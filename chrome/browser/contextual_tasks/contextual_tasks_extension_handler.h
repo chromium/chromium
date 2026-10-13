@@ -50,7 +50,6 @@ class WebContents;
 }  // namespace content
 
 namespace lens {
-struct ContextualInputData;
 class ClientToSearchMessage;
 }  // namespace lens
 
@@ -259,9 +258,6 @@ class ContextualTasksExtensionHandler
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
   LensSearchController* GetLensSearchController() const;
-  void OnTabContextSnapshot(
-      const base::UnguessableToken& context_token,
-      std::unique_ptr<lens::ContextualInputData> page_content_data);
 #endif
 
   void InitializeInputStateModel();

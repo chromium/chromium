@@ -369,7 +369,7 @@ TEST_F(SubmittedContextDecoratorTest,
   // Add an unsubmitted delayed tab to `tab_context_.attached` (must be
   // skipped).
   base::UnguessableToken delayed_token = session_handle->CreateContextToken();
-  session_handle->AddDelayedTabContext(
+  session_handle->AttachTabPendingUpload(
       delayed_token, 30, GURL("https://example.com/delayed"), "Delayed Tab");
   ASSERT_EQ(3u, session_handle->GetTabContextState().attached.size());
 

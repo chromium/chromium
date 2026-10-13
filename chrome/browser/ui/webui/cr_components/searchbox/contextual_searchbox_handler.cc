@@ -2387,7 +2387,7 @@ void ContextualSearchboxHandler::SnapshotTabContext(
             ? std::nullopt
             : std::optional(*page_content_data);
     if (page_content_data->tab_session_id.has_value()) {
-      contextual_session_handle->AddDelayedTabContext(
+      contextual_session_handle->AttachTabPendingUpload(
           context_token, page_content_data->tab_session_id->id(),
           page_content_data->page_url.value_or(GURL()),
           page_content_data->page_title.value_or(""));

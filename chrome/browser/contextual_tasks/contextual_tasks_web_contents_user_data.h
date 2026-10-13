@@ -45,7 +45,6 @@ class RenderFrameHost;
 namespace lens {
 class AddedContext;
 class ClientToSearchMessage;
-struct ContextualInputData;
 enum class LensOverlayDismissalSource;
 enum class MimeType;
 class SearchToClientMessage_UpdateThreadContextLibrary;
@@ -56,6 +55,10 @@ struct InputState;
 }  // namespace omnibox
 
 namespace contextual_tasks {
+
+class ContextualTasksService;
+class DesktopQueryContextualizerDelegate;
+class QueryContextualizer;
 
 class ContextualTasksWebContentsUserData
     : public content::WebContentsUserData<ContextualTasksWebContentsUserData>,
@@ -168,15 +171,13 @@ class ContextualTasksWebContentsUserData
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
   LensSearchController* GetLensSearchController() const;
-  void SetTabContextSnapshot(
-      const base::UnguessableToken& context_token,
-      std::unique_ptr<lens::ContextualInputData> page_content_data);
-  void ClearTabContextSnapshotIfMatching(const base::UnguessableToken& token);
 #endif
-  void UploadSnapshotTabContextIfPresent();
   void DoSubmitQueryCleanup();
   void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source);
 
+  // Returns the tabs selected as context: the session handle's attached tabs
+  // that are delayed tabs pending upload or whose context token is still
+  // pending submission (in `GetUploadedContextTokens()`).
   std::vector<contextual_search::TabInfo> GetSelectedTabs();
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
@@ -197,6 +198,8 @@ class ContextualTasksWebContentsUserData
       SearchMessageDispatcherForTesting dispatcher) {
     search_message_dispatcher_for_testing_ = std::move(dispatcher);
   }
+  // Recreates `query_contextualizer_` with `service`.
+  void SetContextualTasksServiceForTesting(ContextualTasksService* service);
 
   base::WeakPtr<ContextualTasksWebContentsUserData> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -227,6 +230,20 @@ class ContextualTasksWebContentsUserData
   ContextState ComputeContextState();
   void UpdateContextState();
   void RecordTimeToHandshakeComplete();
+  // Returns the active tab to recontextualize on submit, unless the query has
+  // a visual selection (`overlay_token`) or the tab was deselected. Like
+  // `GetPendingDelayedTabs()`, returns `QueryContextualizer::TabId`s.
+  std::vector<int32_t> GetTabsToRecontextualize(
+      contextual_search::ContextualSearchSessionHandle& session_handle,
+      const std::optional<base::UnguessableToken>& overlay_token);
+  // Returns the delayed tabs in `session_handle` to upload on submit.
+  std::vector<int32_t> GetPendingDelayedTabs(
+      contextual_search::ContextualSearchSessionHandle& session_handle);
+  // Posts the `on_submit_query_response` once `query_contextualizer_` has
+  // uploaded the tabs for the submitted query.
+  void OnSubmitQueryContextualized(
+      std::optional<lens::AddedContext> lens_added_context,
+      std::optional<base::UnguessableToken> overlay_token);
   void AppendTabContextsToOnSubmitQueryResponse(
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,
@@ -256,14 +273,12 @@ class ContextualTasksWebContentsUserData
 
   base::TimeTicks last_handled_submit_interaction_time_;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/568013317): Remove. Delayed tabs should be owned by the
-  // session handle and uploaded at submit via QueryContextualizer, like
-  // ContextualTasksComposeboxHandler.
-  std::optional<std::pair<base::UnguessableToken,
-                          std::unique_ptr<lens::ContextualInputData>>>
-      tab_context_snapshot_;
-#endif
+  // Uploads delayed tabs and recontextualizes the active tab on submit.
+  std::unique_ptr<DesktopQueryContextualizerDelegate>
+      query_contextualizer_delegate_;
+  std::unique_ptr<QueryContextualizer> query_contextualizer_;
+  // Whether a submit is waiting for `query_contextualizer_`.
+  bool submit_pending_ = false;
 
   // Maps TabHandle raw values to SessionID values so closed tabs can still be
   // resolved when deleting tab context or removing underlines.

@@ -2828,13 +2828,13 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
-       AddDelayedTabContext_AttachesThenUpdatesOnUpload) {
+       AttachTabPendingUpload_AttachesThenUpdatesOnUpload) {
   EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
       .Times(testing::AnyNumber());
 
   base::UnguessableToken delayed_token = handle_->CreateContextToken();
-  handle_->AddDelayedTabContext(delayed_token, 10,
-                                GURL("https://example.com/10"), "Tab 10");
+  handle_->AttachTabPendingUpload(delayed_token, 10,
+                                  GURL("https://example.com/10"), "Tab 10");
   handle_->StartTabContextUploadFlow(handle_->CreateContextToken(),
                                      MakeTabInputData(20), std::nullopt);
 
@@ -2857,9 +2857,9 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
-       AddDelayedTabContext_IgnoresUnknownToken) {
-  handle_->AddDelayedTabContext(base::UnguessableToken::Create(), 10,
-                                GURL("https://example.com/10"), "Tab 10");
+       AttachTabPendingUpload_IgnoresUnknownToken) {
+  handle_->AttachTabPendingUpload(base::UnguessableToken::Create(), 10,
+                                  GURL("https://example.com/10"), "Tab 10");
   EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
 }
 
@@ -2870,8 +2870,8 @@ TEST_F(ContextualSearchSessionHandleTest,
       .WillRepeatedly(testing::Return(nullptr));
 
   base::UnguessableToken delayed_token = handle_->CreateContextToken();
-  handle_->AddDelayedTabContext(delayed_token, 10,
-                                GURL("https://example.com/10"), "Tab 10");
+  handle_->AttachTabPendingUpload(delayed_token, 10,
+                                  GURL("https://example.com/10"), "Tab 10");
   ASSERT_EQ(1u, handle_->GetTabContextState().attached.size());
 
   base::MockCallback<ContextualSearchSessionHandle::TabContextSubscriber>
@@ -2885,8 +2885,8 @@ TEST_F(ContextualSearchSessionHandleTest,
 TEST_F(ContextualSearchSessionHandleTest,
        RemoveUploadedContextToken_AddsThenRemovesDelayedTab) {
   base::UnguessableToken delayed_token = handle_->CreateContextToken();
-  handle_->AddDelayedTabContext(delayed_token, 10,
-                                GURL("https://example.com/10"), "Tab 10");
+  handle_->AttachTabPendingUpload(delayed_token, 10,
+                                  GURL("https://example.com/10"), "Tab 10");
   ASSERT_EQ(1u, handle_->GetTabContextState().attached.size());
 
   EXPECT_TRUE(handle_->RemoveUploadedContextToken(delayed_token));
@@ -3229,6 +3229,247 @@ TEST_F(
   EXPECT_TRUE(attached[0].submitted);
   EXPECT_EQ(attached[0].context_token, tab_token2);
   EXPECT_EQ(attached[0].url, GURL("https://example.com/2"));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       AddPendingDelayedTab_AttachesThenUpdatesOnUpload) {
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  const base::UnguessableToken pending_token = handle_->AddPendingDelayedTab(
+      10, GURL("https://example.com/10"), "Tab 10");
+  handle_->StartTabContextUploadFlow(handle_->CreateContextToken(),
+                                     MakeTabInputData(20), std::nullopt);
+
+  const auto& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(2u, attached.size());
+  EXPECT_FALSE(pending_token.is_empty());
+  EXPECT_EQ(pending_token, attached[0].context_token);
+  EXPECT_EQ(10, attached[0].tab_id);
+  EXPECT_EQ(GURL("https://example.com/10"), attached[0].url);
+  EXPECT_EQ("Tab 10", attached[0].title);
+  EXPECT_FALSE(attached[0].uploaded);
+  EXPECT_TRUE(attached[0].pending_delayed_upload);
+  EXPECT_FALSE(attached[1].pending_delayed_upload);
+  // The pending tab's token is not referenced in the query.
+  EXPECT_FALSE(std::ranges::contains(handle_->GetUploadedContextTokens(),
+                                     pending_token));
+  EXPECT_EQ(std::vector<SessionID>{SessionID::FromSerializedValue(10)},
+            handle_->GetPendingDelayedTabIds());
+
+  // Uploading the tab at submit time (e.g. by QueryContextualizer, which
+  // creates its own token) updates the same entry in place.
+  const base::UnguessableToken upload_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(upload_token, MakeTabInputData(10),
+                                     std::nullopt);
+  ASSERT_EQ(2u, attached.size());
+  EXPECT_EQ(10, attached[0].tab_id);
+  EXPECT_EQ(upload_token, attached[0].context_token);
+  EXPECT_TRUE(attached[0].uploaded);
+  EXPECT_FALSE(attached[0].pending_delayed_upload);
+  EXPECT_EQ(20, attached[1].tab_id);
+  EXPECT_TRUE(handle_->GetPendingDelayedTabIds().empty());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteFile_RemovesPendingDelayedTabByItsToken) {
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(_))
+      .WillRepeatedly(testing::Return(nullptr));
+
+  const base::UnguessableToken pending_token = handle_->AddPendingDelayedTab(
+      10, GURL("https://example.com/10"), "Tab 10");
+  handle_->DeleteFile(base::UnguessableToken::Create());
+  EXPECT_EQ(1u, handle_->GetTabContextState().attached.size());
+
+  handle_->DeleteFile(pending_token);
+  EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
+  EXPECT_TRUE(handle_->GetPendingDelayedTabIds().empty());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       AddPendingDelayedTab_ClearsDeselection) {
+  const SessionID session_id = SessionID::FromSerializedValue(10);
+  handle_->set_deselected_tabs_urls(
+      {{session_id, {GURL("https://example.com/10"), "Tab 10"}}});
+
+  handle_->AddPendingDelayedTab(10, GURL("https://example.com/10"), "Tab 10");
+
+  EXPECT_FALSE(handle_->GetTabContextState().deselected.contains(session_id));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_DelayedTabTokenDeletesTabAfterUpload) {
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(_))
+      .WillRepeatedly(testing::Return(nullptr));
+
+  const base::UnguessableToken pending_token = handle_->AddPendingDelayedTab(
+      10, GURL("https://example.com/10"), "Tab 10");
+  // The upload replaces the token in the attached tab.
+  const base::UnguessableToken upload_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(upload_token, MakeTabInputData(10),
+                                     std::nullopt);
+  const auto& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(1u, attached.size());
+  EXPECT_EQ(upload_token, attached[0].context_token);
+
+  EXPECT_EQ(std::nullopt,
+            handle_->DeleteTabContext(base::UnguessableToken::Create()));
+  EXPECT_EQ(1u, attached.size());
+
+  EXPECT_EQ(10, handle_->DeleteTabContext(pending_token));
+  EXPECT_TRUE(attached.empty());
+  EXPECT_FALSE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), upload_token));
+  // The delayed tab token no longer resolves to the tab.
+  EXPECT_EQ(std::nullopt, handle_->DeleteTabContext(pending_token));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_SupersededTokenDeletesTabsCurrentToken) {
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  const base::UnguessableToken old_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(old_token, MakeTabInputData(10),
+                                     std::nullopt);
+  handle_->StartTabContextUploadFlow(handle_->CreateContextToken(),
+                                     MakeTabInputData(30), std::nullopt);
+  const base::UnguessableToken new_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(new_token, MakeTabInputData(10),
+                                     std::nullopt);
+  const auto& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(2u, attached.size());
+  EXPECT_EQ(new_token, attached[0].context_token);
+
+  FileInfo old_info;
+  old_info.file_token = old_token;
+  old_info.tab_session_id = SessionID::FromSerializedValue(10);
+  FileInfo new_info;
+  new_info.file_token = new_token;
+  new_info.tab_session_id = SessionID::FromSerializedValue(10);
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(old_token))
+      .WillRepeatedly(testing::Return(&old_info));
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(new_token))
+      .WillRepeatedly(testing::Return(&new_info));
+  EXPECT_CALL(*mock_controller_ptr_, DeleteFile(_))
+      .WillRepeatedly(testing::Return(true));
+
+  // Deleting the superseded token also deletes the tab's current token.
+  EXPECT_EQ(10, handle_->DeleteTabContext(old_token));
+  ASSERT_EQ(1u, attached.size());
+  EXPECT_EQ(30, attached[0].tab_id);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_SupersededSubmittedTokenWithDeselection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+  const SessionID session_id = SessionID::FromSerializedValue(10);
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(1);
+
+  // Submit tab 10, then re-upload it (e.g. recontextualization) and submit.
+  const base::UnguessableToken old_token = handle_->CreateContextToken();
+  FileInfo old_info;
+  old_info.file_token = old_token;
+  old_info.tab_session_id = session_id;
+  old_info.tab_url = GURL("https://example.com/old");
+  old_info.request_id = request_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(old_token))
+      .WillRepeatedly(testing::Return(&old_info));
+  handle_->StartTabContextUploadFlow(old_token, MakeTabInputData(10),
+                                     std::nullopt);
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+
+  const base::UnguessableToken new_token = handle_->CreateContextToken();
+  FileInfo new_info = old_info;
+  new_info.file_token = new_token;
+  new_info.tab_url = GURL("https://example.com/new");
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(new_token))
+      .WillRepeatedly(testing::Return(&new_info));
+  handle_->StartTabContextUploadFlow(new_token, MakeTabInputData(10),
+                                     std::nullopt);
+  old_info.is_superceded = true;
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+  const auto& state = handle_->GetTabContextState();
+  ASSERT_EQ(1u, state.attached.size());
+  EXPECT_EQ(new_token, state.attached[0].context_token);
+
+  // Submitted tokens stay in the controller for previous turns.
+  EXPECT_CALL(*mock_controller_ptr_, DeleteFile(_)).Times(0);
+  EXPECT_EQ(10, handle_->DeleteTabContext(old_token));
+
+  EXPECT_TRUE(handle_->GetSubmittedContextTokens().empty());
+  // The tab is deselected at its current URL, so it is not recontextualized.
+  ASSERT_TRUE(state.deselected.contains(session_id));
+  EXPECT_EQ(GURL("https://example.com/new"),
+            state.deselected.at(session_id).first);
+  // The tab is detached; it is tracked as displaced to report its removal.
+  EXPECT_TRUE(state.attached.empty());
+  // The next turn reports it as removed.
+  const std::vector<lens::LensOverlayRequestId> removed =
+      handle_->TakeRemovedContexts();
+  ASSERT_EQ(1u, removed.size());
+  EXPECT_EQ(1u, removed[0].uuid());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_DelayedTabTokenAfterSubmitWithDeselection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+  const SessionID session_id = SessionID::FromSerializedValue(10);
+
+  // Attach a delayed tab, upload it at submit, and submit.
+  const base::UnguessableToken pending_token = handle_->AddPendingDelayedTab(
+      10, GURL("https://example.com/10"), "Tab 10");
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(pending_token))
+      .WillRepeatedly(testing::Return(nullptr));
+  const base::UnguessableToken upload_token = handle_->CreateContextToken();
+  FileInfo upload_info;
+  upload_info.file_token = upload_token;
+  upload_info.tab_session_id = session_id;
+  upload_info.tab_url = GURL("https://example.com/10");
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(2);
+  upload_info.request_id = request_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(upload_token))
+      .WillRepeatedly(testing::Return(&upload_info));
+  handle_->StartTabContextUploadFlow(upload_token, MakeTabInputData(10),
+                                     std::nullopt);
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+  const auto& state = handle_->GetTabContextState();
+  ASSERT_EQ(1u, state.attached.size());
+  EXPECT_TRUE(state.attached[0].submitted);
+
+  // Deleting the chip by its delayed tab token deselects the submitted tab.
+  EXPECT_CALL(*mock_controller_ptr_, DeleteFile(_)).Times(0);
+  EXPECT_EQ(10, handle_->DeleteTabContext(pending_token));
+  EXPECT_TRUE(handle_->GetSubmittedContextTokens().empty());
+  ASSERT_TRUE(state.deselected.contains(session_id));
+  const std::vector<lens::LensOverlayRequestId> removed =
+      handle_->TakeRemovedContexts();
+  ASSERT_EQ(1u, removed.size());
+  EXPECT_EQ(2u, removed[0].uuid());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       ClearFiles_DropsPendingDelayedTabsOnCancelOnly) {
+  handle_->AddPendingDelayedTab(10, GURL("https://example.com/10"), "Tab 10");
+  handle_->ClearFiles(/*query_submitted=*/true);
+  EXPECT_EQ(1u, handle_->GetTabContextState().attached.size());
+
+  handle_->ClearFiles(/*query_submitted=*/false);
+  EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
 }
 
 }  // namespace contextual_search

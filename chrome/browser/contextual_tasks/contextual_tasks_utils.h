@@ -108,27 +108,23 @@ void RecordTabAddedMetric(
     BrowserWindowInterface* browser_window_interface = nullptr);
 
 #if !BUILDFLAG(IS_ANDROID)
-using TabContextSnapshotCallback = base::OnceCallback<void(
-    const base::UnguessableToken& context_token,
-    std::unique_ptr<lens::ContextualInputData> page_content_data)>;
-
 // Captures page context for the given `tab_id` and uploads it to
-// `session_handle` (or snapshots it via `on_snapshot` when `delay_upload` is
-// true). Creates a context token on `session_handle`, initiates async page
-// context extraction via TabContextualizationController, underlines the tab
-// strip if enabled, and on completion checks that the token is still an
-// uploaded context token before starting upload or snapshotting.
-// If `on_context_uploaded` is provided, it is invoked after upload/snapshot.
+// `session_handle`. Creates a context token on `session_handle`, initiates
+// async page context extraction via TabContextualizationController, underlines
+// the tab strip if enabled, and on completion checks that the token is still an
+// uploaded context token before starting the upload.
+// If `on_context_uploaded` is provided, it is invoked after the upload starts.
 // Returns the created context token on success, or an error.
+// Not used for delayed (auto-suggested chip) tabs: those are recorded via
+// ContextualSearchSessionHandle::AddPendingDelayedTab() and captured and
+// uploaded at submit by QueryContextualizer.
 base::expected<base::UnguessableToken,
                contextual_search::ContextUploadErrorType>
 CaptureAndUploadTabContext(
     int32_t tab_id,
     contextual_search::ContextualSearchSessionHandle* session_handle,
-    bool delay_upload = false,
     base::RepeatingClosure on_context_uploaded = base::DoNothing(),
-    BrowserWindowInterface* browser_window_interface = nullptr,
-    TabContextSnapshotCallback on_snapshot = base::NullCallback());
+    BrowserWindowInterface* browser_window_interface = nullptr);
 
 // Removes the local tab underline for `tab_id` if context management is
 // enabled.

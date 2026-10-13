@@ -504,16 +504,37 @@ void ContextualTasksExtensionHandler::AddTabContext(
   if (session_id.is_valid()) {
     for (const auto& selected_tab : user_data->GetSelectedTabs()) {
       if (selected_tab.tab_id == session_id.id()) {
-        user_data->ClearTabContextSnapshotIfMatching(
-            selected_tab.context_token);
         user_data->OnTabContextRemoved(selected_tab.context_token);
         DeleteTabToken(session_handle, selected_tab.context_token);
       }
     }
   }
 
+  if (delay_upload) {
+    if (!session_id.is_valid()) {
+      std::move(callback).Run(base::unexpected(
+          contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+      return;
+    }
+    user_data->RecordTabIdMapping(tab_id, session_id.id());
+    // Auto-suggested chip tabs are captured and uploaded by the user data's
+    // `QueryContextualizer` on submit, so that their context is as recent as
+    // possible. Until then, the session handle attaches them with a token for
+    // the chip, so that they can be deleted.
+    const base::UnguessableToken token = session_handle->AddPendingDelayedTab(
+        session_id.id(), tab_contents->GetLastCommittedURL(),
+        base::UTF16ToUTF8(tab_contents->GetTitle()));
+    contextual_tasks::RecordTabAddedMetric(
+        tab, session_handle->GetMetricsRecorder(),
+        /*is_tab_suggestion_chip=*/true, GetBrowserWindowInterface());
+    user_data->AssociateTabWithTask(session_id);
+    user_data->UpdateContextLibraryInputState();
+    std::move(callback).Run(base::ok(token));
+    return;
+  }
+
   auto result = contextual_tasks::CaptureAndUploadTabContext(
-      tab_id, session_handle, delay_upload,
+      tab_id, session_handle,
       /*on_context_uploaded=*/
       base::BindRepeating(
           [](base::WeakPtr<contextual_tasks::ContextualTasksWebContentsUserData>
@@ -526,13 +547,13 @@ void ContextualTasksExtensionHandler::AddTabContext(
             }
           },
           user_data->AsWeakPtr()),
-      /*browser_window_interface=*/GetBrowserWindowInterface(),
-      /*on_snapshot=*/
-      base::BindOnce(&ContextualTasksExtensionHandler::OnTabContextSnapshot,
-                     weak_ptr_factory_.GetWeakPtr()));
+      /*browser_window_interface=*/GetBrowserWindowInterface());
   if (result.has_value() && tab_contents && session_id.is_valid()) {
     user_data->RecordTabIdMapping(tab_id, session_id.id());
-    session_handle->AddDelayedTabContext(
+    // Attach the tab right away, while its page context is captured, so that
+    // it is selected (and can be deleted) from now on. Its upload updates the
+    // attached tab in place.
+    session_handle->AttachTabPendingUpload(
         *result, session_id.id(), tab_contents->GetLastCommittedURL(),
         base::UTF16ToUTF8(tab_contents->GetTitle()));
     // Associate the tab with the task as soon as it is attached as context so
@@ -658,22 +679,6 @@ bool ContextualTasksExtensionHandler::IsEmbeddedInSidePanel() const {
   return contextual_tasks::ContextualTasksPanelController::IsWebContentsInPanel(
       web_contents);
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void ContextualTasksExtensionHandler::OnTabContextSnapshot(
-    const base::UnguessableToken& context_token,
-    std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (auto* user_data = GetOrCreateWebContentsUserData()) {
-    user_data->SetTabContextSnapshot(context_token,
-                                     std::move(page_content_data));
-  }
-  if (searchbox_page_) {
-    searchbox_page_->OnContextualInputStatusChanged(
-        context_token, contextual_search::ContextUploadStatus::kProcessing,
-        std::nullopt);
-  }
-}
-#endif
 
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksExtensionHandler::GetOrCreateContextualSessionHandle() {

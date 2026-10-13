@@ -38,6 +38,7 @@ bool TabInfo::operator==(const TabInfo& other) const {
       url != other.url || title != other.title || uploaded != other.uploaded ||
       restored_from_aim != other.restored_from_aim ||
       submitted != other.submitted ||
+      pending_delayed_upload != other.pending_delayed_upload ||
       request_id.has_value() != other.request_id.has_value()) {
     return false;
   }
@@ -493,6 +494,7 @@ bool ContextualSearchSessionHandle::DeleteFile(
   if (file_info == nullptr) {
     // A delayed tab has not been uploaded yet, so it has no file info in the
     // controller, but it may still be attached.
+    delayed_tab_token_ids_.erase(file_token);
     RemoveAttachedTabForToken(file_token);
     return false;
   }
@@ -633,13 +635,15 @@ void ContextualSearchSessionHandle::ClearFiles(bool query_submitted) {
       MarkTabAckByServer(token);
     }
   } else {
-    // On cancel, drop attached tabs that were never submitted. Submitted tabs
+    // On cancel, drop attached tabs that were never submitted: tabs whose
+    // token is still pending and delayed tabs pending upload. Submitted tabs
     // stay attached.
     const base::flat_set<base::UnguessableToken> pending(
         uploaded_context_tokens_.begin(), uploaded_context_tokens_.end());
 
     if (std::erase_if(tab_context_.attached, [&pending](const TabInfo& tab) {
-          return pending.contains(tab.context_token);
+          return tab.pending_delayed_upload ||
+                 pending.contains(tab.context_token);
         }) > 0) {
       NotifyTabContextSubscribers();
     }
@@ -1198,7 +1202,7 @@ void ContextualSearchSessionHandle::SetRestoredTabs(std::vector<TabInfo> tabs) {
   MaybeNotifyTabContextSubscribers();
 }
 
-void ContextualSearchSessionHandle::AddDelayedTabContext(
+void ContextualSearchSessionHandle::AttachTabPendingUpload(
     const base::UnguessableToken& file_token,
     int32_t tab_id,
     const GURL& url,
@@ -1217,6 +1221,88 @@ void ContextualSearchSessionHandle::AddDelayedTabContext(
   // updates `tab.uploaded` to true.
   tab.uploaded = false;
   AddAttachedTab(std::move(tab));
+}
+
+base::UnguessableToken ContextualSearchSessionHandle::AddPendingDelayedTab(
+    int32_t tab_id,
+    const GURL& url,
+    const std::string& title) {
+  const SessionID session_id = SessionID::FromSerializedValue(tab_id);
+  // Like `StartTabContextUploadFlow()`, re-adding a tab clears its deselection.
+  // TODO(crbug.com/562939095): If a deselected submitted tab is re-added here
+  // and its chip is deleted before submit, its removal is no longer reported,
+  // since `TakeRemovedContexts()` checks the deselection. Keep the deselection
+  // until the re-added tab is uploaded via `StartTabContextUploadFlow()`.
+  tab_context_.deselected.erase(session_id);
+  TabInfo tab;
+  // Not added to `uploaded_context_tokens_`: the tab is uploaded with another
+  // token via `StartTabContextUploadFlow()`, which replaces this entry.
+  tab.context_token = base::UnguessableToken::Create();
+  tab.tab_id = tab_id;
+  tab.url = url;
+  tab.title = title;
+  tab.uploaded = false;
+  tab.pending_delayed_upload = true;
+  const base::UnguessableToken token = tab.context_token;
+  delayed_tab_token_ids_.insert_or_assign(token, session_id);
+  AddAttachedTab(std::move(tab));
+  return token;
+}
+
+std::vector<SessionID> ContextualSearchSessionHandle::GetPendingDelayedTabIds()
+    const {
+  std::vector<SessionID> tab_ids;
+  for (const auto& tab : tab_context_.attached) {
+    if (tab.pending_delayed_upload && tab.tab_id.has_value()) {
+      tab_ids.push_back(SessionID::FromSerializedValue(*tab.tab_id));
+    }
+  }
+  return tab_ids;
+}
+
+std::optional<int32_t> ContextualSearchSessionHandle::DeleteTabContext(
+    const base::UnguessableToken& token) {
+  // Superseded tab uploads keep their tab in their file info, and delayed tab
+  // tokens in `delayed_tab_token_ids_`.
+  std::optional<SessionID> session_id;
+  const auto* file_info =
+      GetController() ? GetController()->GetFileInfo(token) : nullptr;
+  if (file_info) {
+    session_id = file_info->tab_session_id;
+  } else if (auto it = delayed_tab_token_ids_.find(token);
+             it != delayed_tab_token_ids_.end()) {
+    session_id = it->second;
+  }
+
+  std::optional<int32_t> tab_id;
+  base::UnguessableToken current_token;
+  auto attached_tab =
+      std::ranges::find_if(tab_context_.attached, [&](const TabInfo& tab) {
+        return tab.context_token == token ||
+               (session_id && tab.tab_id == session_id->id());
+      });
+  if (attached_tab != tab_context_.attached.end()) {
+    tab_id = attached_tab->tab_id;
+    if (attached_tab->context_token != token) {
+      current_token = attached_tab->context_token;
+    }
+  }
+
+  auto delete_token = [this](const base::UnguessableToken& token_to_delete) {
+    if (!DeleteFile(token_to_delete)) {
+      RemoveUploadedContextToken(token_to_delete);
+    }
+  };
+  delete_token(token);
+  // With tab deselection, DeleteFile() also deletes the tab's other tokens,
+  // which may include `current_token`. Deleting it again would delete a
+  // submitted token from the controller, so only delete it if still listed.
+  if (!current_token.is_empty() &&
+      (std::ranges::contains(uploaded_context_tokens_, current_token) ||
+       std::ranges::contains(submitted_context_tokens_, current_token))) {
+    delete_token(current_token);
+  }
+  return tab_id;
 }
 
 void ContextualSearchSessionHandle::AddAttachedTab(TabInfo tab) {
