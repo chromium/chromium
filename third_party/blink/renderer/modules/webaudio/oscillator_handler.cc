@@ -294,7 +294,8 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
   bool has_sample_accurate_values = false;
   bool has_frequency_changes = false;
-  base::span<float> phase_increments = phase_increments_.as_span();
+  base::span<float> phase_increments =
+      phase_increments_.as_span().first(frames_to_process);
 
   float final_scale = periodic_wave_->RateScale();
 
@@ -304,8 +305,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     // Get the sample-accurate frequency values and convert to phase increments.
     // They will be converted to phase increments below.
-    frequency_->CalculateSampleAccurateValues(
-        phase_increments_.as_span().first(frames_to_process));
+    frequency_->CalculateSampleAccurateValues(phase_increments);
   } else {
     // Handle ordinary parameter changes if there are no scheduled changes.
     float frequency = frequency_->FinalValue();
@@ -324,15 +324,14 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     // Convert from cents to rate scalar.
     float k = 1.0 / 1200;
-    vector_math::Vsmul(detune_values, k, detune_values, frames_to_process);
+    vector_math::Vsmul(detune_values, k, detune_values);
     for (unsigned i = 0; i < frames_to_process; ++i) {
       detune_values[i] = std::exp2(detune_values[i]);
     }
 
     if (has_frequency_changes) {
       // Multiply frequencies by detune scalings.
-      vector_math::Vmul(detune_values, phase_increments, phase_increments,
-                        frames_to_process);
+      vector_math::Vmul(detune_values, phase_increments, phase_increments);
     }
   } else {
     // Handle ordinary parameter changes if there are no scheduled
@@ -345,8 +344,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   if (has_sample_accurate_values) {
     ClampFrequency(phase_increments, Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
-    vector_math::Vsmul(phase_increments, final_scale, phase_increments,
-                       frames_to_process);
+    vector_math::Vsmul(phase_increments, final_scale, phase_increments);
   }
 
   return has_sample_accurate_values;

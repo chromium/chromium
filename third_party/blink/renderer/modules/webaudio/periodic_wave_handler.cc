@@ -309,11 +309,13 @@ bool PeriodicWaveHandler::CreateBandLimitedTables(
 
     // Copy from loaded frequency data and generate the complex conjugate
     // because of the way the inverse FFT is defined versus the values in the
-    // arrays.  Need to scale the data by fftSize to remove the scaling that the
-    // inverse IFFT would do.
+    // arrays.  Need to scale the data by `fft_size` to remove the scaling that
+    // the inverse IFFT would do.
     const float scale = fft_size;
-    vector_math::Vsmul(real_data, scale, real.as_span(), number_of_components);
-    vector_math::Vsmul(imag_data, -scale, imag.as_span(), number_of_components);
+    vector_math::Vsmul(real_data.first(number_of_components), scale,
+                       real.as_span().first(number_of_components));
+    vector_math::Vsmul(imag_data.first(number_of_components), -scale,
+                       imag.as_span().first(number_of_components));
 
     // Find the starting bin where we should start culling.  We need to clear
     // out the highest frequencies to band-limit the waveform.
@@ -363,7 +365,7 @@ bool PeriodicWaveHandler::CreateBandLimitedTables(
     }
 
     // Apply normalization scale.
-    vector_math::Vsmul(data_span, normalization_scale, data_span, fft_size);
+    vector_math::Vsmul(data_span, normalization_scale, data_span);
   }
   return true;
 }

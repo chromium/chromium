@@ -101,13 +101,12 @@ bool ReverbConvolverStage::Initialize(
     DCHECK_LE(stage_length, impulse_response.size());
 
     auto direct_kernel = std::make_unique<AudioFloatArray>(fft_size / 2);
-    direct_kernel->as_span()
-        .first(stage_length)
-        .copy_from(impulse_response.first(stage_length));
+    base::span<float> kernel_span =
+        direct_kernel->as_span().first(stage_length);
+    kernel_span.copy_from(impulse_response.first(stage_length));
     // Account for the normalization (if any) of the convolver node.
     if (scale != 1) {
-      vector_math::Vsmul(direct_kernel->as_span(), scale,
-                         direct_kernel->as_span(), stage_length);
+      vector_math::Vsmul(kernel_span, scale, kernel_span);
     }
     direct_convolver_ = std::make_unique<DirectConvolver>(
         render_slice_size, std::move(direct_kernel));

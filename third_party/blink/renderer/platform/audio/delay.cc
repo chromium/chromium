@@ -28,8 +28,6 @@
 #include <cmath>
 
 #include "base/compiler_specific.h"
-#include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -232,8 +230,9 @@ void Delay::ProcessKRate(base::span<const float> source,
   // If interpolation_factor = 0, we don't need to do any interpolation and
   // destination contains the desired values.  We can skip the following code.
   if (interpolation_factor != 0) {
-    base::span<float> temp_span = temp_buffer_.as_span();
-    DCHECK_LE(frames_to_process, temp_span.size());
+    DCHECK_LE(frames_to_process, temp_buffer_.size());
+    base::span<float> temp_span =
+        temp_buffer_.as_span().first(frames_to_process);
     const size_t read_index2 = (read_index1 + 1) % buffer_length;
     remainder = buffer_length - read_index2;
     first_size = std::min(frames_to_process, remainder);
@@ -248,15 +247,14 @@ void Delay::ProcessKRate(base::span<const float> source,
     // Interpolate samples, where f = interpolation_factor
     //   dest[k] = dest[k] + f*(temp_span[k] - dest[k]);
 
-    auto frames_to_process_32 = base::checked_cast<uint32_t>(frames_to_process);
+    base::span<float> destination_span = destination.first(frames_to_process);
     // temp_span[k] = temp_span[k] - dest[k]
-    vector_math::Vsub(temp_span, destination, temp_span, frames_to_process_32);
+    vector_math::Vsub(temp_span, destination_span, temp_span);
 
     // dest[k] = dest[k] + f*temp_span[k]
     //         = dest[k] + f*(temp_span[k] - dest[k]);
     //
-    vector_math::Vsma(temp_span, interpolation_factor, destination,
-                      frames_to_process_32);
+    vector_math::Vsma(temp_span, interpolation_factor, destination_span);
   }
 }
 

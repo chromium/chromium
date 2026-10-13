@@ -81,9 +81,9 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
       }
 
       // Overlap-add 1st half from previous time
-      vector_math::Vadd(output_buffer_.as_span(),
+      vector_math::Vadd(output_buffer_span.first(half_size),
                         last_overlap_buffer_.as_span(),
-                        output_buffer_.as_span(), half_size);
+                        output_buffer_span.first(half_size));
 
       // Finally, save 2nd half of result
       DCHECK_EQ(output_buffer_.size(), 2 * half_size);

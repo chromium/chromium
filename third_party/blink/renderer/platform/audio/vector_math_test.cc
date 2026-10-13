@@ -301,7 +301,7 @@ TEST_F(VectorMathTest, Conv) {
         AudioFloatArray prepared_filter;
         PrepareFilterForConv(reversed_filter.as_span(), prepared_filter);
         Conv(source.as_span(), reversed_filter.as_span(), dest.as_span(),
-             frames_to_process, prepared_filter);
+             prepared_filter);
         for (size_t i = 0u; i < frames_to_process; ++i) {
           EXPECT_NEAR(expected_dest[i], dest[i],
                       1e-3 * std::abs(expected_dest[i]));
@@ -319,8 +319,7 @@ TEST_F(VectorMathTest, Vadd) {
         expected_dest[i] = source1[i] + source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vadd(source1.as_span(), source2.as_span(), dest.as_span(),
-             source1.size());
+        Vadd(source1.as_span(), source2.as_span(), dest.as_span());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -335,8 +334,7 @@ TEST_F(VectorMathTest, Vsub) {
         expected_dest[i] = source1[i] - source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vsub(source1.as_span(), source2.as_span(), dest.as_span(),
-             source1.size());
+        Vsub(source1.as_span(), source2.as_span(), dest.as_span());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -384,8 +382,7 @@ TEST_F(VectorMathTest, Vmul) {
         expected_dest[i] = source1[i] * source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vmul(source1.as_span(), source2.as_span(), dest.as_span(),
-             source1.size());
+        Vmul(source1.as_span(), source2.as_span(), dest.as_span());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -402,7 +399,7 @@ TEST_F(VectorMathTest, Vsma) {
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       std::ranges::copy(dest_source, dest.begin());
-      Vsma(source.as_span(), scale, dest.as_span(), source.size());
+      Vsma(source.as_span(), scale, dest.as_span());
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.
@@ -432,7 +429,7 @@ TEST_F(VectorMathTest, Vsmul) {
       expected_dest[i] = scale * source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsmul(source.as_span(), scale, dest.as_span(), source.size());
+      Vsmul(source.as_span(), scale, dest.as_span());
       EXPECT_EQ(expected_dest, dest);
     }
   }
@@ -446,7 +443,7 @@ TEST_F(VectorMathTest, Vsadd) {
       expected_dest[i] = addend + source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsadd(source.as_span(), addend, dest.as_span(), source.size());
+      Vsadd(source.as_span(), addend, dest.as_span());
       EXPECT_EQ(expected_dest, dest);
     }
   }
@@ -510,7 +507,7 @@ TEST_F(VectorMathTest, Zvmul) {
     for (auto& dest_real : GetSecondaryVectors(GetDestination(2u), real1)) {
       TestVector<float> dest_imag(GetDestination(3u), real1);
       Zvmul(real1.as_span(), imag1.as_span(), real2.as_span(), imag2.as_span(),
-            dest_real.as_span(), dest_imag.as_span(), real1.size());
+            dest_real.as_span(), dest_imag.as_span());
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.

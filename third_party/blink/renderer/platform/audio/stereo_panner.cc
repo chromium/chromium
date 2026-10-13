@@ -121,8 +121,8 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
 
     // Compute destination_r first in case destination_l aliases with source_l
     // during in-place processing.
-    vector_math::Vsmul(source_l, gain_r, destination_r, frames_to_process);
-    vector_math::Vsmul(source_l, gain_l, destination_l, frames_to_process);
+    vector_math::Vsmul(source_l, gain_r, destination_r);
+    vector_math::Vsmul(source_l, gain_l, destination_l);
   } else {  // For stereo source case.
     // Normalize [-1; 0] to [0; 1] for the left pan position (<= 0), and
     // do nothing when [0; 1].
@@ -138,16 +138,16 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
       if (destination_l.data() != source_l.data()) {
         destination_l.copy_from(source_l);
       }
-      vector_math::Vsma(source_r, gain_l, destination_l, frames_to_process);
-      vector_math::Vsmul(source_r, gain_r, destination_r, frames_to_process);
+      vector_math::Vsma(source_r, gain_l, destination_l);
+      vector_math::Vsmul(source_r, gain_r, destination_r);
     } else {
       // When [0; 1], keep right channel intact and equal-power pan the
       // left channel only.
       if (destination_r.data() != source_r.data()) {
         destination_r.copy_from(source_r);
       }
-      vector_math::Vsma(source_l, gain_r, destination_r, frames_to_process);
-      vector_math::Vsmul(source_l, gain_l, destination_l, frames_to_process);
+      vector_math::Vsma(source_l, gain_r, destination_r);
+      vector_math::Vsmul(source_l, gain_l, destination_l);
     }
   }
 }

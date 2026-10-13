@@ -66,8 +66,7 @@ void DirectConvolver::Process(base::span<const float> source,
       .copy_from(source.first(frames_to_process));
 
   vector_math::Conv(buffer_.as_span(), convolution_kernel_->as_span(),
-                    destination, frames_to_process,
-                    prepared_convolution_kernel_);
+                    destination, prepared_convolution_kernel_);
 
   // Copy the last `history_size` samples to the beginning of the buffer.
   buffer_.as_span()

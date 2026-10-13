@@ -133,10 +133,8 @@ std::unique_ptr<FFTFrame> FFTFrame::CreateInterpolatedFrame(
 }
 
 void FFTFrame::ScaleFFT(float factor) {
-  vector_math::Vsmul(real_data_.as_span(), factor, real_data_.as_span(),
-                     real_data_.size());
-  vector_math::Vsmul(imag_data_.as_span(), factor, imag_data_.as_span(),
-                     imag_data_.size());
+  vector_math::Vsmul(real_data_.as_span(), factor, real_data_.as_span());
+  vector_math::Vsmul(imag_data_.as_span(), factor, imag_data_.as_span());
 }
 
 void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
@@ -350,18 +348,11 @@ void FFTFrame::Multiply(const FFTFrame& frame) {
   const AudioFloatArray& real2 = frame2.RealData();
   const AudioFloatArray& imag2 = frame2.ImagData();
 
-  const unsigned packed_size = real1.size();
   float real0 = real1[0];
   float imag0 = imag1[0];
 
-  DCHECK_GE(real1.size(), packed_size);
-  DCHECK_GE(imag1.size(), packed_size);
-  DCHECK_GE(real2.size(), packed_size);
-  DCHECK_GE(imag2.size(), packed_size);
-
   vector_math::Zvmul(real1.as_span(), imag1.as_span(), real2.as_span(),
-                     imag2.as_span(), real1.as_span(), imag1.as_span(),
-                     packed_size);
+                     imag2.as_span(), real1.as_span(), imag1.as_span());
 
   // Multiply the packed DC/nyquist component
   real1[0] = real0 * real2[0];

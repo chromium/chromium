@@ -59,7 +59,7 @@ void AudioChannel::Scale(float scale) {
     return;
   }
 
-  vector_math::Vsmul(Span(), scale, MutableSpan(), length());
+  vector_math::Vsmul(Span(), scale, MutableSpan());
 }
 
 void AudioChannel::CopyFrom(const AudioChannel* source_channel) {
@@ -113,7 +113,8 @@ void AudioChannel::SumFrom(const AudioChannel* source_channel) {
   if (IsSilent()) {
     CopyFrom(source_channel);
   } else {
-    vector_math::Vadd(Span(), source_channel->Span(), MutableSpan(), length());
+    vector_math::Vadd(Span(), source_channel->Span().first(length()),
+                      MutableSpan());
   }
 }
 
