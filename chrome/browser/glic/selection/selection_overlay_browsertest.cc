@@ -352,13 +352,58 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   EXPECT_TRUE(actions[0]->action->is_handoff());
 }
 
+class SelectionOverlayStaticSuggestionsWithPromptBoxBrowserTest
+    : public GlicBrowserTest {
+ public:
+  SelectionOverlayStaticSuggestionsWithPromptBoxBrowserTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        "GlicCaptureRegion,GlicSelectionOverlayPrompt,"
+        "GlicSelectionOverlayPromptBox,StaticSelectionSuggestions",
+        "");
+  }
+  ~SelectionOverlayStaticSuggestionsWithPromptBoxBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayStaticSuggestionsWithPromptBoxBrowserTest,
+    AskGeminiNotInjectedWhenPromptBoxEnabled) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  listener.WaitForBatches(1);
+  EXPECT_TRUE(listener.actions().empty());
+}
+
 class SelectionOverlayQuickAnswersSuggestionsBrowserTest
     : public GlicBrowserTest {
  public:
   SelectionOverlayQuickAnswersSuggestionsBrowserTest() {
     scoped_feature_list_.InitFromCommandLine(
         "GlicCaptureRegion,GlicSelectionOverlayPrompt,"
-        "QuickAnswersSelectionSuggestions",
+        "StaticSelectionSuggestions,QuickAnswersSelectionSuggestions",
         "");
   }
   ~SelectionOverlayQuickAnswersSuggestionsBrowserTest() override = default;
@@ -403,11 +448,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
-  ASSERT_EQ(actions.size(), 1u);
-  EXPECT_EQ(actions[0]->title, "Explain");
-  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kExplain);
-  ASSERT_TRUE(actions[0]->action->is_inline_fulfillment());
-  EXPECT_EQ(actions[0]->action->get_inline_fulfillment()->resource_name,
+  ASSERT_EQ(actions.size(), 2u);
+  EXPECT_EQ(actions[0]->title, "Ask Gemini");
+  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kSpark);
+  EXPECT_TRUE(actions[0]->action->is_handoff());
+  EXPECT_EQ(actions[1]->title, "Explain");
+  EXPECT_EQ(actions[1]->icon, selection::SuggestedActionIcon::kExplain);
+  ASSERT_TRUE(actions[1]->action->is_inline_fulfillment());
+  EXPECT_EQ(actions[1]->action->get_inline_fulfillment()->resource_name,
             "explain_fulfillment.js");
 
   // Adjusting the region without text selection should not present the Explain
@@ -420,7 +468,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   TestSuggestedActionsListener adjusted_listener;
   controller->GetSuggestedActionsForTesting(adjusted_listener.GetCallback());
   adjusted_listener.WaitForBatches(1);
-  EXPECT_TRUE(adjusted_listener.actions().empty());
+  ASSERT_EQ(adjusted_listener.actions().size(), 1u);
+  EXPECT_EQ(adjusted_listener.actions()[0]->title, "Ask Gemini");
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

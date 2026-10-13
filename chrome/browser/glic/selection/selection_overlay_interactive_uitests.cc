@@ -1840,7 +1840,7 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
     feature_list_.InitFromCommandLine(
         /*enable_features=*/
         "GlicSelectionOverlayPrompt,GlicSelectionSmallChip,GlicSelectionPrompt,"
-        "QuickAnswersSelectionSuggestions",
+        "StaticSelectionSuggestions,QuickAnswersSelectionSuggestions",
         /*disable_features=*/"");
   }
 

@@ -1060,22 +1060,25 @@ void SelectionOverlayController::RequestNewSuggestions(
     }
   }
 
-  std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
   if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
-    static_suggestions.emplace_back(std::make_unique<SelectionSuggestion>(
-        CHECK_DEREF(tab_), u"Ask Gemini"));
-  }
-  if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions) &&
-      !base::FeatureList::IsEnabled(
-          ::selection::kSmartSelectionServerSuggestions)) {
-    if (auto suggestion =
-            QuickAnswersTool::CreateSuggestion(CHECK_DEREF(tab_), aoi)) {
-      static_suggestions.push_back(std::move(suggestion));
+    std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicSelectionOverlayPromptBox)) {
+      static_suggestions.emplace_back(std::make_unique<SelectionSuggestion>(
+          CHECK_DEREF(tab_), u"Ask Gemini"));
     }
-  }
-  if (!static_suggestions.empty()) {
-    OnSuggestionsReceived(region_id, generation, /*complete=*/false,
-                          std::move(static_suggestions));
+    if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions) &&
+        !base::FeatureList::IsEnabled(
+            ::selection::kSmartSelectionServerSuggestions)) {
+      if (auto suggestion =
+              QuickAnswersTool::CreateSuggestion(CHECK_DEREF(tab_), aoi)) {
+        static_suggestions.push_back(std::move(suggestion));
+      }
+    }
+    if (!static_suggestions.empty()) {
+      OnSuggestionsReceived(region_id, generation, /*complete=*/false,
+                            std::move(static_suggestions));
+    }
   }
 
   suggestion_service->RequestSuggestions(
