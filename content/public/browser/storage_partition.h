@@ -54,6 +54,7 @@ class DeviceBoundSessionManager;
 
 namespace storage {
 class QuotaManager;
+class QuotaManagerProxy;
 struct QuotaSettings;
 class SpecialStoragePolicy;
 }  // namespace storage
@@ -143,7 +144,10 @@ class CONTENT_EXPORT StoragePartition {
   CreateURLLoaderNetworkObserverForNavigationRequest(
       NavigationRequest& navigation_request) = 0;
 
+  // TODO(crbug.com/468047539): migrate callers of `QuotaManager` to
+  // `QuotaManagerProxy`.
   virtual storage::QuotaManager* GetQuotaManager() = 0;
+  virtual storage::QuotaManagerProxy* GetQuotaManagerProxy() = 0;
   virtual BackgroundSyncContext* GetBackgroundSyncContext() = 0;
   virtual storage::FileSystemContext* GetFileSystemContext() = 0;
   virtual DOMStorageContext* GetDOMStorageContext() = 0;

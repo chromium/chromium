@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "storage/browser/quota/quota_manager.h"
 
 namespace content {
 
@@ -74,6 +75,10 @@ TestStoragePartition::CreateURLLoaderNetworkObserverForNavigationRequest(
 
 storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
+}
+
+storage::QuotaManagerProxy* TestStoragePartition::GetQuotaManagerProxy() {
+  return quota_manager_ ? quota_manager_->proxy() : nullptr;
 }
 
 BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {

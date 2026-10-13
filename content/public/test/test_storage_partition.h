@@ -104,6 +104,7 @@ class TestStoragePartition : public StoragePartition {
     quota_manager_ = manager;
   }
   storage::QuotaManager* GetQuotaManager() override;
+  storage::QuotaManagerProxy* GetQuotaManagerProxy() override;
 
   void set_file_system_context(storage::FileSystemContext* context) {
     file_system_context_ = context;

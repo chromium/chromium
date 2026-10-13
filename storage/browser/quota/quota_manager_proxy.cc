@@ -267,6 +267,29 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
                                                delete_expired);
 }
 
+void QuotaManagerProxy::GetBucketsModifiedBetween(base::Time begin,
+                                                  base::Time end,
+                                                  GetBucketsCallback callback) {
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &QuotaManagerProxy::GetBucketsModifiedBetween, this, begin, end,
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                               std::move(callback))));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+  if (!quota_manager_impl_) {
+    std::move(callback).Run(std::set<BucketLocator>());
+    return;
+  }
+
+  quota_manager_impl_->GetBucketsModifiedBetween(begin, end,
+                                                 std::move(callback));
+}
+
 void QuotaManagerProxy::GetBucketById(
     const BucketId& bucket_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

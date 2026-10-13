@@ -172,6 +172,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateURLLoaderNetworkObserverForNavigationRequest(
       NavigationRequest& navigation_request) override;
   storage::QuotaManager* GetQuotaManager() override;
+  storage::QuotaManagerProxy* GetQuotaManagerProxy() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
@@ -482,8 +483,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // The same as above but for LocalStorage.
   void ResetLocalStorageConnections();
-
-  storage::QuotaManagerProxy* GetQuotaManagerProxy();
 
   // Called by BrowserContextImpl prior to destruction.
   void OnBrowserContextWillBeDestroyed();

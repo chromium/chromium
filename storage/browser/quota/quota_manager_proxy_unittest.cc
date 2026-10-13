@@ -115,4 +115,23 @@ TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
             expected_path);
 }
 
+TEST_F(QuotaManagerProxyTest, GetBucketsModifiedBetween) {
+  base::test::TestFuture<QuotaErrorOr<BucketInfo>> create_future;
+  BucketInitParams params(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      "draft_bucket");
+  quota_manager_proxy_->UpdateOrCreateBucket(
+      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      create_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket, create_future.Take());
+
+  base::test::TestFuture<std::set<BucketLocator>> buckets_future;
+  quota_manager_proxy_->GetBucketsModifiedBetween(
+      base::Time(), base::Time::Max(),
+      buckets_future.GetCallback<const std::set<BucketLocator>&>());
+
+  EXPECT_EQ(std::set<BucketLocator>({bucket.ToBucketLocator()}),
+            buckets_future.Get());
+}
+
 }  // namespace storage

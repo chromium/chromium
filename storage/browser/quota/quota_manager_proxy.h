@@ -139,6 +139,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
 
+  virtual void GetBucketsModifiedBetween(base::Time begin,
+                                         base::Time end,
+                                         GetBucketsCallback callback);
+
   // Deletes bucket with `bucket_name` for `storage_key` for all registered
   // QuotaClients if a bucket exists. Will return QuotaStatusCode to the
   // callback. Called by Storage Buckets API for deleting buckets via

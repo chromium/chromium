@@ -26,7 +26,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -62,19 +62,13 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   cookie_manager->GetAllCookies(base::BindOnce(
       &SiteDataCountingHelper::GetCookiesCallback, base::Unretained(this)));
 
-  storage::QuotaManager* quota_manager = partition->GetQuotaManager();
-  if (quota_manager) {
-    // Count storage keys with filesystem, indexeddb, serviceworkers,
-    // and cachestorage using quota manager.
-    auto buckets_callback =
-        base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
-                            base::Unretained(this));
-    tasks_ += 1;
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&storage::QuotaManager::GetBucketsModifiedBetween,
-                       quota_manager, begin_, end_, buckets_callback));
-  }
+  // Count storage keys with filesystem, indexeddb, serviceworkers, and
+  // cachestorage using quota manager.
+  tasks_ += 1;
+  partition->GetQuotaManagerProxy()->GetBucketsModifiedBetween(
+      begin_, end_,
+      base::BindOnce(&SiteDataCountingHelper::GetQuotaBucketsCallback,
+                     base::Unretained(this)));
 
   // Count origins with local storage or session storage.
   content::DOMStorageContext* dom_storage = partition->GetDOMStorageContext();
@@ -169,14 +163,11 @@ void SiteDataCountingHelper::GetCdmStorageCallback(
 
 void SiteDataCountingHelper::GetQuotaBucketsCallback(
     const std::set<storage::BucketLocator>& buckets) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   std::set<GURL> urls;
-  for (const storage::BucketLocator& bucket : buckets)
+  for (const storage::BucketLocator& bucket : buckets) {
     urls.insert(bucket.storage_key.origin().GetURL());
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SiteDataCountingHelper::Done, base::Unretained(this),
-                     std::vector<GURL>(urls.begin(), urls.end())));
+  }
+  Done(std::vector<GURL>(urls.begin(), urls.end()));
 }
 
 void SiteDataCountingHelper::GetSharedDictionaryOriginsCallback(
