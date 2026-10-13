@@ -172,23 +172,6 @@ public class TabUiTestHelper {
     }
 
     /**
-     * Enter tab switcher from a tab page by clicking the tab switcher button programmatically,
-     * bypassing input dispatch. Prefer {@link #enterTabSwitcher(ChromeTabbedActivity)}.
-     *
-     * @param cta The current running activity.
-     */
-    // TODO(crbug.com/428024864): Remove once the letterbox education popup, shown on large screens
-    // after rotating to portrait, no longer swallows a click on the tab switcher button.
-    public static void enterTabSwitcherProgrammatically(ChromeTabbedActivity cta) {
-        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.HUB));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    cta.findViewById(R.id.tab_switcher_button).performClick();
-                });
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
-    }
-
-    /**
      * Leave tab switcher by tapping "back".
      *
      * <p>Hops on Public Transit at the tab switcher and presses back to return to the previous tab.
