@@ -5,6 +5,7 @@
 import collections
 import os
 from xml.etree import ElementTree
+import zipfile
 
 from util import build_utils
 from util import resource_utils
@@ -24,10 +25,14 @@ def _ResourceNameToJavaSymbol(resource_name):
 
 class RTxtGenerator:
     def __init__(
-        self, res_dirs, ignore_pattern=resource_utils.AAPT_IGNORE_PATTERN
+        self,
+        res_dirs=(),
+        ignore_pattern=resource_utils.AAPT_IGNORE_PATTERN,
+        res_zips=(),
     ):
         self.res_dirs = res_dirs
-        self.ignore_pattern = ignore_pattern
+        self.res_zips = res_zips
+        self.ignore_globs = resource_utils.GenerateGlobs(ignore_pattern)
 
     def _ParseDeclareStyleable(self, node):
         ret = set()
@@ -96,18 +101,18 @@ class RTxtGenerator:
             ret.update(self._ExtractNewIdsFromNode(child))
         return ret
 
-    def _ParseXml(self, xml_path):
+    def _ParseXml(self, xml_file):
         try:
-            return ElementTree.parse(xml_path).getroot()
+            return ElementTree.parse(xml_file).getroot()
         except Exception as e:
-            raise RuntimeError('Failure parsing {}:\n'.format(xml_path)) from e
+            raise RuntimeError(f'Failure parsing {xml_file}:\n') from e
 
-    def _ExtractNewIdsFromXml(self, xml_path):
-        return self._ExtractNewIdsFromNode(self._ParseXml(xml_path))
+    def _ExtractNewIdsFromXml(self, xml_file):
+        return self._ExtractNewIdsFromNode(self._ParseXml(xml_file))
 
-    def _ParseValuesXml(self, xml_path):
+    def _ParseValuesXml(self, xml_file):
         ret = set()
-        root = self._ParseXml(xml_path)
+        root = self._ParseXml(xml_file)
 
         assert root.tag == 'resources'
         for child in root:
@@ -126,7 +131,7 @@ class RTxtGenerator:
                 assert resource_type in resource_utils.ALL_RESOURCE_TYPES, (
                     f'Infered resource type ({resource_type}) from xml entry ('
                     f'{ElementTree.tostring(child, encoding="unicode").strip()}'
-                    f') (found in {xml_path}) is not listed in '
+                    f') (found in {xml_file}) is not listed in '
                     'resource_utils.ALL_RESOURCE_TYPES. Teach '
                     'resources_parser.py how to parse this entry and then add '
                     'to the list.'
@@ -137,44 +142,75 @@ class RTxtGenerator:
                 )
         return ret
 
-    def _CollectResourcesListFromDirectory(self, res_dir):
+    def _CollectResourcesFromEntry(self, subdir, filename, entry_path, open_fn):
+        if build_utils.MatchesGlob(filename, self.ignore_globs):
+            return ()
+        resource_type = os.path.basename(subdir)
+        if '-' in resource_type:
+            if (
+                resource_type.startswith('values-')
+                and resource_type != 'values-mdpi'
+            ):
+                # Skip non-base values-* directories (such as translation
+                # strings.xml files), since all resources should also be
+                # declared in the base values/ (or values-mdpi/) directory.
+                # Compile or TraceReferences build steps will fail if this
+                # assumption does not hold (and we miss a resource).
+                return ()
+            resource_type = resource_type[: resource_type.index('-')]
+        if resource_type == 'values':
+            with open_fn(entry_path) as xml_file:
+                return self._ParseValuesXml(xml_file)
         ret = set()
-        globs = resource_utils.GenerateGlobs(self.ignore_pattern)
-        for root, _, files in os.walk(res_dir):
-            resource_type = os.path.basename(root)
-            if '-' in resource_type:
-                resource_type = resource_type[: resource_type.index('-')]
-            for f in files:
-                if build_utils.MatchesGlob(f, globs):
-                    continue
-                if resource_type == 'values':
-                    ret.update(self._ParseValuesXml(os.path.join(root, f)))
-                else:
-                    if '.' in f:
-                        resource_name = f[: f.index('.')]
-                    else:
-                        resource_name = f
-                    ret.add(
-                        _TextSymbolEntry(
-                            'int', resource_type, resource_name, _DUMMY_RTXT_ID
-                        )
-                    )
-                    # Other types not just layouts can contain new ids (eg: Menus and
-                    # Drawables). Just in case, look for new ids in all files.
-                    if f.endswith('.xml'):
-                        ret.update(
-                            self._ExtractNewIdsFromXml(os.path.join(root, f))
-                        )
+        if '.' in filename:
+            resource_name = filename[: filename.index('.')]
+        else:
+            resource_name = filename
+        ret.add(
+            _TextSymbolEntry(
+                'int', resource_type, resource_name, _DUMMY_RTXT_ID
+            )
+        )
+        # Other types not just layouts can contain new ids (eg: Menus and
+        # Drawables). Just in case, look for new ids in all files.
+        if filename.endswith('.xml'):
+            with open_fn(entry_path) as xml_file:
+                ret.update(self._ExtractNewIdsFromXml(xml_file))
         return ret
 
-    def _CollectResourcesListFromDirectories(self):
+    def _CollectResourcesListFromDirectory(self, res_dir):
+        ret = set()
+        open_fn = lambda p: open(p, 'rb')  # noqa: E731
+        for root, _, files in os.walk(res_dir):
+            for f in files:
+                path = os.path.join(root, f)
+                ret.update(
+                    self._CollectResourcesFromEntry(root, f, path, open_fn)
+                )
+        return ret
+
+    def _CollectResourcesListFromZip(self, res_zip):
+        ret = set()
+        with zipfile.ZipFile(res_zip) as z:
+            for name in z.namelist():
+                if name.endswith('/'):
+                    continue
+                root, f = os.path.split(name)
+                ret.update(
+                    self._CollectResourcesFromEntry(root, f, name, z.open)
+                )
+        return ret
+
+    def _CollectResourcesList(self):
         ret = set()
         for res_dir in self.res_dirs:
             ret.update(self._CollectResourcesListFromDirectory(res_dir))
+        for res_zip in self.res_zips:
+            ret.update(self._CollectResourcesListFromZip(res_zip))
         return sorted(ret)
 
     def WriteRTxtFile(self, rtxt_path):
-        resources = self._CollectResourcesListFromDirectories()
+        resources = self._CollectResourcesList()
         with action_helpers.atomic_output(rtxt_path, mode='w') as f:
             for resource in resources:
                 line = '{0.java_type} {0.resource_type} {0.name} {0.value}\n'.format(

@@ -13,6 +13,7 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 )
 from util import build_utils
+from util import resources_parser
 
 # Required because the following import needs build/android/gyp in the
 # Python path to import util.build_utils.
@@ -384,6 +385,48 @@ class ResourceUtilsTest(unittest.TestCase):
     def test_BuildContext_NoSrcjarDir(self):
         with resource_utils.BuildContext() as build:
             self.assertFalse(hasattr(build, 'srcjar_dir'))
+
+    def test_RTxtGenerator_FromZip(self):
+        with build_utils.TempDir() as tmp_dir:
+            zip_path = os.path.join(tmp_dir, 'res.zip')
+            rtxt_path = os.path.join(tmp_dir, 'R.txt')
+            with zipfile.ZipFile(zip_path, 'w') as z:
+                z.writestr(
+                    'values/strings.xml',
+                    '<resources><string name="hello">world</string>'
+                    '</resources>',
+                )
+                z.writestr(
+                    'values-mdpi/bools.xml',
+                    '<resources><bool name="mdpi_bool">true</bool></resources>',
+                )
+                z.writestr(
+                    'values-fr/strings.xml',
+                    '<resources><string name="ignored_locale">bonjour</string>'
+                    '</resources>',
+                )
+                z.writestr(
+                    'layout/main.xml',
+                    '<LinearLayout android:id="@+id/main_box" '
+                    'xmlns:android='
+                    '"http://schemas.android.com/apk/res/android"/>',
+                )
+                z.writestr('drawable-hdpi/icon.png', b'png')
+            resources_parser.RTxtGenerator(res_zips=[zip_path]).WriteRTxtFile(
+                rtxt_path
+            )
+            with open(rtxt_path, encoding='utf-8') as f:
+                lines = f.read().splitlines()
+            self.assertEqual(
+                [
+                    'int bool mdpi_bool 0x7f010001',
+                    'int drawable icon 0x7f010001',
+                    'int id main_box 0x7f010001',
+                    'int layout main 0x7f010001',
+                    'int string hello 0x7f010001',
+                ],
+                lines,
+            )
 
 
 if __name__ == '__main__':

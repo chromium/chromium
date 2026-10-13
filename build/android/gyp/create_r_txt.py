@@ -8,7 +8,6 @@ import argparse
 import sys
 
 from util import build_utils
-from util import resource_utils
 from util import resources_parser
 
 
@@ -25,13 +24,9 @@ def main(args):
         '--rtxt-path', required=True, help='Path to output R.txt file.'
     )
     options = parser.parse_args(build_utils.ExpandFileArgs(args))
-    with build_utils.TempDir() as temp:
-        dep_subdirs = resource_utils.ExtractDeps(
-            [options.resources_zip_path], temp
-        )
-        resources_parser.RTxtGenerator(dep_subdirs).WriteRTxtFile(
-            options.rtxt_path
-        )
+    resources_parser.RTxtGenerator(
+        res_zips=[options.resources_zip_path]
+    ).WriteRTxtFile(options.rtxt_path)
 
 
 if __name__ == '__main__':
