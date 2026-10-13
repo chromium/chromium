@@ -29,24 +29,38 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/contextual_tasks_extension_resources.h"
 #include "chrome/test/data/webui/webui_composebox_pixel_test.h"
+#include "components/contextual_search/input_state_model.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
+#include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -813,4 +827,187 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, toolbar_screenshot_name,
                               /*baseline_cl=*/"8452168"))));
+}
+
+struct LensChipPixelTestParams {
+  bool dark_mode = false;
+  bool rtl = false;
+
+  std::string ToString() const {
+    std::string name;
+    name += dark_mode ? "Dark" : "Light";
+    if (rtl) {
+      name += "_RTL";
+    }
+    return name;
+  }
+};
+
+class ContextualTasksLensChipPixelTest
+    : public ContextualTasksPixelTestBase,
+      public testing::WithParamInterface<LensChipPixelTestParams> {
+ public:
+  ContextualTasksLensChipPixelTest() {
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasks,
+          {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kContextualTasksContextMenu, {}},
+         {contextual_tasks::kContextualTasksRearchitecture, {}},
+         {extensions_features::kApiContextualTasksPrivate, {}}},
+        /*disabled_features=*/
+        {contextual_tasks::kContextualTasksAnimatedCaret,
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+    WebUIComposeBoxPixelTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetRTL(GetParam().rtl);
+    SetDarkMode(GetParam().dark_mode);
+    ContextualTasksPixelTestBase::SetUpOnMainThread();
+
+    embedded_test_server()->StartAcceptingConnections();
+
+    extensions::ComponentLoader* component_loader =
+        extensions::ComponentLoader::Get(browser()->GetProfile());
+    if (component_loader) {
+      component_loader->set_ignore_allowlist_for_testing(true);
+      component_loader->Add(
+          IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON,
+          base::FilePath(FILE_PATH_LITERAL("contextual_tasks_extension")));
+    }
+
+    contextual_tasks::ContextualTasksExtensionBridge::Get(
+        browser()->GetProfile());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextualTasksPixelTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-sync");
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ContextualTasksPixelTestBase::TearDownOnMainThread();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksLensChipPixelTest,
+    testing::ValuesIn<LensChipPixelTestParams>({
+        // Light mode LTR
+        {.dark_mode = false, .rtl = false},
+        // Dark mode LTR
+        {.dark_mode = true, .rtl = false},
+        // Light mode RTL
+        {.dark_mode = false, .rtl = true},
+        // Dark mode RTL
+        {.dark_mode = true, .rtl = true},
+    }),
+    [](const testing::TestParamInfo<LensChipPixelTestParams>& info) {
+      return info.param.ToString();
+    });
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, Screenshots) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  const DeepQuery kChipIframe = {"#lens-chip-iframe"};
+
+  const GURL chip_url(
+      base::StringPrintf("chrome-extension://%s/lens_chip.html?cs=%s",
+                         extension_misc::kContextualTasksExtensionId,
+                         GetParam().dark_mode ? "1" : "0"));
+
+  const GURL host_url =
+      embedded_test_server()->GetURL("localhost", "/title1.html");
+
+  RunTestSequence(
+      Do([&]() {
+        content::WebContents* tab_contents =
+            browser()->GetTabStripModel()->GetActiveWebContents();
+        auto session_handle = std::make_unique<testing::NiceMock<
+            contextual_search::MockContextualSearchSessionHandle>>();
+        auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+            FromWebContents(tab_contents);
+        if (!user_data) {
+          contextual_tasks::ContextualTasksWebContentsUserData::
+              CreateForWebContents(tab_contents);
+          user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+              FromWebContents(tab_contents);
+        }
+        auto model = user_data->GetOrCreateInputStateModel(*session_handle);
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+            tab_contents)
+            ->SetTaskSession(std::nullopt, std::move(session_handle),
+                             /*input_state_model=*/nullptr);
+        ASSERT_TRUE(model != nullptr);
+        model->RemoveLensCrop();
+        model->SetLensCrop(
+            "data:image/"
+            "png;base64,"
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl"
+            "EQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+      }),
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, host_url),
+      WaitForWebContentsReady(kActiveTab, host_url), Do([&]() {
+        content::WebContents* tab_contents =
+            browser()->GetTabStripModel()->GetActiveWebContents();
+        EXPECT_TRUE(content::ExecJs(
+            tab_contents, base::StringPrintf(
+                              R"(
+                  document.body.style.margin = '0';
+                  document.body.style.backgroundColor = '%s';
+                  const iframe = document.createElement('iframe');
+                  iframe.id = 'lens-chip-iframe';
+                  iframe.style.width = '200px';
+                  iframe.style.height = '60px';
+                  iframe.style.border = 'none';
+                  document.body.appendChild(iframe);
+                )",
+                              GetParam().dark_mode ? "#1f1f1f" : "#ffffff")));
+        EXPECT_TRUE(content::NavigateIframeToURL(tab_contents,
+                                                 "lens-chip-iframe", chip_url));
+
+        content::RenderFrameHost* chip_rfh =
+            content::FrameMatchingPredicateOrNullptr(
+                tab_contents->GetPrimaryPage(),
+                base::BindRepeating([](content::RenderFrameHost* rfh) {
+                  return rfh->GetLastCommittedURL().SchemeIs(
+                      "chrome-extension");
+                }));
+        ASSERT_TRUE(chip_rfh != nullptr);
+
+        EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+          return content::EvalJs(chip_rfh, R"(
+            (() => {
+              const app = document.querySelector('lens-chip-app');
+              if (!app || !app.shadowRoot) return false;
+              const img = app.shadowRoot.querySelector('#cropImage');
+              return img && img.src && img.src.startsWith('data:image/');
+            })()
+          )") == true;
+        }));
+
+        if (GetParam().rtl) {
+          EXPECT_TRUE(content::ExecJs(chip_rfh, R"(
+            document.documentElement.setAttribute('dir', 'rtl');
+            document.body.setAttribute('dir', 'rtl');
+            document.querySelector('lens-chip-app').setAttribute('dir', 'rtl');
+          )"));
+        }
+      }),
+      WaitForWebContentsPainted(kActiveTab),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshots not captured on this platform."),
+      ScreenshotWebUi(kActiveTab, kChipIframe,
+                      /*screenshot_name=*/"ContextualTasksLensChip",
+                      /*baseline_cl=*/"8408192"));
 }
