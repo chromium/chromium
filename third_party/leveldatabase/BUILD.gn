@@ -22,6 +22,8 @@ leveldb_sources = [
   "leveldb_chrome.h",
   "port/port_chromium.cc",
   "port/port_chromium.h",
+  "shared_block_caches.cc",
+  "shared_block_caches.h",
   "src/db/builder.cc",
   "src/db/builder.h",
   "src/db/db_impl.cc",
@@ -182,7 +184,10 @@ static_library("leveldb_static") {
 }
 
 test("env_chromium_unittests") {
-  sources = [ "env_chromium_unittest.cc" ]
+  sources = [
+    "env_chromium_unittest.cc",
+    "shared_block_caches_unittest.cc",
+  ]
   deps = [
     ":leveldatabase",
     "//base/test:test_support",

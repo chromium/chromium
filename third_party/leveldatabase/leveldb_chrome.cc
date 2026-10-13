@@ -16,17 +16,20 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/shared_block_caches.h"
 #include "third_party/leveldatabase/src/helpers/memenv/memenv.h"
 #include "util/mutexlock.h"
 
@@ -35,7 +38,6 @@ using base::trace_event::MemoryDumpArgs;
 using base::trace_event::MemoryDumpProvider;
 using base::trace_event::ProcessMemoryDump;
 using leveldb::Cache;
-using leveldb::NewLRUCache;
 
 namespace leveldb_chrome {
 
@@ -72,8 +74,20 @@ std::string GetDumpNameForMemEnv(const leveldb::Env* memenv) {
                             reinterpret_cast<uintptr_t>(memenv));
 }
 
+// Returns a dedicated sequence for the memory coordinator notifications of the
+// shared block caches, so that they are always delivered and that evicting
+// entries, which acquires the caches' locks, never happens on the main thread.
+// Returns null if the thread pool doesn't exist, which happens in some tests.
+scoped_refptr<base::SequencedTaskRunner> CreateMemoryConsumerTaskRunner() {
+  if (!base::ThreadPoolInstance::Get()) {
+    return nullptr;
+  }
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE});
+}
+
 // Singleton owning resources shared by Chrome's leveldb databases.
-class Globals : public base::MemoryPressureListener {
+class Globals {
  public:
   static Globals* GetInstance() {
     static base::NoDestructor<Globals> singleton;
@@ -81,40 +95,23 @@ class Globals : public base::MemoryPressureListener {
   }
 
   Globals()
-      : web_block_cache_(
-            base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
-                ? nullptr
-                : NewLRUCache(DefaultBlockCacheSize())),
-        browser_block_cache_(NewLRUCache(DefaultBlockCacheSize())),
-        // Using |this| here (when Globals is only partially constructed) is
-        // safe because the memory pressure notification is sent asynchronously,
-        // so this instance will be fully constructed by the time it is called.
-        memory_pressure_listener_registration_(
-            FROM_HERE,
-            base::MemoryPressureListenerTag::kLevelDb,
-            this) {}
+      : shared_block_caches_(
+            DefaultBlockCacheSize(),
+            /*use_separate_web_cache=*/
+            !base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(),
+            CreateMemoryConsumerTaskRunner()) {}
 
   Globals(const Globals&) = delete;
   Globals& operator=(const Globals&) = delete;
 
-  ~Globals() override = default;
+  ~Globals() = default;
 
   Cache* web_block_cache() const {
-    if (web_block_cache_)
-      return web_block_cache_.get();
-    return browser_block_cache();
+    return shared_block_caches_.web_block_cache();
   }
 
-  Cache* browser_block_cache() const { return browser_block_cache_.get(); }
-
-  // Called when the system is under memory pressure.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) override {
-    if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE)
-      return;
-    browser_block_cache()->Prune();
-    if (browser_block_cache() == web_block_cache())
-      return;
-    web_block_cache()->Prune();
+  Cache* browser_block_cache() const {
+    return shared_block_caches_.browser_block_cache();
   }
 
   void DidCreateChromeMemEnv(leveldb::Env* env) {
@@ -138,13 +135,9 @@ class Globals : public base::MemoryPressureListener {
                           base::trace_event::ProcessMemoryDump* pmd);
 
  private:
-  std::unique_ptr<Cache> web_block_cache_;      // null on low end devices.
-  std::unique_ptr<Cache> browser_block_cache_;  // Never null.
+  SharedBlockCaches shared_block_caches_;
   mutable leveldb::port::Mutex env_mutex_;
   base::flat_set<leveldb::Env*> in_memory_envs_;
-  // Listens for the system being under memory pressure.
-  const base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
 };
 
 class ChromeMemEnv : public leveldb::EnvWrapper {
