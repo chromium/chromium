@@ -16457,29 +16457,6 @@
             ]
         }
     ],
-    "SmartRestartLockScreen": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "lock_bypass_beforeunload_threshold": "101.0",
-                        "lock_disruption_threshold": "2",
-                        "lock_restart_delay": "2m",
-                        "lock_tab_threshold": "-1"
-                    },
-                    "enable_features": [
-                        "SmartRestartLockScreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartSuggestions": [
         {
             "platforms": [

@@ -2120,17 +2120,32 @@ BASE_FEATURE(kSmartRestart, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kSmartRestartDelay{
     &kSmartRestart, "restart_delay", base::Minutes(1)};
 
-BASE_FEATURE(kSmartRestartLockScreen, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables automatic background browser restarts to apply pending updates while
+// the OS screen is locked.
+BASE_FEATURE(kSmartRestartLockScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Maximum number of open tabs allowed for a lock screen restart. -1 disables
+// the tab count limit.
 const base::FeatureParam<int> kSmartRestartLockScreenTabThreshold{
     &kSmartRestartLockScreen, "lock_tab_threshold", -1};
 
+// Maximum SmartRestartDisruptionLevel allowed for a lock screen restart
+// (0 = kNoDisruption, 1 = kLowDisruption, 2 = kMediumDisruption,
+// 3 = kHighDisruption). Default 2 allows restarts up to medium disruption while
+// blocking high-disruption states (e.g. incognito, active downloads, media,
+// user edits, beforeunload).
 const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold{
     &kSmartRestartLockScreen, "lock_disruption_threshold", 2};
 
+// Grace period to wait after the screen is locked before evaluating and
+// executing a restart.
 const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay{
-    &kSmartRestartLockScreen, "lock_restart_delay", base::Minutes(5)};
+    &kSmartRestartLockScreen, "lock_restart_delay", base::Minutes(2)};
 
+// Maximum Site Engagement score ([0.0, 100.0]) at or below which beforeunload
+// handlers can be bypassed during a lock screen restart. A negative value
+// (-1.0) disables bypassing beforeunload handlers; a value above 100.0 (e.g.
+// 101.0) runs in dry-run mode to record metrics without restarting.
 const base::FeatureParam<double> kSmartRestartLockBypassBeforeUnloadThreshold{
     &kSmartRestartLockScreen, "lock_bypass_beforeunload_threshold", -1.0};
 
