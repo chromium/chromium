@@ -4,13 +4,21 @@
 
 import("//build/config/features.gni")
 
+# Lightweight target exposing the device signals pref names, so that low-level
+# components (e.g. //components/signin/public/base) can share them without
+# depending on the whole :browser target.
+source_set("pref_names") {
+  public = [ "pref_names.h" ]
+  sources = [ "pref_names.cc" ]
+  deps = [ "//components/prefs" ]
+}
+
 static_library("browser") {
   public = [
     "base_signals_collector.h",
     "browser_utils.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
-    "pref_names.h",
     "settings_client.h",
     "settings_signals_collector.h",
     "signals_aggregator.h",
@@ -29,7 +37,6 @@ static_library("browser") {
     "browser_utils.cc",
     "file_system_signals_collector.cc",
     "metrics_utils.cc",
-    "pref_names.cc",
     "settings_signals_collector.cc",
     "signals_aggregator_impl.cc",
     "signals_types.cc",
@@ -38,6 +45,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":pref_names",
     "//base",
     "//components/device_signals/core/common/mojom",
     "//components/keyed_service/core",
