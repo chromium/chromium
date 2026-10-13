@@ -346,6 +346,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/context/NavigationTracker.test.ts",
     "bidiMapper/modules/digitalCredentials/DigitalCredentialsProcessor.test.ts",
     "bidiMapper/modules/emulation/EmulationProcessor.test.ts",
+    "bidiMapper/modules/input/ActionDispatcher.test.ts",
     "bidiMapper/modules/log/logHelper.test.ts",
     "bidiMapper/modules/network/NetworkModuleMocks.test.ts",
     "bidiMapper/modules/network/NetworkProcessor.test.ts",
