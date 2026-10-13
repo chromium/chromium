@@ -203,12 +203,6 @@ BASE_DECLARE_FEATURE(kRecordPasswordReadiness);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Retries capturing annotated page context during automated password change if
-// capturing failed for some reason.
-BASE_DECLARE_FEATURE(kRetryCapturePageContent);
-extern const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay;
-extern const base::FeatureParam<int> kCapturePageContentRetryCount;
-
 // Shows a tab with password change instead of bubble/settings page after
 // successful password change.
 BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);

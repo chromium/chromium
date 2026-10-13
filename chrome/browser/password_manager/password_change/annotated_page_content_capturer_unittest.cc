@@ -6,7 +6,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,8 +77,6 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
 }
 
 TEST_F(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kRetryCapturePageContent};
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
@@ -106,8 +102,6 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
 }
 
 TEST_F(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kRetryCapturePageContent};
   base::HistogramTester histogram_tester;
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
@@ -130,26 +124,6 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
       "PasswordManager.PasswordChange.PageContentCaptureResult", false, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.PasswordChange.PageContentCaptureDuration", 1);
-}
-
-TEST_F(AnnotatedPageContentCapturerTest, CaptureDoesNotRetryWhenDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kRetryCapturePageContent);
-
-  base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
-      completion_future;
-  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
-      CreateCapturer(completion_future.GetCallback());
-
-  EXPECT_CALL(mock_get_page_content_, Run)
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")));
-
-  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->DidStopLoading();
-
-  ASSERT_TRUE(completion_future.Wait());
-  EXPECT_FALSE(completion_future.Get().has_value());
 }
 
 TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {

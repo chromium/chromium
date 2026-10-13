@@ -195,12 +195,6 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 #endif
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-BASE_FEATURE(kRetryCapturePageContent, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay = {
-    &kRetryCapturePageContent, "retry_capture_delay", base::Milliseconds(500)};
-const base::FeatureParam<int> kCapturePageContentRetryCount = {
-    &kRetryCapturePageContent, "retry_count", 3};
-
 BASE_FEATURE(kShowTabWithPasswordChangeOnSuccess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -6,15 +6,19 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace {
+
+// Parameters for retrying capturing annotated page content during automated
+// password change if capturing failed for some reason.
+// `kCapturePageContentDelay` is the delay between consecutive attempts.
+constexpr base::TimeDelta kCapturePageContentDelay = base::Milliseconds(500);
+constexpr int kCapturePageContentRetryCount = 3;
 
 optimization_guide::AIPageContentResultOrError LogPageContentCaptureMetrics(
     base::TimeTicks start_time,
@@ -61,11 +65,7 @@ void AnnotatedPageContentCapturerImpl::DidStopLoading() {
 
 void AnnotatedPageContentCapturerImpl::CapturePageContent(
     optimization_guide::AIPageContentResultOrError result) {
-  if (result.has_value() ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kRetryCapturePageContent) ||
-      retry_count_ >=
-          password_manager::features::kCapturePageContentRetryCount.Get()) {
+  if (result.has_value() || retry_count_ >= kCapturePageContentRetryCount) {
     if (callback_) {
       std::move(callback_).Run(std::move(result));
     }
@@ -77,7 +77,7 @@ void AnnotatedPageContentCapturerImpl::CapturePageContent(
       FROM_HERE,
       base::BindOnce(&AnnotatedPageContentCapturerImpl::RetryCapture,
                      weak_ptr_factory_.GetWeakPtr()),
-      password_manager::features::kCapturePageContentDelay.Get());
+      kCapturePageContentDelay);
 }
 
 void AnnotatedPageContentCapturerImpl::RetryCapture() {
