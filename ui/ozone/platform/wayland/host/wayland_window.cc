@@ -127,8 +127,24 @@ WaylandWindow::~WaylandWindow() {
     parent_window_->set_child_popup(nullptr);
   }
 
-  if (child_popup_) {
-    child_popup_->set_parent_window(nullptr);
+  // `child_popup_` only tracks the most recently shown popup. Other windows
+  // (e.g. hidden popups or popups that were replaced as `child_popup_`) may
+  // still refer to this window as their parent.
+  for (const auto& window :
+       connection_->window_manager()->GetAllWindowsAsWeakPtr()) {
+    if (!window || window->parent_window() != this) {
+      continue;
+    }
+    // Popups parented to a bubble use the bubble's toplevel as their xdg
+    // parent, so they may still be mapped at this point. Clearing
+    // `parent_window_` would disconnect them from their xdg parent, so hide
+    // them first.
+    if (window->AsWaylandPopup()) {
+      window->Hide();
+    }
+    if (window) {
+      window->set_parent_window(nullptr);
+    }
   }
 
   for (auto bubble : child_bubbles_) {
@@ -167,9 +183,17 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
     return;
   }
 
-  // Propagate update to the popups.
-  if (child_popup_) {
-    child_popup_->UpdateWindowScale(update_bounds);
+  // Propagate update to the popups. `child_popup_` only tracks the most
+  // recently shown popup, so update all visible popups parented to this window.
+  for (const auto& window :
+       connection_->window_manager()->GetAllWindowsAsWeakPtr()) {
+    if (!weak_this) {
+      return;
+    }
+    if (window && window->AsWaylandPopup() && window->IsVisible() &&
+        window->parent_window() == this) {
+      window->UpdateWindowScale(update_bounds);
+    }
   }
 
   // Propagate update to the bubble windows.
@@ -1075,6 +1099,22 @@ WaylandWindow* WaylandWindow::GetXdgParentWindow() {
     xdg_parent_window = xdg_parent_window->parent_window();
   }
   return xdg_parent_window;
+}
+
+void WaylandWindow::HideChildPopups() {
+  auto weak_this = AsWeakPtr();
+  for (const auto& window :
+       connection_->window_manager()->GetAllWindowsAsWeakPtr()) {
+    if (!weak_this) {
+      return;
+    }
+    if (!window || window.get() == this || !window->AsWaylandPopup() ||
+        !window->IsVisible() || window->GetXdgParentWindow() != this) {
+      continue;
+    }
+    // Hiding the popup recursively hides its own child popups first.
+    window->Hide();
+  }
 }
 
 bool WaylandWindow::IsOpaqueWindow() const {

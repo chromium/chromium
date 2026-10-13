@@ -3962,6 +3962,160 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   });
 }
 
+// Compositors such as Mutter raise a fatal protocol error if a parent surface
+// is unmapped while a child popup is still mapped. Verify that hiding a popup
+// hides all of its child popups, even ones that are no longer tracked as the
+// parent's `child_popup()` (e.g. a submenu and a tooltip shown at once).
+TEST_P(WaylandWindowTest, HidingPopupHidesAllChildPopups) {
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                            gfx::Rect(50, 50), &menu_delegate,
+                                            window_->GetWidget());
+  ASSERT_TRUE(menu);
+
+  MockWaylandPlatformWindowDelegate submenu_delegate(connection_.get());
+  auto submenu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(10, 10, 20, 20), &submenu_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(submenu);
+  EXPECT_EQ(menu->child_popup(), submenu->AsWaylandPopup());
+
+  // Showing a tooltip over the menu replaces the submenu as `child_popup()`.
+  MockWaylandPlatformWindowDelegate tooltip_delegate(connection_.get());
+  auto tooltip = CreateWaylandWindowWithParams(
+      PlatformWindowType::kTooltip, gfx::Rect(5, 5, 10, 10), &tooltip_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(tooltip);
+  EXPECT_EQ(menu->child_popup(), tooltip->AsWaylandPopup());
+
+  // Hiding the tooltip must not drop tracking of the still-visible submenu.
+  tooltip->Hide();
+  EXPECT_FALSE(tooltip->IsVisible());
+  EXPECT_TRUE(submenu->IsVisible());
+
+  const uint32_t submenu_surface_id = submenu->root_surface()->get_surface_id();
+  PostToServerAndWait([submenu_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(submenu_surface_id);
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_TRUE(mock_surface->xdg_surface()->xdg_popup());
+  });
+
+  // Show the tooltip again so that the menu has two visible child popups, only
+  // one of which is `child_popup()`.
+  tooltip->Show(false);
+  ASSERT_TRUE(tooltip->IsVisible());
+  EXPECT_EQ(menu->child_popup(), tooltip->AsWaylandPopup());
+
+  menu->Hide();
+  EXPECT_FALSE(menu->IsVisible());
+  EXPECT_FALSE(submenu->IsVisible());
+  EXPECT_FALSE(tooltip->IsVisible());
+
+  const uint32_t tooltip_surface_id = tooltip->root_surface()->get_surface_id();
+  PostToServerAndWait([submenu_surface_id, tooltip_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    EXPECT_FALSE(
+        server->GetObject<wl::MockSurface>(submenu_surface_id)->xdg_surface());
+    EXPECT_FALSE(
+        server->GetObject<wl::MockSurface>(tooltip_surface_id)->xdg_surface());
+  });
+}
+
+// Verify that destroying a visible popup hides its child popups first.
+TEST_P(WaylandWindowTest, DestroyingPopupHidesChildPopups) {
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                            gfx::Rect(50, 50), &menu_delegate,
+                                            window_->GetWidget());
+  ASSERT_TRUE(menu);
+
+  MockWaylandPlatformWindowDelegate submenu_delegate(connection_.get());
+  auto submenu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(10, 10, 20, 20), &submenu_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(submenu);
+  ASSERT_TRUE(submenu->IsVisible());
+
+  menu.reset();
+  EXPECT_FALSE(submenu->IsVisible());
+
+  const uint32_t submenu_surface_id = submenu->root_surface()->get_surface_id();
+  PostToServerAndWait([submenu_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    EXPECT_FALSE(
+        server->GetObject<wl::MockSurface>(submenu_surface_id)->xdg_surface());
+  });
+}
+
+// Popups parented to a bubble use the bubble's toplevel as their xdg parent.
+// Verify that hiding the toplevel hides such popups.
+TEST_P(WaylandWindowTest, HidingToplevelHidesPopupsParentedToBubbles) {
+  MockWaylandPlatformWindowDelegate toplevel_delegate(connection_.get());
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::Rect(200, 200), &toplevel_delegate);
+  ASSERT_TRUE(toplevel);
+
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 100, 100),
+      &bubble_delegate, toplevel->GetWidget());
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(20, 20, 50, 50), &menu_delegate,
+      bubble->GetWidget());
+  ASSERT_TRUE(menu);
+  ASSERT_TRUE(menu->IsVisible());
+  EXPECT_EQ(menu->GetXdgParentWindow(), toplevel.get());
+  EXPECT_FALSE(toplevel->child_popup());
+
+  toplevel->Hide();
+  EXPECT_FALSE(menu->IsVisible());
+
+  const uint32_t menu_surface_id = menu->root_surface()->get_surface_id();
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    EXPECT_FALSE(
+        server->GetObject<wl::MockSurface>(menu_surface_id)->xdg_surface());
+  });
+}
+
+// Destroying a bubble disconnects its child popups from their xdg parent.
+// Verify that such popups are hidden.
+TEST_P(WaylandWindowTest, DestroyingBubbleHidesChildPopups) {
+  MockWaylandPlatformWindowDelegate toplevel_delegate(connection_.get());
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::Rect(200, 200), &toplevel_delegate);
+  ASSERT_TRUE(toplevel);
+
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 100, 100),
+      &bubble_delegate, toplevel->GetWidget());
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(20, 20, 50, 50), &menu_delegate,
+      bubble->GetWidget());
+  ASSERT_TRUE(menu);
+  ASSERT_TRUE(menu->IsVisible());
+  EXPECT_EQ(menu->GetXdgParentWindow(), toplevel.get());
+
+  bubble.reset();
+  EXPECT_FALSE(menu->IsVisible());
+  EXPECT_FALSE(menu->parent_window());
+
+  const uint32_t menu_surface_id = menu->root_surface()->get_surface_id();
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    EXPECT_FALSE(
+        server->GetObject<wl::MockSurface>(menu_surface_id)->xdg_surface());
+  });
+}
+
 TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 

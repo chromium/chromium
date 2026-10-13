@@ -40,7 +40,10 @@ WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
          "show up.";
 }
 
-WaylandPopup::~WaylandPopup() = default;
+WaylandPopup::~WaylandPopup() {
+  // Child popups must be unmapped before `xdg_popup_` is destroyed.
+  HideChildPopups();
+}
 
 bool WaylandPopup::CreateShellPopup() {
   DCHECK(parent_window() && !xdg_popup_);
@@ -155,8 +158,10 @@ void WaylandPopup::Hide() {
     return;
   }
 
-  if (child_popup()) {
-    child_popup()->Hide();
+  auto weak_this = AsWeakPtr();
+  HideChildPopups();
+  if (!weak_this || !xdg_popup_) {
+    return;
   }
 
   // Note that the xdg_popup object should be destroyed before we touch
@@ -170,7 +175,12 @@ void WaylandPopup::Hide() {
   // buffer to the root surface. However, compositors often get it wrong, and it
   // makes sense only if the xdg_popup object is going to be reused, which is
   // not the case here.
-  parent_window()->set_child_popup(nullptr);
+  //
+  // The parent may have had another popup shown after this one, in which case
+  // its `child_popup_` refers to that popup and must not be reset.
+  if (parent_window() && parent_window()->child_popup() == this) {
+    parent_window()->set_child_popup(nullptr);
+  }
   xdg_popup_.reset();
 
   WaylandWindow::Hide();

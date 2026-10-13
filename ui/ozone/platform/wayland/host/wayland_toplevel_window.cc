@@ -62,7 +62,10 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
   SetWmMoveResizeHandler(this, AsWmMoveResizeHandler());
 }
 
-WaylandToplevelWindow::~WaylandToplevelWindow() = default;
+WaylandToplevelWindow::~WaylandToplevelWindow() {
+  // Child popups must be unmapped before `xdg_toplevel_` is destroyed.
+  HideChildPopups();
+}
 
 bool WaylandToplevelWindow::CreateXdgToplevel() {
   if (auto xdg_surface = std::make_unique<XdgSurface>(this, connection())) {
@@ -167,10 +170,12 @@ void WaylandToplevelWindow::Hide() {
     return;
   }
 
-  if (child_popup()) {
-    child_popup()->Hide();
-    set_child_popup(nullptr);
+  auto weak_this = AsWeakPtr();
+  HideChildPopups();
+  if (!weak_this || !xdg_toplevel_) {
+    return;
   }
+  set_child_popup(nullptr);
   for (auto bubble : child_bubbles()) {
     bubble->Hide();
   }
