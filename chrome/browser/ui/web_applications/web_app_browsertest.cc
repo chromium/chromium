@@ -1610,7 +1610,16 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ShortcutMenuOptionsForCrashedTab) {
 }
 
 // Tests that an installed PWA is not used when out of scope by one path level.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, MenuOptionsOutsideInstalledPwaScope) {
+// TODO(crbug.com/572970174): Failing/flaky on Mac and Linux Wayland.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_MenuOptionsOutsideInstalledPwaScope \
+  DISABLED_MenuOptionsOutsideInstalledPwaScope
+#else
+#define MAYBE_MenuOptionsOutsideInstalledPwaScope \
+  MenuOptionsOutsideInstalledPwaScope
+#endif
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest,
+                       MAYBE_MenuOptionsOutsideInstalledPwaScope) {
   NavigateViaLinkClickToURLAndWait(
       browser(), embedded_https_test_server().GetURL(
                      "/banners/scope_is_start_url/index.html"));
@@ -1817,7 +1826,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, CanInstallOverBrowserTabPwa) {
             kNotPresent);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, CannotInstallOverWindowPwa) {
+// TODO(crbug.com/572970174): Failing/flaky on Mac and Linux Wayland.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CannotInstallOverWindowPwa DISABLED_CannotInstallOverWindowPwa
+#else
+#define MAYBE_CannotInstallOverWindowPwa CannotInstallOverWindowPwa
+#endif
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, MAYBE_CannotInstallOverWindowPwa) {
   NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   test::InstallPwaForCurrentUrl(browser());
 
