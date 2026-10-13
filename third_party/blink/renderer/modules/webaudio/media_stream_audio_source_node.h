@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -40,7 +41,7 @@ class AudioContext;
 class MediaStreamAudioSourceOptions;
 class MediaStreamAudioSourceHandler;
 
-class MediaStreamAudioSourceNode final
+class MODULES_EXPORT MediaStreamAudioSourceNode final
     : public AudioNode,
       public AudioSourceProviderClient,
       public ActiveScriptWrappable<MediaStreamAudioSourceNode> {

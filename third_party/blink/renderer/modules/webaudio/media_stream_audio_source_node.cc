@@ -118,9 +118,6 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
   // Initializes the node with the stereo output channel.
   node->SetFormat(2, context.sampleRate());
 
-  // Lets the context know this source node started.
-  context.NotifySourceNodeStartedProcessing(node);
-
   return node;
 }
 
@@ -146,10 +143,12 @@ void MediaStreamAudioSourceNode::ReportWillBeDestroyed() {
 }
 
 bool MediaStreamAudioSourceNode::HasPendingActivity() const {
-  // The node stays alive as long as the context is running. It also will not
-  // be collected until the context is suspended or stopped.
-  // (See https://crbug.com/937231)
-  return context()->ContextState() == V8AudioContextState::Enum::kRunning;
+  // Keep the node alive while the context is running and outputs are connected
+  // (see https://crbug.com/937231).
+  if (context()->ContextState() != V8AudioContextState::Enum::kRunning) {
+    return false;
+  }
+  return HasOutputsConnected();
 }
 
 void MediaStreamAudioSourceNode::Trace(Visitor* visitor) const {
