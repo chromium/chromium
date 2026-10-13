@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_PUBLIC_TEST_FAKE_OPTICAL_CHARACTER_RECOGNIZER_H_
 #define CHROME_BROWSER_SCREEN_AI_PUBLIC_TEST_FAKE_OPTICAL_CHARACTER_RECOGNIZER_H_
 
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -31,6 +34,10 @@ class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
 
   void FlushForTesting() override;
 
+  void set_ready(std::optional<bool> ready) { ready_ = ready; }
+  void set_defer_perform_ocr(bool defer) { defer_perform_ocr_ = defer; }
+  void FlushDeferredPerformOcr();
+
   void set_visual_annotation_result(
       mojom::VisualAnnotationPtr visual_annotation_result) {
     visual_annotation_result_ = std::move(visual_annotation_result);
@@ -50,6 +57,10 @@ class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
 
   // True if the AX tree update result for `PerformOCR` should be empty.
   bool empty_ax_tree_update_result_;
+
+  bool defer_perform_ocr_ = false;
+  std::vector<base::OnceCallback<void(mojom::VisualAnnotationPtr)>>
+      deferred_callbacks_;
 
   // Used to set a fake visual annotation result for `PerformOCR`.
   mojom::VisualAnnotationPtr visual_annotation_result_;

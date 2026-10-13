@@ -1,0 +1,22 @@
+include_rules = [
+  "+chrome/browser/profiles",
+  "+chrome/browser/screen_ai/public",
+  "+content/public/browser",
+  "+services/screen_ai/public/mojom",
+  "+services/shape_detection/public/mojom",
+]
+
+specific_include_rules = {
+  ".*_browsertest\\.cc": [
+    "+chrome/browser/screen_ai/screen_ai_install_state.h",
+    "+chrome/test/base",
+    "+content/public/test",
+    "+services/screen_ai",
+    "+third_party/blink/public/common/features.h",
+    "+ui/accessibility",
+  ],
+  ".*_unittest\\.cc": [
+    "+chrome/test/base",
+    "+content/public/test",
+  ],
+}

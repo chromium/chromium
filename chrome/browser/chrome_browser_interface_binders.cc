@@ -93,7 +93,9 @@
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chrome/browser/text_detection/text_detection_impl.h"
 #include "chrome/browser/web_applications/sub_apps/sub_apps_service_impl.h"
+#include "services/shape_detection/public/mojom/textdetection.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -407,6 +409,12 @@ void BindScreen2xMainContentExtractor(
       frame_host->GetProcess()->GetBrowserContext())
       ->BindMainContentExtractor(std::move(receiver));
 }
+
+void BindTextDetection(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<shape_detection::mojom::TextDetection> receiver) {
+  text_detection::TextDetectionImpl::Create(frame_host, std::move(receiver));
+}
 #endif
 
 void BindModelBroker(
@@ -583,6 +591,8 @@ void PopulateChromeFrameBinders(
 
   map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(
       &BindScreen2xMainContentExtractor);
+
+  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -1,0 +1,79 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/screen_ai/buildflags/features.gni")
+
+assert(enable_screen_ai_service)
+
+source_set("text_detection") {
+  sources = [
+    "text_detection_impl.cc",
+    "text_detection_impl.h",
+  ]
+
+  public_deps = [
+    "//services/screen_ai/public/mojom",
+    "//services/shape_detection/public/mojom",
+    "//skia",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "text_detection_impl_unittest.cc" ]
+  deps = [
+    ":text_detection",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/screen_ai/public:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/screen_ai/public/mojom",
+    "//services/shape_detection/public/mojom",
+    "//skia",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "text_detection_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/screen_ai:screen_ai_install_state",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/screen_ai/buildflags",
+    "//services/screen_ai/public/cpp:utilities",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_features_mojo",
+  ]
+
+  if (enable_screen_ai_browsertests) {
+    data_deps = [ "//third_party/screen-ai:screen_ai" ]
+  }
+}

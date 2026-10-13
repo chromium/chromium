@@ -32,9 +32,22 @@ FakeOpticalCharacterRecognizer::~FakeOpticalCharacterRecognizer() = default;
 void FakeOpticalCharacterRecognizer::PerformOCR(
     const ::SkBitmap& image,
     base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback) {
+  if (defer_perform_ocr_) {
+    deferred_callbacks_.push_back(std::move(callback));
+    return;
+  }
   std::move(callback).Run(visual_annotation_result_
-                              ? std::move(visual_annotation_result_)
+                              ? visual_annotation_result_->Clone()
                               : screen_ai::mojom::VisualAnnotation::New());
+}
+
+void FakeOpticalCharacterRecognizer::FlushDeferredPerformOcr() {
+  auto callbacks = std::move(deferred_callbacks_);
+  for (auto& cb : callbacks) {
+    std::move(cb).Run(visual_annotation_result_
+                          ? visual_annotation_result_->Clone()
+                          : screen_ai::mojom::VisualAnnotation::New());
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

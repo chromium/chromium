@@ -491,6 +491,7 @@ include_rules = [
   "+services/proxy_resolver/public/mojom",
   "+services/resource_coordinator/public",
   "+services/screen_ai",
+  "+services/shape_detection/public/mojom",
   "+services/strings",
   "+services/webnn/public/mojom/features.mojom-features.h",
   "+services/webnn/public/cpp/webnn_buildflags.h",

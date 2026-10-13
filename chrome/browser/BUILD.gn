@@ -2039,6 +2039,8 @@ source_set("core") {
       "//chrome/browser/screen_ai:screen_ai_downloader",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/text_detection",
+      "//services/shape_detection/public/mojom",
     ]
   }
 
