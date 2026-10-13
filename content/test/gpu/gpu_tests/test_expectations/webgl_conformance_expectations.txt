@@ -479,6 +479,8 @@ crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
 crbug.com/40786644 [ win11 nvidia angle-vulkan passthrough ] conformance/glsl/bugs/pow-with-constant-exponent-should-not-crash.html [ Failure ]
+crbug.com/572909266 [ win11 nvidia-0x2184 angle-vulkan passthrough ] conformance/ogles/GL/all/all_001_to_004.html [ RetryOnFailure ]
+crbug.com/572909266 [ win11 nvidia-0x2184 angle-vulkan passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ RetryOnFailure ]
 crbug.com/415086850 [ win11 nvidia-0x2184 angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 ## Win / Qualcomm Snapdragon X Elite / D3D11
