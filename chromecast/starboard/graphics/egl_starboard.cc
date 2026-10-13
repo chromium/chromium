@@ -16,6 +16,54 @@
 
 #include "base/compiler_specific.h"  // for UNSAFE_BUFFERS
 
+namespace {
+
+// Context attributes that ui/gl/gl_context_egl.cc can pass to eglCreateContext
+// but that are defined only by ANGLE or Chromium extensions, so a native
+// Starboard EGL implementation will not recognise them.
+//
+// These are spelled numerically because the defining headers
+// (eglext_angle.h) are not available here; gl_context_egl.cc does the same for
+// EGL_CONTEXT_PASSTHROUGH_SHADERS_ANGLE. The values are checked against
+// third_party/angle/include/EGL/eglext_angle.h.
+//
+// Every attribute in this list falls in 0x33ac..0x34f8, and every standard,
+// KHR, EXT, IMG and NV attribute that gl_context_egl.cc can pass falls below
+// 0x33a0. Listing them individually rather than filtering that numeric range
+// keeps a future standard attribute in the same range from being dropped
+// silently.
+constexpr EGLint kAngleOnlyContextAttributes[] = {
+    0x33ac,  // EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE
+    0x33ad,  // EGL_CONTEXT_BIND_GENERATES_RESOURCE_CHROMIUM
+    0x33af,  // EGL_DISPLAY_TEXTURE_SHARE_GROUP_ANGLE
+    0x3452,  // EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE
+    0x3453,  // EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE
+    0x345f,  // EGL_EXTENSIONS_ENABLED_ANGLE
+    0x3463,  // EGL_CONTEXT_PASSTHROUGH_SHADERS_ANGLE
+    0x3481,  // EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE
+    0x3482,  // EGL_POWER_PREFERENCE_ANGLE
+    0x3483,  // EGL_CONTEXT_OPENGL_BACKWARDS_COMPATIBLE_ANGLE
+    0x348d,  // EGL_DISPLAY_SEMAPHORE_SHARE_GROUP_ANGLE
+    0x348e,  // EGL_EXTERNAL_CONTEXT_ANGLE
+    0x34f8,  // EGL_CONTEXT_HARDENED_ANGLE
+};
+
+bool IsAngleOnlyContextAttribute(EGLint attribute) {
+  // Not an ANGLE extension, but some Starboard implementations reject it and
+  // fail context creation, so it is dropped for the same reason.
+  if (attribute == EGL_CONTEXT_OPENGL_NO_ERROR_KHR) {
+    return true;
+  }
+  for (const EGLint angle_attribute : kAngleOnlyContextAttributes) {
+    if (attribute == angle_attribute) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 extern "C" {
 
 EGLBoolean Sb_eglChooseConfig(EGLDisplay dpy,
@@ -49,9 +97,6 @@ EGLContext Sb_eglCreateContext(EGLDisplay dpy,
   for (const EGLint* attribute_key = attrib_list; attribute_key != nullptr;
        // SAFETY: Required by the EGL API.
        UNSAFE_BUFFERS(attribute_key += 2)) {
-    if (*attribute_key == EGL_CONTEXT_OPENGL_NO_ERROR_KHR) {
-      continue;
-    }
     // EGL_NONE is used to terminate the array.
     if (*attribute_key == EGL_NONE) {
       filtered_attributes.push_back(EGL_NONE);
@@ -64,11 +109,33 @@ EGLContext Sb_eglCreateContext(EGLDisplay dpy,
       // Not valid; stop parsing the attributes.
       break;
     }
+
+    // Filter out attributes that only ANGLE understands. A native Starboard
+    // EGL implementation fails context creation outright when it is handed an
+    // attribute it does not recognise, rather than ignoring it.
+    if (IsAngleOnlyContextAttribute(*attribute_key)) {
+      continue;
+    }
+
     filtered_attributes.push_back(*attribute_key);
     filtered_attributes.push_back(*attribute_value);
   }
+  // eglCreateContext requires the list to be EGL_NONE terminated. The loop
+  // above can exit without copying the terminator, either because the caller's
+  // list was itself malformed or because the terminator was the final entry of
+  // an odd-length list. Reading past the end of the list would be an out of
+  // bounds read inside the EGL implementation, so terminate it here.
+  //
+  // A null attrib_list is valid and distinct from an empty one, so it is passed
+  // through untouched.
+  if (attrib_list &&
+      (filtered_attributes.empty() || filtered_attributes.back() != EGL_NONE)) {
+    filtered_attributes.push_back(EGL_NONE);
+  }
+  const EGLint* final_attribs =
+      attrib_list ? filtered_attributes.data() : nullptr;
   return SbGetEglInterface()->eglCreateContext(dpy, config, share_context,
-                                               filtered_attributes.data());
+                                               final_attribs);
 }
 
 EGLSurface Sb_eglCreatePbufferSurface(EGLDisplay dpy,
