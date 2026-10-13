@@ -69,7 +69,8 @@ const char kDevIwaId[] =
 class ChromeShimlessRmaDelegateTest : public testing::Test {
  public:
   ChromeShimlessRmaDelegateTest()
-      : chrome_shimless_rma_delegate_(ChromeShimlessRmaDelegate(nullptr)),
+      : chrome_shimless_rma_delegate_(
+            TestingBrowserProcess::GetGlobal()->local_state()),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   ~ChromeShimlessRmaDelegateTest() override = default;
 
@@ -227,6 +228,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
     fake_diagnostics_app_profile_helper_delegate_ =
         fake_diagnostics_app_profile_helper_delegate.get();
     chrome_shimless_rma_delegate_ = std::make_unique<ChromeShimlessRmaDelegate>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         std::move(fake_diagnostics_app_profile_helper_delegate));
   }
 

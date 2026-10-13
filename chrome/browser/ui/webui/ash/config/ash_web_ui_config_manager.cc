@@ -365,6 +365,23 @@ std::unique_ptr<content::WebUIConfig> MakeOSFeedbackUIConfig(
   return std::make_unique<OSFeedbackUIConfig>(create_controller_func);
 }
 
+// `local_state` must be non-null and must outlive the returned config.
+std::unique_ptr<content::WebUIConfig> MakeShimlessRMADialogUIConfig(
+    PrefService* local_state) {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](PrefService* local_state, content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate =
+            std::make_unique<shimless_rma::ChromeShimlessRmaDelegate>(
+                local_state);
+        return std::make_unique<ShimlessRMADialogUI>(web_ui,
+                                                     std::move(delegate));
+      },
+      base::Unretained(local_state));
+
+  return std::make_unique<ShimlessRMADialogUIConfig>(create_controller_func);
+}
+
 }  // namespace
 
 // static
@@ -517,9 +534,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
                                                  ChromeScanningAppDelegate>());
   AddWebUIConfig(std::make_unique<SetTimeUIConfig>(&local_state_.get()));
-  AddWebUIConfig(MakeComponentConfigWithDelegate<
-                 ShimlessRMADialogUIConfig, ShimlessRMADialogUI,
-                 shimless_rma::ChromeShimlessRmaDelegate>());
+  AddWebUIConfig(MakeShimlessRMADialogUIConfig(&local_state_.get()));
   AddWebUIConfig(std::make_unique<ShortcutCustomizationAppUIConfig>());
   AddWebUIConfig(std::make_unique<SlowTraceControllerConfig>());
   AddWebUIConfig(std::make_unique<SlowUIConfig>());
