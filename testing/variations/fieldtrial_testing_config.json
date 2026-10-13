@@ -9410,6 +9410,24 @@
             ]
         }
     ],
+    "HistoryEmbeddingsUnlaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20261009",
+                    "disable_features": [
+                        "HistoryEmbeddings"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistoryQueryBatchedLookups": [
         {
             "platforms": [
