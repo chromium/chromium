@@ -148,7 +148,7 @@ void OtpFieldDetector::OnAfterFormSubmitted(AutofillManager& manager,
 void OtpFieldDetector::AddFormAndNotifyIfNecessary(FormGlobalId form_id) {
   // Memorize the state of `forms_with_otps_` before the update, then perform
   // the update and only then notify the callbacks to ensure that
-  // `IsOneTimeTokenFieldPresent()` returns the correct answer when called by
+  // `IsOtpFieldPresent()` returns the correct answer when called by
   // a notified callback.
   const bool was_empty = forms_with_otps_.empty();
   forms_with_otps_.insert(form_id);

@@ -20,16 +20,16 @@ class AutofillField;
 class FormFieldData;
 class FormStructure;
 
-// Utility class to observe if a WebContents (with all of its frames)
+// Utility class to observe if a `WebContents` (with all of its frames)
 // - moves from having 0 OTP fields to >0 OTP fields (only focusable fields are
 //   considered)
 // - moves from having >0 OTP fields to 0 OTP fields
-// - observes an OTP from submission
+// - observes an OTP form submission
 //
 // Internally the tracking happens at a form level (ie. checking if any form
 // contains at least one OTP field).
 //
-// Owned by the AutofillClient and exists once per WebContents.
+// Owned by the `AutofillClient` and exists once per `WebContents`.
 class OtpFieldDetector : public AutofillManager::Observer {
  public:
   using OtpFieldsDetectedCallback = base::RepeatingClosure;
@@ -40,14 +40,14 @@ class OtpFieldDetector : public AutofillManager::Observer {
   OtpFieldDetector& operator=(const OtpFieldDetector& other) = delete;
   ~OtpFieldDetector() override;
 
-  // Registers a callback that is called when a WebContents transitions from 0
-  // OTP fields to >0 OTP field, where OTP fields are considered across all
+  // Registers a callback that is called when a `WebContents` transitions from 0
+  // OTP fields to >0 OTP fields, where OTP fields are considered across all
   // frames.
   [[nodiscard]] base::CallbackListSubscription
   RegisterOtpFieldsDetectedCallback(OtpFieldsDetectedCallback callback);
 
-  // Registers a callback that is called when a WebContents
-  // - transitions from >0 OTP fields to 0 OTP field, where OTP fields are
+  // Registers a callback that is called when a `WebContents`
+  // - transitions from >0 OTP fields to 0 OTP fields, where OTP fields are
   //   considered across all frames.
   // - observes an OTP form submission.
   // May be called twice in case a page has two OTP fields, one is submitted and
@@ -55,7 +55,7 @@ class OtpFieldDetector : public AutofillManager::Observer {
   [[nodiscard]] base::CallbackListSubscription
   RegisterOtpFieldsSubmittedCallback(OtpFieldsSubmittedCallback callback);
 
-  // Returns whether at present any frame of the WebContents contains at least
+  // Returns whether at present any frame of the `WebContents` contains at least
   // one OTP field.
   bool IsOtpFieldPresent() const;
 
@@ -76,8 +76,8 @@ class OtpFieldDetector : public AutofillManager::Observer {
   // `OnFieldTypesDetermined` informs us incrementally about the discovery of
   // OTP fields. This is called once when the heuristic classifications are
   // available and once again when the server classifications are available.
-  // If a server overrides an heuristically identified OTP field with
-  // UKNOWN_TYPE, we temporarily report the presence of an OTP.
+  // If a server overrides a heuristically identified OTP field with
+  // `UNKNOWN_TYPE`, we temporarily report the presence of an OTP.
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
                               FieldTypeSource source,
@@ -92,12 +92,12 @@ class OtpFieldDetector : public AutofillManager::Observer {
   // it's possible that a form is submitted but remains (invisible) in the DOM.
   void OnAfterFormSubmitted(AutofillManager& manager,
                             const FormData& form) override;
-  // If an AutofillManager changes it's LifecycleState away from active, that
+  // If an `AutofillManager` changes its `LifecycleState` away from active, that
   // means that a navigation has happened and the OTP field is not visible
-  // anymore. If the LifecycleState becomes active, the user either navigated to
-  // a new document or navigated back in the forward/backward cache. In this
+  // anymore. If the `LifecycleState` becomes active, the user either navigated
+  // to a new document or navigated back in the forward/backward cache. In this
   // case we may bring forms back.
-  // Navigations are considered because here because not all OTP forms are
+  // Navigations are considered here because not all OTP forms are
   // submitted and we would not notice the disappearance of forms due to
   // navigations without this event.
   void OnAutofillManagerStateChanged(
@@ -108,7 +108,7 @@ class OtpFieldDetector : public AutofillManager::Observer {
  protected:
   // Functions that add and remove `form_id` to/from `forms_with_otps_` and
   // notify the registered callbacks if the number of forms with OTP fields goes
-  // from 0 to >1 or vice versa. `form_id` is always a form that contains at
+  // from 0 to >0 or vice versa. `form_id` is always a form that contains at
   // least one OTP field.
   void AddFormAndNotifyIfNecessary(FormGlobalId form_id);
   // Remove is also called if a form is submitted but remains in the DOM.
