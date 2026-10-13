@@ -4,7 +4,6 @@
 
 import collections
 import os
-import re
 from xml.etree import ElementTree
 
 from util import build_utils
@@ -20,7 +19,7 @@ _DUMMY_RTXT_INDEX = '1'
 
 
 def _ResourceNameToJavaSymbol(resource_name):
-    return re.sub(r'[\.:]', '_', resource_name)
+    return resource_name.replace('.', '_').replace(':', '_')
 
 
 class RTxtGenerator:
@@ -124,14 +123,13 @@ class RTxtGenerator:
                     resource_type = 'array'
                 else:
                     resource_type = child.tag
-                parsed_element = ElementTree.tostring(
-                    child, encoding='unicode'
-                ).strip()
                 assert resource_type in resource_utils.ALL_RESOURCE_TYPES, (
-                    f'Infered resource type ({resource_type}) from xml entry '
-                    f'({parsed_element}) (found in {xml_path}) is not listed in '
-                    'resource_utils.ALL_RESOURCE_TYPES. Teach resources_parser.py how '
-                    'to parse this entry and then add to the list.'
+                    f'Infered resource type ({resource_type}) from xml entry ('
+                    f'{ElementTree.tostring(child, encoding="unicode").strip()}'
+                    f') (found in {xml_path}) is not listed in '
+                    'resource_utils.ALL_RESOURCE_TYPES. Teach '
+                    'resources_parser.py how to parse this entry and then add '
+                    'to the list.'
                 )
                 name = _ResourceNameToJavaSymbol(child.attrib['name'])
                 ret.add(
