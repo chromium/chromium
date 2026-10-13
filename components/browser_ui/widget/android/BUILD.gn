@@ -547,6 +547,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableItemViewBaseTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/textbubble/TextBubbleUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinderTest.java",
   ]
   deps = [

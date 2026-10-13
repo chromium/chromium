@@ -303,12 +303,15 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                                     .getDimensionPixelSize(
                                                             R.dimen.min_touch_target_size);
 
+                            // ContextMenuDialog extends AlwaysDismissedDialog, which dismisses
+                            // the dialog when the Activity stops or restarts, so mContentView
+                            // is never reused across Context restarts.
                             AnchoredPopupWindow.Builder builder =
                                     new AnchoredPopupWindow.Builder(
                                                     mActivity,
                                                     mLayout,
                                                     new ColorDrawable(Color.TRANSPARENT),
-                                                    () -> mContentView,
+                                                    (unused) -> mContentView,
                                                     new RectProvider(popupRect))
                                             .setSmartAnchorWithMaxWidth(true)
                                             .setVerticalOverlapAnchor(true)

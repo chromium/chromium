@@ -35,6 +35,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
@@ -291,6 +292,81 @@ public class ContextMenuDialogUnitTest {
         mDialog.getOnDragListenerForTesting().onDrag(mRootView, mockDragEvent2);
         Assert.assertEquals(
                 List.of(mockDragEvent), mDragDispatchingDestinationView.mDispatchedDragEvents);
+    }
+
+    @Test
+    public void testShowPopupWindow_withViewBuilder() {
+        mDialog = createContextMenuDialog(/* isPopup= */ true, /* shouldRemoveScrim= */ false);
+        mDialog.show();
+        requestLayoutForRootView();
+
+        Mockito.verify(mSpyPopupWindow).setContentView(mMenuContentView);
+        Mockito.verify(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void testShowPopupWindow_incompatibleContext_asserts() {
+        Activity otherActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        try {
+            FrameLayout otherMenuContentView = new FrameLayout(otherActivity);
+            otherMenuContentView.setMinimumWidth(MENU_CONTENT_MIN_SIZE_PX);
+            otherMenuContentView.setMinimumHeight(MENU_CONTENT_MIN_SIZE_PX);
+            ContextMenuDialog dialog =
+                    new ContextMenuDialog(
+                            mActivity,
+                            /* windowAndroid= */ null,
+                            /* theme= */ 0,
+                            ContextMenuDialog.NO_CUSTOM_MARGIN,
+                            ContextMenuDialog.NO_CUSTOM_MARGIN,
+                            mRootView,
+                            otherMenuContentView,
+                            /* isPopup= */ true,
+                            /* isFlyout= */ false,
+                            /* shouldRemoveScrim= */ false,
+                            /* popupMargin= */ 0,
+                            mDragDispatchingDestinationView,
+                            new Rect(0, 0, 0, 0),
+                            /* shouldPadForWindowInsets= */ true,
+                            /* onDismissCallback= */ null,
+                            /* flyoutExtraPaddingY= */ 0);
+            dialog.show();
+            AssertionError error =
+                    Assert.assertThrows(AssertionError.class, this::requestLayoutForRootView);
+            Assert.assertTrue(
+                    error.getMessage()
+                            .contains("Popup contentView context is not from the same Activity"));
+        } finally {
+            otherActivity.finish();
+        }
+    }
+
+    @Test
+    public void testShowPopupWindow_nonActivityContext_doesNotAssert() {
+        FrameLayout appContentMenu = new FrameLayout(ContextUtils.getApplicationContext());
+        appContentMenu.setMinimumWidth(MENU_CONTENT_MIN_SIZE_PX);
+        appContentMenu.setMinimumHeight(MENU_CONTENT_MIN_SIZE_PX);
+        ContextMenuDialog dialog =
+                new ContextMenuDialog(
+                        mActivity,
+                        /* windowAndroid= */ null,
+                        /* theme= */ 0,
+                        ContextMenuDialog.NO_CUSTOM_MARGIN,
+                        ContextMenuDialog.NO_CUSTOM_MARGIN,
+                        mRootView,
+                        appContentMenu,
+                        /* isPopup= */ true,
+                        /* isFlyout= */ false,
+                        /* shouldRemoveScrim= */ false,
+                        /* popupMargin= */ 0,
+                        mDragDispatchingDestinationView,
+                        new Rect(0, 0, 0, 0),
+                        /* shouldPadForWindowInsets= */ true,
+                        /* onDismissCallback= */ null,
+                        /* flyoutExtraPaddingY= */ 0);
+        dialog.show();
+        requestLayoutForRootView();
+        Mockito.verify(mSpyPopupWindow).setContentView(appContentMenu);
     }
 
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
