@@ -271,6 +271,10 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     return frame_view->IsOverlayViewVisible();
   }
 
+  void UpdateOriginAndSecurity(DocumentPipFrameView* frame_view) {
+    frame_view->UpdateOriginAndSecurity();
+  }
+
   // Injects a real auto-PiP overlay onto the frame view the same way the
   // production ctor would (AddChildView + raw_ptr). The unit-test harness
   // creates the host directly (bypassing
@@ -633,6 +637,130 @@ TEST_F(DocumentPipFrameViewTest, DangerousManagedPolicyUrlHasEmptyChipText) {
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
   EXPECT_TRUE(GetOriginChip(frame_view)->GetText().empty());
+}
+
+// The origin chip label uses the security-chip color, like the browser-backed
+// frame's LocationIconView, and does not follow the top-bar inactive fade.
+TEST_F(DocumentPipFrameViewTest, OriginChipLabelUsesSecurityChipColor) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("file:///home/user/movie.html"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  const SkColor secure_color =
+      chip->GetColorProvider()->GetColor(kColorOmniboxSecurityChipSecure);
+  EXPECT_EQ(secure_color, chip->GetCurrentTextColor());
+
+  OnMouseEnteredOrExitedWindow(frame_view, /*entered=*/false);
+  StepTopBarAnimationsToEnd(frame_view);
+  ASSERT_FALSE(GetRenderActive(frame_view));
+  EXPECT_EQ(secure_color, chip->GetCurrentTextColor());
+}
+
+// A "Dangerous" chip uses the security-chip text color, like LocationIconView.
+TEST_F(DocumentPipFrameViewTest, DangerousChipLabelUsesSecurityChipTextColor) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://malware.test/"));
+  SeedFakeSecurityState(security_state::MALICIOUS_CONTENT_STATUS_MALWARE);
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE),
+            chip->GetText());
+  EXPECT_EQ(chip->GetColorProvider()->GetColor(kColorOmniboxSecurityChipText),
+            chip->GetCurrentTextColor());
+}
+
+// The origin chip uses LocationIconView's page-info padding, with the extra
+// trailing padding while a label is shown.
+TEST_F(DocumentPipFrameViewTest, OriginChipBorderMatchesLocationIcon) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("file:///home/user/movie.html"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_FALSE(chip->GetText().empty());
+
+  gfx::Insets expected = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  expected.set_right(
+      expected.right() +
+      GetLayoutConstant(
+          LayoutConstant::kLocationBarPageInfoIconLabelExtraTrailingPadding));
+  EXPECT_EQ(expected, chip->GetInsets());
+}
+
+// Without a label, the origin chip uses the plain page-info padding.
+TEST_F(DocumentPipFrameViewTest, OriginChipBorderWithoutLabel) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://www.example.com/"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_TRUE(chip->GetText().empty());
+
+  EXPECT_EQ(GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING),
+            chip->GetInsets());
+}
+
+// A "Dangerous" chip uses LocationIconView's dangerous-state padding.
+TEST_F(DocumentPipFrameViewTest, DangerousOriginChipBorderMatchesLocationIcon) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://malware.test/"));
+  SeedFakeSecurityState(security_state::MALICIOUS_CONTENT_STATUS_MALWARE);
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_FALSE(chip->GetText().empty());
+
+  gfx::Insets expected = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  expected.set_left(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding));
+  expected.set_right(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding));
+  EXPECT_EQ(expected, chip->GetInsets());
+}
+
+// When the security level changes to DANGEROUS, the chip text slides in and
+// stays visible after the animation, like LocationIconView.
+TEST_F(DocumentPipFrameViewTest, AnimatedChipLabelStaysVisible) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://malware.test/"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_TRUE(chip->GetText().empty());
+
+  SeedFakeSecurityState(security_state::MALICIOUS_CONTENT_STATUS_MALWARE);
+  UpdateOriginAndSecurity(frame_view);
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE),
+            chip->GetText());
+  ASSERT_TRUE(chip->is_animating_label());
+
+  gfx::AnimationTestApi api(&chip->slide_animation_for_testing());
+  const base::TimeTicks now = base::TimeTicks::Now();
+  api.SetStartTime(now);
+  api.Step(now + base::Seconds(1));
+
+  EXPECT_FALSE(chip->is_animating_label());
+  EXPECT_TRUE(chip->ShouldShowLabel());
+  gfx::Insets expected = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  expected.set_left(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding));
+  expected.set_right(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding));
+  EXPECT_EQ(expected, chip->GetInsets());
 }
 
 // The recompute after Widget::Init() grows the outer window by the non-client

@@ -44,9 +44,8 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
     virtual ~Delegate() = default;
 
     // Applies `color` to the top-bar foreground elements (window title,
-    // content-setting icons, and origin chip). Invoked during the color fade
-    // after current_foreground_color() has been updated, so the origin chip
-    // label -- which reads the controller's color -- stays in sync.
+    // content-setting icons, and origin chip icon). Invoked during the color
+    // fade after current_foreground_color() has been updated.
     virtual void ApplyTopBarForegroundColor(SkColor color) = 0;
 
     // Returns the color provider used to resolve the active/inactive foreground
@@ -82,8 +81,7 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
   bool is_top_bar_active() const { return top_bar_active_; }
 
   // The interpolated foreground color while the color fade runs; nullopt when
-  // settled (the frame view then falls back to the steady-state color). Read by
-  // the origin chip so its label tracks the fade.
+  // settled (the frame view then falls back to the steady-state color).
   std::optional<SkColor> current_foreground_color() const {
     return current_foreground_color_;
   }
