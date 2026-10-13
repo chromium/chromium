@@ -15550,6 +15550,24 @@
             ]
         }
     ],
+    "SearchPrefetchHighPriorityPrefetches": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchNavigationPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPromotionIPH": [
         {
             "platforms": [
