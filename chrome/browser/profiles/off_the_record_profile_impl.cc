@@ -634,7 +634,8 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
         g_browser_process->GetFeatures()->application_locale_storage(),
         g_browser_process->platform_part()->GetTimezoneResolverManager());
     chromeos_preferences_->Init(
-        this, user_manager::UserManager::Get()->GetActiveUser());
+        user_manager::UserManager::Get()->GetActiveUser(), this,
+        PrefServiceSyncableFromProfile(this));
   }
 
  private:

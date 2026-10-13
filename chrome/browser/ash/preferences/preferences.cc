@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
@@ -745,11 +744,12 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void Preferences::Init(Profile* profile, const user_manager::User* user) {
-  CHECK(profile, base::NotFatalUntil::M160);
+void Preferences::Init(const user_manager::User* user,
+                       Profile* profile,
+                       sync_preferences::PrefServiceSyncable* prefs) {
   CHECK(user, base::NotFatalUntil::M160);
-  sync_preferences::PrefServiceSyncable* prefs =
-      PrefServiceSyncableFromProfile(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
+  CHECK(prefs, base::NotFatalUntil::M160);
   // This causes OnIsSyncingChanged to be called when the value of
   // PrefService::IsSyncing() changes.
   prefs->AddObserver(this);

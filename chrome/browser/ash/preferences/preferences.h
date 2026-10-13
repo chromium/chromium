@@ -79,8 +79,11 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
                                    user_prefs::PrefRegistrySyncable* registry);
 
   // This method will initialize Chrome OS settings to values in user prefs.
-  // |user| is the user owning this preferences.
-  void Init(Profile* profile, const user_manager::User* user);
+  // |user| is the user owning this preferences. `prefs` is `profile`'s pref
+  // service, narrowed to the syncable type by the caller.
+  void Init(const user_manager::User* user,
+            Profile* profile,
+            sync_preferences::PrefServiceSyncable* prefs);
 
   void InitPrefsForTesting(sync_preferences::PrefServiceSyncable* prefs);
   void InitUserPrefsForTesting(

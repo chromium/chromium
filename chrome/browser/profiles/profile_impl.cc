@@ -1674,8 +1674,8 @@ void ProfileImpl::InitChromeOSPreferences() {
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->platform_part()->GetTimezoneResolverManager());
-  chromeos_preferences_->Init(
-      this, ash::ProfileHelper::Get()->GetUserByProfile(this));
+  chromeos_preferences_->Init(ash::ProfileHelper::Get()->GetUserByProfile(this),
+                              this, PrefServiceSyncableFromProfile(this));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
