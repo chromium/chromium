@@ -949,11 +949,11 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
 }
 
-// ActorContainerConfig usage doesn't necessarily preclude blockage by other
+// TaskPolicyConfig usage doesn't necessarily preclude blockage by other
 // predicates, even if the task policy config predicate is listed first in the
 // predicate order.
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_InterleavedPredicates) {
+       BuiltInPredicate_TaskPolicyConfig_InterleavedPredicates) {
   const GURL kAllowedByConfigAndListSite("https://allowedbyboth.com");
   const GURL kBlockedByConfigAndListSite("https://blockedbyboth.com");
   const GURL kAllowedByConfigIgnoredByListSite("https://allowedbyconfig.com");

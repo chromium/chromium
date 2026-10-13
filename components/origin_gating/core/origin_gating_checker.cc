@@ -117,7 +117,7 @@ DecisionAttribution MakeAttribution(const CustomPredicate& predicate) {
   return DecisionAttribution(predicate.attribution());
 }
 
-Decision EvaluateActorContainerConfig(
+Decision EvaluateTaskPolicyConfig(
     const TaskPolicyConfigSlot& config_slot,
     const GateableEvent& event,
     const std::optional<url::Origin>& source_origin,
@@ -438,12 +438,12 @@ Decision OriginGatingChecker::IsCachedWithUserConfirmation(
 
 Decision OriginGatingChecker::EvaluateTaskPolicyConfigWithCache(
     DelegateInputs& input) const {
-  if (!input.actor_container_decision.has_value()) {
-    input.actor_container_decision = EvaluateActorContainerConfig(
-        task_policy_config_slot_, input.event, input.source_origin,
-        input.destination_origin);
+  if (!input.task_policy_config_decision.has_value()) {
+    input.task_policy_config_decision =
+        EvaluateTaskPolicyConfig(task_policy_config_slot_, input.event,
+                                 input.source_origin, input.destination_origin);
   }
-  return input.actor_container_decision.value();
+  return input.task_policy_config_decision.value();
 }
 
 }  // namespace origin_gating

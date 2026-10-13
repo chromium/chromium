@@ -154,10 +154,10 @@ class OriginGatingChecker {
     std::optional<url::Origin> source_origin;
     url::Origin destination_origin;
     std::optional<bool> requires_user_confirmation;
-    // The decision from the ActorContainerConfig, or `kNoDecision` if there is
+    // The decision from the TaskPolicyConfig, or `kNoDecision` if there is
     // no config. This is `std::nullopt` until a predicate that involves the
-    // ActorContainerConfig is consulted.
-    std::optional<Decision> actor_container_decision;
+    // TaskPolicyConfig is consulted.
+    std::optional<Decision> task_policy_config_decision;
   };
 
   void EvaluatePredicates(
