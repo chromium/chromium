@@ -554,6 +554,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ENABLE_DISCOUNT_INFO_API})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/572881868): Re-enable.
     public void testOptionalButton_SupportedTypes() {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -1692,6 +1693,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/572881868")
     public void testParallelRequest() throws Exception {
         String url = mTestServer.getURL("/echoheader?Cookie");
         Uri requestUri = Uri.parse(mTestServer.getURL("/set-cookie?acookie"));
