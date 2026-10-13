@@ -170,17 +170,6 @@ bool IsBlockedByPolicy(const Extension& extension,
       return true;
     }
   }
-  // History search can return cached page passages without live WebContents.
-  // URL/title-only visits and site engagement scores do not expose page
-  // content.
-  for (const auto& query : data.history_query_result()) {
-    for (const auto& visit : query.history_data().visit_item()) {
-      if (visit.passages_size() > 0 &&
-          permissions.IsPolicyBlockedHost(GURL(visit.page_url()))) {
-        return true;
-      }
-    }
-  }
   return false;
 }
 

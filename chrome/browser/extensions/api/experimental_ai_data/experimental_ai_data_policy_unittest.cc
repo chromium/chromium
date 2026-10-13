@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -209,37 +208,20 @@ TEST_F(ExperimentalAiDataPolicyTest, RejectsTabClosure) {
 }
 
 TEST_F(ExperimentalAiDataPolicyTest, ChecksAncillaryDataAndAllowedExceptions) {
-  struct TestCase {
-    const char* source;
-    bool allowed_exception;
-  };
-  constexpr TestCase test_cases[] = {
-      {"tab", false}, {"history", false}, {"tab", true}, {"history", true}};
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.source);
-    SCOPED_TRACE(test_case.allowed_exception);
+  for (bool allowed_exception : {false, true}) {
+    SCOPED_TRACE(allowed_exception);
     extension_->permissions_data()->SetPolicyHostRestrictions(
         URLPatternSet(
             {URLPattern(URLPattern::SCHEME_ALL, "*://blocked.test/*")}),
-        test_case.allowed_exception
+        allowed_exception
             ? URLPatternSet(
                   {URLPattern(URLPattern::SCHEME_ALL, "*://blocked.test/*")})
             : URLPatternSet());
     auto function = CreateFunction();
-    const std::string url = "https://blocked.test/";
-    if (std::string_view(test_case.source) == "tab") {
-      auto* tab = function->data.add_tabs();
-      tab->set_url(url);
-      tab->mutable_page_context()->set_inner_text("Protected page text");
-    } else {
-      // History search returns extracted passages, not just visit metadata.
-      auto* visit = function->data.add_history_query_result()
-                        ->mutable_history_data()
-                        ->add_visit_item();
-      visit->set_page_url(url);
-      visit->add_passages("Protected page text");
-    }
-    if (test_case.allowed_exception) {
+    auto* tab = function->data.add_tabs();
+    tab->set_url("https://blocked.test/");
+    tab->mutable_page_context()->set_inner_text("Protected page text");
+    if (allowed_exception) {
       EXPECT_TRUE(Run(function.get())) << function->GetError();
     } else {
       EXPECT_EQ(kPolicyError, RunError(function.get()));
@@ -256,15 +238,11 @@ TEST_F(ExperimentalAiDataPolicyTest, AllowsBlockedSiteEngagementMetadata) {
   EXPECT_TRUE(Run(function.get())) << function->GetError();
 }
 
-TEST_F(ExperimentalAiDataPolicyTest, AllowsBlockedTabAndHistoryMetadata) {
+TEST_F(ExperimentalAiDataPolicyTest, AllowsBlockedTabMetadata) {
   BlockHost("*://blocked.test/*");
   auto function = CreateFunction();
   // URLs and titles alone do not expose the contents of the blocked page.
   function->data.add_tabs()->set_url("https://blocked.test/");
-  function->data.add_history_query_result()
-      ->mutable_history_data()
-      ->add_visit_item()
-      ->set_page_url("https://blocked.test/");
   EXPECT_TRUE(Run(function.get())) << function->GetError();
 }
 

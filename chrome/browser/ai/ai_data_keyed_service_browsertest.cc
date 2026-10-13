@@ -365,7 +365,6 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
   EXPECT_EQ(ai_data->page_context().tab_screenshot(), "");
   EXPECT_EQ(ai_data->page_context().inner_text(), "");
   EXPECT_EQ(ai_data->site_engagement().entries().size(), 0);
-  EXPECT_TRUE(ai_data->history_query_result().empty());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
