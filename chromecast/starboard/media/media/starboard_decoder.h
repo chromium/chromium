@@ -112,6 +112,9 @@ class StarboardDecoder {
   // Returns the current delegate, or null if none is currently set.
   MediaPipelineBackend::Decoder::Delegate* GetDelegate() const;
 
+  // Returns true if a pre-initialization buffer push is currently queued.
+  bool HasPendingFirstPush() const { return !pending_first_push_.is_null(); }
+
  private:
   // Performs any initialization logic for the child class. This will run after
   // Initialize runs, and is called each time Initialize is called.

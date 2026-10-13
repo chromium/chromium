@@ -83,6 +83,7 @@ TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageNoCodecs) {
   EXPECT_TRUE(streaming_config_manager_.has_config());
 
   auto config = streaming_config_manager_.config();
+  EXPECT_FALSE(config.display_description.has_value());
   ASSERT_EQ(config.audio_limits.size(), size_t{1});
   auto& limit = config.audio_limits.back();
   EXPECT_EQ(limit.codec, std::nullopt);
@@ -138,6 +139,23 @@ TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageWithCodecs) {
   EXPECT_TRUE(std::ranges::contains(video_codecs, ::media::VideoCodec::kVP9));
   EXPECT_TRUE(std::ranges::contains(video_codecs, ::media::VideoCodec::kVP8));
   EXPECT_TRUE(config.video_limits.empty());
+}
+
+TEST_F(CoreStreamingConfigManagerTest, DisplayDescriptionEnablesScaling) {
+  PlatformInfoSerializer serializer;
+  serializer.SetMaxWidth(1920);
+  serializer.SetMaxHeight(1080);
+  serializer.SetMaxFrameRate(60);
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(streaming_config_manager_.has_config());
+
+  const auto& config = streaming_config_manager_.config();
+  ASSERT_TRUE(config.display_description.has_value());
+  EXPECT_TRUE(config.display_description->can_scale_content);
+  EXPECT_EQ(config.display_description->dimensions.width(), 1920);
+  EXPECT_EQ(config.display_description->dimensions.height(), 1080);
+  EXPECT_EQ(config.display_description->max_frame_rate, 60);
 }
 
 }  // namespace chromecast

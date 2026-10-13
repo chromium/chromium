@@ -51,6 +51,7 @@ source_set("starboard") {
     "//chromecast/base",
     "//chromecast/starboard/chromecast/starboard_adapter",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//media",
     "//ui/display",
     "//ui/gfx/geometry",
   ]

@@ -4,16 +4,23 @@
 
 #include "starboard_video_decoder.h"
 
+#include <algorithm>
+#include <array>
+#include <utility>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/media/mime_utils.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
+#include "media/parsers/h264_parser.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace chromecast {
 namespace media {
@@ -139,6 +146,21 @@ StarboardVideoDecoder::~StarboardVideoDecoder() {
 
 void StarboardVideoDecoder::InitializeInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (std::exchange(has_pending_pre_init_push_, false) &&
+      HasPendingFirstPush()) {
+    return;
+  }
+  if (video_sample_info_ &&
+      (config_.width != container_width_ ||
+       config_.height != container_height_ ||
+       video_sample_info_->frame_width != container_width_ ||
+       video_sample_info_->frame_height != container_height_)) {
+    config_.width = container_width_;
+    config_.height = container_height_;
+    video_sample_info_->frame_width = container_width_;
+    video_sample_info_->frame_height = container_height_;
+    resolution_changed_ = true;
+  }
 }
 
 const std::optional<StarboardVideoSampleInfo>&
@@ -148,6 +170,7 @@ StarboardVideoDecoder::GetVideoSampleInfo() {
 }
 
 std::optional<EncryptionScheme> StarboardVideoDecoder::GetEncryptionScheme() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_sample_info_.has_value()) {
     // The config is populated when video_sample_info_ is populated.
     return config_.encryption_scheme;
@@ -172,6 +195,9 @@ bool StarboardVideoDecoder::SetConfig(const VideoConfig& config) {
   // PushBuffer; at that point, it must be in the kPlaying state.
 
   config_ = config;
+  container_width_ = config.width;
+  container_height_ = config.height;
+  has_pending_pre_init_push_ = false;
   video_sample_info_ = ToVideoSampleInfo(config_);
 
   codec_mime_ =
@@ -189,13 +215,22 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
     return BufferStatus::kBufferFailed;
   }
 
+  if (!IsInitialized() && (!has_pending_pre_init_push_ ||
+                           !HasPendingFirstPush() || buffer->end_of_stream())) {
+    has_pending_pre_init_push_ = false;
+    InitializeInternal();
+  }
+  if (!buffer->end_of_stream()) {
+    has_pending_pre_init_push_ = !IsInitialized();
+    CheckForInBandResolutionChange(*buffer);
+  }
+
   // At this point the VideoPipelineImpl (the delegate) should be in the
   // kPlaying state, so it is safe to update the resolution.
   MediaPipelineBackend::Decoder::Delegate* const delegate = GetDelegate();
-  if (resolution_changed_ && delegate) {
+  if (std::exchange(resolution_changed_, false) && delegate) {
     delegate->OnVideoResolutionChanged(
         chromecast::Size(config_.width, config_.height));
-    resolution_changed_ = false;
   }
 
   if (buffer->end_of_stream()) {
@@ -245,6 +280,84 @@ void StarboardVideoDecoder::GetStatistics(Statistics* statistics) {
 void StarboardVideoDecoder::SetDelegate(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetDecoderDelegate(delegate);
+}
+
+void StarboardVideoDecoder::CheckForInBandResolutionChange(
+    const CastDecoderBuffer& buffer) {
+  if (buffer.end_of_stream() || !buffer.data() || buffer.data_size() == 0 ||
+      buffer.decrypt_config()) {
+    return;
+  }
+  // SAFETY: CastDecoderBuffer provides buffer.data() and verified data_size().
+  auto data = UNSAFE_BUFFERS(base::span(buffer.data(), buffer.data_size()));
+  if (config_.codec == kCodecH264) {
+    ::media::H264Parser parser;
+    parser.SetStream(data.first(std::min<size_t>(data.size(), 1024)));
+    ::media::H264NALU nalu;
+    int sps_id = -1;
+    while (parser.AdvanceToNextNALU(&nalu) == ::media::H264Parser::kOk) {
+      if (nalu.nal_unit_type == ::media::H264NALU::kSPS &&
+          parser.ParseSPS(&sps_id) == ::media::H264Parser::kOk) {
+        if (const ::media::H264SPS* sps = parser.GetSPS(sps_id)) {
+          if (auto rect = sps->GetVisibleRect(); rect && !rect->IsEmpty()) {
+            UpdateResolution(rect->width(), rect->height(), rect->width(),
+                             rect->height(), "H.264");
+          }
+        }
+      } else if (nalu.nal_unit_type >= ::media::H264NALU::kNonIDRSlice &&
+                 nalu.nal_unit_type <= ::media::H264NALU::kIDRSlice) {
+        break;
+      }
+    }
+  } else if (config_.codec == kCodecVP9) {
+    ::media::Vp9Parser parser;
+    parser.SetStream(data, nullptr);
+    ::media::Vp9FrameHeader fhdr;
+    gfx::Size allocate_size;
+    for (::media::Vp9Parser::Result res;
+         (res = parser.ParseNextFrame(&fhdr, &allocate_size, nullptr)) !=
+         ::media::Vp9Parser::kEOStream;) {
+      if (res == ::media::Vp9Parser::kOk && fhdr.IsKeyframe()) {
+        const int w =
+            fhdr.render_width > 0 ? fhdr.render_width : fhdr.frame_width;
+        const int h =
+            fhdr.render_height > 0 ? fhdr.render_height : fhdr.frame_height;
+        UpdateResolution(w, h, fhdr.frame_width, fhdr.frame_height, "VP9");
+      }
+    }
+  } else if (config_.codec == kCodecVP8 && data.size() >= 10 &&
+             (data[0] & 0x01) == 0 && data[3] == 0x9d && data[4] == 0x01 &&
+             data[5] == 0x2a) {
+    constexpr std::array<int, 4> kNum = {1, 5, 5, 2}, kDen = {1, 4, 3, 1};
+    const uint16_t w = base::U16FromLittleEndian(data.subspan<6, 2>());
+    const uint16_t h = base::U16FromLittleEndian(data.subspan<8, 2>());
+    const int coded_w = w & 0x3fff;
+    const int coded_h = h & 0x3fff;
+    const int width = (coded_w * kNum[w >> 14]) / kDen[w >> 14];
+    const int height = (coded_h * kNum[h >> 14]) / kDen[h >> 14];
+    UpdateResolution(width, height, coded_w, coded_h, "VP8");
+  }
+}
+
+void StarboardVideoDecoder::UpdateResolution(int display_width,
+                                             int display_height,
+                                             int coded_width,
+                                             int coded_height,
+                                             const char* codec_name) {
+  if (display_width > 0 && display_height > 0 &&
+      (display_width != config_.width || display_height != config_.height)) {
+    LOG(INFO) << "Detected in-band " << codec_name
+              << " resolution change from (" << config_.width << ", "
+              << config_.height << ") to (" << display_width << ", "
+              << display_height << ")";
+    config_.width = display_width;
+    config_.height = display_height;
+    resolution_changed_ = true;
+  }
+  if (coded_width > 0 && coded_height > 0 && video_sample_info_) {
+    video_sample_info_->frame_width = coded_width;
+    video_sample_info_->frame_height = coded_height;
+  }
 }
 
 }  // namespace media

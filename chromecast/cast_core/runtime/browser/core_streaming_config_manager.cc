@@ -69,6 +69,7 @@ cast_streaming::ReceiverConfig CreateConfig(
     cast_streaming::ReceiverConfig::Display display;
     display.dimensions = gfx::Rect{*width, *height};
     display.max_frame_rate = *frame_rate;
+    display.can_scale_content = true;
     constraints.display_description = std::move(display);
   } else {
     DLOG(WARNING)
