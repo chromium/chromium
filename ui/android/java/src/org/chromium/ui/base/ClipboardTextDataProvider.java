@@ -4,6 +4,7 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.ui.base.ClipboardImpl.CHROME_WEB_CUSTOM_DATA_MIME_TYPE;
 import static org.chromium.ui.base.MimeTypeUtils.TEXT_HTML_MIME_TYPE;
 import static org.chromium.ui.base.MimeTypeUtils.TEXT_PLAIN_MIME_TYPE;
 
@@ -32,10 +33,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Serves clipboard text/plain and text/html payloads too large to fit inline in a {@link
- * android.content.ClipData}. Does not expose {@link android.provider.OpenableColumns}, so {@code
- * ContentUriUtils#isOpenableFile} reports false and readers treat the URI as a stream to paste
- * rather than a file to attach.
+ * Serves clipboard text/plain, text/html and Chromium web custom data payloads too large to fit
+ * inline in a {@link android.content.ClipData}. Does not expose {@link
+ * android.provider.OpenableColumns}, so {@code ContentUriUtils#isOpenableFile} reports false and
+ * readers treat the URI as a stream to paste rather than a file to attach.
  *
  * <p>Uses a capability token query parameter (?uuid=...) and in-memory pipe streaming via {@link
  * ContentProvider#openPipeHelper} to serve the data.
@@ -49,23 +50,30 @@ public class ClipboardTextDataProvider extends ContentProvider {
     private static @Nullable String sCurrentUuid;
     private static byte @Nullable [] sTextBytes;
     private static byte @Nullable [] sHtmlBytes;
+    private static byte @Nullable [] sWebCustomDataBytes;
 
-    // Stores the URI and system clipboard timestamp of the last text/HTML payload copied by this
-    // provider. Used to verify authenticity on paste and protect against Confused Deputy attacks.
+    // Stores the URI and system clipboard timestamp of the last payload copied by this provider.
+    // Used to verify authenticity on paste and protect against Confused Deputy attacks.
     private static @Nullable ClipboardUriMetadata sLastCopiedMetadata;
 
-    /** Stages |text| and/or |html| in memory and returns a content:// URI, or null on failure. */
-    /* package */ static @Nullable Uri store(@Nullable String text, @Nullable String html) {
-        if (text == null && html == null) return null;
+    /**
+     * Stages |text|, |html| and/or |webCustomData| in memory and returns a single content:// URI
+     * serving all of them, or null on failure. Replaces any previously staged payloads.
+     */
+    /* package */ static @Nullable Uri store(
+            @Nullable String text, @Nullable String html, @Nullable String webCustomData) {
+        if (text == null && html == null && webCustomData == null) return null;
 
         String newUuid = UUID.randomUUID().toString();
-        byte[] textBytes = text != null ? text.getBytes(StandardCharsets.UTF_8) : null;
-        byte[] htmlBytes = html != null ? html.getBytes(StandardCharsets.UTF_8) : null;
+        byte[] textBytes = toUtf8Bytes(text);
+        byte[] htmlBytes = toUtf8Bytes(html);
+        byte[] webCustomDataBytes = toUtf8Bytes(webCustomData);
 
         synchronized (sLock) {
             sCurrentUuid = newUuid;
             sTextBytes = textBytes;
             sHtmlBytes = htmlBytes;
+            sWebCustomDataBytes = webCustomDataBytes;
         }
 
         return new Uri.Builder()
@@ -73,6 +81,10 @@ public class ClipboardTextDataProvider extends ContentProvider {
                 .authority(ContextUtils.getApplicationContext().getPackageName() + AUTHORITY_SUFFIX)
                 .appendQueryParameter(QUERY_PARAM_UUID, newUuid)
                 .build();
+    }
+
+    private static byte @Nullable [] toUtf8Bytes(@Nullable String value) {
+        return value != null ? value.getBytes(StandardCharsets.UTF_8) : null;
     }
 
     private static boolean validateUuidQueryParam(Uri uri) {
@@ -91,6 +103,7 @@ public class ClipboardTextDataProvider extends ContentProvider {
             if (!validateUuidQueryParam(uri)) return null;
             if (sHtmlBytes != null) return TEXT_HTML_MIME_TYPE;
             if (sTextBytes != null) return TEXT_PLAIN_MIME_TYPE;
+            if (sWebCustomDataBytes != null) return CHROME_WEB_CUSTOM_DATA_MIME_TYPE;
             return null;
         }
     }
@@ -102,6 +115,7 @@ public class ClipboardTextDataProvider extends ContentProvider {
             List<String> types = new ArrayList<>();
             if (sTextBytes != null) types.add(TEXT_PLAIN_MIME_TYPE);
             if (sHtmlBytes != null) types.add(TEXT_HTML_MIME_TYPE);
+            if (sWebCustomDataBytes != null) types.add(CHROME_WEB_CUSTOM_DATA_MIME_TYPE);
             if (types.isEmpty()) return null;
             return new ClipDescription(null, types.toArray(new String[0]))
                     .filterMimeTypes(mimeTypeFilter);
@@ -123,6 +137,10 @@ public class ClipboardTextDataProvider extends ContentProvider {
             } else if (sHtmlBytes != null
                     && ClipDescription.compareMimeTypes(TEXT_HTML_MIME_TYPE, mimeTypeFilter)) {
                 data = sHtmlBytes;
+            } else if (sWebCustomDataBytes != null
+                    && ClipDescription.compareMimeTypes(
+                            CHROME_WEB_CUSTOM_DATA_MIME_TYPE, mimeTypeFilter)) {
+                data = sWebCustomDataBytes;
             } else {
                 throw new FileNotFoundException(uri.toString());
             }
@@ -183,21 +201,21 @@ public class ClipboardTextDataProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    /** Stores the metadata for the last copied text/HTML payload. */
+    /** Stores the metadata for the last copied payload. */
     public static void storeLastCopiedMetadata(ClipboardUriMetadata metadata) {
         synchronized (sLock) {
             sLastCopiedMetadata = metadata;
         }
     }
 
-    /** Returns the metadata for the last copied text/HTML payload. */
+    /** Returns the metadata for the last copied payload. */
     public static @Nullable ClipboardUriMetadata getLastCopiedMetadata() {
         synchronized (sLock) {
             return sLastCopiedMetadata;
         }
     }
 
-    /** Clears the metadata for the last copied text/HTML payload. */
+    /** Clears the metadata for the last copied payload. */
     public static void clearLastCopiedMetadata() {
         synchronized (sLock) {
             sLastCopiedMetadata = null;
@@ -210,6 +228,7 @@ public class ClipboardTextDataProvider extends ContentProvider {
             sCurrentUuid = null;
             sTextBytes = null;
             sHtmlBytes = null;
+            sWebCustomDataBytes = null;
             sLastCopiedMetadata = null;
         }
     }
