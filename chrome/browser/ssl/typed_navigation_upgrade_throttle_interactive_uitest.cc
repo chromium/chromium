@@ -1192,7 +1192,8 @@ IN_PROC_BROWSER_TEST_P(
 // 6. The navigation ends up showing an interstitial.
 
 // TODO(crbug.com/378576546): Re-enable this test on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/570802137): Fix flakiness on ChromeOS debug builds.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)
 #define MAYBE_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback \
   DISABLED_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback
 #else
@@ -1287,7 +1288,8 @@ IN_PROC_BROWSER_TEST_P(
 // Same as UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback, but the
 // redirect ends up on a net error instead of an SSL error.
 // TODO(crbug.com/402833505): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/570812226): Flaky on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_UrlTypedWithoutScheme_NetError_Redirected_ShouldFallback \
   DISABLED_UrlTypedWithoutScheme_NetError_Redirected_ShouldFallback
 #else
