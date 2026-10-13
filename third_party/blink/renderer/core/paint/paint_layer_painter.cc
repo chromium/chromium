@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
+#include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -596,7 +597,10 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   PropertyTreeStateOrAlias properties =
       controller.CurrentPaintChunkProperties();
   DCHECK(effect);
-  properties.SetEffect(*effect);
+  // The snapshot may contain cross-origin frames or plugins, so it must not be
+  // painted under SVG reference filters on ancestors of the scope.
+  properties.SetEffect(EmbeddedContentPainter::EffectForViewTransitionContent(
+      *effect, object.GetDocument()));
 
   RecordForeignLayer(context, paint_layer_,
                      DisplayItem::kForeignLayerViewTransitionContent,

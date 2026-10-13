@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "cc/layers/view_transition_content_layer.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -25,8 +26,11 @@
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -111,9 +115,13 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
     GraphicsContext& context = paint_info.context;
     layer->SetBounds(embedded_content_view->Size());
     layer->SetIsDrawable(true);
+    PropertyTreeStateOrAlias properties =
+        context.GetPaintController().CurrentPaintChunkProperties();
+    properties.SetEffect(EffectForViewTransitionContent(
+        properties.Effect(), layout_embedded_content_.GetDocument()));
     RecordForeignLayer(context, layout_embedded_content_,
                        DisplayItem::kForeignLayerViewTransitionContent,
-                       std::move(layer), paint_location);
+                       std::move(layer), paint_location, &properties);
   }
 }
 
@@ -181,6 +189,25 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
   return std::optional<ScopedPaintChunkProperties>{
       std::in_place, paint_info.context.GetPaintController(), *candidate_effect,
       layout_embedded_content, display_item_type};
+}
+
+// static
+const EffectPaintPropertyNodeOrAlias&
+EmbeddedContentPainter::EffectForViewTransitionContent(
+    const EffectPaintPropertyNodeOrAlias& effect,
+    Document& document) {
+  if (!RuntimeEnabledFeatures::ViewTransitionPreventSvgFilterPaintEnabled()) {
+    return effect;
+  }
+  const EffectPaintPropertyNode* candidate_effect =
+      PaintPropertyTreeBuilder::GetFirstParentEffectWithoutReferenceFilter(
+          &effect);
+  if (!candidate_effect) {
+    return effect;
+  }
+  document.CountDeprecation(
+      mojom::blink::WebFeature::kViewTransitionPreventSvgFilterPaint);
+  return *candidate_effect;
 }
 
 }  // namespace blink

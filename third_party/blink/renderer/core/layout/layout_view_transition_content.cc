@@ -6,8 +6,10 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -86,9 +88,16 @@ void LayoutViewTransitionContent::PaintReplaced(
         propagate_max_extent_rect_ ? captured_rect_ : gfx::RectF());
   }
 
+  // The content may contain cross-origin frames or plugins, so it must not be
+  // painted under SVG reference filters, including filters applied to the view
+  // transition pseudo-elements.
+  PropertyTreeStateOrAlias properties =
+      context.GetPaintController().CurrentPaintChunkProperties();
+  properties.SetEffect(EmbeddedContentPainter::EffectForViewTransitionContent(
+      properties.Effect(), GetDocument()));
   RecordForeignLayer(
       context, *this, DisplayItem::kForeignLayerViewTransitionContent, layer_,
-      gfx::Point(pixel_snapped_rect.x(), pixel_snapped_rect.y()));
+      gfx::Point(pixel_snapped_rect.x(), pixel_snapped_rect.y()), &properties);
 }
 
 }  // namespace blink

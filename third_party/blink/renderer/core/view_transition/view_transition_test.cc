@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
@@ -56,8 +57,12 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -228,6 +233,32 @@ class ViewTransitionTest : public testing::Test,
       EXPECT_TRUE(incoming_image->GetComputedStyle());
       EXPECT_TRUE(incoming_image->GetLayoutObject());
     }
+  }
+
+  // Returns whether the view transition content painted by `client` in the
+  // last paint is under an effect with an SVG reference filter, or nullopt if
+  // `client` didn't paint view transition content.
+  std::optional<bool> ViewTransitionContentHasReferenceFilter(
+      const DisplayItemClient& client) {
+    const PaintArtifact& artifact = GetLocalFrameView()->GetPaintArtifact();
+    for (const PaintChunk& chunk : artifact.GetPaintChunks()) {
+      for (const DisplayItem& item : artifact.GetDisplayItemList().ItemsInRange(
+               chunk.begin_index, chunk.end_index)) {
+        if (item.GetType() != DisplayItem::kForeignLayerViewTransitionContent ||
+            item.ClientId() != client.Id()) {
+          continue;
+        }
+        for (const EffectPaintPropertyNode* effect =
+                 &chunk.properties.Effect().Unalias();
+             effect; effect = effect->UnaliasedParent()) {
+          if (effect->HasReferenceFilter()) {
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+    return std::nullopt;
   }
 
  protected:
@@ -2143,6 +2174,104 @@ TEST_P(ViewTransitionTest, StyleBuilderKeyframesPrecision) {
   String css = builder.Build();
   EXPECT_NE(css.find("width: 100.094px;"), kNotFound) << css;
   EXPECT_NE(css.find("height: 200.094px;"), kNotFound) << css;
+}
+
+// View transition content may contain cross-origin frames, so SVG reference
+// filters must not apply to it. The ::view-transition-old/new() case is covered
+// by external/wpt/css/css-view-transitions/iframe-cross-origin-svg-filter
+// .tentative.sub.https.html. This tests the snapshot that the embedder paints
+// for a subframe with a view transition, under a filter on the <iframe>.
+TEST_P(ViewTransitionTest, SubframeSnapshotLayerWithoutSvgFilter) {
+  SetHtmlInnerHTML(R"HTML(
+    <svg width=0 height=0>
+      <filter id=blur><feGaussianBlur stdDeviation=5></feGaussianBlur></filter>
+    </svg>
+    <iframe id=frame style="filter: url(#blur)" srcdoc="<html></html>">
+    </iframe>
+  )HTML");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  auto& child_document =
+      *To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild())
+           ->GetDocument();
+  ViewTransitionSupplement::startViewTransition(script_state, child_document,
+                                                ASSERT_NO_EXCEPTION);
+  auto* transition = ViewTransitionUtils::GetTransition(child_document);
+  ASSERT_TRUE(transition);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(transition->GetScopeSnapshotLayer());
+
+  Element* iframe = GetDocument().getElementById(AtomicString("frame"));
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*iframe->GetLayoutObject()),
+            false);
+}
+
+// Same as above, but for the snapshot of a scoped view transition, under a
+// filter on an ancestor of the scope. This also checks that the removal is
+// reported with its own use counter, rather than kPreventSvgFilterPaint.
+TEST_P(ViewTransitionTest, ScopeSnapshotLayerWithoutSvgFilter) {
+  SetHtmlInnerHTML(R"HTML(
+    <svg width=0 height=0>
+      <filter id=blur><feGaussianBlur stdDeviation=5></feGaussianBlur></filter>
+    </svg>
+    <div style="filter: url(#blur)">
+      <div id=scope style="width: 100px; height: 100px; contain: strict;
+                           position: relative; z-index: 0"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  Element* scope_element = GetDocument().getElementById(AtomicString("scope"));
+  ScopedViewTransition::startViewTransition(script_state, *scope_element,
+                                            ASSERT_NO_EXCEPTION);
+  auto* transition = ViewTransitionUtils::GetTransition(*scope_element);
+  ASSERT_TRUE(transition);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(transition->GetScopeSnapshotLayer());
+
+  EXPECT_EQ(
+      ViewTransitionContentHasReferenceFilter(
+          *To<LayoutBoxModelObject>(scope_element->GetLayoutObject())->Layer()),
+      false);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kPreventSvgFilterPaint));
+}
+
+TEST_P(ViewTransitionTest, ScopeSnapshotLayerWithoutSvgFilter_FeatureDisabled) {
+  ScopedViewTransitionPreventSvgFilterPaintForTest feature_disabled(false);
+  SetHtmlInnerHTML(R"HTML(
+    <svg width=0 height=0>
+      <filter id=blur><feGaussianBlur stdDeviation=5></feGaussianBlur></filter>
+    </svg>
+    <div style="filter: url(#blur)">
+      <div id=scope style="width: 100px; height: 100px; contain: strict;
+                           position: relative; z-index: 0"></div>
+    </div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  Element* scope_element = GetDocument().getElementById(AtomicString("scope"));
+  ScopedViewTransition::startViewTransition(script_state, *scope_element,
+                                            ASSERT_NO_EXCEPTION);
+  auto* transition = ViewTransitionUtils::GetTransition(*scope_element);
+  ASSERT_TRUE(transition);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(transition->GetScopeSnapshotLayer());
+
+  EXPECT_EQ(
+      ViewTransitionContentHasReferenceFilter(
+          *To<LayoutBoxModelObject>(scope_element->GetLayoutObject())->Layer()),
+      true);
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
 }
 
 }  // namespace blink
