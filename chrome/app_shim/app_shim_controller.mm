@@ -908,8 +908,6 @@ void AppShimController::BindNotificationService(
       // notification actions to be triggered before the browser process tries
       // to connect to the notification service.
       notification_service_un()->Bind(std::move(service));
-      // TODO(crbug.com/40616749): Determine when to ask for permissions.
-      notification_service_un()->RequestPermission(base::DoNothing());
     }
   } else {
     // NSUserNotificationCenter is in the process of being replaced, and
