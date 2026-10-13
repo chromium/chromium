@@ -27,6 +27,26 @@ enum class GlicInvokeResult {
 enum class GlicTaskType;
 #include "components/metrics/structured/buildflags/buildflags.h"
 
+// Which GlicInstanceCoordinatorImpl entry point produced an invocation. The
+// toggle path (a window entry point opening the panel) is the population of
+// the Glic.CUI.WindowEntryPointInvocation.* histograms, so recording this on
+// the structured events lets them be compared. Mirrored by
+// GlicInvokeEntryPath in //tools/metrics/structured/sync/structured.xml;
+// glic_invoke_metrics.cc translates between the two with an exhaustive
+// switch, so a value cannot be added here without adding it there.
+// LINT.IfChange(GlicInvokeEntryPath)
+enum class GlicInvokeEntryPath {
+  kUnknown = 0,
+  // GlicKeyedService::ShowUI() / ToggleUI(): toolbar and tab strip buttons,
+  // OS hotkey and icon, 3-dot menu, IPH, profile picker, ...
+  kToggle = 1,
+  // GlicKeyedService::Invoke().
+  kInvoke = 2,
+  // GlicKeyedService::InvokeWithAutoSubmit().
+  kInvokeWithAutoSubmit = 3,
+};
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml:GlicInvokeEntryPath)
+
 class GlicInvokeMetrics {
  public:
   explicit GlicInvokeMetrics(mojom::InvocationSource source);
@@ -45,6 +65,9 @@ class GlicInvokeMetrics {
   }
   void SetEmbedderType(EmbedderType embedder_type) {
     embedder_type_ = embedder_type;
+  }
+  void SetEntryPath(GlicInvokeEntryPath entry_path) {
+    entry_path_ = entry_path;
   }
   // The targeted host's load state when the invocation starts. Attached to
   // InvokeTerminated so that an invocation that fails on a failure left over
@@ -90,6 +113,7 @@ class GlicInvokeMetrics {
   std::optional<mojom::FeatureMode> feature_mode_;
   std::optional<EmbedderType> embedder_type_;
   std::optional<ClientLoadState> client_load_state_at_start_;
+  GlicInvokeEntryPath entry_path_ = GlicInvokeEntryPath::kUnknown;
 };
 
 }  // namespace glic

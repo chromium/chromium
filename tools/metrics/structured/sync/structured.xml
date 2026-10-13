@@ -3742,6 +3742,13 @@
     <variant value="1">READY</variant>
     <variant value="2">LOAD_ERROR</variant>
   </enum>
+
+  <enum name="GlicInvokeEntryPath">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">TOGGLE</variant>
+    <variant value="2">INVOKE</variant>
+    <variant value="3">INVOKE_WITH_AUTO_SUBMIT</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -3766,6 +3773,19 @@
         The embedder type for the UI (e.g. side panel vs Floaty). Mirrors
         glic::EmbedderType in //chrome/browser/glic/glic_enums.h, which is
         translated into this enum by an exhaustive switch in
+        glic_invoke_metrics.cc.
+      </summary>
+    </metric>
+    <metric name="EntryPath" type="GlicInvokeEntryPath">
+      <summary>
+        Which coordinator entry point produced this invocation. TOGGLE is a
+        window entry point opening the panel (GlicKeyedService::ShowUI /
+        ToggleUI: toolbar and tab strip buttons, OS hotkey and icon, 3-dot
+        menu, ...), which is the population of the
+        Glic.CUI.WindowEntryPointInvocation.* histograms; INVOKE and
+        INVOKE_WITH_AUTO_SUBMIT are the programmatic Invoke() and
+        InvokeWithAutoSubmit() APIs. Mirrors glic::GlicInvokeEntryPath in
+        glic_invoke_metrics.h, translated by an exhaustive switch in
         glic_invoke_metrics.cc.
       </summary>
     </metric>
@@ -3843,6 +3863,14 @@
         ClientLoadError event of its own, apart from one it watched happen
         (LOADING, or READY if the client was lost mid-invocation). Absent for
         invocations rejected before they start.
+      </summary>
+    </metric>
+    <metric name="EntryPath" type="GlicInvokeEntryPath">
+      <summary>
+        Which coordinator entry point produced this invocation; see
+        InvokeStarted.EntryPath. Duplicated here so that invocations rejected
+        before they start (see InvocationSource) can still be attributed to the
+        window entry point population.
       </summary>
     </metric>
   </event>

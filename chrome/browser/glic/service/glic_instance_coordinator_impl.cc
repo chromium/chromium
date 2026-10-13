@@ -666,14 +666,16 @@ void GlicInstanceCoordinatorImpl::RemoveAllInstances(
 base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::Invoke(
     GlicInvokeOptions options) {
   return InvokeInternal(std::nullopt, std::move(options),
-                        GlicInvokeWithAutoSubmitOptions());
+                        GlicInvokeWithAutoSubmitOptions(),
+                        GlicInvokeEntryPath::kInvoke);
 }
 
 base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options) {
   return InvokeInternal(auto_submit_passkey, std::move(options),
-                        GlicInvokeWithAutoSubmitOptions());
+                        GlicInvokeWithAutoSubmitOptions(),
+                        GlicInvokeEntryPath::kInvokeWithAutoSubmit);
 }
 
 base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
@@ -681,16 +683,18 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
   return InvokeInternal(auto_submit_passkey, std::move(options),
-                        std::move(auto_submit_options));
+                        std::move(auto_submit_options),
+                        GlicInvokeEntryPath::kInvokeWithAutoSubmit);
 }
 
 base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options,
-    bool bypass_in_progress_check) {
+    GlicInvokeEntryPath entry_path) {
   auto metrics =
       std::make_unique<GlicInvokeMetrics>(options.GetInvocationSource());
+  metrics->SetEntryPath(entry_path);
   metrics->SetFeatureMode(
       options.feature_mode.value_or(mojom::FeatureMode::kUnspecified));
 
@@ -898,8 +902,9 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
 
   // Only invocations that send an invoke message to the web client conflict
   // with each other. Invocations that merely show the UI can safely run
-  // simultaneously with any other invocation on the same instance.
-  if (!bypass_in_progress_check &&
+  // simultaneously with any other invocation on the same instance. The toggle
+  // path never sends one, so it skips the check altogether.
+  if (entry_path != GlicInvokeEntryPath::kToggle &&
       GlicInvokeHandler::RequiresClientInvoke(
           options, auto_submit_passkey.has_value())) {
     if (GlicInvokeHandler* in_progress = FindClientInvokeHandler(instance)) {
@@ -1304,7 +1309,7 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   }
   auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),
                                       GlicInvokeWithAutoSubmitOptions(),
-                                      /*bypass_in_progress_check=*/true);
+                                      GlicInvokeEntryPath::kToggle);
   if (weak_instance) {
     weak_instance->instance_metrics().OnToggle(
         source, key, /*is_showing=*/false, std::move(invocation_tracker));

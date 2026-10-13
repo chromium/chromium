@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -231,13 +232,14 @@ class GlicInstanceCoordinatorImpl
   void RemoveAllInstances(InstanceRemovalReason reason);
   void TransferTabGroupBinding(GlicInstanceImpl& source_instance,
                                GlicInstanceImpl& target_instance);
-  // `bypass_in_progress_check` skips checking for a conflicting in-progress
-  // client invoke.
+  // `entry_path` says which public entry point this came from. It is
+  // recorded on the invocation's structured metrics, and the toggle path
+  // skips the check for a conflicting in-progress client invoke.
   base::WeakPtr<GlicInstanceImpl> InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options,
-      bool bypass_in_progress_check = false);
+      GlicInvokeEntryPath entry_path);
 
   void OnTabEvent(const GlicTabEvent& event);
   // Returns a pointer to an instance with the given conversation id or nullptr

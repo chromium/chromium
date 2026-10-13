@@ -311,6 +311,64 @@ TEST(GlicInvokeMetricsTest,
   EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadStateAtStart"), std::nullopt);
 }
 
+// structured.xml GlicInvokeEntryPath wire values.
+constexpr int kEntryPathUnknownWireValue = 0;
+constexpr int kEntryPathToggleWireValue = 1;
+constexpr int kEntryPathInvokeWireValue = 2;
+constexpr int kEntryPathInvokeWithAutoSubmitWireValue = 3;
+
+TEST(GlicInvokeMetricsTest, StartedAndTerminatedHaveEntryPath) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.SetEntryPath(GlicInvokeEntryPath::kToggle);
+  metrics.RecordStarted();
+  metrics.RecordSuccess();
+
+  for (std::string_view event_name : {"InvokeStarted", "InvokeTerminated"}) {
+    SCOPED_TRACE(event_name);
+    auto events = capture.GetEvents(event_name);
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "EntryPath"), kEntryPathToggleWireValue);
+  }
+}
+
+TEST(GlicInvokeMetricsTest, EntryPathWireValuesAreStable) {
+  const struct {
+    GlicInvokeEntryPath entry_path;
+    int wire_value;
+  } kCases[] = {
+      {GlicInvokeEntryPath::kUnknown, kEntryPathUnknownWireValue},
+      {GlicInvokeEntryPath::kToggle, kEntryPathToggleWireValue},
+      {GlicInvokeEntryPath::kInvoke, kEntryPathInvokeWireValue},
+      {GlicInvokeEntryPath::kInvokeWithAutoSubmit,
+       kEntryPathInvokeWithAutoSubmitWireValue},
+  };
+  for (const auto& c : kCases) {
+    SCOPED_TRACE(static_cast<int>(c.entry_path));
+    ScopedStructuredEventCapture capture;
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+    metrics.SetEntryPath(c.entry_path);
+    metrics.RecordError(GlicInvokeError::kInvalidTab);
+    auto events = capture.GetEvents("InvokeTerminated");
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "EntryPath"), c.wire_value);
+  }
+}
+
+// A rejected invocation only records InvokeTerminated, which must therefore
+// say which entry point it came from on its own.
+TEST(GlicInvokeMetricsTest, RejectedInvocationTerminatedHasEntryPath) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.SetEntryPath(GlicInvokeEntryPath::kToggle);
+  metrics.RecordError(GlicInvokeError::kTabClosed);
+
+  EXPECT_TRUE(capture.GetEvents("InvokeStarted").empty());
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "EntryPath"), kEntryPathToggleWireValue);
+}
+
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 }  // namespace

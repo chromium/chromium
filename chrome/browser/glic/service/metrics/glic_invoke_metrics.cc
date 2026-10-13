@@ -62,6 +62,22 @@ ToStructuredClientLoadState(ClientLoadState state) {
       return StructuredClientLoadState::LOAD_ERROR;
   }
 }
+
+metrics::structured::events::v2::glic::GlicInvokeEntryPath
+ToStructuredEntryPath(GlicInvokeEntryPath entry_path) {
+  using StructuredEntryPath =
+      metrics::structured::events::v2::glic::GlicInvokeEntryPath;
+  switch (entry_path) {
+    case GlicInvokeEntryPath::kUnknown:
+      return StructuredEntryPath::UNKNOWN;
+    case GlicInvokeEntryPath::kToggle:
+      return StructuredEntryPath::TOGGLE;
+    case GlicInvokeEntryPath::kInvoke:
+      return StructuredEntryPath::INVOKE;
+    case GlicInvokeEntryPath::kInvokeWithAutoSubmit:
+      return StructuredEntryPath::INVOKE_WITH_AUTO_SUBMIT;
+  }
+}
 #endif
 
 }  // namespace
@@ -95,7 +111,8 @@ void GlicInvokeMetrics::RecordStarted() const {
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
   metrics::structured::events::v2::glic::InvokeStarted event;
   event.SetInvocationId(invocation_id_)
-      .SetInvocationSource(static_cast<int>(source_));
+      .SetInvocationSource(static_cast<int>(source_))
+      .SetEntryPath(ToStructuredEntryPath(entry_path_));
   if (feature_mode_.has_value()) {
     event.SetFeatureMode(static_cast<int>(*feature_mode_));
   }
@@ -187,6 +204,7 @@ void GlicInvokeMetrics::RecordTerminated(
   metrics::structured::events::v2::glic::InvokeTerminated event;
   event.SetInvocationId(invocation_id_)
       .SetInvocationSource(static_cast<int>(source_))
+      .SetEntryPath(ToStructuredEntryPath(entry_path_))
       .SetOutcome(
           static_cast<metrics::structured::events::v2::glic::GlicCuiOutcome>(
               static_cast<int>(outcome)))
