@@ -16,6 +16,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -63,6 +65,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -95,10 +98,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
@@ -787,6 +786,30 @@ class FullWebUIOmniboxInteractiveTest
  protected:
   FindBar* GetFindBar() {
     return FindBarController::From(browser())->find_bar();
+  }
+
+  // Shows a bubble anchored to the browser window, which takes activation.
+  void ShowTestBubble(
+      std::unique_ptr<views::BubbleDialogDelegate>& bubble_delegate,
+      std::unique_ptr<views::Widget>& bubble_widget) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    ASSERT_TRUE(browser_view);
+    // With the WebUI toolbar there is no `LocationBarView`, so anchor to the
+    // top container, which is also in the browser widget.
+    views::View* anchor = browser_view->GetLocationBarView();
+    if (!anchor) {
+      anchor = browser_view->top_container();
+    }
+    ASSERT_TRUE(anchor);
+    bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+        anchor, views::BubbleBorder::TOP_LEFT);
+    auto label_button = std::make_unique<views::LabelButton>(
+        views::Button::PressedCallback(), u"Test Bubble");
+    label_button->SetPreferredSize(gfx::Size(100, 30));
+    bubble_delegate->SetContentsView(std::move(label_button));
+    bubble_widget =
+        views::BubbleDialogDelegate::CreateBubble(bubble_delegate.get());
+    bubble_widget->Show();
   }
 
   // Presses Ctrl/Cmd+F and waits for the find bar to show with focus. The key
@@ -2026,61 +2049,55 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 #endif  // defined(USE_AURA)
 
-// Verifies that switching to another window while a bubble anchored to the
-// browser window is active dismisses the popup and blurs the omnibox. Neither
-// the browser widget nor the popup widget is active when the window switch
-// happens, so neither gets an activation change, and only the browser's
-// paint-as-active change can trigger the blur.
+// Verifies that a bubble anchored to the browser window taking activation
+// dismisses the popup and blurs the omnibox, as with the Views omnibox, whose
+// `FocusManager` blurs it when the browser window deactivates.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       WindowSwitchWhileBubbleActiveDismissesPopup) {
-#if BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "TODO(b/571715601): On Wayland, activating the bubble "
-                    "already blurs the omnibox, so the test's precondition "
-                    "doesn't hold.";
-  }
-#endif
+                       BubbleActivationDismissesPopup) {
   // The bubble delegate must outlive the bubble widget, so declare it first.
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate;
   std::unique_ptr<views::Widget> bubble_widget;
 
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      WaitForOmniboxFocus(true), Do([&]() {
-        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-        ASSERT_TRUE(browser_view);
-        // With the WebUI toolbar there is no `LocationBarView`, so anchor to
-        // the top container, which is also in the browser widget.
-        views::View* anchor = browser_view->GetLocationBarView();
-        if (!anchor) {
-          anchor = browser_view->top_container();
-        }
-        ASSERT_TRUE(anchor);
-        bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-            anchor, views::BubbleBorder::TOP_LEFT);
-        // Keep the bubble open when the other window is activated, so that its
-        // closing doesn't change activation.
-        bubble_delegate->set_close_on_deactivate(false);
-        auto label_button = std::make_unique<views::LabelButton>(
-            views::Button::PressedCallback(), u"Test Bubble");
-        label_button->SetPreferredSize(gfx::Size(100, 30));
-        bubble_delegate->SetContentsView(std::move(label_button));
-        bubble_widget =
-            views::BubbleDialogDelegate::CreateBubble(bubble_delegate.get());
-        bubble_widget->Show();
-      }),
+      WaitForOmniboxFocus(true),
+      Do([&]() { ShowTestBubble(bubble_delegate, bubble_widget); }),
       PollUntil([&]() { return bubble_widget && bubble_widget->IsActive(); },
                 "WaitForBubbleActive"),
-      // Let any checks posted by the popup losing activation run.
-      WaitForPopupTransitionLockout(),
-      // Precondition: activating the bubble must not blur the omnibox, and
-      // must leave neither the browser widget nor the popup widget active.
-      CheckEditModelFocus(true), CheckPopupState(OmniboxPopupState::kFull),
-      CheckResult([this]() { return IsBrowserOrPopupActive(browser()); }, false,
-                  "BrowserAndPopupInactiveWhileBubbleActive"),
-      OpenAndActivateSecondBrowserWindow(), WaitForPopupDismissed(),
-      WaitForEditModelFocus(false));
+      WaitForPopupDismissed(),
+      // Blurring the omnibox must not take activation back from the bubble.
+      CheckResult([&]() { return bubble_widget->IsActive(); }, true,
+                  "BubbleStillActive"));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that a bubble taking activation while a tab switch's deferred focus
+// request is queued keeps activation, and that the omnibox blurs.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       BubbleDuringTabSwitchKeepsActivation) {
+  // The bubble delegate must outlive the bubble widget, so declare it first.
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate;
+  std::unique_ptr<views::Widget> bubble_widget;
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForOmniboxFocus(true),
+      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab2), WaitForPopupDismissed(),
+      PollUntil([this]() { return IsBrowserOrPopupActive(browser()); },
+                "WaitForBrowserActive"),
+      // Show the bubble before the popup's deferred focus request for tab 1
+      // runs.
+      Do([&]() {
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        ShowTestBubble(bubble_delegate, bubble_widget);
+      }),
+      WaitForPopupTransitionLockout(),
+      CheckResult([&]() { return bubble_widget->IsActive(); }, true,
+                  "BubbleStillActive"),
+      WaitForPopupDismissed());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Verifies that focusing the native Omnibox with an active selection range
 // (e.g. from double-clicking or dragging in Views) preserves the exact
@@ -2394,6 +2411,58 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         return GlobalBrowserCollection::GetInstance()->GetSize() == 2;
       }));
 }
+
+// Verifies that pressing Ctrl+D / Cmd+D while the WebUI Omnibox is focused
+// bookmarks the page, shows the bookmark bubble, and blurs the omnibox, as with
+// the Views omnibox. The popup holds activation, so the bubble only shows
+// because `BookmarkCurrentTab()` checks `BrowserWindowInterface::IsActive()`,
+// which counts the popup as part of the browser window.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       BookmarkShortcutShowsBubbleAndDismissesPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"),
+      // The bookmark bubble takes activation, which closes the popup. On Mac
+      // that happens before the synchronous key press returns, so the popup
+      // can't be required to stay visible for the whole step (it would fail
+      // with `kElementHiddenDuringStep`).
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_D, ui::EF_PLATFORM_ACCELERATOR)
+              .SetMustRemainVisible(false)),
+      PollUntil(
+          [this]() {
+            return bookmarks::IsBookmarkedByUser(
+                BookmarkModelFactory::GetForBrowserContext(
+                    browser()->GetProfile()),
+                GURL("chrome://version/"));
+          },
+          "Bookmarked"),
+      InAnyContext(WaitForShow(kBookmarkBubbleOkButtonId)),
+      WaitForPopupDismissed());
+}
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that focusing the location bar while the bookmark bubble is active
+// focuses the WebUI Omnibox and gives the popup activation. Mac only: Windows
+// and ChromeOS ignore `BrowserView::SetFocusToLocationBar()` while the browser
+// window is inactive, and only Mac lets a focus request through while a bubble
+// holds activation (see `OmniboxPopupFullPresenter::CanTakeFocus()`).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusLocationWhileBookmarkBubbleActiveFocusesPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_D, ui::EF_PLATFORM_ACCELERATOR)
+              .SetMustRemainVisible(false)),
+      InAnyContext(WaitForShow(kBookmarkBubbleOkButtonId)),
+      WaitForPopupDismissed(),
+      // The end of the Cmd+L path, where `CommandDispatcher` passes the key
+      // equivalent from the bubble up to the browser window.
+      Do([this]() { chrome::FocusLocationBar(browser()); }),
+      WaitForPopupActive());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Verifies that pressing Ctrl+L / Cmd+L while typing a query selects the typed
 // text and keeps the suggestions dropdown open without interruption.

@@ -2097,9 +2097,11 @@ void BookmarkCurrentTab(BrowserWindowInterface* browser) {
   bool is_bookmarked_by_user = bookmarks::IsBookmarkedByUser(model, url);
   // Make sure the model actually added a bookmark before showing the star. A
   // bookmark isn't created if the url is invalid.
-  if (browser->GetWindow()->IsActive() && is_bookmarked_by_user) {
+  if (browser->IsActive() && is_bookmarked_by_user) {
     // Only show the bubble if the window is active, otherwise we may get into
     // weird situations where the bubble is deleted as soon as it is shown.
+    // `IsActive()` also counts a child widget that holds activation, such as
+    // the Full WebUI omnibox popup while the omnibox is focused.
     BrowserWindow::FromBrowser(browser)->ShowBookmarkBubble(
         url, was_bookmarked_by_user);
   }
