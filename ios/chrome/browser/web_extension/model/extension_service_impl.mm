@@ -80,22 +80,11 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
 
   if (should_load_at_startup) {
     extension_load_started_at_startup_ = true;
-    is_loading_ = true;
     initialization_start_time_ = base::TimeTicks::Now();
-    extension_load_start_time_ = initialization_start_time_;
-    loading_timer_.Start(
-        FROM_HERE, kExtensionLoadingTimeout,
-        base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
-                       weak_ptr_factory_.GetWeakPtr()));
-
     web::BuiltInExtension extension_to_load =
         is_silent ? web::BuiltInExtension::kGPCTest
                   : web::BuiltInExtension::kGPC;
-
-    extension_controller_->LoadBuiltInExtension(
-        extension_to_load,
-        base::BindOnce(&ExtensionServiceImpl::OnExtensionLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
+    LoadExtension(extension_to_load);
   } else {
     is_ready_ = true;
   }
@@ -147,6 +136,23 @@ base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_ready_);
   return ready_callbacks_.Add(std::move(callback));
+}
+
+void ExtensionServiceImpl::LoadExtension(web::BuiltInExtension extension) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!extension_controller_ || is_loading_ ||
+      extension_controller_->IsBuiltInExtensionLoaded(extension)) {
+    return;
+  }
+  is_loading_ = true;
+  extension_load_start_time_ = base::TimeTicks::Now();
+  loading_timer_.Start(
+      FROM_HERE, kExtensionLoadingTimeout,
+      base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+  extension_controller_->LoadBuiltInExtension(
+      extension, base::BindOnce(&ExtensionServiceImpl::OnExtensionLoaded,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
@@ -224,19 +230,12 @@ void ExtensionServiceImpl::OnOptOutPrefChanged() {
   }
   const bool enabled = pref_service_->GetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled);
-  const bool is_loaded = extension_controller_->IsBuiltInExtensionLoaded(
-      web::BuiltInExtension::kGPC);
   if (enabled) {
-    if (!is_loaded && !is_loading_) {
-      is_loading_ = true;
-      extension_controller_->LoadBuiltInExtension(
-          web::BuiltInExtension::kGPC,
-          base::BindOnce(&ExtensionServiceImpl::OnExtensionLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
+    LoadExtension(web::BuiltInExtension::kGPC);
   } else {
     SetHasLoadError(false);
-    if (is_loaded) {
+    if (extension_controller_->IsBuiltInExtensionLoaded(
+            web::BuiltInExtension::kGPC)) {
       extension_controller_->UnloadBuiltInExtension(web::BuiltInExtension::kGPC,
                                                     base::DoNothing());
     }
