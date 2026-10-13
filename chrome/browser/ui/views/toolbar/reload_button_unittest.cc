@@ -393,8 +393,6 @@ TEST_F(ReloadButtonMetricsTest, DISABLED_LogFirstPaintMetrics) {
       "InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease", 0);
 }
 
-
-
 // Verifies that the latency from a mouse input event to the execution of the
 // reload command is recorded in the new unified InteractionToReload metric.
 TEST_F(ReloadButtonMetricsTest, LogInteractionToReloadMetric) {
@@ -460,4 +458,25 @@ TEST_F(ReloadButtonTest, AnimateTransitionsOnButtonPress) {
 
   EXPECT_FALSE(animate_transitions());
   EXPECT_EQ(ReloadButton::Mode::kReload, reload_button()->GetVisibleMode());
+}
+
+// A button hosted outside a browser window, such as the one in the ChromeOS
+// login screen captive portal dialog, has no profile. Clicking it must not
+// crash and must not record WaaP UI metrics.
+using ReloadButtonWithoutProfileTest = ChromeViewsTestBase;
+
+TEST_F(ReloadButtonWithoutProfileTest, ClickRecordsNoMetrics) {
+  base::HistogramTester histogram_tester;
+  ReloadButton button(/*profile=*/nullptr, /*command_updater=*/nullptr,
+                      /*window_metrics_manager=*/nullptr);
+
+  ui::MouseEvent click_event(ui::EventType::kMouseReleased, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(&button).NotifyClick(click_event);
+
+  histogram_tester.ExpectTotalCount("InitialWebUI.ReloadButton.InputCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.ReloadButton.InteractionToReload", 0);
 }

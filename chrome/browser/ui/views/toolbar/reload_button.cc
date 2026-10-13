@@ -63,7 +63,8 @@ ReloadButton::ReloadButton(
                                         base::Unretained(this)),
                     CreateMenuModel(),
                     nullptr),
-      metrics_recorder_(std::make_unique<WaapUIMetricsRecorder>(profile)),
+      metrics_recorder_(
+          profile ? std::make_unique<WaapUIMetricsRecorder>(profile) : nullptr),
       command_updater_(command_updater),
       reload_icon_(features::IsRoundedIconsEnabled()
                        ? vector_icons::kRefreshIcon
@@ -322,7 +323,9 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
 
   ClearPendingMenu();
 
-  metrics_recorder_->OnButtonPressedStart(event);
+  if (metrics_recorder_) {
+    metrics_recorder_->OnButtonPressedStart(event);
+  }
 
   if (visible_mode_ == Mode::kStop) {
     if (command_updater_) {
@@ -359,7 +362,9 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
     animate_transitions_ = true;
 
     ExecuteBrowserCommand(command, flags);
-    metrics_recorder_->DidExecuteReloadCommand(base::TimeTicks::Now());
+    if (metrics_recorder_) {
+      metrics_recorder_->DidExecuteReloadCommand(base::TimeTicks::Now());
+    }
     ++testing_reload_count_;
   }
 }

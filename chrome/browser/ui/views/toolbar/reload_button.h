@@ -38,6 +38,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   METADATA_HEADER(ReloadButton, ToolbarButton)
 
  public:
+  // `profile` is null when the button is hosted outside a browser window, for
+  // example in the ChromeOS login screen captive portal dialog. No WaaP UI
+  // metrics are recorded in that case.
   ReloadButton(Profile* profile,
                CommandUpdater* command_updater,
                InitialWebUIWindowMetricsManager* window_metrics_manager);
@@ -110,8 +113,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // Timer to delay switching between reload and stop states.
   base::OneShotTimer mode_switch_timer_;
 
-  // This can't be null. But it may not record anything if the feature is
-  // disabled or if profile is missing.
+  // Null when the button has no profile, i.e. it is not in a browser window.
   const std::unique_ptr<WaapUIMetricsRecorder> metrics_recorder_;
 
   // This may be NULL when testing.
