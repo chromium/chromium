@@ -50,8 +50,10 @@ MemoryPurgeManager::MemoryPurgeManager(
 MemoryPurgeManager::~MemoryPurgeManager() = default;
 
 void MemoryPurgeManager::OnPageCreated() {
+  bool were_all_frozen = AreAllPagesFrozen();
   total_page_count_++;
   memory_pressure_suppression_token_.reset();
+  MaybeRunAllPagesFrozenCallback(were_all_frozen);
 
   if (!CanPurge()) {
     purge_timer_.Stop();
@@ -61,10 +63,13 @@ void MemoryPurgeManager::OnPageCreated() {
 void MemoryPurgeManager::OnPageDestroyed(bool is_frozen) {
   DCHECK_GT(total_page_count_, 0);
   DCHECK_GE(frozen_page_count_, 0);
+  bool were_all_frozen = AreAllPagesFrozen();
   total_page_count_--;
   if (is_frozen) {
     frozen_page_count_--;
   }
+
+  MaybeRunAllPagesFrozenCallback(were_all_frozen);
 
   if (!CanPurge()) {
     purge_timer_.Stop();
@@ -78,6 +83,8 @@ void MemoryPurgeManager::OnPageFrozen(
   DCHECK_LT(frozen_page_count_, total_page_count_);
   frozen_page_count_++;
 
+  MaybeRunAllPagesFrozenCallback(/*were_all_frozen=*/false);
+
   if (CanPurge()) {
     if (called_from == base::MemoryReductionTaskContext::kProactive) {
       PerformMemoryPurge();
@@ -88,8 +95,11 @@ void MemoryPurgeManager::OnPageFrozen(
 }
 
 void MemoryPurgeManager::OnPageResumed() {
+  bool were_all_frozen = AreAllPagesFrozen();
   DCHECK_GT(frozen_page_count_, 0);
   frozen_page_count_--;
+
+  MaybeRunAllPagesFrozenCallback(were_all_frozen);
 
   if (!CanPurge()) {
     purge_timer_.Stop();
@@ -198,6 +208,13 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   backgrounded_purge_pending_ = false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void MemoryPurgeManager::SetOnAllPagesFrozenCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  all_pages_frozen_callback_ = std::move(callback);
+}
+#endif
+
 bool MemoryPurgeManager::CanPurge() const {
   if (total_page_count_ == 0) {
     return false;
@@ -212,6 +229,16 @@ bool MemoryPurgeManager::CanPurge() const {
   }
 
   return true;
+}
+
+void MemoryPurgeManager::MaybeRunAllPagesFrozenCallback(bool were_all_frozen) {
+#if BUILDFLAG(IS_ANDROID)
+  const bool are_all_frozen = AreAllPagesFrozen();
+  // Run the callback if the "all pages frozen" state changed.
+  if (were_all_frozen != are_all_frozen && all_pages_frozen_callback_) {
+    all_pages_frozen_callback_.Run(are_all_frozen);
+  }
+#endif
 }
 
 bool MemoryPurgeManager::AreAllPagesFrozen() const {
