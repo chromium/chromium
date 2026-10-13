@@ -1,0 +1,37 @@
+# tags: [ mac win linux ]
+# tags: [ mac26-arm64 mac26 mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ x86_64 arm64 ]
+# tags: [ release debug ]
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
+# expectations instead of the typical TestExpectations file, in order to test
+# Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
+
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
+crbug.com/517535239 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
+
+# The overflow test times out because filling the context window takes too long.
+external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
+
+# Temporarily skip semantic embedder WPTs
+crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
+
+# Temporarily skip decision model WPTs until browser implementation is enabled.
+crbug.com/499322156 external/wpt/ai/decision-model/* [ Skip ]
+
+# There is no TranslateKit component for Win ARM64.
+crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
+
+# Temporarily skip TinyGemma small expert model WPTs (Proofreader and Summarizer
+# speed preference) until small expert model support lands for Conversation API.
+crbug.com/560276842 external/wpt/ai/proofreader/* [ Skip ]
+crbug.com/560276842 external/wpt/ai/summarizer/speed/* [ Skip ]
