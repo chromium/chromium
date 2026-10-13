@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kPasswordChangeWithGlic);
 // Inference.
 BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);
 
-// Controls whether the ModelQualityLogsUploader should log password change
-// forms.
-BASE_DECLARE_FEATURE(kRecordDiscardedFormsToModelQualityLogs);
-
 // Controls whether ChangePasswordFormWaiter rechecks cached password forms
 // exponentially.
 BASE_DECLARE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter);

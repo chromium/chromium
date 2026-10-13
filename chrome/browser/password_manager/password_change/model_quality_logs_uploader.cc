@@ -5,14 +5,12 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
-#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -561,11 +559,6 @@ void ModelQualityLogsUploader::SetChangePasswordFormData(
 
 void ModelQualityLogsUploader::RecordDiscardedForms(
     base::span<const DiscardedForm> discarded_forms) {
-  if (!base::FeatureList::IsEnabled(
-          password_change::features::kRecordDiscardedFormsToModelQualityLogs)) {
-    return;
-  }
-
   optimization_guide::proto::PasswordChangeQuality* quality =
       final_log_data_.mutable_password_change_submission()->mutable_quality();
 

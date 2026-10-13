@@ -10,12 +10,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
-#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1116,8 +1114,6 @@ TEST_F(ModelQualityLogsUploaderTest, SetPasswordRequirementsSpec) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, RecordDiscardedForms) {
-  base::test::ScopedFeatureList feature_list(
-      password_change::features::kRecordDiscardedFormsToModelQualityLogs);
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
 
@@ -1146,21 +1142,4 @@ TEST_F(ModelQualityLogsUploaderTest, RecordDiscardedForms) {
   EXPECT_EQ(quality.discarded_forms_data(1).discard_reason(),
             optimization_guide::proto::
                 PasswordChangeQuality_FormData_DiscardReason_FORM_NOT_VISIBLE);
-}
-
-TEST_F(ModelQualityLogsUploaderTest, RecordDiscardedForms_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_change::features::kRecordDiscardedFormsToModelQualityLogs);
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-
-  password_manager::PasswordForm password_form;
-  password_form.url = GURL(kChangePasswordURL);
-  logs_uploader.RecordDiscardedForms(
-      {{password_form, password_change::FormDiscardReason::kFormNotVisible}});
-
-  const auto& quality =
-      logs_uploader.GetFinalLog().password_change_submission().quality();
-  EXPECT_EQ(quality.discarded_forms_data_size(), 0);
 }
