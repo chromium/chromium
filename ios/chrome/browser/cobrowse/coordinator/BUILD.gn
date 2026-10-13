@@ -24,6 +24,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/cobrowse/ui:constants",
     "//ios/chrome/browser/composebox/coordinator:input_plate",
+    "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/lens_overlay/model",

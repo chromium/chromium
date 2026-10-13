@@ -20,6 +20,12 @@
 
 @property(nonatomic, weak) id<ComposeboxDebuggerCoordinatorDelegate> delegate;
 
+// Whether to hide the floating debugging options button.
+@property(nonatomic, assign) BOOL hideOptionsButton;
+
+// Presents the Composebox breadcrumbs logs view controller.
+- (void)showBreadcrumbsLogs;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_DEBUGGER_COMPOSEBOX_DEBUGGER_COORDINATOR_H_

@@ -787,6 +787,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [self.delegate assistantAIMViewControllerDidRequestLoadedURL:self];
 }
 
+- (void)assistantAIMHeaderViewDidRequestComposeboxLogs:
+    (AssistantAIMHeaderView*)headerView {
+  [self.delegate assistantAIMViewControllerDidRequestComposeboxLogs:self];
+}
+
 - (void)assistantAIMHeaderViewDidTapStartNewThread:
     (AssistantAIMHeaderView*)headerView {
   [UIView performWithoutAnimation:^{

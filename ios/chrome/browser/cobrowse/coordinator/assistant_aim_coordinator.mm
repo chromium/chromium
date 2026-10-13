@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_event.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -97,6 +100,7 @@ class AssistantAIMUIStateProvider
   AssistantAIMViewController* _viewController;
   AssistantAIMMediator* _mediator;
   ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
+  ComposeboxDebuggerCoordinator* _debuggerCoordinator;
   ComposeboxModeHolder* _modeHolder;
   std::unique_ptr<AssistantAIMUIStateProvider> _uiStateProvider;
   AssistantContainerDetent _currentDetent;
@@ -168,6 +172,18 @@ class AssistantAIMUIStateProvider
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
 
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    _debuggerCoordinator = [[ComposeboxDebuggerCoordinator alloc]
+        initWithBaseViewController:_viewController
+                           browser:self.browser];
+    _debuggerCoordinator.hideOptionsButton = YES;
+    [_debuggerCoordinator start];
+    [_debuggerCoordinator
+        logEvent:[ComposeboxDebuggerEvent
+                     composeboxGeneralEvent:composebox_debugger::event::
+                                                Composebox::kOpened]];
+  }
+
   _modeHolder = [[ComposeboxModeHolder alloc] init];
   ComposeboxTheme* theme = [[ComposeboxTheme alloc]
       initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottomSheet
@@ -182,6 +198,7 @@ class AssistantAIMUIStateProvider
                        URLLoader:_mediator
                            theme:theme
                       modeHolder:_modeHolder];
+  _inputPlateCoordinator.debugLogger = _debuggerCoordinator;
   [_inputPlateCoordinator start];
 
   [_viewController
@@ -224,6 +241,13 @@ class AssistantAIMUIStateProvider
 
   [_mediator disconnect];
   _mediator = nil;
+
+  [_debuggerCoordinator
+      logEvent:[ComposeboxDebuggerEvent
+                   composeboxGeneralEvent:composebox_debugger::event::
+                                              Composebox::kClosed]];
+  [_debuggerCoordinator stop];
+  _debuggerCoordinator = nil;
 
   [_inputPlateCoordinator stop];
   _inputPlateCoordinator = nil;
@@ -582,6 +606,11 @@ class AssistantAIMUIStateProvider
   [_viewController presentViewController:navController
                                 animated:YES
                               completion:nil];
+}
+
+- (void)assistantAIMViewControllerDidRequestComposeboxLogs:
+    (AssistantAIMViewController*)viewController {
+  [_debuggerCoordinator showBreadcrumbsLogs];
 }
 
 - (void)assistantAIMViewControllerDidTapMyActivity:

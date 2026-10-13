@@ -33,8 +33,10 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 - (void)start {
   CHECK(experimental_flags::IsOmniboxDebuggingEnabled());
-  [self setupOptionsButton];
-  [self setupOptionsMenu];
+  if (!self.hideOptionsButton) {
+    [self setupOptionsButton];
+    [self setupOptionsMenu];
+  }
   _events = [[NSMutableArray alloc] init];
 }
 
@@ -46,6 +48,16 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 - (void)logEvent:(ComposeboxDebuggerEvent*)event {
   [_events addObject:event];
+}
+
+- (void)showBreadcrumbsLogs {
+  UIViewController* breadcrumbsViewController =
+      [[ComposeboxDebuggerBreadcrumbsViewController alloc]
+          initWithEvents:_events];
+
+  [self.baseViewController presentViewController:breadcrumbsViewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 #pragma mark - TabPickerLogger
@@ -169,16 +181,6 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
   _optionsButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
   _optionsButton.menu = menu;
-}
-
-- (void)showBreadcrumbsLogs {
-  UIViewController* breadcrumbsViewController =
-      [[ComposeboxDebuggerBreadcrumbsViewController alloc]
-          initWithEvents:_events];
-
-  [self.baseViewController presentViewController:breadcrumbsViewController
-                                        animated:YES
-                                      completion:nil];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {

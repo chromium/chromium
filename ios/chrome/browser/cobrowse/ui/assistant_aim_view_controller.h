@@ -46,6 +46,10 @@
 - (void)assistantAIMViewControllerDidRequestLoadedURL:
     (AssistantAIMViewController*)viewController;
 
+// Called when the user requests to see the Composebox logs.
+- (void)assistantAIMViewControllerDidRequestComposeboxLogs:
+    (AssistantAIMViewController*)viewController;
+
 // Called when the user taps on my activity.
 - (void)assistantAIMViewControllerDidTapMyActivity:
     (AssistantAIMViewController*)viewController;

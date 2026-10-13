@@ -29,6 +29,10 @@
 - (void)assistantAIMHeaderViewDidRequestLoadedURL:
     (AssistantAIMHeaderView*)headerView;
 
+// Called when the user requests to see the Composebox logs.
+- (void)assistantAIMHeaderViewDidRequestComposeboxLogs:
+    (AssistantAIMHeaderView*)headerView;
+
 // Called when the start new thread button is tapped.
 - (void)assistantAIMHeaderViewDidTapStartNewThread:
     (AssistantAIMHeaderView*)headerView;
