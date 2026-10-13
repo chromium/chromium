@@ -322,6 +322,11 @@ BrowserWindowInterface* GetBrowserWindowInterface(
 }  // namespace
 #endif
 
+using history::journeys::Journey;
+using history::journeys::JourneyContinuationQuery;
+using history::journeys::JourneyVisit;
+using history::journeys::JourneyVisitCollection;
+
 ContextHubPageHandler::ContextHubPageHandler(
     mojo::PendingRemote<browser::context_hub::mojom::Page> page,
     mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> receiver,
@@ -1188,45 +1193,46 @@ namespace {
 // representation. No further lookups are needed: the history service hands
 // back visits that carry their URL and title, and drops any journey it could
 // not fully resolve.
-browser::context_hub::mojom::TopicPtr ToMojoTopic(
-    history::journeys::Journey journey) {
-  std::vector<browser::context_hub::mojom::TopicVisitPtr> visits;
-  visits.reserve(journey.visits.size());
-  for (history::journeys::JourneyVisit& visit : journey.visits) {
-    visits.push_back(browser::context_hub::mojom::TopicVisit::New(
-        std::move(visit.url), base::UTF16ToUTF8(visit.title),
-        visit.visit_time));
-  }
+browser::context_hub::mojom::TopicPtr ToMojoTopic(Journey journey) {
+  std::vector<browser::context_hub::mojom::TopicVisitPtr> visits =
+      base::ToVector(journey.visits, [](JourneyVisit& visit) {
+        return browser::context_hub::mojom::TopicVisit::New(
+            std::move(visit.url), base::UTF16ToUTF8(visit.title),
+            visit.visit_time);
+      });
 
   std::vector<browser::context_hub::mojom::TopicContinuationQueryPtr>
-      continuation_queries;
-  continuation_queries.reserve(journey.continuation_queries.size());
-  for (history::journeys::JourneyContinuationQuery& query :
-       journey.continuation_queries) {
-    continuation_queries.push_back(
-        browser::context_hub::mojom::TopicContinuationQuery::New(
-            std::move(query.title), std::move(query.prompt)));
-  }
+      continuation_queries = base::ToVector(
+          journey.continuation_queries, [](JourneyContinuationQuery& query) {
+            return browser::context_hub::mojom::TopicContinuationQuery::New(
+                std::move(query.title), std::move(query.prompt));
+          });
 
-  // TODO(crbug.com/558572977): Send the topic's collections once the topic
-  // generation backend produces them.
+  std::vector<browser::context_hub::mojom::TopicCollectionPtr> collections =
+      base::ToVector(
+          journey.collections, [](JourneyVisitCollection& collection) {
+            return browser::context_hub::mojom::TopicCollection::New(
+                std::move(collection.title),
+                base::ToVector(collection.visits, [](JourneyVisit& visit) {
+                  return browser::context_hub::mojom::TopicCollectionItem::New(
+                      base::UTF16ToUTF8(visit.title), std::move(visit.url),
+                      /*site_name=*/std::nullopt);
+                }));
+          });
+
   return browser::context_hub::mojom::Topic::New(
       /*id=*/std::move(journey.journey_id), std::move(journey.title),
       journey.creation_time, std::move(journey.emoji),
       std::move(journey.overview), std::move(journey.short_overview),
       std::move(visits), std::move(continuation_queries),
-      /*collections=*/
-      std::vector<browser::context_hub::mojom::TopicCollectionPtr>());
+      std::move(collections));
 }
 
 std::vector<browser::context_hub::mojom::TopicPtr> ToMojoTopics(
-    std::vector<history::journeys::Journey> journeys) {
-  std::vector<browser::context_hub::mojom::TopicPtr> topics;
-  topics.reserve(journeys.size());
-  for (history::journeys::Journey& journey : journeys) {
-    topics.push_back(ToMojoTopic(std::move(journey)));
-  }
-  return topics;
+    std::vector<Journey> journeys) {
+  return base::ToVector(journeys, [](Journey& journey) {
+    return ToMojoTopic(std::move(journey));
+  });
 }
 
 }  // namespace
@@ -1244,8 +1250,7 @@ void ContextHubPageHandler::GetTopics(GetTopicsCallback callback) {
   // this handler, so a query outliving it is cancelled instead of replying.
   history_service->GetAllJourneys(
       base::BindOnce(
-          [](GetTopicsCallback callback,
-             std::vector<history::journeys::Journey> journeys) {
+          [](GetTopicsCallback callback, std::vector<Journey> journeys) {
             std::move(callback).Run(ToMojoTopics(std::move(journeys)));
           },
           std::move(callback)),
@@ -1266,8 +1271,7 @@ void ContextHubPageHandler::GetTopic(const std::string& id,
   history_service->GetJourney(
       id,
       base::BindOnce(
-          [](GetTopicCallback callback,
-             std::optional<history::journeys::Journey> journey) {
+          [](GetTopicCallback callback, std::optional<Journey> journey) {
             std::move(callback).Run(
                 journey ? ToMojoTopic(std::move(journey).value()) : nullptr);
           },
@@ -1559,8 +1563,7 @@ void ContextHubPageHandler::FetchTopicsFeedbackExportData(
   history_service->GetAllJourneys(
       base::BindOnce(
           [](context_hub::TopicsFeedbackExportData* data,
-             base::RepeatingClosure done,
-             std::vector<history::journeys::Journey> journeys) {
+             base::RepeatingClosure done, std::vector<Journey> journeys) {
             data->journeys = std::move(journeys);
             done.Run();
           },

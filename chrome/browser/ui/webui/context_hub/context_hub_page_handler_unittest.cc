@@ -2921,7 +2921,13 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
                                        base::Time::FromTimeT(500),
                                        /*is_foreign=*/false)},
       {history::journeys::JourneyContinuationQuery(
-          "Test Continuation Query Title", "Test Continuation Query Prompt")});
+          "Test Continuation Query Title", "Test Continuation Query Prompt")},
+      {history::journeys::JourneyVisitCollection(
+          "Test Collection Title",
+          {history::journeys::JourneyVisit(
+              GURL("https://example.com/collection-item"),
+              u"Test Collection Item Title", base::Time::FromTimeT(600),
+              /*is_foreign=*/false)})});
 
   EXPECT_CALL(*GetMockHistoryService(), GetAllJourneys(_, _))
       .WillOnce(
@@ -2954,6 +2960,15 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
             "Test Continuation Query Title");
   EXPECT_EQ(topics[0]->continuation_queries[0]->prompt,
             "Test Continuation Query Prompt");
+
+  ASSERT_EQ(topics[0]->collections.size(), 1u);
+  EXPECT_EQ(topics[0]->collections[0]->title, "Test Collection Title");
+  ASSERT_EQ(topics[0]->collections[0]->items.size(), 1u);
+  EXPECT_EQ(topics[0]->collections[0]->items[0]->title,
+            "Test Collection Item Title");
+  EXPECT_EQ(topics[0]->collections[0]->items[0]->url,
+            GURL("https://example.com/collection-item"));
+  EXPECT_FALSE(topics[0]->collections[0]->items[0]->site_name);
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTopics_NoJourneys) {
