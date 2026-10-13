@@ -81,11 +81,6 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-
-// When enabled, automated password change won't be offered when the form
-// contains new password field.
-BASE_DECLARE_FEATURE(kDisablePasswordChangeFromNewPasswordFields);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables Phase 2 of the Mojo JavaScript API migration for the password
 // manager, replacing the legacy passwordsPrivate extension API.
