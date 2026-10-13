@@ -38,6 +38,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Contains the business logic for the AtMemoryBottomSheet. */
@@ -130,27 +131,29 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         }
 
         ModelList sheetItems = mHomeModel.get(HomeProperties.SHEET_ITEMS);
-        sheetItems.clear();
+        if (screenState == AtMemoryScreenState.HIDDEN) {
+            mModel.set(VISIBLE, false);
+            mFlyoutModel.set(FlyoutProperties.TITLE, "");
+            mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
+            sheetItems.clear();
+            return;
+        }
 
+        List<ListItem> newItems = new ArrayList<>();
         boolean isNoticeVisible = hasNotice(suggestions);
         if (screenState.showZeroState) {
-            sheetItems.add(
+            newItems.add(
                     new ListItem(
                             HomeProperties.ItemType.ILLUSTRATION_CARD, createZeroStateModel()));
         }
         if (screenState.showAtMemorySuggestions) {
             for (int i = 0; i < suggestions.size(); i++) {
                 if (shouldShowSuggestion(suggestions.get(i), isNoticeVisible)) {
-                    sheetItems.add(createListItemForSuggestion(suggestions.get(i), i));
+                    newItems.add(createListItemForSuggestion(suggestions.get(i), i));
                 }
             }
         }
-        if (screenState == AtMemoryScreenState.HIDDEN) {
-            mModel.set(VISIBLE, false);
-            mFlyoutModel.set(FlyoutProperties.TITLE, "");
-            mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
-            sheetItems.clear();
-        }
+        sheetItems.set(newItems);
     }
 
     private static boolean shouldShowSuggestion(

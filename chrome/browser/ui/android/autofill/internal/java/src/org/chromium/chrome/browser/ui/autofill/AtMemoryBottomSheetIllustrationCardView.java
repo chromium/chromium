@@ -4,17 +4,24 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.ui.animation.AnimationHandler;
+import org.chromium.ui.animation.AnimationListeners;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.List;
 import java.util.Random;
@@ -23,15 +30,17 @@ import java.util.Random;
 @NullMarked
 public class AtMemoryBottomSheetIllustrationCardView extends LinearLayout {
     static final long TITLE_ROTATION_INTERVAL_MS = 3000L;
+    private static final long CROSSFADE_DURATION_MS = 150L;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Random mRandom = new Random();
+    private final AnimationHandler mTitleAnimationHandler = new AnimationHandler();
 
-    private TextView mTitleView;
-    private TextView mSubtitleView;
-    private List<String> mRotatingPlaceholders = List.of();
-    private int mNextRotatingPlaceholderIndex;
     private boolean mIsRotating;
+    private int mNextRotatingPlaceholderIndex;
+    private List<String> mRotatingPlaceholders = List.of();
+    private TextView mSubtitleView;
+    private TextView mTitleView;
 
     public AtMemoryBottomSheetIllustrationCardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -54,11 +63,21 @@ public class AtMemoryBottomSheetIllustrationCardView extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         stopPlaceholderRotation();
+        mTitleAnimationHandler.forceFinishAnimation();
     }
 
     public void setTitle(@Nullable String title) {
-        mTitleView.setText(title);
-        mTitleView.setVisibility(TextUtils.isEmpty(title) ? GONE : VISIBLE);
+        mTitleAnimationHandler.forceFinishAnimation();
+
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(mTitleView.getText())) {
+            mTitleView.setText(title);
+            mTitleView.setVisibility(TextUtils.isEmpty(title) ? GONE : VISIBLE);
+            return;
+        }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(buildFadeOutAnimation(title), buildFadeInAnimation());
+        mTitleAnimationHandler.startAnimation(animatorSet);
     }
 
     public void setSubtitle(@Nullable String subtitle) {
@@ -97,5 +116,21 @@ public class AtMemoryBottomSheetIllustrationCardView extends LinearLayout {
         mNextRotatingPlaceholderIndex =
                 (mNextRotatingPlaceholderIndex + 1) % mRotatingPlaceholders.size();
         mHandler.postDelayed(this::setPlaceholderText, TITLE_ROTATION_INTERVAL_MS);
+    }
+
+    private Animator buildFadeInAnimation() {
+        Animator fadeInAnimation = ObjectAnimator.ofFloat(mTitleView, View.ALPHA, 0f, 1f);
+        fadeInAnimation.setDuration(CROSSFADE_DURATION_MS);
+        fadeInAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        return fadeInAnimation;
+    }
+
+    private Animator buildFadeOutAnimation(String title) {
+        Animator fadeOutAnimation = ObjectAnimator.ofFloat(mTitleView, View.ALPHA, 1f, 0f);
+        fadeOutAnimation.setDuration(CROSSFADE_DURATION_MS);
+        fadeOutAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        fadeOutAnimation.addListener(
+                AnimationListeners.onAnimationEnd(() -> mTitleView.setText(title)));
+        return fadeOutAnimation;
     }
 }

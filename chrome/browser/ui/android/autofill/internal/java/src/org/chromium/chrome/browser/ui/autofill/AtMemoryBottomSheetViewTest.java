@@ -34,7 +34,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowChoreographer;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -56,6 +58,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.LoadingView;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -645,6 +648,89 @@ public class AtMemoryBottomSheetViewTest {
                 AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
                 TimeUnit.MILLISECONDS);
         assertEquals(rotatedTitle, titleView.getText().toString());
+    }
+
+    @Test
+    public void testIllustrationCardViewTitleCrossfade() {
+        ModelList modelList = new ModelList();
+        PropertyModel initialModel =
+                new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                        .with(IllustrationCardItemProperties.TITLE, "Finding info with Gemini...")
+                        .with(IllustrationCardItemProperties.SUBTITLE, "")
+                        .build();
+        modelList.add(new ListItem(HomeProperties.ItemType.ILLUSTRATION_CARD, initialModel));
+
+        AtMemoryHomeView homeView = mView.getHomeView();
+        homeView.setUpSheetItems(modelList);
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = homeView.findViewById(R.id.suggestions_view);
+        recyclerView.layout(0, 0, 100, 100);
+        ShadowLooper.runUiThreadTasks();
+        AtMemoryBottomSheetIllustrationCardView cardView =
+                (AtMemoryBottomSheetIllustrationCardView) recyclerView.getChildAt(0);
+        TextView titleView = cardView.findViewById(R.id.illustration_card_title);
+
+        assertEquals("Finding info with Gemini...", titleView.getText().toString());
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals(1f, titleView.getAlpha(), 0.01f);
+
+        PropertyModel updatedModel =
+                new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                        .with(IllustrationCardItemProperties.TITLE, "Reviewing connected apps...")
+                        .with(IllustrationCardItemProperties.SUBTITLE, "")
+                        .build();
+        ShadowChoreographer.setPaused(true);
+        try {
+            modelList.set(
+                    List.of(new ListItem(HomeProperties.ItemType.ILLUSTRATION_CARD, updatedModel)));
+            recyclerView.measure(0, 0);
+            recyclerView.layout(0, 0, 100, 100);
+            ShadowLooper.idleMainLooper();
+
+            // Advance into the 150ms fade-out: old text is still shown and alpha is between 0 and
+            // 1.
+            for (int i = 0; i < 3; i++) {
+                ShadowSystemClock.advanceBy(Duration.ofMillis(25));
+                ShadowLooper.idleMainLooper();
+            }
+            assertEquals(cardView, recyclerView.getChildAt(0));
+            assertEquals("Finding info with Gemini...", titleView.getText().toString());
+            assertTrue(titleView.getAlpha() > 0f && titleView.getAlpha() < 1f);
+
+            // Advance past the 150ms fade-out into the 150ms fade-in: new text is shown and alpha
+            // is between 0 and 1.
+            for (int i = 0; i < 6; i++) {
+                ShadowSystemClock.advanceBy(Duration.ofMillis(25));
+                ShadowLooper.idleMainLooper();
+            }
+            assertEquals("Reviewing connected apps...", titleView.getText().toString());
+            assertTrue(titleView.getAlpha() > 0f && titleView.getAlpha() < 1f);
+
+            // Finish the remaining fade-in: new text is shown at full opacity.
+            for (int i = 0; i < 6; i++) {
+                ShadowSystemClock.advanceBy(Duration.ofMillis(25));
+                ShadowLooper.idleMainLooper();
+            }
+            assertEquals("Reviewing connected apps...", titleView.getText().toString());
+            assertEquals(View.VISIBLE, titleView.getVisibility());
+            assertEquals(1f, titleView.getAlpha(), 0.01f);
+        } finally {
+            ShadowChoreographer.setPaused(false);
+        }
+
+        PropertyModel emptyModel =
+                new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                        .with(IllustrationCardItemProperties.TITLE, "")
+                        .with(IllustrationCardItemProperties.SUBTITLE, "")
+                        .build();
+        modelList.set(List.of(new ListItem(HomeProperties.ItemType.ILLUSTRATION_CARD, emptyModel)));
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 100);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals("", titleView.getText().toString());
+        assertEquals(View.GONE, titleView.getVisibility());
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {
