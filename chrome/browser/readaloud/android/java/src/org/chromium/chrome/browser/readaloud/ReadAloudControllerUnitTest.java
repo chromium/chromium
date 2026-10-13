@@ -1166,8 +1166,34 @@ public class ReadAloudControllerUnitTest {
         assertTrue(mController.isReadable(mTab));
 
         // check that URL isn't supported when the language is set to an unsupported language
-        mFakeTranslateBridge.setCurrentLanguage("he");
+        mFakeTranslateBridge.setCurrentLanguage("zz");
         assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void isReadable_hebrewLanguageCodeMappedToIw() {
+        when(mHooksImpl.getCompatibleLanguages())
+                .thenReturn(new HashSet<>(Arrays.asList("en", "iw")));
+        mController.maybeCheckReadability(mTab);
+
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sTestGURL.getSpec(),
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+        mFakeTranslateBridge.setCurrentLanguage("he");
+        assertTrue(mController.isReadable(mTab));
+        assertEquals(PlaybackMode.CLASSIC, mController.getModeToPlay(mTab));
+
+        mFakeTranslateBridge.setCurrentLanguage("he-IL");
+        assertTrue(mController.isReadable(mTab));
+        assertEquals(PlaybackMode.CLASSIC, mController.getModeToPlay(mTab));
     }
 
     @Test

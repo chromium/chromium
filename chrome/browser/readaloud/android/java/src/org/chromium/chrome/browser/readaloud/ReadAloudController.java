@@ -1639,12 +1639,19 @@ public class ReadAloudController
                 : TranslateBridge.isPageTranslated(tab.getWebContents());
     }
 
-    /** If language string includes locale, strip it */
+    /** If language string includes locale, strip it and map to ReadAloud language code. */
     private String getLanguage(String language) {
         if (language.contains("-")) {
-            return language.split("-")[0];
+            language = language.split("-")[0];
         }
-        return language;
+        // TODO(crbug.com/573188805): Update readaloud_voices.textproto to match the modern ISO 639
+        // language code standard and remove this mapping.
+        // Map ISO 639 language codes returned by TranslateBridge to the codes expected by
+        // ReadAloud.
+        return switch (language) {
+            case "he" -> "iw";
+            default -> language;
+        };
     }
 
     private static boolean isAudioOverviewsAllowed() {
