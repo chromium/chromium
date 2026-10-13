@@ -44,7 +44,7 @@ CanonicalizeTrustTokenClientDataForRedemption(
 
   map.emplace(kRedeemingOriginKey, top_frame_origin.Serialize());
 
-  return cbor::Writer::Write(cbor::Value(std::move(map)));
+  return cbor::Writer::Write(map);
 }
 
 }  // namespace network
