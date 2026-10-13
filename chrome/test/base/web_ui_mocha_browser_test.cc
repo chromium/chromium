@@ -222,18 +222,39 @@ testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
     const std::string& file,
     const std::string& trigger,
     const bool& skip_test_loader) {
+  return RunTestImpl(web_contents, web_contents->GetPrimaryMainFrame(), file,
+                     trigger, skip_test_loader);
+}
+
+testing::AssertionResult WebUIMochaBrowserTest::RunTestOnRenderFrameHost(
+    content::RenderFrameHost* render_frame_host,
+    const std::string& file,
+    const std::string& trigger) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  CHECK(web_contents);
+  return RunTestImpl(web_contents, render_frame_host, file, trigger,
+                     /*skip_test_loader=*/true);
+}
+
+testing::AssertionResult WebUIMochaBrowserTest::RunTestImpl(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
+    const std::string& file,
+    const std::string& trigger,
+    bool skip_test_loader) {
   testing::AssertionResult result(testing::AssertionFailure());
 
   if (skip_test_loader) {
     // Perform setup steps normally done by test_loader.html.
-    result = SimulateTestLoader(web_contents, file);
+    result = SimulateTestLoader(render_frame_host, file);
     if (!result) {
       return result;
     }
   }
 
   // Trigger the Mocha tests, and wait for completion.
-  result = ExecJs(web_contents->GetPrimaryMainFrame(), trigger);
+  result = ExecJs(render_frame_host, trigger);
   if (!result) {
     return result;
   }
@@ -314,29 +335,30 @@ void WebUIMochaBrowserTest::SetSubTestResultReportingEnabled(bool enabled) {
 }
 
 testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const std::string& file) {
   // Step 1: Programmatically loads mocha.js and mocha_adapter_simple.js.
   std::string loadMochaScript(base::StringPrintf(
       R"(
 async function load() {
-  await import('//%s/mocha.js');
-  await import('//%s/mocha_adapter_simple.js');
+  await import('%s://%s/mocha.js');
+  await import('%s://%s/mocha_adapter_simple.js');
 }
 load();
 )",
-      chrome::kChromeUIWebUITestHost, chrome::kChromeUIWebUITestHost));
+      test_loader_scheme_.c_str(), chrome::kChromeUIWebUITestHost,
+      test_loader_scheme_.c_str(), chrome::kChromeUIWebUITestHost));
 
-  testing::AssertionResult result =
-      ExecJs(web_contents->GetPrimaryMainFrame(), loadMochaScript);
+  testing::AssertionResult result = ExecJs(render_frame_host, loadMochaScript);
   if (!result) {
     return result;
   }
 
   // Step 2: Programmatically loads the Mocha test file.
-  std::string loadTestModuleScript(base::StringPrintf(
-      "import('//%s/%s');", chrome::kChromeUIWebUITestHost, file.c_str()));
-  return ExecJs(web_contents->GetPrimaryMainFrame(), loadTestModuleScript);
+  std::string loadTestModuleScript(
+      base::StringPrintf("import('%s://%s/%s');", test_loader_scheme_.c_str(),
+                         chrome::kChromeUIWebUITestHost, file.c_str()));
+  return ExecJs(render_frame_host, loadTestModuleScript);
 }
 
 void WebUIMochaFocusTest::OnWebContentsAvailable(

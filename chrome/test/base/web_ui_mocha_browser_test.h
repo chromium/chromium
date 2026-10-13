@@ -21,6 +21,7 @@
 class Profile;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -102,6 +103,13 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
       const std::string& trigger,
       const bool& skip_test_loader);
 
+  // Similar to RunTestOnWebContents() but accepts RenderFrameHost instance,
+  // for cases where the Mocha test runs in an inner subframe or extension host.
+  testing::AssertionResult RunTestOnRenderFrameHost(
+      content::RenderFrameHost* render_frame_host,
+      const std::string& file,
+      const std::string& trigger);
+
   // Tests may optionally call this before calling RunTest to opt into or out
   // of SubTestResult reporting. This is useful for GTests that run
   // intentionally failing JS tests.
@@ -122,12 +130,21 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   void set_test_loader_scheme(const std::string& scheme);
 
  private:
+  // Internal helper that runs the Mocha test on `render_frame_host` and
+  // processes test results and coverage on `web_contents`.
+  testing::AssertionResult RunTestImpl(
+      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
+      const std::string& file,
+      const std::string& trigger,
+      bool skip_test_loader);
+
   // Helper that performs setup steps normally done by test_loader.html, invoked
   // in tests that don't use test_loader.html. Specifically:
   //  1) Programmatically loads mocha.js and mocha_adapter_simple.js.
   //  2) Programmatically loads the Mocha test file.
   testing::AssertionResult SimulateTestLoader(
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       const std::string& file);
 
   // The host to use when invoking the test loader URL, like
