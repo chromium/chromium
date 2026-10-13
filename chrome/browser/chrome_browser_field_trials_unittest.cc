@@ -7,10 +7,16 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/functional/callback_helpers.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
@@ -39,6 +45,21 @@ TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
       "client_id", {0, 8000},
       /*limited_entropy_randomization_source=*/std::string_view());
   auto feature_list = std::make_unique<base::FeatureList>();
+#if BUILDFLAG(IS_ANDROID)
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+
+  // On Android Desktop, metrics/crash fallback sampling trials should not be
+  // created, though the UKM fallback sampling trial should still be created.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  chrome_browser_field_trials.SetUpClientSideFieldTrials(
+      /*has_seed=*/false, entropy_providers, feature_list.get());
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kSamplingTrialName));
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kPostFREFixSamplingTrialName));
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(kUkmSamplingTrialName));
+
+  base::android::device_info::set_is_desktop_for_testing(false);
+#endif  // BUILDFLAG(IS_ANDROID)
   chrome_browser_field_trials.SetUpClientSideFieldTrials(
       /*has_seed=*/false, entropy_providers, feature_list.get());
 
