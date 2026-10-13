@@ -16,7 +16,7 @@ namespace blink {
 
 namespace {
 inline bool IsHangingSpace(UChar c) {
-  return c == uchar::kSpace || Character::IsOtherSpaceSeparator(c);
+  return c == uchar::kSpace || unicode::IsOtherSpaceSeparator(c);
 }
 
 wtf_size_t GlyphCount(const InlineItemResult& item_result) {

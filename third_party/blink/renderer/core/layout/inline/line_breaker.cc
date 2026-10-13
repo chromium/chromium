@@ -188,7 +188,7 @@ inline bool IsBreakableSpace(UChar c) {
 }
 
 inline bool IsBreakableSpaceOrOtherSeparator(UChar c) {
-  return IsBreakableSpace(c) || Character::IsOtherSpaceSeparator(c);
+  return IsBreakableSpace(c) || unicode::IsOtherSpaceSeparator(c);
 }
 
 inline bool IsAllBreakableSpaces(const String& string,
@@ -672,7 +672,7 @@ void LineBreaker::ComputeBaseDirection() {
       StringView(text, start_offset),
       // For CSS processing, line feed (U+000A) is treated as a segment break.
       // https://w3c.github.io/csswg-drafts/css-text-3/#segment-break
-      Character::IsLineFeed);
+      unicode::IsLineFeed);
 }
 
 inline LayoutUnit LineBreaker::ComputeFloatOffset() const {
@@ -2459,7 +2459,7 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
   DCHECK(!is_text_combine_);
 
   if (style.ShouldCollapseWhiteSpaces() &&
-      !Character::IsOtherSpaceSeparator(text[current_.text_offset])) {
+      !unicode::IsOtherSpaceSeparator(text[current_.text_offset])) {
     if (text[current_.text_offset] != uchar::kSpace) {
       if (current_.text_offset > 0 &&
           IsBreakableSpace(text[current_.text_offset - 1])) {
@@ -2486,7 +2486,7 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
     DCHECK(style.ShouldBreakOnlyAfterWhiteSpace() ||
-           Character::IsOtherSpaceSeparator(text[current_.text_offset]));
+           unicode::IsOtherSpaceSeparator(text[current_.text_offset]));
     unsigned end = current_.text_offset;
     while (end < item.EndOffset() &&
            IsBreakableSpaceOrOtherSeparator(text[end]))
@@ -2708,7 +2708,7 @@ bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
       }
       DCHECK_GT(item_result.EndOffset(), 0u);
       DCHECK(item.Style());
-      if (Character::IsOtherSpaceSeparator(text[item_result.EndOffset() - 1])) {
+      if (unicode::IsOtherSpaceSeparator(text[item_result.EndOffset() - 1])) {
         trailing_whitespace_ = WhitespaceState::kPreserved;
         trailing_collapsible_space_.reset();
         return true;

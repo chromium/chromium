@@ -106,9 +106,9 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(wtf_size_t index,
   DCHECK(has_spacing_);
   UChar32 character = text_[index];
   bool treat_as_space =
-      (Character::TreatAsSpace(character) ||
+      (unicode::TreatAsSpace(character) ||
        (normalize_space_ &&
-        Character::IsNormalizedCanvasSpaceCharacter(character))) &&
+        unicode::IsNormalizedCanvasSpaceCharacter(character))) &&
       (character != '\t' || !allow_tabs_);
   if (treat_as_space && character != uchar::kNoBreakSpace) {
     character = uchar::kSpace;
@@ -124,7 +124,7 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(wtf_size_t index,
       RuntimeEnabledFeatures::IgnoreLetterSpacingInCursiveScriptsEnabled()
           ? (!is_cursive_script || treat_as_space)
           : true;
-  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character) &&
+  if (has_letter_spacing && !unicode::TreatAsZeroWidthSpace(character) &&
       apply_letter_spacing) {
     spacing += letter_spacing_;
     is_letter_spacing_applied_ = true;

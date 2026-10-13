@@ -190,13 +190,14 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
                                          unsigned* offset,
                                          UChar* c) {
   DCHECK_EQ(*c, UNSAFE_TODO(string[*offset]));
-  DCHECK(Character::IsCollapsibleSpace(*c));
+  DCHECK(unicode::IsCollapsibleSpace(*c));
   bool space_run_has_newline = *c == uchar::kLineFeed;
   for ((*offset)++; *offset < string.length(); (*offset)++) {
     *c = UNSAFE_TODO(string[*offset]);
     space_run_has_newline |= *c == uchar::kLineFeed;
-    if (!Character::IsCollapsibleSpace(*c))
+    if (!unicode::IsCollapsibleSpace(*c)) {
       break;
+    }
   }
   return space_run_has_newline;
 }
@@ -442,7 +443,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
         case InlineItem::kNotCollapsible: {
           const String& source_text = layout_text->TransformedText();
           if (source_text.length() &&
-              Character::IsCollapsibleSpace(source_text[0])) {
+              unicode::IsCollapsibleSpace(source_text[0])) {
             // If the start of the original string was collapsed, it may be
             // restored.
             if (original_string[old_item0.StartOffset()] != uchar::kSpace) {
@@ -814,7 +815,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   unsigned i = 0;
   UChar c = UNSAFE_TODO(string[i]);
   bool space_run_has_newline = false;
-  if (Character::IsCollapsibleSpace(c)) {
+  if (unicode::IsCollapsibleSpace(c)) {
     // Find the end of the collapsible space run.
     space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
@@ -925,13 +926,14 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     while (true) {
       // Append the non-space text until we find a collapsible space.
       // |string[i]| is guaranteed not to be a space.
-      DCHECK(!Character::IsCollapsibleSpace(UNSAFE_TODO(string[i])));
+      DCHECK(!unicode::IsCollapsibleSpace(UNSAFE_TODO(string[i])));
       unsigned start_of_non_space = i;
       for (i++; i < string.length(); i++) {
         // SAFETY: index checked against length in for-statement.
         c = UNSAFE_BUFFERS(string[i]);
-        if (Character::IsCollapsibleSpace(c))
+        if (unicode::IsCollapsibleSpace(c)) {
           break;
+        }
       }
       AppendTransformedString(
           transformed.Substring(start_of_non_space, i - start_of_non_space),
@@ -944,7 +946,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
 
       // Process a collapsible space run. First, find the end of the run.
       DCHECK_EQ(c, UNSAFE_TODO(string[i]));
-      DCHECK(Character::IsCollapsibleSpace(c));
+      DCHECK(unicode::IsCollapsibleSpace(c));
       unsigned start_of_spaces = i;
       space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 

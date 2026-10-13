@@ -361,19 +361,14 @@ using unicode::CanTextDecorationSkipInk;
 using unicode::GetScriptBasedOnUnicodeBlock;
 using unicode::HasLikelyScript;
 using unicode::IsBidiControl;
-using unicode::IsCollapsibleSpace;
 using unicode::IsCommonOrInheritedScript;
 using unicode::IsCursiveScript;
-using unicode::IsDefaultIgnorable;
 using unicode::IsGcMark;
 using unicode::IsGraphemeExtended;
 using unicode::IsInRange;
-using unicode::IsLineFeed;
 using unicode::IsModernGeorgianUppercase;
 using unicode::IsModifier;
 using unicode::IsNonCharacter;
-using unicode::IsNormalizedCanvasSpaceCharacter;
-using unicode::IsOtherSpaceSeparator;
 using unicode::IsPrivateUse;
 using unicode::IsRegionalIndicator;
 using unicode::IsStandardizedVariationSequence;
@@ -384,10 +379,6 @@ using unicode::IsVerticalMathCharacter;
 using unicode::LowercaseModernGeorgianUppercase;
 using unicode::MaybeBidiRtl;
 using unicode::MaybeBidiRtlUtf16;
-using unicode::TreatAsSpace;
-using unicode::TreatAsZeroWidthSpace;
-using unicode::TreatAsZeroWidthSpaceInComplexScript;
-using unicode::TreatAsZeroWidthSpaceInComplexScriptLegacy;
 }  // namespace blink::Character
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_

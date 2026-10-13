@@ -47,13 +47,12 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
 
     UChar32 normalized = character;
     // Don't normalize tabs as they are not treated as spaces for word-end.
-    if (is_canvas && Character::IsNormalizedCanvasSpaceCharacter(character)) {
+    if (is_canvas && unicode::IsNormalizedCanvasSpaceCharacter(character)) {
       normalized = uchar::kSpace;
-    } else if (Character::TreatAsSpace(character) &&
+    } else if (unicode::TreatAsSpace(character) &&
                character != uchar::kNoBreakSpace) {
       normalized = uchar::kSpace;
-    } else if (Character::TreatAsZeroWidthSpaceInComplexScriptLegacy(
-                   character)) {
+    } else if (unicode::TreatAsZeroWidthSpaceInComplexScriptLegacy(character)) {
       // Replace only ZWS-like characters in BMP because we'd like to avoid
       // changing the string length.
       DCHECK_LT(character, 0x10000);

@@ -291,11 +291,11 @@ inline wtf_size_t LazyLineBreakIterator::NextBreakablePosition(
         break;
       case BreakSpaceType::kAfterEverySpace:
         if (context.last.is_space ||
-            Character::IsOtherSpaceSeparator(context.last.ch)) {
+            unicode::IsOtherSpaceSeparator(context.last.ch)) {
           return i;
         }
         if ((context.current.is_space ||
-             Character::IsOtherSpaceSeparator(context.current.ch)) &&
+             unicode::IsOtherSpaceSeparator(context.current.ch)) &&
             i + 1 < len) {
           return i + 1;
         }

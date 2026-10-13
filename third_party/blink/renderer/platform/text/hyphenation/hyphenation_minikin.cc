@@ -27,8 +27,9 @@ namespace blink {
 namespace {
 
 inline bool ShouldSkipLeadingChar(UChar32 c) {
-  if (Character::TreatAsSpace(c))
+  if (unicode::TreatAsSpace(c)) {
     return true;
+  }
   // Strip leading punctuation, defined as OP and QU line breaking classes,
   // see UAX #14.
   const int32_t lb = u_getIntPropertyValue(c, UCHAR_LINE_BREAK);

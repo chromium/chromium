@@ -1648,7 +1648,7 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
             if (!item.Style()->ShouldBreakSpaces()) {
               UChar last_char = text[item.EndOffset() - 1];
               has_hanging_whitespace =
-                  Character::IsOtherSpaceSeparator(last_char) ||
+                  unicode::IsOtherSpaceSeparator(last_char) ||
                   (item.Style()->ShouldPreserveWhiteSpaces() &&
                    item.Style()->ShouldWrapLine() &&
                    (last_char == uchar::kSpace || last_char == uchar::kTab));

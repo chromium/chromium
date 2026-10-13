@@ -69,7 +69,7 @@ TEST_P(BaseDirectionTest, Data) {
   String text(test.text);
 
   // Test when the search stops at Line Feed.
-  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text, Character::IsLineFeed),
+  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text, unicode::IsLineFeed),
             test.direction_line_feed)
       << text;
 
@@ -84,9 +84,8 @@ TEST_P(BaseDirectionTest, Data) {
     String text8 = String::Make8BitFrom16BitSource(text.Span16());
 
     // Test when the search stops at Line Feed.
-    EXPECT_EQ(
-        BidiParagraph::BaseDirectionForString(text8, Character::IsLineFeed),
-        test.direction_line_feed)
+    EXPECT_EQ(BidiParagraph::BaseDirectionForString(text8, unicode::IsLineFeed),
+              test.direction_line_feed)
         << text;
 
     // Test without stop characters.

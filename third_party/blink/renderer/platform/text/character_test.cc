@@ -472,25 +472,24 @@ TEST(CharacterTest, Truncation) {
   UChar32 test_char = 0;
 
   test_char = kBase + uchar::kSpace;
-  EXPECT_FALSE(Character::TreatAsSpace(test_char));
+  EXPECT_FALSE(unicode::TreatAsSpace(test_char));
   test_char = kBase + uchar::kNoBreakSpace;
-  EXPECT_FALSE(Character::TreatAsSpace(test_char));
+  EXPECT_FALSE(unicode::TreatAsSpace(test_char));
 
   test_char = kBase + uchar::kZeroWidthNonJoiner;
-  EXPECT_FALSE(Character::TreatAsZeroWidthSpace(test_char));
+  EXPECT_FALSE(unicode::TreatAsZeroWidthSpace(test_char));
   test_char = kBase + uchar::kZeroWidthJoiner;
-  EXPECT_FALSE(Character::TreatAsZeroWidthSpace(test_char));
+  EXPECT_FALSE(unicode::TreatAsZeroWidthSpace(test_char));
 
   test_char = kBase + 0x12;
-  EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
-  EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
+  EXPECT_FALSE(unicode::TreatAsZeroWidthSpaceInComplexScript(test_char));
   test_char = kBase + uchar::kObjectReplacementCharacter;
-  EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
+  EXPECT_FALSE(unicode::TreatAsZeroWidthSpaceInComplexScript(test_char));
 
   test_char = kBase + 0xA;
-  EXPECT_FALSE(Character::IsNormalizedCanvasSpaceCharacter(test_char));
+  EXPECT_FALSE(unicode::IsNormalizedCanvasSpaceCharacter(test_char));
   test_char = kBase + 0x9;
-  EXPECT_FALSE(Character::IsNormalizedCanvasSpaceCharacter(test_char));
+  EXPECT_FALSE(unicode::IsNormalizedCanvasSpaceCharacter(test_char));
 }
 
 TEST(CharacterTest, IsBidiControl) {

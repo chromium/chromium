@@ -37,7 +37,7 @@ inline LayoutUnit FlipRtl(LayoutUnit value) {
 
 inline bool IsBreakableSpace(UChar ch) {
   return LazyLineBreakIterator::IsBreakableSpace(ch) ||
-         Character::IsOtherSpaceSeparator(ch);
+         unicode::IsOtherSpaceSeparator(ch);
 }
 
 bool IsAllSpaces(const String& text, wtf_size_t start, wtf_size_t end) {

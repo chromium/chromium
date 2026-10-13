@@ -736,7 +736,7 @@ static bool IsAllCollapsedWhiteSpace(const LayoutObject& layout_object) {
   if (const auto* layout_text = DynamicTo<LayoutText>(&layout_object)) {
     if (layout_text->Style().ShouldCollapseWhiteSpaces() &&
         layout_text->TransformedText()
-            .IsAllSpecialCharacters<Character::IsCollapsibleSpace>()) {
+            .IsAllSpecialCharacters<unicode::IsCollapsibleSpace>()) {
       return true;
     }
   }
