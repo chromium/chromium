@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -50,32 +49,19 @@ const gfx::VectorIcon& GetIconType(
 std::unique_ptr<views::ImageView> CreateIcon(
     const syncer::DeviceInfo::FormFactor device_form_factor) {
   static constexpr int kPrimaryIconSize = 20;
-  auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+  return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
       GetIconType(device_form_factor), ui::kColorIcon, kPrimaryIconSize));
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    constexpr auto kPrimaryIconBorder = gfx::Insets(6);
-    icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
-  }
-  return icon;
 }
 
 views::Button::PressedCallback GetPressedCallback(
     SendTabToSelfDevicePickerBubbleView* bubble,
     SendTabToSelfBubbleDeviceButton* button) {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    return base::BindRepeating(
-        &SendTabToSelfDevicePickerBubbleView::SelectTargetDevice,
-        base::Unretained(bubble), base::Unretained(button));
-  }
   return base::BindRepeating(
-      &SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed,
+      &SendTabToSelfDevicePickerBubbleView::SelectTargetDevice,
       base::Unretained(bubble), base::Unretained(button));
 }
 
 std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    return nullptr;
-  }
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
       ui::kColorAccent, kCheckmarkIconSize));
@@ -95,10 +81,8 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
   device_guid_ = device_info.cache_guid;
   device_form_factor_ = device_info.form_factor;
   SetEnabled(true);
-  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-    ApplyDeviceSelectionStyling();
-  }
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  ApplyDeviceSelectionStyling();
   SetSelected(false);
 }
 
@@ -127,9 +111,7 @@ void SendTabToSelfBubbleDeviceButton::SetSelected(bool selected) {
   if (secondary_view()) {
     secondary_view()->SetVisible(selected);
   }
-  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    GetViewAccessibility().SetIsSelected(selected);
-  }
+  GetViewAccessibility().SetIsSelected(selected);
 }
 
 SendTabToSelfBubbleDeviceButton::~SendTabToSelfBubbleDeviceButton() = default;

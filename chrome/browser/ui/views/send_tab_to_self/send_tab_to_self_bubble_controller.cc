@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_no_target_device_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
-#include "chrome/browser/user_education/user_education_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -249,9 +248,6 @@ SendTabToSelfBubbleController::GetEntryPointDisplayReason() {
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid,
     std::string_view device_name) {
-  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-      GetProfile(), send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
-
   SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(&GetWebContents());
 

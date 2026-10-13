@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -32,11 +31,18 @@
 
 namespace send_tab_to_self {
 
+class SendTabToSelfBubbleTest;
+
 namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+// Test suite for dialog tests that do not have Skia Gold baselines enabled via
+// `*SendTabToSelfBubbleTest.*` in `pixel_tests.filter`.
+using SendTabToSelfBubbleDialogTest = SendTabToSelfBubbleTest;
 using syncer::RemoteDeviceInfo;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
  public:
@@ -130,53 +136,30 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
   raw_ptr<StubSendTabToSelfBubbleController> controller_ = nullptr;
 };
 
-// Test suite for pixel/dialog tests that assert the old bubble UI.
-// These tests must run with SendTabToSelfEnhancedDesktopUI disabled to match
-// the existing pixel baselines.
-class SendTabToSelfBubbleOldUITest : public SendTabToSelfBubbleTest {
- public:
-  SendTabToSelfBubbleOldUITest() {
-    feature_list_.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUI);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleOldUITest, InvokeUi_ShowDeviceList) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleOldUITest, InvokeUi_ShowSigninPromo) {
-  // Last updated in crrev.com/c/3776623.
-  set_baseline("3776623");
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleOldUITest,
+// Verifies that the no-target-device promo bubble renders and matches the
+// baseline screenshot.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
                        InvokeUi_ShowNoTargetDevicePromo) {
   // Last updated in crrev.com/c/3832669.
   set_baseline("3832669");
   ShowAndVerifyUi();
 }
 
+// Verifies that the device picker bubble opens and closes cleanly.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleDialogTest,
+                       InvokeUi_ShowDeviceList) {
+  ShowAndVerifyUi();
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class SendTabToSelfBubbleEnhancedUITest : public SendTabToSelfBubbleTest {
- public:
-  SendTabToSelfBubbleEnhancedUITest() {
-    feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleEnhancedUITest,
+// Verifies that the sign-in promo bubble opens and closes cleanly.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleDialogTest,
                        InvokeUi_ShowSigninPromo) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleEnhancedUITest,
+// Verifies that the reauth promo bubble opens and closes cleanly.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleDialogTest,
                        InvokeUi_ShowVerifyPromo) {
   ShowAndVerifyUi();
 }
@@ -184,32 +167,25 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleEnhancedUITest,
 
 class SendTabToSelfBubbleParameterizedTest
     : public SendTabToSelfBubbleTest,
-      public testing::WithParamInterface<EntryPointDisplayReason> {
+      public WithParamInterface<EntryPointDisplayReason> {
  public:
-  SendTabToSelfBubbleParameterizedTest() {
-    if (GetParam() == EntryPointDisplayReason::kOfferReauth) {
-      feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
-    }
-  }
+  SendTabToSelfBubbleParameterizedTest() = default;
 
   void SetUpOnMainThread() override {
     SendTabToSelfBubbleTest::SetUpOnMainThread();
     controller_->SetEntryPointDisplayReason(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     SendTabToSelfBubbleParameterizedTest,
-    testing::Values(EntryPointDisplayReason::kOfferFeature,
-                    EntryPointDisplayReason::kOfferSignIn,
+    Values(EntryPointDisplayReason::kOfferFeature,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                    EntryPointDisplayReason::kOfferReauth,
+           EntryPointDisplayReason::kOfferSignIn,
+           EntryPointDisplayReason::kOfferReauth,
 #endif
-                    EntryPointDisplayReason::kInformNoTargetDevice));
+           EntryPointDisplayReason::kInformNoTargetDevice));
 
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
                        BubbleTriggersCorrectlyWhenPinned) {

@@ -34,8 +34,14 @@ namespace send_tab_to_self {
 
 namespace {
 
+class SendTabToSelfInteractiveUiTest;
+
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+// Test suite for interactive UI tests that are not part of the
+// `SendTabToSelfInteractiveUiTest.*` filter in `pixel_tests.filter`.
+using SendTabToSelfDeviceSelectionInteractiveUiTest =
+    SendTabToSelfInteractiveUiTest;
 using syncer::RemoteDeviceInfo;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
@@ -167,18 +173,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
                                   kSendTabToSelfDevicePickerBubbleId));
 }
 
-class SendTabToSelfDeviceSelectionInteractiveUiTest
-    : public SendTabToSelfInteractiveUiTest {
- public:
-  SendTabToSelfDeviceSelectionInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
-  }
-  ~SendTabToSelfDeviceSelectionInteractiveUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
+// Verifies that the device selection bubble selects and focuses the first
+// device by default and sends the tab when the Send button is pressed.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                        SendTabShowsBubbleAndToastDeviceSelection) {
   RunTestSequence(

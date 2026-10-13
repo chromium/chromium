@@ -57,8 +57,7 @@ void SendTabToSelfNoTargetDeviceBubbleView::InitLayout() {
                         horizontal_padding));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  auto* link_view = AddChildView(
-      BuildManageAccountDevicesLinkView(/*show_link=*/false, controller_));
+  auto* link_view = AddChildView(BuildManageAccountDevicesLinkView(controller_));
   link_view->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(provider->GetDistanceMetric(
