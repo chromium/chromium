@@ -204,7 +204,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         iconName = blocked ? 'hide_image' : 'photo';
         break;
       case ContentSettingImageType.kJavaScript:
-        iconName = blocked ? 'code_off' : 'code';
+        iconName = blocked ? 'code_off' : 'code_24';
         break;
       case ContentSettingImageType.kMixedScript:
         iconName = blocked ? 'warning_off' : 'warning';
@@ -225,7 +225,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         iconName = blocked ? 'piano_off' : 'piano';
         break;
       case ContentSettingImageType.kAutomaticDownloads:
-        iconName = blocked ? 'file_download_off' : 'download';
+        iconName = blocked ? 'file_download_off' : 'download_20';
         break;
       case ContentSettingImageType.kClipboardReadWrite:
         iconName = blocked ? 'content_paste_off' : 'content_paste';
@@ -246,7 +246,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         iconName = blocked ? 'iframe_off' : 'iframe';
         break;
       case ContentSettingImageType.kFramebust:
-        iconName = blocked ? 'open_in_new_off' : 'open_in_new';
+        iconName = blocked ? 'open_in_new_off' : 'open_in_new_20';
         break;
       // <if expr="is_chromeos">
       case ContentSettingImageType.kSmartCard:
