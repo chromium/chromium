@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -73,8 +74,15 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
   enum CacheMode { kNormal, kCacheDisabled };
-  using KeyType =
-      std::pair<KURL, std::pair<CorsMode, media::DataSource::EncodingMode>>;
+  using KeyType = std::pair<
+      KURL,
+      std::pair<scoped_refptr<const SecurityOrigin>,
+                std::pair<CorsMode, media::DataSource::EncodingMode>>>;
+
+  static KeyType MakeKey(const KURL& url,
+                         scoped_refptr<const SecurityOrigin> security_origin,
+                         CorsMode cors_mode,
+                         media::DataSource::EncodingMode encoding_mode);
 
   // `url_index` is a WeakPtr since while UrlData objects are created by the
   // UrlIndex they are not owned by the UrlIndex until after the network load
@@ -83,15 +91,20 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   UrlData(base::PassKey<UrlIndex>,
           const KURL& url,
           CorsMode cors_mode,
+          CacheMode cache_lookup_mode,
+          scoped_refptr<const SecurityOrigin> security_origin,
           media::DataSource::EncodingMode encoding_mode,
           base::WeakPtr<UrlIndex> url_index,
-          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlData(const UrlData&) = delete;
   UrlData& operator=(const UrlData&) = delete;
 
   // Accessors
   const KURL& url() const { return url_; }
+
+  const scoped_refptr<const SecurityOrigin>& security_origin() const {
+    return security_origin_;
+  }
 
   const std::optional<KURL>& data_origin() const { return data_origin_; }
 
@@ -202,9 +215,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
  protected:
   UrlData(const KURL& url,
           CorsMode cors_mode,
+          CacheMode cache_lookup_mode,
+          scoped_refptr<const SecurityOrigin> security_origin,
           media::DataSource::EncodingMode encoding_mode,
           base::WeakPtr<UrlIndex> url_index,
-          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlData();
 
@@ -219,6 +233,9 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Url we represent, note that there may be multiple UrlData for
   // the same url.
   const KURL url_;
+
+  // Requesting document's security origin.
+  const scoped_refptr<const SecurityOrigin> security_origin_;
 
   // Origin of the data, should only be different from the
   // url_.DeprecatedGetOriginAsURL() when service workers are involved.
@@ -303,6 +320,7 @@ class PLATFORM_EXPORT UrlIndex {
       const KURL& url,
       UrlData::CorsMode cors_mode,
       UrlData::CacheMode cache_mode,
+      scoped_refptr<const SecurityOrigin> security_origin,
       media::DataSource::EncodingMode encoding_mode =
           media::DataSource::EncodingMode::kIdentity);
 
@@ -341,6 +359,7 @@ class PLATFORM_EXPORT UrlIndex {
       const KURL& url,
       UrlData::CorsMode cors_mode,
       UrlData::CacheMode cache_lookup_mode,
+      scoped_refptr<const SecurityOrigin> security_origin,
       media::DataSource::EncodingMode encoding_mode);
 
   raw_ptr<ResourceFetchContext> fetch_context_;

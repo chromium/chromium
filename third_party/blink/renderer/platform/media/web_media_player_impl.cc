@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -440,7 +441,7 @@ STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUseCredentials,
 
 WebMediaPlayerImpl::WebMediaPlayerImpl(
     FrameScheduler* frame_scheduler,
-    const url::Origin& security_origin,
+    scoped_refptr<const SecurityOrigin> security_origin,
     const WebURL& document_url,
     const WebString& document_title,
     WebMediaPlayerBuilder::HasTransientUserActivationCB
@@ -489,14 +490,15 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       player_id_(GetNextMediaPlayerId()),
       defer_load_cb_(std::move(defer_load_cb)),
       isolate_(frame_scheduler_->GetAgentGroupScheduler()->Isolate()),
-      demuxer_manager_(
-          std::make_unique<media::DemuxerManager>(this,
-                                                  security_origin,
-                                                  media_task_runner_,
-                                                  media_log_.get(),
-                                                  std::move(demuxer_override))),
+      demuxer_manager_(std::make_unique<media::DemuxerManager>(
+          this,
+          security_origin->ToUrlOrigin(),
+          media_task_runner_,
+          media_log_.get(),
+          std::move(demuxer_override))),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       url_index_(url_index),
+      security_origin_(std::move(security_origin)),
       raster_context_provider_(std::move(raster_context_provider)),
       vfc_task_runner_(std::move(video_frame_compositor_task_runner)),
       compositor_(std::move(compositor)),
@@ -582,7 +584,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   delegate_->SetIdle(delegate_id_, true);
 
   media_log_->AddEvent<MediaLogEvent::kWebMediaPlayerCreated>(
-      security_origin.GetURL().spec());
+      security_origin_->ToUrlOrigin().GetURL().spec());
 
   media_log_->SetProperty<MediaLogProperty::kFrameUrl>(
       SanitizeUserStringProperty(document_url.GetString()));
@@ -990,7 +992,8 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
       main_task_runner_,
       url_index_->GetByUrl(
           url, static_cast<UrlData::CorsMode>(cors_mode),
-          is_cache_disabled ? UrlData::kCacheDisabled : UrlData::kNormal),
+          is_cache_disabled ? UrlData::kCacheDisabled : UrlData::kNormal,
+          security_origin_),
       media_log_.get(), buffered_data_source_host_.get(),
       blink::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading, weak_this_));
 
@@ -1761,7 +1764,8 @@ void WebMediaPlayerImpl::GetUrlData(
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
       KURL(gurl), static_cast<UrlData::CorsMode>(cors_mode_),
-      TranslateCacheMode(is_cache_disabled_, cache_mode), encoding_mode);
+      TranslateCacheMode(is_cache_disabled_, cache_mode), security_origin_,
+      encoding_mode);
   std::move(cb).Run(std::move(url_data));
 }
 

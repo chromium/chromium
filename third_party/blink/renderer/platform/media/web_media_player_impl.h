@@ -83,10 +83,6 @@ class PipelineController;
 class SwitchableAudioRendererSink;
 }  // namespace media
 
-namespace url {
-class Origin;
-}
-
 namespace viz {
 class RasterContextProvider;
 }
@@ -97,6 +93,7 @@ class BufferedDataSourceHostImpl;
 class FrameScheduler;
 class PowerStatusHelper;
 class KURL;
+class SecurityOrigin;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoDecodeStatsReporter;
@@ -135,7 +132,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // |delegate| and |renderer_factory_selector| must not be null.
   WebMediaPlayerImpl(
       FrameScheduler* frame_scheduler,
-      const url::Origin& security_origin,
+      scoped_refptr<const SecurityOrigin> security_origin,
       const WebURL& document_url,
       const WebString& document_title,
       WebMediaPlayerBuilder::HasTransientUserActivationCB
@@ -899,6 +896,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
   raw_ptr<UrlIndex> url_index_ = nullptr;
+  const scoped_refptr<const SecurityOrigin> security_origin_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   // Video rendering members.

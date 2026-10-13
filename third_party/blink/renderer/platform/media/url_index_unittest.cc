@@ -28,8 +28,8 @@ class UrlIndexTest : public testing::Test {
 
   scoped_refptr<UrlData> GetByUrl(const KURL& url,
                                   UrlData::CorsMode cors_mode) {
-    scoped_refptr<UrlData> ret =
-        url_index_->GetByUrl(url, cors_mode, UrlData::kNormal);
+    scoped_refptr<UrlData> ret = url_index_->GetByUrl(
+        url, cors_mode, UrlData::kNormal, security_origin_);
     EXPECT_EQ(ret->url(), url);
     EXPECT_EQ(ret->cors_mode(), cors_mode);
     return ret;
@@ -37,6 +37,8 @@ class UrlIndexTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<const SecurityOrigin> security_origin_ =
+      SecurityOrigin::CreateUniqueOpaque();
   std::unique_ptr<UrlIndex> url_index_;
 };
 
@@ -169,14 +171,16 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
   UrlData::CorsMode cors = UrlData::CORS_UNSPECIFIED;
 
   scoped_refptr<UrlData> url_data =
-      url_index_->GetByUrl(url, cors, UrlData::kNormal);
+      url_index_->GetByUrl(url, cors, UrlData::kNormal, security_origin_);
   url_data->Use();
   url_data->set_range_supported();
   EXPECT_TRUE(url_data->Valid());
   url_index_->TryInsert(url_data);
 
-  EXPECT_EQ(url_data, url_index_->GetByUrl(url, cors, UrlData::kNormal));
-  EXPECT_NE(url_data, url_index_->GetByUrl(url, cors, UrlData::kCacheDisabled));
+  EXPECT_EQ(url_data, url_index_->GetByUrl(url, cors, UrlData::kNormal,
+                                           security_origin_));
+  EXPECT_NE(url_data, url_index_->GetByUrl(url, cors, UrlData::kCacheDisabled,
+                                           security_origin_));
 }
 
 TEST_F(UrlIndexTest, ValidateDataOrigin) {
@@ -228,9 +232,9 @@ TEST_F(UrlIndexTest, AllowGzip) {
   KURL url("http://foo.bar.com");
 
   // 1. Get UrlData with kAllowGzip and insert it into index.
-  scoped_refptr<UrlData> a =
-      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
-                           media::DataSource::EncodingMode::kAllowGzip);
+  scoped_refptr<UrlData> a = url_index_->GetByUrl(
+      url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kAllowGzip);
   EXPECT_EQ(a->encoding_mode(), media::DataSource::EncodingMode::kAllowGzip);
   a->Use();
   a->set_range_supported();
@@ -238,16 +242,16 @@ TEST_F(UrlIndexTest, AllowGzip) {
   EXPECT_EQ(a, url_index_->TryInsert(a));
 
   // 2. Get UrlData with kIdentity (should be a cache miss / new instance).
-  scoped_refptr<UrlData> b =
-      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
-                           media::DataSource::EncodingMode::kIdentity);
+  scoped_refptr<UrlData> b = url_index_->GetByUrl(
+      url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kIdentity);
   EXPECT_EQ(b->encoding_mode(), media::DataSource::EncodingMode::kIdentity);
   EXPECT_NE(a, b);
 
   // 3. Get UrlData with kAllowGzip again (should be a cache hit, returns 'a').
-  scoped_refptr<UrlData> c =
-      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
-                           media::DataSource::EncodingMode::kAllowGzip);
+  scoped_refptr<UrlData> c = url_index_->GetByUrl(
+      url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kAllowGzip);
   EXPECT_EQ(a, c);
 
   // 4. Insert 'b' (kIdentity) into the index.
@@ -257,10 +261,60 @@ TEST_F(UrlIndexTest, AllowGzip) {
   EXPECT_EQ(b, url_index_->TryInsert(b));
 
   // 5. Get UrlData with kIdentity again (should be a cache hit, returns 'b').
-  scoped_refptr<UrlData> d =
-      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
-                           media::DataSource::EncodingMode::kIdentity);
+  scoped_refptr<UrlData> d = url_index_->GetByUrl(
+      url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kIdentity);
   EXPECT_EQ(b, d);
+}
+
+TEST_F(UrlIndexTest, SecurityOriginIsolation) {
+  KURL url("http://foo.bar.com/video.mp4");
+  auto origin1 = SecurityOrigin::CreateFromString("http://foo.bar.com");
+  auto origin2 = SecurityOrigin::CreateFromString("http://attacker.com");
+
+  scoped_refptr<UrlData> a = url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                                  UrlData::kNormal, origin1);
+  a->Use();
+  a->set_range_supported();
+  a->set_is_cors_cross_origin(false);
+  EXPECT_TRUE(a->Valid());
+  EXPECT_EQ(a, url_index_->TryInsert(a));
+
+  // Same-origin lookup hits the cached entry.
+  EXPECT_EQ(a, url_index_->GetByUrl(
+                   url, UrlData::CORS_ANONYMOUS, UrlData::kNormal,
+                   SecurityOrigin::CreateFromString("http://foo.bar.com")));
+
+  // Cross-origin lookup does not reuse the cached entry from origin1.
+  scoped_refptr<UrlData> b = url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                                  UrlData::kNormal, origin2);
+  EXPECT_NE(a, b);
+
+  // Inserting `b` does not merge into or overwrite `a`.
+  b->Use();
+  b->set_range_supported();
+  b->set_is_cors_cross_origin(true);
+  EXPECT_TRUE(b->Valid());
+  EXPECT_EQ(b, url_index_->TryInsert(b));
+  EXPECT_EQ(a, url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                    UrlData::kNormal, origin1));
+  EXPECT_FALSE(a->is_cors_cross_origin());
+  EXPECT_EQ(b, url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                    UrlData::kNormal, origin2));
+  EXPECT_TRUE(b->is_cors_cross_origin());
+
+  // Distinct opaque origins also do not reuse each other's cached entries.
+  auto opaque1 = SecurityOrigin::CreateUniqueOpaque();
+  auto opaque2 = SecurityOrigin::CreateUniqueOpaque();
+  scoped_refptr<UrlData> c = url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                                  UrlData::kNormal, opaque1);
+  c->Use();
+  c->set_range_supported();
+  EXPECT_EQ(c, url_index_->TryInsert(c));
+  EXPECT_EQ(c, url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                    UrlData::kNormal, opaque1));
+  EXPECT_NE(c, url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,
+                                    UrlData::kNormal, opaque2));
 }
 
 }  // namespace blink

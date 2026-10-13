@@ -51,27 +51,42 @@ void ResourceMultiBuffer::OnEmpty() {
   url_data_->OnEmpty();
 }
 
+// static
+UrlData::KeyType UrlData::MakeKey(
+    const KURL& url,
+    scoped_refptr<const SecurityOrigin> security_origin,
+    CorsMode cors_mode,
+    media::DataSource::EncodingMode encoding_mode) {
+  return std::make_pair(
+      url, std::make_pair(std::move(security_origin),
+                          std::make_pair(cors_mode, encoding_mode)));
+}
+
 UrlData::UrlData(base::PassKey<UrlIndex>,
                  const KURL& url,
                  CorsMode cors_mode,
+                 CacheMode cache_lookup_mode,
+                 scoped_refptr<const SecurityOrigin> security_origin,
                  media::DataSource::EncodingMode encoding_mode,
                  base::WeakPtr<UrlIndex> url_index,
-                 CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UrlData(url,
               cors_mode,
+              cache_lookup_mode,
+              std::move(security_origin),
               encoding_mode,
               url_index,
-              cache_lookup_mode,
               std::move(task_runner)) {}
 
 UrlData::UrlData(const KURL& url,
                  CorsMode cors_mode,
+                 CacheMode cache_lookup_mode,
+                 scoped_refptr<const SecurityOrigin> security_origin,
                  media::DataSource::EncodingMode encoding_mode,
                  base::WeakPtr<UrlIndex> url_index,
-                 CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
+      security_origin_(std::move(security_origin)),
       cors_mode_(cors_mode),
       has_access_control_(false),
       url_index_(url_index),
@@ -80,13 +95,15 @@ UrlData::UrlData(const KURL& url,
       cacheable_(false),
       cache_lookup_mode_(cache_lookup_mode),
       encoding_mode_(encoding_mode),
-      multibuffer_(this, url_index_->block_shift(), std::move(task_runner)) {}
+      multibuffer_(this, url_index_->block_shift(), std::move(task_runner)) {
+  CHECK(security_origin_);
+}
 
 UrlData::~UrlData() = default;
 
 UrlData::KeyType UrlData::key() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return std::make_pair(url(), std::make_pair(cors_mode(), encoding_mode()));
+  return MakeKey(url(), security_origin(), cors_mode(), encoding_mode());
 }
 
 void UrlData::set_valid_until(base::Time valid_until) {
@@ -98,6 +115,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // We're merging from another UrlData that refers to the *same*
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
+  CHECK(security_origin_->IsSameOriginWith(other->security_origin_.get()));
   if (ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     valid_until_ = std::max(valid_until_, other->valid_until_);
@@ -282,26 +300,30 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(
     const KURL& url,
     UrlData::CorsMode cors_mode,
     UrlData::CacheMode cache_mode,
+    scoped_refptr<const SecurityOrigin> security_origin,
     media::DataSource::EncodingMode encoding_mode) {
   if (cache_mode == UrlData::kNormal) {
     auto i = indexed_data_.find(
-        std::make_pair(url, std::make_pair(cors_mode, encoding_mode)));
+        UrlData::MakeKey(url, security_origin, cors_mode, encoding_mode));
     if (i != indexed_data_.end() && i->value->Valid()) {
       return i->value;
     }
   }
 
-  return NewUrlData(url, cors_mode, cache_mode, encoding_mode);
+  return NewUrlData(url, cors_mode, cache_mode, std::move(security_origin),
+                    encoding_mode);
 }
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(
     const KURL& url,
     UrlData::CorsMode cors_mode,
     UrlData::CacheMode cache_lookup_mode,
+    scoped_refptr<const SecurityOrigin> security_origin,
     media::DataSource::EncodingMode encoding_mode) {
   return base::MakeRefCounted<UrlData>(
-      base::PassKey<UrlIndex>(), url, cors_mode, encoding_mode,
-      weak_factory_.GetWeakPtr(), cache_lookup_mode, task_runner_);
+      base::PassKey<UrlIndex>(), url, cors_mode, cache_lookup_mode,
+      std::move(security_origin), encoding_mode, weak_factory_.GetWeakPtr(),
+      task_runner_);
 }
 
 namespace {

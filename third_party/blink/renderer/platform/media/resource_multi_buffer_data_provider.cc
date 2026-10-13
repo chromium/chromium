@@ -271,7 +271,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 
   if (!redirects_to_.IsEmpty()) {
     destination_url_data = url_data_->url_index()->GetByUrl(
-        redirects_to_, cors_mode_, url_data_->cache_lookup_mode());
+        redirects_to_, cors_mode_, url_data_->cache_lookup_mode(),
+        url_data_->security_origin(), url_data_->encoding_mode());
     redirects_to_ = KURL();
   }
 
