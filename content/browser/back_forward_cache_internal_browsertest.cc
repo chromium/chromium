@@ -2924,6 +2924,54 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ->GetURL());
 }
 
+// Regression test for https://crbug.com/571375357. When a restore from the
+// back/forward cache starts, the browser lets the page run script again before
+// the restore commits. If that script removes an iframe, the renderer sends
+// Detach while the page is still in the back/forward cache. The browser should
+// evict the page instead of killing the renderer.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DetachSubframeWhileRestoringFromBackForwardCache) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B). On pagehide, A starts an async Wasm compile and
+  // removes the iframe when it's done. The compile finishes after A is frozen
+  // in the back/forward cache, so the callback can't run until the restore
+  // lets A run script again.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  ASSERT_TRUE(ExecJs(rfh_a.get(), R"(
+    window.addEventListener('pagehide', () => {
+      // The smallest valid Wasm module.
+      const bytes =
+          new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
+      WebAssembly.compile(bytes).then(() => {
+        document.querySelector('iframe').remove();
+      });
+    });
+  )"));
+
+  // 2) Navigate to C. A(B) enters the back/forward cache.
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back. Before the restore commits, the browser tells A's and B's
+  // renderers that the page is leaving the back/forward cache, and waits for
+  // both to reply. If A's renderer replies first, the callback removes the
+  // iframe before the restore commits, and the browser evicts A and loads it
+  // again. Otherwise, A is restored and the iframe is removed after that.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(url_a, current_frame_host()->GetLastCommittedURL());
+
+  // Either way, A's renderer must not be killed.
+  histogram_tester().ExpectBucketCount("Stability.BadMessageTerminated.Content",
+                                       bad_message::RFH_DETACH_WHILE_BFCACHED,
+                                       0);
+}
+
 IN_PROC_BROWSER_TEST_F(
     HighCacheSizeBackForwardCacheBrowserTest,
     MessageReceivedOnAssociatedInterfaceForProcessWithMultipleCachedPages) {

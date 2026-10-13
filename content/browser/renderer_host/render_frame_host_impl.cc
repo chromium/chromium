@@ -146,6 +146,7 @@
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
+#include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/randomized_confidence_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -6167,13 +6168,20 @@ void RenderFrameHostImpl::Detach() {
   // FrameTreeNode's `frame_tree_` reference, which now belongs to a different
   // page. Trigger a renderer kill if we receive an unexpected Detach message.
   if (IsInBackForwardCache()) {
-    if (render_view_host()->DidReceiveBackForwardCacheAck()) {
+    if (!render_view_host()
+             ->GetPageLifecycleStateManager()
+             ->RendererExpectedToSendChannelAssociatedIpcs()) {
       bad_message::ReceivedBadMessage(GetProcess(),
                                       bad_message::RFH_DETACH_WHILE_BFCACHED);
     } else {
-      // The renderer might not have realized that it's in BFCache when it sent
-      // the Detach call, since we haven't received the BFCache ACK. In this
-      // case, just evict from BFCache instead of killing the renderer.
+      // The renderer can legitimately send Detach here in two cases:
+      // - It might not have realized that it's in BFCache when it sent the
+      //   Detach call, since we haven't received the BFCache ACK.
+      // - A restore has started and the browser already asked the renderer to
+      //   disable JS eviction (see `SetIsLeavingBackForwardCache()`), so page
+      //   script can run again before the restore commits.
+      // In these cases, just evict from BFCache instead of killing the
+      // renderer.
       IsInactiveAndDisallowActivation(DisallowActivationReasonId::kDetach);
     }
     // Return early in any case.

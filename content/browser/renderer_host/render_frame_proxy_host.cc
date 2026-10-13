@@ -32,6 +32,7 @@
 #include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -512,10 +513,13 @@ void RenderFrameProxyHost::Detach() {
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
   if (current_rfh->IsInBackForwardCache()) {
     if (render_view_host_ &&
-        render_view_host_->DidReceiveBackForwardCacheAck()) {
+        !render_view_host_->GetPageLifecycleStateManager()
+             ->RendererExpectedToSendChannelAssociatedIpcs()) {
       bad_message::ReceivedBadMessage(GetProcess(),
                                       bad_message::RFH_DETACH_WHILE_BFCACHED);
     } else {
+      // See RenderFrameHostImpl::Detach() for when the renderer can
+      // legitimately send this while the page is in BFCache.
       current_rfh->IsInactiveAndDisallowActivation(
           DisallowActivationReasonId::kDetach);
     }
