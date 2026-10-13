@@ -97,7 +97,9 @@ bool PartnerBookmarksShim::IsLoaded() const {
 }
 
 bool PartnerBookmarksShim::HasPartnerBookmarks() const {
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572863254): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
   return g_partner_model_keeper.Get().partner_bookmarks_root.get() != NULL;
 }
 
