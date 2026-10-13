@@ -1408,8 +1408,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, AdditionalText) {
 // Use Ctrl-Alt-Enter to append www. and .com to URL and open it in new tab.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, Modifiers) {
   FAILS_IN_MODE(Mode::kFull,
-                "Full popup doesn't appear to do Ctrl-Enter when oneline."
-                "See crbug.com/549864613");
+                "Full popup doesn't appear like Ctrl-Enter of https://google");
   RunTestSequence(InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
                   InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
                   EnsureNoPopup(), FocusOmnibox(),
@@ -1651,9 +1650,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
                        RestoreSelectionTabSwitch) {
-  FAILS_IN_MODE(Mode::kFull,
-                "Our behavior on autofocus of location bar (since no restore) "
-                "overwrites full's restore of selection");
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -2023,9 +2019,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
 
 // Test of location bar context menu; uses the 'Copy' item.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, MAYBE_ContextMenu) {
-  FAILS_IN_MODE(Mode::kFull,
-                "Selection lost on right-click when uneliding; possibly "
-                "the same as crbug.com/549791744");
+  FAILS_IN_MODE(Mode::kFull, "Right-click goes to the wrong omnibox");
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
