@@ -474,7 +474,12 @@ AtMemorySearchState AtMemoryManager::GetStateForField(
       result_state.suggestions = GetQueryTypingSuggestions(result_state.filter);
       break;
     case AtMemorySearchStatus::kSearching:
-      result_state.suggestions = GetFetchingStateSuggestions();
+      // Restore partial results if some were received already. Otherwise,
+      // show the fetching state.
+      result_state.suggestions =
+          result_state.suggestions.empty()
+              ? GetFetchingStateSuggestions()
+              : GetResultsRetrievedSuggestions(result_state.suggestions);
       break;
     case AtMemorySearchStatus::kResponseReceived:
       result_state.suggestions =
@@ -1026,10 +1031,7 @@ Suggestion AtMemoryManager::CreateNoConnectionSuggestion(std::u16string query) {
 
 void AtMemoryManager::CancelPendingQueries(
     AtMemoryQueryCompleted query_completed) {
-  if (popup_state_) {
-    popup_state_->fetching_timer.Stop();
-    popup_state_->fetching_string_index = 0;
-  }
+  StopFetchingTimer();
   query_weak_ptr_factory_.InvalidateWeakPtrs();
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
@@ -1058,6 +1060,13 @@ void AtMemoryManager::AdvanceFetchingSuggestion() {
   CHECK(popup_state_);
   popup_state_->fetching_string_index++;
   ShowFetchingStateSuggestions();
+}
+
+void AtMemoryManager::StopFetchingTimer() {
+  if (popup_state_) {
+    popup_state_->fetching_timer.Stop();
+    popup_state_->fetching_string_index = 0;
+  }
 }
 
 std::vector<Suggestion> AtMemoryManager::GetFetchingStateSuggestions() const {
@@ -1130,6 +1139,10 @@ std::vector<Suggestion> AtMemoryManager::GetResultsRetrievedSuggestions(
 
 void AtMemoryManager::ShowResultsRetrievedStateSuggestions(
     const MemorySearchResults& result) {
+  // The results replace the fetching suggestion, so the fetching timer must not
+  // bring it back. This matters for partial responses, where the query is
+  // still pending; for final responses, the timer is already stopped.
+  StopFetchingTimer();
   const std::string_view app_locale = client_->GetAppLocale();
   std::vector<Suggestion> suggestions =
       base::ToVector(result.entries, [&](const MemorySearchResult& entry) {

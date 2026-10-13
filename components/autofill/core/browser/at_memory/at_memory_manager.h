@@ -239,6 +239,10 @@ class AtMemoryManager : public AutofillManager::Observer {
   // Advances to the next fetching suggestion message and updates the UI.
   void AdvanceFetchingSuggestion();
 
+  // Stops rotating the fetching suggestion messages, if any, without
+  // cancelling the pending query.
+  void StopFetchingTimer();
+
   // Appends previously filled suggestions to the list of suggestions.
   void MaybeAppendPreviouslyFilledSuggestions(
       std::vector<Suggestion>& suggestions) const;

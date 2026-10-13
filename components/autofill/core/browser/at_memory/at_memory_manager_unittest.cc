@@ -1968,6 +1968,60 @@ TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
   task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
 }
 
+// Tests that when partial search results arrive, the fetching timer is stopped
+// so that the results are not overwritten by fetching suggestions, while the
+// query remains pending and the final response is still shown.
+TEST_P(AtMemoryManagerTest,
+       FetchingState_TimerStopsWhenPartialResultsReceived) {
+  SeeFormAndShowPopup();
+
+  base::RepeatingCallback<void(MemorySearchResults)> search_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field(&Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  manager().OnSearchSubmitted(u"query");
+
+  // Return partial search results.
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
+                                    SuggestionType::kAtMemorySearchResult)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  search_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kPartialResponseSuccess,
+                          {MemorySearchResult(MemoryDataType::kAddressFull,
+                                              u"Address", u"123 Main St")}));
+  ASSERT_TRUE(manager().IsSearching());
+
+  // The partial results must not be replaced by fetching suggestions.
+  EXPECT_CALL(
+      update_callback_,
+      Run(Contains(Field(&Suggestion::type, SuggestionType::kAtMemoryFetching)),
+          _))
+      .Times(0);
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
+
+  // The final response is still shown.
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(
+              Field(&Suggestion::type, SuggestionType::kTitle),
+              Field(&Suggestion::type, SuggestionType::kAtMemorySearchResult),
+              Field(&Suggestion::type, SuggestionType::kAtMemorySearchResult)),
+          AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  search_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                          {MemorySearchResult(MemoryDataType::kAddressFull,
+                                              u"Address", u"123 Main St"),
+                           MemorySearchResult(MemoryDataType::kAddressFull,
+                                              u"Address", u"456 Second St")}));
+  EXPECT_FALSE(manager().IsSearching());
+}
+
 // Tests that when popup is hidden, the fetching timer is stopped.
 TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
   SeeFormAndShowPopup();
@@ -3156,6 +3210,53 @@ TEST_F(AtMemoryManagerTestBase,
   EXPECT_FALSE(manager().IsSearching());
   EXPECT_TRUE(
       manager().GetStateForField(field_id, form_origin()).filter.empty());
+}
+
+// Tests that when search statefulness is enabled and the popup is reopened
+// while a search is in progress but partial results were already received,
+// the partial results are restored and not replaced by fetching messages.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_PartialResultsRestoredOnPopupReopen) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().GetStateForField(field_id, form_origin());
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+  manager().OnFilterChanged(u"john");
+
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"john"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_TRUE(saved_query_callback);
+  saved_query_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kPartialResponseSuccess,
+                          {MemorySearchResult(MemoryDataType::kAddressFull,
+                                              u"Address", u"123 Main St")}));
+  manager().OnPopupHidden(SuggestionHidingReason::kUserAborted);
+  ASSERT_TRUE(manager().IsSearching());
+
+  // The partial results are restored as is.
+  AtMemorySearchState restored_state =
+      manager().GetStateForField(field_id, form_origin());
+  EXPECT_EQ(restored_state.status, AtMemorySearchStatus::kSearching);
+  EXPECT_THAT(restored_state.suggestions,
+              ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                          Field(&Suggestion::type,
+                                SuggestionType::kAtMemorySearchResult)));
+
+  // Reopening the popup does not replace them with fetching messages.
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+  EXPECT_CALL(update_callback_, Run).Times(0);
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
 }
 
 // Tests that when the primary main frame navigates (driver resets),

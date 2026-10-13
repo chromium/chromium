@@ -401,6 +401,25 @@ TEST_F(AtMemoryPersistedStateManagerTest,
             AtMemorySearchStatus::kQueryModified);
 }
 
+// Tests that submitting a filter clears the suggestions of a previous search,
+// so that they are not mistaken for (partial) results of the new search.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       OnFilterSubmittedClearsPreviousSuggestions) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  state_manager().OnSuggestionsChanged(
+      {Suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult)});
+
+  state_manager().OnFilterSubmitted(u"address");
+
+  const AtMemorySearchState& state =
+      state_manager().GetStateForField(field_id(), FieldOrigin());
+  EXPECT_EQ(state.status, AtMemorySearchStatus::kSearching);
+  EXPECT_EQ(state.filter, u"address");
+  EXPECT_TRUE(state.suggestions.empty());
+}
+
 // Tests that cancelling a search via `StopSearching()` sets the status back to
 // `kQueryModified`.
 TEST_F(AtMemoryPersistedStateManagerTest,

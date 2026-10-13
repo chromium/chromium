@@ -263,6 +263,9 @@ void AtMemoryPersistedStateManager::OnFilterSubmitted(
     const std::u16string& filter) {
   CHECK(field_id_);
   search_state_.filter = filter;
+  // Suggestions of a previous search must not be mistaken for (partial)
+  // results of the new one.
+  search_state_.suggestions.clear();
   search_state_.status = AtMemorySearchStatus::kSearching;
   RestartSearchStateTimer();
 }
