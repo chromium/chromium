@@ -794,12 +794,20 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
     }
 #endif
     case InfoBarType::kJsOptimizations: {
-      infobars::ContentInfoBarManager* infobar_manager =
-          infobars::ContentInfoBarManager::FromWebContents(web_contents);
-      if (!infobar_manager) {
-        return false;
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE)) {
+        CHECK(browser_infobar_manager);
+        browser_infobar_manager->Show(
+            active_tab,
+            infobars::InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE);
+      } else {
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        JsOptimizationsInfoBarDelegate::Create(infobar_manager);
       }
-      JsOptimizationsInfoBarDelegate::Create(infobar_manager);
       return true;
     }
 #if BUILDFLAG(IS_MAC)

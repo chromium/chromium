@@ -109,6 +109,27 @@ void RegisterInfoBars() {
     browser_infobar_manager->Register(std::move(spec));
   }
 
+  if (IsInfoBarMigrated(InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE)
+            .SetMessageText(
+                l10n_util::GetStringUTF16(IDS_JS_OPTIMIZATION_SITE_RELOAD_TEXT))
+            .SetIcon(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSettingsIcon
+                         : vector_icons::kSettingsChromeRefreshOldIcon)
+            .SetScope(InfoBarScope::kTab)
+            .AddOkButton(
+                l10n_util::GetStringUTF16(
+                    IDS_JS_OPTIMIZATION_SITE_RELOAD_BUTTON),
+                base::BindRepeating([](content::WebContents* web_contents) {
+                  CHECK(web_contents);
+                  web_contents->GetController().Reload(
+                      content::ReloadType::NORMAL, true);
+                }))
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS)
   if (IsInfoBarMigrated(
           InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE)) {

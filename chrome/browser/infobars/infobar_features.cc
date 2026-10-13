@@ -77,6 +77,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedJsOptimizations,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedKeystonePromotion,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -189,6 +194,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedIncognitoConnectability;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
+    case InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE:
+      return &kMigratedJsOptimizations;
     case InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
       return &kMigratedKeystonePromotion;
     case InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE:

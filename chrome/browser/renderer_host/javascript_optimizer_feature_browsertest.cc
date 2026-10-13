@@ -24,6 +24,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1504,12 +1505,32 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class JavascriptOptimizerBubbleBrowserTest
-    : public JavascriptOptimizerOmnibarIconBrowserTest {
+    : public JavascriptOptimizerOmnibarIconBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  JavascriptOptimizerBubbleBrowserTest() = default;
+  JavascriptOptimizerBubbleBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedJsOptimizations", "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         JavascriptOptimizerBubbleBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Legacy";
+                         });
+
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
                        BubbleShowsOnClick) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1532,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
   EXPECT_TRUE(IsBubbleButtonVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
                        AfterEnablingOptimizationsIconIsHidden) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1555,7 +1576,8 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
   EXPECT_TRUE(IsBubbleButtonVisible());
   // Click on button.
   RunTestSequence(
-      PressButton(JsOptimizationsPageActionController::kBubbleButtonElementId));
+      PressButton(JsOptimizationsPageActionController::kBubbleButtonElementId),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId));
   // Open new tab and go to the same site.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_https_test_server().GetURL("/simple.html"),
@@ -1571,7 +1593,30 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
   ASSERT_FALSE(IsOmnibarIconVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
+                       ReloadInfoBarReloadsOnAccept) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_TRUE(IsOmnibarIconVisible());
+
+  RunTestSequence(
+      PressButton(kJsOptimizationsIconElementId),
+      WaitForShow(JsOptimizationsPageActionController::kBubbleButtonElementId),
+      PressButton(JsOptimizationsPageActionController::kBubbleButtonElementId),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId));
+
+  content::TestNavigationObserver reload_observer(web_contents());
+  RunTestSequence(PressButton(ConfirmInfoBar::kOkButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+  reload_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
                        IconHighlightClearedOnBubbleClose) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1610,7 +1655,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
       [&]() { return !page_action_test_accessor.HasIconHighlight(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
                        BubbleClosesOnNavigation) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1653,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
 
 // JS optimizations disabled by enterprise policy.
 class JavascriptOptimizerBubbleBrowserTest_WithPolicy
-    : public JavascriptOptimizerBubbleBrowserTest {};
+    : public JavascriptOptimizerOmnibarIconBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_WithPolicy,
                        BubbleShowsOnClick) {

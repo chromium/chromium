@@ -3516,6 +3516,7 @@
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallationError": "true",
                         "MigratedInstallerDownloader": "true",
+                        "MigratedJsOptimizations": "true",
                         "MigratedKnownInterceptionDisclosure": "true",
                         "MigratedLinkCapturing": "true",
                         "MigratedLocalTestPolicies": "true",

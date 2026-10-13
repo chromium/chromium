@@ -31,6 +31,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedFileAccessDisabled);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedGoogleApiKeys);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedIncognitoConnectability);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedJsOptimizations);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedKeystonePromotion);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedKnownInterceptionDisclosure);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedLinkCapturing);

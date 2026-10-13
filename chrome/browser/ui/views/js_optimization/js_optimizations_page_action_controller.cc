@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -15,6 +19,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -149,6 +155,16 @@ void JsOptimizationsPageActionController::EnableV8Optimizations() {
   // it only takes effect in subsequently opened tabs.
 
   // Display a prompt to the user to reload the page
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    browser_infobar_manager->Show(
+        &tab(), infobars::InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE);
+    return;
+  }
+
   infobars::ContentInfoBarManager* const infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents());
   if (infobar_manager) {

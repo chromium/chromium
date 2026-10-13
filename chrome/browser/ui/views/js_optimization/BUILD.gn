@@ -35,4 +35,9 @@ source_set("impl") {
     "//components/infobars/content",
     "//components/infobars/core",
   ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//components/tabs:public",
+  ]
 }
