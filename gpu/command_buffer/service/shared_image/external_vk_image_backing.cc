@@ -171,6 +171,22 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     base::span<const uint8_t> pixel_data) {
   auto format = si_info.format;
   auto usage = si_info.usage;
+
+  bool use_separate_gl_texture =
+      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
+  // The separate GL texture path keeps an independent GL texture in sync with
+  // the VkImage by copying pixels on access. WebGPU interop requires a single
+  // allocation aliased into both APIs, and ExternalVkImageBackingFactory
+  // already refuses formats that would end up here, so this is unreachable
+  // unless a caller bypasses IsSupported(). Fail rather than silently handing
+  // back a backing that cannot keep its two copies coherent. This must happen
+  // before any VulkanImage is allocated, since those must be explicitly
+  // destroyed.
+  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
+    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
+    return nullptr;
+  }
+
   bool is_external = context_state->support_vulkan_external_object();
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
 
@@ -232,6 +248,11 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
                                   VK_IMAGE_TILING_OPTIMAL);
     }
     if (!image) {
+      // VulkanImages must be explicitly destroyed, so release the images
+      // already allocated for earlier planes.
+      for (auto& texture : textures) {
+        texture.vulkan_image->Destroy();
+      }
       return nullptr;
     }
 
@@ -239,18 +260,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     textures.emplace_back(std::move(image), format, si_info.color_space);
   }
 
-  bool use_separate_gl_texture =
-      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
-  // The separate GL texture path keeps an independent GL texture in sync with
-  // the VkImage by copying pixels on access. WebGPU interop requires a single
-  // allocation aliased into both APIs, and ExternalVkImageBackingFactory
-  // already refuses formats that would end up here, so this is unreachable
-  // unless a caller bypasses IsSupported(). Fail rather than silently handing
-  // back a backing that cannot keep its two copies coherent.
-  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
-    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
-    return nullptr;
-  }
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
@@ -295,6 +304,14 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     return nullptr;
   }
 
+  bool use_separate_gl_texture =
+      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
+  // See the comment on the same check in Create().
+  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
+    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
+    return nullptr;
+  }
+
   auto* vulkan_implementation =
       context_state->vk_context_provider()->GetVulkanImplementation();
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
@@ -319,13 +336,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   textures.reserve(1);
   textures.emplace_back(std::move(image), format, color_space);
 
-  bool use_separate_gl_texture =
-      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
-  // See the comment on the same check in Create().
-  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
-    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
-    return nullptr;
-  }
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
@@ -474,6 +484,12 @@ bool ExternalVkImageBacking::BeginAccess(
     return true;
   }
 
+  if (is_write_in_progress_ || (!readonly && reads_in_progress_)) {
+    DLOG(ERROR) << "Unable to begin read or write access because another "
+                   "conflicting access is in progress";
+    return false;
+  }
+
   if (readonly && !reads_in_progress_) {
     if (!is_updating_content_) {
       UpdateContent(kInVkImage);
@@ -481,6 +497,8 @@ bool ExternalVkImageBacking::BeginAccess(
     if (!gl_textures_.empty() && !is_updating_content_) {
       UpdateContent(kInGLTexture);
     }
+  } else if (!readonly && !is_updating_content_) {
+    UpdateContent(is_gl ? kInGLTexture : kInVkImage);
   }
 
   if (gl_reads_in_progress_ && need_synchronization()) {
