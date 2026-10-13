@@ -10,5 +10,6 @@ export function getHtml(this: TernaryDummyElement) {
   return html`
     ${this.condition1 ? '' : html`<div>Inverted</div>`}
     ${this.condition1 ? html`<div>First</div>` : this.condition2 ? html`<div>Second</div>` : ''}
+    ${this.condition1 ? this.items.map(item => html`<div>${item}</div>`) : ''}
   `;
 }

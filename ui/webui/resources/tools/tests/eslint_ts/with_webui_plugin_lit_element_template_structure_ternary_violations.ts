@@ -13,9 +13,11 @@ export class TernaryDummyElement extends CrLitElement {
     return {
       condition1: {type: Boolean},
       condition2: {type: Boolean},
+      items: {type: Array},
     };
   }
 
   condition1: boolean = false;
   condition2: boolean = false;
+  items: string[] = [];
 }

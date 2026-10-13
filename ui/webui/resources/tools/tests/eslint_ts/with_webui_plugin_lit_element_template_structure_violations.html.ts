@@ -67,6 +67,21 @@ ${this.loading ? html`
   ${getSpinnerDiv()}
 ` : html`
   ${messagesToRender.map(message => html`<div>${message}</div>`)}
+  ${messagesToRender.map(message => {
+    return html`<div>${message}</div>`;
+  })}
+  ${messagesToRender.map(message =>
+      this.fancyTitle ? html`<b>${message}</b>` :
+                        html`<span>${message}</span>`)}
+  ${(() => {
+    switch (this.loadProgress) {
+      case 0:
+        return html`<div>Not started</div>`;
+      default:
+        return html`<div>In progress</div>`;
+    }
+  })()}
+  ${html`<div>Unnecessary nested template</div>`}
   ${getButtonHtml.bind(this)('Reload', !this.enableReload)}
   ${input}
 `}
