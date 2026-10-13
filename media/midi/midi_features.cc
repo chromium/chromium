@@ -13,9 +13,5 @@ namespace features {
 BASE_FEATURE(kMidiManagerWinrt, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_APPLE)
-BASE_FEATURE(kMidiMacUmp, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 }  // namespace features
 }  // namespace midi

@@ -53,11 +53,6 @@ class MIDI_EXPORT MidiManagerMac final : public MidiManager {
                                         void* refcon);
   void ReceiveMidiNotify(const MIDINotification* message);
 
-  // CoreMIDI callback for legacy MIDI data.
-  static void ReadMidiDispatch(const MIDIPacketList* packet_list,
-                               void* read_proc_refcon,
-                               void* src_conn_refcon);
-
   // CoreMIDI callback for MIDI data.
   // Each callback can contain multiple packets, each of which can contain
   // multiple MIDI messages.
