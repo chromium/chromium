@@ -36,12 +36,6 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
         row_: {type: Object},
         mouseFocused_: {type: Boolean},
 
-        // Will be updated when |index| is set, unless specified elsewhere.
-        id: {
-          type: String,
-          reflect: true,
-        },
-
         isFocused: {
           type: Boolean,
           notify: true,
@@ -145,7 +139,7 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
         // overriding the ID value if it's set elsewhere.
         const oldIndex = changedProperties.get('focusRowIndex');
         if (this.id === this.computeId_(oldIndex)) {
-          this.id = this.computeId_(this.focusRowIndex) || '';
+          this.id = this.computeId_(this.focusRowIndex);
         }
       }
     }
@@ -161,8 +155,8 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
     /**
      * Returns an ID based on the index that was passed in.
      */
-    private computeId_(index: number|undefined): string|undefined {
-      return index !== undefined ? `frb${index}` : undefined;
+    private computeId_(index: number|undefined): string {
+      return index !== undefined ? `frb${index}` : '';
     }
 
     getFocusRow(): FocusRow {

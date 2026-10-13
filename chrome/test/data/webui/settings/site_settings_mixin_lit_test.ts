@@ -13,7 +13,7 @@ import {createRawSiteException} from './test_util.js';
 suite('SiteSettingsMixinLit', function() {
   const TestElementBase = SiteSettingsMixinLit(CrLitElement);
 
-  class TestElement extends TestElementBase {
+  class TestSiteSettingsMixinLitElement extends TestElementBase {
     static get is() {
       return 'test-site-settings-mixin-lit';
     }
@@ -22,17 +22,18 @@ suite('SiteSettingsMixinLit', function() {
       return html`<div id="category">${this.category}</div>`;
     }
   }
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(
+      TestSiteSettingsMixinLitElement.is, TestSiteSettingsMixinLitElement);
 
-  let testElement: TestElement;
+  let testElement: TestSiteSettingsMixinLitElement;
   let browserProxy: TestSiteSettingsBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
-    testElement =
-        document.createElement('test-site-settings-mixin-lit') as TestElement;
+    testElement = document.createElement('test-site-settings-mixin-lit') as
+        TestSiteSettingsMixinLitElement;
     document.body.appendChild(testElement);
   });
 
