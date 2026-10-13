@@ -53,12 +53,17 @@ export class OnboardingWpDisableCompletePage extends
         type: String,
         computed: 'getActionString(action)',
       },
+
+      action: {
+        type: Number,
+        value: WriteProtectDisableCompleteAction.kUnknown,
+      },
     };
   }
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
   declare protected actionString: string;
-  private action: WriteProtectDisableCompleteAction = WriteProtectDisableCompleteAction.kUnknown;
+  declare private action: WriteProtectDisableCompleteAction;
 
   override ready() {
     super.ready();

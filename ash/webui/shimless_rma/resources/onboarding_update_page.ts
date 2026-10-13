@@ -83,6 +83,11 @@ export class OnboardingUpdatePageElement extends
         type: Boolean,
         value: false,
       },
+
+      isCompliant: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -90,7 +95,7 @@ export class OnboardingUpdatePageElement extends
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
   // We assume it's compliant until updated in onHardwareVerificationResult().
-  protected isCompliant: boolean = true;
+  declare protected isCompliant: boolean;
   declare protected currentVersionText: string;
   declare protected updateVersionButtonLabel: string;
   declare protected updateInProgress: boolean;
