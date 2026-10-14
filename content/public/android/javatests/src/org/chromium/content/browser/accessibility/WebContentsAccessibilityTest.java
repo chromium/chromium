@@ -1435,16 +1435,22 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testAccessibilityFocusPartiallyOffscreenBottomScrollsIntoView() throws Throwable {
         // Build a page where a target element's top edge is visible near the bottom of the
-        // viewport and its height extends below the viewport.
+        // viewport (`90vh`) and its height (`20vh`) extends below the viewport (`110vh`), with
+        // trailing content below so the page has room to scroll further down and center the target.
         setupTestWithHTML(
                 """
                 <body style="margin: 0;">
                   <div style="height: 90vh;"></div>
-                  <div id="target" style="height: 500px; background: red;">Partially offscreen</div>
+                  <div id="target" style="height: 20vh; background: red;">Partially offscreen</div>
+                  <div style="height: 200vh;"></div>
                 </body>
                 """);
 
         int targetVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "target");
+        mNodeInfo = createAccessibilityNodeInfo(targetVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Rect initialBounds = new Rect();
+        mNodeInfo.getBoundsInScreen(initialBounds);
 
         // Initial scroll Y should be 0.
         Assert.assertEquals(0f, mActivityTestRule.mWcax.getScrollYForTesting(), 0.01f);
@@ -1452,12 +1458,23 @@ public class WebContentsAccessibilityTest {
         // Perform accessibility focus action.
         performActionOnUiThread(targetVvid, ACTION_ACCESSIBILITY_FOCUS, null);
 
-        // Poll until scroll Y is updated.
+        // Poll until scroll Y centers the target in the viewport (`scrollY ~= 50vh`), rather than
+        // stopping as soon as the bottom edge enters the viewport (`scrollY ~= 10vh`).
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mActivityTestRule.mWcax.getScrollYForTesting() > 0f;
-                },
-                "Expected view to scroll down to make target fully visible.");
+                    float scrollY = mActivityTestRule.mWcax.getScrollYForTesting();
+                    Criteria.checkThat(scrollY, Matchers.greaterThan(0f));
+                    Rect currentBounds = new Rect();
+                    AccessibilityNodeInfoCompat info = createAccessibilityNodeInfo(targetVvid);
+                    Criteria.checkThat(info, Matchers.notNullValue());
+                    info.getBoundsInScreen(currentBounds);
+                    // `#target` has height `20vh`. When centered in the viewport, `#target`'s top
+                    // moves up by `50vh` (`2.5 * height`), whereas `kClosestEdge` only moves
+                    // `#target`'s top up by `10vh` (`0.5 * height`).
+                    Criteria.checkThat(
+                            initialBounds.top - currentBounds.top,
+                            Matchers.greaterThan(initialBounds.height() * 2));
+                });
     }
 
     /**

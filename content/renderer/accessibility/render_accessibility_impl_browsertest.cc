@@ -939,7 +939,10 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   scroller_action_target->SetScrollOffset(gfx::Point(0, 0));
   EXPECT_EQ(gfx::Point(0, 0), scroller_action_target->GetScrollOffset());
-  EXPECT_TRUE(scroller_child_action_target->ScrollToMakeVisible());
+  EXPECT_TRUE(scroller_child_action_target->ScrollToMakeVisible(
+      ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
   EXPECT_GE(scroller_action_target->GetScrollOffset().y(), 900);
 
   scroller_action_target->SetScrollOffset(gfx::Point(0, 0));

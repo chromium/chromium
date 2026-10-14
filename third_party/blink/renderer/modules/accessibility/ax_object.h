@@ -1519,14 +1519,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Modify or take an action on an object. Returns true if handled.
   bool PerformAction(const ui::AXActionData&);
-  // Scrolls a sub-rectangle within this object into view. See
-  // `OnNativeScrollToMakeVisibleWithSubFocusAction()` for details on
-  // `target_rect`.
-  // TODO(accessibility) Do this through PerformAction() and move to private.
-  bool RequestScrollToMakeVisibleWithSubFocusAction(
-      const gfx::Rect& target_rect,
-      blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-      blink::mojom::blink::ScrollAlignment vertical_scroll_alignment);
 
   // These are actions, just like the actions above, and they allow us
   // to keep track of nodes that gain or lose accessibility focus, but
@@ -1543,8 +1535,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool OnNativeIncrementAction();
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
   // Scrolls this object's full bounding box
-  // (`LayoutObject::AbsoluteBoundingBoxRect()`) into view.
-  bool OnNativeScrollToMakeVisibleAction() const;
+  // (`LayoutObject::AbsoluteBoundingBoxRect()`) into view using the requested
+  // scroll alignments.
+  bool OnNativeScrollToMakeVisibleAction(
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
   // Scrolls `target_rect` into view using the requested scroll alignments.
   // `target_rect` is relative to the object's own top-left origin, so it is
   // offset by `LayoutObject::LocalBoundingBoxRectForAccessibility().origin()`
@@ -1553,8 +1548,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // absolute coordinates via `LayoutObject::LocalToAbsoluteRect()`.
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
       const gfx::Rect& target_rect,
-      blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-      blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
   virtual bool OnNativeSetSelectedAction(bool);
   virtual bool OnNativeSetSequentialFocusNavigationStartingPointAction();
   virtual bool OnNativeSetValueAction(const String&);
@@ -1805,7 +1800,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestFocusAction();
   bool RequestIncrementAction();
   bool RequestScrollToGlobalPointAction(const gfx::Point&);
-  bool RequestScrollToMakeVisibleAction();
+  bool RequestScrollToMakeVisibleAction(
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      mojom::blink::ScrollAlignment vertical_scroll_alignment);
+  bool RequestScrollToMakeVisibleWithSubFocusAction(
+      const gfx::Rect& target_rect,
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      mojom::blink::ScrollAlignment vertical_scroll_alignment);
   bool RequestSetSelectedAction(bool);
   bool RequestSetSequentialFocusNavigationStartingPointAction();
   bool RequestSetValueAction(const String&);
@@ -1828,8 +1829,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void ScrollLayoutObjectRectToVisible(
       const LayoutObject& target_layout_object,
       const PhysicalRect& absolute_target_rect,
-      blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-      blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
 
   void DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
                              WebInputEvent::Type type,

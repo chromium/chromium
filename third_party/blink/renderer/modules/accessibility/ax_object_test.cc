@@ -1918,11 +1918,13 @@ TEST_F(AccessibilityTest, ScrollToMakeVisible) {
 
   // 1. `ScrollToMakeVisible()` on a `LayoutBox` (`#target`) whose top edge
   // (`250px`) is inside the `300px` scroller but whose bottom (`450px`) extends
-  // below the scroller should scroll the full bounding box into view.
+  // below the scroller should center `#target` vertically in the scroller
+  // (`scrollTop = 250 + 100 - 150 = 200`), rather than stopping as soon as the
+  // bottom edge enters the scroller (`scrollTop = 450 - 300 = 150`).
   ASSERT_EQ(scroller->scrollTop(), 0);
   WebAXObject ax_target = WebAXObject::FromWebNode(target);
   ax_target.ScrollToMakeVisible();
-  ASSERT_GT(scroller->scrollTop(), 0);
+  EXPECT_EQ(scroller->scrollTop(), 200);
 
   // 2. `ScrollToMakeVisible()` on a `LayoutInline` (`#inline_target`) located
   // 800px down inside `#inline_container` (whose own top-left origin is at y=0)
@@ -1932,6 +1934,83 @@ TEST_F(AccessibilityTest, ScrollToMakeVisible) {
   WebAXObject ax_inline_target = WebAXObject::FromWebNode(inline_target);
   ax_inline_target.ScrollToMakeVisible();
   EXPECT_GT(scroller->scrollTop(), 500);
+}
+
+TEST_F(AccessibilityTest, ScrollToMakeVisibleCentersPartiallyOffscreenTarget) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #scroller {
+      overflow: auto;
+      height: 200px;
+      width: 200px;
+    }
+    #target {
+      margin-top: 180px;
+      height: 60px;
+      width: 100px;
+      scroll-margin: 0px;
+    }
+    .spacer {
+      height: 1000px;
+    }
+    </style>
+    <div id="scroller">
+      <div id="target">Partially offscreen</div>
+      <div class="spacer"></div>
+    </div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* target = GetElementById("target");
+  WebAXObject ax_target = WebAXObject::FromWebNode(target);
+
+  // `#target` spans `[180, 240]` in a `200px` viewport (partially visible at
+  // the bottom of the viewport). `ScrollToMakeVisible()` defaults to centering
+  // (`scrollTop = 180 + 30 - 100 = 110`), placing `#target` at `[70, 130]` in
+  // the middle of the viewport rather than stopping at the bottom edge
+  // (`scrollTop = 180 + 60 - 200 = 40`, which would leave `#target` at
+  // `[140, 200]`).
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisible();
+  EXPECT_EQ(scroller->scrollTop(), 110);
+
+  // Explicit `kScrollAlignmentClosestEdge` aligns the bottom edge with the
+  // bottom of the viewport (`scrollTop = 180 + 60 - 200 = 40`).
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisible(
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  EXPECT_EQ(scroller->scrollTop(), 40);
+
+  // Single-axis `kNone` on horizontal with `kScrollAlignmentTop` on vertical
+  // (used by Read Anything) aligns the top edge (`scrollTop = 180`).
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisible(
+      ax::mojom::blink::ScrollAlignment::kNone,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentTop,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  EXPECT_EQ(scroller->scrollTop(), 180);
+
+  // When `#target` (`[180, 240]`) is already fully visible inside `[110, 310]`,
+  // `kDoNotScrollIfVisible` does not scroll, whereas `kScrollIfVisible` scrolls
+  // `#target` to the requested alignment (`scrollTop = 180` for
+  // `kScrollAlignmentTop`).
+  scroller->setScrollTop(110);
+  ASSERT_EQ(scroller->scrollTop(), 110);
+  ax_target.ScrollToMakeVisible(
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentTop,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  EXPECT_EQ(scroller->scrollTop(), 110);
+
+  ax_target.ScrollToMakeVisible(
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentTop,
+      ax::mojom::blink::ScrollBehavior::kScrollIfVisible);
+  EXPECT_EQ(scroller->scrollTop(), 180);
 }
 
 TEST_F(AccessibilityTest, ScrollToMakeVisibleWithSubFocus) {

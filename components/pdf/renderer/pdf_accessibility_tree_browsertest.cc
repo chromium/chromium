@@ -7005,6 +7005,19 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
   EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kClosestToEdge,
             action_data.vertical_scroll_alignment);
   EXPECT_EQ(gfx::Rect({0, 0}, {1, 1}), action_data.target_rect);
+
+  EXPECT_TRUE(pdf_action_target->ScrollToMakeVisible(
+      ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::ScrollAlignment::kScrollAlignmentTop,
+      ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
+  action_data = action_handler_.received_action_data();
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kScrollToMakeVisible,
+            action_data.action);
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kCenter,
+            action_data.horizontal_scroll_alignment);
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kTop,
+            action_data.vertical_scroll_alignment);
+  EXPECT_EQ(gfx::Rect({0, 0}, {1, 1}), action_data.target_rect);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
@@ -7152,8 +7165,6 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
   point = pdf_action_target->MaximumScrollOffset();
   EXPECT_EQ(point.x(), 0);
   EXPECT_EQ(point.y(), 0);
-
-  EXPECT_FALSE(pdf_action_target->ScrollToMakeVisible());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {

@@ -82,8 +82,12 @@ bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
       blink_focus_object->WebAXObject(), focus_offset);
 }
 
-bool BlinkAXActionTarget::ScrollToMakeVisible() const {
-  return web_ax_object_.ScrollToMakeVisible();
+bool BlinkAXActionTarget::ScrollToMakeVisible(
+    ax::mojom::ScrollAlignment horizontal_scroll_alignment,
+    ax::mojom::ScrollAlignment vertical_scroll_alignment,
+    ax::mojom::ScrollBehavior scroll_behavior) const {
+  return web_ax_object_.ScrollToMakeVisible(
+      horizontal_scroll_alignment, vertical_scroll_alignment, scroll_behavior);
 }
 
 bool BlinkAXActionTarget::ScrollToMakeVisibleWithSubFocus(

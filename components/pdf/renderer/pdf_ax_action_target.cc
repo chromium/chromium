@@ -157,15 +157,13 @@ bool PdfAXActionTarget::ShowContextMenu() const {
   return pdf_accessibility_tree_source_->ShowContextMenu();
 }
 
-bool PdfAXActionTarget::ScrollToMakeVisible() const {
-  return false;
-}
-
-bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
-    const gfx::Rect& rect,
+bool PdfAXActionTarget::ScrollToMakeVisible(
     ax::mojom::ScrollAlignment horizontal_scroll_alignment,
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) const {
+  // `chrome_pdf::AccessibilityActionData` does not support `scroll_behavior`,
+  // so `PDFiumEngine` always scrolls to the requested alignment regardless of
+  // whether the target is already visible.
   chrome_pdf::AccessibilityActionData pdf_action_data;
   pdf_action_data.action =
       chrome_pdf::AccessibilityAction::kScrollToMakeVisible;
@@ -178,6 +176,15 @@ bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
 
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
+}
+
+bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
+    const gfx::Rect& rect,
+    ax::mojom::ScrollAlignment horizontal_scroll_alignment,
+    ax::mojom::ScrollAlignment vertical_scroll_alignment,
+    ax::mojom::ScrollBehavior scroll_behavior) const {
+  return ScrollToMakeVisible(horizontal_scroll_alignment,
+                             vertical_scroll_alignment, scroll_behavior);
 }
 
 bool PdfAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {

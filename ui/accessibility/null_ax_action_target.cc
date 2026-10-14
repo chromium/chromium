@@ -39,7 +39,10 @@ bool NullAXActionTarget::SetSelection(const AXActionTarget* anchor_object,
   return false;
 }
 
-bool NullAXActionTarget::ScrollToMakeVisible() const {
+bool NullAXActionTarget::ScrollToMakeVisible(
+    ax::mojom::ScrollAlignment horizontal_scroll_alignment,
+    ax::mojom::ScrollAlignment vertical_scroll_alignment,
+    ax::mojom::ScrollBehavior scroll_behavior) const {
   return false;
 }
 

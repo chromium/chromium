@@ -374,7 +374,9 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
             *data.target_rect, data.horizontal_scroll_alignment,
             data.vertical_scroll_alignment, data.scroll_behavior);
       } else {
-        target->ScrollToMakeVisible();
+        target->ScrollToMakeVisible(data.horizontal_scroll_alignment,
+                                    data.vertical_scroll_alignment,
+                                    data.scroll_behavior);
       }
       break;
     case ax::mojom::Action::kBlur:

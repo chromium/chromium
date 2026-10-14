@@ -36,7 +36,10 @@ class AXActionTarget {
                             int focus_offset) const = 0;
   // Make this object visible by scrolling as many nested scrollable views as
   // needed.
-  virtual bool ScrollToMakeVisible() const = 0;
+  virtual bool ScrollToMakeVisible(
+      ax::mojom::ScrollAlignment horizontal_scroll_alignment,
+      ax::mojom::ScrollAlignment vertical_scroll_alignment,
+      ax::mojom::ScrollBehavior scroll_behavior) const = 0;
   // Scrolls the given `rect` (in node-local coordinates) into view by
   // scrolling as many nested scrollable views as needed.
   virtual bool ScrollToMakeVisibleWithSubFocus(

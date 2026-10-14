@@ -355,6 +355,41 @@ bool IsGenericWrapper(const Element& element, const AtomicString& role_str) {
          element.IsCustomElement();
 }
 
+mojom::blink::ScrollAlignment ToBlinkScrollAlignment(
+    ax::mojom::blink::ScrollAlignment alignment,
+    ax::mojom::blink::ScrollBehavior scroll_behavior) {
+  mojom::blink::ScrollAlignment::Behavior behavior =
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  switch (alignment) {
+    case ax::mojom::blink::ScrollAlignment::kNone:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentCenter:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kCenter;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentTop:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kTop;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentBottom:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kBottom;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentLeft:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kLeft;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentRight:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kRight;
+      break;
+    case ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge:
+      behavior = mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
+      break;
+  }
+  mojom::blink::ScrollAlignment::Behavior visible_behavior =
+      scroll_behavior == ax::mojom::blink::ScrollBehavior::kScrollIfVisible
+          ? behavior
+          : mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  return {visible_behavior, behavior, behavior};
+}
+
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -8010,8 +8045,21 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
       return RequestSetValueAction(String::FromUtf8(action_data.value));
     case ax::mojom::blink::Action::kShowContextMenu:
       return RequestShowContextMenuAction();
-    case ax::mojom::blink::Action::kScrollToMakeVisible:
-      return RequestScrollToMakeVisibleAction();
+    case ax::mojom::blink::Action::kScrollToMakeVisible: {
+      mojom::blink::ScrollAlignment horizontal_scroll_alignment =
+          ToBlinkScrollAlignment(action_data.horizontal_scroll_alignment,
+                                 action_data.scroll_behavior);
+      mojom::blink::ScrollAlignment vertical_scroll_alignment =
+          ToBlinkScrollAlignment(action_data.vertical_scroll_alignment,
+                                 action_data.scroll_behavior);
+      if (action_data.target_rect) {
+        return RequestScrollToMakeVisibleWithSubFocusAction(
+            *action_data.target_rect, horizontal_scroll_alignment,
+            vertical_scroll_alignment);
+      }
+      return RequestScrollToMakeVisibleAction(horizontal_scroll_alignment,
+                                              vertical_scroll_alignment);
+    }
     case ax::mojom::blink::Action::kScrollBackward:
     case ax::mojom::blink::Action::kScrollDown:
     case ax::mojom::blink::Action::kScrollForward:
@@ -8156,15 +8204,19 @@ AXObject* AXObject::GetTargetForScrollAction() {
   return IsDetached() ? cache.Get(node) : this;
 }
 
-bool AXObject::RequestScrollToMakeVisibleAction() {
+bool AXObject::RequestScrollToMakeVisibleAction(
+    mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    mojom::blink::ScrollAlignment vertical_scroll_alignment) {
   AXObject* target = GetTargetForScrollAction();
-  return target ? target->OnNativeScrollToMakeVisibleAction() : false;
+  return target ? target->OnNativeScrollToMakeVisibleAction(
+                      horizontal_scroll_alignment, vertical_scroll_alignment)
+                : false;
 }
 
 bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
     const gfx::Rect& target_rect,
-    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) {
+    mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    mojom::blink::ScrollAlignment vertical_scroll_alignment) {
   AXObject* target = GetTargetForScrollAction();
   return target ? target->OnNativeScrollToMakeVisibleWithSubFocusAction(
                       target_rect, horizontal_scroll_alignment,
@@ -8482,8 +8534,8 @@ void AXObject::DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
 void AXObject::ScrollLayoutObjectRectToVisible(
     const LayoutObject& target_layout_object,
     const PhysicalRect& absolute_target_rect,
-    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
+    mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
   const LayoutObject* layout_object = &target_layout_object;
   // To scroll an element into view, we don't scroll the element itself
   // unless it is the document scrolling element.
@@ -8503,21 +8555,23 @@ void AXObject::ScrollLayoutObjectRectToVisible(
                                    ax::mojom::blink::Event::kLocationChanged);
 }
 
-bool AXObject::OnNativeScrollToMakeVisibleAction() const {
+bool AXObject::OnNativeScrollToMakeVisibleAction(
+    mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
   const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
   if (!layout_object) {
     return false;
   }
   ScrollLayoutObjectRectToVisible(
       *layout_object, PhysicalRect(layout_object->AbsoluteBoundingBoxRect()),
-      ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded());
+      horizontal_scroll_alignment, vertical_scroll_alignment);
   return true;
 }
 
 bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
     const gfx::Rect& target_rect,
-    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
+    mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
   const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
   if (!layout_object) {
     return false;

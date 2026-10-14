@@ -43,7 +43,10 @@ class PdfAXActionTarget : public ui::AXActionTarget {
                     int anchor_offset,
                     const ui::AXActionTarget* focus_object,
                     int focus_offset) const override;
-  bool ScrollToMakeVisible() const override;
+  bool ScrollToMakeVisible(
+      ax::mojom::ScrollAlignment horizontal_scroll_alignment,
+      ax::mojom::ScrollAlignment vertical_scroll_alignment,
+      ax::mojom::ScrollBehavior scroll_behavior) const override;
   bool ScrollToMakeVisibleWithSubFocus(
       const gfx::Rect& rect,
       ax::mojom::ScrollAlignment horizontal_scroll_alignment,

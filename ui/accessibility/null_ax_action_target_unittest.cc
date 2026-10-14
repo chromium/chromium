@@ -23,7 +23,10 @@ TEST(NullAXActionTargetTest, TestMethods) {
   EXPECT_EQ(gfx::Point(), action_target->MinimumScrollOffset());
   EXPECT_EQ(gfx::Point(), action_target->MaximumScrollOffset());
   EXPECT_FALSE(action_target->SetSelection(nullptr, 0, nullptr, 0));
-  EXPECT_FALSE(action_target->ScrollToMakeVisible());
+  EXPECT_FALSE(action_target->ScrollToMakeVisible(
+      ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
+      ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
   EXPECT_FALSE(action_target->ScrollToMakeVisibleWithSubFocus(
       gfx::Rect(), ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
       ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
