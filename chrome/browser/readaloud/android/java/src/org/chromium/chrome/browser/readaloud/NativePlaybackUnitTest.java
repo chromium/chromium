@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +50,7 @@ public class NativePlaybackUnitTest {
     @Mock private PlaybackListener mListener;
     @Mock private SendFeedbackCallback mFeedbackCallback;
     @Captor private ArgumentCaptor<PlaybackListener.PlaybackData> mDataCaptor;
+    @Captor private ArgumentCaptor<PlaybackListener.PhraseTiming> mPhraseTimingCaptor;
 
     private NativePlayback mPlayback;
 
@@ -113,6 +117,59 @@ public class NativePlaybackUnitTest {
         assertEquals(1000L, updatedData.positionInParagraphNanos());
         assertEquals(5000L, updatedData.totalDurationNanos());
         assertEquals(5000L, updatedData.paragraphDurationNanos());
+    }
+
+    @Test
+    public void testNotifyWordHighlightUpdated_notifiesListenersWithOffsets() {
+        mPlayback.addListener(mListener);
+
+        mPlayback.notifyWordHighlightUpdated(
+                /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+
+        verify(mListener).onPhraseChanged(mPhraseTimingCaptor.capture());
+        assertEquals(12, mPhraseTimingCaptor.getValue().absoluteStartIndex());
+        assertEquals(17, mPhraseTimingCaptor.getValue().absoluteEndIndex());
+    }
+
+    @Test
+    public void testNotifyWordHighlightUpdated_reusesPhraseTiming() {
+        mPlayback.addListener(mListener);
+        mPlayback.notifyWordHighlightUpdated(
+                /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+        verify(mListener).onPhraseChanged(mPhraseTimingCaptor.capture());
+        PlaybackListener.PhraseTiming initialPhraseTiming = mPhraseTimingCaptor.getValue();
+
+        mPlayback.notifyWordHighlightUpdated(
+                /* absoluteStartIndex= */ 18, /* absoluteEndIndex= */ 25);
+
+        verify(mListener, times(2)).onPhraseChanged(mPhraseTimingCaptor.capture());
+        PlaybackListener.PhraseTiming updatedPhraseTiming = mPhraseTimingCaptor.getValue();
+        assertSame(initialPhraseTiming, updatedPhraseTiming);
+        assertEquals(18, updatedPhraseTiming.absoluteStartIndex());
+        assertEquals(25, updatedPhraseTiming.absoluteEndIndex());
+    }
+
+    @Test
+    public void testIsHighlightingSupported_defaultsToTrue() {
+        assertTrue(mPlayback.isHighlightingSupported());
+    }
+
+    @Test
+    public void testSetHighlightingSupported_updatesState() {
+        mPlayback.setHighlightingSupported(false);
+
+        assertFalse(mPlayback.isHighlightingSupported());
+    }
+
+    @Test
+    public void testNotifyWordHighlightUpdated_highlightingNotSupported_dropsUpdate() {
+        mPlayback.addListener(mListener);
+        mPlayback.setHighlightingSupported(false);
+
+        mPlayback.notifyWordHighlightUpdated(
+                /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+
+        verify(mListener, never()).onPhraseChanged(any(PlaybackListener.PhraseTiming.class));
     }
 
     @Test

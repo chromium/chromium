@@ -1353,7 +1353,12 @@ public class ReadAloudController
                     ReadAloudMetrics.recordTabCreationSuccess(entrypoint, Entrypoint.NUM_ENTRIES);
                     Playback.Metadata metadata = assumeNonNull(playback.getMetadata());
                     mFeedbackType.set(FeedbackType.NONE);
-                    maybeSetUpHighlighter(metadata);
+                    // Native playback has no paragraphs yet: they arrive later via
+                    // onTextChunked(), which sets up the highlighter. Setting it up here would
+                    // lock it to empty metadata, since initialization is one-shot per tab.
+                    if (!(playback instanceof NativePlayback)) {
+                        maybeSetUpHighlighter(metadata);
+                    }
                     updatePlaybackModeSelectionEnabled(readabilityInfo, playbackLanguage, playback, playbackModes);
                     updateVoiceMenu(
                             isTranslated
@@ -2413,7 +2418,9 @@ public class ReadAloudController
         if (mPlayback instanceof NativePlayback nativePlayback) {
             nativePlayback.onTextChunked(chunks);
             Playback.Metadata metadata = mPlayback.getMetadata();
-            if (metadata != null && mActivePlaybackTabSupplier.get() != null) {
+            if (nativePlayback.isHighlightingSupported()
+                    && metadata != null
+                    && mActivePlaybackTabSupplier.get() != null) {
                 maybeSetUpHighlighter(metadata);
             }
         }
@@ -2433,18 +2440,20 @@ public class ReadAloudController
 
     // Called when the active word highlight boundary shifts in the text.
     void onWordHighlightUpdated(int absoluteStartIndex, int absoluteEndIndex) {
-        // TODO: Update property model with word highlight boundaries.
-        Log.d(
-                TAG,
-                "onWordHighlightUpdated: absoluteStartIndex = %d, absoluteEndIndex = %d",
-                absoluteStartIndex,
-                absoluteEndIndex);
+        if (mPlayback instanceof NativePlayback nativePlayback) {
+            // Painted via onPhraseChanged() if highlighting is supported.
+            nativePlayback.notifyWordHighlightUpdated(absoluteStartIndex, absoluteEndIndex);
+        }
     }
 
     // Called to notify if synchronized word highlighting is supported for the current content.
     void onHighlightingSupported(boolean supported) {
-        // TODO: Update property to toggle highlight visibility.
-        Log.d(TAG, "onHighlightingSupported: supported = %b", supported);
+        if (mPlayback instanceof NativePlayback nativePlayback) {
+            nativePlayback.setHighlightingSupported(supported);
+            if (!supported) {
+                maybeClearHighlights();
+            }
+        }
     }
 
     // Called when playback switches to the on-device system TTS engine.

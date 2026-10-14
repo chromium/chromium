@@ -531,6 +531,7 @@ public class ReadAloudControllerUnitTest {
     public void testOnTextChunked_withActiveTabAndMetadata_initializesHighlighter() {
         NativePlayback nativePlayback = Mockito.mock(NativePlayback.class);
         when(nativePlayback.getMetadata()).thenReturn(mMetadata);
+        when(nativePlayback.isHighlightingSupported()).thenReturn(true);
         when(mMetadata.playbackMode()).thenReturn(PlaybackArgs.PlaybackMode.CLASSIC);
         mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
         mController.setPlayback(nativePlayback);
@@ -547,6 +548,133 @@ public class ReadAloudControllerUnitTest {
     public void testOnTextChunked_nullPlayback_safeNoOp() {
         mController.setPlayback(null);
         mController.onTextChunked(new String[] {"Paragraph"});
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testCreatePlayback_nativeEnabled_defersHighlighterUntilTextChunked() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        verify(mHighlighter, never()).initializeJs(any(), any(), any());
+
+        mController.onTextChunked(new String[] {"Paragraph 1", "Paragraph 2"});
+
+        verify(mHighlighter).initializeJs(eq(mTab), any(), any(Highlighter.Config.class));
+    }
+
+    @Test
+    public void testOnWordHighlightUpdated_nativePlayback_forwardsToNativePlayback() {
+        NativePlayback nativePlayback = setUpNativePlaybackWithHighlighter();
+
+        mController.onWordHighlightUpdated(
+                /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+
+        verify(nativePlayback)
+                .notifyWordHighlightUpdated(
+                        /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+    }
+
+    @Test
+    public void testOnPhraseChanged_nativePlayback_highlightsWord() {
+        setUpNativePlaybackWithHighlighter();
+        PlaybackListener.PhraseTiming phraseTiming =
+                Mockito.mock(PlaybackListener.PhraseTiming.class);
+
+        mController.onPhraseChanged(phraseTiming);
+
+        verify(mHighlighter).highlightText(mGlobalRenderFrameHostId, mTab, phraseTiming);
+    }
+
+    @Test
+    public void testOnPhraseChanged_highlightingEnabledAfterStart_highlightsNextWord() {
+        // Highlighting is off before the text arrives; the highlighter is still set up.
+        mController.getHighlightingEnabledSupplier().set(false);
+        setUpNativePlaybackWithHighlighter();
+        PlaybackListener.PhraseTiming phraseTiming =
+                Mockito.mock(PlaybackListener.PhraseTiming.class);
+        mController.onPhraseChanged(phraseTiming);
+        verify(mHighlighter, never()).highlightText(any(), any(), any());
+
+        mController.getHighlightingEnabledSupplier().set(true);
+        mController.onPhraseChanged(phraseTiming);
+
+        verify(mHighlighter).highlightText(mGlobalRenderFrameHostId, mTab, phraseTiming);
+    }
+
+    @Test
+    public void testOnWordHighlightUpdated_legacyPlayback_doesNotHighlight() {
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        verify(mPlaybackHooks).createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
+
+        mController.onWordHighlightUpdated(
+                /* absoluteStartIndex= */ 12, /* absoluteEndIndex= */ 17);
+
+        verify(mHighlighter, never()).highlightText(any(), any(), any());
+    }
+
+    @Test
+    public void testOnHighlightingSupported_forwardsToNativePlayback() {
+        NativePlayback nativePlayback = Mockito.mock(NativePlayback.class);
+        mController.setPlayback(nativePlayback);
+
+        mController.onHighlightingSupported(false);
+
+        verify(nativePlayback).setHighlightingSupported(false);
+    }
+
+    @Test
+    public void testOnTextChunked_highlightingNotSupported_skipsHighlighterSetup() {
+        // Overview playback: the spoken text is a summary that isn't on the page.
+        NativePlayback nativePlayback = Mockito.mock(NativePlayback.class);
+        when(nativePlayback.getMetadata()).thenReturn(mMetadata);
+        when(nativePlayback.isHighlightingSupported()).thenReturn(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.setPlayback(nativePlayback);
+        mController.setActivePlaybackTab(mTab);
+
+        mController.onTextChunked(new String[] {"Summary 1", "Summary 2"});
+
+        verify(mHighlighter, never()).initializeJs(any(), any(), any());
+    }
+
+    @Test
+    public void testOnHighlightingSupportedFalse_afterSetUp_clearsHighlights() {
+        setUpNativePlaybackWithHighlighter();
+
+        mController.onHighlightingSupported(false);
+
+        verify(mHighlighter).clearHighlights(mGlobalRenderFrameHostId, mTab);
+    }
+
+    @Test
+    public void testOnHighlightingSupportedTrue_afterSetUp_doesNotClearHighlights() {
+        setUpNativePlaybackWithHighlighter();
+
+        mController.onHighlightingSupported(true);
+
+        verify(mHighlighter, never()).clearHighlights(any(), any());
+    }
+
+    /** Sets up a native playback whose highlighter was initialized by onTextChunked(). */
+    private NativePlayback setUpNativePlaybackWithHighlighter() {
+        NativePlayback nativePlayback = Mockito.mock(NativePlayback.class);
+        when(nativePlayback.getMetadata()).thenReturn(mMetadata);
+        when(nativePlayback.isHighlightingSupported()).thenReturn(true);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.setPlayback(nativePlayback);
+        mController.setActivePlaybackTab(mTab);
+        mController.onTextChunked(new String[] {"Paragraph 1", "Paragraph 2"});
+        verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
+        return nativePlayback;
     }
 
     @Test
