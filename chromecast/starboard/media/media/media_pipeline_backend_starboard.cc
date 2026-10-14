@@ -53,6 +53,9 @@ MediaPipelineBackendStarboard::CreateAudioDecoder() {
     return nullptr;
   }
   audio_decoder_.emplace(starboard_.get());
+  audio_decoder_->SetOnFirstPushCallback(
+      base::BindOnce(&MediaPipelineBackendStarboard::OnAudioFirstPush,
+                     weak_factory_.GetWeakPtr()));
   return &*audio_decoder_;
 }
 
@@ -202,10 +205,10 @@ void MediaPipelineBackendStarboard::OnGeometryChanged(
     const RectF& display_rect,
     StarboardVideoPlane::Transform transform) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  last_set_bounds_ = display_rect;
   if (!player_) {
     LOG(INFO) << "Player was not created before OnGeometryChanged was called. "
                  "Queueing geometry change.";
-    pending_geometry_change_ = display_rect;
     return;
   }
 
@@ -221,13 +224,29 @@ void MediaPipelineBackendStarboard::OnGeometryChanged(
 void MediaPipelineBackendStarboard::CreatePlayer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
+  // In streaming (mirroring/remoting) sessions, senders frequently negotiate
+  // both audio and video in the OFFER/ANSWER even when streaming video-only or
+  // silent content (where zero audio packets are transmitted). Because
+  // Starboard's player pipeline waits for all configured streams to preroll
+  // before advancing media time and presenting frames, creating SbPlayer with
+  // an audio stream when no audio buffers arrive stalls video playback
+  // indefinitely. Therefore, when both audio and video decoders are present in
+  // streaming mode, only configure audio on SbPlayer once an audio buffer has
+  // actually been pushed.
+  const bool include_audio =
+      audio_decoder_.has_value() &&
+      (!is_streaming_ || !video_decoder_.has_value() || has_received_audio_ ||
+       audio_decoder_->HasPendingFirstPush());
+
   bool has_drm = false;
   StarboardPlayerCreationParam params = {};
   if (audio_decoder_) {
-    const std::optional<StarboardAudioSampleInfo>& audio_info =
-        audio_decoder_->GetAudioSampleInfo();
-    CHECK(audio_info);
-    params.audio_sample_info = *audio_info;
+    if (include_audio) {
+      const std::optional<StarboardAudioSampleInfo>& audio_info =
+          audio_decoder_->GetAudioSampleInfo();
+      CHECK(audio_info);
+      params.audio_sample_info = *audio_info;
+    }
 
     std::optional<EncryptionScheme> encryption_scheme =
         audio_decoder_->GetEncryptionScheme();
@@ -277,7 +296,9 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
                    "SbDrmSystem to SbPlayer";
     }
 
-    drm_resource_.emplace();
+    if (!drm_resource_) {
+      drm_resource_.emplace();
+    }
     params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
   } else {
     LOG(INFO) << "Content is not encrypted, and no CDM exists. Passing a null "
@@ -290,11 +311,50 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
       starboard_->CreatePlayer(&params,
                                /*callback_handler=*/&player_callback_handler_);
   CHECK(player_);
+  player_has_audio_ = include_audio;
+  if (include_audio && audio_decoder_) {
+    audio_decoder_->SetOnFirstPushCallback(base::OnceClosure());
+  }
 
-  if (pending_geometry_change_) {
-    OnGeometryChanged(*pending_geometry_change_,
+  if (last_set_bounds_) {
+    OnGeometryChanged(*last_set_bounds_,
                       StarboardVideoPlane::Transform::TRANSFORM_NONE);
-    pending_geometry_change_ = std::nullopt;
+  }
+}
+
+void MediaPipelineBackendStarboard::OnAudioFirstPush() {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  has_received_audio_ = true;
+  if (!player_ || player_has_audio_) {
+    return;
+  }
+
+  LOG(INFO) << "Audio buffer received on video-only streaming SbPlayer; "
+               "recreating SbPlayer with audio and video.";
+  if (state_ == State::kPlaying || state_ == State::kPaused) {
+    const int64_t current_pts = GetCurrentPts();
+    if (current_pts > last_seek_pts_) {
+      last_seek_pts_ = current_pts;
+    }
+  }
+
+  if (video_decoder_) {
+    video_decoder_->PrepareForPlayerRecreation(player_);
+  }
+
+  void* const old_player = std::exchange(player_, nullptr);
+  player_has_audio_ = false;
+  starboard_->DestroyPlayer(old_player);
+
+  CreatePlayer();
+  if (state_ == State::kPlaying) {
+    ++seek_ticket_;
+    starboard_->SeekTo(player_, last_seek_pts_, seek_ticket_);
+    DoPlay();
+  } else if (state_ == State::kPaused) {
+    ++seek_ticket_;
+    starboard_->SeekTo(player_, last_seek_pts_, seek_ticket_);
+    starboard_->SetPlaybackRate(player_, 0);
   }
 }
 
@@ -312,7 +372,9 @@ void MediaPipelineBackendStarboard::OnSampleDecoded(
     return;
   }
 
-  DCHECK_EQ(player, player_);
+  if (player != player_) {
+    return;
+  }
 
   if (ticket != seek_ticket_) {
     // TODO(antoniori): we may still need to trigger a
@@ -414,7 +476,9 @@ void MediaPipelineBackendStarboard::OnPlayerStatus(void* player,
                        weak_factory_.GetWeakPtr(), player, state, ticket));
     return;
   }
-  DCHECK_EQ(player, player_);
+  if (player != player_) {
+    return;
+  }
 
   LOG(INFO) << "Received starboard player status: " << state;
   if (state == kStarboardPlayerStateEndOfStream) {
@@ -436,6 +500,9 @@ void MediaPipelineBackendStarboard::OnPlayerError(void* player,
         FROM_HERE,
         base::BindOnce(&MediaPipelineBackendStarboard::OnPlayerError,
                        weak_factory_.GetWeakPtr(), player, error, message));
+    return;
+  }
+  if (player != player_) {
     return;
   }
 

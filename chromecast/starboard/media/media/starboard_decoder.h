@@ -48,6 +48,11 @@ class StarboardDecoder {
   // state.
   void Stop();
 
+  // Resets the decoder's `player_` handle to null without clearing
+  // `pending_first_push_`, used when recreating `SbPlayer` after
+  // `RequeueInFlightWrite()`.
+  void ResetPlayerForRecreation();
+
   // Returns true if the decoder is initialized, false otherwise. After Stop(),
   // the decoder is no longer initialized.
   bool IsInitialized();
@@ -61,6 +66,12 @@ class StarboardDecoder {
   // Called when a buffer has been processed by Starboard.
   void OnBufferWritten();
 
+  // If a buffer write to Starboard is currently in progress (awaiting
+  // OnBufferWritten), re-queues that sample into `pending_first_push_` so it
+  // will be re-sent once the decoder is initialized with a new SbPlayer,
+  // without notifying the delegate prematurely.
+  void RequeueInFlightWrite();
+
   // Notifies the delegate that the end of stream buffer has been rendered. This
   // should be called once the SbPlayer has sent the
   // kStarboardPlayerStateEndOfStream/kSbPlayerStateEndOfStream signal.
@@ -69,6 +80,9 @@ class StarboardDecoder {
   // Called when the SbPlayer has encountered a decoder error. Notifies the
   // delegate that an error has occurred.
   void OnStarboardDecodeError();
+
+  // Returns true if a pre-initialization buffer push is currently queued.
+  bool HasPendingFirstPush() const { return !pending_first_push_.is_null(); }
 
  protected:
   // Calls to Starboard are made via `starboard`, to allow mocking in tests.
@@ -112,17 +126,32 @@ class StarboardDecoder {
   // Returns the current delegate, or null if none is currently set.
   MediaPipelineBackend::Decoder::Delegate* GetDelegate() const;
 
-  // Returns true if a pre-initialization buffer push is currently queued.
-  bool HasPendingFirstPush() const { return !pending_first_push_.is_null(); }
-
  private:
   // Performs any initialization logic for the child class. This will run after
   // Initialize runs, and is called each time Initialize is called.
   virtual void InitializeInternal() = 0;
 
+  // Optional hook for child classes to reset state when Stop() is called.
+  virtual void StopInternal() {}
+
   // Runs pending_drm_key_ if `token` matches drm_key_token_. Called once a DRM
   // key is available.
   void RunPendingDrmKeyCallback(int64_t token);
+
+  struct InFlightWrite {
+    InFlightWrite(StarboardSampleInfo sample_info,
+                  DrmInfoWrapper drm_info,
+                  const uint8_t* buffer_addr,
+                  size_t buffer_size);
+    InFlightWrite(InFlightWrite&& other);
+    InFlightWrite& operator=(InFlightWrite&& other);
+    ~InFlightWrite();
+
+    StarboardSampleInfo sample_info;
+    DrmInfoWrapper drm_info;
+    const uint8_t* buffer_addr = nullptr;
+    size_t buffer_size = 0;
+  };
 
   SEQUENCE_CHECKER(sequence_checker_);
   StarboardApiWrapper* starboard_ = nullptr;
@@ -134,6 +163,10 @@ class StarboardDecoder {
   // SbPlayer, the push is delayed and this contains the call to
   // PushBufferInternal.
   base::OnceCallback<MediaPipelineBackend::BufferStatus()> pending_first_push_;
+  // Tracks the currently in-flight sample written via WriteSample (awaiting
+  // OnBufferWritten) so it can be re-queued if the SbPlayer is destroyed and
+  // recreated before OnBufferWritten is called.
+  std::optional<InFlightWrite> in_flight_write_;
   // This map is expected to be small (likely only one or two elements), hence
   // the use of a flat_map.
   // Maps from the array address to the HeapArray that manages the array's

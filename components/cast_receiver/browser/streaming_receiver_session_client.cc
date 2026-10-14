@@ -164,7 +164,8 @@ void StreamingReceiverSessionClient::OnStreamingConfigSet(
 
   streaming_state_ |= LaunchState::kAVSettingsReceived;
   if (!has_streaming_launched()) {
-    streaming_controller_->InitializeReceiverSession(config, this);
+    streaming_controller_->InitializeReceiverSession(std::move(constraints),
+                                                     this);
     return;
   }
 

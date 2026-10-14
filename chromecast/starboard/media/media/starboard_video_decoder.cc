@@ -146,6 +146,14 @@ StarboardVideoDecoder::~StarboardVideoDecoder() {
 
 void StarboardVideoDecoder::InitializeInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsInitialized() &&
+      std::exchange(preserve_in_band_resolution_on_reinit_, false)) {
+    has_pending_pre_init_push_ = false;
+    return;
+  }
+  if (preserve_in_band_resolution_on_reinit_) {
+    return;
+  }
   if (std::exchange(has_pending_pre_init_push_, false) &&
       HasPendingFirstPush()) {
     return;
@@ -163,10 +171,30 @@ void StarboardVideoDecoder::InitializeInternal() {
   }
 }
 
+void StarboardVideoDecoder::StopInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  preserve_in_band_resolution_on_reinit_ = false;
+}
+
 const std::optional<StarboardVideoSampleInfo>&
 StarboardVideoDecoder::GetVideoSampleInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return video_sample_info_;
+}
+
+void StarboardVideoDecoder::PrepareForPlayerRecreation(void* player) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (player) {
+    StarboardPlayerInfo player_info = {};
+    GetStarboardApi().GetPlayerInfo(player, &player_info);
+    accumulated_decoded_frames_ += player_info.total_video_frames;
+    accumulated_dropped_frames_ += player_info.dropped_video_frames;
+  }
+  RequeueInFlightWrite();
+  ResetPlayerForRecreation();
+  // Preserve any in-band resolution parsed on the previous SbPlayer when
+  // Initialize(new_player) calls InitializeInternal().
+  preserve_in_band_resolution_on_reinit_ = true;
 }
 
 std::optional<EncryptionScheme> StarboardVideoDecoder::GetEncryptionScheme() {
@@ -198,6 +226,7 @@ bool StarboardVideoDecoder::SetConfig(const VideoConfig& config) {
   container_width_ = config.width;
   container_height_ = config.height;
   has_pending_pre_init_push_ = false;
+  preserve_in_band_resolution_on_reinit_ = false;
   video_sample_info_ = ToVideoSampleInfo(config_);
 
   codec_mime_ =
@@ -273,8 +302,10 @@ void StarboardVideoDecoder::GetStatistics(Statistics* statistics) {
   }
 
   statistics->decoded_bytes = decoded_bytes_;
-  statistics->decoded_frames = player_info.total_video_frames;
-  statistics->dropped_frames = player_info.dropped_video_frames;
+  statistics->decoded_frames =
+      accumulated_decoded_frames_ + player_info.total_video_frames;
+  statistics->dropped_frames =
+      accumulated_dropped_frames_ + player_info.dropped_video_frames;
 }
 
 void StarboardVideoDecoder::SetDelegate(Delegate* delegate) {

@@ -103,7 +103,6 @@ void StarboardAudioDecoder::InitializeInternal() {
   if (volume_) {
     LOG(INFO) << "Setting starboard's volume to " << *volume_;
     GetStarboardApi().SetVolume(GetPlayer(), *volume_);
-    volume_ = std::nullopt;
   }
 }
 
@@ -111,6 +110,11 @@ const std::optional<StarboardAudioSampleInfo>&
 StarboardAudioDecoder::GetAudioSampleInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return audio_sample_info_;
+}
+
+void StarboardAudioDecoder::SetOnFirstPushCallback(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  on_first_push_cb_ = std::move(callback);
 }
 
 std::optional<EncryptionScheme> StarboardAudioDecoder::GetEncryptionScheme() {
@@ -147,13 +151,13 @@ bool StarboardAudioDecoder::SetVolume(float multiplier) {
     return false;
   }
 
+  volume_ = multiplier;
   void* const player = GetPlayer();
   if (player) {
     LOG(INFO) << "Setting starboard's volume to " << multiplier;
     GetStarboardApi().SetVolume(player, multiplier);
   } else {
     LOG(INFO) << "Delaying setting volume until SbPlayer is created.";
-    volume_ = multiplier;
   }
 
   return true;
@@ -178,10 +182,20 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   }
 
   if (buffer->end_of_stream()) {
+    if (!IsInitialized() && on_first_push_cb_) {
+      // No non-EOS audio buffer was ever pushed on a video-only streaming
+      // player, so the audio decoder was never initialized on SbPlayer.
+      // Acknowledge EOS immediately instead of queueing an uncompletable push.
+      return BufferStatus::kBufferSuccess;
+    }
     return PushEndOfStream();
   }
 
   DCHECK(audio_sample_info_);
+
+  if (on_first_push_cb_) {
+    std::move(on_first_push_cb_).Run();
+  }
 
   // SAFETY: This is not safe, but is necessary since the CastDecoderBuffer API
   // only exposes its data as a pointer + size.

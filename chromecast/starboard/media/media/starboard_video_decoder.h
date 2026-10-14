@@ -32,6 +32,12 @@ class StarboardVideoDecoder
   // Returns the video config or nullopt if the config has not been set yet.
   const std::optional<StarboardVideoSampleInfo>& GetVideoSampleInfo();
 
+  // Snapshots `total_video_frames` and `dropped_video_frames` from `player`
+  // before `player` is destroyed so `GetStatistics()` remains monotonic across
+  // SbPlayer recreations, re-queues any in-flight write, and marks the decoder
+  // uninitialized while preserving any in-band resolution change.
+  void PrepareForPlayerRecreation(void* player);
+
   // MediaPipelineBackend::VideoDecoder implementation:
   bool SetConfig(const VideoConfig& config) override;
   void GetStatistics(Statistics* statistics) override;
@@ -45,6 +51,7 @@ class StarboardVideoDecoder
  private:
   // StarboardDecoder implementation:
   void InitializeInternal() override;
+  void StopInternal() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
   void CheckForInBandResolutionChange(const CastDecoderBuffer& buffer);
@@ -65,8 +72,11 @@ class StarboardVideoDecoder
   int container_width_ = 0;
   int container_height_ = 0;
   bool has_pending_pre_init_push_ = false;
+  bool preserve_in_band_resolution_on_reinit_ = false;
   // The number of bytes sent to the SbPlayer. Used for statistics.
   uint64_t decoded_bytes_ = 0;
+  uint64_t accumulated_decoded_frames_ = 0;
+  uint64_t accumulated_dropped_frames_ = 0;
 };
 
 }  // namespace media

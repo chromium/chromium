@@ -71,6 +71,12 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
   // Creates the starboard player object.
   void CreatePlayer();
 
+  // Called when the first non-EOS audio buffer is pushed to `audio_decoder_`.
+  // In streaming mode, if the player was initially created as video-only
+  // (because no audio buffers had arrived yet), this recreates the player with
+  // both audio and video enabled.
+  void OnAudioFirstPush();
+
   // Called when a starboard audio or video decoder needs more samples. This
   // occurs after either:
   // 1. A sample has been decoded, or
@@ -165,9 +171,14 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   // An opaque handle to the SbPlayer.
   void* player_ = nullptr;
+  // True if `player_` was created with an active audio stream configuration.
+  bool player_has_audio_ = false;
+  // True once at least one non-EOS audio buffer has been pushed to
+  // `audio_decoder_`.
+  bool has_received_audio_ = false;
   std::optional<StarboardAudioDecoder> audio_decoder_;
   std::optional<StarboardVideoDecoder> video_decoder_;
-  std::optional<RectF> pending_geometry_change_;
+  std::optional<RectF> last_set_bounds_;
   StarboardVideoPlane* video_plane_ = nullptr;
   int64_t video_plane_callback_token_ = 0;
   // If true, we should render frames immediately to minimize latency. This

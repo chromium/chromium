@@ -26,12 +26,14 @@ namespace media {
 namespace {
 
 using ::testing::AllOf;
+using ::testing::AnyNumber;
 using ::testing::DoubleEq;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
+using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::NotNull;
 using ::testing::Optional;
@@ -1981,6 +1983,68 @@ TEST_F(StarboardVideoDecoderTest,
   ASSERT_NE(video_info, std::nullopt);
   EXPECT_EQ(video_info->frame_width, 1280);
   EXPECT_EQ(video_info->frame_height, 720);
+}
+
+// Builds an encrypted 10-byte buffer whose key ID is `key_id`. Callers must
+// register `key_id` with StarboardDrmKeyTracker before the buffer can be pushed
+// to starboard.
+scoped_refptr<DecoderBufferAdapter> CreateEncryptedBuffer(const char* key_id) {
+  // This must be 16 bytes.
+  constexpr char kIv[] = "abcdefghijklmnop";
+  // The subsamples account for 1+2+3+4 = 10 bytes, so the data must be exactly
+  // 10 bytes for DecoderBufferAdapter to keep the buffer's decrypt config.
+  const std::vector<::media::SubsampleEntry> subsamples = {
+      ::media::SubsampleEntry(/*clear_bytes=*/1, /*cypher_bytes=*/2),
+      ::media::SubsampleEntry(/*clear_bytes=*/3, /*cypher_bytes=*/4),
+  };
+  std::unique_ptr<::media::DecryptConfig> decrypt_config =
+      ::media::DecryptConfig::CreateCbcsConfig(
+          key_id, kIv, subsamples, ::media::EncryptionPattern::Create(5, 6));
+  CHECK(decrypt_config);
+
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  scoped_refptr<::media::DecoderBuffer> decoder_buffer =
+      ::media::DecoderBuffer::CopyFrom(buffer_data);
+  CHECK(decoder_buffer);
+  decoder_buffer->set_decrypt_config(std::move(decrypt_config));
+  return base::MakeRefCounted<DecoderBufferAdapter>(decoder_buffer);
+}
+
+TEST_F(StarboardVideoDecoderTest,
+       OnBufferWrittenWhileWaitingForDrmKeyKeepsPendingPush) {
+  // While an encrypted buffer is parked waiting for its DRM key, starboard may
+  // report NeedsData again for the previously consumed sample. That must not
+  // discard the parked push: the key-available callback is still registered
+  // and runs the parked push once the key arrives.
+  constexpr char kKeyId[] = "key_id";
+  VideoConfig config = GetBasicConfig();
+  config.encryption_scheme = EncryptionScheme::kAesCbc;
+  scoped_refptr<DecoderBufferAdapter> buffer = CreateEncryptedBuffer(kKeyId);
+
+  StarboardVideoDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+  decoder.Initialize(&fake_player_);
+  decoder.SetConfig(config);
+  decoder.SetDelegate(&delegate);
+
+  // The key is not available yet, so nothing is written to starboard.
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+  EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+  Mock::VerifyAndClearExpectations(starboard_.get());
+
+  EXPECT_CALL(delegate, OnPushBufferComplete).Times(AnyNumber());
+  decoder.OnBufferWritten();
+
+  // Once the key arrives, the parked buffer must be written exactly once.
+  EXPECT_CALL(
+      *starboard_,
+      WriteSample(&fake_player_, kStarboardMediaTypeVideo,
+                  ElementsAre(MatchesVideoConfigAndBuffer(config, buffer))))
+      .Times(1);
+  StarboardDrmKeyTracker::GetInstance().AddKey(kKeyId, "session_id");
+  // The key-available callback is posted to this sequence.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

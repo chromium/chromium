@@ -80,9 +80,32 @@ class StreamingReceiverSessionClientTest : public testing::Test {
   ~StreamingReceiverSessionClientTest() override {
     task_environment_.FastForwardBy(
         StreamingReceiverSessionClient::kMaxAVSettingsWaitTime);
+    if (receiver_session_client_) {
+      config_manager_.RemoveConfigbserver(*receiver_session_client_);
+    }
+    streaming_controller_ = nullptr;
+    receiver_session_client_.reset();
   }
 
  protected:
+  void CreateClient(bool supports_audio, bool supports_video) {
+    if (receiver_session_client_) {
+      config_manager_.RemoveConfigbserver(*receiver_session_client_);
+    }
+    streaming_controller_ = nullptr;
+    receiver_session_client_.reset();
+    auto streaming_controller =
+        std::make_unique<StrictMock<MockStreamingController>>();
+    streaming_controller_ = streaming_controller.get();
+    auto* client = new StreamingReceiverSessionClient(
+        task_environment_.GetMainThreadTaskRunner(),
+        base::BindRepeating(
+            []() -> network::mojom::NetworkContext* { return nullptr; }),
+        std::move(streaming_controller), &handler_, &config_manager_,
+        supports_audio, supports_video);
+    receiver_session_client_.reset(client);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -107,6 +130,50 @@ TEST_F(StreamingReceiverSessionClientTest, FailureWhenNoConfigAfterLaunch) {
   EXPECT_CALL(handler_, OnError());
   task_environment_.FastForwardBy(
       StreamingReceiverSessionClient::kMaxAVSettingsWaitTime);
+}
+
+TEST_F(StreamingReceiverSessionClientTest,
+       ClearsAudioConstraintsWhenAudioNotSupported) {
+  CreateClient(/*supports_audio=*/false, /*supports_video=*/true);
+
+  cast_streaming::ReceiverConfig config;
+  config.audio_codecs.push_back(media::AudioCodec::kOpus);
+  config.audio_limits.emplace_back();
+  config.video_codecs.push_back(media::VideoCodec::kVP8);
+  config.video_limits.emplace_back();
+
+  cast_streaming::ReceiverConfig received_config;
+  EXPECT_CALL(*streaming_controller_,
+              InitializeReceiverSession(_, receiver_session_client_.get()))
+      .WillOnce(testing::SaveArg<0>(&received_config));
+
+  config_manager_.SetConfig(std::move(config));
+  EXPECT_TRUE(received_config.audio_codecs.empty());
+  EXPECT_TRUE(received_config.audio_limits.empty());
+  EXPECT_EQ(received_config.video_codecs.size(), 1u);
+  EXPECT_EQ(received_config.video_limits.size(), 1u);
+}
+
+TEST_F(StreamingReceiverSessionClientTest,
+       ClearsVideoConstraintsWhenVideoNotSupported) {
+  CreateClient(/*supports_audio=*/true, /*supports_video=*/false);
+
+  cast_streaming::ReceiverConfig config;
+  config.audio_codecs.push_back(media::AudioCodec::kOpus);
+  config.audio_limits.emplace_back();
+  config.video_codecs.push_back(media::VideoCodec::kVP8);
+  config.video_limits.emplace_back();
+
+  cast_streaming::ReceiverConfig received_config;
+  EXPECT_CALL(*streaming_controller_,
+              InitializeReceiverSession(_, receiver_session_client_.get()))
+      .WillOnce(testing::SaveArg<0>(&received_config));
+
+  config_manager_.SetConfig(std::move(config));
+  EXPECT_EQ(received_config.audio_codecs.size(), 1u);
+  EXPECT_EQ(received_config.audio_limits.size(), 1u);
+  EXPECT_TRUE(received_config.video_codecs.empty());
+  EXPECT_TRUE(received_config.video_limits.empty());
 }
 
 }  // namespace cast_receiver

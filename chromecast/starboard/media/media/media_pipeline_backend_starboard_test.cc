@@ -5,6 +5,8 @@
 #include "media_pipeline_backend_starboard.h"
 
 #include "base/test/task_environment.h"
+#include "chromecast/media/base/cast_decoder_buffer_impl.h"
+#include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
@@ -677,6 +679,286 @@ TEST_F(
   // There should be no CDMs at this point, so a null SbDrmSystem should be
   // passed to starboard.
   EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       StreamingAudioAndVideoCreatesVideoOnlyPlayerUntilAudioBufferPushed) {
+  int fake_player_1 = 101;
+  int fake_player_2 = 102;
+  const StarboardPlayerCallbackHandler* callback_handler = nullptr;
+
+  EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(
+          AllOf(CreationParamHasStreamingEnabled(),
+                Pointee(Field(&StarboardPlayerCreationParam::audio_sample_info,
+                              Field(&StarboardAudioSampleInfo::codec,
+                                    Eq(kStarboardAudioCodecNone)))),
+                Pointee(Field(&StarboardPlayerCreationParam::video_sample_info,
+                              Field(&StarboardVideoSampleInfo::codec,
+                                    Eq(kStarboardVideoCodecH264))))),
+          _))
+      .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player_1)));
+
+  MediaPipelineDeviceParams device_params = device_params_;
+  device_params.sync_type =
+      MediaPipelineDeviceParams::MediaSyncType::kModeIgnorePts;
+  MediaPipelineBackendStarboard backend(device_params, &video_plane_);
+  MockStarboardApiWrapper* raw_starboard = starboard_.get();
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  audio_decoder->SetConfig(GetBasicAudioConfig());
+  video_decoder->SetConfig(GetBasicVideoConfig());
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  int initial_seek_ticket = -1;
+  EXPECT_CALL(*raw_starboard, SeekTo(&fake_player_1, 0, _))
+      .WillOnce(SaveArg<2>(&initial_seek_ticket));
+  EXPECT_CALL(*raw_starboard, SetPlaybackRate(&fake_player_1, DoubleEq(1.0)))
+      .WillOnce(Return(true));
+
+  ASSERT_TRUE(backend.Initialize());
+  ASSERT_TRUE(backend.Start(0));
+  ASSERT_THAT(callback_handler, NotNull());
+
+  // Initialize video decoder via OnSampleDecoded after seek, and push a video
+  // buffer.
+  const std::vector<uint8_t> kVideoData = {1, 2, 3, 4};
+  auto video_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(kVideoData));
+  EXPECT_EQ(video_decoder->PushBuffer(video_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  EXPECT_CALL(*raw_starboard,
+              WriteSample(&fake_player_1, kStarboardMediaTypeVideo, _))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player_1, callback_handler->context, kStarboardMediaTypeVideo,
+      kStarboardDecoderStateNeedsData, initial_seek_ticket);
+
+  // Now push an audio buffer while video write is still in-flight on
+  // fake_player_1. The backend should re-queue the in-flight video push,
+  // destroy fake_player_1, and recreate the player with both audio and video
+  // enabled without notifying `video_delegate` prematurely.
+  int second_seek_ticket = -1;
+  EXPECT_CALL(video_delegate, OnPushBufferComplete(_)).Times(0);
+  EXPECT_CALL(*raw_starboard, GetPlayerInfo(&fake_player_1, _)).Times(2);
+  EXPECT_CALL(*raw_starboard, DestroyPlayer(&fake_player_1)).Times(1);
+  EXPECT_CALL(
+      *raw_starboard,
+      CreatePlayer(
+          AllOf(CreationParamHasStreamingEnabled(),
+                Pointee(Field(&StarboardPlayerCreationParam::audio_sample_info,
+                              Field(&StarboardAudioSampleInfo::codec,
+                                    Eq(kStarboardAudioCodecMp3)))),
+                Pointee(Field(&StarboardPlayerCreationParam::video_sample_info,
+                              Field(&StarboardVideoSampleInfo::codec,
+                                    Eq(kStarboardVideoCodecH264))))),
+          _))
+      .WillOnce(Return(&fake_player_2));
+  EXPECT_CALL(*raw_starboard, SeekTo(&fake_player_2, _, _))
+      .WillOnce(SaveArg<2>(&second_seek_ticket));
+  EXPECT_CALL(*raw_starboard, SetPlaybackRate(&fake_player_2, DoubleEq(1.0)))
+      .WillOnce(Return(true));
+
+  const std::vector<uint8_t> kAudioData = {5, 6, 7, 8};
+  auto audio_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(kAudioData));
+  EXPECT_EQ(audio_decoder->PushBuffer(audio_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  // When the new player finishes seeking and requests audio and video data,
+  // both the pending audio buffer and the re-queued in-flight video buffer
+  // should be written to fake_player_2.
+  EXPECT_CALL(*raw_starboard,
+              WriteSample(&fake_player_2, kStarboardMediaTypeAudio, _))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player_2, callback_handler->context, kStarboardMediaTypeAudio,
+      kStarboardDecoderStateNeedsData, second_seek_ticket);
+
+  EXPECT_CALL(*raw_starboard,
+              WriteSample(&fake_player_2, kStarboardMediaTypeVideo, _))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player_2, callback_handler->context, kStarboardMediaTypeVideo,
+      kStarboardDecoderStateNeedsData, second_seek_ticket);
+
+  EXPECT_CALL(
+      video_delegate,
+      OnPushBufferComplete(MediaPipelineBackend::BufferStatus::kBufferSuccess))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player_2, callback_handler->context, kStarboardMediaTypeVideo,
+      kStarboardDecoderStateNeedsData, second_seek_ticket);
+
+  EXPECT_CALL(*raw_starboard, DestroyPlayer(&fake_player_2)).Times(1);
+}
+
+TEST_F(
+    MediaPipelineBackendStarboardTest,
+    StreamingAudioAndVideoCreatesAudioVideoPlayerIfAudioPushedBeforeInitialize) {
+  int fake_player = 1;
+  const StarboardPlayerCallbackHandler* callback_handler = nullptr;
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(
+          AllOf(CreationParamHasStreamingEnabled(),
+                Pointee(Field(&StarboardPlayerCreationParam::audio_sample_info,
+                              Field(&StarboardAudioSampleInfo::codec,
+                                    Eq(kStarboardAudioCodecMp3)))),
+                Pointee(Field(&StarboardPlayerCreationParam::video_sample_info,
+                              Field(&StarboardVideoSampleInfo::codec,
+                                    Eq(kStarboardVideoCodecH264))))),
+          _))
+      .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player)));
+
+  MediaPipelineDeviceParams device_params = device_params_;
+  device_params.sync_type =
+      MediaPipelineDeviceParams::MediaSyncType::kModeIgnorePts;
+  MediaPipelineBackendStarboard backend(device_params, &video_plane_);
+  MockStarboardApiWrapper* raw_starboard = starboard_.get();
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+  EXPECT_TRUE(audio_decoder->SetConfig(GetBasicAudioConfig()));
+  EXPECT_TRUE(video_decoder->SetConfig(GetBasicVideoConfig()));
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  const std::vector<uint8_t> kAudioData = {5, 6, 7, 8};
+  auto audio_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(kAudioData));
+  EXPECT_EQ(audio_decoder->PushBuffer(audio_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  int seek_ticket = -1;
+  EXPECT_CALL(*raw_starboard, SeekTo(&fake_player, 0, _))
+      .WillOnce(SaveArg<2>(&seek_ticket));
+  EXPECT_CALL(*raw_starboard, SetPlaybackRate(&fake_player, DoubleEq(1.0)))
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(backend.Initialize());
+  EXPECT_TRUE(backend.Start(0));
+  ASSERT_THAT(callback_handler, NotNull());
+
+  EXPECT_CALL(*raw_starboard,
+              WriteSample(&fake_player, kStarboardMediaTypeAudio, _))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player, callback_handler->context, kStarboardMediaTypeAudio,
+      kStarboardDecoderStateNeedsData, seek_ticket);
+
+  EXPECT_CALL(*raw_starboard, DestroyPlayer(&fake_player)).Times(1);
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       NonStreamingAudioEosBeforeDecoderInitializedForwardsEndOfStream) {
+  int fake_player = 1;
+  const StarboardPlayerCallbackHandler* callback_handler = nullptr;
+  EXPECT_CALL(*starboard_, CreatePlayer(_, _))
+      .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player)));
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  MockStarboardApiWrapper* raw_starboard = starboard_.get();
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  ASSERT_THAT(audio_decoder, NotNull());
+  EXPECT_TRUE(audio_decoder->SetConfig(GetBasicAudioConfig()));
+
+  MockDelegate audio_delegate;
+  audio_decoder->SetDelegate(&audio_delegate);
+
+  int seek_ticket = -1;
+  EXPECT_CALL(*raw_starboard, SeekTo(&fake_player, 0, _))
+      .WillOnce(SaveArg<2>(&seek_ticket));
+  EXPECT_CALL(*raw_starboard, SetPlaybackRate(&fake_player, DoubleEq(1.0)))
+      .WillOnce(Return(true));
+
+  ASSERT_TRUE(backend.Initialize());
+  ASSERT_TRUE(backend.Start(0));
+  ASSERT_THAT(callback_handler, NotNull());
+
+  auto eos_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CreateEOSBuffer());
+  EXPECT_EQ(audio_decoder->PushBuffer(eos_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  EXPECT_CALL(*raw_starboard,
+              WriteEndOfStream(&fake_player, kStarboardMediaTypeAudio))
+      .Times(1);
+  EXPECT_CALL(
+      audio_delegate,
+      OnPushBufferComplete(MediaPipelineBackend::BufferStatus::kBufferSuccess))
+      .Times(1);
+  callback_handler->decoder_status_fn(
+      &fake_player, callback_handler->context, kStarboardMediaTypeAudio,
+      kStarboardDecoderStateNeedsData, seek_ticket);
+
+  EXPECT_CALL(*raw_starboard, DestroyPlayer(&fake_player)).Times(1);
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       StreamingVideoOnlyPlayerCompletesAudioEosImmediately) {
+  int fake_player = 1;
+  EXPECT_CALL(*starboard_, CreatePlayer(_, _)).WillOnce(Return(&fake_player));
+
+  MediaPipelineDeviceParams device_params = device_params_;
+  device_params.sync_type =
+      MediaPipelineDeviceParams::MediaSyncType::kModeIgnorePts;
+  MediaPipelineBackendStarboard backend(device_params, &video_plane_);
+  MockStarboardApiWrapper* raw_starboard = starboard_.get();
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+  EXPECT_TRUE(audio_decoder->SetConfig(GetBasicAudioConfig()));
+  EXPECT_TRUE(video_decoder->SetConfig(GetBasicVideoConfig()));
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  EXPECT_CALL(*raw_starboard, SeekTo(&fake_player, 0, _)).Times(1);
+  EXPECT_CALL(*raw_starboard, SetPlaybackRate(&fake_player, DoubleEq(1.0)))
+      .WillOnce(Return(true));
+
+  ASSERT_TRUE(backend.Initialize());
+  ASSERT_TRUE(backend.Start(0));
+
+  auto eos_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CreateEOSBuffer());
+  EXPECT_EQ(audio_decoder->PushBuffer(eos_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferSuccess);
+
+  EXPECT_CALL(*raw_starboard, DestroyPlayer(&fake_player)).Times(1);
 }
 
 }  // namespace

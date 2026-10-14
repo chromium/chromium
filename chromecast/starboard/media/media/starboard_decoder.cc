@@ -20,6 +20,22 @@ namespace media {
 
 using BufferStatus = ::chromecast::media::MediaPipelineBackend::BufferStatus;
 
+StarboardDecoder::InFlightWrite::InFlightWrite(StarboardSampleInfo sample_info,
+                                               DrmInfoWrapper drm_info,
+                                               const uint8_t* buffer_addr,
+                                               size_t buffer_size)
+    : sample_info(std::move(sample_info)),
+      drm_info(std::move(drm_info)),
+      buffer_addr(buffer_addr),
+      buffer_size(buffer_size) {}
+
+StarboardDecoder::InFlightWrite::InFlightWrite(InFlightWrite&& other) = default;
+
+StarboardDecoder::InFlightWrite& StarboardDecoder::InFlightWrite::operator=(
+    InFlightWrite&& other) = default;
+
+StarboardDecoder::InFlightWrite::~InFlightWrite() = default;
+
 StarboardDecoder::StarboardDecoder(StarboardApiWrapper* starboard,
                                    StarboardMediaType media_type)
     : starboard_(starboard), media_type_(media_type) {
@@ -46,6 +62,13 @@ void StarboardDecoder::Deallocate(const uint8_t* buffer) {
     return;
   }
 
+  if (in_flight_write_ && in_flight_write_->buffer_addr == buffer) {
+    // Starboard released the sample's data before reporting the write
+    // complete. The sample can no longer be re-sent by RequeueInFlightWrite()
+    // if the SbPlayer is recreated before OnBufferWritten(); it is dropped.
+    in_flight_write_->buffer_addr = nullptr;
+  }
+
   // This frees the memory via the unique_ptr's destructor.
   copied_buffers_.erase(it);
 }
@@ -66,6 +89,7 @@ void StarboardDecoder::Initialize(void* sb_player) {
 
     if (status == BufferStatus::kBufferSuccess) {
       // We pushed EoS.
+      in_flight_write_.reset();
       delegate_->OnPushBufferComplete(BufferStatus::kBufferSuccess);
     }
     // For the kBufferPending case, we wait until
@@ -82,6 +106,7 @@ void StarboardDecoder::Stop() {
 
   pending_first_push_.Reset();
   pending_drm_key_.Reset();
+  in_flight_write_.reset();
   if (drm_key_token_) {
     StarboardDrmKeyTracker::GetInstance().UnregisterCallback(*drm_key_token_);
     drm_key_token_ = std::nullopt;
@@ -89,6 +114,12 @@ void StarboardDecoder::Stop() {
 
   // By setting this to null, we will not push any more buffers until Initialize
   // is called again.
+  player_ = nullptr;
+  StopInternal();
+}
+
+void StarboardDecoder::ResetPlayerForRecreation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   player_ = nullptr;
 }
 
@@ -100,7 +131,38 @@ bool StarboardDecoder::IsInitialized() {
 void StarboardDecoder::OnBufferWritten() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+  // `pending_drm_key_` is intentionally left alone: it holds a buffer parked by
+  // PushBufferInternal() until its DRM key arrives and is run or dropped
+  // together with `drm_key_token_`.
+  in_flight_write_.reset();
   delegate_->OnPushBufferComplete(BufferStatus::kBufferSuccess);
+}
+
+void StarboardDecoder::RequeueInFlightWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (drm_key_token_) {
+    StarboardDrmKeyTracker::GetInstance().UnregisterCallback(*drm_key_token_);
+    drm_key_token_ = std::nullopt;
+  }
+  if (pending_drm_key_) {
+    pending_first_push_ = std::move(pending_drm_key_);
+    return;
+  }
+  if (!in_flight_write_) {
+    return;
+  }
+  InFlightWrite in_flight = std::move(*in_flight_write_);
+  in_flight_write_.reset();
+  auto it = copied_buffers_.find(in_flight.buffer_addr);
+  if (it == copied_buffers_.end()) {
+    return;
+  }
+  base::HeapArray<uint8_t> requeue_copy =
+      base::HeapArray<uint8_t>::CopiedFrom(it->second.as_span());
+  pending_first_push_ =
+      base::BindOnce(&StarboardDecoder::PushBufferInternal,
+                     base::Unretained(this), std::move(in_flight.sample_info),
+                     std::move(in_flight.drm_info), std::move(requeue_copy));
 }
 
 void StarboardDecoder::SetDecoderDelegate(
@@ -178,8 +240,9 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   }
 
   const uint8_t* buffer_addr = buffer_data.data();
+  const size_t buffer_size = buffer_data.size();
   sample_info.buffer = static_cast<const void*>(buffer_addr);
-  sample_info.buffer_size = buffer_data.size();
+  sample_info.buffer_size = buffer_size;
   sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
   // Ensure that we do not delete the media data until Deallocate is called.
@@ -188,6 +251,8 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   DCHECK(inserted) << "Duplicate memory address in copied_buffers_: "
                    << static_cast<const void*>(buffer_addr);
 
+  in_flight_write_.emplace(sample_info, std::move(drm_info), buffer_addr,
+                           buffer_size);
   starboard_->WriteSample(player_, media_type_,
                           base::span_from_ref(sample_info));
 

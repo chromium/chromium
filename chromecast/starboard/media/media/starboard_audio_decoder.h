@@ -29,6 +29,10 @@ class StarboardAudioDecoder : public StarboardDecoder,
   // Returns the audio config or nullopt if the config has not been set yet.
   const std::optional<StarboardAudioSampleInfo>& GetAudioSampleInfo();
 
+  // Registers a callback to be invoked the first time a non-EOS audio buffer is
+  // pushed to this decoder.
+  void SetOnFirstPushCallback(base::OnceClosure callback);
+
   // MediaPipelineBackend::AudioDecoder implementation:
   bool SetConfig(const AudioConfig& config) override;
   bool SetVolume(float multiplier) override;
@@ -59,6 +63,7 @@ class StarboardAudioDecoder : public StarboardDecoder,
   uint64_t decoded_bytes_ = 0;
   // This format is what we will be changing all PCM data to during decoding.
   StarboardPcmSampleFormat format_to_decode_to_;
+  base::OnceClosure on_first_push_cb_;
 };
 
 }  // namespace media
