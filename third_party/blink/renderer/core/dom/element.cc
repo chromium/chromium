@@ -4583,6 +4583,11 @@ bool Element::IsCanvasOrInCanvasSubtree() const {
 }
 
 void Element::DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) {
+  if (IsLink() && GetComputedStyle()) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::Create(
+                            style_change_reason::kFlatTreeChange));
+  }
   if (auto* layout_object = GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();

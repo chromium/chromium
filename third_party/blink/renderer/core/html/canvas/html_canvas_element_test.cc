@@ -962,4 +962,62 @@ TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
   EXPECT_FALSE(y->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, SlotReassignmentInvalidatesVisitedLinkStyle) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <div>
+          <slot name="outside"></slot>
+        </div>
+        <canvas content="drawable">
+          <div drawable>
+            <slot name="inside"></slot>
+          </div>
+        </canvas>
+      </template>
+      <div id="payload" slot="outside">
+        <a id="link" href=""><span id="child">Link</span></a>
+        <svg><a id="svg_link" href=""><rect width="10" height="10"/></a></svg>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* payload = GetDocument().getElementById(AtomicString("payload"));
+  auto* link = GetDocument().getElementById(AtomicString("link"));
+  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* svg_link = GetDocument().getElementById(AtomicString("svg_link"));
+
+  EXPECT_FALSE(link->IsInCanvasSubtree());
+  EXPECT_EQ(link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(child->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(svg_link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+
+  payload->setAttribute(html_names::kSlotAttr, AtomicString("inside"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(link->IsInCanvasSubtree());
+  EXPECT_EQ(link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideUnvisitedLink);
+  EXPECT_EQ(child->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideUnvisitedLink);
+  EXPECT_EQ(svg_link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideUnvisitedLink);
+
+  payload->setAttribute(html_names::kSlotAttr, AtomicString("outside"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(link->IsInCanvasSubtree());
+  EXPECT_EQ(link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(child->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(svg_link->GetComputedStyle()->InsideLink(),
+            EInsideLink::kInsideVisitedLink);
+}
+
 }  // namespace blink
