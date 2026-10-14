@@ -523,9 +523,6 @@ NSError* SanitizeNavigationError(
                                               transition:transition]) {
       policyDecision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
     }
-    if (policyDecision.ShouldAllowNavigation()) {
-      [self.delegate navigationHandler:self createWebUIForURL:requestURL];
-    }
   }
 
   const BOOL webControllerCanShow =
@@ -1778,6 +1775,10 @@ NSError* SanitizeNavigationError(
                       webView:(WKWebView*)webView
      forceBlockUniversalLinks:(BOOL)forceBlockUniversalLinks {
   if (policyDecision.ShouldAllowNavigation()) {
+    GURL requestURL = net::GURLWithNSURL(action.request.URL);
+    if (web::GetWebClient()->IsAppSpecificURL(requestURL)) {
+      [self.delegate navigationHandler:self createWebUIForURL:requestURL];
+    }
     if ([[action.request HTTPMethod] isEqualToString:@"POST"]) {
       web::FormWarningType warning_type = [self formWarningType:action];
       // Display the confirmation dialog if a form repost is detected.

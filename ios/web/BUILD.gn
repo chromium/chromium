@@ -467,6 +467,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//ios/web/public/webui",
     "//ios/web/security",
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",

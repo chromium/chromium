@@ -43,6 +43,8 @@
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_state_observer.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
+#import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/crw_fake_web_view_content_view.h"
@@ -2277,6 +2279,83 @@ TEST_F(
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return callback_called;
   }));
+}
+
+// Tests that WebUI is not created when a navigation is cancelled by a policy
+// decider, and is created when the policy decider allows the navigation.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       WebUINotCreatedWhenPolicyDeciderCancelsNavigation) {
+  class MinimalWebUIControllerFactory : public WebUIIOSControllerFactory {
+   public:
+    std::unique_ptr<WebUIIOSController> CreateWebUIIOSControllerForURL(
+        WebUIIOS* web_ui,
+        const GURL& url) const override {
+      return std::make_unique<WebUIIOSController>(web_ui, url.GetHost());
+    }
+    NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {
+      return url.SchemeIs(kTestWebUIScheme) ? 0 : NSURLErrorUnsupportedURL;
+    }
+  };
+
+  MinimalWebUIControllerFactory factory;
+  WebUIIOSControllerFactory::RegisterFactory(&factory);
+
+  [fake_wk_list_ setCurrentURL:@(kTestAppSpecificURL)];
+  NSURL* app_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSMutableURLRequest* app_request =
+      [NSMutableURLRequest requestWithURL:app_url];
+  app_request.mainDocumentURL = app_url;
+
+  FakeWKFrameInfo* main_frame = [[FakeWKFrameInfo alloc] init];
+  main_frame.mainFrame = YES;
+  main_frame.webView = mock_web_view_;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = app_request;
+  action.navigationType = WKNavigationTypeBackForward;
+  action.targetFrame = (WKFrameInfo*)main_frame;
+
+  FakeWebStatePolicyDecider policy_decider(web_state());
+  policy_decider.SetShouldAllowRequest(
+      web::WebStatePolicyDecider::PolicyDecision::Cancel());
+
+  WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
+
+  // 1. Back-forward navigation to an app-specific URL cancelled by a policy
+  // decider must not create a WebUI instance on the WebState.
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_FALSE(web_state_impl->HasWebUI());
+
+  // 2. When the policy decider allows the navigation, WebUI is created.
+  policy_decider.SetShouldAllowRequest(
+      web::WebStatePolicyDecider::PolicyDecision::Allow());
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_TRUE(web_state_impl->HasWebUI());
+
+  web_state_impl->ClearWebUI();
+  WebUIIOSControllerFactory::DeregisterFactory(&factory);
 }
 
 // Test fixture for window.open tests.
