@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class OverlayRequest;
@@ -43,7 +44,7 @@ class OverlayRequestCallbackInstaller {
   // Set containing the requests for which callbacks have already been
   // installed.  Requests are removed from the set when their completion
   // callbacks are executed.
-  std::set<OverlayRequest*> requests_;
+  std::set<raw_ptr<OverlayRequest>> requests_;
 
   base::WeakPtrFactory<OverlayRequestCallbackInstaller> weak_factory_{this};
 };

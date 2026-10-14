@@ -28,7 +28,7 @@ class PermissionsBannerOverlayMediatorTest : public PlatformTest {
   PermissionsBannerOverlayMediatorTest()
       : callback_installer_(
             &callback_receiver_,
-            std::set<const OverlayResponseSupport*>(
+            std::set<raw_ptr<const OverlayResponseSupport>>(
                 {InfobarBannerShowModalResponse::ResponseSupport()})) {}
 
  protected:

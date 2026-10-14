@@ -54,8 +54,9 @@ class FakeOverlayBrowserAgent
     // DispatchInfo.
     std::unique_ptr<FakeOverlayRequestCallbackInstaller> installer =
         std::make_unique<FakeOverlayRequestCallbackInstaller>(
-            &mock_callback_receiver_, std::set<const OverlayResponseSupport*>(
-                                          {DispatchInfo::ResponseSupport()}));
+            &mock_callback_receiver_,
+            std::set<raw_ptr<const OverlayResponseSupport>>(
+                {DispatchInfo::ResponseSupport()}));
     installer->set_request_support(SupportedConfig::RequestSupport());
     AddInstaller(std::move(installer), kModality);
   }

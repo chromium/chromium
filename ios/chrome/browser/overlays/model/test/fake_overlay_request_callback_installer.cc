@@ -38,7 +38,7 @@ void FakeOverlayRequestCallbackReceiver::RunDispatchCallback(
 
 FakeOverlayRequestCallbackInstaller::FakeOverlayRequestCallbackInstaller(
     FakeOverlayRequestCallbackReceiver* receiver,
-    const std::set<const OverlayResponseSupport*>& dispatch_supports)
+    const std::set<raw_ptr<const OverlayResponseSupport>>& dispatch_supports)
     : receiver_(receiver), dispatch_supports_(dispatch_supports) {
   DCHECK(receiver_);
 }

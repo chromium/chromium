@@ -31,8 +31,9 @@ class OverlayRequestQueueCallbackInstallerTest : public PlatformTest {
         OverlayRequestQueueCallbackInstaller::Create(&web_state_, kModality);
     std::unique_ptr<FakeOverlayRequestCallbackInstaller> request_installer =
         std::make_unique<FakeOverlayRequestCallbackInstaller>(
-            &callback_receiver_, std::set<const OverlayResponseSupport*>(
-                                     {DispatchInfo::ResponseSupport()}));
+            &callback_receiver_,
+            std::set<raw_ptr<const OverlayResponseSupport>>(
+                {DispatchInfo::ResponseSupport()}));
     request_installer->set_request_support(SupportedConfig::RequestSupport());
     queue_installer_->AddRequestCallbackInstaller(std::move(request_installer));
   }

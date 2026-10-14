@@ -106,7 +106,7 @@ class InfobarOverlayBrowserAgentTest
     std::unique_ptr<FakeOverlayRequestCallbackInstaller> installer =
         std::make_unique<FakeOverlayRequestCallbackInstaller>(
             &mock_callback_receivers_[overlay_type],
-            std::set<const OverlayResponseSupport*>(
+            std::set<raw_ptr<const OverlayResponseSupport>>(
                 {DispatchInfo::ResponseSupport()}));
     installer->set_request_support(&request_supports_.at(overlay_type));
     return installer;

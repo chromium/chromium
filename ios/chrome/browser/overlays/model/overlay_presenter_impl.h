@@ -187,7 +187,7 @@ class OverlayPresenterImpl : public OverlayPresenter,
   std::unique_ptr<OverlayRequest> removed_request_awaiting_dismissal_;
   // A set of all OverlayRequests that have been shown by the presenter.
   // Requests are removed when they are completed.
-  std::set<OverlayRequest*> previously_presented_requests_;
+  std::set<raw_ptr<OverlayRequest>> previously_presented_requests_;
 
   OverlayModality modality_;
   raw_ptr<WebStateList> web_state_list_ = nullptr;
