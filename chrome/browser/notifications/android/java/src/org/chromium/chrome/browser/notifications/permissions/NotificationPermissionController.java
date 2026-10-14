@@ -16,12 +16,18 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionPrefs;
@@ -111,6 +117,7 @@ public class NotificationPermissionController {
 
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final Supplier<RationaleDelegate> mRationaleDelegateSupplier;
+    private final @Nullable Profile mProfile;
 
     /**
      * Constructor. Should only be called by {@link ChromeTabbedActivity}. Features looking to
@@ -123,8 +130,25 @@ public class NotificationPermissionController {
     public NotificationPermissionController(
             AndroidPermissionDelegate androidPermissionDelegate,
             Supplier<RationaleDelegate> rationaleDelegateSupplier) {
+        this(androidPermissionDelegate, rationaleDelegateSupplier, /* profile= */ null);
+    }
+
+    /**
+     * Constructor. Should only be called by {@link ChromeTabbedActivity}. Features looking to
+     * request this permission in context should instead use {@link
+     * ContextualNotificationPermissionRequester}.
+     *
+     * @param androidPermissionDelegate The delegate to request Android permissions.
+     * @param rationaleDelegateSupplier The delegate to show the rationale UI.
+     * @param profile The current {@link Profile}, or null if unavailable.
+     */
+    public NotificationPermissionController(
+            AndroidPermissionDelegate androidPermissionDelegate,
+            Supplier<RationaleDelegate> rationaleDelegateSupplier,
+            @Nullable Profile profile) {
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mRationaleDelegateSupplier = rationaleDelegateSupplier;
+        mProfile = profile;
     }
 
     /**
@@ -186,6 +210,20 @@ public class NotificationPermissionController {
         @PermissionRequestMode int requestMode = shouldRequestPermission();
         if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return false;
 
+        if (mProfile != null && ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled()) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+            FeatureProperties featureProperties =
+                    new FeatureProperties(
+                            UiFormat.ALERTS,
+                            /* isBlockedByEnterprisePolicy= */ false,
+                            /* isBlockedByCooldownGroup= */ false,
+                            /* blocksCooldownGroup= */ true);
+            if (!tracker.shouldTriggerHelpUi(
+                    FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE, featureProperties)) {
+                return false;
+            }
+        }
+
         if (requestMode == PermissionRequestMode.REQUEST_ANDROID_PERMISSION) {
             requestAndroidPermission();
             recordOsPromptShown();
@@ -199,10 +237,19 @@ public class NotificationPermissionController {
                                 }
                                 if (rationaleResult == RationaleUiResult.ACCEPTED) {
                                     requestAndroidPermission();
+                                } else {
+                                    notifyTrackerDismissed();
                                 }
                             });
         }
         return true;
+    }
+
+    private void notifyTrackerDismissed() {
+        if (mProfile != null && ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled()) {
+            TrackerFactory.getTrackerForProfile(mProfile)
+                    .dismissed(FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE);
+        }
     }
 
     private void recordOsPromptShown() {
@@ -357,6 +404,7 @@ public class NotificationPermissionController {
     }
 
     private void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
+        notifyTrackerDismissed();
         if (permissions == null
                 || grantResults == null
                 || permissions.length != 1

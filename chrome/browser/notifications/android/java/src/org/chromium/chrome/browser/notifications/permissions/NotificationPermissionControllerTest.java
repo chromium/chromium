@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.notifications.permissions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
@@ -30,11 +35,19 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.PermissionRequestMode;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
@@ -45,6 +58,7 @@ import java.lang.ref.WeakReference;
 /** Robolectric unit tests for {@link NotificationPermissionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = VERSION_CODES.TIRAMISU)
+@DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
 public class NotificationPermissionControllerTest {
     @Rule public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
 
@@ -1054,6 +1068,58 @@ public class NotificationPermissionControllerTest {
                                     0,
                                     PermissionPrefs
                                             .getAndroidNotificationPermissionRequestTimestamp());
+                        });
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    public void testNotificationPrompt_recordsCooldownGroupWithBypassProperties() {
+        Profile profile = mock(Profile.class);
+        Tracker tracker = mock(Tracker.class);
+        TrackerFactory.setTrackerForTests(tracker);
+        FeatureProperties expectedProps =
+                new FeatureProperties(
+                        UiFormat.ALERTS,
+                        /* isBlockedByEnterprisePolicy= */ false,
+                        /* isBlockedByCooldownGroup= */ false,
+                        /* blocksCooldownGroup= */ true);
+        when(tracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE),
+                        eq(expectedProps)))
+                .thenReturn(true);
+
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            shadowOf(activity)
+                                    .denyPermissions(Manifest.permission.POST_NOTIFICATIONS);
+                            TestAndroidPermissionDelegate permissionDelegate =
+                                    new TestAndroidPermissionDelegate(
+                                            new WeakReference<>(activity));
+                            NotificationPermissionController notificationPermissionController =
+                                    new NotificationPermissionController(
+                                            permissionDelegate,
+                                            TestRationaleDelegate::new,
+                                            profile);
+
+                            assertTrue(
+                                    notificationPermissionController.requestPermissionIfNeeded(
+                                            /* contextual= */ false));
+
+                            verify(tracker)
+                                    .shouldTriggerHelpUi(
+                                            FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE,
+                                            expectedProps);
+                            verify(tracker, never())
+                                    .dismissed(
+                                            FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE);
+
+                            invokeOSPermissionCallback(
+                                    permissionDelegate, /* permissionGranted= */ true);
+                            verify(tracker)
+                                    .dismissed(
+                                            FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE);
                         });
     }
 }

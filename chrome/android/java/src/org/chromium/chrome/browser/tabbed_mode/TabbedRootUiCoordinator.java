@@ -2993,7 +2993,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         new NotificationPermissionRationaleDialogController(
                                 mActivity, mModalDialogManagerSupplier.get());
         mNotificationPermissionController =
-                new NotificationPermissionController(mWindowAndroid, rationaleUIDelegateSupplier);
+                new NotificationPermissionController(
+                        mWindowAndroid, rationaleUIDelegateSupplier, profile);
         NotificationPermissionController.attach(mWindowAndroid, mNotificationPermissionController);
         if (mNotificationPermissionController.requestPermissionIfNeeded(/* contextual= */ false)) {
             return true;
