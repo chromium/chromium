@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
+#include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
@@ -99,6 +100,9 @@ class GlicDragAndDropPolicyTest : public GlicDragAndDropTestBase,
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
     GlicDragAndDropTestBase::TearDownOnMainThread();
   }
+
+ private:
+  ScopedPageContextEligibilityForTesting scoped_eligibility_;
 };
 
 IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
@@ -296,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest,
                 GlicInvokeError::kAdditionalContextFailedPastePolicy));
       },
       1));
-  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
 }

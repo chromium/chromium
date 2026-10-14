@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -11,10 +10,9 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -30,81 +28,9 @@
 namespace glic {
 namespace {
 
-bool MockIsEligibleWithAccount(
-    const std::string& host,
-    const std::string& path,
-    const std::string& account,
-    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
-  if (path.find("ineligible") != std::string::npos ||
-      host.find("ineligible") != std::string::npos) {
-    return false;
-  }
-  return true;
-}
-
-optimization_guide::StringViewSpan MockGetMeta(
-    std::string_view,
-    std::string_view,
-    const std::vector<optimization_guide::FrameMetadata>&) {
-  return optimization_guide::StringViewSpan{.data = nullptr, .size = 0};
-}
-
-optimization_guide::PageEligibilityResult MockCheckPageEligibility(
-    const std::vector<optimization_guide::FrameUrl>& frames) {
-  bool eligible = true;
-  for (const auto& frame : frames) {
-    if (frame.path.find("ineligible") != std::string::npos ||
-        frame.host.find("ineligible") != std::string::npos) {
-      eligible = false;
-      break;
-    }
-  }
-  return optimization_guide::PageEligibilityResult{
-      .status = eligible ? optimization_guide::PageEligibility::kEligible
-                         : optimization_guide::PageEligibility::kIneligible,
-      .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
-}
-
-bool MockIsEligible(
-    const std::string& host,
-    const std::string& path,
-    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
-  if (path.find("ineligible") != std::string::npos ||
-      host.find("ineligible") != std::string::npos) {
-    return false;
-  }
-  return true;
-}
-
-bool MockShouldReextractPageContext(
-    const std::string& host,
-    const std::string& path,
-    const std::vector<std::string>& updated_meta_tags) {
-  return false;
-}
-
-optimization_guide::PageContextEligibilityAPI g_test_api = {
-    .IsPageContextEligible = &MockIsEligible,
-    .IsPageContextEligibleWithAccount = &MockIsEligibleWithAccount,
-    .ShouldReextractPageContext = &MockShouldReextractPageContext,
-    .GetMetaTagNamesAffectingEligibility = &MockGetMeta,
-    .CheckPageEligibility = &MockCheckPageEligibility,
-};
-
 class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
  public:
   GlicPasteEligibilityBrowserTest() = default;
-
-  void SetUp() override {
-    optimization_guide::PageContextEligibility::SetForTesting(
-        GetTestEligibilityHolder());
-    GlicBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    GlicBrowserTest::TearDown();
-    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
-  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -113,12 +39,6 @@ class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
   }
 
  protected:
-  optimization_guide::PageContextEligibility* GetTestEligibilityHolder() {
-    static base::NoDestructor<optimization_guide::PageContextEligibility>
-        holder(&g_test_api);
-    return holder.get();
-  }
-
   std::optional<content::ClipboardPasteData> SyncCheckPasteEligibility(
       const content::ClipboardEndpoint& source,
       content::WebContents* glic_guest) {
@@ -160,6 +80,9 @@ class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
     EXPECT_TRUE(glic_guest != nullptr && IsGlicGuest(glic_guest));
     return glic_guest;
   }
+
+ private:
+  ScopedPageContextEligibilityForTesting scoped_eligibility_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,

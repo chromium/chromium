@@ -48,6 +48,7 @@
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
+#include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
@@ -409,6 +410,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   page_context_eligibility_helper_ =
       GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
           *tab, *tab);
+
+  glic_web_drag_observer_ = std::make_unique<glic::GlicWebDragObserver>(*tab);
 
   bool use_glic_side_panel = false;
   if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel) &&

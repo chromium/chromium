@@ -4444,6 +4444,63 @@ TEST_F(WebContentsImplTest, MultipleDragProvenancesAreIsolated) {
             contents());
 }
 
+namespace {
+
+// Records what observers see when a drag starts.
+class DragStartObserver : public WebContentsObserver {
+ public:
+  explicit DragStartObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void DidStartDrag(RenderFrameHost* source_rfh,
+                    const DropData& drop_data) override {
+    ++call_count_;
+    observed_drag_id_ = drop_data.drag_id;
+    observed_rfh_token_ = source_rfh->GetGlobalFrameToken();
+  }
+
+  int call_count() const { return call_count_; }
+  const std::optional<base::UnguessableToken>& observed_drag_id() const {
+    return observed_drag_id_;
+  }
+  const GlobalRenderFrameHostToken& observed_rfh_token() const {
+    return observed_rfh_token_;
+  }
+
+ private:
+  int call_count_ = 0;
+  std::optional<base::UnguessableToken> observed_drag_id_;
+  GlobalRenderFrameHostToken observed_rfh_token_;
+};
+
+}  // namespace
+
+TEST_F(WebContentsImplTest, ObserverNotifiedOnDragStartWithDragId) {
+  DragStartObserver observer(contents());
+
+  GlobalRenderFrameHostToken source_rfh_token =
+      main_test_rfh()->GetGlobalFrameToken();
+
+  DropData drop_data;
+  contents()->OnStartDragging(&drop_data, source_rfh_token);
+
+  // Observers key drag-start state on `drag_id`, so it must already be
+  // assigned by the time the notification fires.
+  EXPECT_EQ(observer.call_count(), 1);
+  ASSERT_TRUE(drop_data.drag_id.has_value());
+  EXPECT_EQ(observer.observed_drag_id(), drop_data.drag_id);
+  EXPECT_EQ(observer.observed_rfh_token(), source_rfh_token);
+}
+
+TEST_F(WebContentsImplTest, ObserverNotNotifiedIfInvalidSourceFrame) {
+  DragStartObserver observer(contents());
+
+  DropData drop_data;
+  contents()->OnStartDragging(&drop_data, GlobalRenderFrameHostToken());
+
+  EXPECT_EQ(observer.call_count(), 0);
+}
+
 TEST_F(WebContentsImplTest, ConstrainPopupBounds) {
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       contents()->GetRenderWidgetHostView());

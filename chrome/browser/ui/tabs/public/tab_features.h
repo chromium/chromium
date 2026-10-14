@@ -228,6 +228,7 @@ class GlicPromotionSourceNavigationObserver;
 class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
+class GlicWebDragObserver;
 class SelectionOverlayController;
 class SelectionSuggestionTool;
 class GlicPageFeaturesManager;
@@ -712,6 +713,7 @@ class TabFeatures {
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
+  std::unique_ptr<glic::GlicWebDragObserver> glic_web_drag_observer_;
   std::unique_ptr<selection::SuggestionService>
       selection_suggestion_service_;
   std::unique_ptr<glic::SelectionSuggestionTool>

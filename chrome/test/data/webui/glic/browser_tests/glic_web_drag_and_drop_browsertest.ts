@@ -59,6 +59,9 @@ class GlicWebDragAndDropBrowserTest extends ApiTestFixtureBase {
         }
         let foundImage = false;
         for (const part of options.context.parts) {
+          assertFalse(
+              Boolean(part.tabContext),
+              'TabContext should not be sent to the web client for drag/drop');
           if (part.data) {
             foundImage = true;
             const blob = part.data;

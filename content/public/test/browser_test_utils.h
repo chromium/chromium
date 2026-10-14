@@ -2852,6 +2852,11 @@ class RequestCloseWidgetInterceptor
 // by the browser process. Returns `false` if the test times out before that.
 [[nodiscard]] bool CrashFrameProcess(const ToRenderFrameHost& adapter);
 
+// Simulates the browser-side drag-start path for `source_rfh`, assigning
+// `drop_data->drag_id` and notifying `WebContentsObserver::DidStartDrag`.
+void SimulateDragStartForTesting(RenderFrameHost* source_rfh,
+                                 DropData* drop_data);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_

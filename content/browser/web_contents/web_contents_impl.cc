@@ -8240,6 +8240,9 @@ void WebContentsImpl::OnStartDragging(
   active_drag_id_ = drag_id;
   SetDragSource(drag_id, source_rfh_token);
   drop_data->drag_id = drag_id.value();
+
+  observers_.NotifyObservers(&WebContentsObserver::DidStartDrag, source_frame,
+                             *drop_data);
 }
 
 void WebContentsImpl::OnDragSourceEnded() {

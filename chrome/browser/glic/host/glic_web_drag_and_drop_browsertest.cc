@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -21,10 +22,15 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
+#include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -33,6 +39,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,6 +54,9 @@ class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase,
       : GlicDragAndDropTestBase(
             GlicTestJsPath("./glic_web_drag_and_drop_browsertest.js"),
             GetParam()) {}
+
+ private:
+  ScopedPageContextEligibilityForTesting scoped_eligibility_;
 };
 
 // Linux does not natively support direct in-memory FileContents retrieval
@@ -123,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
       1));
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
                                       GlicDragAndDropContentType::kImage, 1);
-  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
 }
@@ -203,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
       1));
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
                                       GlicDragAndDropContentType::kImage, 1);
-  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
 }
@@ -292,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
                                       GlicDragAndDropContentType::kUrl, 1);
   histogram_tester.ExpectUniqueSample(
-      "Glic.DragAndDrop.ValidationResult",
+      "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kUnsupportedContentType, 1);
 }
 
@@ -302,6 +312,255 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "NoWebview" : "Webview";
                          });
+
+class GlicDragEligibilityBrowserTest : public GlicBrowserTest {
+ public:
+  explicit GlicDragEligibilityBrowserTest(bool enable_web_drag = true) {
+    if (enable_web_drag) {
+      feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
+                                      features::kGlicWebDragAndDropFileUpload},
+                                     {});
+    } else {
+      feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload},
+                                     {features::kGlicWebDragAndDropFileUpload});
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    GlicBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  ScopedPageContextEligibilityForTesting scoped_eligibility_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicDragEligibilityDisabledBrowserTest
+    : public GlicDragEligibilityBrowserTest {
+ public:
+  GlicDragEligibilityDisabledBrowserTest()
+      : GlicDragEligibilityBrowserTest(/*enable_web_drag=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       AllowDragFromEligibleTab) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+  drop_data.url_infos.emplace_back(
+      embedded_test_server()->GetURL("a.com",
+                                     "/drag_and_drop/cors-allowed.jpg"),
+      u"cors-allowed.jpg");
+
+  content::SimulateDragStartForTesting(
+      active_tab->GetContents()->GetPrimaryMainFrame(), &drop_data);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.InvokeResult2.WebDragDrop",
+               static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       BlockDragFromIneligibleTab) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "ineligible.com", "/drag_and_drop/image_source.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+  drop_data.url_infos.emplace_back(
+      embedded_test_server()->GetURL("ineligible.com",
+                                     "/drag_and_drop/cors-allowed.jpg"),
+      u"cors-allowed.jpg");
+
+  content::SimulateDragStartForTesting(
+      active_tab->GetContents()->GetPrimaryMainFrame(), &drop_data);
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kPageContextIneligible, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       BlockDragAfterSourceTabNavigatesToEligible) {
+  base::HistogramTester histogram_tester;
+  const GURL ineligible_url = embedded_test_server()->GetURL(
+      "ineligible.com", "/drag_and_drop/image_source.html");
+  const GURL eligible_url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(
+      content::NavigateToURL(active_tab->GetContents(), ineligible_url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+
+  // Drag starts while the tab is on an ineligible URL.
+  content::SimulateDragStartForTesting(
+      active_tab->GetContents()->GetPrimaryMainFrame(), &drop_data);
+
+  // Even if the source tab navigates to an eligible URL before the drop
+  // finishes, the drag-start eligibility decision must be preserved.
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), eligible_url));
+
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kPageContextIneligible, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       BlockDragWithUnregisteredDragId) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+
+  content::DropData drop_data;
+  drop_data.drag_id = base::UnguessableToken::Create();
+  drop_data.file_contents = {1, 2, 3, 4};
+
+  // A drag ID not registered in GlicDragEligibilityMonitor (e.g. a drag from
+  // outside a tab) must be blocked with kUnknownDragSource.
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kUnknownDragSource, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+
+  BrowserWindowInterface* incognito_browser =
+      InProcessBrowserTest::CreateIncognitoBrowser();
+  tabs::TabInterface* incognito_tab =
+      incognito_browser->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(incognito_tab);
+  content::WebContents* incognito_contents = incognito_tab->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(incognito_contents, url));
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+
+  // The drag starts in an eligible page inside the Incognito BrowserContext
+  // and is dropped onto the regular profile's Glic panel.
+  content::SimulateDragStartForTesting(
+      incognito_contents->GetPrimaryMainFrame(), &drop_data);
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kCrossProfileDragBlocked, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
+                       BlockDragWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+
+  content::SimulateDragStartForTesting(
+      active_tab->GetContents()->GetPrimaryMainFrame(), &drop_data);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kBlockedByFeatureFlag, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       BlockDragAfterSourceFrameDestroyed) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL("a.com", "/iframe.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+
+  content::RenderFrameHost* main_frame =
+      active_tab->GetContents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* source_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(source_frame);
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+
+  // The drag starts in an eligible subframe, which is then removed from the
+  // page before the drop, while its tab and the Glic panel stay open.
+  content::SimulateDragStartForTesting(source_frame, &drop_data);
+  content::RenderFrameDeletedObserver source_frame_deleted(source_frame);
+  ASSERT_TRUE(
+      content::ExecJs(main_frame, "document.getElementById('test').remove();"));
+  source_frame_deleted.WaitUntilDeleted();
+
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kSourceFrameDestroyed, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+}
 
 }  // namespace
 }  // namespace glic

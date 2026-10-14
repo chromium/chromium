@@ -781,15 +781,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.DragAndDrop.ValidationResult"
+<histogram name="Glic.DragAndDrop.ValidationResult2"
     enum="GlicDragAndDropValidationResult" expires_after="2027-05-01">
   <owner>birnie@google.com</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
-    Tracks the validation and processing outcome of a web-to-Glic drop action,
-    occurring before Glic invocation is initiated. Includes success (successful
-    validation) and detailed parsing or environment validation errors. Note that
-    only the first detected validation error is recorded.
+    Records the outcome of validating a web-to-Glic drop, before Glic is
+    invoked. Recorded once for each drop of a web drag (one that carries a
+    Chrome drag ID) onto a Glic panel. Records Success if the drop passes every
+    check and the Glic invocation is started; if every check passes but the
+    profile has no Glic service, nothing is recorded. Otherwise records only the
+    first check that failed, in this order: the feature is disabled; the drop
+    has no file contents; no drag-start record exists for the drag (e.g. the
+    drag started outside a tab); the drag started in a different profile or
+    Incognito window than the drop target; the source page was not known to be
+    eligible for page context when the drag started (ineligible or unknown
+    status); the source frame was destroyed before the drop.
+
+    Replaced Glic.DragAndDrop.ValidationResult when page context eligibility
+    moved from drop time to drag start and drops stopped fetching page context,
+    obsoleting values 2 and 4 to 8, adding values 10 to 12, and changing bucket
+    semantics and proportions.
   </summary>
 </histogram>
 

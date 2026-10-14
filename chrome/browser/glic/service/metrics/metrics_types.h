@@ -246,19 +246,24 @@ enum class DaisyChainSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:Source)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(GlicDragAndDropValidationResult)
 enum class GlicDragAndDropValidationResult {
   kSuccess = 0,
   kBlockedByFeatureFlag = 1,
-  kInvalidDragId = 2,
+  kObsoleteInvalidDragId = 2,
   kCrossProfileDragBlocked = 3,
-  kSourceWebContentsDestroyed = 4,
-  kSourceTabClosed = 5,
-  kTargetWebContentsDestroyed = 6,
-  kSourceFrameNavigatedBeforeContextFetched = 7,
-  kContextFetchFailed = 8,
+  kObsoleteSourceWebContentsDestroyed = 4,
+  kObsoleteSourceTabClosed = 5,
+  kObsoleteTargetWebContentsDestroyed = 6,
+  kObsoleteSourceFrameNavigatedBeforeContextFetched = 7,
+  kObsoleteContextFetchFailed = 8,
   kUnsupportedContentType = 9,
-  kMaxValue = kUnsupportedContentType,
+  kPageContextIneligible = 10,
+  kUnknownDragSource = 11,
+  kSourceFrameDestroyed = 12,
+  kMaxValue = kSourceFrameDestroyed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDragAndDropValidationResult)
 

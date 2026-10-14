@@ -81,6 +81,7 @@ class RenderViewHost;
 class RenderWidgetHost;
 class Page;
 struct CookieAccessDetails;
+struct DropData;
 struct EntryChangedDetails;
 struct FocusedNodeDetails;
 struct GlobalRequestID;
@@ -974,6 +975,11 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Called when text selection is changed.
   virtual void OnTextSelectionChanged(RenderFrameHost* render_frame_host,
                                       std::u16string_view selected_text) {}
+
+  // Called when a drag started from `source_rfh` within this WebContents.
+  // `drop_data` has already been security-filtered and assigned its `drag_id`.
+  virtual void DidStartDrag(RenderFrameHost* source_rfh,
+                            const DropData& drop_data) {}
 
   // Notification that the |render_widget_host| for this WebContents has gained
   // focus.

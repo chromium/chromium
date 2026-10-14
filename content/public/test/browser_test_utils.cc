@@ -5406,4 +5406,11 @@ void SimulateCharTyped(WebContents* web_contents, char16_t character) {
   return watcher.Wait();
 }
 
+void SimulateDragStartForTesting(RenderFrameHost* source_rfh,
+                                 DropData* drop_data) {
+  auto* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(source_rfh));
+  web_contents->OnStartDragging(drop_data, source_rfh->GetGlobalFrameToken());
+}
+
 }  // namespace content
