@@ -2965,6 +2965,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kVoiceSearchEvolutionPhase1Name,
      flag_descriptions::kVoiceSearchEvolutionPhase1Description,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVoiceSearchEvolutionPhase1)},
+    {"autofill-enable-oauth2-token-fix",
+     flag_descriptions::kAutofillEnableOAuth2TokenFixName,
+     flag_descriptions::kAutofillEnableOAuth2TokenFixDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOAuth2TokenFix)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

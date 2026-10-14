@@ -1159,6 +1159,13 @@ inline constexpr char kAutofillShowGmailOtpSuggestionsDescription[] =
     "When enabled, shows autofill suggestions for one-time passwords (OTPs) "
     "received in Gmail.";
 
+inline constexpr char kAutofillEnableOAuth2TokenFixName[] =
+    "Enable Autofill OAuth2 token fix";
+inline constexpr char kAutofillEnableOAuth2TokenFixDescription[] =
+    "When enabled, Autofill payments requests fetch OAuth2 tokens from the "
+    "identity service on each request, instead of keeping local cache in "
+    "Autofill components.";
+
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char

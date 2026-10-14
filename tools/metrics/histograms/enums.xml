@@ -10054,6 +10054,7 @@ from previous Chrome versions.
   <int value="-1488744539" label="QuickUnlockFingerprint:enabled"/>
   <int value="-1488329159" label="ScreenAI:enabled"/>
   <int value="-1487243228" label="NewUsbBackend:disabled"/>
+  <int value="-1487129214" label="AutofillEnableOAuth2TokenFix:disabled"/>
   <int value="-1487054143" label="contextual-cueing-v2-multi-source:disabled"/>
   <int value="-1486897951"
       label="PasswordCompromiseWarningInDetailsCard:enabled"/>
@@ -19295,6 +19296,7 @@ from previous Chrome versions.
   <int value="1298187304"
       label="OmniboxDocumentProviderNoSyncRequirement:disabled"/>
   <int value="1298352720" label="CompanionEnablePageContent:disabled"/>
+  <int value="1298702430" label="AutofillEnableOAuth2TokenFix:enabled"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>

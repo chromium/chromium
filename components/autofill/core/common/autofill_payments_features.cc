@@ -220,6 +220,11 @@ BASE_FEATURE(kAutofillEnableGradientGoogleLogos,
 BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Autofill payments requests fetch OAuth2 tokens from the
+// identity service on each request, instead of keeping local cache in Autofill
+// components.
+BASE_FEATURE(kAutofillEnableOAuth2TokenFix, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,

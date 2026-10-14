@@ -261,6 +261,13 @@ inline constexpr char kAutofillEnableGradientGoogleLogosName[] =
 inline constexpr char kAutofillEnableGradientGoogleLogosDescription[] =
     "When enabled, gradient-style GPay and Wallet branding logos will be used.";
 
+inline constexpr char kAutofillEnableOAuth2TokenFixName[] =
+    "Enable Autofill OAuth2 token fix";
+inline constexpr char kAutofillEnableOAuth2TokenFixDescription[] =
+    "When enabled, Autofill payments requests fetch OAuth2 tokens from the "
+    "identity service on each request, instead of keeping local cache in "
+    "Autofill components.";
+
 inline constexpr char kAutofillEnableWalletBrandingName[] =
     "Update Google Pay branding to Wallet where applicable";
 inline constexpr char kAutofillEnableWalletBrandingDescription[] =

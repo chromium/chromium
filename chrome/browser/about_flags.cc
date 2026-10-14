@@ -14287,6 +14287,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_connectors::kDeviceTrustConnectorAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-oauth2-token-fix",
+     flag_descriptions::kAutofillEnableOAuth2TokenFixName,
+     flag_descriptions::kAutofillEnableOAuth2TokenFixDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOAuth2TokenFix)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
