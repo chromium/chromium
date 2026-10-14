@@ -76,6 +76,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #endif
 
@@ -2100,6 +2101,148 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToGDrive) {
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+class TestDialogObserver
+    : public enterprise_connectors::ContentAnalysisDialogController::
+          TestObserver {
+ public:
+  TestDialogObserver() {
+    enterprise_connectors::ContentAnalysisDialogController::
+        SetObserverForTesting(this);
+  }
+  ~TestDialogObserver() override {
+    enterprise_connectors::ContentAnalysisDialogController::
+        SetObserverForTesting(nullptr);
+  }
+
+  void ConstructorCalled(
+      enterprise_connectors::ContentAnalysisDialogDelegate* dialog,
+      base::TimeTicks timestamp) override {
+    constructor_called_ = true;
+  }
+
+  bool constructor_called() const { return constructor_called_; }
+
+ private:
+  bool constructor_called_ = false;
+};
+
+// Parameterized on whether `kEnableForceSaveToCloudDeferredReporting` is
+// enabled.
+class DeepScanningReportOnlyForceSaveToCloudTest
+    : public DeepScanningReportingTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DeepScanningReportOnlyForceSaveToCloudTest() {
+    if (deferred_reporting_enabled()) {
+      SetFeatures(
+          /*enabled=*/{enterprise_data_protection::kEnableForceDownloadToCloud,
+                       enterprise_data_protection::
+                           kEnableForceSaveToCloudDeferredReporting},
+          /*disabled=*/{});
+    } else {
+      SetFeatures(
+          /*enabled=*/{enterprise_data_protection::kEnableForceDownloadToCloud},
+          /*disabled=*/{enterprise_data_protection::
+                            kEnableForceSaveToCloudDeferredReporting});
+    }
+  }
+
+  bool deferred_reporting_enabled() const { return GetParam(); }
+};
+
+TEST_P(DeepScanningReportOnlyForceSaveToCloudTest, DoesNotShowDialog) {
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_,
+                                                   web_contents_.get());
+
+  auto analysis_settings = settings().value();
+  analysis_settings.block_until_verdict =
+      enterprise_connectors::BlockUntilVerdict::kNoBlock;
+
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
+             DownloadCheckResult result) {
+            test->SetLastResult(result);
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              quit_closure.Run();
+            }
+          },
+          base::Unretained(this), run_loop.QuitClosure()),
+      &download_protection_service_, std::move(analysis_settings),
+      /*password=*/std::nullopt);
+
+  TouchObserver touch_observer;
+  request.AddObserver(&touch_observer);
+  TestDialogObserver dialog_observer;
+
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(
+      enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+  dlp_rule->set_force_save_to_cloud_destination(
+      enterprise_connectors::TriggeredRule::CORP_G_DRIVE);
+  dlp_rule->set_rule_name("dlp_rule");
+  dlp_rule->set_rule_id("0");
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      response);
+  download_protection_service_.GetFakeBinaryUploadService()
+      ->SetExpectedFinalAction(
+          enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+  auto expected_event = CreateDlpSensitiveDataEventForForceSaveToCloud(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*user_name=*/kUserName,
+      /*file_name=*/download_path_.AsUTF8Unsafe(),
+      /*destination=*/"Google Drive");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+  // In report-only mode, Start() immediately completes the download check
+  // callback with the pre-scan result.
+  request.Start();
+  run_loop.Run();
+  EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+  EXPECT_EQ(0, touch_observer.on_finish_called());
+
+  // Once the download completes, scanning starts and finishes without showing
+  // the force save to cloud dialog.
+  EXPECT_CALL(item_, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
+  request.OnDownloadUpdated(&item_);
+
+  validator_run_loop.Run();
+
+  EXPECT_FALSE(dialog_observer.constructor_called());
+  EXPECT_EQ(1, touch_observer.on_finish_called());
+  EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeepScanningReportOnlyForceSaveToCloudTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "DeferredReportingEnabled"
+                        : "DeferredReportingDisabled";
+    });
+
 class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
  public:
   DeepScanningReportingAutomationTest() {

@@ -1076,7 +1076,8 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
               : GetEventResult(result, profile);
     }
 
-    if (base::FeatureList::IsEnabled(
+    if (!ReportOnlyScan() &&
+        base::FeatureList::IsEnabled(
             enterprise_data_protection::
                 kEnableForceSaveToCloudDeferredReporting) &&
         (result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
@@ -1170,6 +1171,10 @@ content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
       !base::FeatureList::IsEnabled(
           enterprise_data_protection::kEnableForceDownloadToCloud)) {
     result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+    return nullptr;
+  }
+
+  if (ReportOnlyScan()) {
     return nullptr;
   }
 

@@ -230,7 +230,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   // correct web contents. Modifies `result` to SENSITIVE_CONTENT_BLOCK if the
   // feature is disabled. Returns the WebContents to use for the dialog, or
   // nullptr if no dialog should be shown (either because it's not a force save,
-  // the feature is disabled, or no web contents could be found).
+  // it's a report-only scan, the feature is disabled, or no web contents could
+  // be found).
   content::WebContents* MaybeGetWebContentsForForceSave(
       DownloadCheckResult& result);
 
