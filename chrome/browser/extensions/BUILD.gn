@@ -3298,6 +3298,7 @@ source_set("interactive_ui_tests") {
       "api/runtime/runtime_interactive_apitest.cc",
       "api/tabs/tabs_interactive_uitest.cc",
       "api/tabs/window_open_interactive_apitest.cc",
+      "api/tabs/windows_interactive_uitest.cc",
       "app_window_uitest.cc",
       "extension_apitest.cc",
       "extension_browsertest.cc",
