@@ -178,6 +178,12 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_MODEL_MANIFEST},
       {"kpfeefaldebcckpkaeelpiecbjfpbmle",
        SystemProfileProto_ComponentId_GEOLOCATION_PERMISSION_PREDICTIONS_MODEL},
+      {"omccndhloelimkeacgjfjaipjhnnogmb",
+       SystemProfileProto_ComponentId_CLIENT_SIDE_PHISHING_MODEL},
+      {"fmkegdflifakmolfcmpbohjhgpicfbol",
+       SystemProfileProto_ComponentId_NOTIFICATION_PERMISSION_PREDICTIONS_MODEL},
+      {"chjfeldfbijdbdeojjhodnibjnaohpdh",
+       SystemProfileProto_ComponentId_PHISHING_IMAGE_EMBEDDER_MODEL},
   });
 
   const auto result = kComponentMap.find(app_id);
