@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/dbus/vm:unit_tests",
     "//chrome/browser/ash/diagnostics:unit_tests",
     "//chrome/browser/ash/drive:unit_tests",
+    "//chrome/browser/ash/eche_app:unit_tests",
     "//chrome/browser/ash/eol:unit_tests",
     "//chrome/browser/ash/events:unit_tests",
     "//chrome/browser/ash/exo:unit_tests",

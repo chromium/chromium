@@ -33,11 +33,8 @@
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
@@ -47,7 +44,6 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -65,8 +61,11 @@ EcheAppManager::EcheAppManager(
     secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<secure_channel::PresenceMonitorClient>
         presence_monitor_client,
-    std::unique_ptr<AccessibilityProviderProxy> accessibility_provider_proxy)
+    std::unique_ptr<AccessibilityProviderProxy> accessibility_provider_proxy,
+    LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
+    base::RepeatingClosure relaunch_callback)
     : user_(CHECK_DEREF(user)),
+      relaunch_callback_(std::move(relaunch_callback)),
       phone_hub_manager_(phone_hub_manager),
       connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
@@ -85,8 +84,7 @@ EcheAppManager::EcheAppManager(
           eche_connection_status_handler_.get())),
       launch_app_helper_(std::make_unique<LaunchAppHelper>(
           phone_hub_manager,
-          base::BindRepeating(&EcheAppManager::LaunchEcheApp,
-                              base::Unretained(this)),
+          std::move(launch_eche_app_function),
           base::BindRepeating(&EcheAppManager::ShowNotification,
                               base::Unretained(this)),
           base::BindRepeating(&EcheAppManager::CloseNotification,
@@ -203,9 +201,7 @@ void EcheAppManager::ShowNotification(
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
   if (!notification_controller_) {
     notification_controller_ = std::make_unique<EcheAppNotificationController>(
-        user_->GetAccountId(),
-        base::BindRepeating(&EcheAppManager::RelaunchLast,
-                            base::Unretained(this)));
+        user_->GetAccountId(), relaunch_callback_);
   }
 
   if (info->category() ==
@@ -227,9 +223,7 @@ void EcheAppManager::ShowNotification(
 void EcheAppManager::CloseNotification(const std::string& notification_id) {
   if (!notification_controller_) {
     notification_controller_ = std::make_unique<EcheAppNotificationController>(
-        user_->GetAccountId(),
-        base::BindRepeating(&EcheAppManager::RelaunchLast,
-                            base::Unretained(this)));
+        user_->GetAccountId(), relaunch_callback_);
   }
   notification_controller_->CloseNotification(notification_id);
 }
@@ -238,84 +232,6 @@ void EcheAppManager::CloseConnectionOrLaunchErrorNotifications() {
   if (notification_controller_ != nullptr) {
     notification_controller_->CloseConnectionOrLaunchErrorNotifications();
   }
-}
-
-void EcheAppManager::LaunchWebApp(
-    const std::string& package_name,
-    const std::optional<int64_t>& notification_id,
-    const std::u16string& visible_name,
-    const std::optional<int64_t>& user_id,
-    const gfx::Image& icon,
-    const std::u16string& phone_name,
-    AppsLaunchInfoProvider* apps_launch_info_provider) {
-  SetLastLaunchedAppInfo(std::make_unique<LaunchedAppInfo>(LaunchedAppInfo{
-      .package_name = package_name,
-      .visible_name = visible_name,
-      .user_id = user_id,
-      .icon = icon,
-      .phone_name = phone_name,
-      .apps_launch_info_provider = apps_launch_info_provider,
-  }));
-  // Use hash mark(#) to send params to webui so we don't need to reload the
-  // whole eche window.
-  std::u16string url = base::StrCat(
-      {u"chrome://eche-app/#package_name=", base::UTF8ToUTF16(package_name),
-       u"&visible_app_name=", visible_name, u"&timestamp=",
-       base::NumberToString16(
-           base::Time::Now().InMillisecondsSinceUnixEpoch())});
-  if (notification_id.has_value()) {
-    base::StrAppend(&url, {u"&notification_id=",
-                           base::NumberToString16(notification_id.value())});
-  }
-  if (user_id.has_value()) {
-    base::StrAppend(&url,
-                    {u"&user_id=", base::NumberToString16(user_id.value())});
-  }
-  const auto gurl = GURL(url);
-
-  return LaunchBubble(
-      gurl, icon, visible_name, phone_name,
-      apps_launch_info_provider->GetConnectionStatusFromLastAttempt(),
-      apps_launch_info_provider->entry_point(),
-      base::BindOnce(&EcheAppManager::CloseStream, base::Unretained(this)),
-      base::BindRepeating(&EcheAppManager::StreamGoBack,
-                          base::Unretained(this)),
-      base::BindRepeating(&EcheAppManager::BubbleShown,
-                          base::Unretained(this)));
-}
-
-void EcheAppManager::RelaunchLast() {
-  std::unique_ptr<LaunchedAppInfo> last_launched_app_info =
-      GetLastLaunchedAppInfo();
-  LaunchWebApp(last_launched_app_info->package_name,
-               /*notification_id=*/std::nullopt,
-               last_launched_app_info->visible_name,
-               last_launched_app_info->user_id, last_launched_app_info->icon,
-               last_launched_app_info->phone_name,
-               last_launched_app_info->apps_launch_info_provider);
-  CloseConnectionOrLaunchErrorNotifications();
-}
-
-void EcheAppManager::LaunchEcheApp(
-    const std::optional<int64_t>& notification_id,
-    const std::string& package_name,
-    const std::u16string& visible_name,
-    const std::optional<int64_t>& user_id,
-    const gfx::Image& icon,
-    const std::u16string& phone_name,
-    AppsLaunchInfoProvider* apps_launch_info_provider) {
-  LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
-               phone_name, apps_launch_info_provider);
-  CloseConnectionOrLaunchErrorNotifications();
-}
-
-void EcheAppManager::SetLastLaunchedAppInfo(
-    std::unique_ptr<LaunchedAppInfo> last_launched_app_info) {
-  last_launched_app_info_ = std::move(last_launched_app_info);
-}
-
-std::unique_ptr<LaunchedAppInfo> EcheAppManager::GetLastLaunchedAppInfo() {
-  return std::move(last_launched_app_info_);
 }
 
 void EcheAppManager::BindSignalingMessageExchangerInterface(
@@ -392,7 +308,6 @@ void EcheAppManager::Shutdown() {
     phone_hub_manager_->SetSystemInfoProvider(nullptr);
   }
 
-  last_launched_app_info_.reset();
   notification_controller_.reset();
   eche_keyboard_layout_handler_.reset();
   eche_stream_orientation_observer_.reset();
