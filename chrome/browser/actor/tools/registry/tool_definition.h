@@ -67,7 +67,9 @@ enum class ToolId {
   kScrollTo = 23,
   // Adds a bookmark for the specified URL and title.
   kAddBookmark = 24,
-  kMaxValue = kAddBookmark,
+  // Removes bookmarks matching the specified URL.
+  kRemoveBookmark = 25,
+  kMaxValue = kRemoveBookmark,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

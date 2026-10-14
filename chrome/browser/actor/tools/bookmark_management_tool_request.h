@@ -50,9 +50,14 @@ class AddBookmarkToolRequest : public ToolRequest {
 class RemoveBookmarkToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "RemoveBookmark";
+  static constexpr std::string_view kModelFacingName = "remove_bookmark";
+  static constexpr std::string_view kUrlParam = "url";
 
   explicit RemoveBookmarkToolRequest(GURL url);
   ~RemoveBookmarkToolRequest() override;
+
+  // Returns the `ToolId::kRemoveBookmark` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
   RemoveBookmarkToolRequest(const RemoveBookmarkToolRequest& other);
   RemoveBookmarkToolRequest& operator=(const RemoveBookmarkToolRequest& other);
 

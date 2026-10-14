@@ -352,6 +352,17 @@ TEST(ToolRegistryTest, AddBookmarkToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(AddBookmarkToolRequest::kTitleParam));
 }
 
+TEST(ToolRegistryTest, RemoveBookmarkToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      RemoveBookmarkToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kRemoveBookmark);
+  EXPECT_EQ(definition->name, RemoveBookmarkToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(RemoveBookmarkToolRequest::kUrlParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(RemoveBookmarkToolRequest::kUrlParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -650,6 +661,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsAddBookmarkTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kAddBookmark, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsRemoveBookmarkTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kRemoveBookmark,
+                                    &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

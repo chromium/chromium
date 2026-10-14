@@ -35,6 +35,14 @@ constexpr std::string_view kAddBookmarkUrlParamDescription =
 constexpr std::string_view kAddBookmarkTitleParamDescription =
     "The title for the bookmark.";
 
+// Default description for the `remove_bookmark` tool.
+constexpr std::string_view kRemoveBookmarkToolDescription =
+    "Removes bookmarks matching the specified URL.";
+
+// Description for the `url` parameter of the `remove_bookmark` tool.
+constexpr std::string_view kRemoveBookmarkUrlParamDescription =
+    "The URL of the bookmark to remove.";
+
 }  // namespace
 
 AddBookmarkToolRequest::AddBookmarkToolRequest(GURL url, std::u16string title)
@@ -82,6 +90,16 @@ RemoveBookmarkToolRequest::RemoveBookmarkToolRequest(GURL url)
     : url_(std::move(url)) {}
 
 RemoveBookmarkToolRequest::~RemoveBookmarkToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> RemoveBookmarkToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kRemoveBookmark, kModelFacingName,
+                               kRemoveBookmarkToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kUrlParam, kRemoveBookmarkUrlParamDescription,
+          ToolSchemaBuilder::kFormatUri))
+      .Build();
+}
 
 RemoveBookmarkToolRequest::RemoveBookmarkToolRequest(
     const RemoveBookmarkToolRequest& other) = default;
