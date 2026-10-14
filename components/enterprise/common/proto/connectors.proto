@@ -147,6 +147,8 @@ message ClientMetadata {
     optional string client_id = 5;
 
     reserved 6;
+
+    optional bool is_isolated_mode = 7;
   }
   optional Profile profile = 3;
 

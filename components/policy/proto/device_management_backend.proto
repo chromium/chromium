@@ -2402,6 +2402,14 @@ message ChromeUserProfileInfo {
 
   // Whether certificates were truncated.
   optional bool certificates_were_truncated = 15;
+
+  enum ProfileType {
+    PROFILE_TYPE_UNSPECIFIED = 0;
+    REGULAR = 1;
+    ISOLATED = 2;
+  }
+
+  optional ProfileType profile_type = 16;
 }
 
 // Report browser level status.
@@ -2488,6 +2496,9 @@ message ProfileSignalsReport {
   repeated string bulk_data_entry_providers = 10;
   repeated string print_providers = 11;
   repeated string security_event_providers = 12;
+
+  // A boolean indicating whether the profile is in isolated mode.
+  optional bool is_isolated_mode = 13;
 }
 
 // Anti virus product information.
