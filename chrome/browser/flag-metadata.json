@@ -767,7 +767,7 @@
   {
     "name": "app-bar-assistant-customization",
     "owners": [ "gambard@chromium.org", "bling-meridian@google.com" ],
-    "expiry_milestone": 161
+    "expiry_milestone": 160
   },
   {
     "name": "app-menu-glow-up",
@@ -923,12 +923,12 @@
   {
     "name": "assistant-container",
     "owners": [ "ewannpv@chromium.org", "bling-meridian@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "assistant-side-panel",
     "owners": [ "ewannpv@google.com", "bling-meridian@google.com" ],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "atmemory-context-menu-entry-point",
@@ -1996,7 +1996,7 @@
   {
     "name": "chrome-next-ia",
     "owners": [ "gambard@chromium.org", "meridian@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "chrome-web-store-navigation-throttle",
@@ -2782,7 +2782,7 @@
   {
     "name": "default-bottom-omnibox-on-ios",
     "owners": [ "gambard@google.com", "meridian@google.com" ],
-    "expiry_milestone": 157
+    "expiry_milestone": 160
   },
   {
     "name": "default-browser-changed-os-notification",
@@ -5458,7 +5458,7 @@
   {
     "name": "fullscreen-refactoring",
     "owners": [ "scottyoder@google.com", "meridian@google.com" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 160
   },
   {
     "name": "fullscreen-scroll-threshold",
@@ -5685,7 +5685,7 @@
   {
     "name": "glass-toolbar",
     "owners": [ "gambard@chromium.org", "meridian@google.com" ],
-    "expiry_milestone": 157
+    "expiry_milestone": 160
   },
   {
     "name": "glic",
@@ -6803,7 +6803,7 @@
   {
     "name": "light-app-bar",
     "owners": [ "gambard@chromium.org", "meridian@google.com" ],
-    "expiry_milestone": 162
+    "expiry_milestone": 160
   },
   {
     "name": "linked-accounts",
@@ -7180,7 +7180,7 @@
   {
     "name": "next-old-design",
     "owners": [ "gambard@google.com", "bling-meridian@google.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 160
   },
   {
     "name": "no-accounts-web-signin",
@@ -7992,12 +7992,12 @@
   {
     "name": "overflow-menu-home-customization-entrypoint",
     "owners": [ "gambard@google.com", "ericekey@google.com", "bling-meridian@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "overflow-menu-ntp-refactor",
     "owners": [ "gambard@google.com", "ericekey@google.com", "bling-meridian@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "overlay-scrollbars",
