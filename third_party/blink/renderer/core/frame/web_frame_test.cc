@@ -61,6 +61,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12411,6 +12412,9 @@ TEST_F(WebFrameTest, DiscardFrame) {
 }
 
 TEST_F(WebFrameTest, DiscardFrameRunsUnloadEvents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kDeprecateUnload);
   DisableRendererSchedulerThrottling();
   RegisterMockedHttpURLLoad("foo.html");
 
