@@ -3057,7 +3057,6 @@ TEST_F(OtpManagerImplTest,
 
   test_api(otp_manager).OnGmailOtpRetrieved(CreateSampleGmailOtpResult());
 
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(test_api(otp_manager).last_triggered_otp_value(), "987654");
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -3082,7 +3081,6 @@ TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_SuppressedWhenPhishGuardBlocks) {
 
   test_api(otp_manager).OnGmailOtpRetrieved(CreateSampleGmailOtpResult());
 
-  task_environment_.RunUntilIdle();
   EXPECT_TRUE(test_api(otp_manager).last_triggered_otp_value().empty());
 }
 
@@ -3154,7 +3152,6 @@ TEST_F(OtpManagerImplTest,
           base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
                                kGmailOtpBackendNetworkError));
 
-  task_environment_.RunUntilIdle();
   EXPECT_TRUE(test_api(otp_manager).last_triggered_otp_value().empty());
 }
 
@@ -3176,7 +3173,6 @@ TEST_F(OtpManagerImplTest,
 
   test_api(otp_manager).OnGmailOtpRetrieved(CreateSampleGmailOtpResult(""));
 
-  task_environment_.RunUntilIdle();
   EXPECT_TRUE(test_api(otp_manager).last_triggered_otp_value().empty());
 }
 
@@ -3218,7 +3214,6 @@ TEST_F(OtpManagerImplTest,
   test_api(otp_manager)
       .OnGmailOtpRetrieved(CreateSampleGmailOtpResult("555123"));
 
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(test_api(otp_manager).last_triggered_otp_value(), "555123");
 }
 
@@ -3272,8 +3267,10 @@ TEST_F(OtpManagerImplTest,
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0].value(), "123456");
 
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  // Execute the pending `DeleteSoon` task for `gmail_otp_retriever_` before
+  // clearing the `affiliation_service` pointer.
+  task_environment_.FastForwardBy(base::TimeDelta());
   autofill_client().set_affiliation_service(nullptr);
 }
 
@@ -3344,7 +3341,6 @@ TEST_F(
               base::TimeTicks::Now(), "sender@example.com"),
           .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
       });
-  task_environment_.RunUntilIdle();
 
   // Simulate the renderer's follow-up AskForValuesToFill -> GetOtpSuggestions
   // call triggered by RendererShouldTriggerSuggestions.
@@ -3359,6 +3355,9 @@ TEST_F(
                   Property(&one_time_tokens::OneTimeToken::sender_address,
                            Optional(std::string("sender@example.com"))))));
 
+  // Execute the pending `DeleteSoon` task for `gmail_otp_retriever_` before
+  // clearing the `affiliation_service` pointer.
+  task_environment_.FastForwardBy(base::TimeDelta());
   autofill_client().set_affiliation_service(nullptr);
 }
 
@@ -3405,7 +3404,6 @@ TEST_F(OtpManagerImplTest,
               base::TimeTicks::Now(), "first@example.com"),
           .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
       });
-  task_environment_.RunUntilIdle();
 
   // Renderer requests suggestions for the first trigger.
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
@@ -3435,7 +3433,6 @@ TEST_F(OtpManagerImplTest,
               base::TimeTicks::Now(), "second@example.com"),
           .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
       });
-  task_environment_.RunUntilIdle();
 
   // Renderer requests suggestions for the second trigger and receives "222222".
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
@@ -3449,6 +3446,9 @@ TEST_F(OtpManagerImplTest,
                   Property(&one_time_tokens::OneTimeToken::sender_address,
                            Optional(std::string("second@example.com"))))));
 
+  // Execute the pending `DeleteSoon` task for `gmail_otp_retriever_` before
+  // clearing the `affiliation_service` pointer.
+  task_environment_.FastForwardBy(base::TimeDelta());
   autofill_client().set_affiliation_service(nullptr);
 }
 
