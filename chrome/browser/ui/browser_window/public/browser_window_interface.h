@@ -146,9 +146,11 @@ class BrowserWindowInterface : public content::PageNavigator {
     // strip).
     TYPE_APP_POPUP,
 #if !BUILDFLAG(IS_ANDROID)
-    // Floating browser (e.g. Document Picture-in-Picture). It's mostly the
-    // same as a TYPE_POPUP, except that it floats above other windows and uses
-    // a minimal frame.
+    // Floating browser (e.g. Document Picture-in-Picture or always-on-top
+    // popup). It's mostly the same as a TYPE_POPUP, except that it floats
+    // above other windows and uses a minimal frame. Document Picture-in-Picture
+    // windows also have additional restrictions (see
+    // DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture()).
     TYPE_FLOATING,
 #endif
 #if BUILDFLAG(IS_ANDROID)

@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
@@ -1556,7 +1557,8 @@ bool BrowserView::GetIsFloatingType() const {
 }
 
 bool BrowserView::GetIsPictureInPictureType() const {
-  return browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING;
+  return DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+      browser_.get());
 }
 
 std::optional<blink::mojom::PictureInPictureWindowOptions>

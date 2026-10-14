@@ -67,6 +67,8 @@
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -74,6 +76,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
@@ -365,9 +368,28 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
           BrowserWindowInterface::CreationStatus::kOk) {
         return {nullptr, -1};
       }
+      bool always_on_top = false;
+      if (params.window_features.always_on_top && params.source_contents) {
+        content::RenderFrameHost* opener_rfh =
+            params.source_contents->GetPrimaryMainFrame();
+        if (opener_rfh) {
+          content::PermissionController* permission_controller =
+              opener_rfh->GetBrowserContext()->GetPermissionController();
+          if (permission_controller &&
+              permission_controller->GetPermissionStatusForCurrentDocument(
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionType(
+                          blink::PermissionType::WINDOW_MANAGEMENT),
+                  opener_rfh) == blink::mojom::PermissionStatus::GRANTED) {
+            always_on_top = true;
+          }
+        }
+      }
       if (app_name.empty()) {
         BrowserWindowCreateParams browser_params(
-            BrowserWindowInterface::TYPE_POPUP, profile, params.user_gesture);
+            always_on_top ? BrowserWindowInterface::TYPE_FLOATING
+                          : BrowserWindowInterface::TYPE_POPUP,
+            profile, params.user_gesture);
         browser_params.is_trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_features.bounds;
         browser_params.initial_origin_specified = GetOriginSpecified(params);

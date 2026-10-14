@@ -78,6 +78,8 @@ struct BrowserWindowCreateParams {
       bool user_gesture);
 
   static BrowserWindowCreateParams CreateForDevTools(Profile* profile);
+
+  bool is_pip() const { return pip_options.has_value(); }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // The type of browser window to create.
@@ -162,7 +164,9 @@ struct BrowserWindowCreateParams {
   bool can_fullscreen = true;
 
   // Document Picture in Picture options, specific to TYPE_FLOATING when used
-  // for Document Picture-in-Picture.
+  // for Document Picture-in-Picture. Presence of this value indicates that the
+  // window is a Document Picture-in-Picture window; do not set this for
+  // non-Picture-in-Picture windows.
   std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
   // Specifies the collapsed state for the Vertical Tab Strip. True if the

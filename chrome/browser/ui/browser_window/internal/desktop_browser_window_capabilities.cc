@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -36,6 +37,18 @@ const DesktopBrowserWindowCapabilities* DesktopBrowserWindowCapabilities::From(
     const BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<DesktopBrowserWindowCapabilities>::Get(
       browser_window_interface->GetUnownedUserDataHost());
+}
+
+// static
+bool DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+    const BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface ||
+      browser_window_interface->GetType() !=
+          BrowserWindowInterface::Type::TYPE_FLOATING) {
+    return false;
+  }
+  const auto* init_state = BrowserInitState::From(browser_window_interface);
+  return init_state && init_state->create_params().is_pip();
 }
 
 bool DesktopBrowserWindowCapabilities::IsVisibleOnScreen() const {

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_features.h"
@@ -78,6 +79,13 @@ BrowserWindowInterface* GetBrowserForOpeningWebUi(
 
   if (browser->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING) {
     return browser;
+  }
+
+  if (!DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(browser)) {
+    BrowserWindowInterface* tabbed_browser =
+        ProfileBrowserCollection::GetForProfile(browser->GetProfile())
+            ->FindTabbedBrowser();
+    return tabbed_browser ? tabbed_browser : browser;
   }
 
   auto* opener_web_contents =

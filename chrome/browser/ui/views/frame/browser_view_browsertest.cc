@@ -194,9 +194,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
   content::ScopedPipExclusionOverride exclusion_override(false);
 
   // Create a PIP browser.
-  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_FLOATING,
-                                   browser()->GetProfile(),
-                                   /*from_user_gesture=*/true);
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          "", /*trusted_source=*/false, browser()->GetProfile(),
+          /*user_gesture=*/true);
   BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -219,9 +220,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
   content::ScopedPipExclusionOverride exclusion_override(true);
 
   // Create a PIP browser.
-  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_FLOATING,
-                                   browser()->GetProfile(),
-                                   /*from_user_gesture=*/true);
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          "", /*trusted_source=*/false, browser()->GetProfile(),
+          /*user_gesture=*/true);
   BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -248,9 +250,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
   content::ScopedPipExclusionOverride exclusion_override(false);
 
   // Create a PIP browser.
-  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_FLOATING,
-                                   browser()->GetProfile(),
-                                   /*from_user_gesture=*/true);
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          "", /*trusted_source=*/false, browser()->GetProfile(),
+          /*user_gesture=*/true);
   BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =

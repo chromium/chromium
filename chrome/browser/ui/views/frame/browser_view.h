@@ -394,7 +394,7 @@ class BrowserView : public BrowserWindow,
   bool GetIsFloatingType() const;
 
   // Returns true if the Browser object associated with this BrowserView is for
-  // a Picture in Picture window.
+  // a Document Picture-in-Picture window.
   bool GetIsPictureInPictureType() const;
 
   // Returns the document picture in picture options from |browser_|'s

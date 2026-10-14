@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -50,6 +52,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -2349,6 +2353,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
             GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(params.browser->GetType(),
             BrowserWindowInterface::Type::TYPE_FLOATING);
+  EXPECT_TRUE(DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+      params.browser));
   EXPECT_NE(BrowserInitState::From(params.browser)->create_params().app_name,
             std::string());
 }
@@ -2764,6 +2770,64 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
+}
+
+class BrowserNavigatorTestAlwaysOnTop : public BrowserNavigatorTest {
+ public:
+  BrowserNavigatorTestAlwaysOnTop() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWindowOpenAlwaysOnTop);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop, AlwaysOnTopAttribute) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  // 1. Without permission, window.alwaysOnTop should return false.
+  {
+    ui_test_utils::BrowserCreatedObserver observer;
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "window.open('about:blank', 'popup1', 'alwaysontop=true');"));
+    BrowserWindowInterface* popup_browser = observer.Wait();
+    ASSERT_TRUE(popup_browser);
+    EXPECT_EQ(popup_browser->GetType(),
+              BrowserWindowInterface::Type::TYPE_POPUP);
+    EXPECT_FALSE(DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+        popup_browser));
+    content::WebContents* new_contents =
+        popup_browser->GetActiveTabInterface()->GetContents();
+    ASSERT_TRUE(new_contents);
+    EXPECT_EQ(false, content::EvalJs(new_contents, "window.alwaysOnTop"));
+  }
+
+  // 2. With permission, window.alwaysOnTop should return true.
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(opener_url, opener_url,
+                                      ContentSettingsType::WINDOW_MANAGEMENT,
+                                      CONTENT_SETTING_ALLOW);
+
+  {
+    ui_test_utils::BrowserCreatedObserver observer;
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "window.open('about:blank', 'popup2', 'alwaysontop=true');"));
+    BrowserWindowInterface* popup_browser = observer.Wait();
+    ASSERT_TRUE(popup_browser);
+    EXPECT_EQ(popup_browser->GetType(),
+              BrowserWindowInterface::Type::TYPE_FLOATING);
+    EXPECT_FALSE(DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
+        popup_browser));
+    content::WebContents* new_contents =
+        popup_browser->GetActiveTabInterface()->GetContents();
+    ASSERT_TRUE(new_contents);
+    EXPECT_EQ(true, content::EvalJs(new_contents, "window.alwaysOnTop"));
+  }
 }
 
 }  // namespace

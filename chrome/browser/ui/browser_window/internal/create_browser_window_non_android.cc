@@ -97,6 +97,7 @@ BrowserWindowCreateParams BrowserWindowCreateParams::CreateForPictureInPicture(
                                    profile, user_gesture);
   params.app_name = app_name;
   params.is_trusted_source = trusted_source;
+  params.pip_options.emplace();
   return params;
 }
 
@@ -141,6 +142,8 @@ BrowserWindowInterface* CreateBrowserWindow(
     BrowserWindowCreateParams create_params) {
   CHECK_EQ(BrowserWindowInterface::CreationStatus::kOk,
            GetBrowserWindowCreationStatusForProfile(*create_params.profile));
+  CHECK(!create_params.is_pip() ||
+        create_params.type == BrowserWindowInterface::TYPE_FLOATING);
 
   return Browser::Create(std::move(create_params));
 }
@@ -148,6 +151,8 @@ BrowserWindowInterface* CreateBrowserWindow(
 std::unique_ptr<BrowserWindowInterface>
 DeprecatedCreateOwnedBrowserWindowForTesting(
     BrowserWindowCreateParams create_params) {
+  CHECK(!create_params.is_pip() ||
+        create_params.type == BrowserWindowInterface::TYPE_FLOATING);
   return Browser::DeprecatedCreateOwnedForTesting(
       std::move(create_params));  // IN-TEST
 }

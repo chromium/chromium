@@ -42,6 +42,13 @@ class DesktopBrowserWindowCapabilities {
   static const DesktopBrowserWindowCapabilities* From(
       const BrowserWindowInterface* browser_window_interface);
 
+  // Returns true if this browser window is a Document Picture-in-Picture
+  // window (i.e. a `TYPE_FLOATING` window with `pip_options` populated).
+  // Returns false if `browser_window_interface` is null, or is not a Document
+  // Picture-in-Picture window (e.g. an always-on-top popup).
+  static bool IsDocumentPictureInPicture(
+      const BrowserWindowInterface* browser_window_interface);
+
   // Returns true if the browser window is visible on the screen.
   bool IsVisibleOnScreen() const;
 

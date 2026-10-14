@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -1189,7 +1190,7 @@ void ReloadBypassingCache(BrowserWindowInterface* browser,
 bool CanReload(const BrowserWindowInterface* browser) {
   return browser &&
          browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS &&
-         browser->GetType() != BrowserWindowInterface::TYPE_FLOATING;
+         !DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(browser);
 }
 
 void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
