@@ -672,6 +672,19 @@ wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index) {
   }
 }
 
+wgpu::TextureAspect ToDawnTextureAspect(wgpu::TextureFormat wgpu_format,
+                                        int plane_index) {
+  bool is_yuv_plane =
+      (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+       wgpu_format == wgpu::TextureFormat::R8BG8Biplanar422Unorm ||
+       wgpu_format == wgpu::TextureFormat::R8BG8Biplanar444Unorm ||
+       wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm ||
+       wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar422Unorm ||
+       wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar444Unorm ||
+       wgpu_format == wgpu::TextureFormat::R8BG8A8Triplanar420Unorm);
+  return ToDawnTextureAspect(is_yuv_plane, plane_index);
+}
+
 namespace {
 
 #if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)

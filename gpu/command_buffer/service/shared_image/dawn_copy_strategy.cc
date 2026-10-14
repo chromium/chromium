@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -239,15 +240,10 @@ bool DawnCopyStrategy::CopyFromBackingToTexture(SharedImageBacking* src_backing,
             },
         .buffer = buffer.Get(),
     };
-    wgpu::TextureFormat wgpu_format = dst_texture.GetFormat();
-    bool is_yuv_plane =
-        (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
-         wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm ||
-         wgpu_format == wgpu::TextureFormat::R8BG8A8Triplanar420Unorm);
     // Get proper plane aspect for multiplanar textures.
     wgpu::TexelCopyTextureInfo texture_copy = {
         .texture = dst_texture,
-        .aspect = ToDawnTextureAspect(is_yuv_plane, plane_index),
+        .aspect = ToDawnTextureAspect(dst_texture.GetFormat(), plane_index),
     };
     wgpu::Extent3D extent = {static_cast<uint32_t>(plane_size.width()),
                              static_cast<uint32_t>(plane_size.height()), 1};
@@ -262,26 +258,27 @@ bool DawnCopyStrategy::CopyFromBackingToTexture(SharedImageBacking* src_backing,
   return true;
 }
 
-// static
-bool DawnCopyStrategy::CopyFromTextureToBacking(wgpu::Texture src_texture,
-                                                SharedImageBacking* dst_backing,
-                                                wgpu::Device device) {
+namespace {
+
+bool CopyTextureToStagingBuffers(wgpu::Texture src_texture,
+                                 const viz::SharedImageFormat& format,
+                                 const gfx::Size& size,
+                                 wgpu::Device device,
+                                 std::vector<StagingBuffer>* out_buffers) {
   wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc;
   internal_usage_desc.useInternalUsages = true;
   wgpu::CommandEncoderDescriptor command_encoder_desc = {
       .nextInChain = &internal_usage_desc,
-      .label = "DawnCopyStrategy::CopyFromTextureToBacking",
+      .label = "DawnCopyStrategy::CopyTextureToStagingBuffers",
   };
 
   wgpu::CommandEncoder encoder =
       device.CreateCommandEncoder(&command_encoder_desc);
 
-  const viz::SharedImageFormat format = dst_backing->format();
-
   // Allocate staging buffers. One staging buffer per plane.
   std::vector<StagingBuffer> staging_buffers;
   if (!AllocateStagingBuffers(
-          device, format, dst_backing->size(),
+          device, format, size,
           wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
           /*map_at_creation=*/false, &staging_buffers)) {
     LOG(ERROR) << "Failed to allocate staging buffers.";
@@ -299,15 +296,10 @@ bool DawnCopyStrategy::CopyFromTextureToBacking(wgpu::Texture src_texture,
     uint32_t bytes_per_row = staging_buffer_entry.bytes_per_row;
     const auto& plane_size = staging_buffer_entry.plane_size;
 
-    wgpu::TextureFormat wgpu_format = src_texture.GetFormat();
-    bool is_yuv_plane =
-        (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
-         wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm ||
-         wgpu_format == wgpu::TextureFormat::R8BG8A8Triplanar420Unorm);
     // Get proper plane aspect for multiplanar textures.
     wgpu::TexelCopyTextureInfo texture_copy = {
         .texture = src_texture,
-        .aspect = ToDawnTextureAspect(is_yuv_plane, plane_index),
+        .aspect = ToDawnTextureAspect(src_texture.GetFormat(), plane_index),
     };
     wgpu::TexelCopyBufferInfo buffer_copy = {
         .layout =
@@ -323,13 +315,12 @@ bool DawnCopyStrategy::CopyFromTextureToBacking(wgpu::Texture src_texture,
     encoder.CopyTextureToBuffer(&texture_copy, &buffer_copy, &extent);
   }
 
-  wgpu::CommandBuffer commandBuffer = encoder.Finish();
+  wgpu::CommandBuffer command_buffer = encoder.Finish();
 
   wgpu::Queue queue = device.GetQueue();
-  queue.Submit(1, &commandBuffer);
+  queue.Submit(1, &command_buffer);
 
   // Map the staging buffer for read.
-  std::vector<SkPixmap> staging_pixmaps;
   for (int plane_index = 0;
        plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
     const auto& staging_buffer_entry = staging_buffers[plane_index];
@@ -345,23 +336,89 @@ bool DawnCopyStrategy::CopyFromTextureToBacking(wgpu::Texture src_texture,
     if (device.GetAdapter().GetInstance().WaitAny(1, &wait_info, UINT64_MAX) !=
         wgpu::WaitStatus::Success) {
       LOG(ERROR) << "WaitAny failed while mapping staging buffer for read.";
-      staging_buffer_entry.buffer.Unmap();
+      for (int i = 0; i <= plane_index; ++i) {
+        staging_buffers[i].buffer.Unmap();
+      }
       return false;
     }
 
     if (!wait_info.completed || staging_buffer_entry.buffer.GetMapState() !=
                                     wgpu::BufferMapState::Mapped) {
       LOG(ERROR) << "MapAsync did not yield a readable mapping.";
+      for (int i = 0; i <= plane_index; ++i) {
+        staging_buffers[i].buffer.Unmap();
+      }
       return false;
     }
+  }
 
+  *out_buffers = std::move(staging_buffers);
+  return true;
+}
+
+}  // namespace
+
+// static
+bool DawnCopyStrategy::CopyFromTextureToBacking(wgpu::Texture src_texture,
+                                                SharedImageBacking* dst_backing,
+                                                wgpu::Device device) {
+  const viz::SharedImageFormat format = dst_backing->format();
+  std::vector<StagingBuffer> staging_buffers;
+  if (!CopyTextureToStagingBuffers(src_texture, format, dst_backing->size(),
+                                   device, &staging_buffers)) {
+    return false;
+  }
+
+  std::vector<SkPixmap> staging_pixmaps;
+  for (int plane_index = 0;
+       plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
     staging_pixmaps.push_back(MappedStagingBufferToPixmap(
         staging_buffers[plane_index], format, dst_backing->alpha_type(),
         dst_backing->color_space().ToSkColorSpace(), plane_index,
         /*writable=*/false));
   }
 
-  return dst_backing->UploadFromMemory(staging_pixmaps);
+  bool result = dst_backing->UploadFromMemory(staging_pixmaps);
+  for (const auto& staging_buffer_entry : staging_buffers) {
+    staging_buffer_entry.buffer.Unmap();
+  }
+  return result;
+}
+
+// static
+bool DawnCopyStrategy::CopyFromTextureToMemory(
+    wgpu::Texture src_texture,
+    const viz::SharedImageFormat& format,
+    const gfx::Size& size,
+    wgpu::Device device,
+    const std::vector<SkPixmap>& dst_pixmaps) {
+  if (dst_pixmaps.size() != static_cast<size_t>(format.NumberOfPlanes())) {
+    return false;
+  }
+
+  std::vector<StagingBuffer> staging_buffers;
+  if (!CopyTextureToStagingBuffers(src_texture, format, size, device,
+                                   &staging_buffers)) {
+    return false;
+  }
+
+  for (int plane_index = 0;
+       plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
+    const auto& staging_buffer_entry = staging_buffers[plane_index];
+    const void* src_pointer =
+        staging_buffer_entry.buffer.GetConstMappedRange(0, wgpu::kWholeMapSize);
+    CHECK(src_pointer);
+
+    const SkPixmap& dst_pixmap = dst_pixmaps[plane_index];
+    CopyImagePlane(static_cast<const uint8_t*>(src_pointer),
+                   staging_buffer_entry.bytes_per_row,
+                   static_cast<uint8_t*>(dst_pixmap.writable_addr()),
+                   dst_pixmap.rowBytes(), dst_pixmap.info().minRowBytes(),
+                   staging_buffer_entry.plane_size.height());
+    staging_buffer_entry.buffer.Unmap();
+  }
+
+  return true;
 }
 
 }  // namespace gpu

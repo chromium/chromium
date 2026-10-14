@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -153,6 +154,13 @@ TEST_F(SharedImageCopyManagerTestWithGraphiteDawn, CopyUsingDawnStrategy) {
   // Test copy from Dawn to Graphite.
   EXPECT_TRUE(
       copy_manager_->CopyImage(dawn_backing.get(), graphite_backing.get()));
+
+  // Test copy from Dawn texture to CPU memory.
+  SkBitmap readback_bitmap;
+  ASSERT_TRUE(readback_bitmap.tryAllocPixels(dawn_backing->AsSkImageInfo()));
+  EXPECT_TRUE(DawnCopyStrategy::CopyFromTextureToMemory(
+      static_cast<DawnImageBacking*>(dawn_backing.get())->GetTexture(), format,
+      size, dawn_context_provider_->GetDevice(), {readback_bitmap.pixmap()}));
 }
 
 class DawnCopyStrategyStackUARTest : public testing::Test {

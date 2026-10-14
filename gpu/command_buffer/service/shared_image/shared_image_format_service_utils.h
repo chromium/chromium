@@ -175,6 +175,8 @@ wgpu::TextureUsage SupportedDawnTextureUsage(
 // indicates if the aspect corresponds to a plane of a multi-planar
 // wgpu::Texture.
 wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
+wgpu::TextureAspect ToDawnTextureAspect(wgpu::TextureFormat wgpu_format,
+                                        int plane_index);
 
 // Returns the graphite::TextureInfo for a given `format` and `plane_index`.
 // `is_yuv_plane` indicates if the texture corresponds to a plane of a

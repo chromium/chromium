@@ -5,9 +5,14 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_COPY_STRATEGY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_COPY_STRATEGY_H_
 
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_strategy.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace wgpu {
 class Device;
@@ -44,6 +49,13 @@ class GPU_GLES2_EXPORT DawnCopyStrategy : public SharedImageCopyStrategy {
   static bool CopyFromTextureToBacking(wgpu::Texture src_texture,
                                        SharedImageBacking* dst_backing,
                                        wgpu::Device device);
+
+  // Helper to copy from a Dawn texture to CPU memory pixmaps.
+  static bool CopyFromTextureToMemory(wgpu::Texture src_texture,
+                                      const viz::SharedImageFormat& format,
+                                      const gfx::Size& size,
+                                      wgpu::Device device,
+                                      const std::vector<SkPixmap>& dst_pixmaps);
 
  private:
   bool CopyFromGpuBackingToDawn(SharedImageBacking* src, DawnImageBacking* dst);
