@@ -146,10 +146,6 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void SetTabStripInitialized() { has_tab_strip_initialized_ = true; }
   bool IsAnimationAllowed() const;
 
-  void SetIsWidgetUserResizing(bool user_widget_resizing) {
-    user_widget_resizing_ = user_widget_resizing;
-  }
-
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
@@ -189,8 +185,6 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
       animation_coordinator_;
 
   bool has_tab_strip_initialized_ = false;
-
-  bool user_widget_resizing_ = false;
 
   std::unique_ptr<HorizontalTabClosingHelper> tab_closing_helper_;
 
