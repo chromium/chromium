@@ -4,8 +4,18 @@
 
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetch_coordinator.h"
 
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -294,6 +304,57 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, HasPendingRequests) {
 
   coordinator_.InformOfNetworkRequestFinished(notification);
   EXPECT_FALSE(coordinator_.HasPendingRequests());
+}
+
+TEST_F(EmailOneTimeTokenFetchCoordinatorTest,
+       LogsBase64UrlEncodedMessageReference) {
+  OneTimeTokenLogSink log_sink;
+  std::vector<std::string> log_messages;
+  base::CallbackListSubscription subscription =
+      log_sink.AddLogHandler(base::BindRepeating(
+          [](std::vector<std::string>* messages, std::string_view msg) {
+            messages->emplace_back(msg);
+          },
+          &log_messages));
+  EXPECT_CALL(mock_delegate_, GetLogSink())
+      .WillRepeatedly(testing::Return(&log_sink));
+  EXPECT_CALL(mock_delegate_, OnCanSendNetworkRequest).Times(3);
+
+  // Use non-UTF-8 binary bytes to ensure logging always emits valid UTF-8.
+  const std::string kBinaryRef("\xFF\xFE\x80\x01", 4);
+  // Base64Url encoding of "\xFF\xFE\x80\x01" with padding is "__6AAQ==".
+  const std::string kExpectedEncodedRef = "__6AAQ==";
+
+  const OneTimeTokenBackendNotification active_notification(
+      EncryptedMessageReference{kBinaryRef});
+  coordinator_.SignalNetworkRequestNeeded(active_notification);
+  // Trigger duplicate active request log.
+  coordinator_.SignalNetworkRequestNeeded(active_notification);
+
+  // Fill remaining active slots so the next notification stays pending.
+  coordinator_.SignalNetworkRequestNeeded(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref2")));
+  coordinator_.SignalNetworkRequestNeeded(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref3")));
+
+  const std::string kPendingBinaryRef("\xFF\x00\x80", 3);
+  const std::string kExpectedPendingEncodedRef = "_wCA";
+  const OneTimeTokenBackendNotification pending_notification(
+      EncryptedMessageReference{kPendingBinaryRef});
+  coordinator_.SignalNetworkRequestNeeded(pending_notification);
+  // Trigger duplicate pending request log.
+  coordinator_.SignalNetworkRequestNeeded(pending_notification);
+
+  for (const std::string& msg : log_messages) {
+    EXPECT_TRUE(base::IsStringUTF8AllowingNoncharacters(msg));
+  }
+  EXPECT_THAT(
+      log_messages,
+      testing::IsSupersetOf({
+          testing::HasSubstr("message_reference: " + kExpectedEncodedRef),
+          testing::HasSubstr("active request: " + kExpectedEncodedRef),
+          testing::HasSubstr("pending request: " + kExpectedPendingEncodedRef),
+      }));
 }
 
 }  // namespace
