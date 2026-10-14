@@ -227,6 +227,10 @@ class OmniboxPopupPresenterBase
   // Called when the widget has just been destroyed.
   virtual void WidgetDestroyed() {}
 
+  // Called with false on show/hide, and true once the first frame after show
+  // is presented.
+  virtual void OnWidgetPresentedChanged(bool presented) {}
+
   // Hook to create the results frame view.
   virtual std::unique_ptr<RoundedOmniboxResultsFrame> CreateResultsFrame(
       std::unique_ptr<views::View> contents,

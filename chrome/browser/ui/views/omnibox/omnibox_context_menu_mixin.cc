@@ -107,6 +107,8 @@ class StandinTextfield : public views::Textfield {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuMixinBase,
                                       kCopyMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuMixinBase,
+                                      kPasteMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuMixinBase,
                                       kShowFullUrlsMenuItem);
 
 views::Widget* OmniboxContextMenuMixinBase::GetWidgetForTextServices() {
@@ -400,6 +402,12 @@ void OmniboxContextMenuMixinBase::AddTextfieldItems(
               std::to_underlying(ui::TouchEditable::MenuCommands::kCopy))
           .value(),
       kCopyMenuItem);
+  menu_contents->SetElementIdentifierAt(
+      menu_contents
+          ->GetIndexOfCommandId(
+              std::to_underlying(ui::TouchEditable::MenuCommands::kPaste))
+          .value(),
+      kPasteMenuItem);
 }
 
 void OmniboxContextMenuMixinBase::AddOmniboxSpecificItems(

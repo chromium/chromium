@@ -282,6 +282,7 @@ source_set("browser_tests") {
 
   sources = [
     "omnibox_aim_popup_browsertest.cc",
+    "omnibox_full_popup_webui_content_browsertest.cc",
     "omnibox_popup_resource_budget_browsertest.cc",
     "omnibox_popup_view_browser_view_browsertest.cc",
     "omnibox_popup_view_views_browsertest.cc",

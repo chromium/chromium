@@ -343,6 +343,7 @@ if (enable_webui_ntp && !is_android) {
       "//content/test:test_support",
       "//ui/accessibility",
       "//ui/base",
+      "//ui/base/clipboard",
       "//ui/events:test_support",
       "//ui/gfx/geometry",
       "//ui/shell_dialogs",

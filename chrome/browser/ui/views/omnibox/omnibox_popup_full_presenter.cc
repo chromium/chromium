@@ -184,6 +184,12 @@ void OmniboxPopupFullPresenter::Hide() {
   pending_focus_task_.Cancel();
   browser_widget_observation_.Reset();
   browser_focus_manager_observation_.Reset();
+  // Cancel any pending context menu request, since the base `Hide()` only
+  // clears the content (which also cancels it) when it closes the widget. A
+  // request left pending could show the menu on a later activation.
+  if (auto* content = GetWebUIContent()) {
+    content->CancelPendingContextMenuRequest();
+  }
   app_menu_control_observation_.Reset();
   event_monitor_.reset();
   forward_events_timer_.Stop();
@@ -481,6 +487,9 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
         }
       }
 #endif  // BUILDFLAG(IS_MAC)
+      if (auto* content = GetWebUIContent()) {
+        content->OnPopupWidgetActivationChanged(/*active=*/true);
+      }
       return;
     }
 
@@ -494,6 +503,10 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
           FROM_HERE, base::BindOnce(&OmniboxPopupFullPresenter::RequestFocus,
                                     weak_factory_.GetWeakPtr()));
       return;
+    }
+
+    if (auto* content = GetWebUIContent()) {
+      content->OnPopupWidgetActivationChanged(/*active=*/false);
     }
 
 #if BUILDFLAG(IS_MAC)
@@ -748,6 +761,12 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   }
 
   is_deactivating_ = false;
+}
+
+void OmniboxPopupFullPresenter::OnWidgetPresentedChanged(bool presented) {
+  if (auto* content = GetWebUIContent()) {
+    content->OnPopupWidgetPresentedChanged(presented);
+  }
 }
 
 void OmniboxPopupFullPresenter::WidgetDestroyed() {
