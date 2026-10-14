@@ -2151,7 +2151,7 @@ public class LocationBarMediator
         // and need not be assigned in updateButtonTints().
         mLocationBarLayout.setDeleteButtonTint(
                 ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
-        mLocationBarLayout.updateVisualsForState(mBrandedColorScheme);
+        mLocationBarLayout.updateVisualsForState();
         mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
         // This sets spans inside the data object that override the color.
         updateUrl();

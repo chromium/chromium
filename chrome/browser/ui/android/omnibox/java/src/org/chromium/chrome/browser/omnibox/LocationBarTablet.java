@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -110,7 +109,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     // instead of being applied as holder margins.
     private int mTargetPopoverWidth;
     private int mTargetPopoverLeftOffset;
-    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private boolean mShowFocusRing;
     private boolean mIsHovered;
     private boolean mIsGlifActive;
@@ -506,26 +504,15 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
-    /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
-        super.updateVisualsForState(brandedColorScheme);
+    /* package */ void updateVisualsForState() {
+        super.updateVisualsForState();
 
-        mBrandedColorScheme = brandedColorScheme;
-        Context context = getContext();
-        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            @ColorInt
-            int popoverColor =
-                    OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                            context, mBrandedColorScheme);
-            mOuterRect.setColor(popoverColor);
-            mInnerRect.setColor(popoverColor);
-        } else {
-            mOuterRect.setColor(
-                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                            context, mBrandedColorScheme));
-            mInnerRect.setColor(
-                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                            context, mBrandedColorScheme));
-        }
+        mOuterRect.setColor(
+                mResourceProvider.getSuggestionBackgroundColor(
+                        mLayoutMode, /* isDropdownContainer= */ true));
+        mInnerRect.setColor(
+                mResourceProvider.getSuggestionBackgroundColor(
+                        mLayoutMode, /* isDropdownContainer= */ false));
 
         updateBackgroundColor();
     }
@@ -534,11 +521,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         Context context = getContext();
         if (mShowFocusRing) {
             mLocationBarBackground.setBackgroundColor(
-                    OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
-                            context, mBrandedColorScheme));
-            @ColorInt
-            int standbyBorderColor =
-                    OmniboxResourceProvider.getColorPrimary(context, mBrandedColorScheme);
+                    mResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor());
+            @ColorInt int standbyBorderColor = mResourceProvider.getColorPrimary();
             mLocationBarBackground.setStandbyColor(standbyBorderColor);
         } else {
             @ColorInt int color = mLocationBarDataProvider.getPrimaryColor();
@@ -547,7 +531,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                             context,
                             color,
-                            mBrandedColorScheme == BrandedColorScheme.INCOGNITO,
+                            mResourceProvider.isIncognito(),
                             /* isCustomTab= */ false);
             mLocationBarBackground.setBackgroundColor(textBoxColor);
         }
@@ -602,8 +586,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
             @ColorInt
             int popoverColor =
-                    OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                            getContext(), mBrandedColorScheme);
+                    mResourceProvider.getSuggestionBackgroundColor(
+                            layoutMode, /* isDropdownContainer= */ false);
             mOuterRect.setColor(popoverColor);
             mInnerRect.setColor(popoverColor);
             mGlifBorderDrawable.setCornerRadius(mOmniboxSuggestionDropdownRoundCornerRadius);

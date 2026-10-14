@@ -175,7 +175,7 @@ public class LocationBarTabletUnitTest {
 
     private void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         mResourceProvider.setBrandedColorScheme(brandedColorScheme);
-        mLocationBarTablet.updateVisualsForState(brandedColorScheme);
+        mLocationBarTablet.updateVisualsForState();
     }
 
     @Test
