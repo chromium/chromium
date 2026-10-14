@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -1363,6 +1364,19 @@ void FetchManager::Loader::NotifyFinished() {
     fetch_manager_->OnLoaderFinished(this);
 }
 
+namespace {
+
+// For documents, Frame::Detach() advances the frame lifecycle to kDetaching and
+// stops active loaders before LocalDOMWindow::FrameDestroyed runs. Any
+// unattached frame or destroyed window context indicates page navigation, tab
+// close, or iframe removal.
+bool IsFrameDetaching(const LocalDOMWindow* window) {
+  return window && (!window->GetFrame() || !window->GetFrame()->IsAttached() ||
+                    window->IsContextDestroyed());
+}
+
+}  // namespace
+
 FetchAbortedReason FetchManager::Loader::DeduceAbortedReason() const {
   if (Signal()->aborted()) {
     // Explicit script abort via AbortController is the primary cause, even if
@@ -1372,12 +1386,7 @@ FetchAbortedReason FetchManager::Loader::DeduceAbortedReason() const {
 
   ExecutionContext* context = GetExecutionContext();
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    // For documents, Frame::Detach() advances the frame lifecycle to
-    // kDetaching and stops active loaders before
-    // LocalDOMWindow::FrameDestroyed runs. Any unattached frame or destroyed
-    // window context indicates page navigation, tab close, or iframe removal.
-    if (!window->GetFrame() || !window->GetFrame()->IsAttached() ||
-        window->IsContextDestroyed()) {
+    if (IsFrameDetaching(window)) {
       return FetchAbortedReason::kFrameDetaching;
     }
   } else if (!context || context->IsContextDestroyed()) {
@@ -1398,9 +1407,38 @@ void FetchManager::Loader::RecordFetchCompletion(int net_error) {
           : kErrorCodesBeforeResponseHeadersHistogramName;
   base::UmaHistogramSparse(phase_histogram, -net_error);
 
+  std::optional<FetchAbortedReason> aborted_reason;
   if (net_error == net::ERR_ABORTED) {
-    base::UmaHistogramEnumeration(kAbortedReasonHistogramName,
-                                  DeduceAbortedReason());
+    aborted_reason = DeduceAbortedReason();
+    base::UmaHistogramEnumeration(kAbortedReasonHistogramName, *aborted_reason);
+  }
+
+  ExecutionContext* context = GetExecutionContext();
+  if (!context || url_list_.empty()) {
+    return;
+  }
+
+  std::optional<uint32_t> category_id =
+      network_utils::GetFetchCategoryIdFromUrl(url_list_.front());
+  if (!category_id.has_value()) {
+    return;
+  }
+
+  if (auto* recorder = context->UkmRecorder()) {
+    const bool is_context_detached =
+        IsFrameDetaching(DynamicTo<LocalDOMWindow>(context)) ||
+        context->IsContextDestroyed();
+    ukm::builders::FetchRequest_WithCategory builder(context->UkmSourceID());
+    builder.SetCategory(*category_id)
+        .SetHttpStatusCode(response_http_status_code_)
+        .SetIsAbortSignalled(Signal()->aborted() ? 1 : 0)
+        .SetIsContextDetached(is_context_detached ? 1 : 0)
+        .SetNetError(-net_error)
+        .SetResponseReceived(received_response_headers_ ? 1 : 0);
+    if (aborted_reason.has_value()) {
+      builder.SetFetchAbortedReason(static_cast<int64_t>(*aborted_reason));
+    }
+    builder.Record(recorder);
   }
 }
 

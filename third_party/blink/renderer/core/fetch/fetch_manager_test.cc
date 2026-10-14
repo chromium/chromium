@@ -16,11 +16,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -52,10 +55,12 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_test_delegate.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -613,7 +618,44 @@ TEST_P(FetchLaterWithInvalidSchemeUrlTest, FailsWithTypeError) {
 // state.
 class FetchManagerTest : public testing::Test {
  protected:
+  // Supplies a valid response body data pipe to `DidReceiveResponse()` and
+  // advances past `BufferingBytesConsumer`'s 50ms delay before
+  // `DidFinishLoading()` signals completion, so the body pipe closes
+  // synchronously without posting to `URLLoaderMock`'s unrun `FakeTaskRunner`.
+  class EmptyBodyLoaderTestDelegate : public URLLoaderTestDelegate {
+   public:
+    explicit EmptyBodyLoaderTestDelegate(
+        test::TaskEnvironment& task_environment)
+        : task_environment_(task_environment) {}
+
+    void DidReceiveResponse(URLLoaderClient* original_client,
+                            const WebURLResponse& response) override {
+      mojo::ScopedDataPipeProducerHandle producer;
+      mojo::ScopedDataPipeConsumerHandle consumer;
+      ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer, consumer),
+                MOJO_RESULT_OK);
+      producer.reset();
+      original_client->DidReceiveResponse(response, std::move(consumer),
+                                          /*cached_metadata=*/std::nullopt);
+    }
+
+    void DidFinishLoading(URLLoaderClient* original_client,
+                          base::TimeTicks finish_time,
+                          int64_t total_encoded_data_length,
+                          int64_t total_encoded_body_length,
+                          int64_t total_decoded_body_length) override {
+      task_environment_->FastForwardBy(base::Milliseconds(50));
+      URLLoaderTestDelegate::DidFinishLoading(
+          original_client, finish_time, total_encoded_data_length,
+          total_encoded_body_length, total_decoded_body_length);
+    }
+
+   private:
+    base::raw_ref<test::TaskEnvironment> task_environment_;
+  };
+
   void TearDown() override {
+    URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(nullptr);
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -657,9 +699,11 @@ class FetchManagerTest : public testing::Test {
   }
 
   const base::HistogramTester& Histogram() const { return histogram_; }
+  test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_;
 };
 
@@ -744,6 +788,166 @@ TEST_F(FetchManagerTest, RecordsOkForManualRedirect) {
   Histogram().ExpectTotalCount(
       FetchManager::kErrorCodesBeforeResponseHeadersHistogramName, 0);
   Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
+}
+
+TEST_F(FetchManagerTest, RecordsCategoryUkmWhenParamMatches) {
+  using UkmEntry = ukm::builders::FetchRequest_WithCategory;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/net-error?category=test-42");
+  RegisterMockedNetworkError(target, net::ERR_CONNECTION_RESET);
+
+  StartFetch(scope, target, /*signal=*/nullptr);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kCategoryName, 42);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName,
+                                 -net::ERR_CONNECTION_RESET);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kResponseReceivedName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsContextDetachedName,
+                                 0);
+}
+
+TEST_F(FetchManagerTest, RecordsCategoryUkmOnSuccess) {
+  using UkmEntry = ukm::builders::FetchRequest_WithCategory;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  EmptyBodyLoaderTestDelegate delegate(task_environment());
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/ok?category=test-7");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kCategoryName, 7);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName, -net::OK);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kHttpStatusCodeName,
+                                 200);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kResponseReceivedName,
+                                 1);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsContextDetachedName,
+                                 0);
+}
+
+TEST_F(FetchManagerTest, DoesNotRecordCategoryUkmWhenPrefixMismatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/net-error?category=other-42");
+  RegisterMockedNetworkError(target, net::ERR_CONNECTION_RESET);
+
+  StartFetch(scope, target, /*signal=*/nullptr);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::FetchRequest_WithCategory::kEntryName);
+  EXPECT_TRUE(entries.empty());
+}
+
+TEST_F(FetchManagerTest, DoesNotRecordCategoryUkmWhenPrefixEmptyByDefault) {
+  // The feature is enabled by default, but category_prefix defaults to empty.
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/net-error?category=test-42");
+  RegisterMockedNetworkError(target, net::ERR_CONNECTION_RESET);
+
+  StartFetch(scope, target, /*signal=*/nullptr);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::FetchRequest_WithCategory::kEntryName);
+  EXPECT_TRUE(entries.empty());
+}
+
+TEST_F(FetchManagerTest, RecordsCategoryUkmOnAbortSignal) {
+  using UkmEntry = ukm::builders::FetchRequest_WithCategory;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/aborted?category=test-99");
+  url_test_helpers::RegisterMockedURLLoad(
+      target, test::CoreTestDataPath("foo.html"), "text/html");
+
+  auto* controller = AbortController::Create(scope.GetScriptState());
+  StartFetch(scope, target, controller->signal());
+  controller->abort(scope.GetScriptState());
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kCategoryName, 99);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName,
+                                 -net::ERR_ABORTED);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], UkmEntry::kFetchAbortedReasonName,
+      static_cast<int64_t>(FetchAbortedReason::kAbortSignal));
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,
+                                 1);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsContextDetachedName,
+                                 0);
+}
+
+TEST_F(FetchManagerTest, RecordsCategoryUkmOnContextDetached) {
+  using UkmEntry = ukm::builders::FetchRequest_WithCategory;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const KURL target("https://example.com/in-flight?category=test-55");
+  {
+    V8TestingScope scope(KURL("https://example.com/"));
+    url_test_helpers::RegisterMockedURLLoad(
+        target, test::CoreTestDataPath("foo.html"), "text/html");
+    StartFetch(scope, target, /*signal=*/nullptr);
+  }
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kCategoryName, 55);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName,
+                                 -net::ERR_ABORTED);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], UkmEntry::kFetchAbortedReasonName,
+      static_cast<int64_t>(FetchAbortedReason::kFrameDetaching));
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kResponseReceivedName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsContextDetachedName,
+                                 1);
 }
 
 }  // namespace blink

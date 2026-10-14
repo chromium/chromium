@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -110,6 +113,40 @@ TEST(NetworkUtilsTest, GetDomainAndRegistry) {
             network_utils::GetDomainAndRegistry(
                 "www.example.notarealregistry",
                 network_utils::kIncludePrivateRegistries));
+}
+
+TEST(NetworkUtilsTest, GetFetchCategoryIdFromUrl) {
+  // By default, category_prefix is empty and logging is inactive.
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=test-123")),
+            std::nullopt);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=test-123")),
+            123u);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?other=1&category=test-0")),
+            0u);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=test-test-123")),
+            std::nullopt);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=test-invalid")),
+            std::nullopt);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=other-123")),
+            std::nullopt);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("https://example.com/?category=test-4294967296")),
+            std::nullopt);
+  EXPECT_EQ(network_utils::GetFetchCategoryIdFromUrl(
+                KURL("ftp://example.com/?category=test-123")),
+            std::nullopt);
 }
 
 }  // namespace blink

@@ -711,6 +711,23 @@ BASE_FEATURE(kFetchDestinationJsonCssModules,
              "kFetchDestinationJsonCssModules",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether category-keyed UKM (FetchRequest.WithCategory) is logged
+// when a fetch() request reaches a terminal state.
+BASE_FEATURE(kFetchErrorCategoryLogging, base::FEATURE_ENABLED_BY_DEFAULT);
+// The URL query parameter name inspected for the fetch category identifier.
+BASE_FEATURE_PARAM(std::string,
+                   kFetchErrorCategoryLoggingParamName,
+                   &kFetchErrorCategoryLogging,
+                   "category_param_name",
+                   "category");
+// The required prefix of the query parameter value (e.g. "test-" in
+// "?category=test-42"). An empty prefix disables logging by default.
+BASE_FEATURE_PARAM(std::string,
+                   kFetchErrorCategoryLoggingPrefix,
+                   &kFetchErrorCategoryLogging,
+                   "category_prefix",
+                   "");
+
 BASE_FEATURE(kFileSystemUrlNavigation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFilteringScrollPrediction,

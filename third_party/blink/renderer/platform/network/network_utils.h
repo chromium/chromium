@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_UTILS_H_
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -55,6 +57,13 @@ PLATFORM_EXPORT String GenerateAcceptLanguageHeader(const String&);
 
 PLATFORM_EXPORT Vector<char> ParseMultipartBoundary(
     const AtomicString& content_type_header);
+
+// Returns the category ID parsed from the URL query parameter if the URL
+// contains a query parameter named by `category_param_name` whose value begins
+// with `category_prefix` followed by an unsigned integer ID. Returns
+// std::nullopt if the feature is disabled, the prefix is empty, or the
+// parameter does not match.
+PLATFORM_EXPORT std::optional<uint32_t> GetFetchCategoryIdFromUrl(const KURL&);
 
 }  // namespace network_utils
 

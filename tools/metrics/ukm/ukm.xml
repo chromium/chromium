@@ -10287,6 +10287,55 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FetchRequest.WithCategory">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logged when a fetch() request with a recognized category parameter reaches a
+    terminal state in the renderer.
+  </summary>
+  <metric name="Category">
+    <summary>
+      An integer representing the numeric identifier parsed from the category
+      query parameter in the request URL.
+    </summary>
+  </metric>
+  <metric name="FetchAbortedReason" enum="FetchAbortedReason">
+    <summary>
+      Why the request ended with net::ERR_ABORTED.
+    </summary>
+  </metric>
+  <metric name="HttpStatusCode" enum="CombinedHttpResponseAndNetErrorCode">
+    <summary>
+      The HTTP response status code if response headers were received, or 0
+      otherwise.
+    </summary>
+  </metric>
+  <metric name="IsAbortSignalled" enum="Boolean">
+    <summary>
+      Whether the request received an explicit abort signal (e.g. from
+      AbortController.abort() or window stop).
+    </summary>
+  </metric>
+  <metric name="IsContextDetached" enum="Boolean">
+    <summary>
+      Whether the execution context or frame was detaching or destroyed when the
+      request terminated.
+    </summary>
+  </metric>
+  <metric name="NetError" enum="NetErrorCodes">
+    <summary>
+      The terminal net error code, recorded as -net_error (e.g. net::OK is 0,
+      net::ERR_ABORTED is 3).
+    </summary>
+  </metric>
+  <metric name="ResponseReceived" enum="Boolean">
+    <summary>
+      Whether response headers were received before the terminal state.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>

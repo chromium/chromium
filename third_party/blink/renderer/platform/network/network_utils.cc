@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/data_url.h"
@@ -16,6 +18,7 @@
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -188,6 +191,41 @@ Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
   Vector<char> result;
   result.append_range(boundary);
   return result;
+}
+
+std::optional<uint32_t> GetFetchCategoryIdFromUrl(const KURL& url) {
+  // Bail out before querying FeatureList or FeatureParam when the URL is not
+  // HTTP(S) or has no query component.
+  StringView query = url.Query();
+  if (!url.ProtocolIsInHttpFamily() || query.empty()) {
+    return std::nullopt;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kFetchErrorCategoryLogging)) {
+    return std::nullopt;
+  }
+
+  std::string prefix = features::kFetchErrorCategoryLoggingPrefix.Get();
+  if (prefix.empty() || !query.contains(prefix.c_str())) {
+    return std::nullopt;
+  }
+
+  std::string param_name = features::kFetchErrorCategoryLoggingParamName.Get();
+  if (param_name.empty() || !query.contains(param_name.c_str())) {
+    return std::nullopt;
+  }
+
+  std::string value;
+  if (!net::GetValueForKeyInQuery(GURL(url), param_name, &value)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::string_view> id_str = base::RemovePrefix(value, prefix);
+  uint32_t category_id = 0;
+  if (!id_str || !base::StringToUint(*id_str, &category_id)) {
+    return std::nullopt;
+  }
+  return category_id;
 }
 
 }  // namespace network_utils
