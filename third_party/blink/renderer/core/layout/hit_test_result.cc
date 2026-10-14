@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -90,6 +91,25 @@ bool HasImageSourceURL(const Node& node) {
     return true;
   }
   return false;
+}
+
+// Returns the position to use instead of mapping a point inside
+// |layout_object| when |layout_object| is display locked, or std::nullopt if it
+// is not. Contents of a locked subtree are not painted and the layout state
+// inside the lock can be dirty, so positions in it must not be used. A hit test
+// result can point into a subtree that got locked after the hit test, e.g. by a
+// focus change during the same mouse press.
+std::optional<PositionWithAffinity> PositionForDisplayLock(
+    const LayoutObject& layout_object) {
+  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
+      layout_object.GetDocument());
+  const Element* locked =
+      DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+          layout_object);
+  if (!locked) {
+    return std::nullopt;
+  }
+  return PositionWithAffinity(Position(*locked, 0), TextAffinity::kDefault);
 }
 
 }  // namespace
@@ -211,15 +231,9 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   if (!layout_object)
     return PositionWithAffinity();
 
-  // We should never have a layout object that is within a locked subtree.
-  CHECK(!DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object));
-
-  // If the layout object is blocked by display lock, we return the beginning of
-  // the node as the position. This is because we don't paint contents of the
-  // element. Furthermore, any caret adjustments below can access layout-dirty
-  // state in the subtree of this object.
-  if (layout_object->ChildPaintBlockedByDisplayLock())
-    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+  if (auto position = PositionForDisplayLock(*layout_object)) {
+    return *position;
+  }
 
   if (node->IsPseudoElement()) {
     // Pseudo-elements can't serve as caret anchors.
@@ -263,15 +277,9 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
-  // We should never have a layout object that is within a locked subtree.
-  CHECK(!DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object));
-
-  // If the layout object is blocked by display lock, we return the beginning of
-  // the node as the position. This is because we don't paint contents of the
-  // element. Furthermore, any caret adjustments below can access layout-dirty
-  // state in the subtree of this object.
-  if (layout_object->ChildPaintBlockedByDisplayLock())
-    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+  if (auto position = PositionForDisplayLock(*layout_object)) {
+    return *position;
+  }
 
   PositionWithAffinity position = layout_object->PositionForPoint(LocalPoint());
   if (position.IsNull())

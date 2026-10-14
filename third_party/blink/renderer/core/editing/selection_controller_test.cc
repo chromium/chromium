@@ -11,8 +11,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -646,6 +649,37 @@ TEST_F(SelectionControllerTest, MAYBE_MiddleClickPasteToggle) {
                                  WebInputEvent::kIsCompatibilityEventForTouch,
                                  WebInputEvent::GetStaticTimeStampForTests());
   EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event_down));
+}
+
+// http://crbug.com/362901608
+TEST_F(SelectionControllerTest, ClickOnPseudoElementLockedByItsOwnFocus) {
+  InsertStyleElement(
+      "li:focus-within > ul { display: block; }"
+      "li:focus-within > ul:focus { content-visibility: hidden; }"
+      "li:focus-within > ul:not(:focus)::before {"
+      "  content: '#'; display: block; position: absolute;"
+      "  top: 0px; left: 0px; width: 20px; height: 20px; }"
+      "ul ul { display: none; position: relative; }"
+      "li { position: relative; }");
+  SetBodyContent(
+      "<ul><li id=item tabindex=0>item"
+      "<ul id=sub tabindex=-1><li tabindex=0>sub item</li></ul>"
+      "</li></ul>");
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  GetElementById("item")->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* const sub = GetElementById("sub");
+  DOMRect* const rect = sub->GetBoundingClientRect();
+  const gfx::PointF point(rect->x() + 3, rect->y() + 3);
+  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown, point, point,
+                           WebMouseEvent::Button::kLeft, 1,
+                           WebInputEvent::Modifiers::kLeftButtonDown,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  GetFrame().GetEventHandler().HandleMousePressEvent(mouse_down);
+
+  EXPECT_EQ(sub, GetDocument().FocusedElement());
 }
 
 }  // namespace blink
