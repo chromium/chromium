@@ -778,13 +778,11 @@ String TextFieldInputType::ConvertFromVisibleValue(
 }
 
 void TextFieldInputType::SubtreeHasChanged() {
+  // SetValueFromRenderer() invalidates the validity pseudo-classes through
+  // SetNeedsValidityCheck(). It does not invalidate the range ones.
   GetElement().SetValueFromRenderer(SanitizeUserInputValue(
       ConvertFromVisibleValue(GetElement().InnerEditorValue())));
   GetElement().UpdatePlaceholderVisibility();
-  GetElement().PseudoStateChanged(CSSSelector::kPseudoValid);
-  GetElement().PseudoStateChanged(CSSSelector::kPseudoInvalid);
-  GetElement().PseudoStateChanged(CSSSelector::kPseudoUserValid);
-  GetElement().PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoInRange);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
 
