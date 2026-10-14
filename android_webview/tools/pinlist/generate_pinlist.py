@@ -368,6 +368,10 @@ def main():
     type=pathlib.Path,
     help='Output.json file that the script can write to.',
   )
+  parser.add_argument(
+    '--isolated-script-test-perf-output',
+    help='Deprecated and ignored, but bots pass it.',
+  )
 
   options = parser.parse_args()
 
