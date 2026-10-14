@@ -573,6 +573,9 @@ public class UrlBar extends AutocompleteEditText {
         boolean wantWrap = isMultilineInputActive();
         if (wantWrap == !isHorizontallyScrollable()) return;
         setHorizontallyScrolling(!wantWrap);
+        if (!wantWrap) {
+            setScrollY(0);
+        }
     }
 
     /** Returns whether the {@link UrlBar} is presently configured to wrap long user input. */
