@@ -862,6 +862,13 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       const bool is_app_window =
           window->type == sessions::SessionWindow::TYPE_APP;
 
+      // Record restored normal (`TYPE_NORMAL`) and app (`TYPE_APP`) window
+      // counts in `counts`. This window-type classification must match
+      // SavePreRestartTabWindowCounts() in
+      // chrome/browser/lifetime/application_lifetime_desktop.cc, which saves
+      // the pre-restart baseline counts. If the two diverge,
+      // SessionRestore.{Tab,Window,Profile}DiffAfterRestart.{Normal,App} will
+      // compare mismatched window sets and report false gains or losses.
       if (is_normal_window) {
         counts->normal_windows++;
       } else if (is_app_window) {

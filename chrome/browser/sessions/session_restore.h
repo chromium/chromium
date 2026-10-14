@@ -44,6 +44,10 @@ class SessionRestore {
     int app_windows = 0;
   };
 
+  // Keys of the per-profile `kPreSmartRestartSessionState` dictionary pref,
+  // which holds the tab and window counts saved before a restart. Profile
+  // counts are saved separately in local state; see
+  // ProfileDiffAfterRestartRecorder.
   static constexpr char kNormalTabsKey[] = "normal_tabs";
   static constexpr char kNormalWindowsKey[] = "normal_windows";
   static constexpr char kAppTabsKey[] = "app_tabs";

@@ -58,6 +58,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/profile_diff_after_restart_recorder.h"
 #include "chrome/browser/sessions/session_restore_metrics.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
@@ -115,6 +116,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -4978,34 +4980,78 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class SessionRestoreRestartMetricTest : public AppSessionRestoreTest {
+// Base fixture for the SessionRestore.*DiffAfterRestart metrics. The PRE_ part
+// of each test calls chrome::AttemptRestart(); `expects_restart` installs an
+// override so the browser is not actually relaunched. The non-PRE_ part then
+// runs against the state left behind by the restart.
+class SessionRestoreRestartMetricTestBase : public AppSessionRestoreTest {
  public:
-  SessionRestoreRestartMetricTest() {
-    feature_list_.InitAndEnableFeature(features::kRecordTabWindowDiffOnRestart);
+  SessionRestoreRestartMetricTestBase(bool enable_feature, bool expects_restart)
+      : expects_restart_(expects_restart) {
+    feature_list_.InitWithFeatureState(features::kRecordTabWindowDiffOnRestart,
+                                       enable_feature);
   }
-  ~SessionRestoreRestartMetricTest() override = default;
+  ~SessionRestoreRestartMetricTestBase() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
+    AppSessionRestoreTest::SetUpInProcessBrowserTestFixture();
+
     std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
-
-    if (base::StartsWith(test_name, "PRE_")) {
-      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
-          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
-      EXPECT_CALL(*mock_relaunch_callback_, Run);
-      relaunch_chrome_override_ =
-          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
-              mock_relaunch_callback_->Get());
+    if (!expects_restart_ || !base::StartsWith(test_name, "PRE_")) {
+      return;
     }
+
+    mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+        base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+    EXPECT_CALL(*mock_relaunch_callback_, Run);
+    relaunch_chrome_override_ =
+        std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+            mock_relaunch_callback_->Get());
+  }
+
+ protected:
+  static const base::DictValue& PreRestartProfileCounts() {
+    return g_browser_process->local_state()->GetDict(
+        prefs::kPreSmartRestartProfileCounts);
+  }
+
+  // Returns the samples recorded for `histogram_name`, or nullptr if the
+  // histogram was never recorded. base::HistogramTester cannot be used for the
+  // startup metrics because they are emitted before the test body runs.
+  static std::unique_ptr<base::HistogramSamples> StartupSamples(
+      std::string_view histogram_name) {
+    base::HistogramBase* histogram =
+        base::StatisticsRecorder::FindHistogram(histogram_name);
+    return histogram ? histogram->SnapshotSamples() : nullptr;
+  }
+
+  // Expects exactly one startup sample of `value` for `histogram_name`.
+  static void ExpectUniqueStartupSample(std::string_view histogram_name,
+                                        int value) {
+    std::unique_ptr<base::HistogramSamples> samples =
+        StartupSamples(histogram_name);
+    ASSERT_TRUE(samples) << histogram_name << " was not recorded";
+    EXPECT_EQ(samples->GetCount(value), 1) << histogram_name;
+    EXPECT_EQ(samples->TotalCount(), 1) << histogram_name;
   }
 
  private:
+  const bool expects_restart_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<::testing::StrictMock<
       base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>
       mock_relaunch_callback_;
   std::unique_ptr<upgrade_util::ScopedRelaunchChromeBrowserOverride>
       relaunch_chrome_override_;
+};
+
+class SessionRestoreRestartMetricTest
+    : public SessionRestoreRestartMetricTestBase {
+ public:
+  SessionRestoreRestartMetricTest()
+      : SessionRestoreRestartMetricTestBase(/*enable_feature=*/true,
+                                            /*expects_restart=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
@@ -5030,6 +5076,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
   // Verify that the browser thinks it was restarted!
   PrefService* pref_service = g_browser_process->local_state();
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+
+  // The single profile had both a normal and an app window open.
+  EXPECT_EQ(PreRestartProfileCounts().FindInt(
+                ProfileDiffAfterRestartRecorder::kNormalProfilesKey),
+            1);
+  EXPECT_EQ(PreRestartProfileCounts().FindInt(
+                ProfileDiffAfterRestartRecorder::kAppProfilesKey),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest, RecordTabWindowDiff) {
@@ -5038,25 +5092,230 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest, RecordTabWindowDiff) {
   // HistogramTester only records metrics logged *after* it is created, so it
   // would miss the startup metrics. StatisticsRecorder holds all histograms
   // in the process regardless of when they were logged.
-  base::HistogramBase* histogram = base::StatisticsRecorder::FindHistogram(
-      "SessionRestore.TabDiffAfterRestart.Normal");
-  ASSERT_TRUE(histogram);
-  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+  ExpectUniqueStartupSample("SessionRestore.TabDiffAfterRestart.Normal", 0);
+  ExpectUniqueStartupSample("SessionRestore.WindowDiffAfterRestart.Normal", 0);
+  ExpectUniqueStartupSample("SessionRestore.TabDiffAfterRestart.App", 0);
+  ExpectUniqueStartupSample("SessionRestore.WindowDiffAfterRestart.App", 0);
 
-  histogram = base::StatisticsRecorder::FindHistogram(
-      "SessionRestore.WindowDiffAfterRestart.Normal");
-  ASSERT_TRUE(histogram);
-  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+  // Everything that was open before the restart came back, for both window
+  // types, so the profile counts match too.
+  ExpectUniqueStartupSample(ProfileDiffAfterRestartRecorder::kNormalHistogram,
+                            0);
+  ExpectUniqueStartupSample(ProfileDiffAfterRestartRecorder::kAppHistogram, 0);
 
-  histogram = base::StatisticsRecorder::FindHistogram(
-      "SessionRestore.TabDiffAfterRestart.App");
-  ASSERT_TRUE(histogram);
-  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+  // The pre-restart counts are consumed when recording starts.
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kPreSmartRestartProfileCounts));
+}
 
-  histogram = base::StatisticsRecorder::FindHistogram(
-      "SessionRestore.WindowDiffAfterRestart.App");
-  ASSERT_TRUE(histogram);
-  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       PRE_RecordProfileDiffMultipleProfilesRestored) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  Profile* second_profile = CreateSecondaryProfile(1);
+  BrowserWindowInterface* second_browser = CreateBrowser(second_profile);
+  ASSERT_NE(second_browser, nullptr);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(second_browser, GURL("about:blank")));
+
+  browser()->GetWindow()->Activate();
+  chrome::AttemptRestart();
+
+  EXPECT_EQ(PreRestartProfileCounts().FindInt(
+                ProfileDiffAfterRestartRecorder::kNormalProfilesKey),
+            2);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       RecordProfileDiffMultipleProfilesRestored) {
+  // ProcessLastOpenedProfiles() restores the first profile synchronously and
+  // subsequent profiles asynchronously (which delete themselves via
+  // DeleteSoon). Ensure any pending asynchronous restore completion has run.
+  ASSERT_TRUE(base::test::RunUntil(
+      [] { return !SessionRestore::IsAnySessionCurrentlyRestoring(); }));
+
+  // Both profiles were restored, so the diff is 0.
+  ExpectUniqueStartupSample(ProfileDiffAfterRestartRecorder::kNormalHistogram,
+                            0);
+  EXPECT_FALSE(StartupSamples(ProfileDiffAfterRestartRecorder::kAppHistogram));
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kPreSmartRestartProfileCounts));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       PRE_RecordProfileDiffLostProfile) {
+  // Open a tab in the primary browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Create second profile and open a browser window with a tab.
+  Profile* second_profile = CreateSecondaryProfile(1);
+  BrowserWindowInterface* second_browser = CreateBrowser(second_profile);
+  ASSERT_NE(second_browser, nullptr);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(second_browser, GURL("about:blank")));
+
+  // Activate primary browser so that primary profile is last_used.
+  browser()->GetWindow()->Activate();
+
+  chrome::AttemptRestart();
+
+  PrefService* pref_service = g_browser_process->local_state();
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+
+  // Verify that 2 profiles were recorded before the restart, and that no app
+  // windows were open.
+  EXPECT_EQ(PreRestartProfileCounts().FindInt(
+                ProfileDiffAfterRestartRecorder::kNormalProfilesKey),
+            2);
+  EXPECT_FALSE(PreRestartProfileCounts().FindInt(
+      ProfileDiffAfterRestartRecorder::kAppProfilesKey));
+
+  // Simulate loss of the second profile by removing it from the last active
+  // profiles list so Chrome will not launch it upon restart.
+  {
+    ScopedListPrefUpdate update(pref_service, prefs::kProfilesLastActive);
+    update->clear();
+    update->Append(browser()->GetProfile()->GetBaseName().AsUTF8Unsafe());
+  }
+
+  // Verify that only the primary profile remains in the last active list.
+  const base::ListValue& last_active =
+      pref_service->GetList(prefs::kProfilesLastActive);
+  EXPECT_EQ(last_active.size(), 1u);
+  EXPECT_EQ(last_active[0].GetString(),
+            browser()->GetProfile()->GetBaseName().AsUTF8Unsafe());
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       RecordProfileDiffLostProfile) {
+  // 2 profiles were expected, but only 1 restored. Diff should be 1.
+  ExpectUniqueStartupSample(ProfileDiffAfterRestartRecorder::kNormalHistogram,
+                            1);
+
+  // No app windows were open before the restart, so nothing is reported for
+  // app profiles.
+  EXPECT_FALSE(StartupSamples(ProfileDiffAfterRestartRecorder::kAppHistogram));
+
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kPreSmartRestartProfileCounts));
+}
+
+// Startup session restore is normally synchronous, but session data can also be
+// read after StartupBrowserCreator has finished launching profiles, in which
+// case the restore completes asynchronously. The diff must be recorded in that
+// ordering too, i.e. when the last session restore - rather than the launch
+// loop - is what finishes last.
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       RecordProfileDiffForAsynchronousRestore) {
+  Profile* profile = browser()->GetProfile();
+  ProfileDiffAfterRestartRecorder& recorder =
+      ProfileDiffAfterRestartRecorder::GetInstance();
+  recorder.ResetForTesting();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Make the current session readable as the previous session, which is what
+  // the restore below reads.
+  ShutdownServices(profile);
+  StartupServices(profile);
+
+  // Set up the state a restart leaves behind: one profile had normal windows.
+  PrefService* local_state = g_browser_process->local_state();
+  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
+      local_state, /*normal_profiles=*/1, /*app_profiles=*/0);
+
+  base::HistogramTester histogram_tester;
+  recorder.MaybeStartRecording(local_state);
+  ASSERT_TRUE(recorder.is_recording_for_testing());
+
+  // Restore asynchronously: SessionRestore::SYNCHRONOUS is deliberately not
+  // part of the bitmask, so the restore is still in flight below.
+  base::RunLoop restored_loop;
+  base::CallbackListSubscription subscription =
+      SessionRestore::RegisterOnSessionRestoredCallback(
+          base::BindLambdaForTesting(
+              [&restored_loop](Profile*, int) { restored_loop.Quit(); }));
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::RESTORE_BROWSER, {});
+  ASSERT_TRUE(SessionRestore::IsAnySessionCurrentlyRestoring());
+
+  // Startup finishes launching profiles while the restore is still in flight,
+  // so there is nothing to record yet.
+  recorder.OnStartupLaunchesFinished();
+  histogram_tester.ExpectTotalCount(
+      ProfileDiffAfterRestartRecorder::kNormalHistogram, 0);
+  ASSERT_TRUE(recorder.is_recording_for_testing());
+
+  restored_loop.Run();
+
+  // An asynchronous restore deletes itself in a posted task, which is when it
+  // stops being an active session restore.
+  ASSERT_TRUE(base::test::RunUntil(
+      [] { return !SessionRestore::IsAnySessionCurrentlyRestoring(); }));
+
+  // The profile restored its normal window, so nothing was lost.
+  histogram_tester.ExpectUniqueSample(
+      ProfileDiffAfterRestartRecorder::kNormalHistogram, 0, 1);
+  EXPECT_FALSE(recorder.is_recording_for_testing());
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kPreSmartRestartProfileCounts));
+}
+
+class SessionRestoreNormalExitMetricTest
+    : public SessionRestoreRestartMetricTestBase {
+ public:
+  SessionRestoreNormalExitMetricTest()
+      : SessionRestoreRestartMetricTestBase(/*enable_feature=*/true,
+                                            /*expects_restart=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreNormalExitMetricTest,
+                       PRE_NoMetricOnNormalExit) {
+  // Set "Continue where you left off".
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  // Normal exit: test finishes without calling chrome::AttemptRestart().
+  EXPECT_FALSE(
+      g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreNormalExitMetricTest,
+                       NoMetricOnNormalExit) {
+  // On regular startup with "Continue where you left off", restart diff metrics
+  // must not be logged.
+  EXPECT_FALSE(
+      StartupSamples(ProfileDiffAfterRestartRecorder::kNormalHistogram));
+  EXPECT_FALSE(StartupSamples(ProfileDiffAfterRestartRecorder::kAppHistogram));
+  EXPECT_FALSE(StartupSamples("SessionRestore.TabDiffAfterRestart.Normal"));
+  EXPECT_FALSE(StartupSamples("SessionRestore.WindowDiffAfterRestart.Normal"));
+
+  // Counts saved by an earlier restart that was cancelled, e.g. by a
+  // beforeunload dialog, are discarded on a startup that is not a restart, so
+  // that a given restart will only ever report its own profile diff.
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kPreSmartRestartProfileCounts));
+}
+
+class SessionRestoreRestartMetricFeatureDisabledTest
+    : public SessionRestoreRestartMetricTestBase {
+ public:
+  SessionRestoreRestartMetricFeatureDisabledTest()
+      : SessionRestoreRestartMetricTestBase(/*enable_feature=*/false,
+                                            /*expects_restart=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricFeatureDisabledTest,
+                       PRE_RecordProfileDiffDisabledFeature) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  chrome::AttemptRestart();
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricFeatureDisabledTest,
+                       RecordProfileDiffDisabledFeature) {
+  EXPECT_FALSE(
+      StartupSamples(ProfileDiffAfterRestartRecorder::kNormalHistogram));
+  EXPECT_FALSE(StartupSamples(ProfileDiffAfterRestartRecorder::kAppHistogram));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

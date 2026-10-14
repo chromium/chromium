@@ -116,6 +116,7 @@
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
+#include "chrome/browser/sessions/profile_diff_after_restart_recorder.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
@@ -794,6 +795,23 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     const Profiles& last_opened_profiles,
     bool restore_tabbed_browser) {
   TRACE_EVENT0("ui", "StartupBrowserCreator::LaunchBrowserForLastProfiles");
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Start observing before launching profiles: primary-profile session restore
+  // completes synchronously during launch, so observing any later would miss
+  // its completion notification and record restored profiles as lost. On
+  // non-restarts, clear any stale pre-restart counts from an aborted restart.
+  ProfileDiffAfterRestartRecorder& profile_diff_recorder =
+      ProfileDiffAfterRestartRecorder::GetInstance();
+  if (WasRestarted()) {
+    profile_diff_recorder.MaybeStartRecording(g_browser_process->local_state());
+  } else {
+    ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(
+        g_browser_process->local_state());
+  }
+  base::ScopedClosureRunner on_launches_finished(base::BindOnce(
+      &ProfileDiffAfterRestartRecorder::OnStartupLaunchesFinished,
+      base::Unretained(&profile_diff_recorder)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   DCHECK_NE(profile_info.mode, StartupProfileMode::kError);
 
   Profile* profile = profile_info.profile;
@@ -810,6 +828,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
+    profile_diff_recorder.AbandonRecording();
     if (ShouldForceLaunchIntoNewProfileWithEmail(command_line, profile)) {
       std::string email =
           command_line.GetSwitchValueASCII(switches::kProfileEmail);
@@ -878,6 +897,10 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
+    // Reachable on a restart when the profile is locked: no session will be
+    // restored until the user picks a profile, so the pre-restart counts would
+    // be reported as fully lost. Drop them instead.
+    profile_diff_recorder.AbandonRecording();
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
             ? ProfilePicker::EntryPoint::kOnStartupNoProfile
@@ -1497,6 +1520,9 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
 // activation this one.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (process_startup == chrome::startup::IsProcessStartup::kYes) {
+    // Every last-opened profile was locked, so no browser was launched and
+    // nothing will be restored.
+    ProfileDiffAfterRestartRecorder::GetInstance().AbandonRecording();
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kOnStartup));
   } else  // NOLINT
