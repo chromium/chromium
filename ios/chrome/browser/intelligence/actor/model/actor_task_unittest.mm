@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -50,6 +51,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface FakeActorTaskUpdatesObserver : NSObject <ActorTaskUpdatesObserver>
 
@@ -1340,13 +1342,16 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
   EXPECT_TRUE(context.completed);
 }
 
-// Tests that waiting on user confirmation completes the background task with
-// success, through the task's state change.
+// Tests that awaiting user confirmation completes the background task
+// successfully: updates the task state, displays the wait message as the title
+// with the task name as subtitle, and leaves the progress bar unfilled.
 TEST_F(ActorTaskBackgroundingTest, WaitingOnUserCompletesBackgroundTask) {
   task_->Act({}, "Act", base::DoNothing());
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
   task_->background_worker()->SetContext(context);
+  const double progress = context.fractionCompleted;
+  ASSERT_NSEQ(context.subtitle, @"Act");
 
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
@@ -1356,7 +1361,10 @@ TEST_F(ActorTaskBackgroundingTest, WaitingOnUserCompletesBackgroundTask) {
   ASSERT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
 
   EXPECT_TRUE(context.completed);
-  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, progress);
+  EXPECT_NSEQ(context.title, l10n_util::GetNSString(
+                                 IDS_IOS_ACTOR_BACKGROUND_TASK_INPUT_NEEDED));
+  EXPECT_NSEQ(context.subtitle, @"Test Task");
 }
 
 // Test that the task forwards actuation to the background worker, which

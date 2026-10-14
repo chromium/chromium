@@ -51,10 +51,10 @@ class ActorTaskBackgroundWorker : public web::WebStateObserver {
     // Returns the task's current state.
     virtual ActorTaskState GetTaskState() const = 0;
 
-    // Returns the task's title, used as the background task title.
+    // Returns the task's title.
     virtual const std::string& GetTaskTitle() const = 0;
 
-    // Returns the latest task update, used as the background task subtitle.
+    // Returns the latest task update.
     virtual const std::string& GetLastTaskUpdate() const = 0;
   };
 
@@ -125,7 +125,9 @@ class ActorTaskBackgroundWorker : public web::WebStateObserver {
   void IncrementBackgroundTaskProgress();
 
   // Finalizes the background task for `reason` and records the end reason &
-  // duration.
+  // duration. When waiting on the user (e.g., paused or yielded), sets the
+  // title describing the wait, keeps the task's own title as subtitle, and
+  // leaves the progress untouched to indicate that the task is not done.
   void FinalizeBackgroundTask(ActorBackgroundTaskEndReason reason);
 
   // Returns whether the WebContent process keep-alive heartbeat should run.

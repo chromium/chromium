@@ -676,6 +676,15 @@ BASE_FEATURE_PARAM(
     kGeminiActorBackgroundWebStateKeepAliveHeartbeatIntervalParam,
     base::Milliseconds(400));
 
+const char kGeminiActorBackgroundProgressHeartbeatIntervalParam[] =
+    "background_progress_heartbeat_interval";
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kGeminiActorBackgroundProgressHeartbeatInterval,
+                   &kGeminiActor,
+                   kGeminiActorBackgroundProgressHeartbeatIntervalParam,
+                   base::Seconds(3));
+
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kActorTabObservationPageContextTimeout,
                    &kGeminiActor,
@@ -698,6 +707,10 @@ bool IsGeminiActorBackgroundingEnabled() {
 
 base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval() {
   return kGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval.Get();
+}
+
+base::TimeDelta GetGeminiActorBackgroundProgressHeartbeatInterval() {
+  return kGeminiActorBackgroundProgressHeartbeatInterval.Get();
 }
 
 base::TimeDelta GetActorTabObservationPageContextTimeout() {

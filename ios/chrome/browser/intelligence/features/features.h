@@ -323,6 +323,14 @@ extern const char
 // WebContent processes alive in the background.
 base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval();
 
+// Parameter for the interval of the system progress heartbeat of the actor's
+// background tasks. Zero disables the heartbeat.
+extern const char kGeminiActorBackgroundProgressHeartbeatIntervalParam[];
+
+// Returns the interval of the system progress heartbeat of the actor's
+// background tasks.
+base::TimeDelta GetGeminiActorBackgroundProgressHeartbeatInterval();
+
 // The timeout for Page Context extraction during an Actor tab observation,
 // the "ActorTabObservationPageContextTimeout" parameter of `kGeminiActor`.
 base::TimeDelta GetActorTabObservationPageContextTimeout();

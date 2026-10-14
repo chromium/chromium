@@ -39,6 +39,7 @@ source_set("model") {
 
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
     "//ios/chrome/app/background_task",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -61,6 +62,7 @@ source_set("model") {
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ui/base",
     "//url",
   ]
 }
@@ -106,6 +108,7 @@ source_set("unit_tests") {
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
     "//ios/chrome/app/background_task",
     "//ios/chrome/app/background_task:features",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -140,6 +143,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }

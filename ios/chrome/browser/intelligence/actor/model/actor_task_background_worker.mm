@@ -17,11 +17,13 @@
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace actor {
@@ -60,6 +62,26 @@ bool IsSuccessfulEndReason(ActorBackgroundTaskEndReason reason) {
     case ActorBackgroundTaskEndReason::kCancelled:
     case ActorBackgroundTaskEndReason::kDestroyed:
       return false;
+  }
+}
+
+// Returns the message ID of the background task title describing why the task
+// is waiting on the user in `task_state`. Must only be called for non-terminal
+// states where `ShouldKeepBackgroundTaskAlive(task_state)` is false.
+int WaitingOnUserTitleMessageId(ActorTaskState task_state) {
+  switch (task_state) {
+    case ActorTaskState::kWaitingOnUser:
+      return IDS_IOS_ACTOR_BACKGROUND_TASK_INPUT_NEEDED;
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kPausedByUser:
+      return IDS_IOS_ACTOR_BACKGROUND_TASK_STOPPED;
+    case ActorTaskState::kInit:
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kFailed:
+      NOTREACHED();
   }
 }
 
@@ -236,6 +258,15 @@ void ActorTaskBackgroundWorker::FinalizeBackgroundTask(
     effective_reason = context.cancelled
                            ? ActorBackgroundTaskEndReason::kCancelled
                            : ActorBackgroundTaskEndReason::kExpired;
+  } else if (effective_reason == ActorBackgroundTaskEndReason::kWaitingOnUser) {
+    // Complete the background task to free up system resources without filling
+    // the progress bar. The title is intentionally swapped as subtitle.
+    NSString* title = l10n_util::GetNSString(
+        WaitingOnUserTitleMessageId(delegate_->GetTaskState()));
+    NSString* subtitle = base::SysUTF8ToNSString(delegate_->GetTaskTitle());
+    [context updateTitle:title subtitle:subtitle];
+    [context setTaskCompletedWithSuccess:IsSuccessfulEndReason(effective_reason)
+                            fillProgress:NO];
   } else {
     [context
         setTaskCompletedWithSuccess:IsSuccessfulEndReason(effective_reason)];

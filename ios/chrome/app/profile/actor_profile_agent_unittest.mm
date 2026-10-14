@@ -368,6 +368,40 @@ TEST_F(ActorProfileAgentBackgroundingTest,
   EXPECT_EQ(1u, service()->GetWeakTaskBackgroundWorkers().size());
 }
 
+// Tests that a request's configuration opts into the progress heartbeat at the
+// interval of the feature parameter.
+TEST_F(ActorProfileAgentBackgroundingTest,
+       ConfigurationProgressHeartbeatIntervalDefault) {
+  [profile_state_ addAgent:agent_];
+  CreateTask("Task");
+
+  NSArray<BackgroundContinuedProcessingTaskRequest*>* requests =
+      agent_.continuedProcessingTaskRequests;
+
+  ASSERT_EQ(1u, requests.count);
+  EXPECT_EQ(GetGeminiActorBackgroundProgressHeartbeatInterval(),
+            requests[0].configuration.progressHeartbeatInterval);
+}
+
+// Tests that the configured progress heartbeat interval follows the feature
+// parameter when it is overridden.
+TEST_F(ActorProfileAgentBackgroundingTest,
+       ConfigurationProgressHeartbeatIntervalFollowsParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiActor,
+      {{kGeminiActorBackgroundProgressHeartbeatIntervalParam, "5s"}});
+  [profile_state_ addAgent:agent_];
+  CreateTask("Task");
+
+  NSArray<BackgroundContinuedProcessingTaskRequest*>* requests =
+      agent_.continuedProcessingTaskRequests;
+
+  ASSERT_EQ(1u, requests.count);
+  EXPECT_EQ(base::Seconds(5),
+            requests[0].configuration.progressHeartbeatInterval);
+}
+
 // Tests that a request's started handler hands the context to its own task's
 // worker: that task stops being eligible while the other stays eligible,
 // and completing the task completes the context with success.

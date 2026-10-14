@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 @implementation ActorProfileAgent {
@@ -143,7 +144,8 @@
 }
 
 // Returns the configuration for `worker`'s task: its title, the fail
-// submission strategy and an expiration handler that pauses the task.
+// submission strategy, the progress heartbeat and an expiration handler that
+// pauses the task.
 - (BackgroundContinuedProcessingTaskConfiguration*)
     configurationForBackgroundWorker:
         (const base::WeakPtr<actor::ActorTaskBackgroundWorker>&)worker {
@@ -162,6 +164,8 @@
   // a lot of assumptions.
   config.submissionStrategy =
       BackgroundContinuedProcessingSubmissionStrategy::kFail;
+  config.progressHeartbeatInterval =
+      GetGeminiActorBackgroundProgressHeartbeatInterval();
   return config;
 }
 

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -32,6 +33,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace actor {
 
@@ -231,10 +233,13 @@ TEST_F(ActorTaskBackgroundWorkerTest, OnWillExecuteToolIncrementsProgress) {
   EXPECT_GT(context.completedUnits, 0);
 }
 
-// Tests that `OnStopped(true)` completes the context with success.
+// Tests that `OnStopped(true)` completes the context with success and fills
+// the remaining progress.
 TEST_F(ActorTaskBackgroundWorkerTest, OnStoppedWithSuccess) {
   BackgroundContinuedProcessingTaskContext* context = CreateContext();
   worker_->SetContext(context);
+  worker_->OnWillExecuteTool();
+  ASSERT_LT(context.fractionCompleted, 1.0);
 
   worker_->OnStopped(/*success=*/true);
 
@@ -267,19 +272,49 @@ TEST_F(ActorTaskBackgroundWorkerTest, DestructorFailsLiveContext) {
 
 #pragma mark - State policy
 
-// Tests that entering a state that waits on the user or pauses completes the
-// context with success and clears it.
-TEST_F(ActorTaskBackgroundWorkerTest, LongWaitStatesCompleteContext) {
-  for (ActorTaskState long_wait_state :
-       {ActorTaskState::kWaitingOnUser, ActorTaskState::kPausedByActor,
-        ActorTaskState::kPausedByUser}) {
+// Tests that waiting on the user completes the context with success, displays
+// the wait message as the title with the task's title as subtitle, and leaves
+// the progress reached so far unfilled.
+TEST_F(ActorTaskBackgroundWorkerTest,
+       WaitingOnUserCompletesContextWithoutFillingProgress) {
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+  worker_->OnWillExecuteTool();
+  const double progress = context.fractionCompleted;
+  ASSERT_GT(progress, 0.0);
+  ASSERT_LT(progress, 1.0);
+
+  delegate_.title = "Book a table";
+  delegate_.state = ActorTaskState::kWaitingOnUser;
+  worker_->OnStateChanged(ActorTaskState::kWaitingOnUser);
+
+  EXPECT_TRUE(context.completed);
+  EXPECT_DOUBLE_EQ(progress, context.fractionCompleted);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_ACTOR_BACKGROUND_TASK_INPUT_NEEDED),
+      context.title);
+  EXPECT_NSEQ(@"Book a table", context.subtitle);
+  EXPECT_EQ(nil, BackgroundTaskContext());
+}
+
+// Tests that pausing, by the actor or by the user, completes the context with
+// the stopped message as the title, the task's title as subtitle, and leaves
+// the progress unfilled.
+TEST_F(ActorTaskBackgroundWorkerTest, PausedStatesCompleteContextAsStopped) {
+  delegate_.title = "Book a table";
+  for (ActorTaskState paused_state :
+       {ActorTaskState::kPausedByActor, ActorTaskState::kPausedByUser}) {
     BackgroundContinuedProcessingTaskContext* context = CreateContext();
     worker_->SetContext(context);
 
-    worker_->OnStateChanged(long_wait_state);
+    delegate_.state = paused_state;
+    worker_->OnStateChanged(paused_state);
 
     EXPECT_TRUE(context.completed);
-    EXPECT_DOUBLE_EQ(1.0, context.fractionCompleted);
+    EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
+    EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_ACTOR_BACKGROUND_TASK_STOPPED),
+                context.title);
+    EXPECT_NSEQ(@"Book a table", context.subtitle);
     EXPECT_EQ(nil, BackgroundTaskContext());
   }
 }
@@ -316,16 +351,21 @@ TEST_F(ActorTaskBackgroundWorkerTest, TerminalStatesLeaveContextToStop) {
 }
 
 // Tests that an already completed (e.g. expired) context is only cleared when
-// entering a long-wait state, without being completed again.
-TEST_F(ActorTaskBackgroundWorkerTest, CompletedContextIsClearedOnLongWait) {
+// entering a state that waits on the user, without being completed again.
+TEST_F(ActorTaskBackgroundWorkerTest,
+       CompletedContextIsClearedOnWaitingOnUser) {
   BackgroundContinuedProcessingTaskContext* context = CreateContext();
   worker_->SetContext(context);
   [context setTaskCompletedWithSuccess:NO];
 
+  delegate_.state = ActorTaskState::kPausedByActor;
   worker_->OnStateChanged(ActorTaskState::kPausedByActor);
 
-  // Progress isn't filled, so the context wasn't completed again.
+  // Neither the title nor the subtitle is updated, so the context wasn't
+  // completed again.
   EXPECT_TRUE(context.completed);
+  EXPECT_NSEQ(@"Test Task", context.title);
+  EXPECT_NSEQ(@"", context.subtitle);
   EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
   EXPECT_EQ(nil, BackgroundTaskContext());
 }
@@ -397,6 +437,7 @@ TEST_F(ActorTaskBackgroundWorkerTest, RecordsWaitingOnUserEndReason) {
   base::HistogramTester histogram_tester;
   worker_->SetContext(CreateContext());
 
+  delegate_.state = ActorTaskState::kWaitingOnUser;
   worker_->OnStateChanged(ActorTaskState::kWaitingOnUser);
 
   histogram_tester.ExpectUniqueSample(
@@ -501,6 +542,7 @@ TEST_F(ActorTaskBackgroundWorkerTest, RecordsContextOnce) {
   base::HistogramTester histogram_tester;
   worker_->SetContext(CreateContext());
 
+  delegate_.state = ActorTaskState::kWaitingOnUser;
   worker_->OnStateChanged(ActorTaskState::kWaitingOnUser);
   worker_->OnStopped(/*success=*/false);
   worker_.reset();
