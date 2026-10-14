@@ -220,7 +220,11 @@ extension ILType {
 ///
 extension ILType {
     fileprivate static let jsNetworkMojomSearchParamsVarianceUnion: ILType = .object(
-        ofGroup: "network.mojom.SearchParamsVariance")
+        ofGroup: "network.mojom.SearchParamsVariance",
+        withProperties: [
+            "noVaryParams",
+            "varyParams",
+        ])
     fileprivate static let jsNetworkMojomSearchParamsVarianceUnionNoVaryParamsConstructor: ILType = .constructor(
         [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVarianceUnion)
     fileprivate static let jsNetworkMojomSearchParamsVarianceUnionVaryParamsConstructor: ILType = .constructor(
@@ -231,7 +235,10 @@ extension ObjectGroup {
     fileprivate static let networkMojomSearchParamsVarianceUnion = ObjectGroup(
         name: "network.mojom.SearchParamsVariance",
         instanceType: .jsNetworkMojomSearchParamsVarianceUnion,
-        properties: [:],
+        properties: [
+            "noVaryParams": .jsStringMojoArray,
+            "varyParams": .jsStringMojoArray,
+        ],
         methods: [:]
     )
 }

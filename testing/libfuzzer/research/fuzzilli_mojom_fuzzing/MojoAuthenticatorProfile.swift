@@ -1103,7 +1103,11 @@ extension ILType {
 ///
 extension ILType {
     fileprivate static let jsBlinkMojomGetCredentialResponseUnion: ILType = .object(
-        ofGroup: "blink.mojom.GetCredentialResponse")
+        ofGroup: "blink.mojom.GetCredentialResponse",
+        withProperties: [
+            "getAssertionResponse",
+            "passwordResponse",
+        ])
     fileprivate static let jsBlinkMojomGetCredentialResponseUnionGetAssertionResponseConstructor: ILType = .constructor(
         [.plain(.jsBlinkMojomGetAssertionResponse)] => .jsBlinkMojomGetCredentialResponseUnion)
     fileprivate static let jsBlinkMojomGetCredentialResponseUnionPasswordResponseConstructor: ILType = .constructor(
@@ -1114,7 +1118,10 @@ extension ObjectGroup {
     fileprivate static let blinkMojomGetCredentialResponseUnion = ObjectGroup(
         name: "blink.mojom.GetCredentialResponse",
         instanceType: .jsBlinkMojomGetCredentialResponseUnion,
-        properties: [:],
+        properties: [
+            "getAssertionResponse": .jsBlinkMojomGetAssertionResponse,
+            "passwordResponse": .jsBlinkMojomCredentialInfo,
+        ],
         methods: [:]
     )
 }
