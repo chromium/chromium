@@ -2983,6 +2983,14 @@ public class ToolbarManager
     }
 
     /**
+     * Returns the download button view, or null if the button is not present or not yet inflated.
+     */
+    // TODO(crbug.com/564646561): Use this view to anchor the downloads tray.
+    public @Nullable View getDownloadButtonView() {
+        return mToolbar.getDownloadButtonView();
+    }
+
+    /**
      * Adds a custom action button to the {@link Toolbar}, if it is supported.
      *
      * @param drawable The {@link Drawable} to use as the background for the button.

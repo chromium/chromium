@@ -701,6 +701,16 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         return mMenuButtonCoordinator.getMenuButton();
     }
 
+    /**
+     * @return The {@link View} representing the download button on the toolbar, or null if not
+     *     inflated or unavailable.
+     */
+    public @Nullable View getDownloadButtonView() {
+        return mDownloadButtonCoordinator != null
+                ? mDownloadButtonCoordinator.getButtonView()
+                : null;
+    }
+
     @Override
     public ToolbarProgressBar getProgressBar() {
         return mToolbarLayout.getProgressBar();
@@ -1332,5 +1342,10 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
     void setOverlayCoordinatorForTesting(TopToolbarOverlayCoordinator overlayCoordinator) {
         mOverlayCoordinator = overlayCoordinator;
+    }
+
+    void setDownloadButtonCoordinatorForTesting(
+            @Nullable DownloadButtonCoordinator downloadButtonCoordinator) {
+        mDownloadButtonCoordinator = downloadButtonCoordinator;
     }
 }

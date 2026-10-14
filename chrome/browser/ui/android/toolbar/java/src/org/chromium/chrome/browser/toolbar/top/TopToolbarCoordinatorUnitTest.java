@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -581,5 +583,17 @@ public class TopToolbarCoordinatorUnitTest {
                 mOnDownloadButtonClicked,
                 /* suppressTabStripAtStart= */ false);
         assertEquals(mOnLongClickListener, Shadows.shadowOf(toolbarPhone).getOnLongClickListener());
+    }
+
+    @Test
+    public void testGetDownloadButtonView() {
+        // Feature disabled in setUp(): no coordinator.
+        assertNull(mCoordinator.getDownloadButtonView());
+
+        DownloadButtonCoordinator downloadButtonCoordinator = mock(DownloadButtonCoordinator.class);
+        View view = new View(mActivity);
+        when(downloadButtonCoordinator.getButtonView()).thenReturn(view);
+        mCoordinator.setDownloadButtonCoordinatorForTesting(downloadButtonCoordinator);
+        assertEquals(view, mCoordinator.getDownloadButtonView());
     }
 }

@@ -88,6 +88,11 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
         return mMediator.shouldShow();
     }
 
+    /** Returns the download button view, or null if the button view has not been inflated. */
+    public @Nullable View getButtonView() {
+        return mView;
+    }
+
     private void onStateChanged(DownloadToolbarButtonState state) {
         boolean shouldShowChanged = mMediator.shouldShow() != state.shouldShow;
         mMediator.setState(state);
@@ -155,9 +160,5 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
                     PropertyModelChangeProcessor.create(
                             mModel, mView, DownloadButtonViewBinder::bind);
         }
-    }
-
-    @Nullable View getViewForTesting() {
-        return mView;
     }
 }

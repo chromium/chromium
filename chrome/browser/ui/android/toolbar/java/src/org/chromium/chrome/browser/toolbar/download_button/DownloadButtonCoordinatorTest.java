@@ -117,7 +117,7 @@ public class DownloadButtonCoordinatorTest {
     private DownloadButtonView showAndGetView() {
         mCoordinator.setHasSpaceToShow(true);
         show();
-        DownloadButtonView view = (DownloadButtonView) mCoordinator.getViewForTesting();
+        DownloadButtonView view = (DownloadButtonView) mCoordinator.getButtonView();
         assertNotNull(view);
         return view;
     }
@@ -133,7 +133,7 @@ public class DownloadButtonCoordinatorTest {
 
     @Test
     public void testInitialState_notInflatedAndNotVisible() {
-        assertNull("View should not be inflated initially", mCoordinator.getViewForTesting());
+        assertNull("View should not be inflated initially", mCoordinator.getButtonView());
         assertFalse("Should not be visible initially without space", mCoordinator.isVisible());
         assertFalse("Should not have space initially", mCoordinator.hasSpaceToShow());
         assertFalse("Defaults shouldShow to false", mCoordinator.shouldShow());
@@ -144,24 +144,24 @@ public class DownloadButtonCoordinatorTest {
         // Space available but shouldShow is false -> still not visible
         mCoordinator.setHasSpaceToShow(true);
         assertFalse("Should not be visible when shouldShow is false", mCoordinator.isVisible());
-        assertNull("View should not be inflated", mCoordinator.getViewForTesting());
+        assertNull("View should not be inflated", mCoordinator.getButtonView());
 
         // shouldShow = true with space -> visible and inflated
         show();
         assertTrue(
                 "Should be visible when space and shouldShow are true", mCoordinator.isVisible());
-        assertEquals(View.VISIBLE, mCoordinator.getViewForTesting().getVisibility());
+        assertEquals(View.VISIBLE, mCoordinator.getButtonView().getVisibility());
 
         // shouldShow = false -> not visible
         hide();
         assertFalse("Should not be visible when shouldShow is false", mCoordinator.isVisible());
-        assertEquals(View.GONE, mCoordinator.getViewForTesting().getVisibility());
+        assertEquals(View.GONE, mCoordinator.getButtonView().getVisibility());
 
         // Space lost -> hidden
         show();
         mCoordinator.setHasSpaceToShow(false);
         assertFalse("Should not be visible when no space", mCoordinator.isVisible());
-        assertEquals(View.GONE, mCoordinator.getViewForTesting().getVisibility());
+        assertEquals(View.GONE, mCoordinator.getButtonView().getVisibility());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class DownloadButtonCoordinatorTest {
                 expectedConsumedWidth,
                 mCoordinator.updateVisibility(buttonWidth));
         assertFalse(mCoordinator.isVisible());
-        assertNull(mCoordinator.getViewForTesting());
+        assertNull(mCoordinator.getButtonView());
 
         // Turn on shouldShow
         show();
@@ -186,7 +186,7 @@ public class DownloadButtonCoordinatorTest {
                 buttonWidth,
                 mCoordinator.updateVisibility(buttonWidth));
         assertTrue(mCoordinator.isVisible());
-        assertEquals(View.VISIBLE, mCoordinator.getViewForTesting().getVisibility());
+        assertEquals(View.VISIBLE, mCoordinator.getButtonView().getVisibility());
 
         // Insufficient available width
         assertEquals(
@@ -194,7 +194,7 @@ public class DownloadButtonCoordinatorTest {
                 expectedConsumedWidth,
                 mCoordinator.updateVisibility(buttonWidth - 1));
         assertFalse(mCoordinator.isVisible());
-        assertEquals(View.GONE, mCoordinator.getViewForTesting().getVisibility());
+        assertEquals(View.GONE, mCoordinator.getButtonView().getVisibility());
     }
 
     @Test
