@@ -228,17 +228,11 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     }
 
     /**
-     * @return The value for {@link Pref#PROMPT_FOR_DOWNLOAD}.
+     * @return The value for {@link Pref#PROMPT_FOR_DOWNLOAD}. This is currently only used by
+     *     enterprise policy.
      */
-    public static boolean getPromptForDownload(Profile profile) {
+    public static boolean getPromptForDownloadPolicy(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile()).getBoolean(Pref.PROMPT_FOR_DOWNLOAD);
-    }
-
-    /**
-     * @param enabled New value to update {@link Pref#PROMPT_FOR_DOWNLOAD}.
-     */
-    public static void setPromptForDownload(Profile profile, boolean enabled) {
-        UserPrefs.get(profile.getOriginalProfile()).setBoolean(Pref.PROMPT_FOR_DOWNLOAD, enabled);
     }
 
     /**

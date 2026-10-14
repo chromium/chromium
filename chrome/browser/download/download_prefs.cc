@@ -60,7 +60,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -468,20 +467,14 @@ bool DownloadPrefs::PromptForDownload() const {
   CHECK(!download_path_.IsManaged() || !prompt_for_download_.GetValue(),
         base::NotFatalUntil::M161);
 
+// Return the Android prompt for download only.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_desktop() &&
-      base::FeatureList::IsEnabled(
-          download::features::kEnableDownloadSaveAsSystemFileDialog)) {
-    return *prompt_for_download_;
-  }
-
   // Use |prompt_for_download_| preference for enterprise policy.
   if (prompt_for_download_.IsManaged())
     return prompt_for_download_.GetValue();
 
-  // Return the Android prompt for download status when not using the OS file
-  // picker. As long as they haven't indicated in preferences they do not want
-  // the dialog shown, show the dialog.
+  // As long as they haven't indicated in preferences they do not want the
+  // dialog shown, show the dialog.
   return *prompt_for_download_android_ !=
          static_cast<int>(DownloadPromptStatus::DONT_SHOW);
 #else

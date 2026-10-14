@@ -245,12 +245,6 @@ bool IsDownloadSaveAsContextMenuEnabled() {
          base::android::device_info::is_desktop();
 }
 
-bool IsDownloadSystemFileDialogEnabled() {
-  return base::FeatureList::IsEnabled(
-             download::features::kEnableDownloadSaveAsSystemFileDialog) &&
-         base::android::device_info::is_desktop();
-}
-
 base::FilePath GetTargetContentUri(const base::FilePath& suggested_path) {
   if (suggested_path.IsContentUri()) {
     return suggested_path;
@@ -1355,7 +1349,8 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
   }
 
   if (IsDownloadSaveAsContextMenuEnabled() &&
-      IsDownloadSystemFileDialogEnabled()) {
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsSystemFileDialog)) {
     new SavePackageFilePicker(web_contents, GetTargetContentUri(suggested_path),
                               default_extension, can_save_as_complete,
                               download_prefs_.get(), std::move(callback));
@@ -1630,7 +1625,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
   }
 
   if (reason == DownloadConfirmationReason::SAVE_AS && is_save_as_enabled &&
-      IsDownloadSystemFileDialogEnabled()) {
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsSystemFileDialog)) {
     ShowFilePickerWithUserTakeover(
         download, GetTargetContentUri(suggested_path), std::move(callback));
     return;
@@ -1661,13 +1657,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     OnDownloadCanceled(download, false /* has_no_external_storage */);
     std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                             ui::SelectedFileInfo());
-    return;
-  }
-
-  if (reason == DownloadConfirmationReason::PREFERENCE &&
-      IsDownloadSystemFileDialogEnabled()) {
-    ShowFilePickerWithUserTakeover(
-        download, GetTargetContentUri(suggested_path), std::move(callback));
     return;
   }
 
@@ -1856,16 +1845,6 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
          download::DownloadItem::TARGET_DISPOSITION_PROMPT) &&
         IsDownloadSaveAsContextMenuEnabled();
     if (download_prefs_->PromptForDownload() || is_save_as_enabled) {
-      if (IsDownloadSystemFileDialogEnabled()) {
-        if (download) {
-          ShowFilePickerWithUserTakeover(
-              download, GetTargetContentUri(target_path), std::move(callback));
-        } else {
-          std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                                  ui::SelectedFileInfo());
-        }
-        return;
-      }
       content::WebContents* web_contents =
           download ? content::DownloadItemUtils::GetWebContents(download)
                    : nullptr;
