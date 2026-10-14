@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 static_library("sync_device_info") {
@@ -62,6 +63,7 @@ static_library("sync_device_info") {
 
   if (is_android) {
     sources += [ "local_device_info_util_android.cc" ]
+    deps += [ ":jni_headers" ]
   }
 
   if (is_chromeos) {
@@ -145,18 +147,34 @@ source_set("unit_tests") {
     "//ui/base",
   ]
 
+  if (is_android) {
+    deps += [ ":sync_device_info_java" ]
+  }
+
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
 }
 
 if (is_android) {
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/sync_device_info/RemoteDeviceInfo.java" ]
+  }
+
   java_cpp_enum("java_enums") {
     sources = [ "//components/sync_device_info/device_info.h" ]
   }
 
   android_library("sync_device_info_java") {
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-    srcjar_deps = [ ":java_enums" ]
+    sources = [ "android/java/src/org/chromium/components/sync_device_info/RemoteDeviceInfo.java" ]
+    deps = [
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [
+      ":java_enums",
+      ":jni_headers",
+    ]
   }
 }

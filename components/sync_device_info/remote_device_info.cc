@@ -11,6 +11,13 @@
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_string.h"
+
+// Must come after all includes for JniType conversions.
+#include "components/sync_device_info/jni_headers/RemoteDeviceInfo_jni.h"
+#endif
+
 namespace syncer {
 
 RemoteDeviceInfo::RemoteDeviceInfo() = default;
@@ -66,3 +73,20 @@ std::u16string RemoteDeviceInfo::GetLastActiveTimeForDisplay() const {
 }
 
 }  // namespace syncer
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<syncer::RemoteDeviceInfo>(
+    JNIEnv* env,
+    const syncer::RemoteDeviceInfo& input) {
+  return syncer::Java_RemoteDeviceInfo_Constructor(
+      env, input.device_name, input.cache_guid, input.form_factor,
+      input.os_type, input.GetLastActiveTimeForDisplay());
+}
+
+}  // namespace jni_zero
+
+DEFINE_JNI(RemoteDeviceInfo)
+#endif

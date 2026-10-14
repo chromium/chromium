@@ -18,15 +18,16 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 
 import java.util.List;
 
 /** Adapter to populate the Target Device Picker sheet. */
 @NullMarked
 class DevicePickerBottomSheetAdapter extends BaseAdapter {
-    private final List<TargetDeviceInfo> mTargetDevices;
+    private final List<RemoteDeviceInfo> mTargetDevices;
 
-    public DevicePickerBottomSheetAdapter(List<TargetDeviceInfo> targetDevices) {
+    public DevicePickerBottomSheetAdapter(List<RemoteDeviceInfo> targetDevices) {
         mTargetDevices = targetDevices;
     }
 
@@ -36,7 +37,7 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
     }
 
     @Override
-    public TargetDeviceInfo getItem(int position) {
+    public RemoteDeviceInfo getItem(int position) {
         return mTargetDevices.get(position);
     }
 
@@ -53,7 +54,7 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
                     LayoutInflater.from(context)
                             .inflate(R.layout.send_tab_to_self_device_picker_item, parent, false);
 
-            TargetDeviceInfo deviceInfo = getItem(position);
+            RemoteDeviceInfo deviceInfo = getItem(position);
             ImageView deviceIcon = convertView.findViewById(R.id.device_icon);
             deviceIcon.setImageDrawable(getDrawableForDeviceType(context, deviceInfo));
             deviceIcon.setVisibility(View.VISIBLE);
@@ -69,7 +70,7 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
     }
 
     private static Drawable getDrawableForDeviceType(
-            Context context, TargetDeviceInfo targetDevice) {
+            Context context, RemoteDeviceInfo targetDevice) {
         switch (targetDevice.formFactor) {
             case FormFactor.DESKTOP:
                 {

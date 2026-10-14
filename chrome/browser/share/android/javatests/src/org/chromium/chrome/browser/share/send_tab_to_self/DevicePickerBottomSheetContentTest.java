@@ -31,6 +31,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 
@@ -50,7 +51,7 @@ public class DevicePickerBottomSheetContentTest {
     @Mock private IdentityManager mIdentityManager;
 
     private Activity mContext;
-    private List<TargetDeviceInfo> mDevices;
+    private List<RemoteDeviceInfo> mDevices;
 
     @Before
     public void setUp() {
@@ -71,7 +72,7 @@ public class DevicePickerBottomSheetContentTest {
 
         mDevices =
                 Arrays.asList(
-                        new TargetDeviceInfo(
+                        new RemoteDeviceInfo(
                                 "My Computer",
                                 "guid",
                                 FormFactor.DESKTOP,

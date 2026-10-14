@@ -64,6 +64,7 @@ include_rules = [
   "+components/strictmode/android",
   "+components/subresource_filter/android",
   "+components/supervised_user/android",
+  "+components/sync_device_info/android",
   "+components/tabs/public/android",
   "+components/tab_groups/android/java",
   "+components/translate/content/android",

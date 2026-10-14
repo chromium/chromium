@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutCo
 import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutControllerFactory;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfShareTargetActivity;
-import org.chromium.chrome.browser.share.send_tab_to_self.TargetDeviceInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -57,6 +56,7 @@ import org.chromium.components.sync.protocol.SessionWindow;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.components.sync.protocol.TabNavigation;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,7 +251,7 @@ public class OtherDevicesShortcutControllerIntegrationTest {
         // Verify the device is now considered active.
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    List<TargetDeviceInfo> devices =
+                    List<RemoteDeviceInfo> devices =
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(

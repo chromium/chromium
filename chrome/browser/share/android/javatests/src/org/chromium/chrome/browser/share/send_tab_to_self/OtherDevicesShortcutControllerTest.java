@@ -44,6 +44,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,9 +133,9 @@ public class OtherDevicesShortcutControllerTest {
 
     @Test
     public void handleShareTargetIntent() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -162,9 +163,9 @@ public class OtherDevicesShortcutControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_MULTI_TAB_SHARE)
     public void handleShareTargetIntent_MultipleUrls() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -203,9 +204,9 @@ public class OtherDevicesShortcutControllerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_MULTI_TAB_SHARE)
     public void handleShareTargetIntent_MultipleUrls_FeatureDisabled() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -244,7 +245,7 @@ public class OtherDevicesShortcutControllerTest {
 
     @Test
     public void handleShareTargetIntent_RejectUnknownDevice() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         // No devices synced.
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -277,9 +278,9 @@ public class OtherDevicesShortcutControllerTest {
 
     @Test
     public void testHandleLauncherShortcutIntent_RelaunchesAsTrusted() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_1,
                         DEVICE_GUID_1,
                         FormFactor.PHONE,
@@ -347,16 +348,16 @@ public class OtherDevicesShortcutControllerTest {
 
     @Test
     public void testUpdateShortcuts() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_1,
                         DEVICE_GUID_1,
                         FormFactor.PHONE,
                         OsType.ANDROID,
                         "Just now"));
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_2,
                         DEVICE_GUID_2,
                         FormFactor.DESKTOP,
@@ -395,9 +396,9 @@ public class OtherDevicesShortcutControllerTest {
     public void testUpdateShortcuts_WithGivenName() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_1,
                         DEVICE_GUID_1,
                         FormFactor.PHONE,
@@ -422,9 +423,9 @@ public class OtherDevicesShortcutControllerTest {
         when(mIdentityManager.getPrimaryAccountInfo())
                 .thenReturn(TestAccounts.TEST_ACCOUNT_NO_NAME);
 
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_1,
                         DEVICE_GUID_1,
                         FormFactor.PHONE,
@@ -447,9 +448,9 @@ public class OtherDevicesShortcutControllerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
     public void testFeatureDisabled_NoShortcutsRegistered() {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         DEVICE_NAME_1,
                         DEVICE_GUID_1,
                         FormFactor.PHONE,

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -50,11 +51,11 @@ public class EnhancedTargetDevicePickerMediatorTest {
     private static final String SHARING_URL = "https://example.com";
     private static final String SHARING_TITLE = "Example Page";
 
-    private final TargetDeviceInfo mDevice1 =
-            new TargetDeviceInfo(
+    private final RemoteDeviceInfo mDevice1 =
+            new RemoteDeviceInfo(
                     "Device 1", "guid_1", FormFactor.PHONE, OsType.ANDROID, "1 day ago");
-    private final TargetDeviceInfo mDevice2 =
-            new TargetDeviceInfo(
+    private final RemoteDeviceInfo mDevice2 =
+            new RemoteDeviceInfo(
                     "Device 2", "guid_2", FormFactor.DESKTOP, OsType.WINDOWS, "2 days ago");
 
     @Before
@@ -68,7 +69,7 @@ public class EnhancedTargetDevicePickerMediatorTest {
                         .build();
     }
 
-    private void createMediator(List<TargetDeviceInfo> devices) {
+    private void createMediator(List<RemoteDeviceInfo> devices) {
         new EnhancedTargetDevicePickerMediator(
                 SHARING_URL,
                 SHARING_TITLE,
@@ -88,14 +89,14 @@ public class EnhancedTargetDevicePickerMediatorTest {
 
         // Verify mapping of device info
         ListItem item1 = deviceList.get(0);
-        TargetDeviceInfo info1 =
+        RemoteDeviceInfo info1 =
                 item1.model.get(
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
         assertEquals(mDevice1.deviceName, info1.deviceName);
         assertEquals(mDevice1.cacheGuid, info1.cacheGuid);
 
         ListItem item2 = deviceList.get(1);
-        TargetDeviceInfo info2 =
+        RemoteDeviceInfo info2 =
                 item2.model.get(
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
         assertEquals(mDevice2.deviceName, info2.deviceName);
@@ -118,17 +119,17 @@ public class EnhancedTargetDevicePickerMediatorTest {
      */
     @Test
     public void testPopulateModelWithoutTruncation() {
-        TargetDeviceInfo device3 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device3 =
+                new RemoteDeviceInfo(
                         "Device 3", "guid_3", FormFactor.TABLET, OsType.ANDROID, "3 days ago");
-        TargetDeviceInfo device4 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device4 =
+                new RemoteDeviceInfo(
                         "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "4 days ago");
-        TargetDeviceInfo device5 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device5 =
+                new RemoteDeviceInfo(
                         "Device 5", "guid_5", FormFactor.DESKTOP, OsType.WINDOWS, "5 days ago");
-        TargetDeviceInfo device6 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device6 =
+                new RemoteDeviceInfo(
                         "Device 6", "guid_6", FormFactor.TABLET, OsType.ANDROID, "6 days ago");
         createMediator(Arrays.asList(mDevice1, mDevice2, device3, device4, device5, device6));
 
@@ -136,14 +137,14 @@ public class EnhancedTargetDevicePickerMediatorTest {
         assertEquals(6, deviceList.size());
 
         ListItem item5 = deviceList.get(4);
-        TargetDeviceInfo info5 =
+        RemoteDeviceInfo info5 =
                 item5.model.get(
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
         assertEquals("Device 5", info5.deviceName);
         assertEquals("guid_5", info5.cacheGuid);
 
         ListItem item6 = deviceList.get(5);
-        TargetDeviceInfo info6 =
+        RemoteDeviceInfo info6 =
                 item6.model.get(
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
         assertEquals("Device 6", info6.deviceName);
@@ -217,20 +218,20 @@ public class EnhancedTargetDevicePickerMediatorTest {
      */
     @Test
     public void testPopulateModelWithManyDevices_autoSelectsFirstDevice() {
-        TargetDeviceInfo device1 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device1 =
+                new RemoteDeviceInfo(
                         "Device 1", "guid_1", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device2 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device2 =
+                new RemoteDeviceInfo(
                         "Device 2", "guid_2", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device3 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device3 =
+                new RemoteDeviceInfo(
                         "Device 3", "guid_3", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device4 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device4 =
+                new RemoteDeviceInfo(
                         "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device5 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device5 =
+                new RemoteDeviceInfo(
                         "Device 5", "guid_5", FormFactor.PHONE, OsType.ANDROID, "Just now");
 
         // Simulate passing 5 devices.
@@ -256,20 +257,20 @@ public class EnhancedTargetDevicePickerMediatorTest {
      */
     @Test
     public void testPopulateModelWithManyDevicesMixedActivity() {
-        TargetDeviceInfo device3 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device3 =
+                new RemoteDeviceInfo(
                         "Device 3", "guid_3", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device4 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device4 =
+                new RemoteDeviceInfo(
                         "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device5 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device5 =
+                new RemoteDeviceInfo(
                         "Device 5", "guid_5", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device6 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device6 =
+                new RemoteDeviceInfo(
                         "Device 6", "guid_6", FormFactor.PHONE, OsType.ANDROID, "Just now");
-        TargetDeviceInfo device7 =
-                new TargetDeviceInfo(
+        RemoteDeviceInfo device7 =
+                new RemoteDeviceInfo(
                         "Device 7", "guid_7", FormFactor.PHONE, OsType.ANDROID, "Just now");
 
         // Simulate passing 2 active devices (from setUp) + 5 extra devices.

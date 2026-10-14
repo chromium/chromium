@@ -92,6 +92,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -548,7 +549,7 @@ public class SendTabToSelfCoordinatorTest {
             doReturn(EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE)
                     .when(nativeMock)
                     .getEntryPointDisplayReason(any(), any());
-            doReturn(new java.util.ArrayList<TargetDeviceInfo>())
+            doReturn(new java.util.ArrayList<RemoteDeviceInfo>())
                     .when(nativeMock)
                     .getAllTargetDeviceInfos(any());
 

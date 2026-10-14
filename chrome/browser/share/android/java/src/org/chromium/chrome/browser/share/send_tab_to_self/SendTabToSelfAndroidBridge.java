@@ -52,6 +52,7 @@ import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -280,9 +281,9 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
-     * @return All {@link TargetDeviceInfo} for the user, or an empty list if the model isn't ready.
+     * @return All {@link RemoteDeviceInfo} for the user, or an empty list if the model isn't ready.
      */
-    public static List<TargetDeviceInfo> getAllTargetDeviceInfos(Profile profile) {
+    public static List<RemoteDeviceInfo> getAllTargetDeviceInfos(Profile profile) {
         return SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile);
     }
 
@@ -742,8 +743,8 @@ public class SendTabToSelfAndroidBridge {
                 @JniType("std::vector<uint8_t>") byte @Nullable [] pageContext,
                 @JniType("GURL") GURL url);
 
-        @JniType("std::vector")
-        List<TargetDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);
+        @JniType("std::vector<syncer::RemoteDeviceInfo>")
+        List<RemoteDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);
 
         @Nullable
         @EntryPointDisplayReason

@@ -43,7 +43,6 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/tab/jni_headers/SendTabToSelfTabCardLabelData_jni.h"
 
 using base::android::JavaRef;
@@ -140,25 +139,15 @@ class SendTabToSelfModelObserverBridge : public SendTabToSelfModelObserver,
 
 }  // namespace
 
-static std::vector<ScopedJavaLocalRef<jobject>>
-JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
-                                                       Profile* profile) {
-  std::vector<ScopedJavaLocalRef<jobject>> infos;
+static std::vector<syncer::RemoteDeviceInfo>
+JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(Profile* profile) {
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
-  if (model->IsReady()) {
-    std::vector<syncer::RemoteDeviceInfo> sorted_devices =
-        model->GetTargetDeviceInfoSortedList();
-    infos.reserve(sorted_devices.size());
-    for (const syncer::RemoteDeviceInfo& info : sorted_devices) {
-      infos.push_back(Java_TargetDeviceInfo_build(
-          env, info.device_name, info.cache_guid,
-          static_cast<int>(info.form_factor), static_cast<int>(info.os_type),
-          info.GetLastActiveTimeForDisplay()));
-    }
+  if (!model->IsReady()) {
+    return {};
   }
-  return infos;
+  return model->GetTargetDeviceInfoSortedList();
 }
 
 static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
@@ -404,5 +393,4 @@ static void JNI_SendTabToSelfAndroidBridge_FillWebContents(
 }  // namespace send_tab_to_self
 
 DEFINE_JNI(SendTabToSelfAndroidBridge)
-DEFINE_JNI(TargetDeviceInfo)
 DEFINE_JNI(SendTabToSelfTabCardLabelData)

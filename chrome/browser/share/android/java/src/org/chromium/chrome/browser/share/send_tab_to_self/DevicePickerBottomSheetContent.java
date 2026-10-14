@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
@@ -55,7 +56,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
             String url,
             String title,
             BottomSheetController controller,
-            List<TargetDeviceInfo> targetDevices,
+            List<RemoteDeviceInfo> targetDevices,
             Profile profile,
             Supplier<@Nullable Tab> tabProvider,
             @ShareEntryPoint int entryPoint) {
@@ -171,7 +172,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         mController.hideContent(this, true);
 
         SendTabToSelfMetricsRecorder.recordCrossDeviceTabJourney();
-        TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
+        RemoteDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
         Tab tab = mTabProvider.get();
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;

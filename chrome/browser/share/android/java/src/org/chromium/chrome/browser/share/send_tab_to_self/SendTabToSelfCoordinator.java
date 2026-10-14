@@ -46,6 +46,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -164,7 +165,7 @@ public class SendTabToSelfCoordinator
         // Do not show the UI if the model is not ready or the URL is unsupported.
         if (displayReason == null) return;
 
-        List<TargetDeviceInfo> targetDevices =
+        List<RemoteDeviceInfo> targetDevices =
                 displayReason == EntryPointDisplayReason.OFFER_FEATURE
                         ? SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile)
                         : Collections.emptyList();
@@ -329,7 +330,7 @@ public class SendTabToSelfCoordinator
         }
     }
 
-    private void showEnhancedTargetDevicePicker(List<TargetDeviceInfo> targetDevices) {
+    private void showEnhancedTargetDevicePicker(List<RemoteDeviceInfo> targetDevices) {
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
             mChangeProcessor = null;
@@ -386,7 +387,7 @@ public class SendTabToSelfCoordinator
         mContext.startActivity(intent);
     }
 
-    private void showLegacyTargetDevicePicker(List<TargetDeviceInfo> targetDevices) {
+    private void showLegacyTargetDevicePicker(List<RemoteDeviceInfo> targetDevices) {
         mBottomSheetController.requestShowContent(
                 new DevicePickerBottomSheetContent(
                         mContext,

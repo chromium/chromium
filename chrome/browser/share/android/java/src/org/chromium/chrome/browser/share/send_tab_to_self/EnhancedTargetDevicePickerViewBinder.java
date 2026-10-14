@@ -25,6 +25,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -114,7 +115,7 @@ class EnhancedTargetDevicePickerViewBinder {
     }
 
     private static void bindDeviceInfo(
-            Context context, DeviceItemViewHolder holder, TargetDeviceInfo deviceInfo) {
+            Context context, DeviceItemViewHolder holder, RemoteDeviceInfo deviceInfo) {
         holder.mDeviceIcon.setImageDrawable(getDrawableForDeviceType(context, deviceInfo));
         holder.mDeviceIcon.setVisibility(View.VISIBLE);
         holder.mDeviceName.setText(deviceInfo.deviceName);
@@ -128,7 +129,7 @@ class EnhancedTargetDevicePickerViewBinder {
     }
 
     private static Drawable getDrawableForDeviceType(
-            Context context, TargetDeviceInfo targetDevice) {
+            Context context, RemoteDeviceInfo targetDevice) {
         switch (targetDevice.formFactor) {
             case FormFactor.DESKTOP:
                 return AppCompatResources.getDrawable(context, R.drawable.computer_black_24dp);

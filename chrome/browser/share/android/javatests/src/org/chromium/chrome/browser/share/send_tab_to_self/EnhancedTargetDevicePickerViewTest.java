@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -89,11 +90,11 @@ public class EnhancedTargetDevicePickerViewTest {
         return view;
     }
 
-    private static List<TargetDeviceInfo> createTargetDevices(int deviceCount) {
-        List<TargetDeviceInfo> devices = new ArrayList<>();
+    private static List<RemoteDeviceInfo> createTargetDevices(int deviceCount) {
+        List<RemoteDeviceInfo> devices = new ArrayList<>();
         for (int i = 1; i <= deviceCount; i++) {
             devices.add(
-                    new TargetDeviceInfo(
+                    new RemoteDeviceInfo(
                             "Device " + i,
                             "guid_" + i,
                             FormFactor.PHONE,

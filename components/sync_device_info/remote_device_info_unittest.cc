@@ -11,6 +11,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif
+
 namespace syncer {
 namespace {
 
@@ -184,6 +188,22 @@ TEST_F(RemoteDeviceInfoTest, StaticGetLastActiveTimeForDisplay) {
             RemoteDeviceInfo::GetLastActiveTimeForDisplay(
                 last_updated, /*has_high_precision_timestamp=*/false));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Verifies that `jni_zero::ToJniType` constructs a non-null Java
+// `RemoteDeviceInfo` object.
+TEST_F(RemoteDeviceInfoTest, ToJniType) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kPhone,
+                               OsType::kAndroid,
+                               base::Time::Now() - base::Minutes(5),
+                               /*has_high_precision_timestamp=*/true);
+
+  base::android::ScopedJavaLocalRef<jobject> java_device_info =
+      jni_zero::ToJniType(env, device_info);
+  EXPECT_FALSE(java_device_info.is_null());
+}
+#endif
 
 }  // namespace
 }  // namespace syncer

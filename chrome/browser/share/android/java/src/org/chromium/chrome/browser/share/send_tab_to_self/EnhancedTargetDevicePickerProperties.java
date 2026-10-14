@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,7 +44,7 @@ class EnhancedTargetDevicePickerProperties {
 
     /** Properties for each device item in the list. */
     static class DeviceItemProperties {
-        static final ReadableObjectPropertyKey<TargetDeviceInfo> DEVICE_INFO =
+        static final ReadableObjectPropertyKey<RemoteDeviceInfo> DEVICE_INFO =
                 new ReadableObjectPropertyKey<>();
         static final ReadableObjectPropertyKey<Runnable> ON_CLICK_CALLBACK =
                 new ReadableObjectPropertyKey<>();

@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -35,7 +36,7 @@ class EnhancedTargetDevicePickerMediator {
     EnhancedTargetDevicePickerMediator(
             String url,
             String title,
-            List<TargetDeviceInfo> targetDevices,
+            List<RemoteDeviceInfo> targetDevices,
             Profile profile,
             Supplier<@Nullable Tab> tabProvider,
             PropertyModel model,
@@ -52,9 +53,9 @@ class EnhancedTargetDevicePickerMediator {
         populateModel(targetDevices);
     }
 
-    private void populateModel(List<TargetDeviceInfo> targetDevices) {
+    private void populateModel(List<RemoteDeviceInfo> targetDevices) {
         ModelList deviceList = mModel.get(EnhancedTargetDevicePickerProperties.DEVICE_LIST);
-        for (TargetDeviceInfo deviceInfo : targetDevices) {
+        for (RemoteDeviceInfo deviceInfo : targetDevices) {
             PropertyModel itemModel =
                     new PropertyModel.Builder(
                                     EnhancedTargetDevicePickerProperties.DeviceItemProperties
@@ -82,7 +83,7 @@ class EnhancedTargetDevicePickerMediator {
         }
     }
 
-    private void onDeviceClick(TargetDeviceInfo targetDeviceInfo) {
+    private void onDeviceClick(RemoteDeviceInfo targetDeviceInfo) {
         mModel.set(
                 EnhancedTargetDevicePickerProperties.SELECTED_DEVICE_ID,
                 targetDeviceInfo.cacheGuid);
@@ -112,7 +113,7 @@ class EnhancedTargetDevicePickerMediator {
         Tab tab = mTabProvider.get();
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;
 
-        TargetDeviceInfo selectedDevice =
+        RemoteDeviceInfo selectedDevice =
                 mSelectedModel.get(
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
         SendTabToSelfAndroidBridge.sendTabToDevice(

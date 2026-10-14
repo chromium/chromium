@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -253,7 +254,7 @@ public class OtherDevicesShortcutController implements Destroyable {
         List<ShortcutInfo> newShortcuts = new ArrayList<>();
 
         if (ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled()) {
-            List<TargetDeviceInfo> devices =
+            List<RemoteDeviceInfo> devices =
                     SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(mProfile);
@@ -268,7 +269,7 @@ public class OtherDevicesShortcutController implements Destroyable {
             // The list of devices is sorted, so the most-recently-used devices will be used for
             // shortcuts.
             for (int i = 0; i < Math.min(devices.size(), MAX_SHORTCUTS); i++) {
-                TargetDeviceInfo device = devices.get(i);
+                RemoteDeviceInfo device = devices.get(i);
 
                 // Create a ShortcutInfo corresponding to `device`. Note that the shortcut has two
                 // separate purposes, which use (overlapping) subsets of all the fields.
@@ -385,7 +386,7 @@ public class OtherDevicesShortcutController implements Destroyable {
                 });
     }
 
-    private Icon createAdaptiveIcon(TargetDeviceInfo device) {
+    private Icon createAdaptiveIcon(RemoteDeviceInfo device) {
         int iconRes =
                 DeviceResourceProviderFactory.create()
                         .getDeviceTypeIcon(device.formFactor, device.osType);

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -65,9 +66,9 @@ public class SendTabToSelfGestureDetectorTest {
         when(mTab.getTitle()).thenReturn("Example Page");
 
         // Set up mock target devices so the bridge check passes
-        List<TargetDeviceInfo> mockDevices = new ArrayList<>();
+        List<RemoteDeviceInfo> mockDevices = new ArrayList<>();
         mockDevices.add(
-                new TargetDeviceInfo(
+                new RemoteDeviceInfo(
                         "device_name", "cache_guid", FormFactor.DESKTOP, OsType.UNKNOWN, "1000"));
         when(mNativeMock.getAllTargetDeviceInfos(any())).thenReturn(mockDevices);
 

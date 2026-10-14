@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.sync_device_info.RemoteDeviceInfo;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -144,7 +145,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
                 break;
         }
 
-        List<TargetDeviceInfo> devices =
+        List<RemoteDeviceInfo> devices =
                 SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(profile);
         // This should ideally have been caught by the switch case above, but in some rarest edge
         // cases, the device list may become empty between the check and now.
@@ -155,7 +156,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
 
         // `devices` is sorted based on the most recently used timestamp. Grab the device with the
         // freshest timestamp as the target.
-        TargetDeviceInfo target = devices.get(0);
+        RemoteDeviceInfo target = devices.get(0);
         SendTabToSelfMetricsRecorder.recordEntryPointInvoked(ShareEntryPoint.GESTURE);
         SendTabToSelfAndroidBridge.sendTabToDevice(
                 profile,
