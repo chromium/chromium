@@ -769,12 +769,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a CanvasResourceProvider that supports direct compositing to make
-  // the canvas composited.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  Context2D()->InitializeBacking();
+  ASSERT_TRUE(Context2D()->IsComposited());
 
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -790,12 +786,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a CanvasResourceProvider that supports direct compositing to make
-  // the canvas composited.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  Context2D()->InitializeBacking();
+  ASSERT_TRUE(Context2D()->IsComposited());
 
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -817,10 +809,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ScopedCanvas2dDeferredFlushForTest enable_feature(true);
   CreateContext(kNonOpaque);
 
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  Context2D()->InitializeBacking();
   ASSERT_TRUE(Context2D()->IsComposited());
   ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerForCanvas2DIfNeeded());
 
@@ -878,10 +867,7 @@ TEST_P(CanvasRenderingContext2DTest, FlushNotDeferredWhenNonComposited) {
 TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   CreateContext(kNonOpaque);
 
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferCPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  Context2D()->InitializeBacking();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
   EXPECT_FALSE(
@@ -1492,12 +1478,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
 
   gfx::Size size(10, 10);
-  std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
-      std::make_unique<FakeCanvasResourceProvider>(size,
-                                                   RasterModeHint::kPreferGPU);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      std::move(fake_resource_provider), size);
+  CanvasElement().SetSize(size);
+  Context2D()->InitializeBacking();
 
   // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
   // pixel per buffer, and 2 is an estimate of num of gpu buffers required
@@ -1517,14 +1500,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   anotherCanvas->GetCanvasRenderingContext(GetExecutionContext(), "2d",
                                            attributes);
   gfx::Size size2(10, 5);
-  std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
-      std::make_unique<FakeCanvasResourceProvider>(size2,
-                                                   RasterModeHint::kPreferGPU);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  anotherCanvas->SetSize(size2);
   auto* second_canvas_context =
       static_cast<CanvasRenderingContext2D*>(anotherCanvas->RenderingContext());
-  second_canvas_context->SetCanvas2DResourceProviderForTesting(
-      std::move(fake_resource_provider2), size2);
+  second_canvas_context->InitializeBacking();
 
   // Tear down the first image buffer that resides in current canvas element
   CanvasElement().SetSize(gfx::Size(20, 20));
