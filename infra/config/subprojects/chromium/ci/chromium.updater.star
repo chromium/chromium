@@ -763,6 +763,76 @@ ci.thin_tester(
     contact_team_email = "omaha-core@google.com",
 )
 
+ci.thin_tester(
+    name = "mac26-arm64-updater-tester-dbg",
+    description_html = _UPDATER_LINK + " macOS 26 arm64 debug tester.",
+    parent = "mac-updater-builder-arm64-dbg",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "updater_gtests_mac",
+        ],
+        mixins = [
+            "mac_26_arm64",
+        ],
+    ),
+    ssd = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac (arm64)",
+        short_name = "26",
+    ),
+    contact_team_email = "omaha-core@google.com",
+)
+
+ci.thin_tester(
+    name = "mac26-arm64-updater-tester-rel",
+    description_html = _UPDATER_LINK + " macOS 26 arm64 release tester.",
+    parent = "mac-updater-builder-arm64-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "updater_gtests_mac",
+        ],
+        mixins = [
+            "mac_26_arm64",
+        ],
+    ),
+    ssd = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|mac (arm64)",
+        short_name = "26",
+    ),
+    contact_team_email = "omaha-core@google.com",
+)
+
 ci.builder(
     name = "win-arm64-updater-builder-dbg",
     description_html = _UPDATER_LINK + " Windows arm64 debug builder.",
