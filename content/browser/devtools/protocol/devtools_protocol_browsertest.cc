@@ -76,6 +76,7 @@
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -6754,6 +6755,121 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandAsync("Emulation.setDeviceMetricsOverride", std::move(params));
   SendCommandAsync("Emulation.clearDeviceMetricsOverride");
   SendCommandSync("Target.getTargets");
+}
+
+// A WebContents that has never been navigated has no RenderFrame.
+// Inspector.enable must not report that as a crash: the first navigation is
+// going to create the RenderFrame.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       InspectorEnableBeforeFirstNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // The initial shell has never been navigated.
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+  ASSERT_TRUE(
+      shell()->web_contents()->GetController().IsInitialBlankNavigation());
+
+  Attach();
+  SendCommandSync("Inspector.enable");
+  EXPECT_FALSE(HasExistingNotification("Inspector.targetCrashed"));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_FALSE(HasExistingNotification("Inspector.targetCrashed"));
+  base::DictValue params;
+  params.Set("expression", "1 + 1");
+  const base::DictValue* result =
+      SendCommandSync("Runtime.evaluate", std::move(params));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(2, result->FindIntByDottedPath("result.value"));
+}
+
+// A "discarded" WebContents will not have a RenderFrame until it is reloaded,
+// so Inspector.enable reports Inspector.targetCrashed.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       InspectorEnableAfterDiscardByReplacement) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size());
+  WebContents* new_contents = new_shell->web_contents();
+  new_contents->GetController().CopyStateFrom(
+      &shell()->web_contents()->GetController(), /*needs_reload=*/false);
+  ASSERT_FALSE(new_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  ASSERT_FALSE(new_contents->GetController().IsInitialBlankNavigation());
+
+  AttachToWebContents(new_contents);
+  SendCommandSync("Inspector.enable");
+  EXPECT_TRUE(HasExistingNotification("Inspector.targetCrashed"));
+}
+
+// Inspector.enable on a tab whose renderer has crashed before the client
+// attached reports Inspector.targetCrashed.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorEnableAfterCrash) {
+  set_agent_host_can_close();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  {
+    ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
+    RenderProcessHostWatcher watcher(
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+        RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
+    watcher.Wait();
+  }
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  Attach();
+  SendCommandSync("Inspector.enable");
+  EXPECT_TRUE(HasExistingNotification("Inspector.targetCrashed"));
+}
+
+// The renderer crashes while a cross-site navigation is in progress.
+// Inspector.enable reports Inspector.targetCrashed, and once the navigation
+// commits in a new RenderFrame, Inspector.targetReloadedAfterCrash follows.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       InspectorEnableAfterCrashDuringNavigation) {
+  set_agent_host_can_close();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  const GURL url = embedded_test_server()->GetURL("b.com", "/title2.html");
+  TestNavigationManager manager(shell()->web_contents(), url);
+  shell()->LoadURL(url);
+  ASSERT_TRUE(manager.WaitForRequestStart());
+
+  {
+    ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
+    RenderProcessHost* process =
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+    RenderProcessHostWatcher watcher(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(RESULT_CODE_KILLED);
+    watcher.Wait();
+  }
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  Attach();
+  SendCommandSync("Inspector.enable");
+  EXPECT_TRUE(HasExistingNotification("Inspector.targetCrashed"));
+  EXPECT_FALSE(HasExistingNotification("Inspector.targetReloadedAfterCrash"));
+
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  WaitForNotification("Inspector.targetReloadedAfterCrash", true);
+  base::DictValue params;
+  params.Set("expression", "1 + 1");
+  const base::DictValue* result =
+      SendCommandSync("Runtime.evaluate", std::move(params));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(2, result->FindIntByDottedPath("result.value"));
 }
 
 }  // namespace content

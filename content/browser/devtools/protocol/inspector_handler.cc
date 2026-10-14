@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
@@ -40,7 +41,6 @@ void InspectorHandler::TargetCrashed() {
 }
 
 void InspectorHandler::TargetReloadedAfterCrash() {
-  // Only send the event if targetCrashed was previously sent in this session.
   if (!target_crashed_)
     return;
   frontend_->TargetReloadedAfterCrash();
@@ -51,8 +51,12 @@ void InspectorHandler::TargetDetached(const std::string& reason) {
 }
 
 Response InspectorHandler::Enable() {
-  if (host_ && !host_->IsRenderFrameLive())
+  // When enabling before the first ever navigation, there is no renderer
+  // yet, but reporting a "crash" in this case would be a mistake.
+  if (host_ && !host_->IsRenderFrameLive() &&
+      !host_->frame_tree()->controller().IsInitialBlankNavigation()) {
     TargetCrashed();
+  }
   return Response::Success();
 }
 
