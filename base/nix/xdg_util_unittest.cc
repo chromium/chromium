@@ -8,6 +8,8 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/nix/scoped_xdg_activation_token_injector.h"
 #include "base/process/launch.h"
 #include "base/strings/cstring_view.h"
@@ -528,6 +530,89 @@ TEST(XDGUtilTest, LaunchOptionsWithXdgActivation) {
         received_launch_options_with_test_token = true;
       }));
   EXPECT_TRUE(received_launch_options_with_test_token);
+}
+
+class DetectAppSandboxTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    existing_path_ = temp_dir_.GetPath().Append(".flatpak-info");
+    ASSERT_TRUE(WriteFile(existing_path_, ""));
+    missing_path_ = temp_dir_.GetPath().Append("missing");
+    ON_CALL(env_, GetVar(_)).WillByDefault(Return(std::nullopt));
+  }
+
+  void SetVar(const char* name, const char* value) {
+    ON_CALL(env_, GetVar(StrEq(name))).WillByDefault(Return(value));
+  }
+
+  testing::NiceMock<MockEnvironment> env_;
+  ScopedTempDir temp_dir_;
+  FilePath existing_path_;
+  FilePath missing_path_;
+};
+
+TEST_F(DetectAppSandboxTest, None) {
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kNone);
+}
+
+TEST_F(DetectAppSandboxTest, FlatpakInfoFile) {
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, existing_path_),
+            AppSandbox::kFlatpak);
+}
+
+TEST_F(DetectAppSandboxTest, FlatpakIdEnvVar) {
+  SetVar("FLATPAK_ID", "org.chromium.Chromium");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_),
+            AppSandbox::kFlatpak);
+}
+
+TEST_F(DetectAppSandboxTest, EmptyFlatpakIdEnvVar) {
+  SetVar("FLATPAK_ID", "");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kNone);
+}
+
+TEST_F(DetectAppSandboxTest, FlatpakSandboxDirAloneIsNotFlatpak) {
+  // Only `/.flatpak-info` and $FLATPAK_ID are used to detect Flatpak.
+  SetVar("FLATPAK_SANDBOX_DIR", "/");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kNone);
+}
+
+TEST_F(DetectAppSandboxTest, Snap) {
+  SetVar("SNAP", "/snap/chromium/123");
+  SetVar("SNAP_NAME", "chromium");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kSnap);
+}
+
+TEST_F(DetectAppSandboxTest, SnapRequiresSnapName) {
+  SetVar("SNAP", "/snap/chromium/123");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kNone);
+}
+
+TEST_F(DetectAppSandboxTest, SnapRequiresSnap) {
+  SetVar("SNAP_NAME", "chromium");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, missing_path_), AppSandbox::kNone);
+}
+
+TEST_F(DetectAppSandboxTest, FlatpakTakesPrecedenceOverSnap) {
+  SetVar("SNAP", "/snap/chromium/123");
+  SetVar("SNAP_NAME", "chromium");
+  EXPECT_EQ(DetectAppSandboxForTesting(env_, existing_path_),
+            AppSandbox::kFlatpak);
+}
+
+TEST(GetAppSandboxTest, ScopedOverride) {
+  const AppSandbox original = GetAppSandbox();
+  {
+    ScopedAppSandboxOverrideForTesting flatpak(AppSandbox::kFlatpak);
+    EXPECT_EQ(GetAppSandbox(), AppSandbox::kFlatpak);
+    {
+      ScopedAppSandboxOverrideForTesting snap(AppSandbox::kSnap);
+      EXPECT_EQ(GetAppSandbox(), AppSandbox::kSnap);
+    }
+    EXPECT_EQ(GetAppSandbox(), AppSandbox::kFlatpak);
+  }
+  EXPECT_EQ(GetAppSandbox(), original);
 }
 
 }  // namespace base::nix

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -251,8 +252,7 @@ void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
 #endif
 
-  auto env = base::Environment::Create();
-  if (env->HasVar("FLATPAK_SANDBOX_DIR") || env->HasVar("SNAP")) {
+  if (base::nix::GetAppSandbox() != base::nix::AppSandbox::kNone) {
     // xdg-desktop-portal has a separate reliable way of detecting the
     // application name for Flatpak and Snap environments, so the systemd unit
     // is not necessary in these cases.

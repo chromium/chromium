@@ -13,7 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_environment_variable_override.h"
+#include "base/nix/xdg_util.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/dbus/xdg/portal_constants.h"
@@ -290,7 +290,8 @@ TEST_F(RequestXdgDesktopPortalTest,
        RequestXdgDesktopPortalSkipsRegisterInSnap) {
   // Under Flatpak or Snap (kUnitNotNecessary), the sandbox provides the app
   // id, so the portal must not be registered with.
-  base::ScopedEnvironmentVariableOverride snap_env("SNAP", "/snap/app");
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox_override(
+      base::nix::AppSandbox::kSnap);
 
   auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));

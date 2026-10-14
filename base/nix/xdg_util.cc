@@ -4,6 +4,8 @@
 
 #include "base/nix/xdg_util.h"
 
+#include <unistd.h>
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -35,6 +37,38 @@ base::nix::XdgActivationTokenCreator& GetXdgActivationTokenCreator() {
 std::optional<std::string>& GetXdgActivationToken() {
   static base::NoDestructor<std::optional<std::string>> token;
   return *token;
+}
+
+// The file that Flatpak creates in the root of every Flatpak sandbox.
+constexpr base::FilePath::StringViewType kFlatpakInfoPath =
+    FILE_PATH_LITERAL("/.flatpak-info");
+
+// Environment variables used to detect application sandboxes.
+constexpr char kFlatpakIdEnvVar[] = "FLATPAK_ID";
+constexpr char kSnapEnvVar[] = "SNAP";
+constexpr char kSnapNameEnvVar[] = "SNAP_NAME";
+
+constinit std::optional<base::nix::AppSandbox> g_app_sandbox_override;
+
+bool HasNonEmptyVar(base::Environment& env, base::cstring_view name) {
+  return !env.GetVar(name).value_or("").empty();
+}
+
+base::nix::AppSandbox DetectAppSandbox(
+    base::Environment& env,
+    const base::FilePath& flatpak_info_path) {
+  // Use access() instead of PathExists() so that this can be called from
+  // threads that disallow blocking. This is a single stat of a top-level file,
+  // and GetAppSandbox() only does it once per process.
+  if (access(flatpak_info_path.value().c_str(), F_OK) == 0 ||
+      HasNonEmptyVar(env, kFlatpakIdEnvVar)) {
+    return base::nix::AppSandbox::kFlatpak;
+  }
+  if (HasNonEmptyVar(env, kSnapEnvVar) &&
+      HasNonEmptyVar(env, kSnapNameEnvVar)) {
+    return base::nix::AppSandbox::kSnap;
+  }
+  return base::nix::AppSandbox::kNone;
 }
 
 }  // namespace
@@ -366,6 +400,32 @@ std::string XdgDesktopPortalSessionPath(const std::string& sender,
   return ReplaceStringPlaceholders(kObjectPathSessionFormat,
                                    std::vector<std::string>{bus_name, token},
                                    nullptr);
+}
+
+AppSandbox GetAppSandbox() {
+  if (g_app_sandbox_override.has_value()) {
+    return *g_app_sandbox_override;
+  }
+  static const AppSandbox sandbox = [] {
+    auto env = Environment::Create();
+    return DetectAppSandbox(*env, FilePath(kFlatpakInfoPath));
+  }();
+  return sandbox;
+}
+
+AppSandbox DetectAppSandboxForTesting(Environment& env,
+                                      const FilePath& flatpak_info_path) {
+  return DetectAppSandbox(env, flatpak_info_path);
+}
+
+ScopedAppSandboxOverrideForTesting::ScopedAppSandboxOverrideForTesting(
+    AppSandbox sandbox)
+    : previous_(g_app_sandbox_override) {
+  g_app_sandbox_override = sandbox;
+}
+
+ScopedAppSandboxOverrideForTesting::~ScopedAppSandboxOverrideForTesting() {
+  g_app_sandbox_override = previous_;
 }
 
 }  // namespace base::nix

@@ -174,6 +174,46 @@ BASE_EXPORT
 std::string XdgDesktopPortalSessionPath(const std::string& sender,
                                         const std::string& token);
 
+// Application sandboxes (packaging formats) that the browser may be running
+// inside of. This is unrelated to Chromium's own process sandbox.
+enum class AppSandbox {
+  kNone,
+  kFlatpak,
+  kSnap,
+};
+
+// Returns the application sandbox that the current process is running in.
+// The result is computed on the first call and cached, since it can't change
+// during the lifetime of the process. Safe to call from any thread.
+//
+// Flatpak is detected by the existence of `/.flatpak-info`, which Flatpak
+// creates in every sandbox, falling back to $FLATPAK_ID. Environment variables
+// alone aren't relied on for Flatpak, since they may be inherited by host
+// processes launched from a sandboxed app (e.g. via `flatpak-spawn --host`).
+// Snap is detected by $SNAP and $SNAP_NAME, which snapd sets for all confined
+// apps.
+BASE_EXPORT AppSandbox GetAppSandbox();
+
+// Uncached version of GetAppSandbox() that reads from `env` and checks
+// `flatpak_info_path` instead of `/.flatpak-info`.
+BASE_EXPORT AppSandbox
+DetectAppSandboxForTesting(Environment& env, const FilePath& flatpak_info_path);
+
+// Makes GetAppSandbox() return `sandbox` while in scope. Must not be used
+// while other threads may be calling GetAppSandbox().
+class BASE_EXPORT ScopedAppSandboxOverrideForTesting {
+ public:
+  explicit ScopedAppSandboxOverrideForTesting(AppSandbox sandbox);
+  ScopedAppSandboxOverrideForTesting(
+      const ScopedAppSandboxOverrideForTesting&) = delete;
+  ScopedAppSandboxOverrideForTesting& operator=(
+      const ScopedAppSandboxOverrideForTesting&) = delete;
+  ~ScopedAppSandboxOverrideForTesting();
+
+ private:
+  const std::optional<AppSandbox> previous_;
+};
+
 }  // namespace nix
 }  // namespace base
 
