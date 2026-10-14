@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
 
 #import "base/strings/utf_string_conversions.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -127,10 +126,6 @@ NSString* SendTabToSelfTabCardLabelData::GetLabelTextForWebState(
     web::WebState* web_state) {
   if (SendTabToSelfTabCardLabelData* label_data = FromWebState(web_state)) {
     return GetLabelText(label_data->sender_device_name_);
-  }
-
-  if (!base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    return nil;
   }
 
   send_tab_to_self::SendTabToSelfModel* model =

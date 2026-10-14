@@ -125,7 +125,6 @@ class SendTabToSelfBrowserAgent
 
  private:
   friend class BrowserUserData<SendTabToSelfBrowserAgent>;
-  friend class SendTabToSelfBrowserAgentExecutionTest;
 
   explicit SendTabToSelfBrowserAgent(Browser* browser);
 
@@ -169,19 +168,8 @@ class SendTabToSelfBrowserAgent
   // foreground transitions for `foreground_session_start_`.
   void RegisterAppLifecycleObservers();
 
-  // Stop observing the WebState and WebStateList and reset associated
-  // variables.
-  void CleanUpObserversAndVariables();
-
   // Owned by the SendTabToSelfSyncService which should outlive this class
   raw_ptr<send_tab_to_self::SendTabToSelfModel> model_ = nullptr;
-
-  // The GUID of the pending SendTabToSelf entry to display an InfoBar for,
-  // if any.
-  std::optional<std::string> pending_entry_guid_;
-
-  // The WebState that is being observed for activation, if any.
-  raw_ptr<web::WebState> pending_web_state_ = nullptr;
 
   // NSNotificationCenter observer tokens for app background and foreground
   // transitions.

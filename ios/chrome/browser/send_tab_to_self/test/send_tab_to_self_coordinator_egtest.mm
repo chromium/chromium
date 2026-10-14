@@ -375,8 +375,8 @@ void DismissSendTabToSelfModal() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          kSecondTargetDeviceName)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kSecondTargetDeviceName)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSendTabToSelfModalSendButton)]
@@ -1019,7 +1019,6 @@ void DismissSendTabToSelfModal() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfExtraEntryPoints);
-  config.features_enabled.push_back(send_tab_to_self::kSendTabToSelfAutoOpen);
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfSupportAutoOpenInTabGrid);
   return config;
@@ -1042,9 +1041,8 @@ void DismissSendTabToSelfModal() {
   }];
 }
 
-// Tests that when kSendTabToSelfAutoOpen is enabled, receiving a shared tab
-// while active in the foreground automatically opens it as a background tab
-// and presents a snackbar banner.
+// Tests that receiving a shared tab while active in the foreground
+// automatically opens it as a background tab and presents a snackbar banner.
 - (void)testSendTabToSelfAutoOpenWhenReceivedInForeground {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
@@ -1101,11 +1099,10 @@ void DismissSendTabToSelfModal() {
       @"%@ histogram not logged.", kActivatedEntryPointHistogram);
 }
 
-// Tests that when kSendTabToSelfAutoOpen is enabled and a shared tab is
-// received while there is no active WebState
-// (e.g., when all tabs are closed), it is
-// not opened immediately but is automatically opened as a background tab when
-// an active WebState is brought back to the foreground.
+// Tests that when a shared tab is received while there is no active WebState
+// (e.g., when all tabs are closed), it is not opened immediately but is
+// automatically opened as a background tab when an active WebState is brought
+// back to the foreground.
 - (void)testSendTabToSelfAutoOpenWhenBroughtToForeground {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
@@ -1336,11 +1333,11 @@ void DismissSendTabToSelfModal() {
       @"%@ histogram not logged.", kTimeOpenedToActivatedHistogram);
 }
 
-// Tests that when both kSendTabToSelfAutoOpen and
-// kSendTabToSelfSupportAutoOpenInTabGrid are enabled, and a shared tab is
-// received while in the Tab Grid, it is opened immediately in the background
-// adjacent to the active tab, displays its activity badge in the switcher, and
-// does not display an infobar banner upon returning to the foreground.
+// Tests that when kSendTabToSelfSupportAutoOpenInTabGrid is enabled, and a
+// shared tab is received while in the Tab Grid, it is opened immediately in the
+// background adjacent to the active tab, displays its activity badge in the
+// switcher, and does not display an infobar banner upon returning to the
+// foreground.
 - (void)testSendTabToSelfAutoOpenWhenReceivedInTabGrid {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];

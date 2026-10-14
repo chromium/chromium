@@ -7,27 +7,21 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
-#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -123,23 +117,17 @@ void IOSSendTabToSelfInfoBarDelegate::InfoBarDismissed() {
 }
 
 std::u16string IOSSendTabToSelfInfoBarDelegate::GetTitleText() const {
-  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    return l10n_util::GetPluralStringFUTF16(
-        IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE,
-        static_cast<int>(opened_tab_count_));
-  }
-  return std::u16string();
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE,
+      static_cast<int>(opened_tab_count_));
 }
 
 std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
-  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);
-    return entry ? l10n_util::GetStringFUTF16(
-                       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
-                       base::UTF8ToUTF16(entry->GetDeviceName()))
-                 : std::u16string();
-  }
-  return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE);
+  const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);
+  return entry ? l10n_util::GetStringFUTF16(
+                     IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                     base::UTF8ToUTF16(entry->GetDeviceName()))
+               : std::u16string();
 }
 
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
@@ -149,14 +137,6 @@ bool IOSSendTabToSelfInfoBarDelegate::Accept() {
   const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);
 
   if (!entry) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    // Open the tab directly in foreground when auto-open feature is disabled.
-    [scene_handler_
-        openURLInNewTab:send_tab_to_self::CreateOpenNewTabCommand(entry)];
-    model_->MarkEntryOpened(guid_);
     return true;
   }
 
