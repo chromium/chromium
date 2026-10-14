@@ -55,14 +55,13 @@ class AccountStatusCheckFetcherUnitTest : public testing::TestWithParam<bool> {
 
   void SetReply(const em::DeviceManagementResponse& response) {
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(service_->SendJobOKAsync(response)))
+        .WillOnce(service_->SendJobOKAsync(response))
         .RetiresOnSaturation();
   }
 
   void SetFailReply(int net_error, int response_code) {
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(
-            DoAll(service_->SendJobResponseAsync(net_error, response_code)))
+        .WillOnce(service_->SendJobResponseAsync(net_error, response_code))
         .RetiresOnSaturation();
   }
 

@@ -217,9 +217,9 @@ TEST_P(SignInNotificationHelperCameraTest, CheckNotificationData) {
             std::u16string::npos);
 }
 
-INSTANTIATE_TEST_CASE_P(SkyVault,
-                        SignInNotificationHelperCameraTest,
-                        ::testing::Values("jpg", "gif", "mp4", "pdf"),
-                        SignInNotificationHelperCameraTest::ParamToName);
+INSTANTIATE_TEST_SUITE_P(SkyVault,
+                         SignInNotificationHelperCameraTest,
+                         ::testing::Values("jpg", "gif", "mp4", "pdf"),
+                         SignInNotificationHelperCameraTest::ParamToName);
 
 }  // namespace policy::skyvault_ui_utils

@@ -352,13 +352,13 @@ IN_PROC_BROWSER_TEST_F(
       connection_changed_callback;
   EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
       .WillRepeatedly(
-          DoAll([&connection_changed_callback](
-                    net::NetworkChangeNotifier::ConnectionType*,
-                    base::OnceCallback<void(
-                        net::NetworkChangeNotifier::ConnectionType)> callback) {
+          [&connection_changed_callback](
+              net::NetworkChangeNotifier::ConnectionType*,
+              base::OnceCallback<void(
+                  net::NetworkChangeNotifier::ConnectionType)> callback) {
             connection_changed_callback = std::move(callback);
             return false;
-          }));
+          });
 
   AddForceInstalledApp(kTestApp, kTestAppName);
   run_on_os_login_handler_.AddRoolApp(kTestApp, kRunWindowed);
@@ -391,13 +391,13 @@ IN_PROC_BROWSER_TEST_F(
       connection_changed_callback;
   EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
       .WillRepeatedly(
-          DoAll([&connection_changed_callback](
-                    net::NetworkChangeNotifier::ConnectionType*,
-                    base::OnceCallback<void(
-                        net::NetworkChangeNotifier::ConnectionType)> callback) {
+          [&connection_changed_callback](
+              net::NetworkChangeNotifier::ConnectionType*,
+              base::OnceCallback<void(
+                  net::NetworkChangeNotifier::ConnectionType)> callback) {
             connection_changed_callback = std::move(callback);
             return false;
-          }));
+          });
 
   AddForceInstalledApp(kTestApp, kTestAppName);
   run_on_os_login_handler_.AddRoolApp(kTestApp, kRunWindowed);

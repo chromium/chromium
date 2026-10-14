@@ -8,11 +8,13 @@ config("neon_2_sse_include") {
 
 # Keep as a public config since TFLite's BUILD references it directly.
 config("neon_2_sse_flags") {
-  if (target_cpu == "x64") {
-    cflags = [ "-Wno-deprecated-declarations" ]
-    if (is_clang) {
-      cflags += [ "-Wno-gnu-inline-cpp-without-extern" ]
-    }
+  # NEON_2_SSE.h marks slow emulated intrinsics as deprecated to act as
+  # performance warnings. Disable those with the library's own macro rather
+  # than -Wno-deprecated-declarations, since this config is public and would
+  # otherwise suppress deprecation warnings for all dependents on x64.
+  defines = [ "NEON2SSE_DISABLE_PERFORMANCE_WARNING" ]
+  if (target_cpu == "x64" && is_clang) {
+    cflags = [ "-Wno-gnu-inline-cpp-without-extern" ]
   }
 }
 

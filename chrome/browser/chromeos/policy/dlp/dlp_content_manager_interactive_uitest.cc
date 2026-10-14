@@ -459,7 +459,7 @@ class DlpContentManagerReportingBrowserTest
     // scope or get consumed by the task.
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
-        .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
+        .WillRepeatedly(testing::WithArgs<1, 2>(
             [=, this](::reporting::Record record,
                       base::OnceCallback<void(::reporting::Status)> callback) {
               content::GetUIThreadTaskRunner({})->PostTask(
@@ -469,7 +469,7 @@ class DlpContentManagerReportingBrowserTest
                       base::Unretained(this), std::move(expectedEvent),
                       barrier_closure, std::move(record)));
               std::move(callback).Run(::reporting::Status::StatusOK());
-            })));
+            }));
   }
 
   // Start printing and wait for the end of
