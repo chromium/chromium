@@ -689,7 +689,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   if (input_buffer_preference_ == InputBufferKind::CpuMemBuf)
     use_gpu_buffer = false;
 
-  EncoderStatus::Or<scoped_refptr<VideoFrame>> result(
+  base::expected<scoped_refptr<VideoFrame>, EncoderStatus> result(
       scoped_refptr<VideoFrame>(nullptr));
   if (use_gpu_buffer)
     result = PrepareGpuFrame(frame);
@@ -1158,7 +1158,7 @@ T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
 // Copy a frame into a shared mem buffer and resize it as the same time. Input
 // frames can I420, NV12, P010, or RGB.
 // They'll be converted to `input_pixel_format_` if needed.
-EncoderStatus::Or<scoped_refptr<VideoFrame>>
+base::expected<scoped_refptr<VideoFrame>, EncoderStatus>
 VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
@@ -1186,8 +1186,9 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
 
   std::unique_ptr<ReadOnlyRegionPool::Handle> handle =
       input_pool_->MaybeAllocateBuffer();
-  if (!handle || !handle->IsValid())
-    return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
+  if (!handle || !handle->IsValid()) {
+    return base::unexpected(EncoderStatus::Codes::kOutOfMemoryError);
+  }
 
   const base::WritableSharedMemoryMapping* mapping = handle->mapping();
   auto mapped_src_frame = src_frame->HasMappableSharedImage()
@@ -1197,13 +1198,14 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
       input_pixel_format_, dest_coded_size, dest_visible_rect,
       dest_visible_rect.size(), *mapping, src_frame->timestamp());
 
-  if (!shared_frame || !mapped_src_frame)
-    return EncoderStatus(EncoderStatus::Codes::kSystemAPICallError);
+  if (!shared_frame || !mapped_src_frame) {
+    return base::unexpected(EncoderStatus::Codes::kSystemAPICallError);
+  }
 
   auto status =
       frame_converter_.ConvertAndScale(*mapped_src_frame, *shared_frame);
   if (!status.is_ok()) {
-    return status;
+    return base::unexpected(status);
   }
 
   shared_frame->set_hdr_metadata(src_frame->hdr_metadata());
@@ -1216,7 +1218,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
 // Copy a frame into a GPU buffer and resize it as the same time. Input frames
 // can I420, NV12, P010, or RGB -- they'll be converted to
 // `input_pixel_format_` if needed.
-EncoderStatus::Or<scoped_refptr<VideoFrame>>
+base::expected<scoped_refptr<VideoFrame>, EncoderStatus>
 VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareGpuFrame");
@@ -1253,7 +1255,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(
       dest_visible_rect.size(), color_space);
   if (!gpu_frame)
-    return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
+    return base::unexpected(EncoderStatus::Codes::kOutOfMemoryError);
 
   gpu_frame->set_timestamp(src_frame->timestamp());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
@@ -1275,12 +1277,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   if (!mapped_gpu_frame || !mapped_src_frame)
-    return EncoderStatus(EncoderStatus::Codes::kSystemAPICallError);
+    return base::unexpected(EncoderStatus::Codes::kSystemAPICallError);
 
   auto status =
       frame_converter_.ConvertAndScale(*mapped_src_frame, *mapped_gpu_frame);
   if (!status.is_ok()) {
-    return status;
+    return base::unexpected(status);
   }
 
   return gpu_frame;
