@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -175,6 +176,54 @@ GURL GetInitiatorUrl(const std::optional<url::Origin>& initiator_origin) {
   return initiator_url;
 }
 
+bool IsPathEqualTo(const GURL& url, std::string_view test) {
+  std::string_view path_piece = url.path();
+  return path_piece.size() > 1 && path_piece.substr(1) == test;
+}
+
+bool IsFaviconURL(const GURL& url) {
+  return IsPathEqualTo(url, kFaviconSourcePath) ||
+         IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"}));
+}
+
+bool IsGeneratedBackgroundPageURL(const GURL& url) {
+  return IsPathEqualTo(url, kGeneratedBackgroundPageFilename);
+}
+
+// Returns true if `pattern` explicitly references the favicon path.
+// Generated paths like _favicon are not exposed by blanket wildcards (e.g.
+// "*").
+bool PatternExplicitlyReferencesFavicon(const URLPattern& pattern) {
+  // `GetPattern()` prepends '/' to every resource path, so "_favicon/*" is
+  // stored as "/_favicon/*".
+  std::string_view pattern_path = pattern.path();
+  if (!pattern_path.starts_with('/') ||
+      !pattern_path.substr(1).starts_with(kFaviconSourcePath)) {
+    return false;
+  }
+  std::string_view remainder =
+      pattern_path.substr(1 + std::string_view(kFaviconSourcePath).length());
+  return remainder.empty() || remainder.starts_with('/');
+}
+
+// Returns true if any pattern in `resources` explicitly matches the favicon
+// path.
+bool EntryExplicitlyMatchesFavicon(const Extension& extension,
+                                   const URLPatternSet& resources,
+                                   std::string_view relative_path) {
+  for (const URLPattern& pattern : resources) {
+    if (PatternExplicitlyReferencesFavicon(pattern)) {
+      URLPatternSet single_pattern_set;
+      single_pattern_set.AddPattern(pattern);
+      if (extension.ResourceMatches(single_pattern_set, relative_path,
+                                    /*case_sensitive=*/true)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Shared implementation for `IsResourceWebAccessible` and
 // `IsResourceWebAccessibleRedirect`.
 bool IsResourceWebAccessibleImpl(
@@ -187,13 +236,27 @@ bool IsResourceWebAccessibleImpl(
     return false;
   }
 
+  const bool restrict_generated_paths = base::FeatureList::IsEnabled(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+
+  // Generated background pages should never be web accessible.
+  if (restrict_generated_paths && IsGeneratedBackgroundPageURL(target_url)) {
+    return false;
+  }
+
+  const bool is_favicon = restrict_generated_paths && IsFaviconURL(target_url);
+
   GURL initiator_url = GetInitiatorUrl(initiator_origin);
   std::string relative_path = target_url.GetPath();
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
-    if (extension.ResourceMatches(entry.resources, relative_path,
-                                  /*case_sensitive=*/true)) {
+    bool matches =
+        is_favicon ? EntryExplicitlyMatchesFavicon(extension, entry.resources,
+                                                   relative_path)
+                   : extension.ResourceMatches(entry.resources, relative_path,
+                                               /*case_sensitive=*/true);
+    if (matches) {
       bool result = true;
 
       // Prior to MV3, web-accessible resources were accessible by any site.
@@ -298,10 +361,20 @@ bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
   if (!info) {
     return false;
   }
+  const bool restrict_generated_paths = base::FeatureList::IsEnabled(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+  GURL target_url = extension->ResolveExtensionURL(path);
+  if (restrict_generated_paths && IsGeneratedBackgroundPageURL(target_url)) {
+    return false;
+  }
+  const bool is_favicon = restrict_generated_paths && IsFaviconURL(target_url);
   for (const auto& entry : info->web_accessible_resources) {
-    if (extension->ResourceMatches(entry.resources, path,
-                                   /*case_sensitive=*/true) &&
-        entry.use_dynamic_url) {
+    bool matches =
+        is_favicon
+            ? EntryExplicitlyMatchesFavicon(*extension, entry.resources, path)
+            : extension->ResourceMatches(entry.resources, path,
+                                         /*case_sensitive=*/true);
+    if (matches && entry.use_dynamic_url) {
       return true;
     }
   }

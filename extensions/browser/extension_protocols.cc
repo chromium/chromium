@@ -894,6 +894,19 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
     const bool is_background_page_url = IsBackgroundPageURL(request_.url);
     const bool is_favicon_url = IsFaviconURL(request_.url);
+    if (is_background_page_url &&
+        base::FeatureList::IsEnabled(
+            extensions_features::
+                kRestrictGeneratedPathsInWebAccessibleResources) &&
+        request_.request_initiator &&
+        request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque() !=
+            extension->origin().GetTupleOrPrecursorTupleIfOpaque()) {
+      // Generated background pages are only served to the extension's own
+      // origin.
+      CompleteRequestAndDeleteThis(net::ERR_BLOCKED_BY_CLIENT);
+      return;
+    }
+
     auto* dynamic_resource_provider = GetDynamicResourceProvider(
         extension.get(), request_.url, browser_context_);
     if (is_background_page_url || is_favicon_url || dynamic_resource_provider) {

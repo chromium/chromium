@@ -359,6 +359,12 @@ BASE_DECLARE_FEATURE(kWebRequestPerContextEventDispatch);
 // If enabled, `HashedExtensionId` uses SHA-256 hashes instead of SHA-1.
 BASE_DECLARE_FEATURE(kUseSha256ForExtensionHashes);
 
+// When enabled, generated paths (e.g. _favicon and the generated background
+// page) are excluded from wildcard web_accessible_resources entries. _favicon
+// must be explicitly listed to be web accessible, and the generated background
+// page is never web accessible.
+BASE_DECLARE_FEATURE(kRestrictGeneratedPathsInWebAccessibleResources);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

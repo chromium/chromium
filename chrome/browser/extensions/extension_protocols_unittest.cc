@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -53,6 +54,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
@@ -277,9 +279,11 @@ class ExtensionProtocolsTestBase : public testing::Test {
     base::PowerMonitor::GetInstance()->ShutdownForTesting();
   }
 
-  GetResult RequestOrLoad(const GURL& url,
-                          network::mojom::RequestDestination destination) {
-    return LoadURL(url, destination);
+  GetResult RequestOrLoad(
+      const GURL& url,
+      network::mojom::RequestDestination destination,
+      const std::optional<url::Origin>& request_initiator = std::nullopt) {
+    return LoadURL(url, destination, request_initiator);
   }
 
   GetResult RequestOrLoad(network::ResourceRequest request) {
@@ -367,9 +371,12 @@ class ExtensionProtocolsTestBase : public testing::Test {
   std::unique_ptr<content::WebContents> contents_;
 
  private:
-  GetResult LoadURL(const GURL& url,
-                    network::mojom::RequestDestination destination) {
-    return LoadURLFromFactory(loader_factory_.get(), url, destination);
+  GetResult LoadURL(
+      const GURL& url,
+      network::mojom::RequestDestination destination,
+      const std::optional<url::Origin>& request_initiator = std::nullopt) {
+    return LoadURLFromFactory(loader_factory_.get(), url, destination,
+                              request_initiator);
   }
 
   GetResult LoadURLFromFactory(network::mojom::URLLoaderFactory* factory,
@@ -686,6 +693,50 @@ TEST_F(ExtensionProtocolsTest, BackgroundPageRequestResponseHeaders) {
     // COOP header does not make sense in non-document responses.
     EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
   }
+}
+
+// Tests that the generated background page is not served to a cross-origin
+// request initiator.
+TEST_F(ExtensionProtocolsTest, BackgroundPageCrossOriginRequestBlocked) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension();
+  AddExtension(extension, false, false);
+
+  const GURL url = extension->GetResourceURL(kGeneratedBackgroundPageFilename);
+
+  // Same-origin initiator succeeds.
+  EXPECT_EQ(net::OK,
+            RequestOrLoad(url, network::mojom::RequestDestination::kDocument,
+                          extension->origin())
+                .result());
+
+  // Cross-origin initiator is blocked.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            RequestOrLoad(url, network::mojom::RequestDestination::kDocument,
+                          url::Origin::Create(GURL("https://example.com")))
+                .result());
+}
+
+// Tests that the generated background page is served to a cross-origin
+// request initiator when the feature flag is disabled.
+TEST_F(ExtensionProtocolsTest,
+       BackgroundPageCrossOriginRequestAllowedFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension();
+  AddExtension(extension, false, false);
+
+  const GURL url = extension->GetResourceURL(kGeneratedBackgroundPageFilename);
+  EXPECT_EQ(net::OK,
+            RequestOrLoad(url, network::mojom::RequestDestination::kDocument,
+                          url::Origin::Create(GURL("https://example.com")))
+                .result());
 }
 
 // Tests that resources from imported module extensions get appropriately

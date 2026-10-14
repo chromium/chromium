@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -483,6 +485,120 @@ TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifestStub));
   EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
                        extension.get(), "resource.html"));
+}
+
+// Tests that generated paths like _favicon are not matched by blanket
+// wildcards and must be explicitly specified in web_accessible_resources.
+TEST_F(WebAccessibleResourcesManifestTest, GeneratedPaths) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+
+  constexpr char kWildcardManifest[] =
+      R"([{
+        "resources": ["*"],
+        "matches": ["<all_urls>"]
+      }])";
+  scoped_refptr<Extension> wildcard_extension =
+      LoadAndExpectSuccess(GetManifestData(kWildcardManifest));
+
+  const auto web_origin = url::Origin::Create(GURL("http://example.com"));
+
+  // Normal resources match the wildcard.
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "test.html", &web_origin));
+
+  // Generated paths do not match the wildcard.
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "_favicon", &web_origin));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "_favicon/", &web_origin));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "_generated_background_page.html",
+      &web_origin));
+
+  // Explicitly declared _favicon/* is accessible.
+  constexpr char kExplicitFaviconManifest[] =
+      R"([{
+        "resources": ["_favicon/*"],
+        "matches": ["http://example.com/*"]
+      }])";
+  scoped_refptr<Extension> favicon_extension =
+      LoadAndExpectSuccess(GetManifestData(kExplicitFaviconManifest));
+
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      favicon_extension.get(), "_favicon", &web_origin));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      favicon_extension.get(), "_favicon/", &web_origin));
+
+  // Non-matching web origin is rejected.
+  const auto other_web_origin =
+      url::Origin::Create(GURL("http://not-matching.com"));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      favicon_extension.get(), "_favicon", &other_web_origin));
+
+  // Generated paths are excluded from wildcard `use_dynamic_url` entries.
+  constexpr char kDynamicWildcardManifest[] =
+      R"([{
+        "resources": ["*"],
+        "matches": ["<all_urls>"],
+        "use_dynamic_url": true
+      }])";
+  scoped_refptr<Extension> dynamic_wildcard_extension =
+      LoadAndExpectSuccess(GetManifestData(kDynamicWildcardManifest));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_wildcard_extension.get(), "test.html"));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_wildcard_extension.get(), "_favicon/"));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_wildcard_extension.get(), "_generated_background_page.html"));
+
+  // Explicitly declared _favicon/* honors `use_dynamic_url`.
+  constexpr char kDynamicFaviconManifest[] =
+      R"([{
+        "resources": ["_favicon/*"],
+        "matches": ["<all_urls>"],
+        "use_dynamic_url": true
+      }])";
+  scoped_refptr<Extension> dynamic_favicon_extension =
+      LoadAndExpectSuccess(GetManifestData(kDynamicFaviconManifest));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_favicon_extension.get(), "_favicon/"));
+}
+
+// Tests that generated paths match blanket wildcards when the
+// kRestrictGeneratedPathsInWebAccessibleResources feature flag is disabled.
+TEST_F(WebAccessibleResourcesManifestTest, GeneratedPathsFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kRestrictGeneratedPathsInWebAccessibleResources);
+
+  constexpr char kWildcardManifest[] =
+      R"([{
+        "resources": ["*"],
+        "matches": ["<all_urls>"]
+      }])";
+  scoped_refptr<Extension> wildcard_extension =
+      LoadAndExpectSuccess(GetManifestData(kWildcardManifest));
+
+  const auto web_origin = url::Origin::Create(GURL("http://example.com"));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "_favicon/", &web_origin));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      wildcard_extension.get(), "_generated_background_page.html",
+      &web_origin));
+
+  constexpr char kDynamicWildcardManifest[] =
+      R"([{
+        "resources": ["*"],
+        "matches": ["<all_urls>"],
+        "use_dynamic_url": true
+      }])";
+  scoped_refptr<Extension> dynamic_wildcard_extension =
+      LoadAndExpectSuccess(GetManifestData(kDynamicWildcardManifest));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_wildcard_extension.get(), "_favicon/"));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+      dynamic_wildcard_extension.get(), "_generated_background_page.html"));
 }
 
 }  // namespace
