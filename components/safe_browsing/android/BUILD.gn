@@ -66,8 +66,6 @@ if (safe_browsing_mode == 2) {
       "real_time_url_checks_allowlist.h",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     deps = [
       "//base",
       "//components/resources:components_resources",
@@ -85,8 +83,6 @@ static_library("remote_database_manager") {
     "remote_database_manager.cc",
     "remote_database_manager.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":safe_browsing_api_handler",
@@ -113,8 +109,6 @@ static_library("safe_browsing_api_handler_util") {
     "safe_browsing_api_handler_util.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/safe_browsing/core/browser/db:util",
@@ -126,8 +120,6 @@ source_set("safe_browsing_api_handler") {
     "safe_browsing_api_handler_bridge.cc",
     "safe_browsing_api_handler_bridge.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":jni_headers",

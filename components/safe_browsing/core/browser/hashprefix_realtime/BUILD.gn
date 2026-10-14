@@ -10,8 +10,6 @@ static_library("hash_realtime_service") {
     "ohttp_key_service.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/keyed_service/core",

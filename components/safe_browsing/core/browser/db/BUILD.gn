@@ -39,8 +39,6 @@ static_library("database_manager") {
     "database_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":sb_protocol_manager_util",
     ":util",
@@ -84,8 +82,6 @@ static_library("util") {
     "util.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":sb_protocol_manager_util",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -106,8 +102,6 @@ static_library("sb_database") {
     "sb_database.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
     ":sb_protocol_manager_util",
@@ -124,8 +118,6 @@ static_library("v4_get_hash_protocol_manager") {
     "v4_get_hash_protocol_manager.cc",
     "v4_get_hash_protocol_manager.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":safebrowsing_proto",
@@ -149,8 +141,6 @@ source_set("v5_search_hashes_util") {
     "v5_search_hashes_util.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":util",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -169,8 +159,6 @@ source_set("v5_get_hash_protocol_manager") {
     "v5_get_hash_protocol_manager.cc",
     "v5_get_hash_protocol_manager.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":util",
@@ -193,8 +181,6 @@ static_library("sb_local_database_manager") {
     "sb_local_database_manager.cc",
     "sb_local_database_manager.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":database_manager",
@@ -236,8 +222,6 @@ source_set("sb_protocol_manager_util") {
     "sb_protocol_manager_util.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
     ":sb_protocol_config",
@@ -255,8 +239,6 @@ source_set("prefix_iterator") {
     "prefix_iterator.cc",
     "prefix_iterator.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":sb_protocol_manager_util",
@@ -279,8 +261,6 @@ source_set("v4_rice") {
       "v4_rice.h",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     deps = [
       "//base",
       "//third_party/protobuf:protobuf_lite",
@@ -296,8 +276,6 @@ source_set("v5_rice") {
       "v5_rice.cc",
       "v5_rice.h",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     public_deps =
         [ "//components/safe_browsing/core/common/proto:safebrowsingv5_proto" ]
@@ -325,8 +303,6 @@ source_set("sb_store") {
       "v5_store.h",
     ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":safebrowsing_proto",
@@ -386,8 +362,6 @@ static_library("sb_update_protocol_manager") {
     "v5_update_protocol_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":sb_protocol_config",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -415,8 +389,6 @@ static_library("v5_search_hashes_cache") {
     "v5_search_hashes_cache.cc",
     "v5_search_hashes_cache.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":sb_protocol_manager_util",
@@ -526,8 +498,6 @@ static_library("allowlist_checker_client") {
     "allowlist_checker_client.cc",
     "allowlist_checker_client.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":database_manager",

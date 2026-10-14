@@ -8,8 +8,6 @@ static_library("hash_realtime_utils") {
     "hash_realtime_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//build:branding_buildflags",

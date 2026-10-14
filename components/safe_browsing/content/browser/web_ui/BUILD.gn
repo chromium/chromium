@@ -17,8 +17,6 @@ static_library("web_ui") {
     "web_ui_content_info_singleton.cc",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//components/os_crypt/async/common",

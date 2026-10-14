@@ -12,8 +12,6 @@ source_set("sync") {
     "sync_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/safe_browsing/core/browser:sync_observer",

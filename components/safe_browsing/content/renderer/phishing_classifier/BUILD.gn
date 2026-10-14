@@ -30,8 +30,6 @@ if (safe_browsing_mode != 0) {
       "phishing_visual_feature_extractor.h",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     public_deps = [ "//base" ]
     deps = [
       "//cc/paint",

@@ -10,8 +10,6 @@ source_set("utils") {
     "safe_browsing_web_app_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/safe_browsing/core/common/proto:csd_proto",
