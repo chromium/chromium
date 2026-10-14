@@ -360,6 +360,18 @@ TEST(DrawQuadTest, TextureDrawQuadNormalization) {
                     quad.GetNormalizedTexCoords(resource_size), kEpsilon);
   EXPECT_RECTF_NEAR(tex_coord_rect,
                     quad.GetUnnormalizedTexCoords(resource_size), kEpsilon);
+
+  // Test that full-frame unnormalized coordinates normalize to exactly
+  // [0, 0, 1, 1] even for sizes where 1.0f / size is inexact in float32.
+  const gfx::Size inexact_reciprocal_size(2592, 1944);
+  quad.SetNew(&shared_state, rect, rect, needs_blending, resource_id,
+              gfx::PointF(0.0f, 0.0f),
+              gfx::PointF(inexact_reciprocal_size.width(),
+                          inexact_reciprocal_size.height()),
+              SkColors::kTransparent, false, false,
+              gfx::ProtectedVideoType::kClear,
+              /*is_tex_coords_normalized=*/false);
+  EXPECT_EQ(uv_rect, quad.GetNormalizedTexCoords(inexact_reciprocal_size));
 }
 
 TEST(DrawQuadTest, CopyTileDrawQuad) {

@@ -75,8 +75,11 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
       return gfx::RectF();
     }
 
-    return gfx::ScaleRect(tex_coord_rect_, 1.0f / resource_size.width(),
-                          1.0f / resource_size.height());
+    // Use InvScale() so that (0,0 width*height) tex_coord_rect is exactly
+    // (0,0 1x1) when normalized.
+    gfx::RectF normalized_rect = tex_coord_rect_;
+    normalized_rect.InvScale(resource_size.width(), resource_size.height());
+    return normalized_rect;
   }
 
   // Returns the texture coordinates in the range [0, resource_size].
