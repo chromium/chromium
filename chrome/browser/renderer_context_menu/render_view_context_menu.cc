@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -461,7 +462,7 @@ enum class GlicWebContentsContextMenuResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebContentsContextMenuResult)
 
-std::string GetGlicWebContentsContextToken(
+std::string_view GetGlicWebContentsContextToken(
     const content::ContextMenuParams& params) {
   if (params.selection_text.empty() && params.link_url.is_empty()) {
     return "Page";
@@ -473,6 +474,15 @@ std::string GetGlicWebContentsContextToken(
     return "Link";
   }
   return "TextSelection";
+}
+
+// Records whether the Glic item for `token` was executed or ignored.
+void RecordGlicWebContentsContextMenuResult(std::string_view token,
+                                            bool executed) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.WebContentsContextMenu.", token}),
+      executed ? GlicWebContentsContextMenuResult::kExecuted
+               : GlicWebContentsContextMenuResult::kShownAndIgnored);
 }
 
 ui::ImageModel GetLensContextMenuIcon() {
@@ -1153,19 +1163,17 @@ RenderViewContextMenu::~RenderViewContextMenu() = default;
 void RenderViewContextMenu::MenuClosed(ui::SimpleMenuModel* source) {
   if (source == &menu_model_) {
     if (glic_item_shown_) {
-      std::string token = GetGlicWebContentsContextToken(params_);
-      if (glic_item_executed_) {
-        base::UmaHistogramEnumeration(
-            base::StrCat({"Glic.WebContentsContextMenu.", token}),
-            GlicWebContentsContextMenuResult::kExecuted);
-      } else {
-        base::UmaHistogramEnumeration(
-            base::StrCat({"Glic.WebContentsContextMenu.", token}),
-            GlicWebContentsContextMenuResult::kShownAndIgnored);
-      }
+      RecordGlicWebContentsContextMenuResult(
+          GetGlicWebContentsContextToken(params_), glic_item_executed_);
+    }
+    if (glic_share_image_item_shown_) {
+      RecordGlicWebContentsContextMenuResult("Image",
+                                             glic_share_image_item_executed_);
     }
     glic_item_shown_ = false;
     glic_item_executed_ = false;
+    glic_share_image_item_shown_ = false;
+    glic_share_image_item_executed_ = false;
   }
   RenderViewContextMenuBase::MenuClosed(source);
 }
@@ -2419,6 +2427,7 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE)
             .value(),
         kGlicShareImageMenuItem);
+    glic_share_image_item_shown_ = true;
   }
 }
 
@@ -5329,6 +5338,7 @@ void RenderViewContextMenu::ExecGlicShareImage() {
     // If this has changed since the context menu was summoned, bail early.
     return;
   }
+  glic_share_image_item_executed_ = true;
   if (auto* glic_service = glic::GlicKeyedService::Get(browser_context_)) {
     glic_service->ShareContextImage(
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_),

@@ -3830,16 +3830,23 @@ chromium-metrics-reviews@google.com.
     enum="GlicWebContentsContextMenuResult" expires_after="2027-04-11">
   <owner>basiaz@google.com</owner>
   <owner>birnie@chromium.org</owner>
+  <owner>alexiswu@google.com</owner>
   <summary>
     Logs when the Glic context menu item was shown and ignored, or executed when
-    the user opened the context menu on a {GlicContextType}.
+    the user opened the context menu on {GlicContextType}. Recorded when the
+    menu closes, once for each Glic item shown in it. Recorded on desktop for
+    all variants except Link, and on Android for Image, Link and Page.
   </summary>
   <token key="GlicContextType">
-    <variant name="Link" summary="link with no selection"/>
-    <variant name="Page" summary="page with no selection"/>
-    <variant name="TextSelection" summary="text selection"/>
+    <variant name="Image"
+        summary="an image (recorded for the Glic share image item)"/>
+    <variant name="Link"
+        summary="a link with no selection (on Android, this includes a link
+                 that wraps an image)"/>
+    <variant name="Page" summary="a page with no selection"/>
+    <variant name="TextSelection" summary="a text selection"/>
     <variant name="TextSelectionWithLink"
-        summary="text selection with click target that is a link"/>
+        summary="a text selection with click target that is a link"/>
   </token>
 </histogram>
 

@@ -280,6 +280,7 @@ if (is_android) {
       ":public_java",
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 }

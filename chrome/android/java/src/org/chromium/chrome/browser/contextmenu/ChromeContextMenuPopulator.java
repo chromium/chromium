@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicContextMenuUtils;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
+import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -120,7 +121,10 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** A {@link ContextMenuPopulator} used for showing the default Chrome context menu. */
@@ -148,6 +152,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private final boolean mIsDownloadRestrictedByPolicy;
     private final SparseArray<CustomContentAction> mCustomActionMap;
+
+    /** Glic invocation sources of the Glic items shown in this menu. */
+    private final Set<Integer> mShownGlicSources = new HashSet<>();
+
+    /** Glic invocation source of the Glic item the user clicked, or null if none. */
+    private @Nullable Integer mClickedGlicSource;
 
     private PendingIntentSender mPendingIntentSender;
 
@@ -516,10 +526,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return GlicContextMenuUtils.shouldShowAskGeminiForImage(getProfile());
     }
 
+    /** Returns the Glic invocation source of the "Ask Gemini" item for this menu's target. */
+    private @GlicInvocationSource int getAskGeminiInvocationSource() {
+        return mParams.isAnchor()
+                ? GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_LINK
+                : GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE;
+    }
+
     @Override
     public List<ModelList> buildContextMenu() {
         int nextCustomMenuItemId = CUSTOM_MENU_ITEM_ID_START;
         mCustomActionMap.clear();
+        mShownGlicSources.clear();
 
         List<ModelList> groupedItems = new ArrayList<>();
 
@@ -550,6 +568,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (shouldShowAskGeminiForPage()) {
                 ModelList geminiGroup = new ModelList();
                 geminiGroup.add(createListItem(Item.ASK_GEMINI));
+                mShownGlicSources.add(getAskGeminiInvocationSource());
                 groupedItems.add(geminiGroup);
             }
 
@@ -695,6 +714,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
                 if (shouldShowAskGeminiForLink()) {
                     linkGroup.add(createListItem(Item.ASK_GEMINI));
+                    mShownGlicSources.add(getAskGeminiInvocationSource());
                 }
             }
             if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())
@@ -855,6 +875,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
             if (shouldShowAskGeminiForImage()) {
                 imageGroup.add(createListItem(Item.ASK_GEMINI_IMAGE));
+                mShownGlicSources.add(GlicInvocationSource.SHARED_IMAGE);
             }
 
             groupedItems.add(imageGroup);
@@ -1448,6 +1469,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_ask_gemini) {
             recordContextMenuSelection(ContextMenuUma.Action.ASK_GEMINI);
             Tab askGeminiTab = getTab();
+            mClickedGlicSource = getAskGeminiInvocationSource();
             if (askGeminiTab != null) {
                 GlicKeyedServiceHandler.invoke(
                         getProfile(), askGeminiTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
@@ -1455,6 +1477,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_ask_gemini_image) {
             recordContextMenuSelection(ContextMenuUma.Action.ASK_GEMINI_IMAGE);
             Tab askGeminiImageTab = getTab();
+            mClickedGlicSource = GlicInvocationSource.SHARED_IMAGE;
             if (askGeminiImageTab != null) {
                 GlicKeyedServiceHandler.shareContextImage(
                         getProfile(),
@@ -1485,7 +1508,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public void onMenuClosed() {}
+    public void onMenuClosed() {
+        for (int source : mShownGlicSources) {
+            GlicMetrics.recordWebContentsContextMenuResult(
+                    source, Objects.equals(mClickedGlicSource, source));
+        }
+        mShownGlicSources.clear();
+        mClickedGlicSource = null;
+    }
 
     @Override
     public boolean hasCustomItems() {

@@ -654,6 +654,10 @@ class RenderViewContextMenu
   bool glic_item_shown_ = false;
   bool glic_item_executed_ = false;
 
+  // Used for CTR metrics of the Glic share image menu item.
+  bool glic_share_image_item_shown_ = false;
+  bool glic_share_image_item_executed_ = false;
+
   // Tracks the originating document at menu-open time so Glic actions can bail
   // out if the tab navigated while the menu was open.
   const content::WeakDocumentPtr source_document_at_menu_open_;

@@ -1427,7 +1427,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Executed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:GlicWebContentsContextMenuResult) -->
+<!-- LINT.ThenChange(
+  //chrome/browser/renderer_context_menu/render_view_context_menu.cc:GlicWebContentsContextMenuResult,
+  //chrome/browser/glic/android/java/src/org/chromium/chrome/browser/glic/GlicMetrics.java:GlicWebContentsContextMenuResult
+) -->
 
 <!-- LINT.IfChange(GlicWebUseCounter) -->
 

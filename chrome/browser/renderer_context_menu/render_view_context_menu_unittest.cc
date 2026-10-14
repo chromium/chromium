@@ -112,6 +112,7 @@
 #include "net/base/url_util.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -1536,6 +1537,67 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageEligibility) {
     menu.Init();
     EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
   }
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageContextMenuResultMetrics) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kGlicShareImage);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents()));
+  ON_CALL(mock_tab, GetProfile()).WillByDefault(testing::Return(profile()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  auto mock_helper =
+      std::make_unique<testing::NiceMock<MockPageContextEligibilityHelper>>(
+          mock_tab);
+  ON_CALL(*mock_helper, IsPageContextEligible())
+      .WillByDefault(testing::Return(
+          optimization_guide::PageContextEligibilityStatus::kEligible));
+
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  base::HistogramTester histogram_tester;
+
+  // Case 1: Share image item is shown and ignored.
+  {
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    ASSERT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+    menu.OnMenuWillShow(const_cast<ui::SimpleMenuModel*>(&menu.menu_model()));
+    menu.MenuClosed(const_cast<ui::SimpleMenuModel*>(&menu.menu_model()));
+  }
+  histogram_tester.ExpectUniqueSample("Glic.WebContentsContextMenu.Image",
+                                      /*kShownAndIgnored*/ 0, 1);
+
+  // Case 2: Share image item is executed.
+  {
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    ASSERT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+    menu.OnMenuWillShow(const_cast<ui::SimpleMenuModel*>(&menu.menu_model()));
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 0);
+    menu.MenuClosed(const_cast<ui::SimpleMenuModel*>(&menu.menu_model()));
+  }
+  histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Image",
+                                     /*kExecuted*/ 1, 1);
+  histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Image",
+                                     /*kShownAndIgnored*/ 0, 1);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Glic.WebContentsContextMenu."),
+      testing::ElementsAre(
+          testing::Pair("Glic.WebContentsContextMenu.Image", 2)));
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party

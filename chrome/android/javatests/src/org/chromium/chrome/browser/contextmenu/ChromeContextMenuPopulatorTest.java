@@ -475,6 +475,29 @@ public class ChromeContextMenuPopulatorTest {
                 /* additionalNavigationParams= */ null);
     }
 
+    private ContextMenuParams getImageLinkParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.IMAGE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                new GURL(LINK_URL),
+                "",
+                GURL.emptyGURL(),
+                new GURL(IMAGE_SRC_URL),
+                IMAGE_TITLE_TEXT,
+                null,
+                true,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
+    }
+
     private ContextMenuParams getInterestForLinkParams() {
         return new ContextMenuParams(
                 0,
@@ -4456,6 +4479,89 @@ public class ChromeContextMenuPopulatorTest {
 
         verify(mGlicKeyedService)
                 .shareContextImage(eq(mTab), eq(mRenderFrameHost), eq(params.getSrcUrl()));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, ChromeFeatureList.TAB_BOTTOM_SHEET})
+    public void testOnMenuClosed_askGeminiLinkIgnored_recordsShownAndIgnored() {
+        setAllMandatoryFlowsComplete();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        mPopulator.buildContextMenu();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Glic.WebContentsContextMenu.Link", 0)
+                        .expectNoRecords("Glic.WebContentsContextMenu.Page")
+                        .expectNoRecords("Glic.WebContentsContextMenu.Image")
+                        .build();
+
+        mPopulator.onMenuClosed();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU + ":show_on_page/true",
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    })
+    public void testOnMenuClosed_askGeminiPageClicked_recordsExecuted() {
+        setAllMandatoryFlowsComplete();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        DeviceInfo.setIsDesktopForTesting(true);
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getPageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        mPopulator.buildContextMenu();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Glic.WebContentsContextMenu.Page", 1)
+                        .expectNoRecords("Glic.WebContentsContextMenu.Link")
+                        .expectNoRecords("Glic.WebContentsContextMenu.Image")
+                        .build();
+
+        mPopulator.onItemSelected(R.id.contextmenu_ask_gemini);
+        mPopulator.onMenuClosed();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU + ":show_on_image_mobile/true",
+        ChromeFeatureList.GLIC_SHARE_IMAGE,
+        ChromeFeatureList.TAB_BOTTOM_SHEET
+    })
+    public void testOnMenuClosed_imageLinkImageClicked_recordsLinkIgnoredAndImageExecuted() {
+        setAllMandatoryFlowsComplete();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getImageLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        when(mNativeDelegate.getRenderFrameHost()).thenReturn(mRenderFrameHost);
+        mPopulator.buildContextMenu();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Glic.WebContentsContextMenu.Image", 1)
+                        .expectIntRecord("Glic.WebContentsContextMenu.Link", 0)
+                        .expectNoRecords("Glic.WebContentsContextMenu.Page")
+                        .build();
+
+        mPopulator.onItemSelected(R.id.contextmenu_ask_gemini_image);
+        mPopulator.onMenuClosed();
+
         watcher.assertExpected();
     }
 }
