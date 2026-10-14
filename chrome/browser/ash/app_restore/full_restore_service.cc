@@ -40,7 +40,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"

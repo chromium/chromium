@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/crostini_installer",
   "+chrome/browser/web_applications/web_app_provider.h",
-  "+chrome/browser/web_applications/web_app_registrar.h",
 ]
 
 specific_include_rules = {

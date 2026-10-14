@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_save_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"

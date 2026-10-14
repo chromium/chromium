@@ -46,7 +46,6 @@ static_library("new_window") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/webui:chrome_web_contents_handler",
-    "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",

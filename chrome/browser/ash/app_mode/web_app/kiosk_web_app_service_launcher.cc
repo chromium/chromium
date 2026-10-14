@@ -19,7 +19,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/origin.h"
