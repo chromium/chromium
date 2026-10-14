@@ -34,16 +34,17 @@ enum class ThreeDSecureTransactionStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:ThreeDSecureTransactionStatus)
 
-// Records metrics for 3DS (3D-Secure) Challenge Requests and Challenge
-// Responses found in `form_data`, the body of an HTTP POST request from a form
+// Records metrics for the 3DS (3D-Secure) Challenge Request and Challenge
+// Response found in `form_data`, the body of an HTTP POST request from a form
 // submission.
 //
-// `form_data` is parsed as `application/x-www-form-urlencoded` data. Each
-// `creq` key (for Challenge Requests) or `cres` key (for Challenge Responses),
-// matched case-insensitively, is counted. The `cres` value is also parsed to
-// record the outcome of the response from its `transStatus` field. UKM entries
-// are recorded against `source_id`.
-void RecordThreeDSecureTelemetryFromFormData(std::string_view form_data,
+// `form_data` is parsed as `application/x-www-form-urlencoded` data. Only the
+// first `creq` key (for Challenge Requests) or `cres` key (for Challenge
+// Responses), matched case-insensitively, is recorded. The `cres` value is also
+// parsed to record the outcome of the response from its `transStatus` field.
+// UKM entries are recorded against `source_id`. Returns whether a Challenge
+// Request or Challenge Response was recorded.
+bool RecordThreeDSecureTelemetryFromFormData(std::string_view form_data,
                                              ukm::SourceId source_id);
 
 }  // namespace payments

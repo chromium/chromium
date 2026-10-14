@@ -694,6 +694,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Payments.ThreeDSecure.ChallengeRedirected" enum="Boolean"
+    expires_after="2027-08-21">
+  <owner>nikifork@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records when a detected 3D-Secure challenge request or response is a
+    duplicate from a navigation redirect on Bling. Only true is recorded.
+
+    This metric is recorded when a 3D-Secure challenge request or response is
+    detected in the form data of an HTTP POST navigation on Bling, and the hash
+    of the form data is equal to the hash of the previous 3D-Secure challenge
+    form data. If equal, the duplicate form data is due to a 307/308 redirect.
+  </summary>
+</histogram>
+
 <histogram name="Payments.ThreeDSecure.ChallengeRequest" enum="Boolean"
     expires_after="2027-08-21">
   <owner>darwinyang@chromium.org</owner>

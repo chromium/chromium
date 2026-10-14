@@ -44,6 +44,8 @@ constexpr char kChallengeRequestHistogram[] =
     "Payments.ThreeDSecure.ChallengeRequest";
 constexpr char kChallengeResponseHistogram[] =
     "Payments.ThreeDSecure.ChallengeResponse";
+constexpr char kChallengeRedirectedHistogram[] =
+    "Payments.ThreeDSecure.ChallengeRedirected";
 
 // Returns form data with a field named `key` holding `message_json` encoded
 // like a 3DS message.
@@ -141,6 +143,7 @@ TEST_F(WebPaymentsMetricsRecorderTest, RecordsChallengeRequest) {
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entries[0], ChallengeRequestUkm::kChallengeRequestName, true);
   EXPECT_TRUE(GetUkmEntries(ChallengeResponseUkm::kEntryName).empty());
+  histogram_tester_.ExpectTotalCount(kChallengeRedirectedHistogram, 0);
 }
 
 // Tests that a Challenge Response is recorded against the main frame document
@@ -199,6 +202,26 @@ TEST_F(WebPaymentsMetricsRecorderTest, DeduplicatesRepeatedMessage) {
   RequestNavigation(form_data);
   histogram_tester_.ExpectUniqueSample(kChallengeRequestHistogram, true, 1);
   EXPECT_EQ(GetUkmEntries(ChallengeRequestUkm::kEntryName).size(), 1u);
+  histogram_tester_.ExpectUniqueSample(kChallengeRedirectedHistogram, true, 1);
+}
+
+// Tests that each redirect of a 3DS challenge navigation is recorded.
+TEST_F(WebPaymentsMetricsRecorderTest, RecordsEachRedirect) {
+  std::string form_data = CreateFormData("creq", R"({"acsTransID":"a"})");
+  RequestNavigation(form_data);
+  RequestNavigation(form_data);
+  RequestNavigation(form_data);
+  histogram_tester_.ExpectUniqueSample(kChallengeRequestHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kChallengeRedirectedHistogram, true, 2);
+}
+
+// Tests that redirects of form submissions without 3DS messages are not
+// recorded as 3DS redirects.
+TEST_F(WebPaymentsMetricsRecorderTest,
+       IgnoresRedirectedUnrelatedFormSubmission) {
+  RequestNavigation("username=foo");
+  RequestNavigation("username=foo");
+  histogram_tester_.ExpectTotalCount(kChallengeRedirectedHistogram, 0);
 }
 
 // Tests that Challenge Requests from different transactions are all recorded.
@@ -207,6 +230,7 @@ TEST_F(WebPaymentsMetricsRecorderTest, RecordsDifferentTransactions) {
   RequestNavigation(CreateFormData("creq", R"({"acsTransID":"b"})"));
   histogram_tester_.ExpectUniqueSample(kChallengeRequestHistogram, true, 2);
   EXPECT_EQ(GetUkmEntries(ChallengeRequestUkm::kEntryName).size(), 2u);
+  histogram_tester_.ExpectTotalCount(kChallengeRedirectedHistogram, 0);
 }
 
 // Tests that the Challenge Request and Challenge Response of one transaction
@@ -222,6 +246,7 @@ TEST_F(WebPaymentsMetricsRecorderTest,
       payments::ThreeDSecureTransactionStatus::kSuccess, 1);
   EXPECT_EQ(GetUkmEntries(ChallengeRequestUkm::kEntryName).size(), 1u);
   EXPECT_EQ(GetUkmEntries(ChallengeResponseUkm::kEntryName).size(), 1u);
+  histogram_tester_.ExpectTotalCount(kChallengeRedirectedHistogram, 0);
 }
 
 // Tests that a repeated encrypted Challenge Response is only recorded once,
@@ -233,6 +258,7 @@ TEST_F(WebPaymentsMetricsRecorderTest, DeduplicatesEncryptedChallengeResponse) {
       kChallengeResponseHistogram,
       payments::ThreeDSecureTransactionStatus::kJSONEncrypted, 1);
   EXPECT_EQ(GetUkmEntries(ChallengeResponseUkm::kEntryName).size(), 1u);
+  histogram_tester_.ExpectUniqueSample(kChallengeRedirectedHistogram, true, 1);
 }
 
 }  // namespace

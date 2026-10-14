@@ -50,6 +50,10 @@ class WebPaymentsMetricsRecorder
   // same form data, so this is used to avoid recording the same 3DS message
   // twice.
   size_t last_form_data_hash_ = 0;
+
+  // Whether the most recent form data has a 3DS message. Used for recording
+  // metrics on 3DS navigation redirects.
+  bool last_form_is_3ds_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAYMENTS_MODEL_WEB_PAYMENTS_METRICS_RECORDER_H_
