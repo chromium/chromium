@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proto definition for the system profile attached to Private Insights
+// events. Shared by all event protos in this directory.
+
+syntax = "proto3";
+
+package private_insights.events;
+
+option optimize_for = LITE_RUNTIME;
+
+message CoarseSystemProfile {
+  string country = 1;
+  string language = 2;
+  string chrome_version = 3;
+  string milestone = 4;
+  string chrome_channel = 5;
+
+  // Operating system platform, matching UMA's SystemProfileProto::OS::name
+  // (e.g. "Windows NT", "Mac OS X", "Linux", "CrOS", "Android", "iOS").
+  string platform = 6;
+}

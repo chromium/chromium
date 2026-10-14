@@ -19,6 +19,7 @@ component("private_insights") {
     "//components/metrics",
     "//components/prefs",
     "//components/private_insights/events:contextual_cue_log_event_proto",
+    "//components/private_insights/events:storage_access_log_event_proto",
   ]
   deps = [
     ":fcp_event_publisher",

@@ -4,6 +4,19 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+proto_library("coarse_system_profile_proto") {
+  proto_in_dir = "//"
+  sources = [ "coarse_system_profile.proto" ]
+}
+
 proto_library("contextual_cue_log_event_proto") {
+  proto_in_dir = "//"
   sources = [ "contextual_cue_log_event.proto" ]
+  deps = [ ":coarse_system_profile_proto" ]
+}
+
+proto_library("storage_access_log_event_proto") {
+  proto_in_dir = "//"
+  sources = [ "storage_access_log_event.proto" ]
+  deps = [ ":coarse_system_profile_proto" ]
 }

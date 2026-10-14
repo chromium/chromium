@@ -1,0 +1,47 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proto definition for Storage Access Log Events.
+
+syntax = "proto3";
+
+package private_insights.events;
+
+import "components/private_insights/events/coarse_system_profile.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Records the outcome of a Storage Access API permission request along with
+// the site that requested it.
+message StorageAccessLogEvent {
+  // Mirrors `RequestOutcome` in
+  // chrome/browser/storage_access_api/storage_access_grant_permission_context.h
+  // (`StorageAccessAPIRequestOutcome` in enums.xml).
+  enum Outcome {
+    UNSPECIFIED = 0;
+    GRANTED_BY_FIRST_PARTY_SET = 1;
+    GRANTED_BY_ALLOWANCE = 2;
+    GRANTED_BY_USER = 3;
+    DENIED_BY_FIRST_PARTY_SET = 4;
+    DENIED_BY_USER = 5;
+    DENIED_BY_PREREQUISITES = 6;
+    DISMISSED_BY_USER = 7;
+    REUSED_PREVIOUS_DECISION = 8;
+    DENIED_BY_TOP_LEVEL_INTERACTION_HEURISTIC = 9;
+    ALLOWED_BY_COOKIE_SETTINGS = 10;
+    REUSED_IMPLICIT_GRANT = 11;
+    DENIED_BY_COOKIE_SETTINGS = 12;
+    ALLOWED_BY_SAME_SITE = 13;
+    DENIED_ABORTED = 14;
+    ALLOWED_BY_FEDCM = 15;
+  }
+
+  CoarseSystemProfile system_profile = 1;
+
+  // The requesting site (eTLD+1), e.g. "https://example.com". Sent in plain
+  // text inside the encrypted payload; only readable inside the TEE.
+  string domain = 2;
+
+  Outcome outcome = 3;
+}

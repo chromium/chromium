@@ -50,7 +50,7 @@ int BucketTabCount(int raw_count) {
 }
 
 void PopulateSystemProfile(
-    private_insights::events::ContextualCueLogEvent::SystemProfile* profile) {
+    private_insights::events::CoarseSystemProfile* profile) {
   profile->set_chrome_version(version_info::GetVersionNumber());
   profile->set_milestone(version_info::GetMajorVersionNumber());
   profile->set_chrome_channel(
