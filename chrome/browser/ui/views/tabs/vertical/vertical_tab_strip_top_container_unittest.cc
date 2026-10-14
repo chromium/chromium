@@ -455,3 +455,26 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_TRUE(segmented_control()->GetVisible());
   EXPECT_FALSE(combo_button()->GetVisible());
 }
+
+TEST_F(VerticalTabStripTopContainerTest, ModeChangedSwitchesControls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  controller()->SetVerticalTabsEnabled(false);
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  LayoutView();
+
+  ASSERT_NE(segmented_control(), nullptr);
+  EXPECT_FALSE(segmented_control()->GetVisible());
+  EXPECT_TRUE(combo_button()->GetVisible());
+
+  controller()->SetVerticalTabsEnabled(true);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_FALSE(combo_button()->GetVisible());
+
+  controller()->SetVerticalTabsEnabled(false);
+  EXPECT_FALSE(segmented_control()->GetVisible());
+  EXPECT_TRUE(combo_button()->GetVisible());
+}

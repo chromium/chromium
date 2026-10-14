@@ -127,6 +127,7 @@ class VerticalTabStripTopContainer : public views::View,
   base::CallbackListSubscription collapse_subscription_;
   base::CallbackListSubscription expand_on_hover_subscription_;
   base::CallbackListSubscription resizing_subscription_;
+  base::CallbackListSubscription mode_changed_subscription_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 

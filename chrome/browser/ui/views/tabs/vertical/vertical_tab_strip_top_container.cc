@@ -91,6 +91,11 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
           base::IgnoreArgs<bool>(base::BindRepeating(
               &VerticalTabStripTopContainer::UpdateControlsVisibility,
               base::Unretained(this))));
+      mode_changed_subscription_ = state_controller_->RegisterOnModeChanged(
+          base::IgnoreArgs<tabs::VerticalTabStripStateController*>(
+              base::BindRepeating(
+                  &VerticalTabStripTopContainer::UpdateControlsVisibility,
+                  base::Unretained(this))));
     }
 
     UpdateControlsVisibility();
