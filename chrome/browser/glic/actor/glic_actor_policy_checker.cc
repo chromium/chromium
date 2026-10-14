@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
@@ -350,18 +351,30 @@ bool GlicActorPolicyChecker::IsBrowserManagedForActor(Profile& profile) {
 }
 
 bool GlicActorPolicyChecker::CanActOnWeb() const {
+  if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
+    return false;
+  }
   return can_act_on_web_ != CanActOutcome::kNo;
 }
 
 CannotActReason GlicActorPolicyChecker::CannotActOnWebReason() const {
+  if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
+    return CannotActReason::kDisabledByPolicy;
+  }
   return cannot_act_on_web_reason_;
 }
 
 bool GlicActorPolicyChecker::GlicApiCanActOnWeb() const {
+  if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
+    return false;
+  }
   return glic_api_can_act_on_web_ != CanActOutcome::kNo;
 }
 
 CannotActReason GlicActorPolicyChecker::GlicApiCannotActOnWebReason() const {
+  if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
+    return CannotActReason::kDisabledByPolicy;
+  }
   return glic_api_cannot_act_on_web_reason_;
 }
 
@@ -371,7 +384,7 @@ void GlicActorPolicyChecker::OnPrefOrAccountChanged() {
       ComputeActOnWebCapability(/*disable_for_enterprise=*/false);
   std::tie(glic_api_can_act_on_web_, glic_api_cannot_act_on_web_reason_) =
       ComputeActOnWebCapability(/*disable_for_enterprise=*/true);
-  if (old_value != can_act_on_web_) {
+  if (old_value != can_act_on_web_ && !changed_callback_list_.empty()) {
     changed_callback_list_.Notify(CanActOnWeb());
   }
 }

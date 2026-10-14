@@ -39,6 +39,8 @@ class GlicProviderSpec {
   virtual std::string_view GetSyntheticTrialGroupName() const = 0;
   // Infix for per-provider metric names: Glic.<Infix>.X.
   virtual std::string_view GetMetricsInfix() const = 0;
+  // Whether browser web actuation (Actor) is supported for this provider.
+  virtual bool IsActuationSupported() const = 0;
 };
 
 }  // namespace glic

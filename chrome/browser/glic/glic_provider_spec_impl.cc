@@ -33,6 +33,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     return "Gemini";
   }
   std::string_view GetMetricsInfix() const override { return "Consumer"; }
+  bool IsActuationSupported() const override { return true; }
 };
 
 class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
@@ -49,6 +50,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return "GeminiEnterprise";
   }
   std::string_view GetMetricsInfix() const override { return "Enterprise"; }
+  bool IsActuationSupported() const override { return false; }
 };
 
 }  // namespace
