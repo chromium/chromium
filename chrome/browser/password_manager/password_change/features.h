@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kPasswordChangeWithGlic);
 // Inference.
 BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);
 
-// Controls whether ChangePasswordFormWaiter rechecks cached password forms
-// exponentially.
-BASE_DECLARE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter);
-
 }  // namespace password_change::features
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_FEATURES_H_

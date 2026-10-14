@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/password_manager/password_change/features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/signatures.h"
@@ -216,16 +214,12 @@ void ChangePasswordFormWaiter::RecheckForms() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_change::features::
-              kRecheckFormsExponentiallyInChangePasswordFormWaiter)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ChangePasswordFormWaiter::RecheckForms,
-                       weak_ptr_factory_.GetWeakPtr()),
-        forms_recheck_delay_);
-    forms_recheck_delay_ *= 2;
-  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ChangePasswordFormWaiter::RecheckForms,
+                     weak_ptr_factory_.GetWeakPtr()),
+      forms_recheck_delay_);
+  forms_recheck_delay_ *= 2;
 }
 
 void ChangePasswordFormWaiter::WaitForLocalMLModelAvailability() {
