@@ -1851,16 +1851,16 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_CLIENT_FILTER_CHIP_TEXT" desc="Text used in the client filter chip when no option is selected.">
         Device
       </message>
-      <message name="IDS_HISTORY_ACTOR_FILTER_CHIP_TEXT" desc="Text used in the actor filter chip when no option is selected." translateable="false">
+      <message name="IDS_HISTORY_ACTOR_FILTER_CHIP_TEXT" desc="Text used in the actor filter chip when no option is selected.">
         Who browsed
       </message>
-      <message name="IDS_HISTORY_ACTOR_FILTER_SHEET_HEADER" desc="Text used in the header of the actor filter sheet." translateable="false">
+      <message name="IDS_HISTORY_ACTOR_FILTER_SHEET_HEADER" desc="Text used in the header of the actor filter sheet.">
         Filter by who browsed
       </message>
-      <message name="IDS_HISTORY_ACTOR_FILTER_USER" desc="Label of the item in the actor filter sheet, short for the longer phrase 'Browsing history that YOU performed.'. " translateable="false">
+      <message name="IDS_HISTORY_ACTOR_FILTER_USER" desc="Label of the item in the actor filter sheet, short for the longer phrase 'Browsing history that YOU performed.'. ">
         You
       </message>
-      <message name="IDS_HISTORY_ACTOR_FILTER_ACTOR" desc="Label of the item in the actor filter sheet, when selected restricts the history results to entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user." translateable="false">
+      <message name="IDS_HISTORY_ACTOR_FILTER_ACTOR" desc="Label of the item in the actor filter sheet, when selected restricts the history results to entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user.">
         Gemini
       </message>
       <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters.">
