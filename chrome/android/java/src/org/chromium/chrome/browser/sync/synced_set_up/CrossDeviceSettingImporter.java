@@ -283,7 +283,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final NullableObservableSupplier<Tab> mActivityTabSupplier;
     private final Context mContext;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
     private final TabObserver mTabObserver =
             new TabObserver() {
@@ -356,7 +356,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             NullableObservableSupplier<Tab> activityTabSupplier,
             Context context,
-            Supplier<@Nullable ModalDialogManager> modalDialogManager,
+            Supplier<ModalDialogManager> modalDialogManager,
             Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityTabSupplier = activityTabSupplier;

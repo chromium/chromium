@@ -412,7 +412,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
-    private final @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
+    private @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable WebContentHairlineCoordinator mWebContentHairlineCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
@@ -862,16 +862,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         maybeShowPromosOnForeground();
 
-        mCrossDeviceSettingImporter =
-                DeviceInfo.isDesktop() || !CrossDeviceSettingImporter.shouldCreateImporter()
-                        ? null
-                        : new CrossDeviceSettingImporter(
-                                activityLifecycleDispatcher,
-                                mActivityTabProvider.asObservable(),
-                                mActivity,
-                                modalDialogManagerSupplier,
-                                snackbarManagerSupplier);
-
         new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
         try {
@@ -1073,6 +1063,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mCrossDeviceSettingImporter != null) {
             mCrossDeviceSettingImporter.destroy();
+            mCrossDeviceSettingImporter = null;
         }
 
         if (mGlicUiCoordinator != null) {
@@ -1610,6 +1601,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         .onFinishNativeInitialization(originalProfile);
             }
         }
+        mCrossDeviceSettingImporter =
+                DeviceInfo.isDesktop() || !CrossDeviceSettingImporter.shouldCreateImporter()
+                        ? null
+                        : new CrossDeviceSettingImporter(
+                                mActivityLifecycleDispatcher,
+                                mActivityTabProvider.asObservable(),
+                                mActivity,
+                                mModalDialogManagerSupplier,
+                                mSnackbarManagerSupplier);
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
 
         // Must precede initializeSideUi(), which passes this controller to vertical tabs.
