@@ -516,6 +516,23 @@ signin::OAuthConsumer ChromeSigninClient::GetOAuthConsumerFromId(
   return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
 }
 
+bool ChromeSigninClient::IsAccountSignedInOnOtherProfile(
+    const GaiaId& gaia_id) const {
+  if (gaia_id.empty() || !g_browser_process ||
+      !g_browser_process->profile_manager()) {
+    return false;
+  }
+  std::vector<ProfileAttributesEntry*> entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
+  return std::ranges::any_of(
+      entries, [this, &gaia_id](const ProfileAttributesEntry* entry) {
+        return !entry->IsOmitted() && entry->GetPath() != profile_->GetPath() &&
+               entry->GetGAIAId() == gaia_id;
+      });
+}
+
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     const std::optional<signin_metrics::ProfileSignout> signout_source) const {
   // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources|.

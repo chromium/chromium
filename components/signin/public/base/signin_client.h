@@ -27,6 +27,7 @@ class PrimaryAccountChangeEvent;
 
 class GaiaAuthConsumer;
 class GaiaAuthFetcher;
+class GaiaId;
 class PrefService;
 
 namespace content_settings {
@@ -147,6 +148,10 @@ class SigninClient : public KeyedService {
   // Returns the OAuthConsumer associated with `oauth_consumer_id`.
   virtual signin::OAuthConsumer GetOAuthConsumerFromId(
       signin::OAuthConsumerId oauth_consumer_id) const = 0;
+
+  // Returns true if `gaia_id` is currently signed in as the primary account
+  // of another profile on this client (excluding the current profile).
+  virtual bool IsAccountSignedInOnOtherProfile(const GaiaId& gaia_id) const;
 
  protected:
   std::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;

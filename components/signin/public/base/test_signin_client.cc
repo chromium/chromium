@@ -201,3 +201,8 @@ signin::OAuthConsumer TestSigninClient::GetOAuthConsumerFromId(
     signin::OAuthConsumerId oauth_consumer_id) const {
   return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
 }
+
+bool TestSigninClient::IsAccountSignedInOnOtherProfile(
+    const GaiaId& gaia_id) const {
+  return accounts_signed_in_on_other_profiles_.contains(gaia_id);
+}
