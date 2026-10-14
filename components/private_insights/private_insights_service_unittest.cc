@@ -7,7 +7,10 @@
 #include <atomic>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -343,39 +346,46 @@ TEST_F(PrivateInsightsServiceTest, LogContextualCueEvent) {
 }
 
 TEST_F(PrivateInsightsServiceTest, SerializeEventsToQueryResult) {
-  base::circular_deque<PrivateInsightsService::ContextualCueEventEntry> events;
+  // Capture the query result that TriggerUpload() serialized into the FCP task
+  // environment. The callback runs on a ThreadPool thread, but the test waits
+  // for the upload to finish before reading, so this local is safe to capture
+  // by reference. The fixture's TearDown() resets the testing callback.
+  fcp::client::ExampleQueryResult captured_query_result;
+  PrivateInsightsService::SetRunFederatedComputationForTesting(
+      base::BindLambdaForTesting(
+          [&](const PrivateInsightsService::FederatedComputationParams& params)
+              -> PrivateInsightsService::FederatedComputationResult {
+            captured_query_result = params.task_env->result();
+            return {
+                .outcome = PrivateInsightsService::FederatedComputationOutcome::
+                    kSuccess,
+                .contributed_task_count = 1,
+            };
+          }));
 
-  base::Time time1;
-  ASSERT_TRUE(base::Time::FromUTCExploded({.year = 2026,
-                                           .month = 6,
-                                           .day_of_week = 0,
-                                           .day_of_month = 28,
-                                           .hour = 12,
-                                           .minute = 0,
-                                           .second = 0,
-                                           .millisecond = 0},
-                                          &time1));
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+
+  const base::Time time1 = base::Time::Now();
   events::ContextualCueLogEvent event1;
   event1.set_cue_id("cue_1");
-  events.push_back({time1, event1});
+  service.LogContextualCueEvent(event1);
 
-  base::Time time2;
-  ASSERT_TRUE(base::Time::FromUTCExploded({.year = 2026,
-                                           .month = 6,
-                                           .day_of_week = 0,
-                                           .day_of_month = 28,
-                                           .hour = 12,
-                                           .minute = 5,
-                                           .second = 30,
-                                           .millisecond = 500},
-                                          &time2));
+  task_environment_.FastForwardBy(base::Minutes(5) + base::Milliseconds(500));
+  const base::Time time2 = base::Time::Now();
   events::ContextualCueLogEvent event2;
   event2.set_cue_id("cue_2");
-  events.push_back({time2, event2});
+  service.LogContextualCueEvent(event2);
 
-  fcp::client::ExampleQueryResult query_result;
-  PrivateInsightsService::SerializeEventsToQueryResult(events, &query_result);
+  service.TriggerUpload();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
 
+  const fcp::client::ExampleQueryResult& query_result = captured_query_result;
   EXPECT_EQ(query_result.result_source(),
             fcp::client::ExampleQueryResult::PRIVATE_LOGGER);
   EXPECT_EQ(query_result.stats().output_rows_count(), 2);
@@ -392,8 +402,8 @@ TEST_F(PrivateInsightsServiceTest, SerializeEventsToQueryResult) {
   const auto& time_strings =
       vectors.at("confidential_compute_event_time").string_values();
   ASSERT_EQ(time_strings.value_size(), 2);
-  EXPECT_EQ(time_strings.value(0), "2026-06-28T12:00:00.000Z");
-  EXPECT_EQ(time_strings.value(1), "2026-06-28T12:05:30.500Z");
+  EXPECT_EQ(time_strings.value(0), base::TimeFormatAsIso8601(time1));
+  EXPECT_EQ(time_strings.value(1), base::TimeFormatAsIso8601(time2));
 }
 
 TEST_F(PrivateInsightsServiceTest, RequeueEventsEmpty) {
@@ -407,7 +417,9 @@ TEST_F(PrivateInsightsServiceTest, RequeueEventsEmpty) {
   service.LogContextualCueEvent(event1);
   EXPECT_EQ(service.contextual_cue_events_.size(), 1u);
 
-  service.RequeueEvents({});
+  service.OnUploadComplete(
+      {}, {.outcome =
+               PrivateInsightsService::FederatedComputationOutcome::kFailed});
   EXPECT_EQ(service.contextual_cue_events_.size(), 1u);
   EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
 }
@@ -437,8 +449,11 @@ TEST_F(PrivateInsightsServiceTest, RequeueEventsPrependsRequeuedEvents) {
   service.LogContextualCueEvent(event3);
   service.LogContextualCueEvent(event4);
 
-  // Requeuing prepends pending events before existing events.
-  service.RequeueEvents(std::move(pending_events));
+  // A failed upload requeues pending events before existing events.
+  service.OnUploadComplete(
+      std::move(pending_events),
+      {.outcome =
+           PrivateInsightsService::FederatedComputationOutcome::kFailed});
   EXPECT_EQ(service.contextual_cue_events_.size(), 4u);
   EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
   EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_2");
@@ -477,8 +492,11 @@ TEST_F(PrivateInsightsServiceTest, RequeueEventsExceedsMaxEvents) {
   event3.set_cue_id("cue_3");
   service.LogContextualCueEvent(event3);
 
-  // Oldest events should be dropped.
-  service.RequeueEvents(std::move(requeue_list));
+  // A failed upload requeues; events that don't fit are dropped.
+  service.OnUploadComplete(
+      std::move(requeue_list),
+      {.outcome =
+           PrivateInsightsService::FederatedComputationOutcome::kFailed});
   EXPECT_EQ(service.contextual_cue_events_.size(), 2u);
   EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_2");
   EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_3");
@@ -502,24 +520,21 @@ class PrivateInsightsServiceTriggerUploadTest
 TEST_P(PrivateInsightsServiceTriggerUploadTest, HandleEvents) {
   const TriggerUploadTestParams& param = GetParam();
 
-  static base::NoDestructor<fcp::client::ExampleQueryResult>
-      captured_query_result;
+  fcp::client::ExampleQueryResult captured_query_result;
   PrivateInsightsService::SetRunFederatedComputationForTesting(
-      base::BindRepeating(
-          [](PrivateInsightsService::FederatedComputationOutcome outcome,
-             const PrivateInsightsService::FederatedComputationParams& params)
+      base::BindLambdaForTesting(
+          [&](const PrivateInsightsService::FederatedComputationParams& params)
               -> PrivateInsightsService::FederatedComputationResult {
-            *captured_query_result = params.task_env->result();
+            captured_query_result = params.task_env->result();
             return {
-                .outcome = outcome,
+                .outcome = param.outcome,
                 .contributed_task_count =
-                    outcome == PrivateInsightsService::
-                                   FederatedComputationOutcome::kSuccess
+                    param.outcome == PrivateInsightsService::
+                                         FederatedComputationOutcome::kSuccess
                         ? std::make_optional(1)
                         : std::nullopt,
             };
-          },
-          param.outcome));
+          }));
 
   TestingPrefServiceSimple local_state;
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
@@ -546,8 +561,8 @@ TEST_P(PrivateInsightsServiceTriggerUploadTest, HandleEvents) {
   }));
 
   // Verify federated computation received the queued event.
-  EXPECT_EQ(captured_query_result->stats().output_rows_count(), 1);
-  const auto& vectors = captured_query_result->vector_data().vectors();
+  EXPECT_EQ(captured_query_result.stats().output_rows_count(), 1);
+  const auto& vectors = captured_query_result.vector_data().vectors();
   ASSERT_EQ(vectors.count("entry"), 1u);
   const auto& entry_bytes = vectors.at("entry").bytes_values();
   ASSERT_EQ(entry_bytes.value_size(), 1);

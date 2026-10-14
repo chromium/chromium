@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
@@ -175,10 +176,26 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
       base::circular_deque<ContextualCueEventEntry> pending_events,
       FederatedComputationResult result);
 
-  void RequeueEvents(base::circular_deque<ContextualCueEventEntry> events);
+  // Prepends `events` back onto `target_queue` (preserving their original
+  // order) without letting `target_queue` grow beyond `max_events`. Events
+  // that don't fit are dropped. The number of requeued and dropped events are
+  // reported to `requeued_count_histogram` and `dropped_count_histogram`
+  // respectively.
+  //
+  // These templates are only instantiated from the .cc, so their definitions
+  // live there. Tests exercise them via OnUploadComplete() / TriggerUpload().
+  template <typename EventProto>
+  void RequeueEvents(base::circular_deque<EventEntry<EventProto>> events,
+                     base::circular_deque<EventEntry<EventProto>>& target_queue,
+                     int max_events,
+                     std::string_view requeued_count_histogram,
+                     std::string_view dropped_count_histogram);
 
+  // Serializes `events` into `query_result` in the format expected by the
+  // private logger example query.
+  template <typename EventProto>
   static void SerializeEventsToQueryResult(
-      const base::circular_deque<ContextualCueEventEntry>& events,
+      const base::circular_deque<EventEntry<EventProto>>& events,
       fcp::client::ExampleQueryResult* query_result);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =

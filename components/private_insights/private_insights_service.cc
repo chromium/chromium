@@ -217,6 +217,56 @@ void PrivateInsightsService::LogContextualCueEvent(
                               static_cast<int>(contextual_cue_events_.size()));
 }
 
+template <typename EventProto>
+void PrivateInsightsService::RequeueEvents(
+    base::circular_deque<EventEntry<EventProto>> events,
+    base::circular_deque<EventEntry<EventProto>>& target_queue,
+    int max_events,
+    std::string_view requeued_count_histogram,
+    std::string_view dropped_count_histogram) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (events.empty()) {
+    return;
+  }
+
+  int requeued_count = 0;
+  while (!events.empty() &&
+         static_cast<int>(target_queue.size()) < max_events) {
+    target_queue.push_front(std::move(events.back()));
+    events.pop_back();
+    requeued_count++;
+  }
+  int dropped_count = static_cast<int>(events.size());
+
+  base::UmaHistogramCounts100(requeued_count_histogram, requeued_count);
+  base::UmaHistogramCounts100(dropped_count_histogram, dropped_count);
+}
+
+// static
+template <typename EventProto>
+void PrivateInsightsService::SerializeEventsToQueryResult(
+    const base::circular_deque<EventEntry<EventProto>>& events,
+    fcp::client::ExampleQueryResult* query_result) {
+  CHECK(query_result);
+
+  query_result->set_result_source(
+      fcp::client::ExampleQueryResult::PRIVATE_LOGGER);
+  query_result->mutable_stats()->set_output_rows_count(
+      static_cast<int32_t>(events.size()));
+
+  auto* proto_values =
+      (*query_result->mutable_vector_data()->mutable_vectors())["entry"]
+          .mutable_bytes_values();
+  auto* time_values =
+      (*query_result->mutable_vector_data()
+            ->mutable_vectors())["confidential_compute_event_time"]
+          .mutable_string_values();
+  for (const auto& entry : events) {
+    proto_values->add_value(entry.event.SerializeAsString());
+    time_values->add_value(base::TimeFormatAsIso8601(entry.timestamp));
+  }
+}
+
 void PrivateInsightsService::TriggerUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_upload_running_) {
@@ -356,54 +406,10 @@ void PrivateInsightsService::OnUploadComplete(
     // succeeded or we're unsure, we have to drop the data to avoid accidentally
     // contributing the dame data twice, as it would undermine privacy
     // guarantees of FCP.
-    RequeueEvents(std::move(pending_events));
-  }
-}
-
-void PrivateInsightsService::RequeueEvents(
-    base::circular_deque<ContextualCueEventEntry> events) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (events.empty()) {
-    return;
-  }
-
-  int max_events = kMaxContextualCueEvents.Get();
-  int requeued_count = 0;
-  while (!events.empty() &&
-         static_cast<int>(contextual_cue_events_.size()) < max_events) {
-    contextual_cue_events_.push_front(std::move(events.back()));
-    events.pop_back();
-    requeued_count++;
-  }
-  int dropped_count = static_cast<int>(events.size());
-
-  base::UmaHistogramCounts100(
-      kContextualCueEventsRequeuingRequeuedCountHistogram, requeued_count);
-  base::UmaHistogramCounts100(
-      kContextualCueEventsRequeuingDroppedCountHistogram, dropped_count);
-}
-
-// static
-void PrivateInsightsService::SerializeEventsToQueryResult(
-    const base::circular_deque<ContextualCueEventEntry>& events,
-    fcp::client::ExampleQueryResult* query_result) {
-  CHECK(query_result);
-
-  query_result->set_result_source(
-      fcp::client::ExampleQueryResult::PRIVATE_LOGGER);
-  query_result->mutable_stats()->set_output_rows_count(
-      static_cast<int32_t>(events.size()));
-
-  auto* proto_values =
-      (*query_result->mutable_vector_data()->mutable_vectors())["entry"]
-          .mutable_bytes_values();
-  auto* time_values =
-      (*query_result->mutable_vector_data()
-            ->mutable_vectors())["confidential_compute_event_time"]
-          .mutable_string_values();
-  for (const auto& entry : events) {
-    proto_values->add_value(entry.event.SerializeAsString());
-    time_values->add_value(base::TimeFormatAsIso8601(entry.timestamp));
+    RequeueEvents(std::move(pending_events), contextual_cue_events_,
+                  kMaxContextualCueEvents.Get(),
+                  kContextualCueEventsRequeuingRequeuedCountHistogram,
+                  kContextualCueEventsRequeuingDroppedCountHistogram);
   }
 }
 
