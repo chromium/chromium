@@ -8,7 +8,9 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -96,11 +98,24 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
     return;
   }
 
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      client_->GetDeviceAuthenticator();
+  bool should_reauth = false;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    authenticator = client_->GetDeviceAuthenticator();
+    should_reauth =
+        client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        client_->GetDeviceAuthAvailabilityChecker();
+    should_reauth = client_->IsReauthBeforeFillingRequired(checker.get());
+    if (should_reauth) {
+      authenticator = client_->GetDeviceAuthenticator();
+    }
+  }
 
   // Biometric filling is disabled, notify observers and invoke callback.
-  if (!client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
+  if (!should_reauth) {
     observer_->OnAutofillDataAvailable(preferred_match.username_value,
                                        preferred_match.password_value.value());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -108,10 +123,13 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
     return;
   }
 
+  CHECK(authenticator);
+
   auto filling_callback = base::BindOnce(
       &HttpAuthManagerImpl::OnReauthCompleted, weak_ptr_factory_.GetWeakPtr(),
       preferred_match.username_value, preferred_match.password_value.value(),
       url::Origin::Create(preferred_match.url), std::move(on_filling_complete));
+
   if (authenticator_) {
     authenticator_->Cancel();
   }

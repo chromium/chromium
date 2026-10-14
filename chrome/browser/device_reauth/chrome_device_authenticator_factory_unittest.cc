@@ -134,13 +134,14 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, CreateAvailabilityChecker) {
             nullptr);
 }
 
-// Checks that an availability checker cannot be created when
-// `kDeviceReauthRefactor` is disabled.
+// The availability checker must be created regardless of
+// `kDeviceReauthRefactor`. Callers gate on the flag, and a `nullptr` checker
+// would make `IsReauthBeforeFillingRequired` skip reauth.
 TEST_F(ChromeDeviceAuthenticatorFactoryTest,
-       CreateAvailabilityCheckerDisabledByKillswitch) {
+       CreateAvailabilityCheckerIgnoresDeviceReauthRefactor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       password_manager::features::kDeviceReauthRefactor);
-  EXPECT_EQ(ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker(),
+  EXPECT_NE(ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker(),
             nullptr);
 }

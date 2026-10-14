@@ -21,10 +21,12 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -263,7 +265,10 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
     return;
   }
 
-  device_authenticator_ = client_->GetDeviceAuthenticator();
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    device_authenticator_ = client_->GetDeviceAuthenticator();
+  }
 
   bool is_primary_main_frame =
       signin_form_manager->GetDriver()->IsInPrimaryMainFrame();
@@ -419,11 +424,24 @@ bool ActorLoginCredentialFiller::DoesStoredCredentialBelongToManager(
 }
 
 bool ActorLoginCredentialFiller::IsReauthBeforeFillingRequired() {
-  return client_->IsReauthBeforeFillingRequiredLegacy(device_authenticator_.get());
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    return client_->IsReauthBeforeFillingRequiredLegacy(
+        device_authenticator_.get());
+  }
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+      client_->GetDeviceAuthAvailabilityChecker();
+  return client_->IsReauthBeforeFillingRequired(checker.get());
 }
 
 void ActorLoginCredentialFiller::ReauthenticateAndFill(
     base::OnceClosure fill_form_cb) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    device_authenticator_ = client_->GetDeviceAuthenticator();
+  }
+  CHECK(device_authenticator_);
+
   std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_IOS)

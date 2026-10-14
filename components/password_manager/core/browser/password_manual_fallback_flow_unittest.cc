@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/match_type.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -165,8 +167,16 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
+  MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
@@ -929,10 +939,20 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().OnSuggestionsShown(base::span_from_ref(suggestion), /*metadata=*/{});
 }
 
+class PasswordManualFallbackFlowReauthTest
+    : public base::test::WithFeatureOverride,
+      public PasswordManualFallbackFlowTest {
+ public:
+  PasswordManualFallbackFlowReauthTest()
+      : base::test::WithFeatureOverride(features::kDeviceReauthRefactor) {}
+
+  bool IsRefactorEnabled() const { return IsParamFeatureEnabled(); }
+};
+
 // Test that both username and password are filled if the suggestion is accepted
 // for a popup triggered on a password form if the biometric authentication is
 // not available.
-TEST_F(PasswordManualFallbackFlowTest,
+TEST_P(PasswordManualFallbackFlowReauthTest,
        AcceptFillFullFormSuggestion_FillsCredentialsIfAuthNotAvailable) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
@@ -951,8 +971,14 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(false));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(
       driver(),
       FillSuggestionById(
@@ -975,7 +1001,7 @@ TEST_F(PasswordManualFallbackFlowTest,
 
 // Tests that no credentials are filled if the authentication fails. The popup
 // is triggered on a password form.
-TEST_F(PasswordManualFallbackFlowTest,
+TEST_P(PasswordManualFallbackFlowReauthTest,
        AcceptFillFullFormSuggestion_NoFillingIfAuthFails) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
@@ -999,8 +1025,14 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1031,7 +1063,7 @@ TEST_F(PasswordManualFallbackFlowTest,
 
 // Tests that credentials are filled if the authentication succeeds. The popup
 // is triggered on a password form.
-TEST_F(PasswordManualFallbackFlowTest,
+TEST_P(PasswordManualFallbackFlowReauthTest,
        AcceptFillFullFormSuggestion_FillsCredentialsIfAuthSucceeds) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
@@ -1055,8 +1087,14 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1218,15 +1256,21 @@ TEST_F(PasswordManualFallbackFlowTest,
 
 // Tests that the password value is filled if the authentication is not
 // available. This can happen if it's not implemented for a particular platform.
-TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
+TEST_P(PasswordManualFallbackFlowReauthTest, FillsPasswordIfAuthNotAvailable) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
   FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(false));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(driver(),
               FillField(field_id.renderer_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
@@ -1241,7 +1285,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
 }
 
 // Tests that password value if not filled if the authentication fails.
-TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
+TEST_P(PasswordManualFallbackFlowReauthTest, NoFillingIfAuthFails) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
@@ -1253,8 +1297,14 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1335,7 +1385,7 @@ INSTANTIATE_TEST_SUITE_P(PasswordManualFallbackFlowTest,
         // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that password value is filled if the authentication succeeds.
-TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
+TEST_P(PasswordManualFallbackFlowReauthTest, FillsPasswordIfAuthSucceeds) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
@@ -1347,8 +1397,14 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1376,7 +1432,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
 
 // Tests that authentication is requested when using fied-by-field filling to
 // fill a password value on a non password field.
-TEST_F(PasswordManualFallbackFlowTest,
+TEST_P(PasswordManualFallbackFlowReauthTest,
        RequestsAuthenticationWhenFillingdPasswordOnANonPasswordField) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
@@ -1392,8 +1448,14 @@ TEST_F(PasswordManualFallbackFlowTest,
   // Note that even when reauth before filling is not required, still asks for
   // authentication when the field is not a password field but the value being
   // filled is a password value.
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(false));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1421,7 +1483,7 @@ TEST_F(PasswordManualFallbackFlowTest,
 
 // Test that unfinished authentication is cancelled if the "Fill password"
 // suggestion is accepted again.
-TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
+TEST_P(PasswordManualFallbackFlowReauthTest, CancelsAuthIfPreviousNotFinished) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
@@ -1437,9 +1499,14 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*authenticator2, AuthenticateWithMessage);
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 2 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .Times(2)
-      .WillRepeatedly(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 2);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .Times(2)
       .WillOnce(Return(testing::ByMove(std::move(authenticator1))))
@@ -1462,7 +1529,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
 
 // Test that unfinished authentication is cancelled if the flow object is
 // destroyed.
-TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
+TEST_P(PasswordManualFallbackFlowReauthTest, CancelsAuthOnDestroy) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
@@ -1474,8 +1541,14 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
   auto authenticator_ptr = authenticator.get();
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   ShowAndAcceptSuggestion(
@@ -1487,6 +1560,8 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
 
   EXPECT_CALL(*authenticator_ptr, Cancel);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordManualFallbackFlowReauthTest);
 
 // Test that selecting "Manage passwords" suggestion doesn't trigger navigation.
 TEST_F(PasswordManualFallbackFlowTest, SelectManagePasswordsEntry) {

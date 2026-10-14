@@ -54,10 +54,6 @@ ChromeDeviceAuthenticatorFactory::GetInstance() {
 // static
 std::unique_ptr<DeviceAuthAvailabilityChecker>
 ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kDeviceReauthRefactor)) {
-    return nullptr;
-  }
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<DeviceAuthAvailabilityCheckerAndroid>();
 #elif BUILDFLAG(IS_MAC)

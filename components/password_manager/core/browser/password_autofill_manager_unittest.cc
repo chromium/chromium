@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -48,6 +49,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -232,8 +234,16 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (override));
   MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
+  MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
               (override));
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -1226,7 +1236,17 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
             autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }
 
-TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
+class PasswordAutofillManagerReauthTest
+    : public base::test::WithFeatureOverride,
+      public PasswordAutofillManagerTest {
+ public:
+  PasswordAutofillManagerReauthTest()
+      : base::test::WithFeatureOverride(features::kDeviceReauthRefactor) {}
+
+  bool IsRefactorEnabled() const { return IsParamFeatureEnabled(); }
+};
+
+TEST_P(PasswordAutofillManagerReauthTest, FillsSuggestionIfAuthNotAvailable) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
 
@@ -1254,9 +1274,13 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, test_password_, _));
 
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(false));
-  EXPECT_CALL(client, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1266,7 +1290,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
       SuggestionPosition{.multi_index = {1}});
 }
 
-TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
+TEST_P(PasswordAutofillManagerReauthTest, FillsSuggestionIfAuthSuccessful) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1299,7 +1323,13 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
@@ -1314,7 +1344,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
       SuggestionPosition{.multi_index = {1}});
 }
 
-TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
+TEST_P(PasswordAutofillManagerReauthTest, DoesntFillSuggestionIfAuthFailed) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   auto authenticator =
@@ -1347,7 +1377,13 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
                       std::optional(FillingProduct::kPassword)));
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
@@ -1362,7 +1398,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
       SuggestionPosition{.multi_index = {1}});
 }
 
-TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
+TEST_P(PasswordAutofillManagerReauthTest,
+       CancelsOngoingBiometricAuthOnDestroy) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   auto authenticator =
@@ -1389,7 +1426,13 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1405,7 +1448,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   EXPECT_CALL(*authenticator_ptr, Cancel());
 }
 
-TEST_F(PasswordAutofillManagerTest,
+TEST_P(PasswordAutofillManagerReauthTest,
        CancelsOngoingBiometricAuthOnDeleteFillData) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
@@ -1433,7 +1476,13 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1450,7 +1499,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DeleteFillData();
 }
 
-TEST_F(PasswordAutofillManagerTest,
+TEST_P(PasswordAutofillManagerReauthTest,
        CancelsOngoingBiometricAuthOnFillDataChange) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
@@ -1478,7 +1527,13 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1495,7 +1550,8 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
 
-TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
+TEST_P(PasswordAutofillManagerReauthTest,
+       CancelsOngoingBiometricAuthOnNewRequest) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   auto authenticator =
@@ -1504,7 +1560,13 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 
   InitializePasswordAutofillManager(&client, &autofill_client);
   password_autofill_manager_->ShowSuggestions(kTriggeringField);
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1521,7 +1583,10 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 
   // Triggering new authentication should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_ptr, Cancel());
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(*authenticator_ptr2, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1536,7 +1601,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   EXPECT_CALL(*authenticator_ptr2, Cancel());
 }
 
-TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
+TEST_P(PasswordAutofillManagerReauthTest, MetricsRecordedForBiometricAuth) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   base::HistogramTester histograms;
   TestPasswordManagerClient client;
@@ -1554,7 +1619,13 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(MoveArg<1>(&auth_callback));
 
-  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
   EXPECT_CALL(client, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1579,6 +1650,8 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
       "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordAutofillManagerReauthTest);
 
 TEST_F(PasswordAutofillManagerTest,
        ShowsWebAuthnSuggestionsWhenUsePasskeyOnAnotherDeviceInAutofill) {

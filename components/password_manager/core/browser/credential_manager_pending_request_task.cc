@@ -18,8 +18,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -197,10 +199,20 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   //
   // Moreover, we only return such a credential if the user has opted-in via the
   // first-run experience.
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      delegate_->client()->GetDeviceAuthenticator();
-  const bool is_reauth_before_filling_required =
-      delegate_->client()->IsReauthBeforeFillingRequiredLegacy(authenticator.get());
+  bool is_reauth_before_filling_required = false;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+        delegate_->client()->GetDeviceAuthenticator();
+    is_reauth_before_filling_required =
+        delegate_->client()->IsReauthBeforeFillingRequiredLegacy(
+            authenticator.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        delegate_->client()->GetDeviceAuthAvailabilityChecker();
+    is_reauth_before_filling_required =
+        delegate_->client()->IsReauthBeforeFillingRequired(checker.get());
+  }
 
   if (is_reauth_before_filling_required &&
       mediation_ == CredentialMediationRequirement::kSilent) {

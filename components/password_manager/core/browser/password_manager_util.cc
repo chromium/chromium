@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -518,13 +519,27 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
   if (!client) {
     return false;
   }
-  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client->GetDeviceAuthenticator();
-  if (!device_authenticator) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
+        client->GetDeviceAuthenticator();
+    if (!device_authenticator) {
+      return false;
+    }
+    if (!device_authenticator->CanAuthenticateWithBiometrics()) {
+      return false;
+    }
+    return !client->GetPrefs()->GetBoolean(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling);
+  }
+
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+      client->GetDeviceAuthAvailabilityChecker();
+  if (!checker) {
     return false;
   }
 
-  if (!device_authenticator->CanAuthenticateWithBiometrics()) {
+  if (!checker->CanAuthenticateWithBiometrics()) {
     return false;
   }
   return !client->GetPrefs()->GetBoolean(

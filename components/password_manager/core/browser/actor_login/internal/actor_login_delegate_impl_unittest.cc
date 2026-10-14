@@ -13,9 +13,11 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
@@ -90,8 +92,16 @@ class FakePasswordManagerClient
               (),
               (override, const));
   MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
+  MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
-              (DeviceAuthenticator*),
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
               (override));
 
   FakePasswordManagerClient() {
@@ -641,13 +651,28 @@ TEST_F(ActorLoginDelegateImplTest, ContextDestroyedDuringAttemptLogin) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+class ActorLoginDelegateImplReauthTest : public base::test::WithFeatureOverride,
+                                         public ActorLoginDelegateImplTest {
+ public:
+  ActorLoginDelegateImplReauthTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kDeviceReauthRefactor) {}
+
+  bool IsRefactorEnabled() const { return IsParamFeatureEnabled(); }
+
+  void SetUp() override {
+    ActorLoginDelegateImplTest::SetUp();
+    actor_login_feature_list_.InitAndEnableFeature(
+        password_manager::features::kActorLogin);
+  }
+
+ private:
+  base::test::ScopedFeatureList actor_login_feature_list_;
+};
+
 // If the window is not active and reauth before filling is required,
 // `AttemptLogin` should return LoginStatusResult::kErrorDeviceReauthRequired.
-TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/
-                                {password_manager::features::kActorLogin},
-                                /*disabled_features=*/{});
+TEST_P(ActorLoginDelegateImplReauthTest, FillingReauthRequiredWindowNotActive) {
   const url::Origin origin = url::Origin::Create(GURL(kTestUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL(), origin);
@@ -673,7 +698,13 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
+  ON_CALL(client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(
@@ -685,6 +716,8 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
   EXPECT_EQ(future.Get().value(),
             LoginStatusResult::kErrorDeviceReauthRequired);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ActorLoginDelegateImplReauthTest);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ActorLoginDelegateImplTest, RecordActorLoginMetricsNoCredentials) {

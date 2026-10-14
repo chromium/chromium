@@ -42,6 +42,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon_base/favicon_types.h"
@@ -969,14 +970,28 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
 void PasswordAutofillManager::OnPasswordCredentialSuggestionAccepted(
     base::OnceClosure fill_suggestion_callback) {
   CancelBiometricReauthIfOngoing();
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      password_client_->GetDeviceAuthenticator();
-  // Note: this is currently only implemented on Android, Mac and Windows.
-  // For other platforms, the `authenticator` will be null.
-  if (!password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
+  bool should_reauth = false;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
+  if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
+    authenticator = password_client_->GetDeviceAuthenticator();
+    should_reauth = password_client_->IsReauthBeforeFillingRequiredLegacy(
+        authenticator.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        password_client_->GetDeviceAuthAvailabilityChecker();
+    should_reauth =
+        password_client_->IsReauthBeforeFillingRequired(checker.get());
+    if (should_reauth) {
+      authenticator = password_client_->GetDeviceAuthenticator();
+    }
+  }
+
+  if (!should_reauth) {
     std::move(fill_suggestion_callback).Run();
     return;
   }
+
+  CHECK(authenticator);
   authenticator_ = std::move(authenticator);
 
   std::u16string message;

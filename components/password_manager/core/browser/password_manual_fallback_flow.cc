@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -457,36 +458,47 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
     base::OnceClosure fill_fields,
     bool is_password_filled_in_non_password_field) {
   CancelBiometricReauthIfOngoing();
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      password_client_->GetDeviceAuthenticator();
-  // Note: this is currently only implemented on Android, Mac and Windows.
-  // For other platforms, the `authenticator` will be null.
-  // Authentication is always required if the user is entering their password on
-  // a non password field.
-  bool authentication_required =
-      password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get()) ||
-      is_password_filled_in_non_password_field;
-  if (!authenticator || !authentication_required) {
-    std::move(fill_fields).Run();
+  bool authentication_required = false;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
+  if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
+    authenticator = password_client_->GetDeviceAuthenticator();
+    authentication_required =
+        password_client_->IsReauthBeforeFillingRequiredLegacy(
+            authenticator.get()) ||
+        is_password_filled_in_non_password_field;
   } else {
-    authenticator_ = std::move(authenticator);
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        password_client_->GetDeviceAuthAvailabilityChecker();
+    authentication_required =
+        password_client_->IsReauthBeforeFillingRequired(checker.get()) ||
+        is_password_filled_in_non_password_field;
+    if (authentication_required) {
+      authenticator = password_client_->GetDeviceAuthenticator();
+    }
+  }
 
-    std::u16string message;
-    auto on_reath_complete =
-        base::BindOnce(&PasswordManualFallbackFlow::OnBiometricReauthCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(fill_fields));
+  if (!authentication_required || !authenticator) {
+    std::move(fill_fields).Run();
+    return;
+  }
+
+  authenticator_ = std::move(authenticator);
+
+  std::u16string message;
+  auto on_reath_complete =
+      base::BindOnce(&PasswordManualFallbackFlow::OnBiometricReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(fill_fields));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-    const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
-        url::Origin::Create(password_manager_driver_->GetLastCommittedURL())));
-    message =
-        l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+  const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
+      url::Origin::Create(password_manager_driver_->GetLastCommittedURL())));
+  message =
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-    authenticator_->AuthenticateWithMessage(
-        message, metrics_util::TimeCallbackMediumTimes(
-                     std::move(on_reath_complete),
-                     "PasswordManager.PasswordFilling.AuthenticationTime2"));
-  }
+  authenticator_->AuthenticateWithMessage(
+      message, metrics_util::TimeCallbackMediumTimes(
+                   std::move(on_reath_complete),
+                   "PasswordManager.PasswordFilling.AuthenticationTime2"));
 }
 
 void PasswordManualFallbackFlow::OnBiometricReauthCompleted(

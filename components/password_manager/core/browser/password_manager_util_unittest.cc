@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
@@ -64,6 +65,7 @@ using ::password_manager::PasswordString;
 using ::password_manager::StoredCredential;
 using ::password_manager::UnorderedPasswordFormElementsAre;
 using ::testing::_;
+using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::Not;
 using ::testing::Return;
@@ -87,6 +89,10 @@ class MockPasswordManagerClient
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
+              (),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
               (),
               (override));
   MOCK_METHOD(password_manager::PasswordStoreInterface*,
@@ -1071,5 +1077,52 @@ TEST_F(PasswordManagerUtilRecoverableErrorTest,
   EXPECT_FALSE(IsSavingBlockedByRecoverableError(&mock_client_, &form_manager));
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST(PasswordManagerUtilBiometricPromoTest,
+     ShouldShowPromoWithKillswitchEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDeviceReauthRefactor);
+
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  MockPasswordManagerClient client;
+  EXPECT_CALL(client, GetPrefs).WillOnce(Return(&prefs));
+
+  auto checker =
+      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+  EXPECT_CALL(*checker, CanAuthenticateWithBiometrics).WillOnce(Return(true));
+  EXPECT_CALL(client, GetDeviceAuthAvailabilityChecker)
+      .WillOnce(Return(ByMove(std::move(checker))));
+
+  EXPECT_TRUE(ShouldShowBiometricAuthenticationBeforeFillingPromo(&client));
+}
+
+TEST(PasswordManagerUtilBiometricPromoTest,
+     ShouldShowPromoWithKillswitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kDeviceReauthRefactor);
+
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  MockPasswordManagerClient client;
+  EXPECT_CALL(client, GetPrefs).WillOnce(Return(&prefs));
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
+  EXPECT_CALL(client, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(authenticator))));
+
+  EXPECT_TRUE(ShouldShowBiometricAuthenticationBeforeFillingPromo(&client));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace password_manager_util
