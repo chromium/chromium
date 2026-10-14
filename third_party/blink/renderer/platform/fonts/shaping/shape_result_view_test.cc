@@ -14,13 +14,25 @@
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
+
+namespace {
+
+const ShapeResultTestInfo* TestInfo(const ShapeResult* result) {
+  return static_cast<const ShapeResultTestInfo*>(result);
+}
+
+}  // namespace
 
 class ShapeResultViewTest : public FontTestBase {
  protected:
@@ -222,6 +234,113 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
     wtf_size_t cached_safe = result->CachedPreviousSafeToBreakOffset(offset);
     EXPECT_EQ(safe, cached_safe);
   } while (--offset > start_offset);
+}
+
+TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
+  Font* font = test::CreateTestFont(
+      AtomicString("Noto Mono"),
+      test::BlinkWebTestsDir() +
+          "/third_party/NotoMono-hintedLocalizedFamilyName/"
+          "NotoMono-Regular.subset.ttf",
+      10);
+  ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
+
+  auto Measure = [&](bool compaction) -> Vector<float> {
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(compaction);
+    String string = To16Bit(
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz");
+    HarfBuzzShaper shaper(string);
+    ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    if (compaction) {
+      const ShapeResultTestInfo* const test_info = TestInfo(result);
+      EXPECT_EQ(1u, test_info->NumberOfRunsForTesting());
+      if (test_info->NumberOfRunsForTesting() == 1) {
+        EXPECT_TRUE(test_info->RunInfoForTesting(0)
+                        .GetGlyphDataRange()
+                        .IsCompactSource());
+      }
+    }
+
+    ShapeResultSpacing spacing(string);
+    FontDescription spacing_font_description;
+    spacing_font_description.SetLetterSpacing(Length::Fixed(4));
+    spacing.SetSpacing(spacing_font_description);
+    result->ApplySpacing(spacing);
+
+    const ShapeResultView* view1 = ShapeResultView::Create(result, 8, 72);
+    const ShapeResultView* view2 = ShapeResultView::Create(view1, 16, 64);
+    const ShapeResult* created = view2->CreateShapeResult();
+
+    Vector<float> out;
+    out.push_back(created->Width());
+    out.push_back(static_cast<float>(created->NumCharacters()));
+    for (unsigned offset = 0; offset <= created->NumCharacters(); ++offset) {
+      out.push_back(created->PositionForOffset(offset));
+    }
+    return out;
+  };
+  EXPECT_EQ(Measure(true), Measure(false));
+}
+
+TEST_F(ShapeResultViewTest, ExistingViewSurvivesSourceMaterialization) {
+  ScopedMonospaceGlyphCompactionForTest scoped_feature(true);
+  Font* font = test::CreateTestFont(
+      AtomicString("Noto Mono"),
+      test::BlinkWebTestsDir() +
+          "/third_party/NotoMono-hintedLocalizedFamilyName/"
+          "NotoMono-Regular.subset.ttf",
+      10);
+  ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
+
+  String string = To16Bit(
+      "abcdefghijklmnopqrstuvwxyz"
+      "abcdefghijklmnopqrstuvwxyz"
+      "abcdefghijklmnopqrstuvwxyz");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+  ASSERT_TRUE(TestInfo(result)
+                  ->RunInfoForTesting(0)
+                  .GetGlyphDataRange()
+                  .IsCompactSource());
+
+  const ShapeResultView* view = ShapeResultView::Create(result, 8, 64);
+  Vector<ShapeResultTestGlyphInfo> before;
+  view->ForEachGlyph(0, AddGlyphInfo, &before);
+
+  ShapeResultSpacing spacing(string);
+  FontDescription spacing_font_description;
+  spacing_font_description.SetLetterSpacing(Length::Fixed(1));
+  ASSERT_TRUE(spacing.SetSpacing(spacing_font_description));
+  result->ApplySpacing(spacing);
+  EXPECT_FALSE(TestInfo(result)
+                   ->RunInfoForTesting(0)
+                   .GetGlyphDataRange()
+                   .IsCompactSource());
+
+  Vector<ShapeResultTestGlyphInfo> after;
+  view->ForEachGlyph(0, AddGlyphInfo, &after);
+  const ShapeResultView* expected_view = ShapeResultView::Create(result, 8, 64);
+  Vector<ShapeResultTestGlyphInfo> expected;
+  expected_view->ForEachGlyph(0, AddGlyphInfo, &expected);
+  ASSERT_EQ(expected.size(), after.size());
+  for (unsigned i = 0; i < expected.size(); ++i) {
+    EXPECT_EQ(expected[i].character_index, after[i].character_index);
+    EXPECT_EQ(expected[i].glyph, after[i].glyph);
+    EXPECT_EQ(expected[i].advance, after[i].advance);
+  }
+
+  const ShapeResult* copy = view->CreateShapeResult();
+  Vector<ShapeResultTestGlyphInfo> copied;
+  copy->ForEachGlyph(0, AddGlyphInfo, &copied);
+  ASSERT_EQ(after.size(), copied.size());
+  for (unsigned i = 0; i < after.size(); ++i) {
+    EXPECT_EQ(after[i].character_index, copied[i].character_index);
+    EXPECT_EQ(after[i].glyph, copied[i].glyph);
+    EXPECT_EQ(after[i].advance, copied[i].advance);
+  }
 }
 
 TEST_F(ShapeResultViewTest, LatinMultiRun) {

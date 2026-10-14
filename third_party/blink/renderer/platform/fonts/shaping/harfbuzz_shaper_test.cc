@@ -1167,6 +1167,47 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetLatin) {
   ASSERT_NEAR(result->Width(), result->PositionForOffset(12), 0.1);
 }
 
+TEST_F(HarfBuzzShaperTest, PositionForOffsetMonospaceCompaction) {
+  String string = To16Bit("Thequickbrownfoxjumpsoverthelazydog");
+  FontDescription::VariantLigatures ligatures;
+  Font* font = blink::test::CreateTestFont(
+      AtomicString("Noto Mono"),
+      test::BlinkWebTestsDir() +
+          "/third_party/NotoMono-hintedLocalizedFamilyName/"
+          "NotoMono-Regular.subset.ttf",
+      16, &ligatures);
+  ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
+  HarfBuzzShaper shaper(string);
+  const ShapeResult* full_result;
+  {
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(false);
+    full_result = shaper.Shape(font, TextDirection::kLtr);
+  }
+  ScopedMonospaceGlyphCompactionForTest scoped_feature(true);
+  const ShapeResult* compact_result = shaper.Shape(font, TextDirection::kLtr);
+  const ShapeResultTestInfo* const test_info = TestInfo(compact_result);
+  ASSERT_EQ(1u, test_info->NumberOfRunsForTesting());
+  const ShapeResultRun& run = test_info->RunInfoForTesting(0);
+  EXPECT_TRUE(run.GetGlyphDataRange().IsCompactSource());
+  EXPECT_TRUE(compact_result->IsStartSafeToBreak());
+  EXPECT_FALSE(compact_result->ComputeInkBounds().IsEmpty());
+  EXPECT_TRUE(run.GetGlyphDataRange().IsCompactSource());
+
+  for (unsigned offset = 0; offset <= string.length(); ++offset) {
+    SCOPED_TRACE(offset);
+    EXPECT_EQ(
+        full_result->PositionForOffset(offset, AdjustMidCluster::kToEnd),
+        compact_result->PositionForOffset(offset, AdjustMidCluster::kToEnd));
+    EXPECT_EQ(
+        full_result->PositionForOffset(offset, AdjustMidCluster::kToStart),
+        compact_result->PositionForOffset(offset, AdjustMidCluster::kToStart));
+    EXPECT_EQ(full_result->CaretPositionForOffset(offset, string,
+                                                  AdjustMidCluster::kToEnd),
+              compact_result->CaretPositionForOffset(offset, string,
+                                                     AdjustMidCluster::kToEnd));
+  }
+}
+
 TEST_F(HarfBuzzShaperTest, MonospaceGlyphCompactionRequiresHorizontalLtrRun) {
   FontDescription::VariantLigatures ligatures;
   Font* font = blink::test::CreateTestFont(
