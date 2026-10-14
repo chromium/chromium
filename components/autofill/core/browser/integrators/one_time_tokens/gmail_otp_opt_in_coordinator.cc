@@ -4,10 +4,12 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h"
 
+#include <memory>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
@@ -19,10 +21,22 @@
 
 namespace autofill {
 
+namespace {
+
+// Key used by `SupportsUserData` on `session_user_data_` (whose address serves
+// as the unique `const void*` key) to record whether the Gmail OTP opt-in
+// bubble was dismissed during the current browser session.
+constexpr int kGmailOtpOptInDismissedInSessionKey = 0;
+
+}  // namespace
+
 GmailOtpOptInCoordinator::GmailOtpOptInCoordinator(
     AutofillClient& client,
-    one_time_tokens::OneTimeTokenService* one_time_token_service)
-    : client_(client), one_time_token_service_(one_time_token_service) {
+    one_time_tokens::OneTimeTokenService* one_time_token_service,
+    base::SupportsUserData& session_user_data)
+    : client_(client),
+      one_time_token_service_(one_time_token_service),
+      session_user_data_(session_user_data) {
   if (OtpFieldDetector* detector = client_->GetOtpFieldDetector()) {
     otp_fields_detected_subscription_ =
         detector->RegisterOtpFieldsDetectedCallback(
@@ -69,6 +83,10 @@ void GmailOtpOptInCoordinator::OnTickleReceived(
     return;
   }
 
+  if (session_user_data_->GetUserData(&kGmailOtpOptInDismissedInSessionKey)) {
+    return;
+  }
+
   const signin::IdentityManager* identity_manager =
       client_->GetIdentityManager();
   if (!identity_manager) {
@@ -90,7 +108,29 @@ void GmailOtpOptInCoordinator::OnTickleReceived(
 
 void GmailOtpOptInCoordinator::OnOptInBubbleClosed(GmailOtpOptInResult result) {
   is_bubble_showing_ = false;
-  // Outcome handling is implemented in a follow-up CL.
+  switch (result) {
+    case GmailOtpOptInResult::kAccepted:
+      if (PrefService* prefs = client_->GetPrefs()) {
+        prefs::SetAutofillGmailOtpFillingEnabled(prefs, true);
+        prefs::ClearAutofillGmailOtpFillingActivationDismissalTimestamp(prefs);
+      }
+      break;
+    case GmailOtpOptInResult::kDeclined:
+      if (PrefService* prefs = client_->GetPrefs()) {
+        prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+            prefs, base::Time::Now());
+      }
+      break;
+    case GmailOtpOptInResult::kClosed:
+      session_user_data_->SetUserData(
+          &kGmailOtpOptInDismissedInSessionKey,
+          std::make_unique<base::SupportsUserData::Data>());
+      break;
+    case GmailOtpOptInResult::kLostFocus:
+    case GmailOtpOptInResult::kDiscarded:
+    case GmailOtpOptInResult::kUnknown:
+      break;
+  }
 }
 
 }  // namespace autofill

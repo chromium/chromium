@@ -14,6 +14,10 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
+namespace base {
+class SupportsUserData;
+}  // namespace base
+
 namespace autofill {
 
 class AutofillClient;
@@ -34,9 +38,13 @@ class GmailOtpOptInCoordinator {
   // the opt-in bubble can be shown again.
   static constexpr base::TimeDelta kDeclinedCooldownDuration = base::Days(90);
 
+  // `session_user_data` is a profile/session-scoped object used to record
+  // in-memory dismissal state across tabs for the duration of the browser
+  // session.
   GmailOtpOptInCoordinator(
       AutofillClient& client,
-      one_time_tokens::OneTimeTokenService* one_time_token_service);
+      one_time_tokens::OneTimeTokenService* one_time_token_service,
+      base::SupportsUserData& session_user_data);
   GmailOtpOptInCoordinator(const GmailOtpOptInCoordinator&) = delete;
   GmailOtpOptInCoordinator& operator=(const GmailOtpOptInCoordinator&) = delete;
   ~GmailOtpOptInCoordinator();
@@ -48,6 +56,7 @@ class GmailOtpOptInCoordinator {
 
   const raw_ref<AutofillClient> client_;
   const raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_;
+  const raw_ref<base::SupportsUserData> session_user_data_;
 
   base::CallbackListSubscription otp_fields_detected_subscription_;
   one_time_tokens::ExpiringSubscription tickle_subscription_;

@@ -1372,7 +1372,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowGmailOtpSuggestions)) {
     gmail_otp_opt_in_coordinator_ = std::make_unique<GmailOtpOptInCoordinator>(
-        *this, GetOneTimeTokenService());
+        *this, GetOneTimeTokenService(), *GetProfile());
   }
   if (OtpMetricsTracker::IsEligibleForGmailOtps(GetIdentityManager())) {
     otp_metrics_tracker_ =
