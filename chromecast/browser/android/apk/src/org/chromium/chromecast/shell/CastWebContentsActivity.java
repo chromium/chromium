@@ -221,6 +221,27 @@ public class CastWebContentsActivity extends ComponentActivity {
                             });
                 });
 
+        mCreatedState.subscribe(
+                x -> {
+                    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+                    return new BroadcastReceiverScope(
+                            filter,
+                            (Intent intent) -> {
+                                Log.i(
+                                        TAG,
+                                        "ACTION_SCREEN_OFF received. Removing turn screen on"
+                                                + " flags.");
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                                    setTurnScreenOn(false);
+                                    setShowWhenLocked(false);
+                                } else {
+                                    getWindow()
+                                            .clearFlags(
+                                                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                                }
+                            });
+                });
+
         Observable<Unit> shouldKeepScreenOn =
                 mGotIntentState
                         .filter(

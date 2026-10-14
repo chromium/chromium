@@ -347,6 +347,30 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
+    public void testRemovesTurnScreenOnFlagsOnScreenOff() {
+        mActivityLifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivity.class,
+                        CastWebContentsIntentUtils.requestStartCastActivity(
+                                mWebContents, true, false, true, false, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        mActivityLifecycle.create();
+
+        Assert.assertTrue(shadowActivity.getTurnScreenOn());
+        Assert.assertTrue(shadowActivity.getShowWhenLocked());
+
+        Intent intent = new Intent(Intent.ACTION_SCREEN_OFF);
+        RuntimeEnvironment.application.sendBroadcast(intent);
+        ShadowLooper.idleMainLooper();
+
+        Assert.assertFalse(shadowActivity.getTurnScreenOn());
+        Assert.assertFalse(shadowActivity.getShowWhenLocked());
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
     public void testDoesNotTurnScreenOnIfNotTurnOnScreen() {
         mActivityLifecycle =
                 Robolectric.buildActivity(
