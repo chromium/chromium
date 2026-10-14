@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_coordinator.h"
 
+#import <memory>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -47,6 +48,8 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -151,9 +154,7 @@ class AssistantAIMUIStateProvider
       IOSContextualTasksServiceFactory::GetForProfile(
           self.browser->GetProfile());
 
-  web::WebState::CreateParams params(self.browser->GetProfile());
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-  AttachTabHelpers(webState.get(), TabHelperFilter::kAssistantAim);
+  std::unique_ptr<web::WebState> webState = [self createWebState];
 
   _mediator = [[AssistantAIMMediator alloc]
              initWithWebState:std::move(webState)
@@ -385,6 +386,21 @@ class AssistantAIMUIStateProvider
 }
 
 #pragma mark - Private
+
+// Creates the WebState displayed in the sheet, with its tab helpers attached.
+- (std::unique_ptr<web::WebState>)createWebState {
+  web::WebState::CreateParams params(self.browser->GetProfile());
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+  AttachTabHelpers(webState.get(), TabHelperFilter::kAssistantAim);
+  // The WebState is not in the WebStateList, so the TabLifecycleMediator does
+  // not install the dependencies of its tab helpers. Set the insertion agent
+  // so that the captive portal login page opens in a new tab when the user
+  // taps "Connect" on a captive portal interstitial displayed in the sheet.
+  CaptivePortalTabHelper::FromWebState(webState.get())
+      ->SetTabInsertionBrowserAgent(
+          TabInsertionBrowserAgent::FromBrowser(self.browser));
+  return webState;
+}
 
 // Minimizes the cobrowse container and opens the specified URL.
 - (void)minimizeAndOpenURL:(const GURL&)URL {

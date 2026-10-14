@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_coordinator.h"
 
+#import <memory>
+
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
@@ -13,14 +15,29 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+@interface AssistantAIMCoordinator (Testing)
+- (std::unique_ptr<web::WebState>)createWebState;
+@end
 
 namespace {
 
@@ -41,6 +58,12 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+    // Services used by the tab helpers attached to the coordinator's WebState.
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
@@ -71,6 +94,7 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
@@ -135,4 +159,29 @@ TEST_F(AssistantAIMCoordinatorTest,
   [mock_snackbar_handler_ verify];
 
   [mockViewController stopMocking];
+}
+
+// Tests that the captive portal login page requested from the coordinator's
+// WebState, i.e. when tapping "Connect" on a captive portal interstitial shown
+// in the sheet, opens in a new tab. Regression test for crbug.com/571963356.
+TEST_F(AssistantAIMCoordinatorTest, CaptivePortalLoginPageOpensInNewTab) {
+  TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
+  std::unique_ptr<web::WebState> web_state = [coordinator_ createWebState];
+  ASSERT_TRUE(web_state);
+  CaptivePortalTabHelper* captive_portal_tab_helper =
+      CaptivePortalTabHelper::FromWebState(web_state.get());
+  ASSERT_TRUE(captive_portal_tab_helper);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_TRUE(web_state_list->empty());
+
+  const GURL landing_url("http://captive.portal.test/login");
+  captive_portal_tab_helper->DisplayCaptivePortalLoginPage(landing_url);
+
+  ASSERT_EQ(1, web_state_list->count());
+  web::NavigationItem* pending_item = web_state_list->GetWebStateAt(0)
+                                          ->GetNavigationManager()
+                                          ->GetPendingItem();
+  ASSERT_TRUE(pending_item);
+  EXPECT_EQ(landing_url, pending_item->GetURL());
 }
