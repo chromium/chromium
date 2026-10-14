@@ -37,13 +37,12 @@ namespace blink {
 
 class Font;
 
-class PLATFORM_EXPORT StringTruncator {
-  STATIC_ONLY(StringTruncator);
-
- public:
-  static String CenterTruncate(const String&, float max_width, const Font&);
-  static String RightTruncate(const String&, float max_width, const Font&);
-};
+PLATFORM_EXPORT String TruncateCenter(const String&,
+                                      float max_width,
+                                      const Font&);
+PLATFORM_EXPORT String TruncateRight(const String&,
+                                     float max_width,
+                                     const Font&);
 
 }  // namespace blink
 

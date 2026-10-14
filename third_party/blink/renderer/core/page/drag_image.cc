@@ -232,7 +232,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   cc::PaintFlags text_paint;
   if (draw_url_string) {
     if (clip_url_string) {
-      url_string = StringTruncator::CenterTruncate(
+      url_string = TruncateCenter(
           url_string, image_size.width() - (kDragLabelBorderX * 2.0f),
           *url_font);
     }
@@ -246,7 +246,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   }
 
   if (clip_label_string) {
-    label = StringTruncator::RightTruncate(
+    label = TruncateRight(
         label, image_size.width() - (kDragLabelBorderX * 2.0f), *label_font);
   }
 

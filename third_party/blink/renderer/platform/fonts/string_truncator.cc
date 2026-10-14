@@ -193,15 +193,11 @@ static String TruncateString(const String& string,
   return String(truncated_string);
 }
 
-String StringTruncator::CenterTruncate(const String& string,
-                                       float max_width,
-                                       const Font& font) {
+String TruncateCenter(const String& string, float max_width, const Font& font) {
   return TruncateString(string, max_width, font, CenterTruncateToBuffer);
 }
 
-String StringTruncator::RightTruncate(const String& string,
-                                      float max_width,
-                                      const Font& font) {
+String TruncateRight(const String& string, float max_width, const Font& font) {
   return TruncateString(string, max_width, font, RightTruncateToBuffer);
 }
 
