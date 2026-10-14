@@ -17,7 +17,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -158,12 +157,6 @@ public final class ApkInfo {
     }
 
     public static ApkInfo getInstance() {
-        // Some tests mock out things ApkInfo is based on, so disable caching in tests to ensure
-        // such mocking is not defeated by caching.
-        if (BuildConfig.IS_FOR_TEST) {
-            return new ApkInfo();
-        }
-
         if (sInstance == null) {
             synchronized (CREATION_LOCK) {
                 if (sInstance == null) {
