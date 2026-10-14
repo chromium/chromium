@@ -80,10 +80,14 @@ source_set("visual_utils") {
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//skia",
-    "//ui/base",
     "//ui/gfx",
     "//ui/gfx:color_utils",
   ]
+
+  if (is_ios) {
+    sources += [ "visual_utils_ios.mm" ]
+    frameworks = [ "UIKit.framework" ]
+  }
 }
 
 source_set("common") {

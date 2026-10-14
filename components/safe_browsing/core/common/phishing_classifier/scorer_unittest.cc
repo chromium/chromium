@@ -10,27 +10,40 @@
 #include <unordered_set>
 
 #include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/phishing_classifier/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing {
 
 namespace {
+
+// Input tensor dimensions for the test visual classification (`visual_model_*`)
+// and image embedding (`image_embedding.tflite`) TFLite models.
+constexpr int kVisualClassificationInputWidth = 48;
+constexpr int kVisualClassificationInputHeight = 48;
+constexpr int kImageEmbeddingInputWidth = 289;
+constexpr int kImageEmbeddingInputHeight = 289;
 
 std::string GetFlatBufferString(bool include_tflite_metadata = true) {
   flatbuffers::FlatBufferBuilder builder(1024);
@@ -148,6 +161,7 @@ class PhishingScorerTest : public ::testing::Test {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
+  base::test::TaskEnvironment task_environment_;
   ClientSideModel model_;
 };
 
@@ -206,6 +220,82 @@ TEST_F(PhishingScorerTest, ImageEmbeddingModelDefensiveChecks) {
   // This should not crash despite img_embedding_metadata being null in the
   // flatbuffer model.
   scorer->AttachImageEmbeddingModel(base::File());
+}
+
+// Tests that `ApplyVisualTfLiteModel()` resizes the input image to the model's
+// configured classification dimensions and produces classification scores.
+TEST_F(PhishingScorerTest, ApplyVisualTfLiteModel) {
+  base::FilePath tflite_path;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &tflite_path));
+  tflite_path = tflite_path.AppendASCII("components")
+                    .AppendASCII("test")
+                    .AppendASCII("data")
+                    .AppendASCII("safe_browsing")
+#if BUILDFLAG(IS_IOS)
+                    .AppendASCII("visual_model_ios.tflite");
+#elif BUILDFLAG(IS_ANDROID)
+                    .AppendASCII("visual_model_android.tflite");
+#else
+                    .AppendASCII("visual_model_desktop.tflite");
+#endif
+
+  base::File tflite_model(tflite_path,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(tflite_model.IsValid());
+
+  std::unique_ptr<Scorer> scorer =
+      Scorer::Create(kVisualClassificationInputWidth,
+                     kVisualClassificationInputHeight, std::move(tflite_model));
+  ASSERT_TRUE(scorer);
+
+  // Use a source image larger than the model input dimensions so that
+  // `ResizeImageForModel()` actively resizes the image.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kVisualClassificationInputWidth * 3,
+                        kVisualClassificationInputHeight * 3);
+  bitmap.eraseColor(SK_ColorWHITE);
+
+  base::test::TestFuture<std::vector<double>> future;
+  scorer->ApplyVisualTfLiteModel(gfx::Image::CreateFrom1xBitmap(bitmap),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get().empty());
+}
+
+// Tests that `ApplyVisualTfLiteModelImageEmbedding()` resizes the input image
+// to the model's configured embedding dimensions and produces an image
+// embedding.
+TEST_F(PhishingScorerTest, ApplyVisualTfLiteModelImageEmbedding) {
+  base::FilePath img_embedding_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                                     &img_embedding_path));
+  img_embedding_path = img_embedding_path.AppendASCII("components")
+                           .AppendASCII("test")
+                           .AppendASCII("data")
+                           .AppendASCII("safe_browsing")
+                           .AppendASCII("image_embedding.tflite");
+
+  base::File img_embedding_model(img_embedding_path,
+                                 base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(img_embedding_model.IsValid());
+
+  std::unique_ptr<Scorer> scorer = Scorer::CreateScorerWithImageEmbeddingModel(
+      kVisualClassificationInputWidth, kVisualClassificationInputHeight,
+      base::File(), kImageEmbeddingInputWidth, kImageEmbeddingInputHeight,
+      std::move(img_embedding_model));
+  ASSERT_TRUE(scorer);
+
+  // Use a source image larger than the model input dimensions so that
+  // `ResizeImageForModel()` actively resizes the image.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kImageEmbeddingInputWidth * 3,
+                        kImageEmbeddingInputHeight * 3);
+  bitmap.eraseColor(SK_ColorWHITE);
+
+  base::test::TestFuture<ImageFeatureEmbedding> future;
+  scorer->ApplyVisualTfLiteModelImageEmbedding(
+      gfx::Image::CreateFrom1xBitmap(bitmap), future.GetCallback());
+  EXPECT_GT(future.Get().embedding_value_size(), 0);
 }
 
 }  // namespace safe_browsing

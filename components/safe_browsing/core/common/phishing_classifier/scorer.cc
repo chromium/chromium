@@ -42,7 +42,6 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_util.h"
 
 namespace safe_browsing {
 
@@ -154,31 +153,27 @@ std::unique_ptr<tflite::task::vision::ImageEmbedder> CreateImageEmbedder(
 SkBitmap ResizeImageForModel(const gfx::Image& image,
                              int width,
                              int height,
-                             bool image_embedding = false) {
+                             [[maybe_unused]] bool image_embedding = false) {
   if (image.IsEmpty() || width <= 0 || height <= 0) {
     return SkBitmap();
   }
 #if BUILDFLAG(IS_IOS)
-  // On iOS, we must use gfx::ResizedImage to utilize CoreGraphics to avoid
-  // contiguous memory OOMs that occur when extracting full-resolution
-  // SkBitmaps.
-  gfx::Image resized_gfx_image =
-      gfx::ResizedImage(image, gfx::Size(width, height));
-  SkBitmap resized_bitmap = resized_gfx_image.AsBitmap();
-  if (resized_bitmap.drawsNothing()) {
-    return SkBitmap();
-  }
-  if (resized_bitmap.width() != width || resized_bitmap.height() != height) {
-    // Apply a fast-path resize to handle Retina scaling (2x, 3x, etc.) and
-    // ensure the final dimensions exactly match the model's requirements.
-    return skia::ImageOperations::Resize(
-        resized_bitmap,
-        image_embedding && base::FeatureList::IsEnabled(kConditionalImageResize)
-            ? skia::ImageOperations::RESIZE_BEST
-            : skia::ImageOperations::RESIZE_GOOD,
-        width, height);
-  }
-  return resized_bitmap;
+  // On iOS, we must resize via CoreGraphics to avoid contiguous memory OOMs
+  // that occur when extracting full-resolution SkBitmaps.
+  //
+  // `gfx::ResizedImage(...).AsBitmap()` is deliberately not used here:
+  // `AsBitmap()` upsamples by the maximum supported resource scale factor
+  // (e.g. 3x), which would allocate a 9x-area intermediate and then require a
+  // second `skia::ImageOperations::Resize()` pass back down to
+  // (`width`, `height`) on the calling (UI) thread. Neither pass adds detail,
+  // since the CoreGraphics resize already produced the exact target
+  // dimensions.
+  //
+  // As a result `kConditionalImageResize` has no effect on iOS: the skia
+  // interpolation-quality choice below only ever applied to that redundant
+  // second pass.
+  return visual_utils::GetResizedImageAsSkBitmap(image,
+                                                 gfx::Size(width, height));
 #else
   // On other platforms, we can safely extract the SkBitmap and resize it using
   // Skia, which allows us to respect the `kConditionalImageResize`

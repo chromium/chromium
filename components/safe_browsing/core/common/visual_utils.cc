@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -25,11 +24,6 @@
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_IOS)
-#include "ui/base/resource/resource_scale_factor.h"
-#include "ui/gfx/image/image_util.h"
-#endif
 
 namespace safe_browsing::visual_utils {
 
@@ -118,10 +112,9 @@ bool GetBlurredImage(const SkBitmap& image,
     // overhead.
     downsampled = image;
   } else {
-    // If dimensions do not match exactly (e.g. on non-iOS platforms, or
-    // if Finch feature parameters like `kVisualFeaturesSizes` configure
-    // dimensions that are not cleanly divisible by the display scale), fall
-    // back to resizing here.
+    // If the dimensions do not match exactly (e.g. on non-iOS platforms, where
+    // the caller passes through the full-resolution bitmap), fall back to
+    // resizing here.
     downsampled = skia::ImageOperations::Resize(
         image, skia::ImageOperations::RESIZE_GOOD, GetPHashDownsampleWidth(),
         GetPHashDownsampleHeight());
@@ -261,24 +254,16 @@ SkBitmap GetBitmapForVisualFeatures(const gfx::Image& image) {
     return SkBitmap();
   }
 
-  // `gfx::ResizedImage()` on iOS accepts dimensions in DIPs, while
-  // `AsBitmap()` multiplies DIPs by the maximum supported resource scale
-  // factor (e.g. 2x/3x) when converting back to an `SkBitmap`. Divide target
-  // pixel dimensions by the scale factor so the resulting `SkBitmap` matches
-  // the exact target pHash pixel dimensions.
-  // Note: If Finch feature parameters (e.g. `kVisualFeaturesSizes`) configure
-  // pixel dimensions that are not cleanly divisible by `scale`, integer
-  // rounding in `base::ClampRound()` may produce pixel dimensions that differ
-  // slightly from the target pHash dimensions. `GetBlurredImage()` handles
-  // this gracefully by falling back to `skia::ImageOperations::Resize()` if
-  // dimensions do not match exactly.
-  const float scale =
-      std::max(1.0f, ui::GetScaleForMaxSupportedResourceScaleFactor());
-  gfx::Size target_size_dips(
-      std::max(1, base::ClampRound(GetPHashDownsampleWidth() / scale)),
-      std::max(1, base::ClampRound(GetPHashDownsampleHeight() / scale)));
-  gfx::Image downsampled_image = gfx::ResizedImage(image, target_size_dips);
-  return downsampled_image.AsBitmap();
+  // Resize the image directly to the target pHash pixel dimensions.
+  //
+  // `gfx::ResizedImage(...).AsBitmap()` is deliberately not used here:
+  // `AsBitmap()` upsamples by the maximum supported resource scale factor, so
+  // that pattern requires pre-dividing the target dimensions by the same
+  // factor. The shrink and the upsample cancel out dimensionally, but the image
+  // ends up rendered at only 1/scale of the pHash resolution and the
+  // interpolated upsample bleeds detail across `kPHashBlockSize` boundaries.
+  return GetResizedImageAsSkBitmap(
+      image, gfx::Size(GetPHashDownsampleWidth(), GetPHashDownsampleHeight()));
 #else
   return image.AsBitmap();
 #endif

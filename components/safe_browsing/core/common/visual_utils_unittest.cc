@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -246,7 +247,7 @@ TEST_F(VisualUtilsTest, NonSquareBlurredImage) {
   }
 }
 
-// Tests that GetBitmapForVisualFeatures downsamples the image to pHash
+// Tests that `GetBitmapForVisualFeatures()` downsamples the image to pHash
 // dimensions on iOS and preserves the original dimensions on non-iOS platforms.
 TEST_F(VisualUtilsTest, GetBitmapForVisualFeatures) {
   base::test::ScopedFeatureList feature_list;
@@ -280,6 +281,67 @@ TEST_F(VisualUtilsTest, GetBitmapForVisualFeatures) {
   SkBitmap empty_bitmap = GetBitmapForVisualFeatures(empty_image);
   EXPECT_TRUE(empty_bitmap.drawsNothing());
 }
+
+#if BUILDFLAG(IS_IOS)
+// Tests that `GetResizedImageAsSkBitmap()` returns an empty bitmap
+// for invalid inputs.
+TEST_F(VisualUtilsTest, GetResizedImageAsSkBitmapEmptyInputs) {
+  static constexpr int kTargetWidth = 108;
+  static constexpr int kTargetHeight = 192;
+
+  // Empty input image.
+  EXPECT_TRUE(GetResizedImageAsSkBitmap(gfx::Image(),
+                                        gfx::Size(kTargetWidth, kTargetHeight))
+                  .drawsNothing());
+
+  // Non-empty input image.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kTargetWidth, kTargetHeight);
+  bitmap.eraseColor(SK_ColorWHITE);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  // Zero-width or zero-height target size.
+  EXPECT_TRUE(GetResizedImageAsSkBitmap(image, gfx::Size(0, kTargetHeight))
+                  .drawsNothing());
+  EXPECT_TRUE(GetResizedImageAsSkBitmap(image, gfx::Size(kTargetWidth, 0))
+                  .drawsNothing());
+}
+
+// Tests that `GetResizedImageAsSkBitmap()` resizes images directly to target
+// pixel dimensions without bleeding detail across block boundaries.
+TEST_F(VisualUtilsTest, GetResizedImageAsSkBitmap) {
+  static constexpr int kTargetWidth = 108;
+  static constexpr int kTargetHeight = 192;
+  static constexpr int kScaleFactor = 3;
+  static constexpr int kSourceWidth = kTargetWidth * kScaleFactor;
+  static constexpr int kSourceHeight = kTargetHeight * kScaleFactor;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kSourceWidth, kSourceHeight);
+  bitmap.erase(SK_ColorBLACK,
+               SkIRect::MakeXYWH(0, 0, kSourceWidth, kSourceHeight / 2));
+  bitmap.erase(
+      SK_ColorWHITE,
+      SkIRect::MakeXYWH(0, kSourceHeight / 2, kSourceWidth, kSourceHeight / 2));
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  SkBitmap resized =
+      GetResizedImageAsSkBitmap(image, gfx::Size(kTargetWidth, kTargetHeight));
+  ASSERT_FALSE(resized.drawsNothing());
+  ASSERT_EQ(kTargetWidth, resized.width());
+  ASSERT_EQ(kTargetHeight, resized.height());
+
+  // Verify that the direct resize preserves the sharp horizontal boundary
+  // between the top (black) and bottom (white) halves without upsample bleed.
+  EXPECT_EQ(SK_ColorBLACK, resized.getColor(kTargetWidth / 2, 0));
+  EXPECT_EQ(SK_ColorBLACK,
+            resized.getColor(kTargetWidth / 2, kTargetHeight / 2 - 1));
+  EXPECT_EQ(SK_ColorWHITE,
+            resized.getColor(kTargetWidth / 2, kTargetHeight / 2));
+  EXPECT_EQ(SK_ColorWHITE,
+            resized.getColor(kTargetWidth / 2, kTargetHeight - 1));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(VisualUtilsTest, EncodeScreenshot) {
   const int kBitmapWidth = 40;
