@@ -173,6 +173,20 @@ BASE_FEATURE(kSegmentationPlatformFedCmUser,
 BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool>
+    kDefaultBrowserPromoPropensityModelLogModelResultAndShowPromo{
+        &kDefaultBrowserPromoPropensityModel, "log_model_result_and_show_promo",
+        false};
+
+constexpr base::FeatureParam<double>
+    kDefaultBrowserPromoPropensityModelScoreThreshold{
+        &kDefaultBrowserPromoPropensityModel, "score_threshold", 0.8};
+
+constexpr base::FeatureParam<int>
+    kDefaultBrowserPromoPropensityModelExperimentCohort{
+        &kDefaultBrowserPromoPropensityModel, "opportunity_experiment_cohort",
+        1};
+
 BASE_FEATURE(kDefaultBrowserMagicStackIos,
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);

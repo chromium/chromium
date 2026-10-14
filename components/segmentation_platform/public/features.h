@@ -131,6 +131,21 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 // browser promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoPropensityModel);
 
+// When enabled, records opportunity metrics and shows the promo regardless of
+// the model score, allowing counterfactual analysis of promo engagement.
+extern const base::FeatureParam<bool>
+    kDefaultBrowserPromoPropensityModelLogModelResultAndShowPromo;
+
+// Minimum model score required to show the default browser promo when gating
+// on propensity predictions.
+extern const base::FeatureParam<double>
+    kDefaultBrowserPromoPropensityModelScoreThreshold;
+
+// Identifier for the active experiment study or cohort, used to reset and track
+// first-time opportunity metrics across study ramp-downs and ramp-ups.
+extern const base::FeatureParam<int>
+    kDefaultBrowserPromoPropensityModelExperimentCohort;
+
 // Feature flag to enable the ephemeral Default Browser card in the Magic Stack
 // on iOS.
 BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
