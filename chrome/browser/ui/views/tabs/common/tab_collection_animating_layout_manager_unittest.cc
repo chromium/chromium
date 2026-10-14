@@ -678,6 +678,85 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   EXPECT_EQ(prev_pos_in_host, 20);
 }
 
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       ReparentedChildInNewMovingNestedContainerHasNoParabolicOvershoot) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
+  widget()->SetBounds(gfx::Rect(0, 0, 200, 200));
+
+  // Create a 100px leading tab before `group_view` (which has a 20px header).
+  // When `leading_tab` is reparented into `group_view`, `group_view` shifts by
+  // -100px while `leading_tab` moves by a net +20px in `host_view()`. Without
+  // converting `kPreviousCollectionBounds` relative to `group_view`'s starting
+  // bounds, `leading_tab` would parabolically overshoot to 36px before
+  // reversing back to 20px.
+  auto* leading_tab =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  leading_tab->SetPreferredSize(gfx::Size(100, 100));
+
+  // Additionally, we need to create another tab after the position where we
+  // intend to add the group view. Otherwise, the value of adding_views_start_x_
+  // for the group view will be 0, meaning that the group will not move at all,
+  // resulting in a false positive for this test.
+  auto* trailing_tab =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  trailing_tab->SetPreferredSize(gfx::Size(100, 100));
+
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  widget()->LayoutRootViewIfNecessary();
+
+  ASSERT_FALSE(layout_manager()->is_animating());
+  ASSERT_EQ(is_vertical ? leading_tab->bounds().y() : leading_tab->bounds().x(),
+            0);
+  ASSERT_EQ(
+      is_vertical ? trailing_tab->bounds().y() : trailing_tab->bounds().x(),
+      100);
+
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> group_delegate;
+  auto* group_view =
+      host_view()->AddChildViewAt(std::make_unique<views::View>(), 1);
+  auto* group_layout_manager = group_view->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(animation_axis()), group_delegate,
+          animation_coordinator(), animation_axis()));
+  group_view->AddChildView(std::make_unique<views::View>());
+
+  const gfx::Rect previous_bounds_in_screen = leading_tab->GetBoundsInScreen();
+  group_layout_manager->AnimateAndReparentView(
+      host_view()->RemoveChildViewT(leading_tab), previous_bounds_in_screen);
+  group_view->InvalidateLayout();
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  int prev_pos_in_host = 0;
+  int step = 0;
+  while (layout_manager()->is_animating() ||
+         group_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(5));
+    widget()->LayoutRootViewIfNecessary();
+
+    const int group_pos =
+        is_vertical ? group_view->bounds().y() : group_view->bounds().x();
+    const int tab_pos_in_group =
+        is_vertical ? leading_tab->bounds().y() : leading_tab->bounds().x();
+    const int pos_in_host = group_pos + tab_pos_in_group;
+
+    EXPECT_GE(pos_in_host, prev_pos_in_host) << "at step " << step;
+    EXPECT_LE(pos_in_host, 20) << "at step " << step;
+    prev_pos_in_host = pos_in_host;
+    ++step;
+  }
+
+  EXPECT_GT(step, 20);
+  EXPECT_EQ(prev_pos_in_host, 20);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabCollectionAnimatingLayoutManagerTest,

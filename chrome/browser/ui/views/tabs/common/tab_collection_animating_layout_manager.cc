@@ -620,12 +620,26 @@ TabCollectionAnimatingLayoutManager::GetHostAnimationOffsets(
   }
   auto start_it = parent_lm->start_view_layout_map_.find(host_view());
   auto target_it = parent_lm->target_view_layout_map_.find(host_view());
-  if (start_it == parent_lm->start_view_layout_map_.end() ||
-      target_it == parent_lm->target_view_layout_map_.end()) {
+  if (target_it == parent_lm->target_view_layout_map_.end()) {
     return {};
   }
-  const gfx::Rect& host_start = start_it->second.bounds;
   const gfx::Rect& host_target = target_it->second.bounds;
+  gfx::Rect host_start;
+  if (start_it == parent_lm->start_view_layout_map_.end()) {
+    // When adding a tab to a new group, the group will not be in the parent's
+    // starting layout but will have a cached `adding_views_start_x_`.
+    if (parent_lm->adding_views_start_x_.has_value()) {
+      auto it = parent_lm->adding_views_start_x_->find(host_view());
+      CHECK(it != parent_lm->adding_views_start_x_->end());
+      const int host_start_x = it->second;
+      host_start =
+          gfx::Rect(host_start_x, host_target.y(), 0, host_target.height());
+    } else {
+      return {};
+    }
+  } else {
+    host_start = start_it->second.bounds;
+  }
   return {
       .start = host_start.OffsetFromOrigin(),
       .target = host_target.OffsetFromOrigin(),
