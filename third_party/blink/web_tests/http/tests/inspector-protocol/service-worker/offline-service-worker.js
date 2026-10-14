@@ -38,5 +38,17 @@
 
   testRunner.log('navigator.onLine: ' + await serviceWorkerSession.evaluate('navigator.onLine'));
 
+  // Switching offline mode off again must not crash (crbug.com/746220).
+  const onlineResponse = await swdp.Network.emulateNetworkConditions({
+    downloadThroughput: -1,
+    latency: 0,
+    offline: false,
+    uploadThroughput: -1
+  });
+  testRunner.log('\nSwitched offline mode off, response.error: ' +
+                 onlineResponse.error);
+  testRunner.log('navigator.onLine: ' +
+                 await serviceWorkerSession.evaluate('navigator.onLine'));
+
   testRunner.completeTest();
 });

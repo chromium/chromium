@@ -3,3 +3,6 @@ response.error: undefined
 loadingFailed.params.errorText: net::ERR_INTERNET_DISCONNECTED
 navigator.onLine: false
 
+Switched offline mode off, response.error: undefined
+navigator.onLine: true
+
