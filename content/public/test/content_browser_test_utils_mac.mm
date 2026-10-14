@@ -13,6 +13,7 @@
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
@@ -44,12 +45,22 @@ constexpr char
     RenderWidgetHostViewCocoaObserver::kShowDefinitionForAttributedString[];
 
 // static
-std::map<std::string, std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
-    RenderWidgetHostViewCocoaObserver::rwhvcocoa_swizzlers_;
+std::map<std::string, std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>&
+RenderWidgetHostViewCocoaObserver::RwhvcocoaSwizzlers() {
+  static base::NoDestructor<std::map<
+      std::string, std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>>
+      swizzlers;
+  return *swizzlers;
+}
 
 // static
-std::map<WebContents*, RenderWidgetHostViewCocoaObserver*>
-    RenderWidgetHostViewCocoaObserver::observers_;
+std::map<WebContents*, RenderWidgetHostViewCocoaObserver*>&
+RenderWidgetHostViewCocoaObserver::Observers() {
+  static base::NoDestructor<
+      std::map<WebContents*, RenderWidgetHostViewCocoaObserver*>>
+      observers;
+  return *observers;
+}
 
 namespace {
 
@@ -87,21 +98,22 @@ content::RenderWidgetHostViewMac* GetRenderWidgetHostViewMac(NSObject* object) {
 
 base::apple::ScopedObjCClassSwizzler*
 RenderWidgetHostViewCocoaObserver::GetSwizzler(const std::string& method_name) {
-  return rwhvcocoa_swizzlers_.count(method_name)
-             ? rwhvcocoa_swizzlers_.at(method_name).get()
+  return RwhvcocoaSwizzlers().count(method_name)
+             ? RwhvcocoaSwizzlers().at(method_name).get()
              : nullptr;
 }
 
 // static
 RenderWidgetHostViewCocoaObserver*
 RenderWidgetHostViewCocoaObserver::GetObserver(WebContents* web_contents) {
-  return observers_.count(web_contents) ? observers_.at(web_contents) : nullptr;
+  return Observers().count(web_contents) ? Observers().at(web_contents)
+                                         : nullptr;
 }
 
 RenderWidgetHostViewCocoaObserver::RenderWidgetHostViewCocoaObserver(
     WebContents* web_contents)
     : web_contents_(web_contents) {
-  if (rwhvcocoa_swizzlers_.empty()) {
+  if (RwhvcocoaSwizzlers().empty()) {
     SetUpSwizzlers();
   }
 
@@ -118,8 +130,8 @@ RenderWidgetHostViewCocoaObserver::RenderWidgetHostViewCocoaObserver(
                                            forView:GetRenderWidgetHostViewCocoa(
                                                        web_contents)];
 
-  DCHECK(!observers_.count(web_contents));
-  observers_[web_contents] = this;
+  DCHECK(!Observers().count(web_contents));
+  Observers()[web_contents] = this;
 }
 
 RenderWidgetHostViewCocoaObserver::~RenderWidgetHostViewCocoaObserver() {
@@ -127,20 +139,20 @@ RenderWidgetHostViewCocoaObserver::~RenderWidgetHostViewCocoaObserver() {
       unregisterForTestingMenuRunCallbackForView:GetRenderWidgetHostViewCocoa(
                                                      web_contents_)];
 
-  observers_.erase(web_contents_);
+  Observers().erase(web_contents_);
 
-  if (observers_.empty()) {
-    rwhvcocoa_swizzlers_.clear();
+  if (Observers().empty()) {
+    RwhvcocoaSwizzlers().clear();
   }
 }
 
 void RenderWidgetHostViewCocoaObserver::SetUpSwizzlers() {
-  if (!rwhvcocoa_swizzlers_.empty()) {
+  if (!RwhvcocoaSwizzlers().empty()) {
     return;
   }
 
   // [RenderWidgetHostViewCocoa showDefinitionForAttributedString:atPoint].
-  rwhvcocoa_swizzlers_[kShowDefinitionForAttributedString] =
+  RwhvcocoaSwizzlers()[kShowDefinitionForAttributedString] =
       std::make_unique<ScopedObjCClassSwizzler>(
           GetRenderWidgetHostViewCocoaClassForTesting(),
           [RenderWidgetHostViewCocoaSwizzler class],

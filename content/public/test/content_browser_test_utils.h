@@ -216,9 +216,10 @@ class RenderWidgetHostViewCocoaObserver {
   static void SetUpSwizzlers();
 
   static std::map<std::string,
-                  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
-      rwhvcocoa_swizzlers_;
-  static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*> observers_;
+                  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>&
+  RwhvcocoaSwizzlers();
+  static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*>&
+  Observers();
 
   const raw_ptr<WebContents> web_contents_;
 };

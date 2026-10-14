@@ -796,11 +796,9 @@ void RenderFrameHostCreatedObserver::RenderFrameCreated(
 }
 
 BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason() {
-  static const BackForwardCache::DisabledReason reason =
-      BackForwardCache::DisabledReason(
-          BackForwardCache::DisabledSource::kTesting, 0, "disabled for testing",
-          /*context=*/"", "disabled");
-  return reason;
+  return BackForwardCache::DisabledReason(
+      BackForwardCache::DisabledSource::kTesting, 0, "disabled for testing",
+      /*context=*/"", "disabled");
 }
 
 void DisableBFCacheForRFHForTesting(
