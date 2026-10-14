@@ -4,6 +4,7 @@
 
 package org.chromium.ui.test.util;
 
+import android.graphics.Bitmap;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -13,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.mojom.CursorType;
 
 /**
  * Mimics the Chrome TestViewAndroidDelegate in chrome/browser/tab for use in tests, driven by the
@@ -22,6 +24,12 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 public class TestViewAndroidDelegate extends ViewAndroidDelegate {
     /** Stores the Visual Viewport bottom inset when under test, just like the real one. */
     private int mApplicationViewportInsetBottomPx;
+
+    private int mLastCursorType = CursorType.NULL;
+    private int mLastCustomCursorWidth;
+    private int mLastCustomCursorHeight;
+    private int mLastCustomCursorHotspotX;
+    private int mLastCustomCursorHotspotY;
 
     /**
      * @param containerView {@link ViewGroup} to be used as a container view.
@@ -56,5 +64,50 @@ public class TestViewAndroidDelegate extends ViewAndroidDelegate {
     @Override
     protected int getViewportInsetBottom() {
         return mApplicationViewportInsetBottomPx;
+    }
+
+    @Override
+    public void onCursorChanged(int cursorType) {
+        super.onCursorChanged(cursorType);
+        mLastCursorType = cursorType;
+        mLastCustomCursorWidth = 0;
+        mLastCustomCursorHeight = 0;
+        mLastCustomCursorHotspotX = 0;
+        mLastCustomCursorHotspotY = 0;
+    }
+
+    @Override
+    public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
+        super.onCursorChangedToCustom(customCursorBitmap, hotspotX, hotspotY);
+        mLastCursorType = CursorType.CUSTOM;
+        mLastCustomCursorWidth = customCursorBitmap.getWidth();
+        mLastCustomCursorHeight = customCursorBitmap.getHeight();
+        mLastCustomCursorHotspotX = hotspotX;
+        mLastCustomCursorHotspotY = hotspotY;
+    }
+
+    @CalledByNative
+    private int getLastCursorType() {
+        return mLastCursorType;
+    }
+
+    @CalledByNative
+    private int getLastCustomCursorWidth() {
+        return mLastCustomCursorWidth;
+    }
+
+    @CalledByNative
+    private int getLastCustomCursorHeight() {
+        return mLastCustomCursorHeight;
+    }
+
+    @CalledByNative
+    private int getLastCustomCursorHotspotX() {
+        return mLastCustomCursorHotspotX;
+    }
+
+    @CalledByNative
+    private int getLastCustomCursorHotspotY() {
+        return mLastCustomCursorHotspotY;
     }
 }

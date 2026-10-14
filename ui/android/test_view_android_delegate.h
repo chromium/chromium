@@ -6,6 +6,8 @@
 #define UI_ANDROID_TEST_VIEW_ANDROID_DELEGATE_H_
 
 #include "base/android/jni_android.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 
@@ -29,6 +31,10 @@ class TestViewAndroidDelegate {
   // Insets the Visual Viewport bottom.  |SetupTestDelegate| must be called
   // first.
   void InsetViewportBottom(int bottom);
+
+  int GetLastCursorType() const;
+  gfx::Size GetLastCustomCursorSize() const;
+  gfx::Point GetLastCustomCursorHotspot() const;
 
  private:
   base::android::ScopedJavaLocalRef<jobject> j_delegate_;

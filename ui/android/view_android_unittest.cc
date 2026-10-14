@@ -4,6 +4,7 @@
 
 #include "ui/android/view_android.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -12,12 +13,16 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/android/event_forwarder.h"
 #include "ui/android/test_view_android_delegate.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/android/event_handler_android.h"
@@ -25,6 +30,8 @@
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 
@@ -35,7 +42,11 @@ class TestViewAndroid : public ViewAndroid {
   TestViewAndroid(ViewAndroid::LayoutType layout_type)
       : ViewAndroid(layout_type) {}
 
-  float GetDipScale() override { return 1.f; }
+  float GetDipScale() override { return dip_scale_; }
+  void set_dip_scale(float dip_scale) { dip_scale_ = dip_scale; }
+
+ private:
+  float dip_scale_ = 1.f;
 };
 
 class TestEventHandler : public EventHandlerAndroid {
@@ -687,6 +698,84 @@ TEST(ViewAndroidTest, WindowAndroidColorProviderKeyKeepsContextWithBridge) {
   EXPECT_NE(key.context_hash, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_FALSE(key.context.get(env).is_null());
+}
+
+TEST(ViewAndroidTest, OnCursorChangedScalesCustomCursorToDip) {
+  TestViewAndroid view(ViewAndroid::LayoutType::kNormal);
+  TestViewAndroidDelegate delegate;
+  delegate.SetupTestDelegate(&view);
+
+  // A 256x128px bitmap with image_scale_factor = 8.0f has a nominal size of
+  // 32x16 DIP. On a display with dip_scale = 2.0f, it must be rescaled by
+  // 2.0 / 8.0 = 0.25 to 64x32 device pixels, with the hotspot scaled from
+  // (64, 32) to (16, 8).
+  view.set_dip_scale(2.0f);
+  SkBitmap large_bitmap;
+  large_bitmap.allocN32Pixels(256, 128);
+  large_bitmap.eraseColor(SK_ColorRED);
+  Cursor high_scale_cursor =
+      Cursor::NewCustom(large_bitmap, gfx::Point(64, 32), 8.0f);
+  view.OnCursorChanged(high_scale_cursor);
+
+  EXPECT_EQ(static_cast<int>(mojom::CursorType::kCustom),
+            delegate.GetLastCursorType());
+  EXPECT_EQ(gfx::Size(64, 32), delegate.GetLastCustomCursorSize());
+  EXPECT_EQ(gfx::Point(16, 8), delegate.GetLastCustomCursorHotspot());
+
+  // When rounding a scaled hotspot near the bottom-right edge, the hotspot
+  // must be clamped within [0, width - 1] x [0, height - 1].
+  view.set_dip_scale(1.0f);
+  SkBitmap edge_bitmap;
+  edge_bitmap.allocN32Pixels(10, 10);
+  edge_bitmap.eraseColor(SK_ColorBLUE);
+  Cursor edge_hotspot_cursor =
+      Cursor::NewCustom(edge_bitmap, gfx::Point(9, 9), 2.0f);
+  view.OnCursorChanged(edge_hotspot_cursor);
+
+  EXPECT_EQ(static_cast<int>(mojom::CursorType::kCustom),
+            delegate.GetLastCursorType());
+  EXPECT_EQ(gfx::Size(5, 5), delegate.GetLastCustomCursorSize());
+  EXPECT_EQ(gfx::Point(4, 4), delegate.GetLastCustomCursorHotspot());
+
+  // If rescaling underflows to an empty size, fall back to kPointer.
+  view.set_dip_scale(0.5f);
+  Cursor degenerate_scale_cursor = Cursor::NewCustom(
+      edge_bitmap, gfx::Point(0, 0), std::numeric_limits<float>::max());
+  view.OnCursorChanged(degenerate_scale_cursor);
+
+  EXPECT_EQ(static_cast<int>(mojom::CursorType::kPointer),
+            delegate.GetLastCursorType());
+
+  // If rescaling overflows to +Inf (e.g., subnormal image_scale_factor), fall
+  // back to kPointer.
+  view.OnCursorChanged(edge_hotspot_cursor);
+  ASSERT_EQ(static_cast<int>(mojom::CursorType::kCustom),
+            delegate.GetLastCursorType());
+  view.set_dip_scale(1.0f);
+  Cursor subnormal_scale_cursor = Cursor::NewCustom(
+      edge_bitmap, gfx::Point(0, 0), std::numeric_limits<float>::denorm_min());
+  view.OnCursorChanged(subnormal_scale_cursor);
+
+  EXPECT_EQ(static_cast<int>(mojom::CursorType::kPointer),
+            delegate.GetLastCursorType());
+
+  // If skia::ImageOperations::Resize fails and returns an empty bitmap (e.g.,
+  // kRGB_565_SkColorType when rescale != 1.f), fall back to kPointer instead
+  // of crashing in gfx::ConvertToJavaBitmap.
+  view.OnCursorChanged(edge_hotspot_cursor);
+  ASSERT_EQ(static_cast<int>(mojom::CursorType::kCustom),
+            delegate.GetLastCursorType());
+  view.set_dip_scale(2.0f);
+  SkBitmap rgb565_bitmap;
+  rgb565_bitmap.allocPixels(
+      SkImageInfo::Make(10, 10, kRGB_565_SkColorType, kOpaque_SkAlphaType));
+  rgb565_bitmap.eraseColor(SK_ColorGREEN);
+  Cursor unresizable_cursor =
+      Cursor::NewCustom(rgb565_bitmap, gfx::Point(2, 2), 1.0f);
+  view.OnCursorChanged(unresizable_cursor);
+
+  EXPECT_EQ(static_cast<int>(mojom::CursorType::kPointer),
+            delegate.GetLastCursorType());
 }
 
 }  // namespace ui

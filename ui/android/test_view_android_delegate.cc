@@ -27,6 +27,26 @@ void TestViewAndroidDelegate::InsetViewportBottom(int bottom) {
   Java_TestViewAndroidDelegate_insetViewportBottom(env, j_delegate_, bottom);
 }
 
+int TestViewAndroidDelegate::GetLastCursorType() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TestViewAndroidDelegate_getLastCursorType(env, j_delegate_);
+}
+
+gfx::Size TestViewAndroidDelegate::GetLastCustomCursorSize() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return gfx::Size(
+      Java_TestViewAndroidDelegate_getLastCustomCursorWidth(env, j_delegate_),
+      Java_TestViewAndroidDelegate_getLastCustomCursorHeight(env, j_delegate_));
+}
+
+gfx::Point TestViewAndroidDelegate::GetLastCustomCursorHotspot() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return gfx::Point(Java_TestViewAndroidDelegate_getLastCustomCursorHotspotX(
+                        env, j_delegate_),
+                    Java_TestViewAndroidDelegate_getLastCustomCursorHotspotY(
+                        env, j_delegate_));
+}
+
 }  // namespace ui
 
 DEFINE_JNI(TestViewAndroidDelegate)

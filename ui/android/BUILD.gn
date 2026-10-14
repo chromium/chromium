@@ -151,6 +151,7 @@ static_library("test_support") {
     ":ui_javatest_jni_headers",
     "//ui/android",
     "//ui/display",
+    "//ui/gfx/geometry",
   ]
 }
 
@@ -762,6 +763,7 @@ android_library("ui_java_test_support") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/base/cursor/mojom:cursor_type_java",
   ]
 }
 
@@ -961,6 +963,8 @@ test("ui_android_unittests") {
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/interaction:test_support",
     "//ui/color",
     "//ui/color:mixers",
