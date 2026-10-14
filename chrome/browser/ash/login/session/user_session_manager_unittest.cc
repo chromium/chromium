@@ -11,9 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
@@ -22,11 +24,14 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/device_id_helper.h"
@@ -54,6 +59,12 @@ using testing::Not;
 namespace ash {
 namespace {
 
+// The account both LoginTestUser() and LoginGaiaTestUser() log in, and the
+// key ash::IdentityManagerProvider lookups are made under.
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("demo@test.com",
+                                            GaiaId::Literal("demo_user"));
+
 constexpr char kFakePassword[] = "p4zzw0r(|";
 
 static_assert(
@@ -69,6 +80,15 @@ class UserSessionManagerTest : public testing::Test {
 
   void SetUp() override {
     SessionManagerClient::InitializeFake();
+
+    // Use the production IdentityManagerProvider rather than a fake. It
+    // resolves an AccountId to a Profile through BrowserContextHelper, which
+    // ProfileHelper::Get() already creates with its production delegate; that
+    // delegate works off g_browser_process->profile_manager(), which this
+    // fixture provides. See AnnotateAndLogIn() for the per-user setup that
+    // makes the lookup resolve.
+    identity_manager_provider_ =
+        std::make_unique<ash::IdentityManagerProviderImpl>();
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
@@ -93,6 +113,15 @@ class UserSessionManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    identity_manager_provider_.reset();
+    // Pairs with the OnUserProfileCreated() in
+    // LogInAndCreateProfile(): the User holds the profile's PrefService
+    // and must drop it before the profile is destroyed, as production does
+    // from ProfileUserManagerController::OnProfileWillBeDestroyed().
+    if (test_user_) {
+      fake_user_manager_->OnUserProfileWillBeDestroyed(
+          test_user_->GetAccountId());
+    }
     profile_manager_.reset();
     test_user_ = nullptr;
     user_session_manager_.reset();
@@ -118,40 +147,21 @@ class UserSessionManagerTest : public testing::Test {
     return user_session_manager_->user_context().GetPasswordKey()->GetSecret();
   }
 
-  // Creates a dummy user with a testing profile and logs in.
   TestingProfile* LoginTestUser() {
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
+    const AccountId account_id(kTestAccountId);
     // TODO(http://b/310599489): We are logging a Gaia type user as a Public
     // Session user here. This is inconsistent.
     test_user_ = fake_user_manager_->AddPublicAccountUser(account_id);
 
-    auto prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(prefs->registry());
-    TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
-        /*avatar_id=*/1, TestingProfile::TestingFactories());
-
-    fake_user_manager_->LoginUser(account_id);
-    return profile;
+    return LogInAndCreateProfile(account_id);
   }
 
   // Creates a dummy Gaia user with a testing profile and logs in.
   TestingProfile* LoginGaiaTestUser() {
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
+    const AccountId account_id(kTestAccountId);
     test_user_ = fake_user_manager_->AddUser(account_id);
 
-    auto prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(prefs->registry());
-    TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
-        /*avatar_id=*/1, TestingProfile::TestingFactories());
-
-    fake_user_manager_->LoginUser(account_id);
-    return profile;
+    return LogInAndCreateProfile(account_id);
   }
 
   // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
@@ -170,7 +180,29 @@ class UserSessionManagerTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<UserSessionManager> user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::IdentityManagerProviderImpl> identity_manager_provider_;
   raw_ptr<user_manager::User> test_user_ = nullptr;
+
+ private:
+  // Logs `account_id` in and then creates its profile, in that order, as
+  // production does.
+  TestingProfile* LogInAndCreateProfile(const AccountId& account_id) {
+    fake_user_manager_->LoginUser(account_id,
+                                  /*set_profile_created_flag=*/false);
+
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    TestingProfile* profile = profile_manager_->CreateTestingProfile(
+        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
+
+    fake_user_manager_->OnUserProfileCreated(account_id, profile->GetPrefs());
+    return profile;
+  }
 };
 
 // Calling VoteForSavingLoginPassword() with `save_password` set to false for

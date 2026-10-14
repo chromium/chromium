@@ -127,6 +127,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
@@ -144,6 +145,7 @@
 #include "chromeos/ash/components/password_manager/password_reuse_manager_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
 #include "chromeos/ash/components/trusted_vault/trusted_vault_service_provider.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -910,27 +912,29 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
     return;
   }
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(user_profile);
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(user_profile);
-  const bool account_id_valid =
-      identity_manager &&
-      !identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin).empty();
-  if (!account_id_valid)
+  // The early return above leaves only a logged-in GAIA user's profile, which
+  // ProfileUserManagerController annotates in OnProfileCreationStarted(), so
+  // the AccountId is always present and usable here.
+  const AccountId* const account_id =
+      ash::AnnotatedAccountId::Get(user_profile);
+  CHECK(account_id && account_id->is_valid());
+  signin::IdentityManager* const identity_manager =
+      ash::IdentityManagerProvider::Get().Find(*account_id);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
+  if (identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin).empty()) {
     LOG(ERROR) << "No account is associated with sign-in manager on restore.";
+  }
 
-  CHECK(user, base::NotFatalUntil::M161);
   if (network_connection_tracker_ &&
       !network_connection_tracker_->IsOffline()) {
-    pending_signin_restore_sessions_.erase(user->GetAccountId());
+    pending_signin_restore_sessions_.erase(*account_id);
     RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
   } else {
     // Even if we're online we should wait till initial
     // OnConnectionTypeChanged() call. Otherwise starting fetchers too early may
     // end up canceling all request when initial network connection type is
     // processed. See http://crbug.com/40184809.
-    pending_signin_restore_sessions_.insert(user->GetAccountId());
+    pending_signin_restore_sessions_.insert(*account_id);
   }
 }
 
@@ -1165,19 +1169,23 @@ void UserSessionManager::OnSessionRestoreStateChanged(
       OAuth2LoginManagerFactory::GetInstance()->GetForProfile(user_profile);
 
   bool connection_error = false;
+  // Reached only for a user profile whose session restore is under way, which
+  // ProfileUserManagerController annotates in OnProfileCreationStarted(), so
+  // the AccountId is always present and usable here.
+  const AccountId* const account_id =
+      ash::AnnotatedAccountId::Get(user_profile);
+  CHECK(account_id && account_id->is_valid());
   signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForProfile(user_profile);
+      ash::IdentityManagerProvider::Get().Find(*account_id);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
   switch (state) {
     case OAuth2LoginManager::SESSION_RESTORE_DONE:
-      if (identity_manager) {
-        // SESSION_RESTORE_DONE state means that primary account has a valid
-        // token.
-        CHECK(
-            !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      // SESSION_RESTORE_DONE state means that primary account has a valid
+      // token.
+      CHECK(!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
                 identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin)
                     .account_id),
             base::NotFatalUntil::M161);
-      }
       user_status = user_manager::User::OAUTH2_TOKEN_STATUS_VALID;
       break;
     case OAuth2LoginManager::SESSION_RESTORE_FAILED:
@@ -1540,6 +1548,13 @@ void UserSessionManager::InitProfilePreferences(
     // unlocking a previously opened profile, or when creating a supervised
     // user. However, in these cases the gaia_id should be already available in
     // `IdentityManager`.
+    // Note: this deliberately uses `profile` directly rather than going
+    // through ash::IdentityManagerProvider::Get().Find(), since the latter
+    // resolves the AccountId back to a BrowserContext via
+    // BrowserContextHelper, whose mapping for this account isn't
+    // guaranteed to be established yet this early in profile creation
+    // (InitProfilePreferences() runs as one of ProfileManager's
+    // OnProfileCreationFinished() callbacks).
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     GaiaId gaia_id = user_context.GetGaiaID();
@@ -2138,8 +2153,12 @@ void UserSessionManager::MaybeMigrateConsentLevelToSync(Profile* profile) {
 
   CHECK(!profile->IsOffTheRecord());
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+  // Only reached from OnUserProfileLoaded(), by which point the profile is
+  // annotated and reported to UserManager, so resolving the AccountId back to
+  // it always succeeds.
+  signin::IdentityManager* const identity_manager =
+      ash::IdentityManagerProvider::Get().Find(user->GetAccountId());
+  CHECK(identity_manager, base::NotFatalUntil::M161);
   // Only enforce consent level if the user is already signed in.
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
