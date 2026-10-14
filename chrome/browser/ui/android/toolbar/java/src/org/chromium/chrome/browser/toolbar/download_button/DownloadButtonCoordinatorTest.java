@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,10 +22,13 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.core.graphics.ColorUtils;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,8 +44,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadProgressRingDrawable.RingStatus;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link DownloadButtonCoordinator} and {@link DownloadButtonMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,6 +75,7 @@ public class DownloadButtonCoordinatorTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private Runnable mOnButtonClickedRunnable;
     @Mock private Runnable mOnVisibilityChangedRunnable;
+    @Mock private DownloadProgressRingDrawable mRing;
 
     private final SettableNonNullObservableSupplier<DownloadToolbarButtonState> mStateSupplier =
             ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
@@ -203,6 +210,7 @@ public class DownloadButtonCoordinatorTest {
         assertEquals(1, mIncognitoStateProvider.getObserverCountForTesting());
         mCoordinator.destroy();
         verify(mThemeColorProvider).removeTintObserver(mCoordinator);
+        verify(mThemeColorProvider).removeThemeColorObserver(any());
         assertEquals(0, mIncognitoStateProvider.getObserverCountForTesting());
     }
 
@@ -293,5 +301,174 @@ public class DownloadButtonCoordinatorTest {
         show();
         assertFalse(
                 "Destroyed coordinator should ignore supplier changes", mCoordinator.shouldShow());
+    }
+
+    @Test
+    public void testMediator_mapsStateToIconRingAndBadge() {
+        PropertyModel model = new PropertyModel.Builder(DownloadButtonProperties.ALL_KEYS).build();
+        DownloadButtonMediator mediator =
+                new DownloadButtonMediator(
+                        mActivity, model, mThemeColorProvider, mOnButtonClickedRunnable);
+
+        // Hidden by default: arrow-and-tray glyph, no ring, no badge.
+        assertIconRingAndBadge(model, R.drawable.ic_download, RingStatus.IDLE, /* badge= */ 0);
+
+        // Two active downloads: in-progress glyph, determinate ring, count badge.
+        mediator.setState(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 2,
+                        /* progressPercent= */ 40,
+                        /* progressCertain= */ true));
+        assertIconRingAndBadge(
+                model, R.drawable.ic_download_in_progress, RingStatus.DOWNLOADING, /* badge= */ 2);
+        assertEquals(40, model.get(DownloadButtonProperties.PROGRESS_PERCENT));
+
+        // All paused: ring stays at the paused progress but the badge is hidden.
+        mediator.setState(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ false,
+                        /* downloadCount= */ 2,
+                        /* progressPercent= */ 60,
+                        /* progressCertain= */ true));
+        assertIconRingAndBadge(
+                model, R.drawable.ic_download_in_progress, RingStatus.DOWNLOADING, /* badge= */ 0);
+        assertEquals(60, model.get(DownloadButtonProperties.PROGRESS_PERCENT));
+
+        // Unknown total size: indeterminate ring.
+        mediator.setState(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 1,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ false));
+        assertIconRingAndBadge(
+                model, R.drawable.ic_download_in_progress, RingStatus.SCANNING, /* badge= */ 0);
+
+        // Complete: arrow-and-tray glyph, no ring.
+        mediator.setState(
+                state(
+                        IconState.COMPLETE,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 0,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ true));
+        assertIconRingAndBadge(model, R.drawable.ic_download, RingStatus.IDLE, /* badge= */ 0);
+    }
+
+    @Test
+    public void testView_bindsIconRingAndBadge() {
+        DownloadButtonView view = showAndGetView();
+        view.setRingForTesting(mRing);
+
+        mStateSupplier.set(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 2,
+                        /* progressPercent= */ 40,
+                        /* progressCertain= */ true));
+        assertIcon(R.drawable.ic_download_in_progress, view);
+        verify(mRing).setDownloading(40);
+        verify(mRing).setBadgeCount(2);
+
+        mStateSupplier.set(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 1,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ false));
+        verify(mRing).setScanning();
+
+        // Each transition updates the ring exactly once, e.g. no stale setScanning() while the
+        // progress changes on the way back to DOWNLOADING.
+        mStateSupplier.set(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 1,
+                        /* progressPercent= */ 60,
+                        /* progressCertain= */ true));
+        verify(mRing).setDownloading(60);
+        verify(mRing).setScanning();
+
+        mStateSupplier.set(
+                state(
+                        IconState.COMPLETE,
+                        /* isActive= */ false,
+                        /* downloadCount= */ 0,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ true));
+        assertIcon(R.drawable.ic_download, view);
+        verify(mRing).setIdle();
+    }
+
+    @Test
+    public void testRingColors_followTintAndThemeColor() {
+        DownloadButtonView view = showAndGetView();
+        view.setRingForTesting(mRing);
+        int track = ColorUtils.setAlphaComponent(Color.RED, Math.round(255 * 0.3f));
+
+        mCoordinator.onTintChanged(
+                /* tint= */ null,
+                /* activityFocusTint= */ ColorStateList.valueOf(Color.RED),
+                BrandedColorScheme.APP_DEFAULT);
+        verify(mRing)
+                .setColors(
+                        track,
+                        /* progressColor= */ Color.RED,
+                        /* badgeBackgroundColor= */ Color.TRANSPARENT,
+                        /* badgeTextColor= */ Color.RED);
+
+        // A theme color change without a tint change must still update the badge fill.
+        ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> observer =
+                ArgumentCaptor.forClass(ThemeColorProvider.ThemeColorObserver.class);
+        verify(mThemeColorProvider).addThemeColorObserver(observer.capture());
+        observer.getValue().onThemeColorChanged(Color.WHITE, /* shouldAnimate= */ false);
+        verify(mRing)
+                .setColors(
+                        track,
+                        /* progressColor= */ Color.RED,
+                        /* badgeBackgroundColor= */ Color.WHITE,
+                        /* badgeTextColor= */ Color.RED);
+    }
+
+    /**
+     * Returns a shown {@link DownloadToolbarButtonState} for driving the button in tests.
+     *
+     * @param iconState Whether downloads are in progress or complete.
+     * @param isActive Whether the icon uses the active (accent) color.
+     * @param downloadCount Number of in-progress downloads; 2 or more shows the badge when active.
+     * @param progressPercent Aggregate progress in [0, 100] shown by the determinate ring.
+     * @param progressCertain Whether the total size is known; false shows the scanning ring.
+     */
+    private static DownloadToolbarButtonState state(
+            @IconState int iconState,
+            boolean isActive,
+            int downloadCount,
+            int progressPercent,
+            boolean progressCertain) {
+        return new DownloadToolbarButtonState(
+                /* shouldShow= */ true,
+                iconState,
+                isActive,
+                downloadCount,
+                progressPercent,
+                progressCertain);
+    }
+
+    private static void assertIcon(int expectedResId, DownloadButtonView view) {
+        assertEquals(expectedResId, shadowOf(view.getButton().getDrawable()).getCreatedFromResId());
+    }
+
+    private static void assertIconRingAndBadge(
+            PropertyModel model, int iconRes, @RingStatus int ringStatus, int badge) {
+        assertEquals(iconRes, model.get(DownloadButtonProperties.ICON_RES));
+        assertEquals(ringStatus, model.get(DownloadButtonProperties.RING_STATUS));
+        assertEquals(badge, model.get(DownloadButtonProperties.BADGE_COUNT));
     }
 }

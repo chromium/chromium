@@ -7,18 +7,23 @@ package org.chromium.chrome.browser.toolbar.download_button;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadProgressRingDrawable.RingStatus;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator controlling the property model of the download toolbar button. */
 @NullMarked
-class DownloadButtonMediator {
+class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
     private final PropertyModel mModel;
+    private final ThemeColorProvider mThemeColorProvider;
     private final ColorStateList mAccentTint;
     private final ColorStateList mIncognitoAccentTint;
     private boolean mHasSpaceToShow;
@@ -40,14 +45,23 @@ class DownloadButtonMediator {
             ThemeColorProvider themeColorProvider,
             Runnable onClickRunnable) {
         mModel = model;
+        mThemeColorProvider = themeColorProvider;
         // Same accent as other "on" toolbar icons, e.g. the filled bookmark star.
         mAccentTint = context.getColorStateList(R.color.default_icon_color_accent1_tint_list);
         mIncognitoAccentTint = context.getColorStateList(R.color.default_icon_color_blue_light);
         mActiveTint = mAccentTint;
         mModel.set(DownloadButtonProperties.ON_CLICK, v -> onClickRunnable.run());
+        updateIconAndRing();
+        mThemeColorProvider.addThemeColorObserver(this);
+        onThemeColorChanged(themeColorProvider.getThemeColor(), /* shouldAnimate= */ false);
         onTintChanged(
                 themeColorProvider.getActivityFocusTint(),
                 themeColorProvider.getBrandedColorScheme());
+    }
+
+    /** Stops observing the theme color provider. */
+    void destroy() {
+        mThemeColorProvider.removeThemeColorObserver(this);
     }
 
     /** Applies a new download state to the model. */
@@ -56,6 +70,7 @@ class DownloadButtonMediator {
         mModel.set(DownloadButtonProperties.SHOULD_SHOW, state.shouldShow);
         updateButtonVisibility();
         updateTint();
+        updateIconAndRing();
     }
 
     /**
@@ -74,6 +89,14 @@ class DownloadButtonMediator {
                         ? mIncognitoAccentTint
                         : mAccentTint;
         updateTint();
+    }
+
+    // ThemeColorProvider.ThemeColorObserver implementation:
+
+    @Override
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+        // Fill the badge with the toolbar color so it reads as a cutout over the ring.
+        mModel.set(DownloadButtonProperties.BADGE_BACKGROUND_COLOR, color);
     }
 
     boolean shouldShow() {
@@ -101,5 +124,31 @@ class DownloadButtonMediator {
 
     private void updateTint() {
         mModel.set(DownloadButtonProperties.TINT, mState.isActive ? mActiveTint : mDefaultTint);
+    }
+
+    /** Mirrors desktop's {@code DownloadToolbarUIController::UpdateIcon}. */
+    private void updateIconAndRing() {
+        boolean isComplete = mState.iconState == IconState.COMPLETE;
+        // Once complete, show the arrow and tray; otherwise show a standalone arrow.
+        mModel.set(
+                DownloadButtonProperties.ICON_RES,
+                isComplete ? R.drawable.ic_download : R.drawable.ic_download_in_progress);
+
+        @RingStatus int ringStatus;
+        if (isComplete || mState.downloadCount == 0) {
+            ringStatus = RingStatus.IDLE;
+        } else if (!mState.progressCertain) {
+            ringStatus = RingStatus.SCANNING;
+        } else {
+            ringStatus = RingStatus.DOWNLOADING;
+        }
+        // Set progress first so a status change to DOWNLOADING never draws a stale percentage.
+        mModel.set(DownloadButtonProperties.PROGRESS_PERCENT, mState.progressPercent);
+        mModel.set(DownloadButtonProperties.RING_STATUS, ringStatus);
+
+        // Like desktop, the count is only shown while active, e.g. not when everything is paused.
+        mModel.set(
+                DownloadButtonProperties.BADGE_COUNT,
+                mState.isActive && mState.downloadCount >= 2 ? mState.downloadCount : 0);
     }
 }

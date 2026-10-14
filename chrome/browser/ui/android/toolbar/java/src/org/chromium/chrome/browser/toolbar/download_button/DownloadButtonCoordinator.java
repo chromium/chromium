@@ -71,6 +71,7 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
     @Override
     public void destroy() {
         mStateSupplier.removeObserver(mStateObserver);
+        mMediator.destroy();
         super.destroy();
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();

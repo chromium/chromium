@@ -408,6 +408,7 @@ android_resources("java_resources") {
     "java/res/drawable/glic_action_chip_background.xml",
     "java/res/drawable/home_surface_search_box_background.xml",
     "java/res/drawable/ic_close_all_tabs.xml",
+    "java/res/drawable/ic_download_in_progress.xml",
     "java/res/drawable/ic_widgets.xml",
     "java/res/drawable/modern_toolbar_text_box_background_with_primary_color_square.xml",
     "java/res/drawable/optional_button_background.xml",
