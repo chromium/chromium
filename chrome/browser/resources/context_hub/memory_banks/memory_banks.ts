@@ -18,7 +18,7 @@ import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry, MemoryBankEntryAnnotations} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './memory_banks.css.js';
@@ -48,6 +48,7 @@ function downloadFile(
 export interface MemoryBanksElement {
   $: {
     actionMenu: CrActionMenuElement,
+    fileInput: HTMLInputElement,
   };
 }
 
@@ -616,6 +617,35 @@ export class MemoryBanksElement extends CrLitElement {
         'memory_banks_entries.md', this.getSelectedEntriesAsMarkdown_());
   }
 
+  protected onUploadClick_() {
+    this.$.fileInput.value = '';
+    this.$.fileInput.click();
+  }
+
+  protected async onFileUploadChange_(e: Event) {
+    const input = e.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+    const entriesToUpload: MemoryBankEntry[] = [];
+    for (const file of Array.from(input.files)) {
+      const text = await file.text();
+      entriesToUpload.push(...this.parseEntriesFromMarkdown_(text));
+    }
+    input.value = '';
+    if (entriesToUpload.length === 0) {
+      return;
+    }
+    // TODO(crbug.com/567261012): Notify the user in the UI when one or more
+    // uploaded entries fail to save.
+    const {success} =
+        await browserProxyFactory.getInstance().handler.uploadMemoryBankEntries(
+            entriesToUpload);
+    if (success) {
+      await this.fetchEntries();
+    }
+  }
+
   protected onDownloadGeminiResponseClick_() {
     downloadFile('gemini_response.md', this.geminiResponse_);
   }
@@ -667,6 +697,139 @@ export class MemoryBanksElement extends CrLitElement {
     } finally {
       this.isAskingGemini_ = false;
     }
+  }
+
+  private convertDateToMojoTime_(date: Date): {internalValue: bigint} {
+    if (isNaN(date.getTime())) {
+      return {internalValue: 0n};
+    }
+    return {
+      internalValue: BigInt(date.getTime()) * 1000n + 11644473600000000n,
+    };
+  }
+
+  private parseEntriesFromMarkdown_(text: string): MemoryBankEntry[] {
+    const normalized = text.replace(/\r\n/g, '\n').trim();
+    if (!normalized) {
+      return [];
+    }
+
+    const blocks = normalized.split(/\n+---\n+(?=\s*##\s*\[)/);
+    const entries: MemoryBankEntry[] = [];
+    const fieldHeaderRegex = new RegExp(
+        '^-\\s*\\*\\*(Title|URL|Collection|Tags|Saved Date|Note|Content):' +
+            '\\*\\*(?:\\s*(.*))?$',
+        'i');
+
+    for (const block of blocks) {
+      const lines = block.trim().split('\n');
+      if (lines.length === 0) {
+        continue;
+      }
+
+      const header = lines[0]!.trim().toLowerCase();
+      let type: EntryType;
+      if (header.includes('[saved text selection]') ||
+          header.includes('[saved text]')) {
+        type = EntryType.kTextSelection;
+      } else if (header.includes('[saved tab]')) {
+        type = EntryType.kTab;
+      } else {
+        continue;
+      }
+
+      let timestamp = {internalValue: 0n};
+      let tabTitle = '';
+      let url = '';
+      let collection: string|null = null;
+      let tags: string[] = [];
+
+      let currentField: string|null = null;
+      const noteLines: string[] = [];
+      const contentLines: string[] = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i]!;
+        const match = line.match(fieldHeaderRegex);
+        if (match) {
+          const field = match[1]!.toLowerCase();
+          const value = (match[2] || '').trim();
+          currentField = field;
+          switch (field) {
+            case 'title':
+              tabTitle = value;
+              break;
+            case 'url':
+              url = value;
+              break;
+            case 'collection':
+              collection = value || null;
+              break;
+            case 'tags':
+              tags = value.split(',').map(t => t.trim()).filter(Boolean);
+              break;
+            case 'saved date': {
+              const parsedDate = new Date(value);
+              if (!isNaN(parsedDate.getTime())) {
+                timestamp = this.convertDateToMojoTime_(parsedDate);
+              }
+              break;
+            }
+            case 'note':
+              if (value) {
+                noteLines.push(value.replace(/^(?:\s*>\s?)+/, ''));
+              }
+              break;
+            case 'content':
+              if (value) {
+                contentLines.push(value.replace(/^(?:\s*>\s?)+/, ''));
+              }
+              break;
+            default:
+              break;
+          }
+        } else if (currentField === 'note') {
+          noteLines.push(line.replace(/^(?:\s*>\s?)+/, ''));
+        } else if (currentField === 'content') {
+          contentLines.push(line.replace(/^(?:\s*>\s?)+/, ''));
+        }
+      }
+
+      // URL sanitization: must be valid HTTP or HTTPS URL to be uploaded.
+      if (!url) {
+        continue;
+      }
+      try {
+        const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+          continue;
+        }
+      } catch {
+        continue;
+      }
+
+      const uniqueTags = Array.from(new Set(tags));
+      const note: string|null = noteLines.join('\n').trim() || null;
+      const selectedText: string|null = contentLines.join('\n').trim() || null;
+
+      entries.push({
+        // Set `id` to 0 so the storage backend treats the uploaded entry as a
+        // new entry (generating a fresh ID and enforcing capacity limits)
+        // rather than overwriting an existing entry.
+        id: 0n,
+        type,
+        timestamp,
+        url,
+        tabTitle,
+        selectedText,
+        imageUrl: null,
+        tags: uniqueTags,
+        note,
+        collection,
+      });
+    }
+
+    return entries;
   }
 
   private getSelectedEntriesAsMarkdown_(): string {
