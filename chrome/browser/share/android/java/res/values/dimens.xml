@@ -23,4 +23,8 @@ found in the LICENSE file.
     <dimen name="stts_sheet_margin">16dp</dimen>
     <dimen name="stts_enhanced_list_item_height">74dp</dimen>
     <dimen name="stts_fading_edge_length">24dp</dimen>
+    <dimen name="stts_manage_devices_top_margin">8dp</dimen>
+    <dimen name="stts_manage_devices_divider_top_margin_landscape">8dp</dimen>
+    <dimen name="stts_manage_devices_top_margin_landscape">0dp</dimen>
+    <dimen name="stts_bottom_actions_bottom_padding_landscape">8dp</dimen>
 </resources>

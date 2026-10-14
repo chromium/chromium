@@ -11,9 +11,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.DimenRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -24,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -311,5 +315,90 @@ public class EnhancedTargetDevicePickerViewTest {
 
         assertEquals(laidOutWidthPx, view.mSendButton.getMeasuredWidth());
         assertEquals(laidOutWidthPx, view.mManageDevicesBlock.getMeasuredWidth());
+    }
+
+    private void assertManageDevicesSpacing(
+            EnhancedTargetDevicePickerView view,
+            @DimenRes int dividerMarginResId,
+            @DimenRes int linkMarginResId,
+            @DimenRes int bottomPaddingResId) {
+        Resources resources = mActivity.getResources();
+        int dividerMarginPx =
+                ((ViewGroup.MarginLayoutParams) view.mManageDevicesDivider.getLayoutParams())
+                        .topMargin;
+        int linkMarginPx =
+                ((ViewGroup.MarginLayoutParams) view.mManageDevicesLink.getLayoutParams())
+                        .topMargin;
+        assertEquals(resources.getDimensionPixelSize(dividerMarginResId), dividerMarginPx);
+        assertEquals(resources.getDimensionPixelSize(linkMarginResId), linkMarginPx);
+        assertEquals(
+                resources.getDimensionPixelSize(bottomPaddingResId),
+                view.mBottomActionsBlock.getPaddingBottom());
+    }
+
+    /**
+     * Tests that on phones, rotating between portrait and landscape dynamically switches between
+     * standard and compact manage devices footer spacing.
+     */
+    @Test
+    public void testManageDevicesSpacing_phonePortraitAndLandscape() {
+        EnhancedTargetDevicePickerView view =
+                createViewWithDevices(
+                        /* deviceCount= */ 4, /* isLargeFormFactorUiEnabled= */ false);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        view.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        assertManageDevicesSpacing(
+                view,
+                R.dimen.stts_sheet_margin,
+                R.dimen.stts_manage_devices_top_margin,
+                R.dimen.stts_sheet_margin);
+
+        // Rotate phone to landscape: footer uses compact spacing in `SheetState.FULL`.
+        mActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_LANDSCAPE;
+        view.onContainerSizeChanged(/* width= */ 1800, /* height= */ 1080);
+        assertManageDevicesSpacing(
+                view,
+                R.dimen.stts_manage_devices_divider_top_margin_landscape,
+                R.dimen.stts_manage_devices_top_margin_landscape,
+                R.dimen.stts_bottom_actions_bottom_padding_landscape);
+
+        // Rotate phone back to portrait: default spacing is restored.
+        mActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_PORTRAIT;
+        view.onContainerSizeChanged(/* width= */ 1080, /* height= */ 1800);
+        assertManageDevicesSpacing(
+                view,
+                R.dimen.stts_sheet_margin,
+                R.dimen.stts_manage_devices_top_margin,
+                R.dimen.stts_sheet_margin);
+    }
+
+    /**
+     * Tests that tablets (`sw600dp-land`) and desktop (`isLargeFormFactorUiEnabled` is `true`) in
+     * landscape orientation preserve the standard vertical footer spacing.
+     */
+    @Test
+    @Config(qualifiers = "sw600dp-land")
+    public void testManageDevicesSpacing_tabletAndDesktopLandscape_preservesDefaultSpacing() {
+        EnhancedTargetDevicePickerView tabletView =
+                createViewWithDevices(
+                        /* deviceCount= */ 4, /* isLargeFormFactorUiEnabled= */ false);
+        tabletView.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+        assertManageDevicesSpacing(
+                tabletView,
+                R.dimen.stts_sheet_margin,
+                R.dimen.stts_manage_devices_top_margin,
+                R.dimen.stts_sheet_margin);
+
+        EnhancedTargetDevicePickerView desktopView =
+                createViewWithDevices(/* deviceCount= */ 4, /* isLargeFormFactorUiEnabled= */ true);
+        desktopView.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertManageDevicesSpacing(
+                desktopView,
+                R.dimen.stts_sheet_margin,
+                R.dimen.stts_manage_devices_top_margin,
+                R.dimen.stts_sheet_margin);
     }
 }
