@@ -75,6 +75,19 @@ group("deps") {
 
     if (enable_cpp_api_from_rust) {
       deps += [ "//build/rust/tests/test_cpp_api_from_rust" ]
+
+      # The `data_deps` below provides light test coverage for using
+      # `cpp_api_from_rust` when building for the host platform (rather than
+      # the target platform).  This is a bit of a hack that shouldn't really be
+      # replicated/used elsewhere.
+      #
+      # `data_deps` (rather than `deps`) are needed because this is a
+      # dependency on a `source_set` from *another* toolchain - `deps` would
+      # undesirably link the host toolchain objects into the (target toolchain)
+      # executables that depend on this group (e.g. into `base_unittests`).
+      if (!toolchain_for_rust_host_build_tools) {
+        data_deps += [ "//build/rust/tests/test_cpp_api_from_rust:target_depending_only_on_bindings($rust_macro_toolchain)" ]
+      }
     }
     if (enable_rust_api_from_cpp) {
       deps += [ "//build/rust/tests/test_rust_api_from_cpp" ]

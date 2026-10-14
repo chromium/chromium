@@ -10,9 +10,7 @@ group("crubit") {
   public_deps = [
     "$crubit_src_dir/support:support_cpp",
     "$crubit_src_dir/support/rs_std:rs_std_cpp",
-    "//build/rust/std/rules:alloc_bindings",
-    "//build/rust/std/rules:core_bindings",
-    "//build/rust/std/rules:std_bindings",
+    "//build/rust/std:std_bindings",
   ]
 }
 

@@ -449,8 +449,7 @@ rust_prebuilt_stdlib =
 #
 # See the `assert` comments in `cpp_api_from_rust.gni` for explanation of
 # the conditions used here.
-enable_cpp_api_from_rust = enable_rust && use_chromium_rust_toolchain &&
-                           !rust_prebuilt_stdlib && build_with_chromium
+enable_cpp_api_from_rust = enable_rust && build_with_chromium
 
 declare_args() {
   # Whether it is okay to use `rust_api_from_cpp.gni`.  The default is `false`,
@@ -459,9 +458,8 @@ declare_args() {
   # `true` in `args.gn` for local experimentation.
   #
   # TODO(crbug.com/40226863): After officially supporting `rust_api_from_cpp`:
-  # * Introduce `_enable_crubit = enable_rust && use_chromium_rust_toolchain &&
-  #   build_with_chromium`
-  # * Set `enable_cpp_api_from_rust = _enable_crubit && !rust_prebuilt_stdlib`
+  # * Introduce `_enable_crubit = enable_rust && build_with_chromium`
+  # * Set `enable_cpp_api_from_rust = _enable_crubit`
   # * Set `enable_rust_api_from_cpp = _enable_crubit`
   #   (and it should just be a variable, not an `args.gn` setting / not in
   #   `declare_args`)

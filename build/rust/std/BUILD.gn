@@ -19,6 +19,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/rust/gni_impl/cpp_api_from_rust.gni")
 
 if (toolchain_has_rust) {
   # List of Rust stdlib rlibs which are present in the official Rust toolchain
@@ -424,6 +425,67 @@ if (toolchain_has_rust) {
     # copied into the sysroot by `:prebuilt_rustc_copy_to_sysroot` via `:std`.
     group("test_support") {
       deps = [ ":std" ]
+    }
+
+    if (enable_cpp_api_from_rust) {
+      # C++ bindings of the prebuilt Rust standard library.  The in-tree stdlib
+      # build generates the bindings from the stdlib sources (see
+      # `//build/rust/std/rules`), but here Crubit reads the crate metadata
+      # from the `.rmeta` files in the sysroot.
+      _prebuilt_stdlib_bindings = [
+        {
+          crate_name = "core"
+          deps = []
+        },
+        {
+          crate_name = "alloc"
+          deps = [ ":prebuilt_core_bindings" ]
+        },
+        {
+          crate_name = "std"
+          deps = [
+            ":prebuilt_alloc_bindings",
+            ":prebuilt_core_bindings",
+          ]
+        },
+      ]
+      foreach(_bindings, _prebuilt_stdlib_bindings) {
+        cpp_api_from_rust("prebuilt_${_bindings.crate_name}_bindings") {
+          use_rmeta_interface = true
+          rust_target = ":std"
+          crate_name = _bindings.crate_name
+          h_out = "$root_gen_dir/third_party/crubit/support/rs_std/" +
+                  "rs_${_bindings.crate_name}.h"
+          original_attributes = {
+            cpp_namespace = "rs::${_bindings.crate_name}"
+            deps = _bindings.deps
+          }
+
+          # Crubit reads the `.rmeta` files from `rust_sysroot`.  The copies
+          # made by `:find_stdlib` change together with these files.
+          sources = get_target_outputs(":find_stdlib")
+          deps = [ ":find_stdlib" ]
+
+          visibility = [ ":*" ]
+        }
+      }
+
+      group("std_bindings") {
+        deps = [ ":std" ]
+        public_deps = [
+          ":prebuilt_alloc_bindings",
+          ":prebuilt_core_bindings",
+          ":prebuilt_std_bindings",
+        ]
+      }
+
+      group("std_bindings_crubit_metadata") {
+        public_deps = [
+          ":prebuilt_alloc_bindings_crubit_metadata",
+          ":prebuilt_core_bindings_crubit_metadata",
+          ":prebuilt_std_bindings_crubit_metadata",
+        ]
+      }
     }
   }
 }
