@@ -178,14 +178,26 @@ class AppShimManager
       const webapps::AppId& app_id,
       const std::optional<badging::BadgeManager::BadgeValue>& badge);
 
+  // LINT.IfChange(AppShimNotificationProviderOutcome)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class NotificationProviderOutcome {
+    kBoundToExistingHost = 0,
+    kLaunchedNewShim = 1,
+    kNoProfileForBackgroundLaunch = 2,
+    kShuttingDown = 3,
+    kMaxValue = kShuttingDown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:AppShimNotificationProviderOutcome)
+
   // Called to connect to a MacNotificationProvider instance in the app shim
   // process for the given app_id. This is only supported for multi-profile
   // app shims; but only legacy platform apps would use single-profile shims
   // anyway.
-  // If there is no running app shim matching `app_id`, currently this method
-  // instead returns a remote connected to a dummy notification provider. In
-  // the future this will instead launch an app shim for `app_id` and connect
-  // to that.
+  // If there is no running app shim matching `app_id`, this method will
+  // launch an app shim in the background for `app_id` and connect to that, or
+  // return a remote connected to a dummy notification provider if no profile
+  // with `app_id` installed is available.
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
   LaunchNotificationProvider(const webapps::AppId& app_id);
 

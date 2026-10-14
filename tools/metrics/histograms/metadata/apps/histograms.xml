@@ -1948,6 +1948,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppShim.NotificationProvider.Outcome"
+    enum="AppShimNotificationProviderOutcome" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    Records the outcome of AppShimManager::LaunchNotificationProvider on macOS
+    when connecting a MacNotificationProvider to an app shim (binding to an
+    already-running host, launching a new shim in background mode, or falling
+    back to a dummy provider when no profile is available or Chrome is shutting
+    down).
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppShim.WillTerminate" enum="Boolean"
     expires_after="2027-03-01">
   <owner>mek@chromium.org</owner>

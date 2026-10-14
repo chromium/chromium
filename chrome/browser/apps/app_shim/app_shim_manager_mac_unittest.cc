@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -2137,6 +2138,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
 
   // Connect to its notification provider.
+  base::HistogramTester histogram_tester;
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
       manager_->LaunchNotificationProvider(kTestAppIdA);
   EXPECT_TRUE(provider.is_bound());
@@ -2144,6 +2146,9 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
       host_aa_->test_app_shim_->notification_provider_receiver_.is_bound());
   provider.FlushForTesting();
   EXPECT_TRUE(provider.is_connected());
+  histogram_tester.ExpectUniqueSample(
+      "Apps.AppShim.NotificationProvider.Outcome",
+      AppShimManager::NotificationProviderOutcome::kBoundToExistingHost, 1);
 }
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
@@ -2164,6 +2169,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
                            web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
                            web_app::ShimLaunchMode::kBackground));
 
+  base::HistogramTester histogram_tester;
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
       manager_->LaunchNotificationProvider(kTestAppIdA);
   EXPECT_TRUE(provider.is_bound());
@@ -2171,6 +2177,9 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
       host_aa_->test_app_shim_->notification_provider_receiver_.is_bound());
   provider.FlushForTesting();
   EXPECT_TRUE(provider.is_connected());
+  histogram_tester.ExpectUniqueSample(
+      "Apps.AppShim.NotificationProvider.Outcome",
+      AppShimManager::NotificationProviderOutcome::kLaunchedNewShim, 1);
 }
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
@@ -2182,6 +2191,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
 
+  base::HistogramTester histogram_tester;
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
       manager_->LaunchNotificationProvider(kTestAppIdA);
   // AppShimManager binds `provider` to a dummy implementation if an app can't
@@ -2189,6 +2199,11 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   EXPECT_TRUE(provider.is_bound());
   provider.FlushForTesting();
   EXPECT_TRUE(provider.is_connected());
+  histogram_tester.ExpectUniqueSample(
+      "Apps.AppShim.NotificationProvider.Outcome",
+      AppShimManager::NotificationProviderOutcome::
+          kNoProfileForBackgroundLaunch,
+      1);
 
   // Attempting to bind a notification service on the dummy provider should
   // immediately disconnect.

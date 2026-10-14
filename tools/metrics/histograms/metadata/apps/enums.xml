@@ -349,6 +349,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dismissed by Nudge"/>
 </enum>
 
+<!-- LINT.IfChange(AppShimNotificationProviderOutcome) -->
+
+<enum name="AppShimNotificationProviderOutcome">
+  <int value="0" label="Bound to existing host"/>
+  <int value="1" label="Launched new shim"/>
+  <int value="2" label="No profile for background launch"/>
+  <int value="3" label="Shutting down"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_shim/app_shim_manager_mac.h:AppShimNotificationProviderOutcome) -->
+
 <enum name="AppShimRegistryGetHmacKeyResult">
   <int value="0" label="Success"/>
   <int value="1" label="Not Found"/>
