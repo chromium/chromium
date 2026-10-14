@@ -86,9 +86,6 @@ BASE_FEATURE(kCredentialManagementUnifiedUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceReauthRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisablePasswordChangeFromNewPasswordFields,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kEnablePasswordManagerMojoApiPhase2,
              base::FEATURE_ENABLED_BY_DEFAULT);
