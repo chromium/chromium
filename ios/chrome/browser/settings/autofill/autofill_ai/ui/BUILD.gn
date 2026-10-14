@@ -79,6 +79,8 @@ source_set("unit_tests") {
   deps = [
     ":edit_items",
     ":ui",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",

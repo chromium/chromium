@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
 #import <algorithm>
+#import <utility>
 #import <variant>
 
 #import "base/apple/foundation_util.h"
@@ -290,8 +291,13 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     // The legal message token ties the save to the disclosure notice the user
     // was shown, so it only holds a value when that notice was actually
     // displayed.
+    if (_legalMessageToken.has_value()) {
+      autofill::LogWalletNoticeFunnelEvent(
+          autofill::AutofillAiWalletNoticeFunnelEvents::kEntitySaved,
+          /*in_settings=*/true);
+    }
     _entityDataManager->AddOrUpdateEntityInstance(
-        *_entityInstance, std::move(_legalMessageToken));
+        *_entityInstance, std::exchange(_legalMessageToken, std::nullopt));
     [self.consumer didFinishSavingWithLocalFallback:NO];
     return;
   }
@@ -527,6 +533,15 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
              _entityInstance->record_type_data())
       .GetManagementUrlWithFallback(_entityInstance->type(),
                                     _entityInstance->guid());
+}
+
+- (void)disconnect {
+  if (_legalMessageToken.has_value()) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved,
+        /*in_settings=*/true);
+    _legalMessageToken.reset();
+  }
 }
 
 #pragma mark - Private
