@@ -928,7 +928,7 @@ public class AutocompleteMediatorUnitTest {
         autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         assertEquals("inline_autocomplete2", session.getAutocompleteInput().getPreviewText());
-        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, true);
+        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, false);
     }
 
     @Test

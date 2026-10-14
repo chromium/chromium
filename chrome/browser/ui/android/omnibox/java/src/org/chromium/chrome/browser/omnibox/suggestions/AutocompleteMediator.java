@@ -1286,9 +1286,8 @@ class AutocompleteMediator
 
         if (!(mAutocompleteResult != null && mAutocompleteResult.equals(autocompleteResult))) {
             mAutocompleteResult = autocompleteResult;
-            populateSuggestions();
-            mDelegate.onSuggestionsChanged(
-                    defaultMatch, !mAutocompleteResult.getSuggestionsList().isEmpty());
+            boolean hasSuggestions = populateSuggestions();
+            mDelegate.onSuggestionsChanged(defaultMatch, hasSuggestions);
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
@@ -1300,8 +1299,15 @@ class AutocompleteMediator
         measureSuggestionRequestToUiModelTime(isFinal);
     }
 
-    private void populateSuggestions() {
-        if (!isInInputSession() || mAutocompleteResult == null) return;
+    /**
+     * Populates the dropdown suggestion list from the current autocomplete result. Returns whether
+     * any suggestions were populated into the dropdown, or whether the underlying result is
+     * non-empty when suggestions are temporarily hidden due to multiline text wrapping on desktop.
+     *
+     * @return Whether any suggestions are available for the autocomplete delegate.
+     */
+    private boolean populateSuggestions() {
+        if (!isInInputSession() || mAutocompleteResult == null) return false;
 
         boolean hasPreviewText =
                 mAutocompleteInput.hasPreviewText()
@@ -1320,6 +1326,9 @@ class AutocompleteMediator
                 mDropdownViewInfoListBuilder.buildDropdownViewInfoList(
                         mAutocompleteInput, autocompleteResult);
         mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
+        return shouldHideSuggestions
+                ? !mAutocompleteResult.getSuggestionsList().isEmpty()
+                : !viewInfoList.isEmpty();
     }
 
     private void onUrlTextWrappingChanged() {
