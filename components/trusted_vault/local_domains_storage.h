@@ -14,11 +14,16 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/trusted_vault/proto/local_domains_data.pb.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_id.h"
+
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
 
 namespace trusted_vault {
 
@@ -44,11 +49,12 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
         const trusted_vault_pb::LocalDomainsData& data) = 0;
   };
 
-  // Creates an instance of `LocalDomainsStorage` that reads and writes data
-  // inside `base_dir`. `ReadDataFromDisk()` must be called before using the
-  // returned object.
+  // Creates an instance of `LocalDomainsStorage` that reads and writes
+  // encrypted data inside `base_dir` using `encryptor`. `ReadDataFromDisk()`
+  // must be called before using the returned object.
   static std::unique_ptr<LocalDomainsStorage> Create(
-      const base::FilePath& base_dir);
+      const base::FilePath& base_dir,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor);
 
   // Creates an instance of `LocalDomainsStorage` with a custom
   // `StorageFileAccess` implementation. Only used for testing.

@@ -225,6 +225,11 @@ void RecordTrustedVaultFileWriteSuccess(bool success) {
   base::UmaHistogramBoolean("TrustedVault.FileWriteSuccess", success);
 }
 
+void RecordTrustedVaultFileWriteStatus(
+    TrustedVaultFileWriteStatusForUMA status) {
+  base::UmaHistogramEnumeration("TrustedVault.FileWriteStatus", status);
+}
+
 void RecordTrustedVaultLocalDomainsMigrationStatus(
     TrustedVaultLocalDomainsMigrationStatusForUMA status) {
   base::UmaHistogramEnumeration("TrustedVault.LocalDomainsMigrationStatus",

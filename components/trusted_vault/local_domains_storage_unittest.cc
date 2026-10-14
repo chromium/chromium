@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_domains_data.pb.h"
@@ -218,14 +219,19 @@ class LocalDomainsStorageDiskTest : public testing::Test {
   base::FilePath legacy_file_path() const {
     return base_dir().Append(FILE_PATH_LITERAL("trusted_vault.pb"));
   }
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor() const {
+    return encryptor_;
+  }
 
  private:
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<os_crypt_async::TestEncryptor> encryptor_ =
+      os_crypt_async::GetTestEncryptorForTesting();
 };
 
 TEST_F(LocalDomainsStorageDiskTest,
        ShouldRecordNotFoundAndNoLegacyFileAndWriteEmptyFile) {
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -239,11 +245,31 @@ TEST_F(LocalDomainsStorageDiskTest,
 }
 
 TEST_F(LocalDomainsStorageDiskTest,
-       ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
+       ShouldRecordDecryptionFailedWhenReadingUnencryptedOrCorruptedFile) {
   ASSERT_TRUE(
-      base::WriteFile(local_domains_file_path(), "corrupted_data_proto"));
+      base::WriteFile(local_domains_file_path(), "unencrypted_or_corrupted"));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus",
+      TrustedVaultFileReadStatusForUMA::kDecryptionFailed, 1);
+  histogram_tester.ExpectTotalCount("TrustedVault.LocalDomainsMigrationStatus",
+                                    0);
+  EXPECT_TRUE(base::PathExists(local_domains_file_path()));
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
+  std::string encrypted_corrupted_proto;
+  ASSERT_TRUE(encryptor()->EncryptString("corrupted_data_proto",
+                                         &encrypted_corrupted_proto));
+  ASSERT_TRUE(
+      base::WriteFile(local_domains_file_path(), encrypted_corrupted_proto));
+
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -259,7 +285,7 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   const std::vector<std::vector<uint8_t>> kKeys = {{1, 2, 3}, {4, 5, 6}};
 
   {
-    auto storage = LocalDomainsStorage::Create(base_dir());
+    auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
     storage->ReadDataFromDisk();
 
     base::HistogramTester write_histogram_tester;
@@ -267,11 +293,20 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
                           /*last_key_version=*/5);
     write_histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess",
                                               true, 1);
+    write_histogram_tester.ExpectUniqueSample(
+        "TrustedVault.FileWriteStatus",
+        TrustedVaultFileWriteStatusForUMA::kSuccess, 1);
   }
 
   ASSERT_TRUE(base::PathExists(local_domains_file_path()));
 
-  auto reloaded_storage = LocalDomainsStorage::Create(base_dir());
+  // Verify on-disk content is encrypted and not readable as plaintext.
+  std::string on_disk_bytes;
+  ASSERT_TRUE(
+      base::ReadFileToString(local_domains_file_path(), &on_disk_bytes));
+  EXPECT_EQ(on_disk_bytes.find("user1"), std::string::npos);
+
+  auto reloaded_storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester read_histogram_tester;
   reloaded_storage->ReadDataFromDisk();
 
@@ -302,10 +337,13 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {
   domain->set_domain_id(static_cast<int32_t>(SecurityDomainId::kChromeSync));
   domain->set_last_vault_key_version(5);
   domain->add_vault_key()->set_key_material("key");
-  ASSERT_TRUE(base::WriteFile(local_domains_file_path(),
-                              future_data.SerializeAsString()));
+  std::string encrypted_future_data;
+  ASSERT_TRUE(encryptor()->EncryptString(future_data.SerializeAsString(),
+                                         &encrypted_future_data));
+  ASSERT_TRUE(
+      base::WriteFile(local_domains_file_path(), encrypted_future_data));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -318,6 +356,52 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {
       storage->GetVaultKeys(kGaiaId, SecurityDomainId::kChromeSync).empty());
   EXPECT_EQ(storage->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync),
             0);
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordEncryptionFailedWhenEncryptorHasNoKeys) {
+  auto keyless_encryptor =
+      os_crypt_async::GetTestEncryptorWithoutKeysForTesting();
+  auto storage = LocalDomainsStorage::Create(base_dir(), keyless_encryptor);
+  storage->ReadDataFromDisk();
+
+  base::HistogramTester histogram_tester;
+  storage->SetVaultKeys(GaiaId("user1"), SecurityDomainId::kChromeSync,
+                        {{1, 2, 3}}, /*last_key_version=*/1);
+
+  histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileWriteStatus",
+      TrustedVaultFileWriteStatusForUMA::kEncryptionFailed, 1);
+  EXPECT_FALSE(base::PathExists(local_domains_file_path()));
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldUseLegacyDataWhenMigrationEncryptionFails) {
+  trusted_vault_pb::LocalTrustedVault legacy_data;
+  legacy_data.set_data_version(4);
+  auto* user = legacy_data.add_user();
+  user->set_gaia_id("migrated_user");
+  user->set_last_vault_key_version(10);
+  ASSERT_TRUE(WriteLegacyTrustedVaultFile(legacy_data, legacy_file_path()));
+
+  auto keyless_encryptor =
+      os_crypt_async::GetTestEncryptorWithoutKeysForTesting();
+  auto storage = LocalDomainsStorage::Create(base_dir(), keyless_encryptor);
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.LocalDomainsMigrationStatus",
+      TrustedVaultLocalDomainsMigrationStatusForUMA::kNewFileWriteFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileWriteStatus",
+      TrustedVaultFileWriteStatusForUMA::kEncryptionFailed, 1);
+  EXPECT_FALSE(base::PathExists(local_domains_file_path()));
+  EXPECT_EQ(storage->GetLastKeyVersion(GaiaId("migrated_user"),
+                                       SecurityDomainId::kChromeSync),
+            10);
 }
 
 TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
@@ -335,7 +419,7 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
 
   ASSERT_TRUE(WriteLegacyTrustedVaultFile(legacy_data, legacy_file_path()));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -349,6 +433,9 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
       "TrustedVault.LocalDomainsMigrationStatus",
       TrustedVaultLocalDomainsMigrationStatusForUMA::kMigrated, 1);
   histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileWriteStatus",
+      TrustedVaultFileWriteStatusForUMA::kSuccess, 1);
   EXPECT_TRUE(base::PathExists(local_domains_file_path()));
 
   GaiaId gaia_id("migrated_user");
@@ -367,7 +454,7 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
 
   // Verify subsequent reads load from `local_domains_data.pb` without
   // re-migrating.
-  auto reloaded_storage = LocalDomainsStorage::Create(base_dir());
+  auto reloaded_storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester reload_histogram_tester;
   reloaded_storage->ReadDataFromDisk();
   reload_histogram_tester.ExpectUniqueSample(
@@ -384,7 +471,7 @@ TEST_F(LocalDomainsStorageDiskTest,
   ASSERT_TRUE(base::WriteFile(legacy_file_path(),
                               corrupted_legacy_file.SerializeAsString()));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -403,7 +490,7 @@ TEST_F(LocalDomainsStorageDiskTest,
   ASSERT_TRUE(
       WriteLegacyTrustedVaultFile(empty_legacy_data, legacy_file_path()));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
@@ -433,7 +520,7 @@ TEST_F(LocalDomainsStorageDiskTest,
 
   ASSERT_TRUE(WriteLegacyTrustedVaultFile(legacy_data, legacy_file_path()));
 
-  auto storage = LocalDomainsStorage::Create(base_dir());
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   storage->ReadDataFromDisk();
 
   const GaiaId gaia_id("legacy_v0_user");

@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
@@ -401,12 +402,13 @@ void MigrationAndMutationsMatchLegacyAdapter(
       LegacyStandaloneTrustedVaultStorage::GetBackendFilePath(
           migrated_dir.GetPath(), SecurityDomainId::kChromeSync)));
 
+  auto encryptor = os_crypt_async::GetTestEncryptorForTesting();
   auto legacy_adapter =
       std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
           std::make_unique<LegacyStandaloneTrustedVaultStorage>(
               legacy_dir.GetPath(), SecurityDomainId::kChromeSync));
   auto local_domains_storage =
-      LocalDomainsStorage::Create(migrated_dir.GetPath());
+      LocalDomainsStorage::Create(migrated_dir.GetPath(), encryptor);
 
   legacy_adapter->ReadDataFromDisk();
   local_domains_storage->ReadDataFromDisk();
@@ -426,7 +428,7 @@ void MigrationAndMutationsMatchLegacyAdapter(
           std::make_unique<LegacyStandaloneTrustedVaultStorage>(
               legacy_dir.GetPath(), SecurityDomainId::kChromeSync));
   auto reloaded_local_domains_storage =
-      LocalDomainsStorage::Create(migrated_dir.GetPath());
+      LocalDomainsStorage::Create(migrated_dir.GetPath(), encryptor);
   reloaded_legacy_adapter->ReadDataFromDisk();
   reloaded_local_domains_storage->ReadDataFromDisk();
 

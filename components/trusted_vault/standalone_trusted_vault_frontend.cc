@@ -315,9 +315,8 @@ void StandaloneTrustedVaultFrontend::OnEncryptorReady(
     const base::FilePath& base_dir,
     scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/542895033): Pass `encryptor` to
-  // `LocalDomainsStorage::Create`.
-  InitializeBackend(LocalDomainsStorage::Create(base_dir));
+  InitializeBackend(
+      LocalDomainsStorage::Create(base_dir, std::move(encryptor)));
 }
 
 void StandaloneTrustedVaultFrontend::InitializeBackend(

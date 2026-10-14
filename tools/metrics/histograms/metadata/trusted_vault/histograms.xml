@@ -92,6 +92,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="TrustedVault.FileWriteStatus"
+    enum="TrustedVaultFileWriteStatus" expires_after="2027-02-07">
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
+  <summary>
+    Recorded when writing the local domains trusted vault file, capturing
+    whether encryption or disk write failed.
+
+    Note: This histogram covers all write events, including writes required
+    because of re-encryption during reads.
+  </summary>
+</histogram>
+
 <histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
     enum="Boolean" expires_after="2027-09-06">
   <owner>mastiz@chromium.org</owner>

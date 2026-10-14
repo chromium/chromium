@@ -24,7 +24,8 @@ enum class SecurityDomainId;
 class StandaloneTrustedVaultFrontend;
 
 // Standalone, file-based implementation of TrustedVaultClient that stores the
-// keys in a local file, containing a serialized protocol buffer.
+// keys in a local file, containing a serialized protocol buffer encrypted with
+// platform-dependent crypto mechanisms (OSCrypt).
 //
 // Reading of the file is done lazily.
 class StandaloneTrustedVaultClient : public TrustedVaultClient {

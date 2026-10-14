@@ -14,6 +14,8 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
@@ -31,17 +33,46 @@ constexpr base::FilePath::CharType kLocalDomainsFileName[] =
 
 constexpr int kCurrentLocalDomainsDataVersion = 1;
 
+bool WriteLocalDomainsDataToDiskImpl(
+    const trusted_vault_pb::LocalDomainsData& data,
+    const base::FilePath& file_path,
+    const os_crypt_async::Encryptor& encryptor) {
+  std::string encrypted_content;
+  if (!encryptor.EncryptString(data.SerializeAsString(), &encrypted_content)) {
+    RecordTrustedVaultFileWriteSuccess(false);
+    RecordTrustedVaultFileWriteStatus(
+        TrustedVaultFileWriteStatusForUMA::kEncryptionFailed);
+    return false;
+  }
+
+  const bool success = base::ImportantFileWriter::WriteFileAtomically(
+      file_path, encrypted_content, "TrustedVault");
+  RecordTrustedVaultFileWriteSuccess(success);
+  RecordTrustedVaultFileWriteStatus(
+      success ? TrustedVaultFileWriteStatusForUMA::kSuccess
+              : TrustedVaultFileWriteStatusForUMA::kFileWriteFailed);
+  return success;
+}
+
 std::pair<trusted_vault_pb::LocalDomainsData, TrustedVaultFileReadStatusForUMA>
-ReadLocalDomainsDataFromDiskImpl(const base::FilePath& file_path) {
-  // TODO(crbug.com/542893243): Use OS Crypt to decrypt the file content.
+ReadLocalDomainsDataFromDiskImpl(const base::FilePath& file_path,
+                                 const os_crypt_async::Encryptor& encryptor) {
   trusted_vault_pb::LocalDomainsData data_proto;
-  std::string file_content;
-  if (!base::ReadFileToString(file_path, &file_content)) {
+  std::string ciphertext;
+  if (!base::ReadFileToString(file_path, &ciphertext)) {
     return {trusted_vault_pb::LocalDomainsData(),
             TrustedVaultFileReadStatusForUMA::kFileReadFailed};
   }
 
-  if (!data_proto.ParseFromString(file_content)) {
+  std::string decrypted_content;
+  os_crypt_async::Encryptor::DecryptFlags decrypt_flags;
+  if (!encryptor.DecryptString(ciphertext, &decrypted_content,
+                               &decrypt_flags)) {
+    return {trusted_vault_pb::LocalDomainsData(),
+            TrustedVaultFileReadStatusForUMA::kDecryptionFailed};
+  }
+
+  if (!data_proto.ParseFromString(decrypted_content)) {
     return {trusted_vault_pb::LocalDomainsData(),
             TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed};
   }
@@ -51,27 +82,26 @@ ReadLocalDomainsDataFromDiskImpl(const base::FilePath& file_path) {
             TrustedVaultFileReadStatusForUMA::kUnsupportedVersion};
   }
 
+  if (decrypt_flags.should_reencrypt) {
+    WriteLocalDomainsDataToDiskImpl(data_proto, file_path, encryptor);
+  }
   return {std::move(data_proto), TrustedVaultFileReadStatusForUMA::kSuccess};
 }
 
-bool WriteLocalDomainsDataToDiskImpl(
-    const trusted_vault_pb::LocalDomainsData& data,
-    const base::FilePath& file_path) {
-  // TODO(crbug.com/542893243): Use OS Crypt to encrypt the file content.
-  const bool success = base::ImportantFileWriter::WriteFileAtomically(
-      file_path, data.SerializeAsString(), "TrustedVault");
-  RecordTrustedVaultFileWriteSuccess(success);
-  return success;
-}
-
 // Default file access implementation for `LocalDomainsStorage`.
-// Responsible for reading/writing `local_domains_data.pb` and migrating legacy
-// `trusted_vault.pb` data when `local_domains_data.pb` does not yet exist.
+// Responsible for reading/writing `local_domains_data.pb` encrypted with
+// `OSCryptAsync` and migrating legacy `trusted_vault.pb` data when
+// `local_domains_data.pb` does not yet exist.
 class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
  public:
-  explicit DefaultStorageFileAccess(const base::FilePath& base_dir)
+  DefaultStorageFileAccess(
+      const base::FilePath& base_dir,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor)
       : base_dir_(base_dir),
-        local_domains_file_path_(base_dir.Append(kLocalDomainsFileName)) {}
+        local_domains_file_path_(base_dir.Append(kLocalDomainsFileName)),
+        encryptor_(std::move(encryptor)) {
+    CHECK(encryptor_);
+  }
   DefaultStorageFileAccess(const DefaultStorageFileAccess&) = delete;
   DefaultStorageFileAccess& operator=(const DefaultStorageFileAccess&) = delete;
   ~DefaultStorageFileAccess() override = default;
@@ -84,7 +114,7 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
     }
 
     auto [data, read_status] =
-        ReadLocalDomainsDataFromDiskImpl(local_domains_file_path_);
+        ReadLocalDomainsDataFromDiskImpl(local_domains_file_path_, *encryptor_);
     RecordTrustedVaultFileReadStatus(read_status);
     if (data.data_version() != kCurrentLocalDomainsDataVersion) {
       data.Clear();
@@ -94,7 +124,8 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
   }
 
   void WriteToDisk(const trusted_vault_pb::LocalDomainsData& data) override {
-    WriteLocalDomainsDataToDiskImpl(data, local_domains_file_path_);
+    WriteLocalDomainsDataToDiskImpl(data, local_domains_file_path_,
+                                    *encryptor_);
   }
 
  private:
@@ -205,7 +236,7 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
       const trusted_vault_pb::LocalDomainsData& migrated_data,
       TrustedVaultLocalDomainsMigrationStatusForUMA migration_status) {
     const bool write_success = WriteLocalDomainsDataToDiskImpl(
-        migrated_data, local_domains_file_path_);
+        migrated_data, local_domains_file_path_, *encryptor_);
     RecordTrustedVaultLocalDomainsMigrationStatus(
         write_success ? migration_status
                       : TrustedVaultLocalDomainsMigrationStatusForUMA::
@@ -214,15 +245,18 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
 
   const base::FilePath base_dir_;
   const base::FilePath local_domains_file_path_;
+  const scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
 };
 
 }  // namespace
 
 // static
 std::unique_ptr<LocalDomainsStorage> LocalDomainsStorage::Create(
-    const base::FilePath& base_dir) {
-  return base::WrapUnique(new LocalDomainsStorage(
-      std::make_unique<DefaultStorageFileAccess>(base_dir)));
+    const base::FilePath& base_dir,
+    scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
+  return base::WrapUnique(
+      new LocalDomainsStorage(std::make_unique<DefaultStorageFileAccess>(
+          base_dir, std::move(encryptor))));
 }
 
 // static

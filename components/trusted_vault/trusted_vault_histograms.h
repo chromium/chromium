@@ -140,9 +140,21 @@ enum class TrustedVaultFileReadStatusForUMA {
   kDataProtoDeserializationFailed = 5,
   kSHA256DigestMismatch = 6,
   kUnsupportedVersion = 7,
-  kMaxValue = kUnsupportedVersion
+  kDecryptionFailed = 8,
+  kMaxValue = kDecryptionFailed
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultFileWriteStatus)
+enum class TrustedVaultFileWriteStatusForUMA {
+  kSuccess = 0,
+  kEncryptionFailed = 1,
+  kFileWriteFailed = 2,
+  kMaxValue = kFileWriteFailed
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileWriteStatus)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -240,6 +252,8 @@ void RecordTrustedVaultFileWriteSuccessForSecurityDomain(
     SecurityDomainId security_domain_id,
     bool success);
 void RecordTrustedVaultFileWriteSuccess(bool success);
+void RecordTrustedVaultFileWriteStatus(
+    TrustedVaultFileWriteStatusForUMA status);
 void RecordTrustedVaultLocalDomainsMigrationStatus(
     TrustedVaultLocalDomainsMigrationStatusForUMA status);
 
