@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_mutator.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_site_exception.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -159,20 +158,20 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
       l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE),
       defaultHeader.subtitle);
 
-  TableViewDisclosureHeaderFooterItem* allowedHeader =
-      static_cast<TableViewDisclosureHeaderFooterItem*>(
+  TableViewTextHeaderFooterItem* allowedHeader =
+      static_cast<TableViewTextHeaderFooterItem*>(
           [view_controller.tableViewModel headerForSectionIndex:1]);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED),
               allowedHeader.text);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED_SUBTITLE),
-              allowedHeader.subtitleText);
+              allowedHeader.subtitle);
 
-  TableViewDisclosureHeaderFooterItem* notAllowedHeader =
-      static_cast<TableViewDisclosureHeaderFooterItem*>(
+  TableViewTextHeaderFooterItem* notAllowedHeader =
+      static_cast<TableViewTextHeaderFooterItem*>(
           [view_controller.tableViewModel headerForSectionIndex:2]);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_NOT_ALLOWED),
               notAllowedHeader.text);
-  EXPECT_EQ(nil, notAllowedHeader.subtitleText);
+  EXPECT_EQ(nil, notAllowedHeader.subtitle);
 
   TableViewURLItem* allowedItem =
       static_cast<TableViewURLItem*>(GetTableViewItem(1, 0));

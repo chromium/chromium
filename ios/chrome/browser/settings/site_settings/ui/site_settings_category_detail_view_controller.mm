@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
@@ -36,6 +35,11 @@ namespace {
 // freeze. See crbug.com/430383178.
 constexpr base::TimeDelta kSearchControllerRemovalDelay =
     base::Milliseconds(300);
+
+// Height of the footer after a section that precedes an exception section,
+// providing 24pt total spacing to the next section header (16pt footer + 8pt
+// header top margin).
+constexpr CGFloat kInterSectionFooterHeight = 16.0;
 
 // Section identifiers for the Category Detail table view.
 enum SectionIdentifier {
@@ -164,7 +168,6 @@ enum ItemType {
                                          IDS_IOS_SITE_SETTINGS_ALLOWED)
                         subtitleText:l10n_util::GetNSString(
                                          IDS_IOS_SITE_SETTINGS_ALLOWED_SUBTITLE)
-                          sectionTag:@"Allowed"
                                sites:_filteredAllowedSites];
 
   // 3. Not Allowed Section (only if non-empty).
@@ -174,7 +177,6 @@ enum ItemType {
                              titleText:l10n_util::GetNSString(
                                            IDS_IOS_SITE_SETTINGS_NOT_ALLOWED)
                           subtitleText:nil
-                            sectionTag:@"NotAllowed"
                                  sites:_filteredNotAllowedSites];
 }
 
@@ -285,27 +287,15 @@ enum ItemType {
   return cell;
 }
 
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  UIView* header = [super tableView:tableView viewForHeaderInSection:section];
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
-
-  if (sectionIdentifier != SectionIdentifierNotAllowed &&
-      sectionIdentifier != SectionIdentifierAllowed) {
-    return header;
+  if (sectionIdentifier == SectionIdentifierDefaultSetting ||
+      sectionIdentifier == SectionIdentifierAllowed) {
+    return kInterSectionFooterHeight;
   }
-
-  header.tag = sectionIdentifier;
-  for (UIGestureRecognizer* recognizer in header.gestureRecognizers) {
-    [header removeGestureRecognizer:recognizer];
-  }
-  UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(handleHeaderTap:)];
-  [header addGestureRecognizer:tapGesture];
-
-  return header;
+  return [super tableView:tableView heightForFooterInSection:section];
 }
 
 #pragma mark - UITableViewDelegate
@@ -602,14 +592,13 @@ enum ItemType {
       toSectionWithIdentifier:SectionIdentifierDefaultSetting];
 }
 
-// Adds a collapsible section for the given `sites` list if non-empty,
-// configuring the header, collapse state key, and site items.
+// Adds a section for the given `sites` list if non-empty, configuring the
+// header and site items.
 - (void)loadSitesSectionWithIdentifier:(SectionIdentifier)sectionIdentifier
                             headerType:(ItemType)headerType
                               itemType:(ItemType)itemType
                              titleText:(NSString*)titleText
                           subtitleText:(NSString*)subtitleText
-                            sectionTag:(NSString*)sectionTag
                                  sites:(NSArray<SiteSettingsSiteException*>*)
                                            sites {
   if (sites.count == 0) {
@@ -617,16 +606,11 @@ enum ItemType {
   }
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:sectionIdentifier];
-  NSString* collapsedKey =
-      [NSString stringWithFormat:@"SiteSettings_%d_%@",
-                                 static_cast<int>(_category), sectionTag];
-  [model setSectionIdentifier:sectionIdentifier collapsedKey:collapsedKey];
 
-  TableViewDisclosureHeaderFooterItem* header =
-      [[TableViewDisclosureHeaderFooterItem alloc] initWithType:headerType];
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:headerType];
   header.text = titleText;
-  header.subtitleText = subtitleText;
-  header.collapsed = [model sectionIsCollapsed:sectionIdentifier];
+  header.subtitle = subtitleText;
   [model setHeader:header forSectionWithIdentifier:sectionIdentifier];
 
   for (SiteSettingsSiteException* siteException in sites) {
@@ -774,80 +758,6 @@ enum ItemType {
     return sites[indexPath.row];
   }
   return nil;
-}
-
-// Handles tap gestures on section disclosure headers to toggle expansion.
-- (void)handleHeaderTap:(UITapGestureRecognizer*)sender {
-  if (sender.state != UIGestureRecognizerStateEnded) {
-    return;
-  }
-  NSInteger sectionIdentifier = sender.view.tag;
-  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier]) {
-    return;
-  }
-
-  [self toggleExpansionOfSectionIdentifier:sectionIdentifier];
-  [self updateDisclosureHeaderForSectionIdentifier:sectionIdentifier];
-}
-
-// Updates the disclosure chevron direction and collapsed state on the section
-// header.
-- (void)updateDisclosureHeaderForSectionIdentifier:
-    (NSInteger)sectionIdentifier {
-  NSInteger sectionIndex =
-      [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
-  ListItem* headerItem =
-      [self.tableViewModel headerForSectionIndex:sectionIndex];
-  UITableViewHeaderFooterView* headerView =
-      [self.tableView headerViewForSection:sectionIndex];
-  TableViewDisclosureHeaderFooterView* disclosureHeaderView =
-      base::apple::ObjCCast<TableViewDisclosureHeaderFooterView>(headerView);
-  TableViewDisclosureHeaderFooterItem* disclosureItem =
-      base::apple::ObjCCast<TableViewDisclosureHeaderFooterItem>(headerItem);
-  BOOL collapsed = [self.tableViewModel sectionIsCollapsed:sectionIdentifier];
-  DisclosureDirection direction =
-      collapsed ? DisclosureDirectionTrailing : DisclosureDirectionDown;
-  [disclosureHeaderView rotateToDirection:direction];
-  disclosureItem.collapsed = collapsed;
-}
-
-// Animates expanding or collapsing rows within the specified section.
-- (void)toggleExpansionOfSectionIdentifier:(NSInteger)sectionIdentifier {
-  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier]) {
-    return;
-  }
-  NSArray* items =
-      [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier];
-  if ([items count] == 0) {
-    return;
-  }
-
-  NSInteger sectionIndex =
-      [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
-  NSMutableArray* cellIndexPathsToDeleteOrInsert = [NSMutableArray array];
-  for (NSUInteger i = 0; i < [items count]; i++) {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i
-                                                inSection:sectionIndex];
-    [cellIndexPathsToDeleteOrInsert addObject:indexPath];
-  }
-
-  void (^tableUpdates)(void) = ^{
-    if ([self.tableViewModel sectionIsCollapsed:sectionIdentifier]) {
-      [self.tableViewModel setSection:sectionIdentifier collapsed:NO];
-      [self.tableView insertRowsAtIndexPaths:cellIndexPathsToDeleteOrInsert
-                            withRowAnimation:UITableViewRowAnimationFade];
-    } else {
-      [self.tableViewModel setSection:sectionIdentifier collapsed:YES];
-      [self.tableView deleteRowsAtIndexPaths:cellIndexPathsToDeleteOrInsert
-                            withRowAnimation:UITableViewRowAnimationFade];
-    }
-  };
-
-  [self.tableView performBatchUpdates:tableUpdates completion:nil];
-  if (self.tableView.editing) {
-    self.deleteButton.enabled =
-        self.tableView.indexPathsForSelectedRows.count > 0;
-  }
 }
 
 // Filters allowed and not allowed sites matching `searchTerm` against domain
