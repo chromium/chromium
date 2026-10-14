@@ -13,10 +13,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** BottomSheetContent implementation for the Payments Churned Users bottom sheet. */
 @NullMarked
 /*package*/ class AutofillPaymentsChurnedUsersBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
     private final View mContentView;
 
     AutofillPaymentsChurnedUsersBottomSheetContent(View contentView) {
@@ -44,6 +47,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public boolean hasCustomLifecycle() {
         return false;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
     }
 
     @Override
