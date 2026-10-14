@@ -1227,9 +1227,16 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 
 #if !defined(BUILDING_CHROME_RENDERER)
+  const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
+#if BUILDFLAG(IS_WIN)
+  if (is_browser) {
+    CHECK(!command_line.HasSwitch(switches::kChildModuleVersion));
+    CHECK(!command_line.HasSwitch(switches::kChildModuleUserPathComponent));
+  }
+#endif
+
   // The DevTools remote debugging pipe file descriptors need to be checked
   // before any other files are opened, see https://crbug.com/40259890.
-  const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
 #if BUILDFLAG(IS_WIN)
   const bool pipes_are_specified_explicitly =
       command_line.HasSwitch(::switches::kRemoteDebuggingIoPipes);

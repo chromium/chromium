@@ -24,9 +24,9 @@
 
 namespace {
 
-// Launches chrome.exe with a version switch and verifies that it prints the
-// version and exits, rather than starting a browser.
-class ChromeVersionSwitchesWinTest : public ::testing::Test {
+// Launches chrome.exe with a command-line switch and verifies its exit
+// behavior.
+class ChromeMainDelegateWinTest : public ::testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
@@ -38,9 +38,10 @@ class ChromeVersionSwitchesWinTest : public ::testing::Test {
         job_.get(), JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE));
   }
 
-  // Runs chrome.exe with `version_switch`. Returns true if it exited within
-  // the timeout, in which case `output` and `exit_code` are populated.
-  bool RunChromeWithSwitch(std::string_view version_switch,
+  // Runs chrome.exe with `switch_string`. Returns true if it exited within
+  // the timeout, in which case `output` (if non-null) and `exit_code` are
+  // populated.
+  bool RunChromeWithSwitch(std::string_view switch_string,
                            std::string* output,
                            int* exit_code) {
     const base::FilePath exe_dir = base::PathService::CheckedGet(base::DIR_EXE);
@@ -48,7 +49,7 @@ class ChromeVersionSwitchesWinTest : public ::testing::Test {
         exe_dir.Append(chrome::kBrowserProcessExecutableName));
     command_line.AppendSwitchPath(switches::kUserDataDir,
                                   user_data_dir_.GetPath());
-    command_line.AppendSwitch(version_switch);
+    command_line.AppendSwitch(switch_string);
 
     base::LaunchOptions options;
     options.job_handle = job_.get();
@@ -62,7 +63,7 @@ class ChromeVersionSwitchesWinTest : public ::testing::Test {
   base::win::ScopedHandle job_;
 };
 
-TEST_F(ChromeVersionSwitchesWinTest, ProductVersion) {
+TEST_F(ChromeMainDelegateWinTest, ProductVersion) {
   std::string output;
   int exit_code = -1;
   ASSERT_TRUE(
@@ -72,7 +73,7 @@ TEST_F(ChromeVersionSwitchesWinTest, ProductVersion) {
             version_info::GetVersionNumber());
 }
 
-TEST_F(ChromeVersionSwitchesWinTest, Version) {
+TEST_F(ChromeMainDelegateWinTest, Version) {
   std::string output;
   int exit_code = -1;
   ASSERT_TRUE(RunChromeWithSwitch(switches::kVersion, &output, &exit_code));
@@ -80,6 +81,20 @@ TEST_F(ChromeVersionSwitchesWinTest, Version) {
   EXPECT_THAT(output, ::testing::StartsWith(
                           base::StrCat({version_info::GetProductName(), " ",
                                         version_info::GetVersionNumber()})));
+}
+
+TEST_F(ChromeMainDelegateWinTest, ChildModuleVersion) {
+  int exit_code = 0;
+  ASSERT_TRUE(RunChromeWithSwitch(switches::kChildModuleVersion,
+                                  /*output=*/nullptr, &exit_code));
+  EXPECT_NE(exit_code, 0);
+}
+
+TEST_F(ChromeMainDelegateWinTest, ChildModuleUserPathComponent) {
+  int exit_code = 0;
+  ASSERT_TRUE(RunChromeWithSwitch(switches::kChildModuleUserPathComponent,
+                                  /*output=*/nullptr, &exit_code));
+  EXPECT_NE(exit_code, 0);
 }
 
 }  // namespace
