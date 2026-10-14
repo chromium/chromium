@@ -99,6 +99,7 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         buyNowPayLaterSwitch.setTitle(R.string.autofill_bnpl_settings_label);
         buyNowPayLaterSwitch.setSummary(R.string.autofill_bnpl_settings_toggle_sublabel);
         buyNowPayLaterSwitch.setKey(PREF_KEY_ENABLE_BUY_NOW_PAY_LATER);
+        buyNowPayLaterSwitch.setPersistent(false);
         buyNowPayLaterSwitch.setChecked(mPersonalDataManager.isBuyNowPayLaterEnabled());
         buyNowPayLaterSwitch.setOnPreferenceChangeListener(this);
         getPreferenceScreen().addPreference(buyNowPayLaterSwitch);

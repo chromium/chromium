@@ -134,6 +134,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
             ChromeSwitchPreference ewalletSwitch = new ChromeSwitchPreference(getStyledContext());
             ewalletSwitch.setChecked(isFacilitatedPaymentsEwalletEnabled);
             ewalletSwitch.setKey(PREFERENCE_KEY_EWALLET);
+            ewalletSwitch.setPersistent(false);
             ewalletSwitch.setTitle(R.string.settings_manage_other_financial_accounts_ewallet);
             ewalletSwitch.setOnPreferenceChangeListener(this);
             getPreferenceScreen().addPreference(ewalletSwitch);
@@ -149,6 +150,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
             ChromeSwitchPreference a2aSwitch = new ChromeSwitchPreference(getStyledContext());
             a2aSwitch.setChecked(mPersonalDataManager.getFacilitatedPaymentsA2AEnabledPref());
             a2aSwitch.setKey(PREFERENCE_KEY_A2A);
+            a2aSwitch.setPersistent(false);
             a2aSwitch.setTitle(R.string.settings_manage_non_card_payment_methods_a2a_title);
             a2aSwitch.setSummary(R.string.settings_manage_non_card_payment_methods_a2a_description);
             a2aSwitch.setOnPreferenceChangeListener(this);

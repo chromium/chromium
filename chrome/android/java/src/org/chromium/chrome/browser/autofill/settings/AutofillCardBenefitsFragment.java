@@ -130,6 +130,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         cardBenefitSwitch.setTitle(getCardBenefitsTitle());
         cardBenefitSwitch.setSummary(getCardBenefitsSummary());
         cardBenefitSwitch.setKey(PREF_KEY_ENABLE_CARD_BENEFIT);
+        cardBenefitSwitch.setPersistent(false);
         cardBenefitSwitch.setChecked(mPersonalDataManager.isCardBenefitEnabled());
         cardBenefitSwitch.setOnPreferenceChangeListener(this);
         getPreferenceScreen().addPreference(cardBenefitSwitch);
