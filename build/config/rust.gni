@@ -63,6 +63,21 @@ declare_args() {
   # the bindgen exectuable).
   rust_bindgen_root = "//third_party/rust-toolchain"
 
+  # Directory under which to find Crubit tools and support libraries:
+  # * `bin/cc_bindings_from_rs` and `bin/rs_bindings_from_cc`
+  # * `lib/third_party/crubit` (support libraries and their `BUILD.gn` files)
+  #
+  # Unlike `rust_bindgen_root` we don't set `rust_crubit_root` to
+  # `"//third_party/rust-toolchain"` by default, because `cc_bindings_from_rs`
+  # has to be built from the same Rust compiler sources as `rustc` (see
+  # https://github.com/google/crubit/blob/89417b58802e20a6a11db7fea7c31692fef25276/docs/design/design.md?plain=1#L599-L602).
+  # Because of the above `rust_crubit_root` has to be explicitly set when using
+  # a custom toolchain via `rust_sysroot_absolute`.  OTOH, when
+  # `use_chromium_rust_toolchain` is set then defaulting to
+  # `"//third_party/rust-toolchain"` is ok (see the `if (rust_crubit_root...
+  # use_chromium_rust_toolchain` code below).
+  rust_crubit_root = ""
+
   # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
   # set this to the output of `rustc -V`. Changing this string will cause all
   # Rust targets to be rebuilt, which allows you to update your toolchain and
@@ -187,6 +202,18 @@ if (enable_rust) {
     rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
   }
 }
+
+if (rust_crubit_root == "" && use_chromium_rust_toolchain) {
+  rust_crubit_root = "//third_party/rust-toolchain"
+}
+
+# Message for `assert(rust_crubit_root != "", rust_crubit_root_missing_message)`
+# in places that need Crubit.
+rust_crubit_root_missing_message =
+    "Crubit is required, but `rust_crubit_root` GN arg is not set.  It has " +
+    "to be set when using a custom Rust toolchain via " +
+    "`rust_sysroot_absolute`.  See `rust_crubit_root` in " +
+    "//build/config/rust.gni for more details."
 
 # Figure out the Rust target triple (aka 'rust_abi_target')
 #

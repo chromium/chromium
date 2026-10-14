@@ -65,10 +65,8 @@ _globally_enabled_crubit_features = [
 #     targets that generate bindings for types from these other targets.
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
-
-  # At this point `rs_bindings_from_cc` is only distributed with the Chromium
-  # Rust toolchain.
-  assert(enable_rust && use_chromium_rust_toolchain)
+  assert(enable_rust)
+  assert(rust_crubit_root != "", rust_crubit_root_missing_message)
 
   # PDFium, V8 and other "2nd-party" Chromium projects don't yet have their own
   # `//build_overrides/crubit.gni` build file.  Until this is fixed, we assert
@@ -254,8 +252,6 @@ template("rust_api_from_cpp") {
       "//build/rust/gni_impl/filter_clang_args.py",
       _metadata_path,
       rust_api_from_cpp_exe_path,
-      rustfmt_exe_path,
-      rustfmt_config_path,
     ]
 
     # Public headers are inputs to this action rather than sources,
@@ -301,10 +297,18 @@ template("rust_api_from_cpp") {
       "--public_headers=" + string_join(",", _rebased_public_headers),
       "--target=${_current_lib_target_full_label}",
       "--crubit_support_path_format=${crubit_support_path_format}",
-      "--rustfmt_exe_path=" + rebase_path(rustfmt_exe_path, root_build_dir),
-      "--rustfmt_config_path=" +
-          rebase_path(rustfmt_config_path, root_build_dir),
     ]
+    if (defined(rustfmt_exe_path)) {
+      inputs += [
+        rustfmt_exe_path,
+        rustfmt_config_path,
+      ]
+      args += [
+        "--rustfmt_exe_path=" + rebase_path(rustfmt_exe_path, root_build_dir),
+        "--rustfmt_config_path=" +
+            rebase_path(rustfmt_config_path, root_build_dir),
+      ]
+    }
 
     # TODO(https://crbug.com/40226863): Use
     # `rust_enable_generated_code_formatting` (see https://crrev.com/c/8494684)

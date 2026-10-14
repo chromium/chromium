@@ -22,7 +22,7 @@ config("public_config") {
   # `include_dirs` below help ensure that Chromium can use the same
   # `#include` paths as other Crubit clients like google3 - e.g.
   # `#include "third_party/crubit/support/rs_std/slice_ref.h"`.
-  include_dirs = [ "//third_party/rust-toolchain/lib" ]
+  include_dirs = [ "${rust_crubit_root}/lib" ]
 }
 
 # The `cref` crate provides `CRef<T>` and `CMut<T>` - Rust types that represent

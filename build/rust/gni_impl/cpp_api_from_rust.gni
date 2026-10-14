@@ -50,6 +50,8 @@ _globally_enabled_crubit_features = [
 #
 #
 template("cpp_api_from_rust") {
+  assert(rust_crubit_root != "", rust_crubit_root_missing_message)
+
   # `enable_rust` and `use_chromium_rust_toolchain` enforce that `rustc` and
   # `cpp_api_from_rust` use the same version of Rust compiler sources - this is
   # required (e.g. to see the same memory layout of repr-Rusts structs) as
@@ -165,8 +167,6 @@ template("cpp_api_from_rust") {
     inputs += [
       _action_rsp_path,
       cpp_api_from_rust_exe_path,
-      rustfmt_exe_path,
-      rustfmt_config_path,
     ]
     outputs = [
       _h_out,
@@ -204,13 +204,21 @@ template("cpp_api_from_rust") {
 
       "--crubit-support-path-format",
       crubit_support_path_format,
+    ]
+    if (defined(rustfmt_exe_path)) {
+      inputs += [
+        rustfmt_exe_path,
+        rustfmt_config_path,
+      ]
+      args += [
+        "--rustfmt-exe-path",
+        rebase_path(rustfmt_exe_path, root_build_dir),
 
-      "--rustfmt-exe-path",
-      rebase_path(rustfmt_exe_path, root_build_dir),
-
-      "--rustfmt-config-path",
-      rebase_path(rustfmt_config_path, root_build_dir),
-
+        "--rustfmt-config-path",
+        rebase_path(rustfmt_config_path, root_build_dir),
+      ]
+    }
+    args += [
       "--crate-namespace",
       "self=${_cpp_namespace}",
     ]

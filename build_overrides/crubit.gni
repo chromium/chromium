@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-crubit_src_dir = "//third_party/rust-toolchain/lib/third_party/crubit"
+import("//build/config/rust.gni")
+
+assert(rust_crubit_root != "", rust_crubit_root_missing_message)
+
+crubit_src_dir = "${rust_crubit_root}/lib/third_party/crubit"
 crubit_absl_dep_target = "//third_party/abseil-cpp:absl"
 crubit_gn_configs_to_remove = [
   "//build/config/compiler:chromium_code",
