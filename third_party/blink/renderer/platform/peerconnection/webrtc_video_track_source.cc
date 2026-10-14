@@ -310,8 +310,8 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
   // webrtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
-  std::optional<int> capture_counter = frame->metadata().capture_counter;
-  std::optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
+  std::optional<int> capture_counter = frame->metadata().capture.counter;
+  std::optional<gfx::Rect> update_rect = frame->metadata().capture.update_rect;
 
   const bool has_valid_update_rect =
       update_rect.has_value() && capture_counter.has_value() &&

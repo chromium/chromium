@@ -464,7 +464,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   auto frame2 = media::VideoFrame::CreateBlackFrame(gfx::Size(200, 300));
 
   media::VideoFrameMetadata metadata = frame2->metadata();
-  metadata.source_size = gfx::Size(600, 400);
+  metadata.capture.source_size = gfx::Size(600, 400);
   frame2->set_metadata(metadata);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame2), &sink);
   native_track->GetSettings(settings);
@@ -490,7 +490,7 @@ TEST_F(MediaStreamVideoTrackTest, ScreenPixelRatioDoesNotIncludePageZoom) {
 
   auto frame1 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   media::VideoFrameMetadata metadata = frame1->metadata();
-  metadata.source_size = gfx::Size(600, 400);
+  metadata.capture.source_size = gfx::Size(600, 400);
   metadata.device_scale_factor = 2.0f;
   frame1->set_metadata(metadata);
   DeliverVideoFrameAndWaitForRenderer(frame1, &sink);
@@ -540,9 +540,9 @@ TEST_F(MediaStreamVideoTrackTest,
   EXPECT_EQ(std::nullopt, settings.physical_frame_size);
   EXPECT_EQ(2.0f, settings.device_scale_factor);
 
-  // Changing metadata source_size triggers an event.
+  // Changing metadata capture.source_size triggers an event.
   auto frame2 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  metadata.source_size = gfx::Size(600, 400);
+  metadata.capture.source_size = gfx::Size(600, 400);
   frame2->set_metadata(metadata);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame2), &sink);
   native_track->GetSettings(settings);
@@ -1349,7 +1349,7 @@ class MediaStreamVideoTrackCaptureVersionTest
       media::CaptureVersion capture_version = media::CaptureVersion()) {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-    frame->metadata().capture_version = capture_version;
+    frame->metadata().capture.version = capture_version;
     return frame;
   }
 

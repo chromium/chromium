@@ -183,8 +183,8 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
-    frame->metadata().capture_counter = capture_counter;
-    frame->metadata().capture_update_rect = update_rect;
+    frame->metadata().capture.counter = capture_counter;
+    frame->metadata().capture.update_rect = update_rect;
     track_source_->OnFrameCaptured(frame);
   }
 

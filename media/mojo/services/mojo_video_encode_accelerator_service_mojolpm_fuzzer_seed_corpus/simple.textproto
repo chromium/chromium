@@ -144,11 +144,16 @@ actions {
           m_metadata {
             new {
               id: 1
-              m_capture_version {
+              m_capture {
                 new {
                   id: 1
-                  m_source: 0
-                  m_sub_capture: 0
+                  m_version {
+                    new {
+                      id: 1
+                      m_source: 0
+                      m_sub_capture: 0
+                    }
+                  }
                 }
               }
               m_copy_required: false

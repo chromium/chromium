@@ -1144,7 +1144,7 @@ TEST_F(MediaStreamVideoSourceTest, StopForRestartDeliversBlackFrameToSink) {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(200, 200));
     frame->set_timestamp(base::Seconds(1));
-    frame->metadata().capture_version = kCaptureVersion;
+    frame->metadata().capture.version = kCaptureVersion;
     mock_source()->DeliverVideoFrame(std::move(frame));
     run_loop.Run();
   }

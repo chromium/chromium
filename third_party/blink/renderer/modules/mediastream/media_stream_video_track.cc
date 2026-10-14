@@ -606,9 +606,9 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
 
   frame_drop_log_state_ = FrameDropLogState();
 
-  OnCaptureVersion(frame->metadata().capture_version);
+  OnCaptureVersion(frame->metadata().capture.version);
 
-  if (frame->metadata().capture_version < capture_version_) {
+  if (frame->metadata().capture.version < capture_version_) {
     OnFrameDroppedOnVideoTaskRunner(
         media::VideoCaptureFrameDropReason::kOldCaptureVersion);
     return;

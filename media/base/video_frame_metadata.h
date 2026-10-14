@@ -17,6 +17,7 @@
 #include "media/base/video_transformation.h"
 #include "media/gpu/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "gpu/vulkan/vulkan_ycbcr_info.h"
@@ -30,6 +31,67 @@ struct EffectInfo {
   bool operator==(const EffectInfo& other) const {
     return enabled == other.enabled;
   }
+};
+
+// Capture-specific counter, geometry, temporal damage, and sub-capture
+// (Region/Element Capture) metadata attached to a captured `VideoFrame`.
+//
+// NOTE: When adding new CaptureMetadata fields, please ensure you update
+// CaptureMetadata::MergeMetadataFrom() and media.mojom.CaptureMetadata.
+struct MEDIA_EXPORT CaptureMetadata {
+  CaptureMetadata();
+  ~CaptureMetadata();
+
+  CaptureMetadata(const CaptureMetadata& other);
+  CaptureMetadata(CaptureMetadata&& other);
+  CaptureMetadata& operator=(const CaptureMetadata& other);
+  CaptureMetadata& operator=(CaptureMetadata&& other);
+
+  bool operator==(const CaptureMetadata& other) const = default;
+
+  // Merges internal values from `metadata_source`.
+  void MergeMetadataFrom(const CaptureMetadata& metadata_source);
+
+  // Monotonically increasing counter incremented by the producer for each
+  // captured frame. Consumers can check for gaps between consecutive frames to
+  // detect dropped frames (which invalidate `update_rect`). The initial value
+  // is arbitrary.
+  std::optional<int> counter;
+
+  // Bounding rect of pixels in the coded frame (`coded_size()`) that changed
+  // since the immediately preceding `counter` frame (`*counter ==
+  // *prev_counter + 1`). Used by video encoders to skip unchanged regions.
+  // If `counter` has a gap, consumers must ignore `update_rect` and treat the
+  // entire frame as updated.
+  std::optional<gfx::Rect> update_rect;
+
+  // Unscaled pixel size of the captured source (or active cropped region when
+  // GPU Region Capture cropping is active) before scaling or letterboxing into
+  // the `VideoFrame`. Used to adjust capture resolution (e.g. HiDPI tab
+  // capture) and compute `screenPixelRatio`.
+  std::optional<gfx::Size> source_size;
+
+  // Physical crop rect in the requested root frame sink's DIP coordinate space.
+  // Set only when Viz physically crops a single-target Region Capture in the
+  // root frame sink; `std::nullopt` when uncropped, in multi-target full-frame
+  // mode, during Element Capture, or when cropping an out-of-process iframe
+  // (https://crbug.com/1327560). Used to draw the browser's tab-sharing border
+  // and to drop GPU-cropped frames on uncropped tracks.
+  std::optional<gfx::Rect> region_capture_rect;
+
+  // Maps each active `RegionCaptureCropId` (`base::Token`) to its bounding rect
+  // in the delivered `VideoFrame` (`visible_rect()`):
+  //   - In full-frame mode, contains scaled/letterboxed bounds for all active
+  //     crop targets so Blink can crop per track via `WrapVideoFrame()`.
+  //   - In single-target GPU-cropped mode, maps the active crop target to
+  //     `visible_rect()`.
+  base::flat_map<base::Token, gfx::Rect> region_capture_bounds;
+
+  // The `(source, sub_capture)` version pair (`media::CaptureVersion`) for
+  // this frame. `source` increments when the captured surface changes;
+  // `sub_capture` increments on `cropTo()` / `restrictTo()`. Used to resolve
+  // pending sub-capture promises and discard pre-crop frames.
+  media::CaptureVersion version;
 };
 
 // NOTE: When adding new VideoFrameMetadata fields, please ensure you update the
@@ -54,46 +116,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   std::optional<base::TimeTicks> capture_begin_time;
   std::optional<base::TimeTicks> capture_end_time;
 
-  // A counter that is increased by the producer of video frames each time
-  // it pushes out a new frame. By looking for gaps in this counter, clients
-  // can determine whether or not any frames have been dropped on the way from
-  // the producer between two consecutively received frames. Note that the
-  // counter may start at arbitrary values, so the absolute value of it has no
-  // meaning.
-  std::optional<int> capture_counter;
-
-  // The rectangular region of the frame that has changed since the frame
-  // with the directly preceding CAPTURE_COUNTER. If that frame was not
-  // received, typically because it was dropped during transport from the
-  // producer, clients must assume that the entire frame has changed.
-  // The rectangle is relative to the full frame data, i.e. [0, 0,
-  // coded_size().width(), coded_size().height()]. It does not have to be
-  // fully contained within visible_rect().
-  std::optional<gfx::Rect> capture_update_rect;
-
-  // For encoded frames, this is the original source size which may be different
-  // from the encoded size. It's used for the HiDPI tab capture heuristic.
-  // The size corresponds to the active region if region capture is active,
-  // or otherwise the full size of the captured source.
-  std::optional<gfx::Size> source_size;
-
-  // If cropping was applied due to Region Capture to produce this frame,
-  // then this reflects where the frame's contents originate from in the
-  // original uncropped frame.
-  //
-  // NOTE: May also be nullopt if region capture is enabled but the capture rect
-  // is in a different coordinate space. For more info, see
-  // https://crbug.com/1327560.
-  std::optional<gfx::Rect> region_capture_rect;
-
-  // In multi-track or full-frame capture mode, contains the bounding rectangles
-  // in pixel coordinates for all active RegionCaptureCropIds (CropTargets).
-  base::flat_map<base::Token, gfx::Rect> region_capture_bounds;
-
-  // Represents the version of the capture according to which this frame
-  // was produced. For an explanation of how that versioning works, see
-  // the documentation of `media::CaptureVersion`.
-  media::CaptureVersion capture_version;
+  // Capture-specific geometry, temporal damage, and sub-capture (Region/Element
+  // Capture) metadata. See `CaptureMetadata` above for details on how each
+  // field is populated and consumed.
+  CaptureMetadata capture;
 
   // Indicates that mailbox created in one context, is also being used in a
   // different context belonging to another share group and video frames are

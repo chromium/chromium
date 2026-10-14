@@ -201,8 +201,10 @@ void VideoCaptureHost::OnBufferReady(
     return;
   }
 
-  if (region_capture_rect_ != buffer.frame_info->metadata.region_capture_rect) {
-    region_capture_rect_ = buffer.frame_info->metadata.region_capture_rect;
+  if (region_capture_rect_ !=
+      buffer.frame_info->metadata.capture.region_capture_rect) {
+    region_capture_rect_ =
+        buffer.frame_info->metadata.capture.region_capture_rect;
     media_stream_manager_->OnRegionCaptureRectChanged(controller_id,
                                                       region_capture_rect_);
   }

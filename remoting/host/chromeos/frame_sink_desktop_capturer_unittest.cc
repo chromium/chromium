@@ -244,7 +244,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
 
     auto metadata = frame->metadata();
     metadata.device_scale_factor = params.scale_factor();
-    metadata.capture_update_rect = params.updated_region();
+    metadata.capture.update_rect = params.updated_region();
 
     // Assemble frame layout, format, and metadata into a mojo struct to send to
     // the consumer.

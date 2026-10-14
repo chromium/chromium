@@ -812,7 +812,7 @@ TEST_F(VideoTrackAdapterFixtureTest, SettingsCallback) {
                       /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
                       test_sii_.get());
   media::VideoFrameMetadata metadata;
-  metadata.source_size = kCodedSize;
+  metadata.capture.source_size = kCodedSize;
   metadata.device_scale_factor = 2.0f;
   test_frame->set_metadata(metadata);
   const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
@@ -1003,7 +1003,7 @@ TEST_F(VideoTrackAdapterFixtureTest, BlackFrameIsDeliveredAndStamped) {
   EXPECT_EQ(delivered_frame->natural_size(), kSize);
   // Carries the source's capture version, so MediaStreamVideoTrack does not
   // discard it as kOldCaptureVersion.
-  EXPECT_EQ(delivered_frame->metadata().capture_version, kCaptureVersion);
+  EXPECT_EQ(delivered_frame->metadata().capture.version, kCaptureVersion);
   // Continues the timeline rather than restarting at zero.
   EXPECT_GT(delivered_frame->timestamp(), kRealFrameTimestamp);
 }
@@ -1261,7 +1261,7 @@ TEST_F(VideoTrackAdapterEncodedTest, DeliverFrameWithRegionCaptureBounds) {
   base::flat_map<base::Token, gfx::Rect> bounds;
   bounds[token1] = gfx::Rect(11, 21, 101, 201);
   bounds[token2] = gfx::Rect(50, 60, 200, 150);
-  input_frame->metadata().region_capture_bounds = bounds;
+  input_frame->metadata().capture.region_capture_bounds = bounds;
 
   DeliverFrameAndWait(input_frame);
 
@@ -1297,7 +1297,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
 
   base::flat_map<base::Token, gfx::Rect> bounds;
   bounds[token1] = gfx::Rect(11, 21, 101, 201);
-  input_frame->metadata().region_capture_bounds = bounds;
+  input_frame->metadata().capture.region_capture_bounds = bounds;
 
   DeliverFrameAndWait(input_frame);
 
@@ -1338,7 +1338,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
   base::flat_map<base::Token, gfx::Rect> bounds;
   // token1 is omitted
   bounds[token2] = gfx::Rect(50, 60, 200, 150);
-  input_frame->metadata().region_capture_bounds = bounds;
+  input_frame->metadata().capture.region_capture_bounds = bounds;
 
   DeliverFrameAndWait(input_frame);
 
@@ -1394,7 +1394,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
             kFrameSize, timestamp);
-    frame->metadata().region_capture_bounds = bounds;
+    frame->metadata().capture.region_capture_bounds = bounds;
     DeliverFrameAndWait(frame);
   };
 
@@ -1465,7 +1465,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
       media::VideoFrame::CreateZeroInitializedFrame(
           media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
           kFrameSize, base::Milliseconds(33));
-  frame->metadata().region_capture_bounds = bounds;
+  frame->metadata().capture.region_capture_bounds = bounds;
 
   DeliverFrameAndWait(frame);
 
@@ -1525,8 +1525,8 @@ TEST_F(VideoTrackAdapterEncodedTest,
 
   const gfx::Size kFrameSize(1920, 1080);
 
-  // Deliver a frame WITHOUT region_capture_bounds and WITHOUT
-  // region_capture_rect. track1 (cropped) must NOT receive it; track2
+  // Deliver a frame WITHOUT capture.region_capture_bounds and WITHOUT
+  // capture.region_capture_rect. track1 (cropped) must NOT receive it; track2
   // (uncropped) MUST receive it.
   {
     scoped_refptr<media::VideoFrame> frame =
@@ -1539,17 +1539,17 @@ TEST_F(VideoTrackAdapterEncodedTest,
   EXPECT_EQ(track1_deliveries, 0);
   EXPECT_EQ(track2_deliveries, 1);
 
-  // Deliver a frame WITH region_capture_rect cropped to a DIFFERENT target
-  // (token2). Neither track1 (cropped to token1) nor track2 (uncropped) may
-  // receive it.
+  // Deliver a frame WITH capture.region_capture_rect cropped to a DIFFERENT
+  // target (token2). Neither track1 (cropped to token1) nor track2 (uncropped)
+  // may receive it.
   const base::Token token2(0x33333333, 0x44444444);
   {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, gfx::Size(200, 100), gfx::Rect(200, 100),
             gfx::Size(200, 100), base::Milliseconds(66));
-    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
-    frame->metadata().region_capture_bounds = {
+    frame->metadata().capture.region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    frame->metadata().capture.region_capture_bounds = {
         {token2, gfx::Rect(0, 0, 200, 100)}};
     DeliverFrameAndWait(frame);
   }
@@ -1557,16 +1557,16 @@ TEST_F(VideoTrackAdapterEncodedTest,
   EXPECT_EQ(track1_deliveries, 0);
   EXPECT_EQ(track2_deliveries, 1);
 
-  // Deliver a frame WITH region_capture_rect cropped to token1 (simulating GPU
-  // single-target crop to token1). track1 (cropped to token1) MUST receive it;
-  // track2 (uncropped) must NOT receive it.
+  // Deliver a frame WITH capture.region_capture_rect cropped to token1
+  // (simulating GPU single-target crop to token1). track1 (cropped to token1)
+  // MUST receive it; track2 (uncropped) must NOT receive it.
   {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, gfx::Size(200, 100), gfx::Rect(200, 100),
             gfx::Size(200, 100), base::Milliseconds(99));
-    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
-    frame->metadata().region_capture_bounds = {
+    frame->metadata().capture.region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    frame->metadata().capture.region_capture_bounds = {
         {token1, gfx::Rect(0, 0, 200, 100)}};
     DeliverFrameAndWait(frame);
   }
@@ -1637,7 +1637,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
             kFrameSize, base::Milliseconds(33));
-    frame->metadata().region_capture_bounds = {
+    frame->metadata().capture.region_capture_bounds = {
         {token1, gfx::Rect(10, 20, 100, 200)}};
     DeliverFrameAndWait(frame);
   }
@@ -1652,17 +1652,17 @@ TEST_F(VideoTrackAdapterEncodedTest,
     DeliverFrameAndWait(frame);
   }
 
-  // Frame 3: frame marked as GPU-cropped via `region_capture_rect`. If
+  // Frame 3: frame marked as GPU-cropped via `capture.region_capture_rect`. If
   // enabled, it would be dropped for both tracks: for track2 because it wants
   // uncropped content, and for track1 because its bounds are missing. Here it
-  // must be delivered to both. `region_capture_rect` is only metadata, so
-  // `visible_rect` stays full and track1 still observes the full frame.
+  // must be delivered to both. `capture.region_capture_rect` is only metadata,
+  // so `visible_rect` stays full and track1 still observes the full frame.
   {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
             kFrameSize, base::Milliseconds(99));
-    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    frame->metadata().capture.region_capture_rect = gfx::Rect(0, 0, 200, 100);
     DeliverFrameAndWait(frame);
   }
 

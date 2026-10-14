@@ -845,7 +845,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultZeroCopy(
   // OnIncomingCapturedBufferExt() takes color space and several other
   // video frame properties as explicit, separate parameters.
   media::VideoFrameMetadata metadata;
-  metadata.source_size =
+  metadata.capture.source_size =
       gfx::Size(frame->size().width(), frame->size().height());
   metadata.device_scale_factor = frame->device_scale_factor();
 
@@ -1098,7 +1098,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
   // This passes the information to the frame metadata for screen and non-chrome
   // window captures.
   media::VideoFrameMetadata metadata;
-  metadata.source_size =
+  metadata.capture.source_size =
       gfx::Size(frame->size().width(), frame->size().height());
   metadata.device_scale_factor = frame->device_scale_factor();
 

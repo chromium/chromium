@@ -62,11 +62,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
 
   ASSERT_TRUE(RoundTrip(metadata_in, &metadata_out));
 
-  EXPECT_FALSE(metadata_out.capture_counter.has_value());
-  EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
+  EXPECT_EQ(metadata_out.capture, media::CaptureMetadata());
   EXPECT_FALSE(metadata_out.transformation.has_value());
-  EXPECT_FALSE(metadata_out.region_capture_rect.has_value());
-  EXPECT_TRUE(metadata_out.region_capture_bounds.empty());
   EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
   EXPECT_FALSE(metadata_out.in_surface_view);
@@ -99,8 +96,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(metadata_out.ycbcr_info.has_value());
 #endif
-
-  EXPECT_EQ(metadata_out.capture_version, media::CaptureVersion());
 }
 
 TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
@@ -109,20 +104,21 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   VideoFrameMetadata metadata_in;
 
   // ints
-  metadata_in.capture_counter = 123;
   metadata_in.frame_sequence = 456;
   metadata_in.source_id = 789;
 
-  // gfx::Rects
-  metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
-  metadata_in.region_capture_rect = gfx::Rect(56, 78, 180, 240);
+  // CaptureMetadata
+  metadata_in.capture.counter = 123;
+  metadata_in.capture.update_rect = gfx::Rect(12, 34, 360, 480);
+  metadata_in.capture.source_size = gfx::Size(720, 960);
+  metadata_in.capture.region_capture_rect = gfx::Rect(56, 78, 180, 240);
 
-  // region_capture_bounds
   base::Token token1(0x12345678, 0x9abcdef0);
   base::Token token2(0xfedcba98, 0x76543210);
-  metadata_in.region_capture_bounds = base::flat_map<base::Token, gfx::Rect>{
-      {token1, gfx::Rect(10, 20, 100, 200)},
-      {token2, gfx::Rect(30, 40, 300, 400)}};
+  metadata_in.capture.region_capture_bounds =
+      base::flat_map<base::Token, gfx::Rect>{
+          {token1, gfx::Rect(10, 20, 100, 200)},
+          {token2, gfx::Rect(30, 40, 300, 400)}};
 
   // VideoTransformation
   metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
@@ -173,20 +169,15 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
       /*suggested_ychroma_offset=*/1, /*format_features=*/7);
 #endif
 
-  metadata_in.capture_version =
+  metadata_in.capture.version =
       media::CaptureVersion(/*source=*/123, /*sub_capture=*/456);
 
   VideoFrameMetadata metadata_out;
 
   ASSERT_TRUE(RoundTrip(metadata_in, &metadata_out));
 
-  EXPECT_EQ(metadata_in.capture_counter, metadata_out.capture_counter);
-  EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
-  EXPECT_EQ(metadata_in.region_capture_rect, metadata_out.region_capture_rect);
-  EXPECT_EQ(metadata_in.region_capture_bounds,
-            metadata_out.region_capture_bounds);
+  EXPECT_EQ(metadata_in.capture, metadata_out.capture);
   EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
-  EXPECT_EQ(metadata_in.capture_version, metadata_out.capture_version);
   EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
   EXPECT_EQ(metadata_in.in_surface_view, metadata_out.in_surface_view);

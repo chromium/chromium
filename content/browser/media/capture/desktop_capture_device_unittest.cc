@@ -302,8 +302,10 @@ class DesktopCaptureDeviceTest : public testing::TestWithParam<bool> {
                  const std::optional<media::VideoFrameMetadata>& metadata) {
     ASSERT_TRUE(output_frame_);
     ASSERT_NE(metadata, std::nullopt);
-    ASSERT_EQ(metadata->source_size->width(), output_frame_->size().width());
-    ASSERT_EQ(metadata->source_size->height(), output_frame_->size().height());
+    ASSERT_EQ(metadata->capture.source_size->width(),
+              output_frame_->size().width());
+    ASSERT_EQ(metadata->capture.source_size->height(),
+              output_frame_->size().height());
     CopyFrameScaled(buffer, format, color_space, reference_time, timestamp,
                     visible_rect, metadata);
   }
@@ -327,7 +329,7 @@ class DesktopCaptureDeviceTest : public testing::TestWithParam<bool> {
     ASSERT_EQ(format.frame_size.height(), output_frame_->size().height());
     ASSERT_EQ(format.pixel_format, media::PIXEL_FORMAT_I420);
     ASSERT_NE(metadata, std::nullopt);
-    ASSERT_NE(metadata->source_size, std::nullopt);
+    ASSERT_NE(metadata->capture.source_size, std::nullopt);
     ASSERT_EQ(metadata->device_scale_factor, 2.0f);
 
     // SAFETY: output_frame_ is allocated with the same dimensions and format
@@ -348,8 +350,10 @@ class DesktopCaptureDeviceTest : public testing::TestWithParam<bool> {
                        int frame_feedback_id) {
     ASSERT_TRUE(output_frame_);
     ASSERT_NE(metadata, std::nullopt);
-    ASSERT_EQ(metadata->source_size->width(), output_frame_->size().width());
-    ASSERT_EQ(metadata->source_size->height(), output_frame_->size().height());
+    ASSERT_EQ(metadata->capture.source_size->width(),
+              output_frame_->size().width());
+    ASSERT_EQ(metadata->capture.source_size->height(),
+              output_frame_->size().height());
     CopyFrameScaledLegacy(frame, format, color_space, clockwise_rotation,
                           flip_y, reference_time, timestamp, capture_begin_time,
                           metadata, frame_feedback_id);
@@ -375,7 +379,7 @@ class DesktopCaptureDeviceTest : public testing::TestWithParam<bool> {
     ASSERT_EQ(format.pixel_format,
               FourCCToVideoPixelFormat(output_frame_->pixel_format()));
     ASSERT_NE(metadata, std::nullopt);
-    ASSERT_NE(metadata->source_size, std::nullopt);
+    ASSERT_NE(metadata->capture.source_size, std::nullopt);
     ASSERT_EQ(metadata->device_scale_factor, 2.0f);
     // SAFETY: output_frame_ is allocated with the same size.
     UNSAFE_BUFFERS(base::span<uint8_t>(output_frame_->data(), frame.size()))

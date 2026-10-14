@@ -176,7 +176,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   virtual CaptureHandle GetCaptureHandle();
 
   // Adds a one off callback that will be invoked when either:
-  // - The first frame satisfying |metadata.capture_version >= capture_version|
+  // - The first frame satisfying |metadata.capture.version >= capture_version|
   //   is observed.
   // - A message is received guaranteeing that all subsequent frames will
   //   satisfy this property.

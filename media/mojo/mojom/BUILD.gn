@@ -563,6 +563,10 @@ mojom("media_types") {
     {
       types = [
         {
+          mojom = "media.mojom.CaptureMetadata"
+          cpp = "::media::CaptureMetadata"
+        },
+        {
           mojom = "media.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },

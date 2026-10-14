@@ -1844,9 +1844,9 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   {
     auto received_frame = consumer.TakeFrame(cur_frame_index);
     EXPECT_EQ(gfx::Rect(size_set().capture_size),
-              received_frame->metadata().capture_update_rect);
+              received_frame->metadata().capture.update_rect);
     previous_capture_counter_received =
-        *received_frame->metadata().capture_counter;
+        *received_frame->metadata().capture.counter;
   }
   consumer.SendDoneNotification(cur_frame_index);
 
@@ -1879,9 +1879,9 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   EXPECT_EQ(expected_frames_count, consumer.num_frames_received());
   {
     auto received_frame = consumer.TakeFrame(++cur_frame_index);
-    int received_capture_counter = *received_frame->metadata().capture_counter;
+    int received_capture_counter = *received_frame->metadata().capture.counter;
     EXPECT_EQ(expected_frame_update_rect,
-              *received_frame->metadata().capture_update_rect);
+              *received_frame->metadata().capture.update_rect);
     EXPECT_EQ(previous_capture_counter_received + 1, received_capture_counter);
     previous_capture_counter_received = received_capture_counter;
   }
@@ -1897,8 +1897,8 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   EXPECT_EQ(expected_frames_count, consumer.num_frames_received());
   {
     auto received_frame = consumer.TakeFrame(++cur_frame_index);
-    int received_capture_counter = *received_frame->metadata().capture_counter;
-    EXPECT_TRUE(received_frame->metadata().capture_update_rect->IsEmpty());
+    int received_capture_counter = *received_frame->metadata().capture.counter;
+    EXPECT_TRUE(received_frame->metadata().capture.update_rect->IsEmpty());
     EXPECT_EQ(previous_capture_counter_received + 1, received_capture_counter);
     previous_capture_counter_received = received_capture_counter;
   }
@@ -1915,9 +1915,9 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   EXPECT_EQ(expected_frames_count, consumer.num_frames_received());
   {
     auto received_frame = consumer.TakeFrame(++cur_frame_index);
-    int received_capture_counter = *received_frame->metadata().capture_counter;
+    int received_capture_counter = *received_frame->metadata().capture.counter;
     EXPECT_EQ(gfx::Rect(size_set().capture_size),
-              *received_frame->metadata().capture_update_rect);
+              *received_frame->metadata().capture.update_rect);
     EXPECT_EQ(previous_capture_counter_received + 1, received_capture_counter);
     previous_capture_counter_received = received_capture_counter;
   }
@@ -1934,9 +1934,9 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   EXPECT_EQ(expected_frames_count, consumer.num_frames_received());
   {
     auto received_frame = consumer.TakeFrame(++cur_frame_index);
-    int received_capture_counter = *received_frame->metadata().capture_counter;
+    int received_capture_counter = *received_frame->metadata().capture.counter;
     EXPECT_EQ(gfx::Rect(size_set().capture_size),
-              *received_frame->metadata().capture_update_rect);
+              *received_frame->metadata().capture.update_rect);
     EXPECT_EQ(previous_capture_counter_received + 1, received_capture_counter);
     previous_capture_counter_received = received_capture_counter;
   }
@@ -1966,9 +1966,9 @@ TEST_P(FrameSinkVideoCapturerTest, CaptureCounterSkipsWhenFramesAreDropped) {
   {
     auto received_frame = consumer.TakeFrame(cur_receive_frame_index);
     EXPECT_EQ(gfx::Rect(size_set().capture_size),
-              *received_frame->metadata().capture_update_rect);
+              *received_frame->metadata().capture.update_rect);
     previous_capture_counter_received =
-        *received_frame->metadata().capture_counter;
+        *received_frame->metadata().capture.counter;
   }
   consumer.SendDoneNotification(cur_receive_frame_index);
 
@@ -1994,7 +1994,7 @@ TEST_P(FrameSinkVideoCapturerTest, CaptureCounterSkipsWhenFramesAreDropped) {
   {
     auto received_frame = consumer.TakeFrame(++cur_receive_frame_index);
     EXPECT_NE(previous_capture_counter_received + 1,
-              *received_frame->metadata().capture_counter);
+              *received_frame->metadata().capture.counter);
   }
   StopCapture();
 }
@@ -2485,11 +2485,11 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
-  const auto& bounds = frame->metadata().region_capture_bounds;
+  const auto& bounds = frame->metadata().capture.region_capture_bounds;
   EXPECT_EQ(bounds.size(), 2u);
   EXPECT_EQ(bounds.at(kCropId1), kBounds1);
   EXPECT_EQ(bounds.at(kCropId2), kBounds2);
-  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+  EXPECT_FALSE(frame->metadata().capture.region_capture_rect.has_value());
 
   StopCapture();
 }
@@ -2519,8 +2519,8 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
-  EXPECT_TRUE(frame->metadata().region_capture_bounds.empty());
-  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+  EXPECT_TRUE(frame->metadata().capture.region_capture_bounds.empty());
+  EXPECT_FALSE(frame->metadata().capture.region_capture_rect.has_value());
 
   StopCapture();
 }
@@ -2554,8 +2554,8 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
-  EXPECT_TRUE(frame->metadata().region_capture_bounds.empty());
-  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+  EXPECT_TRUE(frame->metadata().capture.region_capture_bounds.empty());
+  EXPECT_FALSE(frame->metadata().capture.region_capture_rect.has_value());
 
   StopCapture();
 }
@@ -2582,9 +2582,9 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
-  EXPECT_EQ(frame->metadata().source_size, kValidCropBounds.size());
-  EXPECT_TRUE(frame->metadata().region_capture_rect.has_value());
-  const auto& bounds = frame->metadata().region_capture_bounds;
+  EXPECT_EQ(frame->metadata().capture.source_size, kValidCropBounds.size());
+  EXPECT_TRUE(frame->metadata().capture.region_capture_rect.has_value());
+  const auto& bounds = frame->metadata().capture.region_capture_bounds;
   EXPECT_EQ(bounds.size(), 1u);
   EXPECT_EQ(bounds.at(kCropId), frame->visible_rect());
 
@@ -2625,9 +2625,9 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
-  EXPECT_EQ(frame->metadata().source_size, kValidCropBounds.size());
-  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
-  const auto& bounds = frame->metadata().region_capture_bounds;
+  EXPECT_EQ(frame->metadata().capture.source_size, kValidCropBounds.size());
+  EXPECT_FALSE(frame->metadata().capture.region_capture_rect.has_value());
+  const auto& bounds = frame->metadata().capture.region_capture_bounds;
   // ASSERT rather than EXPECT: `at()` below is fatal if the entry is missing.
   ASSERT_EQ(bounds.size(), 1u);
   EXPECT_EQ(bounds.at(kCropId), frame->visible_rect());

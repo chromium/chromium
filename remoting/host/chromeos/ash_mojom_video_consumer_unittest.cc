@@ -213,8 +213,8 @@ TEST_F(AshMojomVideoConsumerTest,
   info->coded_size = gfx::Size(100, 100);
   info->visible_rect = gfx::Rect(0, 0, 100, 100);
 
-  // malicious capture_update_rect outside content_rect.
-  info->metadata.capture_update_rect = gfx::Rect(0, 0, 200, 200);
+  // malicious capture.update_rect outside content_rect.
+  info->metadata.capture.update_rect = gfx::Rect(0, 0, 200, 200);
 
   size_t shared_memory_size =
       media::VideoFrame::AllocationSize(info->pixel_format, info->coded_size);

@@ -401,20 +401,53 @@ struct CaptureVersion {
   uint32 sub_capture;
 };
 
+// Capture-specific geometry, temporal damage, and sub-capture metadata for a
+// VideoFrame. See media::CaptureMetadata in media/base/video_frame_metadata.h
+// for a detailed description of each field, its coordinate space, and its
+// producers and consumers.
+//
+// The nullable fields are null when the producer does not provide the value
+// (e.g. camera capture and decoded frames set none of them). Null also means
+// "unset" for media::VideoFrameMetadata::MergeMetadataFrom(), which keeps the
+// existing value instead of overwriting it.
+struct CaptureMetadata {
+  // Frame counter incremented by the producer on each frame; used to detect
+  // dropped frames between consecutive deliveries (`update_rect`). Only set by
+  // the Viz frame sink video capturer.
+  int32? counter;
+
+  // Temporal damage rect in coded-frame pixel coordinates since the preceding
+  // `counter` frame. Only set by the Viz frame sink video capturer; consumers
+  // must treat the entire frame as changed when null.
+  gfx.mojom.Rect? update_rect;
+
+  // Unscaled pixel dimensions of the captured source (or active crop region).
+  // Only set by screen/tab/window capturers; null for other sources such as
+  // cameras.
+  gfx.mojom.Size? source_size;
+
+  // Single-target physical crop origin rect in the requested root frame sink's
+  // DIP coordinate space. Null unless Viz physically crops the frame for
+  // single-target Region Capture within the requested frame sink (i.e. null
+  // when uncropped, in multi-target mode, during Element Capture, or when the
+  // crop target is in an out-of-process iframe).
+  gfx.mojom.Rect? region_capture_rect;
+
+  // Per-target logical bounding rects in delivered VideoFrame pixel
+  // coordinates (`visible_rect()`) keyed by RegionCaptureCropId token.
+  map<mojo_base.mojom.Token, gfx.mojom.Rect> region_capture_bounds;
+
+  // Capture version `(source, sub_capture)` according to which the frame was
+  // produced.
+  CaptureVersion version;
+};
+
 // See media/base/video_frame_metadata.h for a description of fields.
 struct VideoFrameMetadata {
   mojo_base.mojom.TimeTicks? capture_begin_time;
   mojo_base.mojom.TimeTicks? capture_end_time;
 
-  int32? capture_counter;
-
-  gfx.mojom.Rect? capture_update_rect;
-
-  gfx.mojom.Size? source_size;
-
-  gfx.mojom.Rect? region_capture_rect;
-  map<mojo_base.mojom.Token, gfx.mojom.Rect> region_capture_bounds;
-  CaptureVersion capture_version;
+  CaptureMetadata capture;
 
   bool copy_required;
 

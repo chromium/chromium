@@ -843,8 +843,8 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
   base::TimeTicks now = base::TimeTicks::Now();
 
   VideoFrameMetadata metadata;
-  metadata.source_size = gfx::Size(frame_format.frame_size.width(),
-                                   frame_format.frame_size.height());
+  metadata.capture.source_size = gfx::Size(frame_format.frame_size.width(),
+                                           frame_format.frame_size.height());
   metadata.device_scale_factor = 1.0f;
   client()->OnIncomingCapturedData(
       buffer_, device_state()->format,

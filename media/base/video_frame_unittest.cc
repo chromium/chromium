@@ -60,11 +60,15 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   // make sure values are preserved across serialization.
   media::VideoFrameMetadata metadata;
 
-  // ints
-  metadata.capture_counter = 123;
-
-  // gfx::Rects
-  metadata.capture_update_rect = gfx::Rect(12, 34, 360, 480);
+  // media::CaptureMetadata
+  metadata.capture.counter = 123;
+  metadata.capture.update_rect = gfx::Rect(12, 34, 360, 480);
+  metadata.capture.source_size = gfx::Size(720, 960);
+  metadata.capture.region_capture_rect = gfx::Rect(56, 78, 180, 240);
+  metadata.capture.region_capture_bounds = {
+      {base::Token(0x12345678, 0x9abcdef0), gfx::Rect(10, 20, 100, 200)}};
+  metadata.capture.version =
+      media::CaptureVersion(/*source=*/123, /*sub_capture=*/456);
 
   // media::VideoTransformation
   metadata.transformation = media::VIDEO_ROTATION_90;
@@ -113,8 +117,7 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
                                       const media::VideoFrameMetadata& b) {
   EXPECT_EQ(a.capture_begin_time, b.capture_begin_time);
   EXPECT_EQ(a.capture_end_time, b.capture_end_time);
-  EXPECT_EQ(a.capture_counter, b.capture_counter);
-  EXPECT_EQ(a.capture_update_rect, b.capture_update_rect);
+  EXPECT_EQ(a.capture, b.capture);
   EXPECT_EQ(a.copy_required, b.copy_required);
   EXPECT_EQ(a.end_of_stream, b.end_of_stream);
   EXPECT_EQ(a.frame_duration, b.frame_duration);
@@ -1046,22 +1049,56 @@ TEST(VideoFrameMetadata, ClearTextureMetadata) {
 
 TEST(VideoFrameMetadata, PartialMergeMetadata) {
   VideoFrameMetadata full_metadata = GetFullVideoFrameMetadata();
+  const CaptureMetadata original_capture = full_metadata.capture;
 
   const gfx::Rect kTempRect{100, 200, 300, 400};
   const base::TimeTicks kTempTicks = base::TimeTicks::Now() + base::Seconds(2);
   const base::TimeDelta kTempDelta = base::Milliseconds(31415);
 
   VideoFrameMetadata partial_metadata;
-  partial_metadata.capture_update_rect = kTempRect;
+  partial_metadata.capture.update_rect = kTempRect;
   partial_metadata.reference_time = kTempTicks;
   partial_metadata.processing_time = kTempDelta;
 
-  // Merging partial metadata into full metadata partially override it.
+  // Merging partial metadata into full metadata partially overrides it while
+  // preserving unset CaptureMetadata fields.
   full_metadata.MergeMetadataFrom(partial_metadata);
 
-  EXPECT_EQ(partial_metadata.capture_update_rect, kTempRect);
-  EXPECT_EQ(partial_metadata.reference_time, kTempTicks);
-  EXPECT_EQ(partial_metadata.processing_time, kTempDelta);
+  EXPECT_EQ(full_metadata.capture.counter, original_capture.counter);
+  EXPECT_EQ(full_metadata.capture.update_rect, kTempRect);
+  EXPECT_EQ(full_metadata.capture.source_size, original_capture.source_size);
+  EXPECT_EQ(full_metadata.capture.region_capture_rect,
+            original_capture.region_capture_rect);
+  EXPECT_EQ(full_metadata.capture.region_capture_bounds,
+            original_capture.region_capture_bounds);
+  EXPECT_EQ(full_metadata.capture.version, original_capture.version);
+  EXPECT_EQ(full_metadata.reference_time, kTempTicks);
+  EXPECT_EQ(full_metadata.processing_time, kTempDelta);
+
+  // Merging non-default values for the remaining CaptureMetadata fields
+  // overrides them on full_metadata.capture.
+  const int kTempCounter = 456;
+  const gfx::Size kTempSize{1280, 720};
+  const gfx::Rect kTempRegionRect{5, 10, 50, 100};
+  const base::flat_map<base::Token, gfx::Rect> kTempBounds{
+      {base::Token(0xabcdef01, 0x23456789), gfx::Rect(1, 2, 30, 40)}};
+  const CaptureVersion kTempVersion(/*source=*/999, /*sub_capture=*/888);
+
+  VideoFrameMetadata partial_capture_metadata;
+  partial_capture_metadata.capture.counter = kTempCounter;
+  partial_capture_metadata.capture.source_size = kTempSize;
+  partial_capture_metadata.capture.region_capture_rect = kTempRegionRect;
+  partial_capture_metadata.capture.region_capture_bounds = kTempBounds;
+  partial_capture_metadata.capture.version = kTempVersion;
+
+  full_metadata.MergeMetadataFrom(partial_capture_metadata);
+
+  EXPECT_EQ(full_metadata.capture.counter, kTempCounter);
+  EXPECT_EQ(full_metadata.capture.update_rect, kTempRect);
+  EXPECT_EQ(full_metadata.capture.source_size, kTempSize);
+  EXPECT_EQ(full_metadata.capture.region_capture_rect, kTempRegionRect);
+  EXPECT_EQ(full_metadata.capture.region_capture_bounds, kTempBounds);
+  EXPECT_EQ(full_metadata.capture.version, kTempVersion);
 }
 
 TEST(VideoFrame, AccessPlaneDataSpans) {

@@ -968,7 +968,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // will cause the queue to be permanently stuck.
   VideoFrameMetadata& metadata = frame->metadata();
   metadata.capture_begin_time = capture_begin_time;
-  metadata.capture_counter = capture_frame_number;
+  metadata.capture.counter = capture_frame_number;
   metadata.frame_duration = oracle_->estimated_frame_duration();
   metadata.frame_rate = 1.0 / oracle_->min_capture_period().InSecondsF();
   metadata.reference_time = event_time;
@@ -979,7 +979,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   metadata.page_scale_factor = frame_metadata.page_scale_factor;
   metadata.root_scroll_offset_x = frame_metadata.root_scroll_offset.x();
   metadata.root_scroll_offset_y = frame_metadata.root_scroll_offset.y();
-  metadata.source_size = source_size;
+  metadata.capture.source_size = source_size;
   if (frame_metadata.top_controls_visible_height.has_value()) {
     last_top_controls_visible_height_ =
         *frame_metadata.top_controls_visible_height;
@@ -1034,7 +1034,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
       update_rect = ExpandRectToI420SubsampleBoundaries(update_rect);
     }
   }
-  metadata.capture_update_rect = update_rect;
+  metadata.capture.update_rect = update_rect;
 
   // If the frame is a resurrected one, just deliver it since it already
   // contains the most up-to-date capture of the source content.
@@ -1111,13 +1111,13 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     // The frame was physically cropped to the crop-target, so the target
     // occupies the entirety of the frame. This holds irrespective of which
     // frame sink the target resolved to.
-    metadata.region_capture_bounds = {
+    metadata.capture.region_capture_bounds = {
         {std::get<RegionCaptureCropId>(target_->sub_target),
          frame->visible_rect()}};
 
     if (is_same_frame_sink_as_requested) {
       const float scale_factor = frame_metadata.device_scale_factor;
-      metadata.region_capture_rect =
+      metadata.capture.region_capture_rect =
           scale_factor
               ? ScaleToEnclosingRect(region_properties->render_pass_subrect,
                                      1.0f / scale_factor)
@@ -1126,7 +1126,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   } else if (IsEntireTabCapture(target_->sub_target) &&
              !frame_metadata.capture_bounds.IsEmpty()) {
     // In full-frame mode (multi-target or uncropped capture), populate
-    // region_capture_bounds with the bounding rectangles for active targets.
+    // `capture.region_capture_bounds` with the bounding rectangles for active
+    // targets.
     const float scale_x =
         static_cast<float>(content_rect.width()) / source_size.width();
     const float scale_y =
@@ -1143,12 +1144,13 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     // iterated in strictly increasing key order with unique keys. Since we only
     // modify the rect values, `scaled_bounds` preserves this sorted unique
     // order.
-    metadata.region_capture_bounds = base::flat_map<base::Token, gfx::Rect>(
-        base::sorted_unique, std::move(scaled_bounds));
+    metadata.capture.region_capture_bounds =
+        base::flat_map<base::Token, gfx::Rect>(base::sorted_unique,
+                                               std::move(scaled_bounds));
   }
   // Note that this is done unconditionally, as a new sub-capture-target version
   // may indicate that the stream has been successfully uncropped.
-  metadata.capture_version = capture_version();
+  metadata.capture.version = capture_version();
   FrameCapture frame_capture(capture_frame_number, oracle_frame_number,
                              content_version_, content_rect, *region_properties,
                              std::move(frame), capture_begin_time);
@@ -1531,7 +1533,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(FrameCapture frame_capture) {
     // a new frame. (Whether there has been a change in crop-status,
     // restriction-status, share-this-tab-instead of anything else, an early new
     // frame is desirable.)
-    if (frame_capture.frame->metadata().capture_version != capture_version()) {
+    if (frame_capture.frame->metadata().capture.version != capture_version()) {
       frame_capture.CaptureFailed(CaptureResult::kSubCaptureTargetChanged);
     } else if (!oracle_->CompleteCapture(frame_capture.oracle_frame_number,
                                          frame_capture.success(),
@@ -1548,7 +1550,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(FrameCapture frame_capture) {
     TRACE_EVENT_END("gpu.capture", CaptureTrack(metadata), "result",
                     frame_capture.result());
     TRACE_EVENT_END("gpu.capture", FrameInUseTrack(metadata), "frame_number",
-                    metadata.capture_counter, "utilization_pct",
+                    metadata.capture.counter, "utilization_pct",
                     AsPercent(GetPipelineUtilization()));
     MaybeScheduleRefreshFrame();
     return;
@@ -1675,7 +1677,7 @@ void FrameSinkVideoCapturerImpl::NotifyFrameReleased(
   num_frames_in_flight_--;
   const media::VideoFrameMetadata metadata = frame->metadata();
   TRACE_EVENT_END("gpu.capture", FrameInUseTrack(metadata), "frame_number",
-                  metadata.capture_counter, "utilization_pct",
+                  metadata.capture.counter, "utilization_pct",
                   AsPercent(GetPipelineUtilization()));
 }
 

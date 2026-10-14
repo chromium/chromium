@@ -295,11 +295,11 @@ void AshMojomVideoConsumer::OnFrameCaptured(
     return;
   }
 
-  auto updated_rect = info->metadata.capture_update_rect.value_or(content_rect);
+  auto updated_rect = info->metadata.capture.update_rect.value_or(content_rect);
 
-  // Ensure the capture_update_rect is within the bounds of the content_rect.
+  // Ensure the capture.update_rect is within the bounds of the content_rect.
   if (!content_rect.Contains(updated_rect)) {
-    VLOG(1) << "capture_update_rect is out of bounds of content_rect.";
+    VLOG(1) << "capture.update_rect is out of bounds of content_rect.";
     mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>(
         std::move(callbacks))
         ->Done();
