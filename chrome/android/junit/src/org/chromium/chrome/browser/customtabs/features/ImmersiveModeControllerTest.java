@@ -8,6 +8,8 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -48,6 +50,7 @@ public class ImmersiveModeControllerTest {
 
     @Mock public ActivityWindowAndroid mWindowAndroid;
     @Mock public EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock public WebappInsetsConsumer mWebappInsetsConsumer;
     public UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     private Activity mActivity;
@@ -62,7 +65,26 @@ public class ImmersiveModeControllerTest {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
         mController =
                 new ImmersiveModeController(
-                        mActivity, mWindowAndroid, mEdgeToEdgeStateProvider, mLifecycleDispatcher);
+                        mActivity,
+                        mWindowAndroid,
+                        mEdgeToEdgeStateProvider,
+                        mWebappInsetsConsumer,
+                        mLifecycleDispatcher);
+    }
+
+    @Test
+    public void withholdsWebappInsetsWhileImmersive() {
+        when(mWebappInsetsConsumer.acquireEdgeToEdgeToken()).thenReturn(7);
+
+        mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
+        // The token must be held synchronously, before the posted immersive-flags task runs,
+        // so the edge-to-edge layout never pads the root view for a frame.
+        verify(mWebappInsetsConsumer).acquireEdgeToEdgeToken();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mWebappInsetsConsumer, times(1)).acquireEdgeToEdgeToken();
+
+        mController.exitImmersiveMode();
+        verify(mWebappInsetsConsumer).releaseEdgeToEdgeToken(7);
     }
 
     @Test

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -83,8 +84,8 @@ public class WebappInsetsConsumerTest {
     }
 
     @Test
-    public void consumesSystemBarsAndDisplayCutoutWhileEdgeToEdge() {
-        mConsumer.drawEdgeToEdge(true);
+    public void consumesSystemBarsAndDisplayCutoutWhileTokenHeld() {
+        mConsumer.acquireEdgeToEdgeToken();
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         WindowInsetsCompat result = mConsumer.onApplyWindowInsets(mView, mWindowInsets);
@@ -114,9 +115,16 @@ public class WebappInsetsConsumerTest {
     }
 
     @Test
-    public void restoresInsetsWhenConsumptionStops() {
-        mConsumer.drawEdgeToEdge(true);
-        mConsumer.drawEdgeToEdge(false);
+    public void restoresInsetsWhenLastTokenIsReleased() {
+        int firstToken = mConsumer.acquireEdgeToEdgeToken();
+        int secondToken = mConsumer.acquireEdgeToEdgeToken();
+
+        mConsumer.releaseEdgeToEdgeToken(firstToken);
+        assertTrue(
+                "Insets stay withheld while another token is held.",
+                mConsumer.getDrawEdgeToEdgeSupplier().get());
+
+        mConsumer.releaseEdgeToEdgeToken(secondToken);
 
         WindowInsetsCompat result = mConsumer.onApplyWindowInsets(mView, mWindowInsets);
 
@@ -138,7 +146,7 @@ public class WebappInsetsConsumerTest {
                                 new DisplayCutoutCompat(
                                         new Rect(0, 83, 0, 0), /* boundingRects= */ null))
                         .build();
-        mConsumer.drawEdgeToEdge(true);
+        mConsumer.acquireEdgeToEdgeToken();
 
         WindowInsetsCompat result =
                 mConsumer.onApplyWindowInsets(new View(activity), insetsWithCutout);
@@ -167,7 +175,7 @@ public class WebappInsetsConsumerTest {
                                 new DisplayCutoutCompat(
                                         new Rect(0, 83, 0, 0), /* boundingRects= */ null))
                         .build();
-        mConsumer.drawEdgeToEdge(true);
+        mConsumer.acquireEdgeToEdgeToken();
 
         WindowInsetsCompat result =
                 mConsumer.onApplyWindowInsets(new View(activity), insetsWithCutout);

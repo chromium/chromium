@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -120,9 +122,9 @@ public class TrustedWebActivityEdgeToEdgeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            activity.getEdgeToEdgeManager()
-                                    .getEdgeToEdgeStateProvider()
-                                    .isEdgeToEdgeEnabled(),
+                            assumeNonNull(activity.getWebappInsetsConsumer())
+                                    .getDrawEdgeToEdgeSupplier()
+                                    .get(),
                             Matchers.is(false));
                     Criteria.checkThat(layout.getPaddingTop(), Matchers.greaterThan(0));
                 });
@@ -141,9 +143,9 @@ public class TrustedWebActivityEdgeToEdgeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            activity.getEdgeToEdgeManager()
-                                    .getEdgeToEdgeStateProvider()
-                                    .isEdgeToEdgeEnabled(),
+                            assumeNonNull(activity.getWebappInsetsConsumer())
+                                    .getDrawEdgeToEdgeSupplier()
+                                    .get(),
                             Matchers.is(true));
                     Criteria.checkThat(layout.getPaddingTop(), Matchers.is(0));
                 });
@@ -171,9 +173,9 @@ public class TrustedWebActivityEdgeToEdgeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            activity.getEdgeToEdgeManager()
-                                    .getEdgeToEdgeStateProvider()
-                                    .isEdgeToEdgeEnabled(),
+                            assumeNonNull(activity.getWebappInsetsConsumer())
+                                    .getDrawEdgeToEdgeSupplier()
+                                    .get(),
                             Matchers.is(false));
                     Criteria.checkThat(layout.getPaddingTop(), Matchers.greaterThan(0));
                 },
@@ -197,9 +199,9 @@ public class TrustedWebActivityEdgeToEdgeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            activity.getEdgeToEdgeManager()
-                                    .getEdgeToEdgeStateProvider()
-                                    .isEdgeToEdgeEnabled(),
+                            assumeNonNull(activity.getWebappInsetsConsumer())
+                                    .getDrawEdgeToEdgeSupplier()
+                                    .get(),
                             Matchers.is(true));
                     Criteria.checkThat(layout.getPaddingTop(), Matchers.is(0));
                 });

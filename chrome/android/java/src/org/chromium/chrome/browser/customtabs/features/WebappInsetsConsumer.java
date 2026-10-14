@@ -9,16 +9,22 @@ import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.insets.WindowInsetsUtils;
+import org.chromium.ui.util.TokenHolder;
 
 /**
- * Consumes system bar and display cutout insets while an installed web app draws edge-to-edge, so
- * the edge-to-edge root layout below draws zero-height system bars instead of padding the content.
- * Display cutout insets are only withheld while the window's cutout mode allows drawing into the
- * cutout, e.g. a TWA requesting {@code LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER} keeps them.
+ * Consumes system bar and display cutout insets while a token is held, so the edge-to-edge root
+ * layout below draws zero-height system bars instead of padding the installed web app's content.
+ * Tokens are held by the paths that own the web app's edge-to-edge state: the display cutout
+ * controller and immersive mode. Display cutout insets are only withheld while the window's cutout
+ * mode allows drawing into the cutout, e.g. a TWA requesting {@code
+ * LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER} keeps them.
  *
  * <p>Safe area computations are unaffected: they read the raw window insets via {@link
  * InsetObserver#getLastRawWindowInsets()}. IME insets are never consumed, so keyboard-driven layout
@@ -27,7 +33,9 @@ import org.chromium.ui.insets.WindowInsetsUtils;
 @NullMarked
 public class WebappInsetsConsumer implements WindowInsetsConsumer {
     private final InsetObserver mInsetObserver;
-    private boolean mDrawEdgeToEdge;
+    private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
+    private final SettableNonNullObservableSupplier<Boolean> mDrawEdgeToEdgeSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /**
      * Creates the consumer and registers it on the given {@link InsetObserver} at {@link
@@ -38,21 +46,24 @@ public class WebappInsetsConsumer implements WindowInsetsConsumer {
         mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.WEB_APP_EDGE_TO_EDGE);
     }
 
-    /**
-     * Sets whether system bar and display cutout insets are withheld from downstream consumers
-     * while the web app draws edge-to-edge. Re-dispatches the last seen window insets when the
-     * state changes.
-     */
-    public void drawEdgeToEdge(boolean drawEdgeToEdge) {
-        if (mDrawEdgeToEdge == drawEdgeToEdge) return;
+    /** Withholds system bar and display cutout insets until the token is released. */
+    public int acquireEdgeToEdgeToken() {
+        return mTokenHolder.acquireToken();
+    }
 
-        mDrawEdgeToEdge = drawEdgeToEdge;
-        mInsetObserver.retriggerOnApplyWindowInsets();
+    /** Releases a token acquired via {@link #acquireEdgeToEdgeToken()}. */
+    public void releaseEdgeToEdgeToken(int token) {
+        mTokenHolder.releaseToken(token);
+    }
+
+    /** Supplies whether insets are currently withheld, i.e. the web app draws edge-to-edge. */
+    public NonNullObservableSupplier<Boolean> getDrawEdgeToEdgeSupplier() {
+        return mDrawEdgeToEdgeSupplier;
     }
 
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
-        if (!mDrawEdgeToEdge) return insets;
+        if (!mDrawEdgeToEdgeSupplier.get()) return insets;
 
         WindowInsetsCompat insetsWithoutSystemBars =
                 new WindowInsetsCompat.Builder(insets)
@@ -80,5 +91,13 @@ public class WebappInsetsConsumer implements WindowInsetsConsumer {
     /** Unregisters the consumer from the {@link InsetObserver}. */
     public void destroy() {
         mInsetObserver.removeInsetsConsumer(this);
+    }
+
+    private void onTokenUpdate() {
+        boolean drawEdgeToEdge = mTokenHolder.hasTokens();
+        if (drawEdgeToEdge == mDrawEdgeToEdgeSupplier.get()) return;
+
+        mDrawEdgeToEdgeSupplier.set(drawEdgeToEdge);
+        mInsetObserver.retriggerOnApplyWindowInsets();
     }
 }

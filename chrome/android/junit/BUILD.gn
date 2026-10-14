@@ -752,7 +752,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/BaseCustomTabRootUiCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/ClientManagerTest.java",
       "src/org/chromium/chrome/browser/customtabs/CloseButtonNavigatorTest.java",
-      "src/org/chromium/chrome/browser/customtabs/CustomTabActivityEdgeToEdgeTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTimeoutHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabAdaptiveToolbarBehaviorUnitTest.java",

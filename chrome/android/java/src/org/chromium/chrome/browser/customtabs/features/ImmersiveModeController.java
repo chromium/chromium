@@ -22,6 +22,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeTokenHolder;
+import org.chromium.ui.util.TokenHolder;
 
 /** Allows to enter and exit immersive mode in TWAs and WebAPKs. */
 @NullMarked
@@ -44,9 +46,11 @@ public class ImmersiveModeController
     private final Handler mHandler = new Handler();
     private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
     private final EdgeToEdgeTokenHolder mEdgeToEdgeTokenHolder;
+    private final @Nullable WebappInsetsConsumer mWebappInsetsConsumer;
 
     private boolean mInImmersiveMode;
     private boolean mIsImmersiveModeSticky;
+    private int mWebappInsetsToken = TokenHolder.INVALID_TOKEN;
 
     private static final int IMMERSIVE_MODE_UI_FLAGS =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -65,9 +69,11 @@ public class ImmersiveModeController
             Activity activity,
             WindowAndroid windowAndroid,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            @Nullable WebappInsetsConsumer webappInsetsConsumer,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mEdgeToEdgeTokenHolder = new EdgeToEdgeTokenHolder(edgeToEdgeStateProvider);
+        mWebappInsetsConsumer = webappInsetsConsumer;
         lifecycleDispatcher.register(this);
 
         ActivityDisplayCutoutModeSupplier.attach(
@@ -103,6 +109,9 @@ public class ImmersiveModeController
         // waiting for DisplayCutoutController to set the mode).
         window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
         mCutoutSupplier.set(layoutInDisplayCutoutMode);
+        // Same reason: withhold the insets before the first inset pass, so the edge-to-edge
+        // layout never pads the root view for a frame while the posted flags task is pending.
+        updateEdgeToEdge(/* drawEdgeToEdge= */ true);
 
         postSetImmersiveFlags(0);
     }
@@ -181,8 +190,15 @@ public class ImmersiveModeController
     private void updateEdgeToEdge(boolean drawEdgeToEdge) {
         if (drawEdgeToEdge) {
             mEdgeToEdgeTokenHolder.acquireTokenIfEmpty();
+            if (mWebappInsetsConsumer != null && mWebappInsetsToken == TokenHolder.INVALID_TOKEN) {
+                mWebappInsetsToken = mWebappInsetsConsumer.acquireEdgeToEdgeToken();
+            }
         } else {
             mEdgeToEdgeTokenHolder.release();
+            if (mWebappInsetsConsumer != null && mWebappInsetsToken != TokenHolder.INVALID_TOKEN) {
+                mWebappInsetsConsumer.releaseEdgeToEdgeToken(mWebappInsetsToken);
+                mWebappInsetsToken = TokenHolder.INVALID_TOKEN;
+            }
         }
     }
 

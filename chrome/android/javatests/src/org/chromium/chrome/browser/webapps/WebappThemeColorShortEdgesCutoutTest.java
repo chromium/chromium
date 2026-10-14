@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Color;
 import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
@@ -23,12 +27,16 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeBaseLayout;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Tests status bar color transitions for a standalone webapp with the short-edges cutout feature
@@ -38,8 +46,9 @@ import org.chromium.ui.base.DeviceFormFactor;
 @DoNotBatch(reason = "Tests activity startup behavior.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // Standalone webapps run in a windowed container on tablets/desktop where the cutout treatment
-// does not apply.
+// does not apply. Automotive keeps edge-to-edge everywhere disabled.
 @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class WebappThemeColorShortEdgesCutoutTest {
     private static final int PAGE_THEME_COLOR = Color.RED;
     private static final int UPDATED_PAGE_THEME_COLOR = Color.BLUE;
@@ -53,7 +62,8 @@ public class WebappThemeColorShortEdgesCutoutTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE, ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testThemeColorTransitionsWithViewportFitChanges_EdgeToEdgeEverywhere()
             throws Exception {
@@ -67,14 +77,19 @@ public class WebappThemeColorShortEdgesCutoutTest {
                         .putExtra(WebappConstants.EXTRA_URL, pageWithThemeColorUrl));
         WebappActivity activity = mActivityTestRule.getActivity();
 
-        // Themed state: status bar uses the page theme-color.
+        // Themed state: the window status bar is transparent from startup (the activity draws
+        // edge-to-edge), and EdgeToEdgeBaseLayout pads the content and paints the status bar
+        // region with the page theme-color.
         ThemeTestUtils.waitForThemeColor(activity, PAGE_THEME_COLOR);
         waitForStatusBarColor(activity, PAGE_THEME_COLOR);
-        waitForContentFitsWindowInsets(activity, false);
+        waitForWindowStatusBarColor(activity, Color.TRANSPARENT);
+        waitForWebappDrawsEdgeToEdge(activity, false);
+        waitForEdgeToEdgeLayoutTopPadding(activity, /* padded= */ true);
         waitForLayoutInDisplayCutoutMode(
                 activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
 
-        // Opting into viewport-fit=cover makes the window status bar transparent.
+        // Opting into viewport-fit=cover withholds the insets, so the layout stops padding and
+        // the content draws under the (still transparent) status bar.
         mActivityTestRule.runJavaScriptCodeInCurrentTab(
                 "var meta = document.createElement('meta');"
                         + "meta.setAttribute('name', 'viewport');"
@@ -83,7 +98,8 @@ public class WebappThemeColorShortEdgesCutoutTest {
                         + "window.__viewportMeta = meta;");
         waitForLayoutInDisplayCutoutMode(
                 activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
-        waitForContentFitsWindowInsets(activity, false);
+        waitForWebappDrawsEdgeToEdge(activity, true);
+        waitForEdgeToEdgeLayoutTopPadding(activity, /* padded= */ false);
         waitForWindowStatusBarColor(activity, Color.TRANSPARENT);
 
         // Changing the theme-color while edge-to-edge keeps the window transparent; the tracked
@@ -95,12 +111,13 @@ public class WebappThemeColorShortEdgesCutoutTest {
         waitForStatusBarColor(activity, UPDATED_PAGE_THEME_COLOR);
         waitForWindowStatusBarColor(activity, Color.TRANSPARENT);
 
-        // Opting out restores the themed status bar with the updated color.
+        // Opting out restores the padded layout, painted with the updated theme color.
         mActivityTestRule.runJavaScriptCodeInCurrentTab(
                 "window.__viewportMeta.setAttribute('content', 'viewport-fit=auto');");
         waitForLayoutInDisplayCutoutMode(
                 activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
-        waitForContentFitsWindowInsets(activity, false);
+        waitForWebappDrawsEdgeToEdge(activity, false);
+        waitForEdgeToEdgeLayoutTopPadding(activity, /* padded= */ true);
         waitForStatusBarColor(activity, UPDATED_PAGE_THEME_COLOR);
     }
 
@@ -130,13 +147,40 @@ public class WebappThemeColorShortEdgesCutoutTest {
                 });
     }
 
-    private static void waitForContentFitsWindowInsets(WebappActivity activity, boolean expected) {
+    /** Waits until the webapp inset consumer withholds (or restores) the system bar insets. */
+    private static void waitForWebappDrawsEdgeToEdge(WebappActivity activity, boolean expected) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            activity.getEdgeToEdgeManager().shouldContentFitsWindowInsets(),
+                            assumeNonNull(activity.getWebappInsetsConsumer())
+                                    .getDrawEdgeToEdgeSupplier()
+                                    .get(),
                             Matchers.is(expected));
                 });
+    }
+
+    /** Waits until the edge-to-edge layout pads (or stops padding) the content at the top. */
+    private static void waitForEdgeToEdgeLayoutTopPadding(WebappActivity activity, boolean padded) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    EdgeToEdgeBaseLayout layout =
+                            findEdgeToEdgeLayout(activity.getWindow().getDecorView());
+                    Criteria.checkThat(layout, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            layout.getPaddingTop(),
+                            padded ? Matchers.greaterThan(0) : Matchers.is(0));
+                });
+    }
+
+    private static @Nullable EdgeToEdgeBaseLayout findEdgeToEdgeLayout(View root) {
+        if (root instanceof EdgeToEdgeBaseLayout layout) return layout;
+        if (root instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                EdgeToEdgeBaseLayout layout = findEdgeToEdgeLayout(group.getChildAt(i));
+                if (layout != null) return layout;
+            }
+        }
+        return null;
     }
 
     private static void waitForLayoutInDisplayCutoutMode(WebappActivity activity, int expected) {

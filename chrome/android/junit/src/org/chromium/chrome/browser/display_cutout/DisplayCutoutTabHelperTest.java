@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.display_cutout;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -31,12 +31,11 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.features.WebappInsetsConsumer;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 import java.lang.ref.WeakReference;
 
@@ -46,14 +45,14 @@ import java.lang.ref.WeakReference;
 // Android 11.
 @Config(sdk = {Build.VERSION_CODES.R, BaseRobolectricTestRunner.MAX_SDK})
 public class DisplayCutoutTabHelperTest {
-    // Subclass needed to stub getEdgeToEdgeManager() and getIntentDataProvider() without running
-    // full ChromeActivity startup.
+    // Subclass needed to stub getWebappInsetsConsumer() and getIntentDataProvider() without
+    // running full ChromeActivity startup.
     private static class TestCustomTabActivity extends CustomTabActivity {
-        private EdgeToEdgeManager mEdgeToEdgeManager;
+        private WebappInsetsConsumer mWebappInsetsConsumer;
         private BrowserServicesIntentDataProvider mIntentDataProvider;
 
-        void setEdgeToEdgeManagerForTesting(EdgeToEdgeManager manager) {
-            mEdgeToEdgeManager = manager;
+        void setWebappInsetsConsumerForTesting(WebappInsetsConsumer consumer) {
+            mWebappInsetsConsumer = consumer;
         }
 
         void setIntentDataProviderForTesting(BrowserServicesIntentDataProvider provider) {
@@ -61,8 +60,8 @@ public class DisplayCutoutTabHelperTest {
         }
 
         @Override
-        public EdgeToEdgeManager getEdgeToEdgeManager() {
-            return mEdgeToEdgeManager;
+        public WebappInsetsConsumer getWebappInsetsConsumer() {
+            return mWebappInsetsConsumer;
         }
 
         @Override
@@ -77,10 +76,8 @@ public class DisplayCutoutTabHelperTest {
     @Mock private WindowAndroid mWindowAndroidA;
     @Mock private WindowAndroid mWindowAndroidB;
     @Mock private WindowAndroid mWindowAndroidNonCct;
-    @Mock private EdgeToEdgeManager mManagerA;
-    @Mock private EdgeToEdgeManager mManagerB;
-    @Mock private EdgeToEdgeStateProvider mProviderA;
-    @Mock private EdgeToEdgeStateProvider mProviderB;
+    @Mock private WebappInsetsConsumer mInsetsConsumerA;
+    @Mock private WebappInsetsConsumer mInsetsConsumerB;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     private TestCustomTabActivity mActivityA;
     private TestCustomTabActivity mActivityB;
@@ -89,17 +86,10 @@ public class DisplayCutoutTabHelperTest {
     @Before
     public void setUp() {
         mActivityA = Robolectric.buildActivity(TestCustomTabActivity.class).get();
-        mActivityA.setEdgeToEdgeManagerForTesting(mManagerA);
         mActivityA.setIntentDataProviderForTesting(mIntentDataProvider);
         when(mWindowAndroidA.getActivity()).thenReturn(new WeakReference<>(mActivityA));
-        when(mManagerA.getEdgeToEdgeStateProvider()).thenReturn(mProviderA);
-        when(mProviderA.acquireEdgeToEdgeToken()).thenReturn(1);
-
         mActivityB = Robolectric.buildActivity(TestCustomTabActivity.class).get();
-        mActivityB.setEdgeToEdgeManagerForTesting(mManagerB);
         when(mWindowAndroidB.getActivity()).thenReturn(new WeakReference<>(mActivityB));
-        when(mManagerB.getEdgeToEdgeStateProvider()).thenReturn(mProviderB);
-        when(mProviderB.acquireEdgeToEdgeToken()).thenReturn(2);
 
         mNonCustomTabActivity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidNonCct.getActivity())
@@ -124,21 +114,6 @@ public class DisplayCutoutTabHelperTest {
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 
         assertFalse(delegate.isShortEdgesCutoutModeEnabled());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void testEdgeToEdgeStateUntouchedWhenShortEdgesInactive() {
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        setUpFullscreenWebapp(mActivityA);
-        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
-                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
-
-        delegate.setEdgeToEdgeState(false);
-        delegate.setEdgeToEdgeState(true);
-
-        verify(mProviderA, never()).acquireEdgeToEdgeToken();
-        verify(mManagerA, never()).setContentFitsWindowInsets(anyBoolean());
     }
 
     @Test
@@ -224,15 +199,18 @@ public class DisplayCutoutTabHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void testEdgeToEdgeTokenRebindsAfterActivityReparenting() {
+    public void testInsetsTokenRebindsAfterActivityReparenting() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         setUpFullscreenWebapp(mActivityA);
         setUpFullscreenWebapp(mActivityB);
+        mActivityA.setWebappInsetsConsumerForTesting(mInsetsConsumerA);
+        mActivityB.setWebappInsetsConsumerForTesting(mInsetsConsumerB);
+        when(mInsetsConsumerA.acquireEdgeToEdgeToken()).thenReturn(1);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 
         delegate.setEdgeToEdgeState(true);
-        verify(mProviderA).acquireEdgeToEdgeToken();
+        verify(mInsetsConsumerA).acquireEdgeToEdgeToken();
 
         // The tab is reparented to a different BaseCustomTabActivity instance (e.g. via
         // CustomTabActivityNavigationController#openInAdjacentActivity in multi-window mode),
@@ -240,32 +218,63 @@ public class DisplayCutoutTabHelperTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidB);
         delegate.setEdgeToEdgeState(true);
 
-        // The token acquired from the old activity's provider must be released, and a new token
-        // must be acquired from the new activity's provider. Otherwise the delegate keeps a
-        // permanent reference to the old (destroyed) activity's window, leaking it.
-        verify(mProviderA).releaseEdgeToEdgeToken(1);
-        verify(mProviderB).acquireEdgeToEdgeToken();
+        // The token held against the old activity's consumer must be released, and a new token
+        // acquired from the new activity's consumer. Otherwise the delegate keeps a permanent
+        // reference to the old (destroyed) activity, leaking it.
+        verify(mInsetsConsumerA).releaseEdgeToEdgeToken(1);
+        verify(mInsetsConsumerB).acquireEdgeToEdgeToken();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void testEdgeToEdgeTokenReleasedWhenReparentedToNonCustomTabActivity() {
+    public void testInsetsTokenReleasedWhenReparentedToNonCustomTabActivity() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         setUpFullscreenWebapp(mActivityA);
+        mActivityA.setWebappInsetsConsumerForTesting(mInsetsConsumerA);
+        when(mInsetsConsumerA.acquireEdgeToEdgeToken()).thenReturn(1);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 
         delegate.setEdgeToEdgeState(true);
-        verify(mProviderA).acquireEdgeToEdgeToken();
+        verify(mInsetsConsumerA).acquireEdgeToEdgeToken();
 
         // The tab is reparented into the regular (non-Custom-Tab) browser activity, e.g. via
         // "Open in Chrome" from the custom tab's overflow menu.
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidNonCct);
         delegate.setEdgeToEdgeState(true);
 
-        // Even though the new activity isn't a BaseCustomTabActivity (so there's no new provider
-        // to acquire a token from), the token held against the old CCT's provider must still be
-        // released. Otherwise the delegate keeps pinning the old (possibly destroyed) CCT forever.
-        verify(mProviderA).releaseEdgeToEdgeToken(1);
+        verify(mInsetsConsumerA).releaseEdgeToEdgeToken(1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testInsetsTokenHeldOnceWhileDrawingEdgeToEdge() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
+        mActivityA.setWebappInsetsConsumerForTesting(mInsetsConsumerA);
+        when(mInsetsConsumerA.acquireEdgeToEdgeToken()).thenReturn(1);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        delegate.setEdgeToEdgeState(true);
+        delegate.setEdgeToEdgeState(true);
+        verify(mInsetsConsumerA, times(1)).acquireEdgeToEdgeToken();
+
+        delegate.setEdgeToEdgeState(false);
+        delegate.setEdgeToEdgeState(false);
+        verify(mInsetsConsumerA, times(1)).releaseEdgeToEdgeToken(1);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testNonParticipatingActivityHasNoInsetsConsumer() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        delegate.setEdgeToEdgeState(true);
+
+        verifyNoInteractions(mInsetsConsumerA);
     }
 }
