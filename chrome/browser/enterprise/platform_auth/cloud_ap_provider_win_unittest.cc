@@ -7,18 +7,23 @@
 #include <proofofpossessioncookieinfo.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,16 +51,10 @@ class CloudApProviderWinTest : public ::testing::Test {
   static constexpr size_t kMaxQueueSize = CloudApProviderWin::kMaxQueueSize;
 
   static size_t GetTotalFetches(const base::HistogramTester& tester) {
-    size_t total = 0;
-    for (const auto& bucket : tester.GetAllSamples(
-             "Enterprise.PlatformAuth.GetAuthData.SuccessTime")) {
-      total += bucket.count;
-    }
-    for (const auto& bucket : tester.GetAllSamples(
-             "Enterprise.PlatformAuth.GetAuthData.FailureTime")) {
-      total += bucket.count;
-    }
-    return total;
+    return tester.GetTotalCountForPrefix(
+               "Enterprise.PlatformAuth.GetAuthData.SuccessTime") +
+           tester.GetTotalCountForPrefix(
+               "Enterprise.PlatformAuth.GetAuthData.FailureTime");
   }
 
   ~CloudApProviderWinTest() override {
@@ -135,7 +134,7 @@ TEST_F(CloudApProviderWinTest, NotJoined) {
       .WillOnce([&run_loop](std::unique_ptr<std::vector<url::Origin>> origins) {
         run_loop.Quit();
         ASSERT_NE(origins.get(), nullptr);
-        EXPECT_TRUE(origins->empty());
+        EXPECT_THAT(*origins, testing::IsEmpty());
       });
 
   provider.FetchOrigins(mock.Get());
@@ -208,7 +207,8 @@ TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
 
   // Only cookies whose name begins with 'x-ms' should be set as individual
   // headers.
-  EXPECT_FALSE(auth_headers.GetHeader(base::WideToASCII(cookie_name_1)));
+  EXPECT_EQ(auth_headers.GetHeader(base::WideToASCII(cookie_name_1)),
+            std::nullopt);
   // Cookie attributes are removed from the header value.
   EXPECT_EQ(auth_headers.GetHeader(base::WideToASCII(cookie_name_2)),
             base::WideToASCII(L"data"));
@@ -293,6 +293,7 @@ TEST_F(CloudApProviderWinTest, GetDataSameUrl) {
 
 TEST_F(CloudApProviderWinTest, GetDataMultipleUrls) {
   CloudApProviderWin provider;
+  base::HistogramTester histogram_tester;
   GURL url1("https://test1.com");
   GURL url2("https://test2.com");
 
@@ -313,6 +314,47 @@ TEST_F(CloudApProviderWinTest, GetDataMultipleUrls) {
   run_loop.Run();
 
   EXPECT_EQ(count, 2);
+  EXPECT_EQ(GetTotalFetches(histogram_tester), 2u);
+}
+
+TEST_F(CloudApProviderWinTest, GetDataSequentialSameUrl) {
+  CloudApProviderWin provider;
+  GURL url("https://test.com");
+  base::HistogramTester histogram_tester;
+
+  {
+    base::RunLoop run_loop;
+    provider.GetData(url,
+                     base::BindOnce([](base::RepeatingClosure quit,
+                                       net::HttpRequestHeaders) { quit.Run(); },
+                                    run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_EQ(GetTotalFetches(histogram_tester), 1u);
+  }
+
+  // A subsequent request after the first completes must trigger a fresh fetch.
+  {
+    base::RunLoop run_loop;
+    provider.GetData(url,
+                     base::BindOnce([](base::RepeatingClosure quit,
+                                       net::HttpRequestHeaders) { quit.Run(); },
+                                    run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_EQ(GetTotalFetches(histogram_tester), 2u);
+  }
+}
+
+TEST_F(CloudApProviderWinTest, DestructionDuringInFlightFetch) {
+  GURL url("https://test.com");
+  base::HistogramTester histogram_tester;
+  {
+    CloudApProviderWin provider;
+    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> callback;
+    EXPECT_CALL(callback, Run(_)).Times(0);
+    provider.GetData(url, callback.Get());
+  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetTotalFetches(histogram_tester) == 1u; }));
 }
 
 TEST_F(CloudApProviderWinTest, GetDataGlobalOverflow) {

@@ -11,9 +11,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/win/windows_types.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
+#include "url/gurl.h"
 
-class GURL;
 class ProofOfPossessionCookieInfo;
 
 namespace net {
@@ -50,8 +51,6 @@ class CloudApProviderWin : public PlatformAuthProvider {
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, NotJoined);
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, Joined);
   FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest, ParseCookieInfo);
-  FRIEND_TEST_ALL_PREFIXES(CloudApProviderWinTest,
-                           ParseCookieInfo_HeaderFeatureEnabled);
 
   // Maximum total number of pending data requests allowed across all URLs.
   static constexpr size_t kMaxQueueSize = 100;
