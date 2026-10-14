@@ -6059,6 +6059,21 @@
             ]
         }
     ],
+    "DeviceBoundSessionsDsePrewarmerMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261014",
+                    "enable_features": [
+                        "DeviceBoundSessionsDsePrewarmer"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceBoundSessionsForGoogle": [
         {
             "platforms": [
