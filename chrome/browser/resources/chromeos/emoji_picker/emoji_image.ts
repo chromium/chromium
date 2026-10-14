@@ -28,12 +28,13 @@ export class EmojiImageComponent extends PolymerElement {
 
       clearable: {type: Boolean, value: false},
       showClearButton: {type: Boolean, value: false},
+      loading: {type: Boolean, value: true},
     };
   }
 
   declare index: number;
   declare item: EmojiVariants;
-  loading: boolean = true;
+  declare loading: boolean;
 
   declare showTooltip: (e: MouseEvent|FocusEvent) => void;
   declare emojiClick: (e: MouseEvent) => void;
