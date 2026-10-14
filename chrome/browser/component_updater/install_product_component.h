@@ -27,7 +27,10 @@ struct LaunchOptions;
 
 namespace component_updater {
 
-// Result of installing a product component payload.
+// Result of installing a product component payload. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+// LINT.IfChange(ProductComponentInstallResult)
 enum class ProductComponentInstallResult {
   kSuccess = 0,
   kAlreadyExists = 1,
@@ -44,7 +47,9 @@ enum class ProductComponentInstallResult {
   kFailedComInvalidArg = 12,
   kFailedComUnexpected = 13,
   kFailedComOther = 14,
+  kMaxValue = kFailedComOther,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:ProductComponentInstallResult)
 
 #if BUILDFLAG(IS_WIN)
 // Delegate interface to abstract external Windows installer mechanisms.

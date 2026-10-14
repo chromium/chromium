@@ -62,6 +62,10 @@
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/component_updater/dynamic_patch_component_installer.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
 #else
@@ -237,6 +241,10 @@ void RegisterComponentsForUpdate() {
   RegisterCaptchaProviderComponent(cus);
 
   MaybeRegisterPlatformRuntimeComponent(cus);
+
+#if BUILDFLAG(IS_WIN)
+  MaybeRegisterDynamicPatchComponent(cus);
+#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {

@@ -276,6 +276,32 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoMergePortalsResult)
 -->
 
+<!-- LINT.IfChange(ProductComponentInstallResult) -->
+
+<enum name="ProductComponentInstallResult">
+  <summary>
+    The result of installing a product component (e.g., a dynamic patch) into
+    the Chrome installation directory.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Same or newer version already installed"/>
+  <int value="2" label="Launch or execution failed"/>
+  <int value="3" label="Signature verification failed"/>
+  <int value="4" label="Invalid input (e.g., manifest or arguments)"/>
+  <int value="5" label="Incompatible base version"/>
+  <int value="6" label="Other error"/>
+  <int value="7" label="App Command or setup.exe not found"/>
+  <int value="8" label="Chrome is not installed"/>
+  <int value="9" label="Internal installer error (I/O or filesystem)"/>
+  <int value="10" label="COM access denied (E_ACCESSDENIED)"/>
+  <int value="11" label="COM/RPC server died or disconnected"/>
+  <int value="12" label="COM invalid argument (E_INVALIDARG)"/>
+  <int value="13" label="COM unexpected error (E_UNEXPECTED)"/>
+  <int value="14" label="Other COM/RPC error"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/component_updater/install_product_component.h:ProductComponentInstallResult) -->
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>

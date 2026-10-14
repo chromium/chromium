@@ -47,6 +47,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
       std::string_view, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
        SystemProfileProto_ComponentId_REAL_TIME_URL_CHECKS_ALLOWLIST},
+      {"binbghhnflgglfabhjocbobkiignbgfh",
+       SystemProfileProto_ComponentId_DYNAMIC_RENDERER_PATCH_WINDOWS},
       {"bjbdkfoakgmkndalgpadobhgbhhoanho",
        SystemProfileProto_ComponentId_EPSON_INKJET_PRINTER_ESCPR},
       {"cdoopinbipdmaefofkedmagbfmdcjnaa",

@@ -40,6 +40,13 @@ chromium-metrics-reviews@google.com.
   <variant name="RegularBoot" summary="subsequent boot after first boot"/>
 </variants>
 
+<variants name="DynamicPatchInstallLevel">
+  <variant name="SystemLevel"
+      summary="system-level install, via Google Update's elevated
+               install-component-for-user App Command"/>
+  <variant name="UserLevel" summary="per-user install, via setup.exe"/>
+</variants>
+
 <variants name="ImportantFileClients">
   <variant name="" summary="Unknown file"/>
   <variant name=".AccountManager" summary="ChromeOS serialized accounts file"/>
@@ -690,6 +697,34 @@ chromium-metrics-reviews@google.com.
     automated component update checks. Warning: this histogram was expired from
     2022-12-20 to 2023-12-04; data may be missing.
   </summary>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.DynamicPatch.InstallationResult.{InstallLevel}"
+    enum="ProductComponentInstallResult" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>src/chrome/browser/child_module/OWNERS</owner>
+  <summary>
+    Windows only. The result of installing a dynamic patch (patched child
+    process binaries such as chrome_renderer.dll for the running version of the
+    browser) for a {InstallLevel}. Recorded each time the component updater
+    installs a new version of the dynamic patch component.
+  </summary>
+  <token key="InstallLevel" variants="DynamicPatchInstallLevel"/>
+</histogram>
+
+<histogram name="ComponentUpdater.DynamicPatch.InstallDuration.{InstallLevel}"
+    units="ms" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>src/chrome/browser/child_module/OWNERS</owner>
+  <summary>
+    Windows only. The time taken to install a dynamic patch (patched child
+    process binaries such as chrome_renderer.dll for the running version of the
+    browser) for a {InstallLevel}, whether or not installation succeeded.
+    Recorded each time the component updater installs a new version of the
+    dynamic patch component.
+  </summary>
+  <token key="InstallLevel" variants="DynamicPatchInstallLevel"/>
 </histogram>
 
 <histogram name="ComponentUpdater.InstallResult" enum="ComponentManagerError"
