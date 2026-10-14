@@ -89,15 +89,16 @@ class TransportSessionImpl : public TransportSession {
   base::expected<void, DownstreamMessageSequencer::Error>
   ProcessDownstreamMessage(ActuatorDownstreamMessage message);
 
-  // Last contiguous sequence number dispatched for the session, used for
-  // resume positions and upstream reply correlation.
+  // Last contiguous sequence number (>= 0) dispatched for the session, or -1
+  // if no downstream message has been dispatched yet. Used for stream resume
+  // positions (when > 0) and upstream reply correlation.
   int64_t last_seen_sequence_number() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_seen_sequence_number_;
   }
   bool has_last_seen_sequence_number() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return last_seen_sequence_number_ > 0;
+    return last_seen_sequence_number_ >= 0;
   }
 
   size_t consecutive_invalid_sequence_numbers() const {
@@ -139,12 +140,13 @@ class TransportSessionImpl : public TransportSession {
 
   const base::TimeTicks start_time_;
   DownstreamMessageSequencer sequencer_ GUARDED_BY_CONTEXT(sequence_checker_);
-  // Tracks the sequence number of the most recently dispatched message.
-  // Unlike `sequencer_.last_seen_sequence_number()` (which advances to the end
-  // of a drained batch at once), this advances message-by-message during a
+  // Tracks the sequence number of the most recently dispatched downstream
+  // message (>= 0), or -1 before any message is dispatched. Unlike
+  // `sequencer_.last_seen_sequence_number()` (which advances to the end of a
+  // drained batch at once), this advances message-by-message during a
   // multi-message drain so synchronous handlers observe the sequence number of
   // the message currently being handled when sending an upstream reply.
-  int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
   size_t consecutive_invalid_sequence_numbers_
       GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int64_t client_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

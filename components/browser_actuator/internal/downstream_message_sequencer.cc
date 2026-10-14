@@ -4,6 +4,7 @@
 
 #include "components/browser_actuator/internal/downstream_message_sequencer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -31,7 +32,7 @@ base::expected<std::vector<ActuatorDownstreamMessage>,
 DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int64_t sequence_number = message.sequence_number();
-  if (sequence_number <= 0 ||
+  if (sequence_number < 0 ||
       sequence_number == std::numeric_limits<int64_t>::max()) {
     return base::unexpected(Error::kInvalidSequenceNumber);
   }
@@ -41,7 +42,10 @@ DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
     return std::vector<ActuatorDownstreamMessage>();
   }
 
-  if (sequence_number > next_expected_sequence_number()) {
+  // Sequence 0 is optional, so sequence 1 may skip 0 when no messages have
+  // been seen yet (`last_seen_sequence_number_ == -1`).
+  if (sequence_number > next_expected_sequence_number() &&
+      sequence_number > 1) {
     if (buffered_messages_.contains(sequence_number)) {
       DVLOG(1) << "Session '" << message.session_id()
                << "': dropping duplicate sequence number " << sequence_number;
@@ -87,8 +91,9 @@ std::vector<ActuatorDownstreamMessage> DownstreamMessageSequencer::Flush() {
   }
 
   const int64_t last_flushed = buffered_messages_.rbegin()->first;
-  const int64_t skipped_count = (last_flushed - last_seen_sequence_number_) -
-                                static_cast<int64_t>(buffered_messages_.size());
+  const int64_t skipped_count =
+      (last_flushed - std::max<int64_t>(last_seen_sequence_number_, 0)) -
+      static_cast<int64_t>(buffered_messages_.size());
   DVLOG(1) << "Session '" << buffered_messages_.begin()->second.session_id()
            << "': flushing " << buffered_messages_.size()
            << " buffered messages through sequence number " << last_flushed

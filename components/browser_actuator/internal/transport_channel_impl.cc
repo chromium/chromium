@@ -212,7 +212,7 @@ void TransportChannelImpl::SendUpstreamMessage(
   int64_t client_sequence_number = session->IncrementClientSequenceNumber();
   std::optional<int64_t> validated_responding_to_seq;
   if (responding_to_sequence_number.has_value() &&
-      *responding_to_sequence_number > 0) {
+      *responding_to_sequence_number >= 0) {
     validated_responding_to_seq = *responding_to_sequence_number;
   }
   ActuatorUpstreamMessage upstream =
@@ -245,7 +245,7 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {
        session_registry_->GetAllSessionImpls()) {
     WatchSessionsRequest::Session* data = request.add_sessions();
     data->set_session_id(session->GetSessionId());
-    if (session->has_last_seen_sequence_number()) {
+    if (session->last_seen_sequence_number() > 0) {
       data->set_last_seen_sequence_number(session->last_seen_sequence_number());
     }
   }

@@ -248,14 +248,21 @@ TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
 }
 
 TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
+  fake_client_->Dispatch(SerializedDownstream("s1", 0));  // Initial FCM wake.
+  WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
+
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s1", 2));
-  fake_client_->Dispatch(SerializedDownstream("s1", 1));  // Duplicate.
-  fake_client_->Dispatch(SerializedDownstream("s1", 0));  // Unset.
-  fake_client_->Dispatch(SerializedDownstream("s1", 4));  // Gap (3 missing).
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));   // Duplicate.
+  fake_client_->Dispatch(SerializedDownstream("s1", 0));   // Late wake retry.
+  fake_client_->Dispatch(SerializedDownstream("s1", -1));  // Invalid.
+  fake_client_->Dispatch(SerializedDownstream("s1", 4));   // Gap (3 missing).
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
 
-  WatchSessionsRequest body = ResumeBody();
+  body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
   EXPECT_EQ(body.sessions(0).session_id(), "s1");
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 2);
@@ -264,6 +271,7 @@ TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
   fake_client_->Dispatch(SerializedDownstream("s1", 3));
   body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 4);
 }
 
@@ -764,6 +772,55 @@ TEST_F(TransportChannelImplTest,
             "type.googleapis.com/browser_actuator.ControlCommand");
 }
 
+TEST_F(TransportChannelImplTest,
+       StartSessionWakeWithZeroSequenceNumberSendsSingleStartSessionAck) {
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* downstream =
+      response.mutable_actuator_downstream_message();
+  downstream->set_session_id("session_wake_test");
+  downstream->set_sequence_number(0);
+
+  ControlCommand command;
+  command.mutable_start_session();
+
+  auto* typed_payload = downstream->add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_value(
+      command.SerializeAsString());
+
+  // First wake (sequence 0) triggers StartSessionAck with
+  // `responding_to_sequence_number == 0` while leaving the session's
+  // `last_seen_sequence_number` unset in `WatchSessionsRequest`.
+  fake_client_->Dispatch(response.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "session_wake_test");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_TRUE(upstream.has_responding_to_sequence_number());
+  EXPECT_EQ(upstream.responding_to_sequence_number(), 0);
+
+  const WatchSessionsRequest watch_body = ResumeBody();
+  ASSERT_EQ(watch_body.sessions_size(), 1);
+  EXPECT_EQ(watch_body.sessions(0).session_id(), "session_wake_test");
+  EXPECT_EQ(watch_body.sessions(0).last_seen_sequence_number(), 0);
+
+  // Duplicate wake (sequence 0) is dropped without sending a second
+  // StartSessionAck.
+  fake_client_->Dispatch(response.SerializeAsString());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
 TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ControlCommand command;
@@ -942,7 +999,7 @@ TEST_F(TransportChannelImplTest,
   for (size_t i = 0;
        i + 1 < TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers;
        ++i) {
-    fake_client_->Dispatch(SerializedDownstream("s1", 0));
+    fake_client_->Dispatch(SerializedDownstream("s1", -1));
     EXPECT_NE(registry->GetSession("s1"), nullptr);
     EXPECT_TRUE(observer.received.empty());
   }
@@ -957,7 +1014,7 @@ TEST_F(TransportChannelImplTest,
   // destroys the local session.
   for (size_t i = 0;
        i < TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers; ++i) {
-    fake_client_->Dispatch(SerializedDownstream("s1", 0));
+    fake_client_->Dispatch(SerializedDownstream("s1", -1));
   }
 
   EXPECT_EQ(registry->GetSession("s1"), nullptr);

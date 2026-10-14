@@ -173,8 +173,14 @@ TEST(TransportSessionImplTest, ServerSequenceNumbers) {
   MockTransportChannel channel;
   TransportSessionImpl session("test_session", channel.GetWeakPtr());
 
-  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_EQ(session.last_seen_sequence_number(), -1);
   EXPECT_FALSE(session.has_last_seen_sequence_number());
+
+  // Out-of-band FCM wake message (sequence 0) advances
+  // `last_seen_sequence_number()` to 0.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(0)));
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_TRUE(session.has_last_seen_sequence_number());
 
   EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
   EXPECT_EQ(session.last_seen_sequence_number(), 1);
@@ -183,18 +189,67 @@ TEST(TransportSessionImplTest, ServerSequenceNumbers) {
   EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(2)));
   EXPECT_EQ(session.last_seen_sequence_number(), 2);
 
-  // Duplicate sequence numbers are ignored.
+  // Duplicate sequence numbers (including late sequence 0 retries) are ignored.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(0)));
   EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
   EXPECT_EQ(session.last_seen_sequence_number(), 2);
 
-  // Non-positive sequence numbers are rejected.
-  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(0)),
+  // Negative sequence numbers are rejected.
+  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-1)),
               base::test::ErrorIs(
                   DownstreamMessageSequencer::Error::kInvalidSequenceNumber));
   EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-5)),
               base::test::ErrorIs(
                   DownstreamMessageSequencer::Error::kInvalidSequenceNumber));
   EXPECT_EQ(session.last_seen_sequence_number(), 2);
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageDispatchesZeroSequenceNumberOnce) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+
+  ControlCommand start_cmd;
+  start_cmd.mutable_start_session();
+  const std::string serialized_start = start_cmd.SerializeAsString();
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+  EXPECT_CALL(*handler_ptr, OnMessage(PayloadType::kControl, serialized_start))
+      .WillOnce([&](PayloadType, std::string_view) {
+        EXPECT_EQ(session.last_seen_sequence_number(), 0);
+        EXPECT_TRUE(session.has_last_seen_sequence_number());
+      });
+
+  // First wake message (sequence 0) is dispatched to the handler and advances
+  // `last_seen_sequence_number()` from -1 to 0.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), serialized_start,
+      /*sequence_number=*/0)));
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_TRUE(session.has_last_seen_sequence_number());
+  EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
+
+  // Duplicate wake message (sequence 0) is dropped without invoking the
+  // handler again or incrementing `consecutive_invalid_sequence_numbers()`.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), serialized_start,
+      /*sequence_number=*/0)));
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_TRUE(session.has_last_seen_sequence_number());
+  EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
 }
 
 TEST(TransportSessionImplTest, GetWeakPtr) {
@@ -720,7 +775,7 @@ TEST(TransportSessionImplTest,
       ExpectedTypeUrl(PayloadType::kExperimentalTriggering), "payload-2",
       /*sequence_number=*/2)));
   EXPECT_TRUE(delivered.empty());
-  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_EQ(session.last_seen_sequence_number(), -1);
 
   // Sequence 1 fills the gap and drains 1, 2, 3 in ascending order, advancing
   // `last_seen_sequence_number()` before each message's handlers run.
@@ -808,6 +863,10 @@ TEST(TransportSessionImplTest,
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
       ExpectedTypeUrl(PayloadType::kControl), serialized_close,
       /*sequence_number=*/1)));
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), serialized_close,
+      /*sequence_number=*/0)));
   EXPECT_THAT(delivered_sequences, testing::ElementsAre(1));
 
   // Terminating CloseSession at sequence 4 (inside the gap below buffered 5 &
@@ -942,7 +1001,7 @@ TEST(TransportSessionImplTest,
           MakeSequenceOnlyMessage(static_cast<int64_t>(
               DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 2))),
       base::test::ErrorIs(DownstreamMessageSequencer::Error::kBufferFull));
-  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+  EXPECT_EQ(session.last_seen_sequence_number(), -1);
 }
 
 TEST(TransportSessionImplTest,
@@ -952,17 +1011,26 @@ TEST(TransportSessionImplTest,
 
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
 
-  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(0)),
+  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-1)),
               base::test::ErrorIs(
                   DownstreamMessageSequencer::Error::kInvalidSequenceNumber));
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 1u);
 
-  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-1)),
+  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-2)),
               base::test::ErrorIs(
                   DownstreamMessageSequencer::Error::kInvalidSequenceNumber));
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 2u);
 
-  // A message with a valid sequence number resets the consecutive counter.
+  // An out-of-band wake message (sequence 0) resets the consecutive counter.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(0)));
+  EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
+
+  EXPECT_THAT(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(-1)),
+              base::test::ErrorIs(
+                  DownstreamMessageSequencer::Error::kInvalidSequenceNumber));
+  EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 1u);
+
+  // A message with a valid stream sequence number also resets the counter.
   EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
 }

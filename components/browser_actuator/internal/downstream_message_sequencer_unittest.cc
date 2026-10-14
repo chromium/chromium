@@ -54,7 +54,7 @@ base::expected<std::vector<int64_t>, Error> AddAndGetDelivered(
 
 TEST(DownstreamMessageSequencerTest, StartsEmpty) {
   DownstreamMessageSequencer sequencer;
-  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
   EXPECT_EQ(sequencer.buffered_message_count(), 0u);
 }
 
@@ -95,7 +95,7 @@ TEST(DownstreamMessageSequencerTest, BuffersEarlyMessageUntilGapFills) {
 TEST(DownstreamMessageSequencerTest, BuffersWhenFirstMessageIsMissing) {
   DownstreamMessageSequencer sequencer;
   EXPECT_THAT(AddAndGetDelivered(sequencer, 2), ValueIs(IsEmpty()));
-  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
   EXPECT_EQ(sequencer.buffered_message_count(), 1u);
 
   EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1, 2)));
@@ -161,10 +161,68 @@ TEST(DownstreamMessageSequencerTest, DropsDuplicateBufferedMessage) {
       ValueIs(ElementsAre(EqualsProto(MakeMessage(1)), EqualsProto(first))));
 }
 
+TEST(DownstreamMessageSequencerTest,
+     DeliversZeroSequenceNumberOnceBeforeStreamMessages) {
+  DownstreamMessageSequencer sequencer;
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(ElementsAre(0)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.buffered_message_count(), 0u);
+
+  // Duplicate 0 is dropped without error while cursor is still 0.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(IsEmpty()));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+
+  // Subsequent stream messages start at 1 and advance the cursor normally.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 1);
+}
+
+TEST(DownstreamMessageSequencerTest,
+     DeliversZeroSequenceNumberWithoutDrainingBufferedMessages) {
+  DownstreamMessageSequencer sequencer;
+  // Message 2 arrives before 0 and 1.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 2), ValueIs(IsEmpty()));
+  EXPECT_EQ(sequencer.buffered_message_count(), 1u);
+
+  // Message 0 is delivered immediately without advancing the cursor or
+  // draining message 2 (which is still waiting for message 1).
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(ElementsAre(0)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.buffered_message_count(), 1u);
+
+  // Message 1 fills the gap and drains message 2.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1, 2)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 2);
+  EXPECT_EQ(sequencer.buffered_message_count(), 0u);
+}
+
+TEST(DownstreamMessageSequencerTest,
+     DropsLateZeroSequenceNumberAfterCursorAdvances) {
+  DownstreamMessageSequencer sequencer;
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 1);
+
+  // A late FCM wake retry with sequence_number == 0 is dropped as a duplicate
+  // rather than rejected as an invalid sequence number.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(IsEmpty()));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 1);
+}
+
+TEST(DownstreamMessageSequencerTest,
+     DropsLateZeroSequenceNumberAfterFlushFromInitialCursor) {
+  DownstreamMessageSequencer sequencer;
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 2), ValueIs(IsEmpty()));
+  EXPECT_THAT(sequencer.Flush(), ElementsAre(EqualsProto(MakeMessage(2))));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 2);
+
+  // Even though sequence 0 was never seen prior to `Flush()`, advancing the
+  // cursor past 0 causes a late sequence 0 to be dropped as a duplicate.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(IsEmpty()));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 2);
+}
+
 TEST(DownstreamMessageSequencerTest, RejectsInvalidSequenceNumber) {
   DownstreamMessageSequencer sequencer;
-  EXPECT_THAT(sequencer.AddMessage(MakeMessage(0)),
-              ErrorIs(Error::kInvalidSequenceNumber));
   EXPECT_THAT(sequencer.AddMessage(MakeMessage(-1)),
               ErrorIs(Error::kInvalidSequenceNumber));
   EXPECT_THAT(
@@ -173,14 +231,12 @@ TEST(DownstreamMessageSequencerTest, RejectsInvalidSequenceNumber) {
   EXPECT_THAT(
       sequencer.AddMessage(MakeMessage(std::numeric_limits<int64_t>::max())),
       ErrorIs(Error::kInvalidSequenceNumber));
-  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
   EXPECT_EQ(sequencer.buffered_message_count(), 0u);
 
-  // Non-positive sequence numbers are still rejected as invalid rather than
+  // Negative sequence numbers are still rejected as invalid rather than
   // dropped as duplicates after the cursor advances.
   EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1)));
-  EXPECT_THAT(sequencer.AddMessage(MakeMessage(0)),
-              ErrorIs(Error::kInvalidSequenceNumber));
   EXPECT_THAT(sequencer.AddMessage(MakeMessage(-1)),
               ErrorIs(Error::kInvalidSequenceNumber));
   EXPECT_EQ(sequencer.last_seen_sequence_number(), 1);
@@ -194,6 +250,14 @@ TEST(DownstreamMessageSequencerTest, RejectsEarlyMessageWhenBufferFull) {
   // The incoming message is discarded; the buffer keeps what it had.
   EXPECT_THAT(sequencer.AddMessage(MakeMessage(4)),
               ErrorIs(Error::kBufferFull));
+  EXPECT_EQ(sequencer.buffered_message_count(), 2u);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
+
+  // An out-of-band wake message (sequence 0) is still delivered immediately
+  // while the reorder buffer is full, advancing the cursor to 0, and a
+  // duplicate 0 is dropped without reporting `Error::kBufferFull`.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(ElementsAre(0)));
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(IsEmpty()));
   EXPECT_EQ(sequencer.buffered_message_count(), 2u);
   EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
 
@@ -222,7 +286,7 @@ TEST(DownstreamMessageSequencerTest, ZeroCapacityRejectsEveryEarlyMessage) {
 TEST(DownstreamMessageSequencerTest, FlushWithEmptyBuffer) {
   DownstreamMessageSequencer sequencer;
   EXPECT_THAT(sequencer.Flush(), IsEmpty());
-  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
 
   EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1)));
   EXPECT_THAT(sequencer.Flush(), IsEmpty());

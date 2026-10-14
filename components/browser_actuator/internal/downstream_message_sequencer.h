@@ -17,17 +17,19 @@
 
 namespace browser_actuator {
 
-// Orders the downstream messages of a single session by `sequence_number`,
-// which starts at 1.
+// Orders the downstream messages of a single session by `sequence_number`.
+// In-band stream messages start at 1; `sequence_number == 0` is reserved for
+// the optional out-of-band FCM wake message.
 //
+// `last_seen_sequence_number()` starts at -1 before any message is delivered.
 // Relative to `last_seen_sequence_number()`, a message numbered:
-// - `last_seen + 1` is delivered, plus any buffered messages now contiguous;
-// - `> last_seen + 1` is buffered;
+// - `last_seen + 1` (or `1` when `last_seen == -1`, skipping the optional `0`)
+//   is delivered, plus any buffered messages now contiguous;
+// - `> last_seen + 1` (and `> 1`) is buffered;
 // - `<= last_seen` is dropped as a duplicate.
 //
-// `last_seen_sequence_number()` therefore only advances over contiguous
-// messages, which makes it a safe resume position: everything after it can
-// be replayed by the server.
+// `last_seen_sequence_number()` therefore advances to 0 on an initial wake
+// message and over contiguous stream messages (>= 1) thereafter.
 //
 // Only `Flush()` skips gaps. This class never requests a replay itself: a
 // caller must react to `Error::kBufferFull`, and must also handle a gap that
@@ -38,7 +40,7 @@ namespace browser_actuator {
 class DownstreamMessageSequencer {
  public:
   enum class Error {
-    // `sequence_number` is <= 0 or `std::numeric_limits<int64_t>::max()`.
+    // `sequence_number` is < 0 or `std::numeric_limits<int64_t>::max()`.
     kInvalidSequenceNumber,
     // The message is early and the buffer is full. The message is discarded;
     // the caller should request a replay from `last_seen_sequence_number()`.
@@ -83,7 +85,7 @@ class DownstreamMessageSequencer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
   const size_t max_buffered_messages_;
 
   // Keyed by sequence number; every key is > `next_expected_sequence_number()`.
