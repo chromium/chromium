@@ -304,14 +304,6 @@ void QuickInsertController::SetClient(QuickInsertClient* client) {
   client_ = client;
 }
 
-void QuickInsertController::OnClientPrefsSet(PrefService* prefs) {
-  if (client_ == nullptr) {
-    return;
-  }
-
-  search_controller_.LoadEmojiLanguagesFromPrefs(prefs);
-}
-
 void QuickInsertController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
   // Show the feature tour if it's the first time this feature is used.

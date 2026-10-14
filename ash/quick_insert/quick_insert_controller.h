@@ -97,9 +97,6 @@ class ASH_EXPORT QuickInsertController
   // this method on a destructed class instance to avoid a use after free.
   void SetClient(QuickInsertClient* client);
 
-  // This should be run when the Prefs from the client is ready.
-  void OnClientPrefsSet(PrefService* prefs);
-
   // Toggles the visibility of the Quick Insert widget.
   // This must only be called after `SetClient` is called with a valid client.
   // `trigger_event_timestamp` is the timestamp of the event that triggered the

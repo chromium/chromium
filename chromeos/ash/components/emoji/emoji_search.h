@@ -94,10 +94,11 @@ class EmojiSearch {
 
   // Returns an empty string if the emoji has no name.
   std::string GetEmojiName(std::string_view emoji,
-                           std::string_view language_code) const;
+                           std::string_view language_code);
 
  private:
-  void LoadLanguage(std::string_view language_code);
+  const EmojiLanguageData* GetOrLoadLanguageData(
+      std::string_view language_code);
 
   std::map<EmojiLanguageCode, EmojiLanguageData> language_data_;
 };

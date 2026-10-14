@@ -25,7 +25,6 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -43,12 +42,6 @@ class ASH_EXPORT QuickInsertSearchController {
   QuickInsertSearchController& operator=(const QuickInsertSearchController&) =
       delete;
   ~QuickInsertSearchController();
-
-  // Adds emoji keywords for enabled languages in `prefs` and whenever the
-  // enabled languages change. This does not unload any keywords loaded
-  // previously. `prefs` can be null, which stops this class from listening to
-  // changes to prefs.
-  void LoadEmojiLanguagesFromPrefs(PrefService* prefs);
 
   // `client` must remain valid until `StopSearch` is called or until this
   // object is destroyed.
@@ -74,14 +67,11 @@ class ASH_EXPORT QuickInsertSearchController {
   std::string GetEmojiName(std::string_view emoji);
 
  private:
-  void LoadEmojiLanguages(PrefService* pref);
   void OnGifSearchResponse(
       SearchGifsCallback callback,
       std::u16string gif_search_query,
       base::expected<tenor::mojom::PaginatedGifResponsesPtr,
                      GifTenorApiFetcher::Error> response);
-
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::TimeDelta burn_in_period_;
 
@@ -90,8 +80,6 @@ class ASH_EXPORT QuickInsertSearchController {
   // destructed first.
   std::unique_ptr<QuickInsertSearchAggregator> aggregator_;
   std::unique_ptr<QuickInsertSearchRequest> search_request_;
-
-  base::WeakPtrFactory<QuickInsertSearchController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

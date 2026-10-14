@@ -550,11 +550,6 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
 
   file_suggester_ = std::make_unique<QuickInsertFileSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<QuickInsertThumbnailLoader>(profile_);
-
-  if (controller_ != nullptr) {
-    controller_->OnClientPrefsSet(profile == nullptr ? nullptr
-                                                     : profile->GetPrefs());
-  }
 }
 
 std::unique_ptr<app_list::SearchProvider>

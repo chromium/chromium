@@ -135,29 +135,6 @@ QuickInsertSearchController::QuickInsertSearchController(
 
 QuickInsertSearchController::~QuickInsertSearchController() = default;
 
-void QuickInsertSearchController::LoadEmojiLanguagesFromPrefs(
-    PrefService* prefs) {
-  pref_change_registrar_.Reset();
-  if (prefs == nullptr) {
-    return;
-  }
-  emoji_search_.LoadEmojiLanguages(GetLanguageCodesFromPrefs(prefs));
-
-  pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(
-      prefs::kLanguagePreloadEngines,
-      base::BindRepeating(&QuickInsertSearchController::LoadEmojiLanguages,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          pref_change_registrar_.prefs()));
-}
-
-void QuickInsertSearchController::LoadEmojiLanguages(PrefService* prefs) {
-  if (prefs == nullptr) {
-    return;
-  }
-  emoji_search_.LoadEmojiLanguages(GetLanguageCodesFromPrefs(prefs));
-}
-
 void QuickInsertSearchController::StartSearch(
     QuickInsertClient* client,
     std::u16string_view query,

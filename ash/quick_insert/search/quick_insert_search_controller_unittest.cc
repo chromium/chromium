@@ -1008,7 +1008,6 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataInAllLanguages) {
 
   QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
       &prefs_service(), u"smile",
       base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1053,7 +1052,6 @@ TEST_F(QuickInsertSearchControllerTest,
 
   QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
       &prefs_service(), u"smile",
       base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1100,7 +1098,6 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
       /*burn_in_period=*/base::Milliseconds(100));
 
   // First search, only English results
-  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
@@ -1170,7 +1167,6 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
 
-  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(results_callback_jp,
               Call(ElementsAre(

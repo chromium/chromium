@@ -36,8 +36,6 @@ namespace emoji {
 
 namespace {
 
-constexpr std::string_view kDefaultLanguageCode = "en";
-
 struct PrefixMatcher {
   std::u16string_view prefix;
 };
@@ -332,10 +330,7 @@ EmojiSearchResult::EmojiSearchResult(std::vector<EmojiSearchEntry> emojis,
 
 EmojiSearchResult::~EmojiSearchResult() = default;
 
-EmojiSearch::EmojiSearch() {
-  // Adds default language emoji data on startup.
-  LoadLanguage(kDefaultLanguageCode);
-}
+EmojiSearch::EmojiSearch() = default;
 
 EmojiSearch::~EmojiSearch() = default;
 
@@ -367,28 +362,25 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
   // language cost then go up.
   int language_cost = 0;
   for (const std::string& code_str : language_codes) {
-    std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
-    if (!code.has_value()) {
+    const EmojiLanguageData* data = GetOrLoadLanguageData(code_str);
+    if (data == nullptr) {
       continue;
     }
-    if (const auto& it = language_data_.find(*code);
-        it != language_data_.end()) {
-      // Languages are ordered by preference, so once there are enough results,
-      // we can stop adding to the map.
-      if (!max_emojis.has_value() || emojis.size() < *max_emojis) {
-        emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
-                                       it->second.names, language_cost));
-      }
-      if (!max_symbols.has_value() || symbols.size() < *max_symbols) {
-        symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
-                                        it->second.names, language_cost));
-      }
-      if (!max_emoticons.has_value() || emoticons.size() < *max_emoticons) {
-        emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
-                                          it->second.names, language_cost));
-      }
-      ++language_cost;
+    // Languages are ordered by preference, so once there are enough results,
+    // we can stop adding to the map.
+    if (!max_emojis.has_value() || emojis.size() < *max_emojis) {
+      emojis.merge(GetResultsFromMap(data->emojis, lowercase_words, data->names,
+                                     language_cost));
     }
+    if (!max_symbols.has_value() || symbols.size() < *max_symbols) {
+      symbols.merge(GetResultsFromMap(data->symbols, lowercase_words,
+                                      data->names, language_cost));
+    }
+    if (!max_emoticons.has_value() || emoticons.size() < *max_emoticons) {
+      emoticons.merge(GetResultsFromMap(data->emoticons, lowercase_words,
+                                        data->names, language_cost));
+    }
+    ++language_cost;
   }
   return EmojiSearchResult(SortEmojiResultsByCost(emojis),
                            SortEmojiResultsByCost(symbols),
@@ -398,19 +390,20 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
 void EmojiSearch::LoadEmojiLanguages(
     base::span<const std::string> language_codes) {
   for (const std::string& code : language_codes) {
-    LoadLanguage(code);
+    GetOrLoadLanguageData(code);
   }
 }
 
-void EmojiSearch::LoadLanguage(std::string_view language_code) {
+const EmojiLanguageData* EmojiSearch::GetOrLoadLanguageData(
+    std::string_view language_code) {
   std::optional<EmojiLanguageCode> lang = GetLanguageCode(language_code);
   if (!lang.has_value()) {
-    return;
+    return nullptr;
   }
 
   auto [it, inserted] = language_data_.emplace(*lang, EmojiLanguageData());
   if (!inserted) {
-    return;
+    return &it->second;
   }
   EmojiLanguageData& new_data = it->second;
 
@@ -436,23 +429,18 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
     }
   }
 
-  return;
+  return &it->second;
 }
 
 std::string EmojiSearch::GetEmojiName(std::string_view emoji,
-                                      std::string_view language_code) const {
-  std::optional<EmojiLanguageCode> lang = GetLanguageCode(language_code);
-
-  if (!lang.has_value()) {
+                                      std::string_view language_code) {
+  const EmojiLanguageData* data = GetOrLoadLanguageData(language_code);
+  if (data == nullptr) {
     return "";
   }
 
-  if (const auto& data_it = language_data_.find(*lang);
-      data_it != language_data_.end()) {
-    if (const auto it = data_it->second.names.find(emoji);
-        it != data_it->second.names.end()) {
-      return it->second;
-    }
+  if (const auto it = data->names.find(emoji); it != data->names.end()) {
+    return it->second;
   }
 
   return "";
