@@ -281,9 +281,6 @@ extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
 // Parameter determining the maximum number of small action chips to show.
 extern const base::FeatureParam<int> kNtpMaxSmallChips;
 
-// Parameter determining if in test mode for small action chips.
-extern const base::FeatureParam<bool> kNtpScaledActionChipsSmallInTestMode;
-
 // Parameter determining if fallback action chips should be shown.
 // Used for local testing.
 extern const base::FeatureParam<bool> kNtpScaledActionChipsShowFallback;
