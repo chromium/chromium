@@ -17,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -2395,13 +2394,13 @@ void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
   if (destroy_pending()) {
     return;
   }
-  // OnCaretBoundsChanged() below may call out to a third-party TSF IME on
-  // Windows, which can re-entrantly destroy `this`. Use WeakAutoReset so the
-  // unwind write does not land in freed memory (AutoReset::scoped_variable_ is
-  // RAW_PTR_EXCLUSION and not BRP-protected).
-  base::WeakAutoReset in_bounds_changed(
-      weak_ptr_factory_.GetWeakPtr(),
-      &RenderWidgetHostViewAura::in_bounds_changed_, true);
+  // `OnBoundsChanged()` is only called from
+  // `aura::Window::NotifyBoundsChanged()`, which holds an active
+  // `ScopedDeleteBlocker` on `window_`. Since `DestroyImpl()` deletes `window_`
+  // before `delete this`, `this` cannot be deleted while `OnBoundsChanged()` is
+  // on the stack.
+  window_->AssertDeleteBlocked();
+  base::AutoReset<bool> in_bounds_changed(&in_bounds_changed_, true);
   // We care about this whenever RenderWidgetHostViewAura is not owned by a
   // WebContentsViewAura since changes to the Window's bounds need to be
   // messaged to the renderer.  WebContentsViewAura invokes SetSize() or
@@ -2410,12 +2409,7 @@ void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
   SetSize(new_bounds.size());
 
   if (GetInputMethod()) {
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     GetInputMethod()->OnCaretBoundsChanged(this);
-    if (!weak_this) {
-      // `this` may have been deleted inside the IME callout.
-      return;
-    }
     UpdateInsetsWithVirtualKeyboardEnabled();
   }
 }

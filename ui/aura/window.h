@@ -146,6 +146,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
     base::raw_span<const raw_ptr<Window, VectorExperimental>> windows_;
   };
 
+  // Asserts that at least one `ScopedDeleteBlocker` is active on this Window.
+  void AssertDeleteBlocked() const { CHECK(delete_block_count_ > 0u); }
+
   // Initial value of id() for newly created windows.
   static constexpr int kInitialId = -1;
 
