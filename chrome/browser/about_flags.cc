@@ -14179,6 +14179,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImmersiveReadAnythingPrintName,
      flag_descriptions::kImmersiveReadAnythingPrintDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kImmersiveReadAnythingPrint)},
+    {"password-sign-in-in-context-error-resolution",
+     flag_descriptions::kPasswordSignInInContextErrorResolutionName,
+     flag_descriptions::kPasswordSignInInContextErrorResolutionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordSignInInContextErrorResolution)},
 #endif
 
     {"aba-search-journeys",

@@ -4149,6 +4149,12 @@ inline constexpr char kPasswordSaveUpdateDropdownMenuExperimentDescription[] =
     "Enables an experimental dropdown menu for password save and update "
     "prompts.";
 
+inline constexpr char kPasswordSignInInContextErrorResolutionName[] =
+    "Password sign-in in-context Trusted Vault error resolution";
+inline constexpr char kPasswordSignInInContextErrorResolutionDescription[] =
+    "Enables resolution of Trusted Vault encryption errors directly within the "
+    "sign-in autofill dropdown.";
+
 inline constexpr char kPaymentRequestRejectTooSmallWindowsName[] =
     "Reject Payment Request in small windows";
 inline constexpr char kPaymentRequestRejectTooSmallWindowsDescription[] =

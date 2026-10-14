@@ -13739,6 +13739,8 @@ from previous Chrome versions.
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
   <int value="-371771269" label="ShortcutsNotApps:enabled"/>
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
+  <int value="-371272279"
+      label="PasswordSignInInContextErrorResolution:disabled"/>
   <int value="-371103035" label="OmniboxTouchDownTriggerForPrefetch:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-370229772" label="RefreshFeedOnRestart:enabled"/>
@@ -18605,6 +18607,8 @@ from previous Chrome versions.
   <int value="1103037724" label="AiSettingsPageEnterpriseDisabledUi:enabled"/>
   <int value="1103990762" label="AndroidSetupList:disabled"/>
   <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
+  <int value="1104603540"
+      label="PasswordSignInInContextErrorResolution:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
   <int value="1105039185" label="GlicSsr:enabled"/>
   <int value="1105058168" label="CrosSafetyService:enabled"/>

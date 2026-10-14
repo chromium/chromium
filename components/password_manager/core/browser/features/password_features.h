@@ -191,6 +191,14 @@ BASE_DECLARE_FEATURE(kPasswordManualFallbackSecurityChecks);
 // password save flow.
 BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolution);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Enables resolution of Trusted Vault encryption errors directly within the
+// sign-in autofill dropdown.
+BASE_DECLARE_FEATURE(kPasswordSignInInContextErrorResolution);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 // Prevents offering Automatic Password Change on federated login.
 BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 
