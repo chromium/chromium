@@ -610,6 +610,10 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
           customDetentWithIdentifier:kCustomFittingDetentIdentifier
                             resolver:detentResolver] ];
 
+  if (self.isOffTheRecord) {
+    _viewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
+
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 }
