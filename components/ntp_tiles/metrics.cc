@@ -20,6 +20,7 @@ namespace {
 
 const int kLastTitleSource = static_cast<int>(TileTitleSource::LAST);
 
+// LINT.IfChange(NewTabPageProviders)
 // Identifiers for the various tile sources. Should sync with
 // NewTabPageProviders in
 // tools/metrics/histograms/metadata/new_tab_page/histograms.xml.
@@ -30,6 +31,8 @@ const char kHistogramAllowlistName[] = "allowlist";
 const char kHistogramHomepageName[] = "homepage";
 const char kHistogramCustomLinksName[] = "custom_links";
 const char kHistogramEnterpriseShortcutsName[] = "enterprise_shortcuts";
+const char kHistogramAiModeName[] = "ai_mode";
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/histograms.xml:NewTabPageProviders)
 
 // Suffixes for the various icon types.
 const char kTileTypeSuffixIconColor[] = "IconsColor";
@@ -52,6 +55,8 @@ std::string GetSourceHistogramName(TileSource source) {
       return kHistogramCustomLinksName;
     case TileSource::ENTERPRISE_SHORTCUTS:
       return kHistogramEnterpriseShortcutsName;
+    case TileSource::AI_MODE:
+      return kHistogramAiModeName;
   }
   NOTREACHED();
 }

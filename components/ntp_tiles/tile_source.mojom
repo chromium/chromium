@@ -20,4 +20,8 @@ enum TileSource {
   HOMEPAGE = 5,
   // Tile is an enterprise shortcut.
   ENTERPRISE_SHORTCUTS = 6,
+  // Tile is an AI Mode shortcut. Injected by the Android UI layer; never
+  // produced by native, and only used for metrics attribution. See
+  // crbug.com/573235952.
+  AI_MODE = 7,
 };

@@ -95,7 +95,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".tab_resumption" summary="Module ID for Tab Resumption"/>
 </variants>
 
+<!-- LINT.IfChange(NewTabPageProviders) -->
+
 <variants name="NewTabPageProviders">
+  <variant name=".ai_mode" summary="AI Mode shortcut."/>
   <variant name=".allowlist"
       summary="Installed allowlist entry point suggestions."/>
   <variant name=".client" summary="Suggestions coming from the client."/>
@@ -110,6 +113,8 @@ chromium-metrics-reviews@google.com.
                server)."/>
   <variant name=".server" summary="Suggestions coming from the server."/>
 </variants>
+
+<!-- LINT.ThenChange(//components/ntp_tiles/metrics.cc:NewTabPageProviders) -->
 
 <histogram name="NewTabPage.ActionAndroid2" enum="NewTabPageActionAndroid2"
     expires_after="2027-04-11">

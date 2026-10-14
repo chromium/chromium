@@ -251,6 +251,10 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
       return custom_links_manager_ != nullptr;
     case TileSource::ENTERPRISE_SHORTCUTS:
       return enterprise_shortcuts_manager_ != nullptr;
+    case TileSource::AI_MODE:
+      // Native code should not be aware of AI mode except when recording
+      // metrics. See crbug.com/573235952.
+      return false;
   }
   NOTREACHED();
 }
