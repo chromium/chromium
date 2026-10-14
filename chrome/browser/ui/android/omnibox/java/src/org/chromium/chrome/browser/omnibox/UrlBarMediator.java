@@ -424,11 +424,6 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         // Trim to just the currently selected text as that is the only text we are replacing.
         currentText = currentText.substring(minSel, maxSel);
 
-        UrlBarDelegate delegate = mModel.get(UrlBarProperties.DELEGATE);
-        assert delegate != null;
-        String replacement = delegate.getReplacementCutCopyText(currentText, selection);
-        if (replacement != null) return replacement;
-
         String formattedUrlLocation;
         String originalUrlLocation;
 

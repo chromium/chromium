@@ -990,7 +990,6 @@ if (is_android) {
       "//base:features_java",
       "//chrome/browser/flags:java",
       "//components/embedder_support/android:util_java",
-      "//content/public/android:content_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]

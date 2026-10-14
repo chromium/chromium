@@ -17,7 +17,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -38,7 +37,6 @@ import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
-import org.chromium.url.GURL;
 
 /**
  * Handles tracking updates and calculating what should be used for the omnibox hint text. Accepts a
@@ -224,14 +222,6 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     }
 
     private String getOmniboxHintText() {
-        // The hint describes the page currently shown in the tab, which is independent of any
-        // input session, so read the current page from the data provider.
-        GURL url = mLocationBarDataProvider.getCurrentGurl();
-        String title = mLocationBarDataProvider.getTitle();
-        if (ContextualTasksUtils.isContextualTasksUrl(url) && !TextUtils.isEmpty(title)) {
-            return title;
-        }
-
         assert mSearchEngineService != null;
         SearchEngineService searchEngineService = mSearchEngineService;
         String searchEngineName = searchEngineService.getSearchEngineName();

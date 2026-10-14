@@ -255,19 +255,6 @@ public class UrlBar extends AutocompleteEditText {
          */
         default void shareText(String text) {}
 
-        /**
-         * Gets potential replacement text to be used instead of the current selected text for
-         * cut/copy actions. If null is returned, the existing text will be cut or copied.
-         *
-         * @param currentText The current displayed text.
-         * @param selection The current text selection range in the URL bar.
-         * @return The text to be cut/copied instead of the currently selected text.
-         */
-        default @Nullable String getReplacementCutCopyText(
-                String currentText, TextSelection selection) {
-            return null;
-        }
-
         /** Returns the UrlBarData representing the current input session. */
         default UrlBarData getUrlBarDataForCurrentInput() {
             return UrlBarData.EMPTY;

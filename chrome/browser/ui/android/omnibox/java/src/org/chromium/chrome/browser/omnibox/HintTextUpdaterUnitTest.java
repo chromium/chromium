@@ -227,18 +227,6 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
-    public void testGetOmniboxHintText_ContextualTasks() {
-        GURL aiUrl = new GURL("chrome://contextual-tasks");
-        String aiTitle = "My AI Page";
-        when(mLocationBarDataProvider.getCurrentGurl()).thenReturn(aiUrl);
-        when(mLocationBarDataProvider.getTitle()).thenReturn(aiTitle);
-
-        mUpdater.onTitleChanged();
-
-        verify(mUpdateHintTextCallback).onResult(eq(aiTitle));
-    }
-
-    @Test
     public void testGetOmniboxHintText_FuseboxSessionState() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
 

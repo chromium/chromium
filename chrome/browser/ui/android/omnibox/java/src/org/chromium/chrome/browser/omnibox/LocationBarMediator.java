@@ -61,7 +61,6 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1543,19 +1542,6 @@ public class LocationBarMediator
 
         String userText = currentInput.getUserText();
         if (TextUtils.equals(userText, currentInput.getInitialUserText())) {
-            if (ContextualTasksUtils.isContextualTasksUrl(
-                    mLocationBarDataProvider.getCurrentGurl())) {
-                WebContents webContents = mLocationBarDataProvider.getWebContents();
-                if (webContents != null) {
-                    GURL contextualTaskDisplayUrl =
-                            ContextualTasksUtils.getContextualTasksDisplayUrl(webContents);
-                    if (!GURL.isEmptyOrInvalid(contextualTaskDisplayUrl)) {
-                        return UrlBarData.forUrlAndText(
-                                mLocationBarDataProvider.getCurrentGurl(),
-                                contextualTaskDisplayUrl.getSpec());
-                    }
-                }
-            }
             if (!TextUtils.isEmpty(userText)) {
                 return UrlBarData.forUrlAndText(currentInput.getPageUrl(), userText);
             }
@@ -3401,23 +3387,6 @@ public class LocationBarMediator
     @Override
     public boolean allowKeyboardLearning() {
         return !mLocationBarDataProvider.isOffTheRecord();
-    }
-
-    @Override
-    public @Nullable String getReplacementCutCopyText(String currentText, TextSelection selection) {
-        GURL currentGurl = mLocationBarDataProvider.getCurrentGurl();
-        if (!ContextualTasksUtils.isContextualTasksUrl(currentGurl)) return null;
-
-        WebContents webContents = mLocationBarDataProvider.getWebContents();
-        if (webContents == null) return null;
-
-        GURL functionalGurl = ContextualTasksUtils.getContextualTasksFunctionalURL(webContents);
-        if (GURL.isEmptyOrInvalid(functionalGurl)) {
-            return null;
-        }
-
-        return ContextualTasksUtils.getReplacementUrl(
-                currentText, selection.from, selection.to, functionalGurl);
     }
 
     @Override
