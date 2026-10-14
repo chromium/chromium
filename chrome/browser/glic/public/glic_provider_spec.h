@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+class Profile;
+
 namespace glic {
 
 enum class GlicSettingsSection { kGemini, kGeminiEnterprise };
@@ -14,6 +16,12 @@ enum class GlicSettingsSection { kGemini, kGeminiEnterprise };
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
 // Holds data only. Values don't change for a given profile.
+class GlicProviderSpec;
+
+// Returns GlicKeyedService::Get(profile)->provider_spec() when the service
+// exists, else a static Consumer spec. Handles profile == nullptr.
+const GlicProviderSpec& GetGlicProviderSpec(Profile* profile);
+
 class GlicProviderSpec {
  public:
   GlicProviderSpec() = default;
@@ -29,6 +37,8 @@ class GlicProviderSpec {
   virtual int GetEntryPointIconId() const = 0;
   // The synthetic field trial group name for this provider.
   virtual std::string_view GetSyntheticTrialGroupName() const = 0;
+  // Infix for per-provider metric names: Glic.<Infix>.X.
+  virtual std::string_view GetMetricsInfix() const = 0;
 };
 
 }  // namespace glic

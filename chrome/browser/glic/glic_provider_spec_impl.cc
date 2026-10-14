@@ -7,7 +7,9 @@
 #include <memory>
 #include <string_view>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +32,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   std::string_view GetSyntheticTrialGroupName() const override {
     return "Gemini";
   }
+  std::string_view GetMetricsInfix() const override { return "Consumer"; }
 };
 
 class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
@@ -45,9 +48,20 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   std::string_view GetSyntheticTrialGroupName() const override {
     return "GeminiEnterprise";
   }
+  std::string_view GetMetricsInfix() const override { return "Enterprise"; }
 };
 
 }  // namespace
+
+const GlicProviderSpec& GetGlicProviderSpec(Profile* profile) {
+  if (profile) {
+    if (auto* service = GlicKeyedService::Get(profile)) {
+      return service->provider_spec();
+    }
+  }
+  static base::NoDestructor<GeminiGlicProviderSpec> fallback_spec;
+  return *fallback_spec;
+}
 
 std::unique_ptr<GlicProviderSpec> CreateGlicProviderSpec(Profile* profile) {
   return geic::IsGeicEnabled(profile)
