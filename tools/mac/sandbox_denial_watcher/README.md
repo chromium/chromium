@@ -59,6 +59,12 @@ When unexpected denials occur:
   - Clicking **Dismiss** or letting the dialog close after 15 seconds
     suppresses notifications for that denial for one hour.
 
+The pre-filled bug includes the denial, your macOS version, and your CPU
+architecture. Your home directory is replaced with `~`, but please review the
+report for any other personal information before filing it. Please also fill
+in the "What were you doing when this notification was triggered?" section;
+this context helps developers reproduce and resolve the issue more quickly.
+
 ## Adding New Known Denials
 
 If a newly observed denial is determined to be expected:
