@@ -5474,6 +5474,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // second browser.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragSingleTabToSeparateWindow) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/40267734): Flaky on Linux Wayland.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Linux Wayland (crbug.com/544956332)";
+  }
+#endif
+
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   ResetIDs(browser()->GetTabStripModel(), 0);
