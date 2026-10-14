@@ -296,8 +296,6 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
         ->extensions_container_for_testing();
   }
 
-  int num_popup_hosts_created() const { return host_watcher_->created(); }
-
  private:
   std::unique_ptr<PopupHostWatcher> host_watcher_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -358,91 +356,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
   ExtensionActionTestHelper::Create(new_browser)->HidePopup();
 }
 
-// Tests opening a popup in an incognito window.
-// TODO(crbug.com/345091943): Extremely flaky on Mac release builds.
-#if (BUILDFLAG(IS_MAC) && defined(NDEBUG))
-#define MAYBE_TestOpenPopupIncognito DISABLED_TestOpenPopupIncognito
-#else
-#define MAYBE_TestOpenPopupIncognito TestOpenPopupIncognito
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
-                       MAYBE_TestOpenPopupIncognito) {
-  // Load the extension with incognito support.
-  const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("browser_action").AppendASCII("open_popup"),
-      {.allow_in_incognito = true});
-  ASSERT_TRUE(extension);
-
-  Profile* incognito_profile =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  ExtensionHostTestHelper host_helper(incognito_profile);
-  host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
-
-  // Open an incognito window.
-  BrowserWindowInterface* incognito_browser =
-      OpenURLOffTheRecord(profile(), GURL("about:blank"));
-  ASSERT_TRUE(incognito_browser);
-
-  // Ensure the incognito browser is fully active.
-  ui_test_utils::BrowserActivationWaiter waiter(incognito_browser);
-  waiter.WaitForActivation();
-
-  ResultCatcher catcher;
-
-  // Navigate to the extension URL in the incognito browser to trigger the
-  // popup.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      incognito_browser,
-      extension->GetResourceURL("open_popup_succeeds.html")));
-
-  ASSERT_TRUE(catcher.GetNextResult()) << message_;
-  ASSERT_TRUE(host_helper.WaitForHostCompletedFirstLoad());
-
-  // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
-  // have popups if there is any popup open.
-#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(USE_AURA))
-  // Starting window does not have a popup.
-  EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
-#endif
-  // Incognito window should have a popup.
-  auto test_util = ExtensionActionTestHelper::Create(incognito_browser);
-  EXPECT_TRUE(test_util->HasPopup());
-  test_util->HidePopup();
-}
-
-// Tests that an extension can open a popup in the last active incognito window
-// even from a background page with a non-incognito profile.
-// (crbug.com/40401189)
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
-                       TestOpenPopupIncognitoFromBackground) {
-  ExtensionTestMessageListener ready_listener("ready",
-                                              ReplyBehavior::kWillReply);
-
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("browser_action")
-                        .AppendASCII("open_popup_background"),
-                    {.allow_in_incognito = true});
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  BrowserWindowInterface* incognito_browser =
-      OpenURLOffTheRecord(profile(), GURL("chrome://newtab/"));
-  ASSERT_TRUE(incognito_browser);
-
-  // Ensure the incognito browser is fully active/shown.
-  ui_test_utils::BrowserActivationWaiter waiter(incognito_browser);
-  waiter.WaitForActivation();
-
-  // Tell the background page to trigger the openPopup call.
-  ExtensionTestMessageListener response_listener("opened");
-  ready_listener.Reply("openPopup");
-  EXPECT_TRUE(response_listener.WaitUntilSatisfied());
-
-  auto test_util = ExtensionActionTestHelper::Create(incognito_browser);
-  EXPECT_TRUE(test_util->HasPopup());
-  test_util->HidePopup();
-}
-
 // Tests if there is already a popup open (by a user click or otherwise), that
 // the openPopup API does not override it.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
@@ -468,26 +381,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // there's an active popup.
   listener.Reply("show another");
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
-}
-
-// Test that openPopup does not grant tab permissions like for browser action
-// clicks if the activeTab permission is set.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
-                       TestOpenPopupDoesNotGrantTabPermissions) {
-  OpenPopupViaAPI(false);
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->GetProfile());
-  ASSERT_FALSE(
-      registry->enabled_extensions()
-          .GetByID(last_loaded_extension_id())
-          ->permissions_data()
-          ->HasAPIPermissionForTab(
-              sessions::SessionTabHelper::IdForTab(
-                  browser()->GetTabStripModel()->GetActiveWebContents())
-                  .id(),
-              mojom::APIPermissionID::kTab));
-
   extensions_container()->HideActivePopup();
   EXPECT_FALSE(HasPopupNativeView());
 }
@@ -832,44 +725,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 
   extensions_container()->HideActivePopup();
   EXPECT_FALSE(HasPopupNativeView());
-}
-
-// Test that we don't try and show a browser action popup with
-// browserAction.openPopup if there is no toolbar (e.g., for web popup windows).
-// Regression test for crbug.com/40455833.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
-  // Open a new web popup window.
-  NavigateParams params(browser(), GURL("https://www.google.com/"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_action = NavigateParams::WindowAction::kShowWindow;
-  ui_test_utils::NavigateToURL(&params);
-  ASSERT_TRUE(params.browser);
-  BrowserWindowInterface* popup_browser = params.browser;
-  // Verify it is a popup, and it is the active window.
-  ui_test_utils::BrowserActivationWaiter waiter(popup_browser);
-  waiter.WaitForActivation();
-  EXPECT_TRUE(popup_browser->GetWindow()->IsActive());
-  EXPECT_FALSE(browser()->GetWindow()->IsActive());
-  EXPECT_FALSE(
-      WindowFeatureController::From(popup_browser)
-          ->SupportsWindowFeature(
-              WindowFeatureController::WindowFeature::kFeatureToolbar));
-  EXPECT_EQ(popup_browser,
-            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
-                ->GetLastActiveBrowser());
-
-  // Load up the extension, which will call chrome.browserAction.openPopup()
-  // when it is loaded and verify that the popup didn't open.
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-  EXPECT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/open_popup_on_reply")));
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  ResultCatcher catcher;
-  listener.Reply(std::string());
-  EXPECT_TRUE(catcher.GetNextResult()) << message_;
-  EXPECT_EQ(0, num_popup_hosts_created());
 }
 
 // Watches a frame is swapped with a new frame by e.g., navigation.

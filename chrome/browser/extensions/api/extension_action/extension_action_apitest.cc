@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -1020,6 +1022,79 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   // TODO(devlin): Add tests for setting icons as a dictionary of
   // { size -> image_data }.
 }
+
+// Tests that setting an invisible icon is not allowed and verifies an error is
+// returned when the error reporting flag is set.
+IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, InvisibleIcon) {
+  // Turn on error reporting for invisible icons.
+  ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
+      true);
+  base::ScopedClosureRunner reset_error(base::BindOnce(
+      &ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting,
+      false));
+
+  static constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Invisible Icon Test",
+           "manifest_version": %d,
+           "version": "0.1",
+           "%s": {}
+         })";
+  static constexpr char kPageJsTemplate[] =
+      R"(const canvas = document.createElement('canvas');
+         canvas.width = 21;
+         canvas.height = 21;
+         const ctx = canvas.getContext('2d');
+         const invisibleImageData = ctx.getImageData(0, 0, 21, 21);
+
+         ctx.fillStyle = '#FF0000';
+         ctx.fillRect(0, 0, 21, 21);
+         const visibleImageData = ctx.getImageData(0, 0, 21, 21);
+
+         function setIcon(details) {
+           return new Promise((resolve) => {
+             chrome.%s.setIcon(details, () => {
+               resolve(chrome.runtime.lastError ?
+                           chrome.runtime.lastError.message :
+                           '<no error>');
+             });
+           });
+         }
+        )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, GetManifestVersionForActionType(GetParam()),
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("page.js"),
+      base::StringPrintf(kPageJsTemplate, GetAPINameForActionType(GetParam())));
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("page.html")));
+
+  int tab_id = GetActiveTabId();
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  EnsureActionIsEnabledOnActiveTab(action);
+
+  // Attempting to set an invisible icon should fail.
+  static constexpr char kInvisibleScript[] =
+      "setIcon({tabId: %d, imageData: invisibleImageData});";
+  EXPECT_EQ("Icon not sufficiently visible.",
+            EvalJs(web_contents, base::StringPrintf(kInvisibleScript, tab_id)));
+
+  // Setting a visible icon should succeed.
+  static constexpr char kVisibleScript[] =
+      "setIcon({tabId: %d, imageData: visibleImageData});";
+  EXPECT_EQ("<no error>",
+            EvalJs(web_contents, base::StringPrintf(kVisibleScript, tab_id)));
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests calling setIcon() from JS with hooks that might cause issues with our
@@ -1277,6 +1352,102 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests calling setIcon() with an SVG icon path.
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconWithSvg) {
+  ResultCatcher result_catcher;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("extension_action/update_svg"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Now test loading from the extension page (non-service worker context).
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("page.html")));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests dispatching the onClicked event to listeners in incognito split mode.
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IncognitoSplit) {
+  ExtensionTestMessageListener listener_ready("regular ready");
+  ExtensionTestMessageListener incognito_ready("incognito ready");
+
+  // Open an incognito browser before loading the extension.
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  ASSERT_TRUE(incognito_browser);
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_browser);
+  ASSERT_TRUE(incognito_tab_list);
+  // Some platforms (e.g. desktop) do not open a tab by default. Ensure one
+  // exists so the extension action has an active tab to execute on.
+  if (incognito_tab_list->GetTabCount() == 0) {
+    incognito_tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Action Incognito Split",
+           "version": "1.0",
+           "manifest_version": 3,
+           "incognito": "split",
+           "action": {},
+           "background": {
+             "service_worker": "background.js"
+           }
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function testOnClick() {
+             chrome.action.onClicked.addListener(async (tab) => {
+               const isIncognito = chrome.extension.inIncognitoContext;
+               chrome.test.assertEq(isIncognito, tab.incognito);
+
+               const newTab = await chrome.tabs.create({url: 'about:blank'});
+               chrome.test.assertEq(isIncognito, newTab.incognito);
+               chrome.test.assertEq(tab.windowId, newTab.windowId);
+               chrome.test.succeed();
+             });
+
+             chrome.test.sendMessage(chrome.extension.inIncognitoContext
+                                         ? 'incognito ready'
+                                         : 'regular ready');
+           }
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher catcher;
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
+
+  ExtensionsContainer* extensions_container =
+      ExtensionsContainer::From(*browser_window_interface());
+  ASSERT_TRUE(extensions_container);
+  ToolbarActionViewModel* regular_model =
+      extensions_container->GetActionForId(extension->id());
+  ASSERT_TRUE(regular_model);
+  regular_model->ExecuteUserAction(
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  EXPECT_TRUE(incognito_ready.WaitUntilSatisfied());
+
+  ExtensionsContainer* incognito_container =
+      ExtensionsContainer::From(*incognito_browser);
+  ASSERT_TRUE(incognito_container);
+  ToolbarActionViewModel* incognito_model =
+      incognito_container->GetActionForId(extension->id());
+  ASSERT_TRUE(incognito_model);
+  incognito_model->ExecuteUserAction(
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Tests multiple cases of setting an invalid popup that violate same-origin

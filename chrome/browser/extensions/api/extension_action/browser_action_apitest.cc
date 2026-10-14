@@ -269,15 +269,6 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
   ASSERT_NO_FATAL_FAILURE(RunUpdateTest("browser_action/update", false));
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
-  // TODO(crbug.com/40123818): Service Workers currently don't support loading
-  // SVG images.
-  const bool expect_failure =
-      browser_test_util::IsServiceWorkerContext(context_type_);
-  ASSERT_NO_FATAL_FAILURE(
-      RunUpdateTest("browser_action/update_svg", expect_failure));
-}
-
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          BrowserActionApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
@@ -480,45 +471,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
       ToolbarActionViewModel::InvocationSource::kToolbarButton);
   ASSERT_FALSE(catcher.GetNextResult());
   EXPECT_EQ(kEmptyPathError, catcher.message());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
-  // Turn this on so errors are reported.
-  ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
-      true);
-  ASSERT_TRUE(RunExtensionTest("browser_action/invisible_icon")) << message_;
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  // Test there is a browser action in the toolbar.
-  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
-  ToolbarActionView* action_view =
-      extensions_container()->GetViewForId(extension->id());
-  gfx::Image initial_bar_icon = gfx::Image(action_view->GetIconForTest());
-
-  ExtensionHost* background_page =
-      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
-          extension->id());
-  ASSERT_TRUE(background_page);
-
-  static constexpr char kScript[] = "setIcon(%s);";
-
-  {
-    EXPECT_EQ("Icon not sufficiently visible.",
-              EvalJs(background_page->host_contents(),
-                     base::StringPrintf(kScript, "invisibleImageData")));
-    // The icon should not have changed.
-    EXPECT_TRUE(gfx::test::AreImagesEqual(
-        initial_bar_icon, gfx::Image(action_view->GetIconForTest())));
-  }
-
-  {
-    EXPECT_EQ("", EvalJs(background_page->host_contents(),
-                         base::StringPrintf(kScript, "visibleImageData")));
-    // The icon should have changed.
-    EXPECT_FALSE(gfx::test::AreImagesEqual(
-        initial_bar_icon, gfx::Image(action_view->GetIconForTest())));
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
@@ -798,41 +750,6 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
             action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
-}
-
-// Tests that events are dispatched to the correct profile for split mode
-// extensions.
-IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
-  ExtensionTestMessageListener listener_ready("regular ready");
-  ExtensionTestMessageListener incognito_ready("incognito ready");
-
-  // Open an incognito browser.
-  // Note: It is important that we create incognito profile before loading
-  // |extension| below. "event_page" based test fails otherwise.
-  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile());
-
-  ResultCatcher catcher;
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
-                    {.allow_in_incognito = true});
-  ASSERT_TRUE(extension) << message_;
-
-  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
-
-  // NOTE: It is necessary to ensure that browser.onClicked listener was
-  // registered from the extension. Otherwise SW based extension occasionally
-  // times out.
-  EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
-
-  // A click in the regular profile should open a tab in the regular profile.
-  ExecuteExtensionAction(browser(), extension);
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  EXPECT_TRUE(incognito_ready.WaitUntilSatisfied());
-  // A click in the incognito profile should open a tab in the
-  // incognito profile.
-  ExecuteExtensionAction(incognito_browser, extension);
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {

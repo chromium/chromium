@@ -1,0 +1,9 @@
+{
+  "name": "SVG Icon Test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "action": {},
+  "background": {
+    "service_worker": "worker.js"
+  }
+}

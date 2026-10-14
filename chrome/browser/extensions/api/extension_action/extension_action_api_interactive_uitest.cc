@@ -10,8 +10,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,8 +25,11 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 
@@ -172,6 +178,117 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInInactiveWindow) {
                    *extension);
 
   EXPECT_FALSE(BrowserHasPopup(browser()));
+}
+
+// Tests displaying a popup in an incognito window using action.openPopup().
+IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInIncognitoWindow) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("extension_action/stub_action"),
+                    {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  BrowserWindowInterface* incognito_browser =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
+  ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
+
+  EXPECT_TRUE(incognito_browser->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Test opening in the active incognito window without specifying window ID.
+  constexpr char kScriptActive[] =
+      R"(await chrome.action.openPopup();
+         chrome.test.succeed();)";
+  WrapAndRunScript(kScriptActive, *extension);
+
+  EXPECT_TRUE(BrowserHasPopup(incognito_browser));
+  EXPECT_FALSE(BrowserHasPopup(browser()));
+
+  // Hide the popup.
+  ExtensionActionTestHelper::Create(incognito_browser)->HidePopup();
+  EXPECT_FALSE(BrowserHasPopup(incognito_browser));
+
+  // Test opening in the incognito window with a specified window ID.
+  int incognito_window_id = ExtensionTabUtil::GetWindowId(incognito_browser);
+  constexpr char kScriptSpecified[] =
+      R"(await chrome.action.openPopup({windowId: %d});
+         chrome.test.succeed();)";
+  WrapAndRunScript(base::StringPrintf(kScriptSpecified, incognito_window_id),
+                   *extension);
+
+  EXPECT_TRUE(BrowserHasPopup(incognito_browser));
+  EXPECT_FALSE(BrowserHasPopup(browser()));
+}
+
+// Tests that openPopup() fails when the target window has no toolbar.
+// Regression test for https://crbug.com/40455833.
+IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
+                       OpenPopupFailsInWindowWithoutToolbar) {
+  const Extension* extension = LoadStubExtension();
+  ASSERT_TRUE(extension);
+
+  // Open a new web popup window (which has no toolbar).
+  NavigateParams params(browser(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
+  ui_test_utils::NavigateToURL(&params);
+  ASSERT_TRUE(params.browser);
+  BrowserWindowInterface* popup_browser = params.browser;
+  ui_test_utils::BrowserActivationWaiter(popup_browser).WaitForActivation();
+
+  EXPECT_FALSE(
+      WindowFeatureController::From(popup_browser)
+          ->SupportsWindowFeature(
+              WindowFeatureController::WindowFeature::kFeatureToolbar));
+
+  int popup_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
+
+  // Trying to open a popup specifying the window without a toolbar should fail.
+  constexpr char kScript[] =
+      R"(await chrome.test.assertPromiseRejects(
+             chrome.action.openPopup({windowId: %d}),
+             "Error: Browser window has no toolbar.");
+         chrome.test.succeed();)";
+  WrapAndRunScript(base::StringPrintf(kScript, popup_window_id), *extension);
+
+  EXPECT_FALSE(GetPopup(*extension));
+  EXPECT_FALSE(BrowserHasPopup(browser()));
+}
+
+// Tests that action.openPopup() does not grant tab permissions (such as
+// activeTab), which should only be granted on explicit user gesture clicks.
+IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
+                       OpenPopupDoesNotGrantTabPermissions) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "ActiveTab Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "action": { "default_popup": "popup.html" },
+           "permissions": ["activeTab"],
+           "background": { "service_worker": "worker.js" }
+         })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html><body>Popup</body></html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), "// Intentionally blank");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  constexpr char kScript[] =
+      R"(await chrome.action.openPopup();
+         chrome.test.succeed();)";
+  WrapAndRunScript(kScript, *extension);
+
+  EXPECT_TRUE(BrowserHasPopup(browser()));
+
+  int tab_id = sessions::SessionTabHelper::IdForTab(
+                   browser()->GetTabStripModel()->GetActiveWebContents())
+                   .id();
+  EXPECT_FALSE(extension->permissions_data()->HasAPIPermissionForTab(
+      tab_id, mojom::APIPermissionID::kTab));
 }
 
 // Tests a series of action.openPopup() invocations that are expected to fail.
