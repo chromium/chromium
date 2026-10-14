@@ -375,13 +375,37 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getStandardSuggestionBackgroundColor(mContext, getBrandedColorScheme());
     }
 
-    /**
-     * Get stateful suggestion background.
-     *
-     * @see #getStatefulSuggestionBackground(Context, ...)
-     */
+    /** Returns a stateful suggestion background with the select default state. */
     public Drawable getStatefulSuggestionBackground(@ColorInt int defaultColor) {
-        return getStatefulSuggestionBackground(mContext, defaultColor, getBrandedColorScheme());
+        var background = new ColorDrawable(defaultColor);
+        var hover = new ColorDrawable(getHoverSuggestionBackgroundColor());
+
+        // Ripple effect to use when the user interacts with the suggestion.
+        var ripple = resolveAttributeToDrawable(R.attr.selectableItemBackground);
+
+        var statefulBackground = new StateListDrawable();
+        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
+        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(
+                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(new int[] {}, background);
+
+        return new LayerDrawable(new Drawable[] {statefulBackground, ripple});
+    }
+
+    /** Returns the background hover color for suggestions. */
+    private @ColorInt int getHoverSuggestionBackgroundColor() {
+        @ColorInt int baseColor = getStandardSuggestionBackgroundColor();
+        @ColorInt
+        int hoverColor =
+                isIncognito()
+                        ? mContext.getColor(R.color.baseline_neutral_90)
+                        : MaterialColors.getColor(mContext, R.attr.colorOnSurface, TAG);
+        float fraction =
+                mContext.getResources()
+                        .getFraction(R.fraction.omnibox_suggestion_bg_hover_overlay_fraction, 1, 1);
+
+        return ColorUtils.overlayColor(baseColor, hoverColor, fraction);
     }
 
     /**
@@ -1051,45 +1075,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(colorScheme)
                 ? context.getColor(R.color.gm3_baseline_surface_container_dark)
                 : ContextCompat.getColor(context, R.color.omnibox_popover_suggestion_bg_color);
-    }
-
-    /** Returns the background hover color for suggestions in a model with the given context. */
-    private static @ColorInt int getHoverSuggestionBackgroundColor(
-            Context context, @BrandedColorScheme int colorScheme) {
-
-        @ColorInt int baseColor = getStandardSuggestionBackgroundColor(context, colorScheme);
-        @ColorInt
-        int hoverColor =
-                switch (colorScheme) {
-                    case BrandedColorScheme.INCOGNITO ->
-                            context.getColor(R.color.baseline_neutral_90);
-                    default -> MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
-                };
-        float fraction =
-                context.getResources()
-                        .getFraction(R.fraction.omnibox_suggestion_bg_hover_overlay_fraction, 1, 1);
-
-        return ColorUtils.overlayColor(baseColor, hoverColor, fraction);
-    }
-
-    /** Returns a stateful suggestion background with the select default state. */
-    public static Drawable getStatefulSuggestionBackground(
-            Context context, @ColorInt int defaultColor, @BrandedColorScheme int colorScheme) {
-        var background = new ColorDrawable(defaultColor);
-        var hover = new ColorDrawable(getHoverSuggestionBackgroundColor(context, colorScheme));
-
-        // Ripple effect to use when the user interacts with the suggestion.
-        var ripple =
-                resolveAttributeToDrawable(context, colorScheme, R.attr.selectableItemBackground);
-
-        var statefulBackground = new StateListDrawable();
-        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
-        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
-        statefulBackground.addState(
-                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
-        statefulBackground.addState(new int[] {}, background);
-
-        return new LayerDrawable(new Drawable[] {statefulBackground, ripple});
     }
 
     /**
