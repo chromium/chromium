@@ -44,6 +44,15 @@ class WebAppFrameToolbarInteractiveUITest
   void LoadAndLaunchExtension() {
     ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("simple_with_icon/")));
 
+    // Move the mouse to the center of the browser window so that a stray cursor
+    // left by an earlier test does not hover over the app window's reload
+    // button when navigation completes (which temporarily disables the reload
+    // button).
+    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetBoundsInScreen()
+            .CenterPoint()));
+
     const GURL app_url("https://test.org");
     helper()->InstallAndLaunchWebApp(browser(), app_url);
   }
