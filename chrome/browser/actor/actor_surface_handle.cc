@@ -97,6 +97,18 @@ class ActorSurfaceLookup {
                                                 : it->second;
   }
 
+  // Linear in the number of live surfaces, like GetForTab().
+  ActorSurfaceHandle GetForWebContents(
+      const content::WebContents* web_contents) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (const auto& [handle, surface] : registered_surfaces_) {
+      if (surface->GetWebContents() == web_contents) {
+        return handle;
+      }
+    }
+    return ActorSurfaceHandle::Null();
+  }
+
   // Inverse of GetForTab(). Falls back to surfaces destroyed earlier in the
   // current task; see `recently_destroyed_tabs_`.
   tabs::TabHandle GetTabForHandle(ActorSurfaceHandle handle) const {
@@ -169,6 +181,20 @@ ActorSurfaceHandle ActorSurfaceHandle::From(tabs::TabHandle tab) {
     return Null();
   }
   return ActorSurfaceLookup::GetInstance().GetForTab(tab);
+}
+
+// static
+ActorSurfaceHandle ActorSurfaceHandle::From(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return Null();
+  }
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return From(tab->GetHandle());
+  }
+  // Not a tab's WebContents, so it may back a headless page.
+  return ActorSurfaceLookup::GetInstance().GetForWebContents(web_contents);
 }
 
 // static

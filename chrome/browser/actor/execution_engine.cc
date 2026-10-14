@@ -1993,19 +1993,21 @@ void ExecutionEngine::EnqueueFollowupAction(
                           std::move(action));
 }
 
-void ExecutionEngine::AddTab(
-    tabs::TabHandle tab_handle,
+void ExecutionEngine::AddActorSurface(
+    ActorSurfaceHandle actor_surface_handle,
     bool stop_task_on_detach,
     base::OnceCallback<void(mojom::ActionResultPtr)> callback) {
-  task_->AddTab(tab_handle, stop_task_on_detach, std::move(callback));
+  task_->AddActorSurface(actor_surface_handle, stop_task_on_detach,
+                         std::move(callback));
 }
 
-bool ExecutionEngine::HasTab(tabs::TabHandle tab_handle) {
-  return task_->HasTab(tab_handle);
+bool ExecutionEngine::HasActorSurface(ActorSurfaceHandle actor_surface_handle) {
+  return task_->HasActorSurface(actor_surface_handle);
 }
 
-void ExecutionEngine::RemoveTab(tabs::TabHandle tab_handle) {
-  task_->RemoveTab(tab_handle);
+void ExecutionEngine::RemoveActorSurface(
+    ActorSurfaceHandle actor_surface_handle) {
+  task_->RemoveActorSurface(actor_surface_handle);
 }
 
 base::WeakPtr<actor_login::ActionSequenceDelegate>

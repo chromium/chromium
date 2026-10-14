@@ -353,5 +353,33 @@ TEST_F(ActorSurfaceRegistryTest, FromTabResolvesSurfaceDestroyedInSameTask) {
   EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
 }
 
+TEST_F(ActorSurfaceRegistryTest, FromWebContentsReturnsTabSurfaceHandle) {
+  registry_->OnTabCreated(mock_tab1_);
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::From(tab_handle());
+  ASSERT_FALSE(handle.is_null());
+
+  EXPECT_EQ(ActorSurfaceHandle::From(web_contents1_.get()), handle);
+
+  // Once the surface is gone, the WebContents no longer maps to it.
+  registry_->OnTabWillBeDestroyed(tab_handle());
+  EXPECT_TRUE(ActorSurfaceHandle::From(web_contents1_.get()).is_null());
+}
+
+TEST_F(ActorSurfaceRegistryTest, FromWebContentsReturnsHeadlessSurfaceHandle) {
+  ActorSurface* surface = registry_->CreateHeadlessWebContents();
+  ASSERT_TRUE(surface);
+
+  EXPECT_EQ(ActorSurfaceHandle::From(surface->GetWebContents()),
+            surface->GetHandle());
+}
+
+TEST_F(ActorSurfaceRegistryTest, FromWebContentsReturnsNullWithoutSurface) {
+  EXPECT_TRUE(
+      ActorSurfaceHandle::From(static_cast<content::WebContents*>(nullptr))
+          .is_null());
+  // `web_contents1_` doesn't back any surface yet.
+  EXPECT_TRUE(ActorSurfaceHandle::From(web_contents1_.get()).is_null());
+}
+
 }  // namespace
 }  // namespace actor

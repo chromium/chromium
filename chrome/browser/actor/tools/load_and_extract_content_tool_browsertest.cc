@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
@@ -554,8 +555,9 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   observer.WaitForAddedTabs(1);
 
   // Close the newly added tab. The initial tab is at index 0.
-  const tabs::TabHandle closed_tab =
-      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle();
+  const ActorSurfaceHandle closed_tab = ActorSurfaceHandle::From(
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
+  ASSERT_TRUE(actor_task().HasActorSurface(closed_tab));
   actor::ActorTabCloseSkipBeforeUnloadUserData::CreateForWebContents(
       browser()->tab_strip_model()->GetWebContentsAt(1));
   browser()->tab_strip_model()->CloseWebContentsAt(1,
@@ -570,8 +572,9 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   VerifyActionsResult(mojom::ActionResultCode::kOk, result,
                       expected_tab_observations);
 
-  // The task doesn't keep the closed tab.
-  EXPECT_FALSE(actor_task().HasTab(closed_tab));
+  // The task doesn't keep the closed tab. Check by surface handle: the closed
+  // tab no longer maps to its surface, so HasTab() would pass regardless.
+  EXPECT_FALSE(actor_task().HasActorSurface(closed_tab));
 }
 
 // Tests the tool being cancelled because the task is paused while a page is
@@ -589,15 +592,15 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   observer.WaitForAddedTabs(1);
-  const tabs::TabHandle tool_tab =
-      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle();
-  ASSERT_TRUE(actor_task().HasTab(tool_tab));
+  const ActorSurfaceHandle tool_tab = ActorSurfaceHandle::From(
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
+  ASSERT_TRUE(actor_task().HasActorSurface(tool_tab));
 
   actor_task().Pause(/*from_actor=*/false);
 
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskPaused);
   observer.VerifyTabCountRestored();
-  EXPECT_FALSE(actor_task().HasTab(tool_tab));
+  EXPECT_FALSE(actor_task().HasActorSurface(tool_tab));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,

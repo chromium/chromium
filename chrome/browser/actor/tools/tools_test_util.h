@@ -103,13 +103,13 @@ class MockToolDelegate : public ToolDelegate {
               (std::unique_ptr<ToolRequest>),
               (override));
   MOCK_METHOD(void,
-              AddTab,
-              (tabs::TabHandle,
+              AddActorSurface,
+              (ActorSurfaceHandle,
                bool,
                base::OnceCallback<void(mojom::ActionResultPtr)>),
               (override));
-  MOCK_METHOD(bool, HasTab, (tabs::TabHandle), (override));
-  MOCK_METHOD(void, RemoveTab, (tabs::TabHandle), (override));
+  MOCK_METHOD(bool, HasActorSurface, (ActorSurfaceHandle), (override));
+  MOCK_METHOD(void, RemoveActorSurface, (ActorSurfaceHandle), (override));
   MOCK_METHOD(void, FailCurrentTool, (mojom::ActionResultCode), (override));
   MOCK_METHOD(base::WeakPtr<actor_login::ActionSequenceDelegate>,
               GetActionSequenceDelegate,

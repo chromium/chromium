@@ -11,6 +11,10 @@
 
 #include "components/tabs/public/tab_interface.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace actor {
 
 class ActorSurface;
@@ -75,6 +79,12 @@ class ActorSurfaceHandle {
   // ActorSurface is destroyed right away (Get() returns null, but the handle
   // lookup still exists), so that cleanups can still happen.
   static ActorSurfaceHandle From(tabs::TabHandle tab);
+
+  // Returns the handle of the surface currently backed by `web_contents`,
+  // whether it is a tab's or a headless page's, or Null() if there is none.
+  // For a tab's WebContents this is From(tab), so it also returns the handle
+  // if the tab's surface was just destroyed.
+  static ActorSurfaceHandle From(content::WebContents* web_contents);
 
   // Mints a new, unique handle with no surface registered under it. Tests use
   // it to construct surfaces directly or to get a handle that resolves to
