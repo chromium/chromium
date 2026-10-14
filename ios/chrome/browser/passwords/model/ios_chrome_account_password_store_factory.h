@@ -9,12 +9,6 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/shared/model/profile/typed_refcounted_profile_keyed_service_factory_ios.h"
 
-enum class ServiceAccessType;
-
-namespace password_manager {
-class PasswordStoreInterface;
-}
-
 // Singleton that owns all Gaia-account-scoped PasswordStores and associates
 // them with ProfileIOS.
 class IOSChromeAccountPasswordStoreFactory
