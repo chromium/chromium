@@ -8750,7 +8750,7 @@
   },
   {
     "name": "replace-sync-promos-with-sign-in-promos-desktop",
-    "owners": [ "amelies@google.com", "chrome-signin-team@google.com" ],
+    "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160
   },
   {
@@ -8942,7 +8942,7 @@
   },
   {
     "name": "search-settings-update",
-    "owners": [ "amelies@google.com", "chrome-signin-desktop-team@google.com" ],
+    "owners": [ "droger@chromium.org", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 158
   },
   {

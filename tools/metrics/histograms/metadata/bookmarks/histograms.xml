@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.BookmarkBar.Shown" enum="BooleanShown"
     expires_after="2027-04-11">
-  <owner>amelies@google.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether the bookmark bar is shown at startup or not.

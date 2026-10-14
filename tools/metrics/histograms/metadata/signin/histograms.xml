@@ -1184,7 +1184,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled"
     enum="BooleanOccurred" expires_after="2027-02-28">
-  <owner>amelies@google.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records that sync was turned on while the user had account storage for
@@ -2194,7 +2194,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Extensions.ExplicitSigninFromAnyAccessPoint"
     enum="BooleanIsNewOptIn" expires_after="2027-02-21">
-  <owner>amelies@google.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether the user explicitly signed in for the first time or if they
@@ -4224,7 +4224,7 @@ OAuth Multilogin call. -->
 
 <histogram name="Signin.SigninPending.InconsistentStateInvoked{Profile}"
     enum="BooleanHit" expires_after="2027-04-11">
-  <owner>amelies@google.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records that the signin interceptor detected the user entering an
@@ -4299,7 +4299,7 @@ OAuth Multilogin call. -->
 
 <histogram name="Signin.SignInPromo.{UserAction}" enum="SigninAccessPoint"
     expires_after="2027-04-11">
-  <owner>amelies@google.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the access point associated with the sign in promo. Recorded when

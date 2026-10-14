@@ -7721,7 +7721,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.ProfileImport.StorageNewAddressIsSavedTo"
     enum="AutofillProfileRecordType" expires_after="2027-03-07">
-  <owner>amelies@google.com</owner>
+  <owner>jkeitel@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs in which storage type the new address profile will be stored when the
