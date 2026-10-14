@@ -6749,6 +6749,12 @@ void ChromeContentBrowserClient::AddChromeSchemeFactories(
     allowed_webui_hosts.emplace_back(chrome::kChromeUIThemeHost);
     // For testing purposes chrome://webui-test/ is also allowed.
     allowed_webui_hosts.emplace_back(chrome::kChromeUIWebUITestHost);
+    // chrome://image/ is only allowed for component extensions that explicitly
+    // declare it in their manifest's host permissions.
+    if (extension->permissions_data()->HasHostPermission(
+            GURL(chrome::kChromeUIImageURL))) {
+      allowed_webui_hosts.emplace_back(chrome::kChromeUIImageHost);
+    }
   }
   if (extension->is_extension() || extension->is_legacy_packaged_app() ||
       (extension->is_platform_app() &&
