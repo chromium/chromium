@@ -263,13 +263,19 @@ should be able to be added at any place in this file.
   <variant name="_AndroidBottomBarPromoDialog"
       summary="For the promo dialog shown to introduce the bottom bar."/>
   <variant name="_AndroidTabDeclutter" summary="For archived tabs on android."/>
+  <variant name="_AndroidTipsOptInPromo"
+      summary="For the Android Tips Notifications opt-in bottom sheet promo."/>
   <variant name="_AndroidVerticalTabsNewLabel"
       summary="Enables the 'New' label for Android Vertical Tabs."/>
   <variant name="_AndroidVerticalTabsPromo"
       summary="For the vertical tabs promo on android horizontal tab strip."/>
+  <variant name="_AppLanguagePromo"
+      summary="For the App Language prompt on Android."/>
   <variant name="_AppRatingPrompt" summary="For App Rating Prompt feature."/>
   <variant name="_AppSpecificHistory"
       summary="For App Specific History feature."/>
+  <variant name="_ArchivedTabsAutoDeletePromo"
+      summary="For the Archived Tabs auto-delete decision bottom sheet promo."/>
   <variant name="_AutoDarkOptOut" summary="For AutoDarkOptOut dialog feature."/>
   <variant name="_AutoDarkUserEducationMessage"
       summary="For AutoDarkUserEducationMessage feature."/>
@@ -496,6 +502,8 @@ should be able to be added at any place in this file.
       summary="For FocusHelpBubbleScreenReaderPromo feature."/>
   <variant name="_FollowWhileBrowsing"
       summary="For Follow While-Browsing IPH feature."/>
+  <variant name="_FullscreenSigninPromo"
+      summary="For the fullscreen sign-in (re-FRE) promo on Android."/>
   <variant name="_FuseboxAttachment"
       summary="For engagement with Fusebox attachments."/>
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
@@ -734,6 +742,8 @@ should be able to be added at any place in this file.
   <variant name="_NewTabPageThemeCustomization"
       summary="In product help for NewTabPage theme customization feature."/>
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
+  <variant name="_NotificationPermissionPromo"
+      summary="For the OS notification permission prompt on Android."/>
   <variant name="_OmniboxEverywhereLensPromo"
       summary="In product help for the Lens search feature in Omnibox
                Everywhere."/>
@@ -849,6 +859,8 @@ should be able to be added at any place in this file.
       summary="For Resumption Rail feature entrypoint."/>
   <variant name="_RtlGestureNavigation"
       summary="For the gesture navigation in RTL mode."/>
+  <variant name="_SearchEngineChoicePromo"
+      summary="For the regulatory search engine choice dialog on Android."/>
   <variant name="_SearchPromotionFeature"
       summary="IPH for Search extension promo on Windows"/>
   <variant name="_SendTabToSelfOmnibox"

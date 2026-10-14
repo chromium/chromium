@@ -20,8 +20,14 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(IS_ANDROID)
     // ALL_FEATURES_ANDROID_START
     // keep-sorted start case=no
+    &kIPH_AndroidTipsOptInPromo,
+    &kIPH_AppLanguagePromo,
+    &kIPH_ArchivedTabsAutoDeletePromo,
     &kIPH_BlueBubbleCooldownGroup,
+    &kIPH_FullscreenSigninPromo,
     &kIPH_InterruptiveIphCooldownGroup,
+    &kIPH_NotificationPermissionPromo,
+    &kIPH_SearchEngineChoicePromo,
     &kIPHAccountSettingsHistorySync,
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,

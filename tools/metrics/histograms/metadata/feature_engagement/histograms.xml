@@ -68,12 +68,18 @@ chromium-metrics-reviews@google.com.
       summary="Describes the promo dialog shown to introduce the bottom bar."/>
   <variant name="IPH_AndroidTabDeclutter"
       summary="Shows how to access tabs which have been archived."/>
+  <variant name="IPH_AndroidTipsOptInPromo"
+      summary="Android Tips Notifications opt-in bottom sheet promo"/>
   <variant name="IPH_AndroidVerticalTabsNewLabel"
       summary="Enables the 'New' label for Android Vertical Tabs."/>
   <variant name="IPH_AndroidVerticalTabsPromo"
       summary="Vertical Tabs promo on Android horizontal tab strip."/>
+  <variant name="IPH_AppLanguagePromo"
+      summary="App Language prompt on Android"/>
   <variant name="IPH_AppRatingPrompt" summary="App Rating Prompt action"/>
   <variant name="IPH_AppSpecificHistory" summary="App Specific History action"/>
+  <variant name="IPH_ArchivedTabsAutoDeletePromo"
+      summary="Archived Tabs auto-delete decision bottom sheet promo"/>
   <variant name="IPH_AutoDarkOptOut"
       summary="educating users about disabling auto dark feature globally"/>
   <variant name="IPH_AutoDarkUserEducationMessage"
@@ -310,6 +316,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
   <variant name="IPH_FollowWhileBrowsing"
       summary="IPH for following the current site"/>
+  <variant name="IPH_FullscreenSigninPromo"
+      summary="fullscreen sign-in (re-FRE) promo on Android"/>
   <variant name="IPH_FuseboxAttachment"
       summary="engagement with Fusebox attachments"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
@@ -561,6 +569,8 @@ chromium-metrics-reviews@google.com.
       summary="informing user of customizing new tab page theme via NTP
                customization option in the App menu"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
+  <variant name="IPH_NotificationPermissionPromo"
+      summary="OS notification permission prompt on Android"/>
   <variant name="IPH_OmniboxEverywhereLensPromo"
       summary="the Lens search feature in Omnibox Everywhere"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
@@ -704,6 +714,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RtlGestureNavigation"
       summary="the in product help dialog to educate users on how to do
                gesture navigation in RTL mode."/>
+  <variant name="IPH_SearchEngineChoicePromo"
+      summary="regulatory search engine choice dialog on Android"/>
   <variant name="IPH_SearchPromotionFeature"
       summary="Showing the Search extension promo on Windows"/>
   <variant name="IPH_SendTabToSelfOmnibox"

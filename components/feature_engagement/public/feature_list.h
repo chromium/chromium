@@ -85,10 +85,19 @@ DEFINE_VARIATION_PARAM(
     kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature,
     "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf");
 DEFINE_VARIATION_PARAM(kIPHAimActivationHint, "IPH_AimActivationHint");
+DEFINE_VARIATION_PARAM(kIPH_AndroidTipsOptInPromo, "IPH_AndroidTipsOptInPromo");
+DEFINE_VARIATION_PARAM(kIPH_AppLanguagePromo, "IPH_AppLanguagePromo");
+DEFINE_VARIATION_PARAM(kIPH_ArchivedTabsAutoDeletePromo,
+                       "IPH_ArchivedTabsAutoDeletePromo");
 DEFINE_VARIATION_PARAM(kIPH_BlueBubbleCooldownGroup,
                        "IPH_BlueBubbleCooldownGroup");
+DEFINE_VARIATION_PARAM(kIPH_FullscreenSigninPromo, "IPH_FullscreenSigninPromo");
 DEFINE_VARIATION_PARAM(kIPH_InterruptiveIphCooldownGroup,
                        "IPH_InterruptiveIphCooldownGroup");
+DEFINE_VARIATION_PARAM(kIPH_NotificationPermissionPromo,
+                       "IPH_NotificationPermissionPromo");
+DEFINE_VARIATION_PARAM(kIPH_SearchEngineChoicePromo,
+                       "IPH_SearchEngineChoicePromo");
 DEFINE_VARIATION_PARAM(kIPHPageSummaryWebMenuFeature, "IPH_PageSummaryWebMenu");
 DEFINE_VARIATION_PARAM(kIPHPageSummaryPdfMenuFeature, "IPH_PageSummaryPdfMenu");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkOptOutFeature, "IPH_AutoDarkOptOut");
@@ -657,8 +666,14 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_ANDROID)
 // VARIATION_ENTRY_ANDROID_START
 // keep-sorted start case=no
+        VARIATION_ENTRY(kIPH_AndroidTipsOptInPromo),
+        VARIATION_ENTRY(kIPH_AppLanguagePromo),
+        VARIATION_ENTRY(kIPH_ArchivedTabsAutoDeletePromo),
         VARIATION_ENTRY(kIPH_BlueBubbleCooldownGroup),
+        VARIATION_ENTRY(kIPH_FullscreenSigninPromo),
         VARIATION_ENTRY(kIPH_InterruptiveIphCooldownGroup),
+        VARIATION_ENTRY(kIPH_NotificationPermissionPromo),
+        VARIATION_ENTRY(kIPH_SearchEngineChoicePromo),
         VARIATION_ENTRY(kIPHAccountSettingsHistorySync),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature),

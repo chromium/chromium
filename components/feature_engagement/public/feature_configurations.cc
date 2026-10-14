@@ -2275,6 +2275,93 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 #endif
 
+  if (kIPH_AndroidTipsOptInPromo.name == feature->name) {
+    // Allows the Android Tips Notifications opt-in bottom sheet promo to be
+    // shown at most once every 7 days and up to 3 times over 360 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.trigger = EventConfig("android_tips_opt_in_promo_triggered",
+                                 Comparator(EQUAL, 0), 7, 360);
+    config.event_configs.insert(
+        EventConfig("android_tips_opt_in_promo_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config.used = EventConfig("android_tips_opt_in_promo_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPH_AppLanguagePromo.name == feature->name) {
+    // Allows the App Language prompt to be shown at most once every 7 days and
+    // up to 3 times over 360 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.trigger = EventConfig("app_language_promo_triggered",
+                                 Comparator(EQUAL, 0), 7, 360);
+    config.event_configs.insert(EventConfig(
+        "app_language_promo_triggered", Comparator(LESS_THAN, 3), 360, 360));
+    config.used =
+        EventConfig("app_language_promo_used", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPH_ArchivedTabsAutoDeletePromo.name == feature->name) {
+    // Allows the Archived Tabs auto-delete decision bottom sheet promo to be
+    // shown at most once every 7 days and up to 3 times over 360 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.trigger = EventConfig("archived_tabs_auto_delete_promo_triggered",
+                                 Comparator(EQUAL, 0), 7, 360);
+    config.event_configs.insert(
+        EventConfig("archived_tabs_auto_delete_promo_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config.used = EventConfig("archived_tabs_auto_delete_promo_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPH_FullscreenSigninPromo.name == feature->name) {
+    // Allows the fullscreen sign-in (re-FRE) promo to be shown at most once
+    // every 7 days and up to 3 times over 360 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.trigger = EventConfig("fullscreen_signin_promo_triggered",
+                                 Comparator(EQUAL, 0), 7, 360);
+    config.event_configs.insert(EventConfig("fullscreen_signin_promo_triggered",
+                                            Comparator(LESS_THAN, 3), 360,
+                                            360));
+    config.used = EventConfig("fullscreen_signin_promo_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPH_NotificationPermissionPromo.name == feature->name) {
+    // Regulatory OS notification permission prompt that always triggers when
+    // requested and contributes to interruptive cooldown group blocking.
+    FeatureConfig config = CreateAlwaysTriggerConfig(feature);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    return config;
+  }
+
+  if (kIPH_SearchEngineChoicePromo.name == feature->name) {
+    // Regulatory search engine choice dialog that always triggers when
+    // requested and contributes to interruptive cooldown group blocking.
+    FeatureConfig config = CreateAlwaysTriggerConfig(feature);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    return config;
+  }
+
 // CONFIGURATION_ANDROID_END
 #endif  // BUILDFLAG(IS_ANDROID)
 
