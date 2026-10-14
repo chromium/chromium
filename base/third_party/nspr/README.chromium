@@ -1,8 +1,8 @@
 Name: Netscape Portable Runtime (NSPR)
-URL: https://hg.mozilla.org/projects/nspr
+URL: https://github.com/mozilla/nspr
 Version: 4.38.2
-Revision: 488a7a069c8d7405696fd8171ec8fc369834158b
-Update Mechanism: Manual
+Revision: 14aff5f72ca3f6b89a1dc78b559d4debf0d9f6cb
+Update Mechanism: Static.HardFork (https://crbug.com/573403638)
 License: MPL-2.0
 License Android Compatible: yes
 License File: LICENSE
