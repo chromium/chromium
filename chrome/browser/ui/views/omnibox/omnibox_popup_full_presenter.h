@@ -147,9 +147,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // Returns whether the browser widget or this popup's widget is active. This
   // is true while the omnibox is focused, since the popup then holds
   // activation, and false once another window, such as a bubble anchored to
-  // the browser window, takes activation. On Linux and Windows, the popup only
-  // counts while the browser's platform window is also active. Returns false
-  // if there is no browser widget.
+  // the browser window, takes activation. Returns false if there is no browser
+  // widget.
   bool IsBrowserOrPopupActive();
 
   // Returns whether a focus request may activate the popup. This is

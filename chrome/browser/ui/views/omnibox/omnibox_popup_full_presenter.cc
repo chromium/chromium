@@ -52,44 +52,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "ui/views/win/hwnd_util.h"
-#endif  // BUILDFLAG(IS_WIN)
-
-namespace {
-
-// Returns whether the browser widget's platform window is active.
-bool IsBrowserPlatformWindowActive(views::Widget* browser_widget) {
-#if BUILDFLAG(IS_LINUX)
-  if (aura::Window* native_window = browser_widget->GetNativeWindow();
-      native_window && native_window->GetHost()) {
-    if (auto* host = views::DesktopWindowTreeHostPlatform::GetHostForWidget(
-            native_window->GetHost()->GetAcceleratedWidget())) {
-      return host->IsActive();
-    }
-  }
-  // The window is being torn down or isn't fully set up.
-  return false;
-#elif BUILDFLAG(IS_WIN)
-  HWND hwnd = views::HWNDForWidget(browser_widget);
-  return hwnd && ::GetActiveWindow() == hwnd;
-#else
-  // ChromeOS has a single activation client for all windows, and Mac has no
-  // Aura, so the popup's activation already implies the browser window's.
-  return true;
-#endif
-}
-
-}  // namespace
-
 OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
     LocationBar* location_bar,
     OmniboxPopupPresenterDelegate& presenter_delegate,
@@ -878,13 +840,8 @@ bool OmniboxPopupFullPresenter::IsBrowserOrPopupActive() {
   if (!browser_widget) {
     return false;
   }
-  if (browser_widget->IsActive()) {
-    return true;
-  }
-  // TODO(crbug.com/572976640): Remove the host check once Desktop Aura stops
-  // activating sibling child widgets when the host deactivates.
-  return GetWidget() && GetWidget()->IsActive() &&
-         IsBrowserPlatformWindowActive(browser_widget);
+  return browser_widget->IsActive() ||
+         (GetWidget() && GetWidget()->IsActive());
 }
 
 bool OmniboxPopupFullPresenter::CanTakeFocus() {
