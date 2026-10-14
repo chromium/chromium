@@ -14,19 +14,17 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -46,8 +44,6 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * The main coordinator for the Tab Switcher Action Menu, responsible for creating the popup menu
@@ -79,19 +75,32 @@ public class TabSwitcherActionMenuCoordinator {
         int NEW_INCOGNITO_WINDOW = 8;
     }
 
+    /** Functional interface to check whether other tab groups exist. */
+    @FunctionalInterface
+    public interface TabGroupExistenceChecker {
+        /**
+         * @param tabModel The {@link TabModel} to check.
+         * @param currentTabGroupId The current tab group ID, or null.
+         * @return Whether another tab group exists.
+         */
+        boolean hasOtherTabGroups(TabModel tabModel, @Nullable Token currentTabGroupId);
+    }
+
     /**
      * @param onItemClicked The clicked listener handling clicks on TabSwitcherActionMenu.
      * @param profile The {@link Profile} associated with the tabs.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param tabGroupExistenceChecker The {@link TabGroupExistenceChecker} to check for tab groups.
      * @return a long click listener of the long press action of tab switcher button.
      */
     public static OnLongClickListener createOnLongClickListener(
             Callback<Integer> onItemClicked,
             Profile profile,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            TabWindowManager tabWindowManager) {
+            TabGroupExistenceChecker tabGroupExistenceChecker) {
         return createOnLongClickListener(
                 new TabSwitcherActionMenuCoordinator(
-                        profile, tabModelSelectorSupplier, tabWindowManager),
+                        profile, tabModelSelectorSupplier, tabGroupExistenceChecker),
                 profile,
                 onItemClicked);
     }
@@ -135,19 +144,19 @@ public class TabSwitcherActionMenuCoordinator {
 
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
-    private final TabWindowManager mTabWindowManager;
+    private final TabGroupExistenceChecker mTabGroupExistenceChecker;
 
     // For test.
     private @Nullable View mContentView;
 
-    /** Construct a coordinator for the given {@link Profile}. */
+    /** Construct a coordinator with an injected {@link TabGroupExistenceChecker}. */
     TabSwitcherActionMenuCoordinator(
             Profile profile,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            TabWindowManager tabWindowManager) {
+            TabGroupExistenceChecker tabGroupExistenceChecker) {
         mProfile = profile;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mTabWindowManager = tabWindowManager;
+        mTabGroupExistenceChecker = tabGroupExistenceChecker;
     }
 
     /**
@@ -237,7 +246,9 @@ public class TabSwitcherActionMenuCoordinator {
         TabModel tabModel = selector.getCurrentModel();
         if (!tabModel.isTabStateInitialized()) return;
 
-        if (doTabGroupsExist()) {
+        Tab currentTab = selector.getCurrentTabSupplier().get();
+        Token currentTabGroupId = currentTab != null ? currentTab.getTabGroupId() : null;
+        if (mTabGroupExistenceChecker.hasOtherTabGroups(tabModel, currentTabGroupId)) {
             itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));
         } else {
             itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_NEW_GROUP));
@@ -338,20 +349,6 @@ public class TabSwitcherActionMenuCoordinator {
                 ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
                 R.dimen.list_menu_item_horizontal_padding);
         return new ListItem(ListItemType.DIVIDER, builder.build());
-    }
-
-    private boolean doTabGroupsExist() {
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        if (tabModelSelector != null) {
-            TabModel tabModel = tabModelSelector.getCurrentModel();
-            boolean checkAllWindows = ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
-            Collection<TabModelSelector> selectors =
-                    checkAllWindows
-                            ? mTabWindowManager.getAllTabModelSelectors()
-                            : Collections.emptyList();
-            return TabGroupUtils.hasTabGroups(tabModel, selectors);
-        }
-        return false;
     }
 
     private boolean isCurrentTabInGroup() {
