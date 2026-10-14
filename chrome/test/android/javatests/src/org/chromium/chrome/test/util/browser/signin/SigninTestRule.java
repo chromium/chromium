@@ -189,7 +189,11 @@ public class SigninTestRule implements TestRule {
         mFakeAccountManagerFacade.addAccount(accountInfo);
     }
 
-    /** Updates an account in the fake AccountManagerFacade */
+    /**
+     * Updates an account in the fake AccountManagerFacade
+     *
+     * <p>TODO(crbug.com/573071894): Allow to execute onExtendedAccountInfoUpdated() directly.
+     */
     public void updateAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.updateAccount(accountInfo);
     }

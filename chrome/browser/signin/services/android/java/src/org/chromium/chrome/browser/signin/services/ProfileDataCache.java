@@ -331,8 +331,8 @@ public class ProfileDataCache
     }
 
     /**
-     * Sets a {@link BadgeConfig} for a given account, and then populates the cache with the new
-     * Badge.
+     * Sets a {@link BadgeConfig} for a given account and refreshes its cached profile data, if any.
+     * Otherwise, the badge is applied once the account's profile data is built.
      *
      * @param coreAccountId The account id for which to set this badge.
      * @param badgeConfig The badge configuration. If null then the current badge is removed.
@@ -347,13 +347,11 @@ public class ProfileDataCache
             return;
         }
         mPerAccountBadgeConfig.put(accountId, badgeConfig);
-        var accountInfo = findAccountInfo(accountId);
-        if (accountInfo != null) {
-            var displayableProfileData = toDisplayableProfileData(accountInfo);
-            mAccountsCache.put(accountInfo.getId(), displayableProfileData);
-            refreshAccountsPromiseIfFulfilled();
-            fireOnProfileDataUpdated(displayableProfileData);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            if (!mAccountsCache.containsKey(accountId)) return;
         }
+        var accountInfo = findAccountInfo(accountId);
+        if (accountInfo != null) updateCache(accountInfo);
     }
 
     public @Nullable BadgeConfig getBadgeConfigForTesting(CoreAccountId accountId) {
@@ -365,20 +363,25 @@ public class ProfileDataCache
      */
     public void addObserver(Observer observer) {
         ThreadUtils.assertOnUiThread();
-        if (mObservers.isEmpty()) {
-            if (SigninFeatureMap.isEnabled(
-                    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
-                mIdentityManager.addObserver(assumeNonNull(mIdentityManagerAccountsChangeObserver));
-            } else {
-                mAccountManagerFacade.addObserver(
-                        assumeNonNull(mAccountManagerAccountsChangeObserver));
-            }
-            mIdentityManager.addObserver(this);
-            if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
-                mSubscriptionEligibilityService.addObserver(this);
-            }
+        if (!mObservers.isEmpty()) {
+            mObservers.addObserver(observer);
+            return;
+        }
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            mIdentityManager.addObserver(assumeNonNull(mIdentityManagerAccountsChangeObserver));
+        } else {
+            mAccountManagerFacade.addObserver(assumeNonNull(mAccountManagerAccountsChangeObserver));
+        }
+        mIdentityManager.addObserver(this);
+        if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
+            mSubscriptionEligibilityService.addObserver(this);
         }
         mObservers.addObserver(observer);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+                && !mAccountsPromise.isFulfilled()) {
+            updateCache();
+        }
     }
 
     /**
@@ -438,10 +441,13 @@ public class ProfileDataCache
             // Cache will be updated by onRefreshTokenRemovedForAccount() callback.
             return;
         }
-        var displayableProfileData = toDisplayableProfileData(accountInfo);
-        mAccountsCache.put(accountInfo.getId(), displayableProfileData);
-        refreshAccountsPromiseIfFulfilled();
-        fireOnProfileDataUpdated(displayableProfileData);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            // Only known accounts are updated here. New accounts are added by
+            // onRefreshTokenUpdatedForAccount() once they have a refresh token, as observers rely
+            // on the accounts with refresh tokens.
+            if (!mAccountsCache.containsKey(accountInfo.getId())) return;
+        }
+        updateCache(accountInfo);
     }
 
     /** Checks if the cache contains profile data for the given account ID. */
@@ -451,7 +457,7 @@ public class ProfileDataCache
 
     private void updateCache() {
         final @Nullable List<AccountInfo> coreAccounts = getCoreAccountsIfLoaded();
-        final @Nullable AccountInfo primaryAccountInfo = getPrimaryAccountInfo();
+        final @Nullable AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
 
         // If the full account list is not loaded yet, cache the primary account (if present)
         // for getById() lookups, but do not fulfill the getAccounts() Promise.
@@ -470,6 +476,35 @@ public class ProfileDataCache
             allAccounts.add(primaryAccountInfo);
         }
         updateCache(allAccounts);
+    }
+
+    /**
+     * Updates the cached profile data of a single account and notifies the observers about it.
+     * Observers are not notified about the account list: with IdentityManager as the source of
+     * accounts, new accounts are added by {@link #addToCache(AccountInfo)}; with
+     * AccountManagerFacade, the list is rebuilt by onAccountsChanged().
+     */
+    private void updateCache(final AccountInfo accountInfo) {
+        var profileData = toDisplayableProfileData(accountInfo);
+        mAccountsCache.put(accountInfo.getId(), profileData);
+        refreshAccountsPromiseIfFulfilled();
+        // TODO(crbug.com/570481489) : Notify onAccountsUpdated() as well.
+        fireOnProfileDataUpdated(profileData);
+    }
+
+    /**
+     * Adds a new account to the cache and notifies the observers about the updated account list and
+     * the profile data of the added account. Must only be called once the account list has been
+     * loaded, i.e. the {@link #getAccounts()} Promise is fulfilled.
+     */
+    private void addToCache(final AccountInfo accountInfo) {
+        assert !mAccountsCache.containsKey(accountInfo.getId());
+        assert mAccountsPromise.isFulfilled();
+        var profileData = toDisplayableProfileData(accountInfo);
+        mAccountsCache.put(accountInfo.getId(), profileData);
+        refreshAccountsPromiseIfFulfilled();
+        fireOnAccountsUpdated(mAccountsPromise.getResult());
+        fireOnProfileDataUpdated(profileData);
     }
 
     private void updateCache(List<AccountInfo> accounts) {
@@ -595,19 +630,11 @@ public class ProfileDataCache
                 }
             }
         }
-        var primaryAccountInfo = getPrimaryAccountInfo();
+        var primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo != null && primaryAccountInfo.getId().equals(accountId)) {
             return primaryAccountInfo;
         }
         return null;
-    }
-
-    private @Nullable AccountInfo getPrimaryAccountInfo() {
-        var primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
-        if (primaryAccountInfo == null) {
-            return null;
-        }
-        return new AccountInfo.Builder(primaryAccountInfo).build();
     }
 
     private @Nullable List<AccountInfo> getCoreAccountsIfLoaded() {
@@ -756,9 +783,16 @@ public class ProfileDataCache
             assert SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
             if (mIdentityManager.getRefreshTokensLoadingState()
-                    == RefreshTokensLoadingState.SUCCEEDED) {
-                updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
-            }
+                    != RefreshTokensLoadingState.SUCCEEDED) return;
+            // Refresh token updates are sent for all accounts on every reload of accounts. Profile
+            // data changes of known accounts are handled by onExtendedAccountInfoUpdated(), so only
+            // newly added accounts have to be handled here. This is the first point where
+            // getExtendedAccountInfoForAccountsWithRefreshToken() returns the new account, which
+            // observers of onAccountsUpdated() rely on.
+            if (mAccountsCache.containsKey(coreAccountInfo.getId())) return;
+            var accountInfo =
+                    mIdentityManager.findExtendedAccountInfoByAccountId(coreAccountInfo.getId());
+            addToCache(assumeNonNull(accountInfo));
         }
 
         /**
