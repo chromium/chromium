@@ -8,7 +8,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
+
 namespace tab_groups {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid, kSavedTabGroupGuidKey)
 
 TabGroupMenuAction::TabGroupMenuAction(Type type,
                                        std::variant<base::Uuid, GURL> element)

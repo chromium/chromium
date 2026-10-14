@@ -11,9 +11,15 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "ui/base/class_property.h"
 #include "url/gurl.h"
 
+DECLARE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
+
 namespace tab_groups {
+
+// GUID of the saved tab group that a tab group menu action item targets.
+extern const ui::ClassProperty<base::Uuid*>* const kSavedTabGroupGuidKey;
 
 // The action users can perform on a saved tab group's submenu.
 struct TabGroupMenuAction {
