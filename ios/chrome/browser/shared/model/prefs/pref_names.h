@@ -998,6 +998,12 @@ inline constexpr char kDeviceAuthorizationStartupFetchNextTime[] =
 inline constexpr char kDeviceAuthorizationStartupFetchBackoff[] =
     "ios.device_authorization.startup_fetch_backoff";
 
+// Boolean pref indicating whether the Universal Opt-Out error toast has been
+// displayed. Stored in Profile prefs so the toast is only displayed once across
+// scenes and sessions per profile until reset.
+inline constexpr char kUniversalOptOutErrorToastShown[] =
+    "ios.universal_optout.error_toast_shown";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
