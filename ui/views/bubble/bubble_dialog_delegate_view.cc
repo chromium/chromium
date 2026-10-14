@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
@@ -99,6 +101,14 @@ std::vector<BubbleDialogDelegate*>& GetAnchorVector(View* view) {
   }
 
   return *(view->GetProperty(kAnchorVector));
+}
+
+// Tracks active BubbleDialogDelegates anchored to non-Views TrackedElements
+// (such as TrackedElementWebUI) in anchored order so GetAnchoredDialog() can
+// locate the primary focusable bubble for a TrackedElement.
+std::vector<BubbleDialogDelegate*>& GetAnchoredTrackedElementDelegates() {
+  static base::NoDestructor<std::vector<BubbleDialogDelegate*>> delegates;
+  return *delegates;
 }
 
 // Override base functionality of Widget to give bubble dialogs access to the
@@ -687,10 +697,7 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
   // If kAnchoredDialogKey does not point to |this|, then |this| is not on the
   // focus traversal path. Don't reset kAnchoredDialogKey or we risk detaching
   // a widget from the traversal path.
-  if (GetAnchorView() &&
-      GetAnchorView()->GetProperty(kAnchoredDialogKey) == this) {
-    GetAnchorView()->ClearProperty(kAnchoredDialogKey);
-  }
+  ClearAnchoredDialogKey();
 
   if (bubble_shown_time_.has_value()) {
     bubble_shown_duration_ += base::TimeTicks::Now() - *bubble_shown_time_;
@@ -1125,6 +1132,7 @@ void BubbleDialogDelegate::SetAnchorWidget(views::Widget* anchor_widget) {
 }
 
 void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
+  ClearAnchoredDialogKey();
   if (anchor_view) {
     anchor_tracked_element_ = nullptr;
   }
@@ -1135,9 +1143,6 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
     anchor_widget_observer_.reset();
   }
   if (GetAnchorView()) {
-    if (GetAnchorView()->GetProperty(kAnchoredDialogKey) == this) {
-      GetAnchorView()->ClearProperty(kAnchoredDialogKey);
-    }
     anchor_view_observer_.reset();
   }
 
@@ -1195,6 +1200,7 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
       CHECK(widget) << "BubbleAnchor only supports TrackedElement backed by a "
                     << "Widget.";
       SetAnchorWidget(widget);
+      SetAnchoredDialogKey();
     }
   } else {
     CHECK(anchor.IsNull());
@@ -1212,6 +1218,30 @@ BubbleAnchor BubbleDialogDelegate::GetAnchor() const {
     return BubbleAnchor(anchor_tracked_element_.get());
   }
   return BubbleAnchor();
+}
+
+// static
+BubbleDialogDelegate* BubbleDialogDelegate::GetAnchoredDialog(
+    BubbleAnchor anchor) {
+  if (ui::TrackedElement* tracked_element = anchor.GetIfElement()) {
+    if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
+      anchor = BubbleAnchor(element_views->view());
+    }
+  }
+
+  if (View* view = anchor.GetIfView()) {
+    DialogDelegate* dialog = view->GetProperty(kAnchoredDialogKey);
+    return dialog ? dialog->AsBubbleDialogDelegate() : nullptr;
+  }
+  if (ui::TrackedElement* element = anchor.GetIfElement()) {
+    for (BubbleDialogDelegate* delegate :
+         base::Reversed(GetAnchoredTrackedElementDelegates())) {
+      if (delegate->anchor_tracked_element_.get() == element) {
+        return delegate;
+      }
+    }
+  }
+  return nullptr;
 }
 
 bool BubbleDialogDelegate::IsSameAnchor(BubbleAnchor anchor) const {
@@ -1366,9 +1396,10 @@ void BubbleDialogDelegate::NotifyAnchoredBubbleIsPrimary() {
 }
 
 void BubbleDialogDelegate::SetAnchoredDialogKey() {
-  auto* anchor_view = GetAnchorView();
-  DCHECK(anchor_view);
-  if (focus_traversable_from_anchor_view_) {
+  if (!focus_traversable_from_anchor_view_) {
+    return;
+  }
+  if (auto* anchor_view = GetAnchorView()) {
     // Make sure that focus can move into here from the anchor view (but not
     // out, focus will cycle inside the dialog once it gets here).
     // It is possible that a view anchors more than one widgets,
@@ -1379,7 +1410,19 @@ void BubbleDialogDelegate::SetAnchoredDialogKey() {
     }
     anchor_view->SetProperty(kAnchoredDialogKey,
                              static_cast<DialogDelegate*>(this));
+  } else if (anchor_tracked_element_) {
+    auto& delegates = GetAnchoredTrackedElementDelegates();
+    std::erase(delegates, this);
+    delegates.push_back(this);
   }
+}
+
+void BubbleDialogDelegate::ClearAnchoredDialogKey() {
+  if (auto* anchor_view = GetAnchorView();
+      anchor_view && anchor_view->GetProperty(kAnchoredDialogKey) == this) {
+    anchor_view->ClearProperty(kAnchoredDialogKey);
+  }
+  std::erase(GetAnchoredTrackedElementDelegates(), this);
 }
 
 void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {

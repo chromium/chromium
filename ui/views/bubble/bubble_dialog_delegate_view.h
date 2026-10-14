@@ -318,6 +318,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchor(BubbleAnchor anchor);
   BubbleAnchor GetAnchor() const;
 
+  // Returns the focus-traversable BubbleDialogDelegate anchored to `anchor`, or
+  // nullptr if none exists.
+  static BubbleDialogDelegate* GetAnchoredDialog(BubbleAnchor anchor);
+
   // Returns true when this is anchored on the same thing in `anchor`; this is
   // needed since GetAnchor() can return different representations than what
   // was initially passed in.
@@ -723,6 +727,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void UpdateHighlightedButton(bool highlight);
 
   void SetAnchoredDialogKey();
+  void ClearAnchoredDialogKey();
 
   gfx::Rect GetDesiredBubbleBounds();
 

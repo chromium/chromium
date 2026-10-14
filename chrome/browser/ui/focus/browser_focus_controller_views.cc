@@ -23,6 +23,8 @@
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -97,18 +99,21 @@ bool BrowserFocusControllerViews::
     }
     auto* multi_contents_view = views::AsViewClass<MultiContentsView>(
         GetViewForId(kMultiContentsViewElementId));
-    for (auto* view : std::initializer_list<views::View*>{
-             GetViewForId(kLocationBarElementId),
-             toolbar_button_provider_->GetDownloadButton(),
-             GetViewForId(kTopContainerElementId),
-             multi_contents_view->GetActiveContentsContainerView()
-                 ->GetToastAnchorView()}) {
-      if (view) {
-        if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
-            dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
-          bubble = dialog;
-          break;
-        }
+    for (const views::BubbleAnchor& anchor : std::to_array<views::BubbleAnchor>(
+             {views::BubbleAnchor(
+                  browser_elements_->GetElement(kLocationBarElementId)),
+              views::BubbleAnchor(
+                  toolbar_button_provider_->GetDownloadButton()),
+              views::BubbleAnchor(GetViewForId(kTopContainerElementId)),
+              views::BubbleAnchor(
+                  multi_contents_view
+                      ? multi_contents_view->GetActiveContentsContainerView()
+                            ->GetToastAnchorView()
+                      : nullptr)})) {
+      if (auto* dialog = views::BubbleDialogDelegate::GetAnchoredDialog(anchor);
+          dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
+        bubble = dialog;
+        break;
       }
     }
   }
