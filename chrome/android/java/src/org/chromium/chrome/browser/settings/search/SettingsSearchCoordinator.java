@@ -1805,6 +1805,27 @@ public class SettingsSearchCoordinator
                         }
                     }
                 });
+        // When settings is shown in a tab, switching away from the tab detaches the page's views
+        // and switching back re-attaches them. CompositorViewHolder then calls requestFocus() on
+        // the page, which gives focus to its first focusable descendant. While browsing search
+        // results in two-column mode that is this query field, and the focus listener above would
+        // treat it as a tap and pop the result the user was viewing. Keep the query field from
+        // taking focus until the re-attach has finished. See crbug.com/573289137.
+        queryEdit.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        if (mFragmentState != FS_RESULTS) return;
+
+                        // setFocusable(false) also clears focusableInTouchMode, and
+                        // setFocusableInTouchMode(true) restores both.
+                        v.setFocusable(false);
+                        mHandler.post(() -> v.setFocusableInTouchMode(true));
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {}
+                });
         queryEdit.setAccessibilityDelegate(
                 new View.AccessibilityDelegate() {
                     @Override
