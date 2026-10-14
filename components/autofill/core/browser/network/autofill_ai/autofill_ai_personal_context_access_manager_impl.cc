@@ -656,6 +656,11 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
 
     prefetched_proto_cache_.emplace(instance.guid(), std::move(entity.proto));
     if (!suppression_manager || !suppression_manager->IsSuppressed(instance)) {
+      const auto& payload =
+          std::get<EntityInstance::PersonalContextRecordTypePayload>(
+              instance.record_type_data());
+      LogPersonalContextPrefetchEntitySourceCount(instance.type(),
+                                                  payload.sources.size());
       entities.push_back(std::move(instance));
     } else {
       suppressed_count++;

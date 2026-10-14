@@ -2160,6 +2160,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.PersonalContext.Prefetch.EntitySourceCount{EntityType}"
+    units="sources" expires_after="2027-04-13">
+  <owner>tobson@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of valid sources attached to a valid entity received from
+    Personal Context during Ambient Autofill prefetch. Emitted for each
+    unsuppressed entity instance processed from the prefetch response that
+    passes validation.
+
+    {EntityType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult{EntityType}"
     enum="AutofillAiPersonalContextPrefetchEntityValidationResult"
     expires_after="2027-09-01">
