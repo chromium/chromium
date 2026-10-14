@@ -38,10 +38,6 @@ class TestUpgradeDetector : public UpgradeDetector {
       UpgradeNotificationAnnoyanceLevel level) override {
     return base::Time();
   }
-
-  // Exposed for testing.
-  using UpgradeDetector::AdjustDeadline;
-  using UpgradeDetector::GetRelaunchWindowPolicyValue;
 };
 
 }  // namespace

@@ -86,6 +86,17 @@ class UpgradeDetector {
   // is reached.
   static base::TimeDelta GetDefaultElevatedAnnoyanceThreshold();
 
+  // Returns the adjusted deadline to fall within `window`. If the
+  // `deadline` has already passed the window for the day, it is prolonged for
+  // the next day within the window. If the `deadline` already falls within the
+  // window, no change is made.
+  static base::Time AdjustDeadline(base::Time deadline,
+                                   const RelaunchWindow& window);
+
+  // Returns the relaunch window specified via the RelaunchWindow policy
+  // setting, or nullopt if unset or set incorrectly.
+  static std::optional<RelaunchWindow> GetRelaunchWindowPolicyValue();
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   virtual void Init();
@@ -219,17 +230,6 @@ class UpgradeDetector {
   // of range.
   static base::TimeDelta GetRelaunchNotificationPeriod();
   static bool IsRelaunchNotificationPolicyEnabled();
-
-  // Returns the adjusted deadline to fall within `window`. If the
-  // `deadline` has already passed the window for the day, it is prolonged for
-  // the next day within the window. If the `deadline` already falls within the
-  // window, no change is made.
-  static base::Time AdjustDeadline(base::Time deadline,
-                                   const RelaunchWindow& window);
-
-  // Returns the relaunch window specified via the RelaunchWindow policy
-  // setting, or nullopt if unset or set incorrectly.
-  static std::optional<RelaunchWindow> GetRelaunchWindowPolicyValue();
 
   // Returns the default relaunch window within which the relaunch should take
   // place. It is 2am to 4am from Chrome OS and the whole day for others.

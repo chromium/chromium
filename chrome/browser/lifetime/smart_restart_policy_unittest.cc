@@ -24,7 +24,26 @@ class SmartRestartPolicyTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()
+        ->GetTestingLocalState()
+        ->RemoveManagedPref(prefs::kRelaunchWindow);
+  }
+
  protected:
+  void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
+    base::DictValue entry;
+    entry.SetByDottedPath("start.hour", hour);
+    entry.SetByDottedPath("start.minute", minute);
+    entry.Set("duration_mins", duration_mins);
+    base::ListValue entries;
+    entries.Append(std::move(entry));
+    base::DictValue dict;
+    dict.Set("entries", std::move(entries));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+        prefs::kRelaunchWindow, base::Value(std::move(dict)));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
 };
@@ -85,13 +104,44 @@ TEST_F(SmartRestartPolicyTest, BlockWhenIncognitoOpen) {
             SmartRestartPolicy::ShouldRestart(state));
 }
 
-TEST_F(SmartRestartPolicyTest, BlockLockScreenWhenManaged) {
+TEST_F(SmartRestartPolicyTest, ProceedLockScreenWhenManagedByDefault) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::CLOUD);
 
   ExtendedRestartabilityState state;
+  EXPECT_EQ(ExtendedExecutionOutcome::kExecuted,
+            SmartRestartPolicy::CanLockScreenRestartProceed(state));
+}
+
+TEST_F(SmartRestartPolicyTest, BlockLockScreenOutsideRelaunchWindow) {
+  // Set a 1-minute window 12 hours away from current local time.
+  base::Time::Exploded now_exploded;
+  base::Time::Now().LocalExplode(&now_exploded);
+  int outside_hour = (now_exploded.hour + 12) % 24;
+
+  SetRelaunchWindowPref(outside_hour, 0, /*duration_mins=*/1);
+
+  ExtendedRestartabilityState state;
   EXPECT_EQ(ExtendedExecutionOutcome::kBlockedByPolicy,
+            SmartRestartPolicy::CanLockScreenRestartProceed(state));
+}
+
+TEST_F(SmartRestartPolicyTest, ProceedLockScreenWithinRelaunchWindow) {
+  ExtendedRestartabilityState state;
+
+  // 1. 24-hour (1440-minute) window covers all times.
+  SetRelaunchWindowPref(0, 0, /*duration_mins=*/1440);
+  EXPECT_EQ(ExtendedExecutionOutcome::kExecuted,
+            SmartRestartPolicy::CanLockScreenRestartProceed(state));
+
+  // 2. Window starting 1 hour before current local time with a 3-hour duration
+  // (exercises midnight-wrapping when current local hour is 0).
+  base::Time::Exploded now_exploded;
+  base::Time::Now().LocalExplode(&now_exploded);
+  int start_hour = (now_exploded.hour + 23) % 24;
+  SetRelaunchWindowPref(start_hour, 0, /*duration_mins=*/180);
+  EXPECT_EQ(ExtendedExecutionOutcome::kExecuted,
             SmartRestartPolicy::CanLockScreenRestartProceed(state));
 }
 
@@ -116,8 +166,7 @@ TEST_F(SmartRestartPolicyTest, ExplicitPolicyDisabledBlocksZeroWindow) {
 
   EXPECT_FALSE(SmartRestartPolicy::CanZeroWindowRestartProceed());
 
-  // Lock screen should not be affected by zero window policy (it checks
-  // IsManaged which is false here).
+  // Lock screen should not be affected by zero window policy.
   ExtendedRestartabilityState state;
   EXPECT_EQ(ExtendedExecutionOutcome::kExecuted,
             SmartRestartPolicy::CanLockScreenRestartProceed(state));
@@ -143,10 +192,9 @@ TEST_F(SmartRestartPolicyTest,
   // Zero window should proceed because policy overrides management status.
   EXPECT_TRUE(SmartRestartPolicy::CanZeroWindowRestartProceed());
 
-  // Lock screen should still be blocked because it only checks IsManaged and
-  // ignores this policy.
+  // Lock screen should also proceed when RelaunchWindow is not configured.
   ExtendedRestartabilityState state;
-  EXPECT_EQ(ExtendedExecutionOutcome::kBlockedByPolicy,
+  EXPECT_EQ(ExtendedExecutionOutcome::kExecuted,
             SmartRestartPolicy::CanLockScreenRestartProceed(state));
 
   // Clean up
