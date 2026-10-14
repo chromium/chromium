@@ -266,7 +266,7 @@ public class IdentityDiscController
 
             int aiTierRingThicknessPx =
                     mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_identity_disc);
+                            .getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_small);
             int aiTierImageSizePx =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size_with_ring);

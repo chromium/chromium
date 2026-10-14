@@ -139,10 +139,7 @@ public class ProfileDataCache
 
         if (mAiTierRingEnabled) {
             int ringSpacingPx =
-                    context.getResources()
-                            .getDimensionPixelSize(
-                                    org.chromium.components.browser_ui.util.R.dimen
-                                            .ai_tier_ring_spacing);
+                    context.getResources().getDimensionPixelSize(R.dimen.ai_tier_ring_spacing);
             mTotalPadding = mRingThicknessPx + ringSpacingPx;
             mAvatarSize = mImageSize - 2 * mTotalPadding;
         } else {

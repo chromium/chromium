@@ -55,7 +55,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "res/values/dimens.xml" ]
+  sources = []
   deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 

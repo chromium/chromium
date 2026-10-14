@@ -28,6 +28,10 @@ found in the LICENSE file.
     <dimen name="toolbar_identity_disc_badge_position_x">12dp</dimen>
     <dimen name="toolbar_identity_disc_badge_position_y">12dp</dimen>
 
+    <!-- AI Tier Ring Dimensions -->
+    <dimen name="ai_tier_ring_spacing">2dp</dimen>
+    <!-- AI tier ring thickness for avatars up to 24dp -->
+    <dimen name="ai_tier_ring_thickness_small">2dp</dimen>
     <!-- AI tier ring thickness for avatars larger than 24dp -->
     <!-- TODO(crbug.com/522145863): Remove tools:ignore once used. -->
     <dimen name="ai_tier_ring_thickness_large" tools:ignore="UnusedResources">3dp</dimen>

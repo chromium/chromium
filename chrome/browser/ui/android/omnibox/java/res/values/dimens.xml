@@ -9,7 +9,6 @@ found in the LICENSE file.
     <dimen name="ai_chip_corner_radius">36dp</dimen>
     <dimen name="ai_chip_horizontal_inset">2dp</dimen>
     <dimen name="ai_chip_vertical_inset">6dp</dimen>
-    <dimen name="ai_tier_ring_thickness_identity_disc">2dp</dimen>
     <dimen name="close_button_height">48dp</dimen>
     <dimen name="close_button_height_desktop">20dp</dimen>
     <dimen name="close_button_width">48dp</dimen>

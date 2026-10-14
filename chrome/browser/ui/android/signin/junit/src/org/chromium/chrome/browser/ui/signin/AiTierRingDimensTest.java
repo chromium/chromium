@@ -33,7 +33,7 @@ public class AiTierRingDimensTest {
                                 org.chromium.chrome.browser.signin.services.R.dimen
                                         .ai_tier_ring_thickness_large)
                         + mResources.getDimensionPixelSize(
-                                org.chromium.components.browser_ui.util.R.dimen
+                                org.chromium.chrome.browser.signin.services.R.dimen
                                         .ai_tier_ring_spacing);
     }
 
