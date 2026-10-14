@@ -181,8 +181,11 @@ public class ImeAdapterImpl
     private boolean mNodePassword;
 
     // Viewport rect before the OSK was brought up.
-    // Used to tell View#onSizeChanged to focus a form element.
+    // Used to tell whether the current viewport rect changed because of the OSK.
     private final Rect mFocusPreOSKViewportRect = new Rect();
+
+    // Reusable scratch rect for querying the current visible display frame.
+    private final Rect mCurrentDisplayFrameRect = new Rect();
 
     // Keep the current configuration to detect the change when onConfigurationChanged() is called.
     private Configuration mCurrentConfig;
@@ -1006,6 +1009,7 @@ public class ImeAdapterImpl
     public void onShowKeyboardReceiveResult(int resultCode) {
         if (!isValid()) return;
         View containerView = getContainerView();
+        if (containerView == null) return;
         if (resultCode == InputMethodManager.RESULT_SHOWN) {
             // If OSK is newly shown, delay the form focus until
             // the onSizeChanged (in order to adjust relative to the
@@ -1018,6 +1022,9 @@ public class ImeAdapterImpl
             // If the OSK was already there, focus the form immediately.
             // Also, the VR soft keyboard always reports RESULT_UNCHANGED_SHOWN as it
             // doesn't affect the size of the web contents.
+            if (isReshrinkScrollEnabled() && mFocusPreOSKViewportRect.isEmpty()) {
+                containerView.getWindowVisibleDisplayFrame(mFocusPreOSKViewportRect);
+            }
             mWebContents.scrollFocusedEditableNodeIntoView();
         }
     }
@@ -1029,6 +1036,15 @@ public class ImeAdapterImpl
 
     public void cancelRequestToScrollFocusedEditableNodeIntoView() {
         mFocusPreOSKViewportRect.setEmpty();
+    }
+
+    Rect getFocusPreOSKViewportRectForTesting() {
+        return new Rect(mFocusPreOSKViewportRect);
+    }
+
+    private static boolean isReshrinkScrollEnabled() {
+        return ContentFeatureMap.isEnabled(
+                ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK);
     }
 
     @Override
@@ -1043,6 +1059,7 @@ public class ImeAdapterImpl
     /** Hide soft keyboard. */
     private void hideKeyboard() {
         setPendingShowKeyboardOnTouchUp(false);
+        cancelRequestToScrollFocusedEditableNodeIntoView();
         if (!isValid()) return;
         if (DEBUG_LOGS) Log.i(TAG, "hideKeyboard");
         View view = getContainerView();
@@ -2036,7 +2053,16 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void onResizeScrollableViewport(boolean contentsHeightReduced) {
+    @VisibleForTesting
+    void onResizeScrollableViewport(boolean contentsHeightReduced) {
+        if (!isValid()) return;
+        if (!focusedNodeEditable()) {
+            cancelRequestToScrollFocusedEditableNodeIntoView();
+            return;
+        }
+        View containerView = getContainerView();
+        if (containerView == null) return;
+
         if (!contentsHeightReduced) {
             // Note: When the keyboard is shown, the viewport height can grow and shrink as various
             // pieces of state are updated asynchronously. If we're waiting to scroll (non-empty
@@ -2045,23 +2071,46 @@ public class ImeAdapterImpl
             if (!ContentFeatureMap.isEnabled(
                     ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX)) {
                 cancelRequestToScrollFocusedEditableNodeIntoView();
+                return;
+            }
+            if (!mFocusPreOSKViewportRect.isEmpty()) {
+                containerView.getWindowVisibleDisplayFrame(mCurrentDisplayFrameRect);
+                if (mCurrentDisplayFrameRect.width() != mFocusPreOSKViewportRect.width()) {
+                    cancelRequestToScrollFocusedEditableNodeIntoView();
+                    return;
+                }
+                // Update the baseline when the visible display frame expands (e.g. switching the
+                // keyboard to floating mode) so a subsequent re-docking shrink scrolls into view.
+                // Non-IME viewport changes such as browser controls do not alter
+                // getWindowVisibleDisplayFrame().
+                if (isReshrinkScrollEnabled()
+                        && mCurrentDisplayFrameRect.height() > mFocusPreOSKViewportRect.height()) {
+                    mFocusPreOSKViewportRect.set(mCurrentDisplayFrameRect);
+                }
             }
             return;
         }
 
         // Execute a delayed form focus operation because the OSK was brought up earlier.
         if (!mFocusPreOSKViewportRect.isEmpty()) {
-            Rect rect = new Rect();
-            getContainerView().getWindowVisibleDisplayFrame(rect);
-            if (!rect.equals(mFocusPreOSKViewportRect)) {
+            containerView.getWindowVisibleDisplayFrame(mCurrentDisplayFrameRect);
+            if (!mCurrentDisplayFrameRect.equals(mFocusPreOSKViewportRect)) {
                 // Only assume the OSK triggered the onSizeChanged if width was preserved.
-                if (rect.width() == mFocusPreOSKViewportRect.width()) {
-                    assert mWebContents != null;
+                if (mCurrentDisplayFrameRect.width() != mFocusPreOSKViewportRect.width()) {
+                    cancelRequestToScrollFocusedEditableNodeIntoView();
+                    return;
+                }
+                if (mCurrentDisplayFrameRect.height() < mFocusPreOSKViewportRect.height()) {
                     mWebContents.scrollFocusedEditableNodeIntoView();
                 }
-                // Zero the rect to prevent the above operation from issuing the delayed
-                // form focus event.
-                cancelRequestToScrollFocusedEditableNodeIntoView();
+                if (isReshrinkScrollEnabled()) {
+                    // Keep tracking the display frame so later keyboard growth
+                    // (e.g. Gboard Translate) re-scrolls the node into view.
+                    mFocusPreOSKViewportRect.set(mCurrentDisplayFrameRect);
+                } else {
+                    // Legacy: only scroll once per keyboard show.
+                    cancelRequestToScrollFocusedEditableNodeIntoView();
+                }
             }
         }
     }

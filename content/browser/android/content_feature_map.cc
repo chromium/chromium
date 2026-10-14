@@ -74,6 +74,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kContinueGestureOnLosingFocus,
     &features::kSandboxedProcessServiceLimitOnAndroid,
     &features::kScrollAfterOSKViewportShrinkFix,
+    &features::kScrollFocusedNodeOnOSKViewportReshrink,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,

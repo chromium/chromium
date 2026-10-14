@@ -32,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -56,8 +57,10 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink_public.web.WebInputEventModifier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -70,6 +73,8 @@ import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ime.TextInputType;
 import org.chromium.ui.mojom.ImeTextSpanType;
+import org.chromium.ui.mojom.VirtualKeyboardPolicy;
+import org.chromium.ui.mojom.VirtualKeyboardVisibilityRequest;
 import org.chromium.ui.test.util.TestViewAndroidDelegate;
 
 /** Unit tests for {@link ImeAdapterImpl}. */
@@ -91,9 +96,19 @@ public class ImeAdapterImplTest {
         int mRequestRectangleOnScreen3ArgCount;
         boolean mLastRequestRectangleOnScreenImmediate;
         int mLastRequestRectangleOnScreenSource;
+        @Nullable Rect mWindowVisibleDisplayFrame;
 
         TestContainerView() {
             super(ApplicationProvider.getApplicationContext());
+        }
+
+        @Override
+        public void getWindowVisibleDisplayFrame(Rect outRect) {
+            if (mWindowVisibleDisplayFrame != null) {
+                outRect.set(mWindowVisibleDisplayFrame);
+            } else {
+                super.getWindowVisibleDisplayFrame(outRect);
+            }
         }
 
         @Override
@@ -208,6 +223,376 @@ public class ImeAdapterImplTest {
                 /* vkPolicy= */ 0,
                 /* nodeId= */ 0,
                 /* imeTextSpans= */ null);
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX,
+        ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK
+    })
+    public void testResizeScrollableViewport_keyboardHeightExpandsAfterInitialShow() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node (e.g. Chat input field) and show keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+
+        // 2. Keyboard appears initially, reducing viewport height to 1800.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+
+        // Verify the initial scroll into view occurred.
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+
+        // 3. User enables translate tool in Gboard (or docks from floating mode), expanding
+        // keyboard height and reducing visible viewport height further to 1400.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1400);
+        adapter.onResizeScrollableViewport(true);
+
+        // The focused node should be scrolled into view again so it isn't hidden by the expanded
+        // keyboard.
+        verify(mWebContentsImpl, times(2)).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX,
+        ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK
+    })
+    public void testResizeScrollableViewport_dockFromFloatingAfterInitialShow() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node (e.g. Chat input field) and show keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+
+        // 2. Keyboard appears initially, reducing viewport height to 1800.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+
+        // 3. User switches to floating window mode (viewport expands back).
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 2400);
+        adapter.onResizeScrollableViewport(false);
+
+        // 4. User switches back to docked mode (viewport height reduces again).
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+
+        // The focused node should be scrolled into view again upon re-docking.
+        verify(mWebContentsImpl, times(2)).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @EnableFeatures(ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX)
+    public void testResizeScrollableViewport_widthChangeCancelsPendingScroll() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and request keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        Assert.assertFalse(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 2. Device rotates (width changes from 1080 to 2400).
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 2400, 1080);
+
+        // 3. Viewport resize arrives with contentsHeightReduced=true.
+        adapter.onResizeScrollableViewport(true);
+
+        // Width mismatch should cancel the pending scroll request without scrolling.
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 4. Also verify width mismatch cancels when contentsHeightReduced=false.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        Assert.assertFalse(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 2400, 1080);
+        adapter.onResizeScrollableViewport(false);
+
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+    }
+
+    @Test
+    public void testResizeScrollableViewport_cancelledRequestDoesNotScroll() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and request keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+
+        // 2. Simulate touch down or cancelled scroll request which clears mFocusPreOSKViewportRect.
+        adapter.cancelRequestToScrollFocusedEditableNodeIntoView();
+
+        // 3. Viewport height reduces (e.g. keyboard expands or docks).
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+
+        // Should NOT scroll into view because the request was cancelled (mFocusPreOSKViewportRect
+        // is empty).
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    public void testResizeScrollableViewport_resetAndHideKeyboardCancelsScroll() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and request keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+
+        // 2. Reset and hide keyboard, which clears mFocusPreOSKViewportRect.
+        adapter.resetAndHideKeyboard();
+
+        // 3. Viewport height reduces.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+
+        // Should NOT scroll into view because resetAndHideKeyboard cancelled the request.
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    public void testResizeScrollableViewport_invalidAdapterReturnsEarly() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        // Do not call onConnectedToRenderProcess(), so isValid() is false.
+        Assert.assertFalse(adapter.isValid());
+
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    public void testResizeScrollableViewport_nullContainerViewReturnsEarly() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        updateTextInputType(adapter, TextInputType.TEXT);
+        when(mWebContentsImpl.getViewAndroidDelegate()).thenReturn(null);
+
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    public void testResizeScrollableViewport_emptyPreOSKViewportRectWhenNodeNotEditable() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Not focused on an editable node.
+        updateTextInputType(adapter, TextInputType.NONE);
+        Assert.assertFalse(adapter.focusedNodeEditable());
+
+        // 2. Viewport height reduces.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+
+        // Should not scroll into view when node is not editable.
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    public void testResizeScrollableViewport_nodeNotEditableCancelsPendingScroll() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and request keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        Assert.assertFalse(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 2. Node becomes non-editable before viewport resize completes. Use the MANUAL
+        // virtualkeyboardpolicy path so that updateState() does not call hideKeyboard() (which
+        // would itself cancel the pending scroll request) and the rect stays armed.
+        adapter.updateState(
+                /* textInputType= */ TextInputType.NONE,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ false,
+                /* alwaysHide= */ false,
+                /* text= */ "",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 0,
+                /* compositionStart= */ 0,
+                /* compositionEnd= */ 0,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ VirtualKeyboardVisibilityRequest.NONE,
+                /* vkPolicy= */ VirtualKeyboardPolicy.MANUAL,
+                /* nodeId= */ 0,
+                /* imeTextSpans= */ null);
+        Assert.assertFalse(adapter.focusedNodeEditable());
+        Assert.assertFalse(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 3. Viewport height reduces. This should cancel the pending scroll request.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 4. Even if the node becomes editable again later without a new keyboard show result,
+        // a subsequent resize should not scroll because the pending request was cancelled.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1400);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @DisableFeatures(ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX)
+    public void testResizeScrollableViewport_legacyGrowthCancelsPendingScroll() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and request keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        Assert.assertFalse(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 2. Viewport grows. With the legacy behaviour this cancels the pending request.
+        adapter.onResizeScrollableViewport(false);
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 3. Viewport subsequently shrinks; nothing is pending so no scroll happens.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, never()).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @EnableFeatures(ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX)
+    @DisableFeatures(ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK)
+    public void testResizeScrollableViewport_reshrinkDisabledScrollsOnlyOncePerShow() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node and show keyboard.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+
+        // 2. Keyboard appears initially, reducing viewport height to 1800.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1800);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+        // Legacy behaviour: the request is consumed after the first scroll.
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 3. Keyboard grows further (e.g. Gboard Translate); no further scroll happens.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1400);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+
+        // 4. Re-arm, then grow the display frame. With the kill switch off the baseline is not
+        // raised, so a subsequent shrink that is still taller than the baseline does not scroll.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 2600);
+        adapter.onResizeScrollableViewport(false);
+        Assert.assertEquals(
+                new Rect(0, 0, 1080, 2400), adapter.getFocusPreOSKViewportRectForTesting());
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 2500);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+    }
+
+    @Test
+    @DisableFeatures(ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK)
+    public void testShowKeyboardReceiveResult_reshrinkDisabledUnchangedShownDoesNotArm() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node when keyboard is already shown.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
+        // Immediate scroll into view still happens, but no baseline is recorded.
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+        Assert.assertTrue(adapter.getFocusPreOSKViewportRectForTesting().isEmpty());
+
+        // 2. Keyboard height expands further; no additional scroll.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1400);
+        adapter.onResizeScrollableViewport(true);
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX,
+        ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK
+    })
+    public void
+            testShowKeyboardReceiveResult_unchangedShownRecordsFrameAndSubsequentResizeScrolls() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Focus on an editable node when keyboard is already shown.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
+        // Immediate scroll into view happens on RESULT_UNCHANGED_SHOWN.
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+
+        // 2. Keyboard height expands further (e.g. translate tool), reducing viewport to 1400.
+        mContainerView.mWindowVisibleDisplayFrame.set(0, 0, 1080, 1400);
+        adapter.onResizeScrollableViewport(true);
+
+        // Should scroll into view again because RESULT_UNCHANGED_SHOWN recorded the display frame
+        // baseline.
+        verify(mWebContentsImpl, times(2)).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentInternalFeatures.SCROLL_AFTER_OSK_VIEWPORT_SHRINK_FIX,
+        ContentInternalFeatures.SCROLL_FOCUSED_NODE_ON_OSK_VIEWPORT_RESHRINK
+    })
+    public void
+            testShowKeyboardReceiveResult_unchangedShownDoesNotOverwritePendingPreOSKViewportRect() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // 1. Initial keyboard show sets pending pre-OSK viewport rect.
+        updateTextInputType(adapter, TextInputType.TEXT);
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 2400);
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        Assert.assertEquals(
+                new Rect(0, 0, 1080, 2400), adapter.getFocusPreOSKViewportRectForTesting());
+
+        // 2. Window display frame updates before resize event arrives.
+        mContainerView.mWindowVisibleDisplayFrame = new Rect(0, 0, 1080, 1800);
+
+        // 3. Secondary show request returns RESULT_UNCHANGED_SHOWN while resize is still pending.
+        adapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
+        // Pre-OSK viewport rect should NOT be overwritten by RESULT_UNCHANGED_SHOWN.
+        Assert.assertEquals(
+                new Rect(0, 0, 1080, 2400), adapter.getFocusPreOSKViewportRectForTesting());
+        // Immediate scroll occurs on RESULT_UNCHANGED_SHOWN.
+        verify(mWebContentsImpl, times(1)).scrollFocusedEditableNodeIntoView();
+
+        // 4. Subsequent viewport resize arrives with reduced height relative to the initial rect.
+        adapter.onResizeScrollableViewport(true);
+
+        // The resize still triggers scroll because the original baseline (2400) was preserved.
+        verify(mWebContentsImpl, times(2)).scrollFocusedEditableNodeIntoView();
     }
 
     @Test
