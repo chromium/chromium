@@ -52,12 +52,17 @@ export class TouchpadTesterElement extends TouchpadTesterElementBase implements
   }
 
   static get properties(): PolymerElementProperties {
-    return {};
+    return {
+      touchpad: {
+        type: Object,
+        value: null,
+      },
+    };
   }
 
   protected drawingProvider: CanvasDrawingProvider|null = null;
   // Touchpad device being tested.
-  touchpad: TouchDeviceInfo|null = null;
+  declare touchpad: TouchDeviceInfo|null;
 
   override connectedCallback(): void {
     super.connectedCallback();
