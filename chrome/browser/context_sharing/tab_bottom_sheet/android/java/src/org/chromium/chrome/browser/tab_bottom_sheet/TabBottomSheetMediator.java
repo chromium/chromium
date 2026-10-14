@@ -136,7 +136,9 @@ public class TabBottomSheetMediator extends GestureStateListener {
     }
 
     boolean isNotPeeking() {
-        return mCurrentSheetState == SheetState.FULL || mCurrentSheetState == SheetState.HALF;
+        return mCurrentSheetState == SheetState.FULL
+                || mCurrentSheetState == SheetState.HALF
+                || mCurrentSheetState == SheetState.SCROLLING;
     }
 
     private boolean isShowing() {

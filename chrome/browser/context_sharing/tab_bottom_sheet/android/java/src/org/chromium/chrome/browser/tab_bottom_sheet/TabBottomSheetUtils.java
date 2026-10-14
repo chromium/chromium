@@ -47,6 +47,10 @@ public final class TabBottomSheetUtils {
                 && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled();
     }
 
+    public static boolean isEdgeToEdgeEnabled() {
+        return isTabBottomSheetEnabled() && ChromeFeatureList.sTabBottomSheetEdgeToEdge.isEnabled();
+    }
+
     /** Returns the resizing placeholder type configured by feature flag params. */
     public static String getResizingPlaceholderType() {
         if (!canResizeWebView()) {

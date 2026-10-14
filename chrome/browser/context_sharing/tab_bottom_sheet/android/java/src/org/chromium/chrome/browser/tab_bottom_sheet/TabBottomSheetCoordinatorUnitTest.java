@@ -1152,6 +1152,34 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    public void testTopMarginRemovedWhenEdgeToEdgeEnabled() {
+        simulateShowSuccessAndGetObserver();
+
+        View webUiContainer = mView.findViewById(R.id.web_ui_container);
+        assertEquals(
+                0, ((ViewGroup.MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
+    public void testTopMarginPreservedWhenEdgeToEdgeDisabled() {
+        simulateShowSuccessAndGetObserver();
+
+        int topMarginPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
+        View webUiContainer = mView.findViewById(R.id.web_ui_container);
+        assertEquals(
+                topMarginPx,
+                ((ViewGroup.MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin);
+    }
+
+    @Test
     public void testMetrics_Glic_CurrentStateAndTransitions() {
         // Re-create coordinator with GLIC client type
         recreateCoordinatorWithClientType(TabBottomSheetClientType.GLIC);
@@ -1257,6 +1285,25 @@ public class TabBottomSheetCoordinatorUnitTest {
         observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
 
         assertFalse(outlineProvider.isTopEdgeRounded());
+    }
+
+    @Test
+    public void testUpdateRoundingEdges_FullWidth_Expanded() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        RoundedCornerOutlineProvider outlineProvider = mCoordinator.getOutlineProviderForTesting();
+
+        when(mMockBottomSheetController.isFullWidth()).thenReturn(true);
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+        assertFalse(outlineProvider.isTopEdgeRounded());
+
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
+        assertTrue(outlineProvider.isTopEdgeRounded());
+
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertTrue(outlineProvider.isTopEdgeRounded());
+
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        assertTrue(outlineProvider.isTopEdgeRounded());
     }
 
     @Test

@@ -308,6 +308,9 @@ public class TabBottomSheetMediatorUnitTest {
         mMediator.onSheetStateChanged(SheetState.PEEK);
         Assert.assertFalse(mMediator.isNotPeeking());
 
+        mMediator.onSheetStateChanged(SheetState.SCROLLING);
+        Assert.assertTrue(mMediator.isNotPeeking());
+
         mMediator.onSheetStateChanged(SheetState.HALF);
         Assert.assertTrue(mMediator.isNotPeeking());
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.canResizeWebView;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityInactive;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isEdgeToEdgeEnabled;
 
 import static java.lang.Math.max;
 
@@ -17,6 +18,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -147,6 +149,7 @@ public class TabBottomSheetCoordinator {
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_corner_radius);
         mOutlineProvider = new RoundedCornerOutlineProvider(radius);
+        mOutlineProvider.setRoundingEdges(true, true, true, false);
         mCoBrowseViews.setPlaceholderAllowedSupplier(mPlaceholderAllowedSupplier);
     }
 
@@ -215,6 +218,12 @@ public class TabBottomSheetCoordinator {
         mContentView = mCoBrowseViews.getView();
         mContentView.setOutlineProvider(mOutlineProvider);
         mContentView.setClipToOutline(true);
+        View webUiContainer = mContentView.findViewById(R.id.web_ui_container);
+        if (webUiContainer != null
+                && webUiContainer.getLayoutParams() instanceof MarginLayoutParams params) {
+            params.topMargin = isEdgeToEdgeEnabled() ? 0 : mWebUiTopMargin;
+            webUiContainer.setLayoutParams(params);
+        }
         CoBrowseComponentProvider provider = mCoBrowseViews.getContentProvider();
         assert provider != null : "CoBrowseComponentProvider must not be null";
         mSheetContent =
@@ -485,13 +494,14 @@ public class TabBottomSheetCoordinator {
                     mMediator.onSheetOffsetChanged(offsetPx);
                     if (canResizeWebView()) {
                         assert mResizingStrategy != null;
+                        float topMargin = isEdgeToEdgeEnabled() ? 0 : mWebUiTopMargin;
                         float peekHeight = mSheetContent.getPeekHeight();
                         float halfRatio = mSheetContent.getHalfHeightRatio();
                         float halfHeight = mBottomSheetController.getContainerHeight() * halfRatio;
                         float fullHeight = mBottomSheetController.getMaxOffset();
                         mResizingStrategy.onSheetOffsetChanged(
-                                offsetPx - mWebUiTopMargin,
-                                peekHeight - mWebUiTopMargin,
+                                offsetPx - topMargin,
+                                peekHeight - topMargin,
                                 halfHeight,
                                 fullHeight);
                     }
@@ -706,7 +716,7 @@ public class TabBottomSheetCoordinator {
     private void updateRoundingEdges() {
         if (mOutlineProvider == null) return;
 
-        boolean shouldRound = !mBottomSheetController.isFullWidth();
+        boolean shouldRound = !mBottomSheetController.isFullWidth() || mMediator.isNotPeeking();
         if (mOutlineProvider.isTopEdgeRounded() == shouldRound) {
             return;
         }
