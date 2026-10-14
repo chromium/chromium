@@ -41,6 +41,4 @@ component("vr_cardboard") {
     "//ui/gfx",
     "//ui/gl/init",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

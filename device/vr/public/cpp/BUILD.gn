@@ -28,8 +28,6 @@ component("cpp") {
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom/compositing",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 component("features") {
@@ -51,5 +49,4 @@ component("features") {
   }
 
   defines = [ "IS_VR_FEATURES_IMPL" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

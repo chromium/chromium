@@ -43,8 +43,6 @@ component("fido") {
     "//third_party/boringssl",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (use_blink) {
     sources += [
       "cable/noise.cc",
@@ -314,7 +312,6 @@ if (use_blink) {
       "//components/gcm_driver/instance_id",
       "//third_party/boringssl",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   static_library("cablev2_authenticator") {
@@ -330,7 +327,6 @@ if (use_blink) {
       "//services/network/public/cpp",
       "//services/network/public/mojom",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   static_library("cablev2_test_util") {

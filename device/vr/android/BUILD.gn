@@ -35,6 +35,4 @@ static_library("vr_android") {
     "//ui/gl",
     "//ui/gl/init",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
