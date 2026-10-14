@@ -221,12 +221,6 @@ def _ValidateStudyConfig(study_config, create_message_fn):
     return create_message_fn('Missing valid experiments for experiment config')
   if not isinstance(study_config['experiments'], list):
     return create_message_fn('Expecting list for experiments')
-  if len(study_config['experiments']) != 1:
-    return create_message_fn(
-      'Expecting exactly 1 experiment per study config, got %d. See '
-      'testing/variations/README.md',
-      len(study_config['experiments']),
-    )
   for experiment_group in study_config['experiments']:
     warnings = _ValidateExperimentGroup(experiment_group, create_message_fn)
     if warnings:

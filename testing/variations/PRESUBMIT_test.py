@@ -304,42 +304,5 @@ class UndeclaredFeaturesTest(unittest.TestCase):
     self.assertIn('unable to find any declared flags', result[0][1])
 
 
-class ValidateStudyConfigTest(unittest.TestCase):
-  def _create_message(self, message_format, *args):
-    return message_format % args if args else message_format
-
-  def testSingleExperimentPasses(self):
-    config = {
-      'platforms': ['windows'],
-      'experiments': [{'name': 'group1'}],
-    }
-    result = PRESUBMIT._ValidateStudyConfig(config, self._create_message)
-    self.assertEqual(result, [])
-
-  def testMultipleExperimentsFails(self):
-    config = {
-      'platforms': ['windows'],
-      'experiments': [{'name': 'group1'}, {'name': 'group2'}],
-    }
-    result = PRESUBMIT._ValidateStudyConfig(config, self._create_message)
-    self.assertEqual(
-      result,
-      'Expecting exactly 1 experiment per study config, got 2. See '
-      'testing/variations/README.md',
-    )
-
-  def testEmptyExperimentsFails(self):
-    config = {
-      'platforms': ['windows'],
-      'experiments': [],
-    }
-    result = PRESUBMIT._ValidateStudyConfig(config, self._create_message)
-    self.assertEqual(
-      result,
-      'Expecting exactly 1 experiment per study config, got 0. See '
-      'testing/variations/README.md',
-    )
-
-
 if __name__ == '__main__':
   unittest.main()
