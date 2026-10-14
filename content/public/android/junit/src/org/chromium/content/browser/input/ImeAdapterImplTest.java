@@ -230,6 +230,87 @@ public class ImeAdapterImplTest {
         verify(mImeAdapterImplJni).requestTextInputStateUpdate(anyLong());
     }
 
+    private void updateTextInputState(
+            ImeAdapterImpl adapter, @TextInputType int textInputType, int nodeId) {
+        adapter.updateState(
+                /* textInputType= */ textInputType,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ textInputType != TextInputType.NONE,
+                /* alwaysHide= */ false,
+                /* text= */ "",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 0,
+                /* compositionStart= */ -1,
+                /* compositionEnd= */ -1,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* nodeId= */ nodeId,
+                /* imeTextSpans= */ null);
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)
+    public void testOnWindowFocusChangedLostResetsWithoutHidingKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        // Focus an editable text field.
+        adapter.focusedNodeChanged(/* isEditable= */ true, 0, 0, 100, 100);
+        updateTextInputState(adapter, TextInputType.TEXT, /* nodeId= */ 42);
+        reset(mInputMethodManagerWrapper);
+
+        // Window focus is lost (e.g. IME picker dialog, notification shade, power menu).
+        adapter.onWindowFocusChanged(/* gainFocus= */ false);
+
+        // Verify that the soft keyboard is NOT hidden and input is reset.
+        verify(mInputMethodManagerWrapper, never()).hideSoftInputFromWindow(any(), anyInt(), any());
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)
+    public void testOnWindowFocusChangedGainedRestartsInputOnNextStateUpdateWhenTextInputActive() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        // Initial focus on node 42.
+        adapter.focusedNodeChanged(/* isEditable= */ true, 0, 0, 100, 100);
+        updateTextInputState(adapter, TextInputType.TEXT, /* nodeId= */ 42);
+        verify(mInputMethodManagerWrapper, times(1)).restartInput(mContainerView);
+        reset(mInputMethodManagerWrapper);
+
+        // Window loses focus then gains focus.
+        adapter.onWindowFocusChanged(/* gainFocus= */ false);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+
+        adapter.onWindowFocusChanged(/* gainFocus= */ true);
+        verify(mImeAdapterImplJni).requestTextInputStateUpdate(anyLong());
+
+        // Subsequent updateState for the same node 42 should restart input.
+        updateTextInputState(adapter, TextInputType.TEXT, /* nodeId= */ 42);
+        verify(mInputMethodManagerWrapper, times(1)).restartInput(mContainerView);
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)
+    public void testOnWindowFocusChangedGainedDoesNotRestartInputWhenNoActiveTextInput() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.onWindowFocusChanged(/* gainFocus= */ true);
+        verify(mImeAdapterImplJni).requestTextInputStateUpdate(anyLong());
+
+        // Subsequent updateState for TextInputType.NONE does not restart input.
+        updateTextInputState(adapter, TextInputType.NONE, /* nodeId= */ 0);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+    }
+
     @Test
     @EnableFeatures(ContentFeatureList.ANDROID_CAPTURE_KEY_EVENTS)
     public void testSendCompositionToNative() {

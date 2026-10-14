@@ -1102,12 +1102,18 @@ public class ImeAdapterImpl
     public void onWindowFocusChanged(boolean gainFocus) {
         if (DEBUG_LOGS) Log.i(TAG, "onWindowFocusChanged: gainFocus [%b]", gainFocus);
 
-        if (!gainFocus) resetAndHideKeyboard();
-        if (gainFocus
-                && isValid()
-                && ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)) {
-            requestTextInputStateUpdate();
+        if (ContentFeatureMap.isEnabled(
+                ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)) {
+            if (gainFocus) {
+                if (isValid()) {
+                    requestTextInputStateUpdate();
+                }
+            } else {
+                // Due to crbug.com/560321831, we should not hide keyboard when the window loses
+                // focus. This is to prevent issues that the keyboard dialog disappears when users
+                // switch languages.
+                reset();
+            }
         }
 
         if (mInputConnectionFactory != null) {
@@ -1152,16 +1158,22 @@ public class ImeAdapterImpl
         }
     }
 
-    /** Resets IME adapter and hides keyboard. Note that this will also unblock input connection. */
-    @Override
-    public void resetAndHideKeyboard() {
-        if (DEBUG_LOGS) Log.i(TAG, "resetAndHideKeyboard");
+    /** Resets IME adapter. */
+    public void reset() {
+        if (DEBUG_LOGS) Log.i(TAG, "reset");
         mTextInputType = TextInputType.NONE;
         mTextInputFlags = 0;
         mTextInputMode = WebTextInputMode.DEFAULT;
         mTextInputNodeId = 0;
         mRestartInputOnNextStateUpdate = false;
         updateNodeAttributes(/* isEditable= */ false, mNodePassword);
+    }
+
+    /** Resets IME adapter and hides keyboard. Note that this will also unblock input connection. */
+    @Override
+    public void resetAndHideKeyboard() {
+        if (DEBUG_LOGS) Log.i(TAG, "resetAndHideKeyboard");
+        reset();
         // This will trigger unblocking if necessary.
         hideKeyboard();
     }
