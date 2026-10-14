@@ -141,6 +141,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
@@ -993,6 +994,10 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::LeakedPasswordDetails details) {
 #if BUILDFLAG(IS_ANDROID)
+  // Do not show the window-scoped modal dialog for a hidden or occluded tab.
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
@@ -1015,7 +1020,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
        details.credentials.username_value, GetProfile(),
        web_contents()->GetTopLevelNativeWindow(),
        std::make_unique<PasswordCheckupLauncherHelperImpl>(),
-       std::move(metrics_recorder), account))
+       std::move(metrics_recorder), std::move(account)))
       ->ShowDialog();
 #else   // !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

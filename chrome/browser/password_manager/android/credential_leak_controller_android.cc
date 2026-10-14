@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
@@ -39,7 +40,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
       leak_dialog_traits_(CreateDialogTraits(leak_type_)),
       checkup_launcher_(std::move(checkup_launcher)),
       metrics_recorder_(std::move(metrics_recorder)),
-      account_email_(account_email) {}
+      account_email_(std::move(account_email)) {}
 
 CredentialLeakControllerAndroid::~CredentialLeakControllerAndroid() = default;
 
