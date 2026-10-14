@@ -752,7 +752,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
   }
   [self removeItemInternal:item];
-  _latestTabSelectionMapping.erase(item.identifier);
 }
 
 // Internal helper to remove an item from the collection and session without
@@ -767,6 +766,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   // Cancels the page context extraction of the item's tab, if in flight.
   _pageContextWrappers.erase(item.identifier);
+  _latestTabSelectionMapping.erase(item.identifier);
 
   [self.debugLogger
       logEvent:[ComposeboxDebuggerEvent
@@ -1362,18 +1362,15 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
-  web::WebStateID webStateID = _latestTabSelectionMapping[identifier];
-  if (!webStateID.valid()) {
+  auto it = _latestTabSelectionMapping.find(identifier);
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
+  if (it == _latestTabSelectionMapping.end() || !it->second.valid() || !item) {
     [self handleFailedAttachment:identifier];
     return;
   }
 
   auto serverToken = _contextualSearchSession->CreateContextToken();
-
-  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
-  if (item) {
-    item.serverToken = serverToken;
-  }
+  item.serverToken = serverToken;
 
   if (_contextualSearchSession) {
     _contextualSearchSession->StartTabContextUploadFlow(
@@ -1505,7 +1502,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   for (ComposeboxInputItem* item in items) {
     if (item.isAutoAdded) {
       [self removeItemInternal:item];
-      _latestTabSelectionMapping.erase(item.identifier);
     }
   }
 }
@@ -2515,6 +2511,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   for (ComposeboxInputItem* item in invalidatedItems) {
     _pageContextWrappers.erase(item.identifier);
+    _latestTabSelectionMapping.erase(item.identifier);
     if (_contextualSearchSession && !item.serverToken.is_empty()) {
       _contextualSearchSession->DeleteFile(item.serverToken);
     }

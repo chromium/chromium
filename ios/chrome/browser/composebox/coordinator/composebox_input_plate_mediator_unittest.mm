@@ -2162,4 +2162,54 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE(IsPageContextWrapperAlive(0));
 }
 
+// Tests that a mode change invalidating a tab item prevents a late page
+// context response (e.g. from cached APC retrieval) from uploading the
+// invalidated tab.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ModeChangeInvalidatingTabPreventsLatePageContextUpload) {
+  StubPageContextExtraction();
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(web_state);
+  [mediator attachSelectedTabsWithWebStateIDs:{web_state->GetUniqueIdentifier()}
+                            cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* tab_item = consumer.items.firstObject;
+  base::UnguessableToken tab_item_identifier = tab_item.identifier;
+
+  [mediator inputStateManager:nil
+                didChangeMode:ComposeboxMode::kImageGeneration
+       invalidatedAttachments:@[ tab_item ]];
+  ASSERT_EQ(consumer.items.count, 0U);
+
+  EXPECT_CALL(*raw_mock_session, CreateContextToken()).Times(0);
+  EXPECT_CALL(*raw_mock_session,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .Times(0);
+  [mediator
+      handlePageContextResponse:std::make_unique<
+                                    optimization_guide::proto::PageContext>()
+                       webState:web_state
+                     identifier:tab_item_identifier];
+}
+
 }  // namespace
