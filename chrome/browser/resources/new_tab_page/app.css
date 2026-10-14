@@ -63,15 +63,6 @@
   --ntp-scrim-opacity_: 0.5;
 }
 
-/**
- * Use a larger width if the secondary side can be shown.
- */
-:host([realbox-can-show-secondary-side]) {
-  #rhsContent {
-    --ntp-search-box-width: 746px;
-  }
-}
-
 @container rhsWrapper (min-width: 560px) {
   #rhsContent {
     --ntp-search-box-width: 449px;
@@ -81,6 +72,12 @@
 @container rhsWrapper (min-width: 672px) {
   #rhsContent {
     --ntp-search-box-width: 561px;
+  }
+}
+
+@container rhsWrapper (min-width: 900px) {
+  #rhsContent {
+    --ntp-search-box-width: 746px;
   }
 }
 

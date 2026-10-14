@@ -3744,6 +3744,19 @@ suite('NewTabPageAppTest', () => {
       await recreateApp();
     }
 
+    // Pins the width of #rhsWrapper, then waits for the ResizeObserver to
+    // report and for the resulting re-render.
+    async function setRhsWrapperWidth(width: number) {
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
+      rhsWrapper.style.flex = 'none';
+      rhsWrapper.style.width = `${width}px`;
+      for (let i = 0; i < 2; i++) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      }
+      await microtasksFinished();
+    }
+
     test('LHS is not rendered when feature disabled', async () => {
       await setThreadsRailEnabled(false);
 
@@ -3773,6 +3786,38 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!mostVisited);
       assertEquals($$(app, '#rhsWrapper'), mostVisited.widthContainer);
     });
+
+    test(
+        'realbox secondary side uses the window width when feature disabled',
+        async () => {
+          await setThreadsRailEnabled(false);
+          const windowIsWide = window.matchMedia('(min-width: 900px)').matches;
+
+          // Make the RHS width disagree with the window width.
+          await setRhsWrapperWidth(windowIsWide ? 899 : 900);
+
+          assertEquals(windowIsWide, app.realboxCanShowSecondarySide);
+        });
+
+    test(
+        'realbox secondary side uses the RHS width when feature enabled',
+        async () => {
+          await setThreadsRailEnabled(true);
+          const searchbox = $$<NtpSearchboxElement>(app, '#searchbox');
+          assertTrue(!!searchbox);
+          const rhsContent = $$(app, '#rhsContent');
+          assertTrue(!!rhsContent);
+
+          await setRhsWrapperWidth(900);
+          assertTrue(app.realboxCanShowSecondarySide);
+          assertTrue(searchbox.canShowSecondarySide);
+          assertStyle(rhsContent, '--ntp-search-box-width', '746px');
+
+          await setRhsWrapperWidth(899);
+          assertFalse(app.realboxCanShowSecondarySide);
+          assertFalse(searchbox.canShowSecondarySide);
+          assertStyle(rhsContent, '--ntp-search-box-width', '561px');
+        });
   });
 
   suite('VoiceSearchCoherence', () => {
