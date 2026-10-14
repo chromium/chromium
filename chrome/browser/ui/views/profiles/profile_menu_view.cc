@@ -349,7 +349,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           &profile(), signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
       break;
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
-      chrome::OpenUpdateChromeDialog(&browser());
+      chrome::MaybeUpdateChrome(&browser());
       break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:

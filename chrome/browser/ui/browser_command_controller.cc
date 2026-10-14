@@ -1366,7 +1366,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ShowAboutChrome(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_UPGRADE_DIALOG:
-      OpenUpdateChromeDialog(browser_);
+      MaybeUpdateChrome(browser_);
       break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case IDC_SCHEDULED_RESTART_DIALOG:

@@ -145,10 +145,6 @@ BASE_FEATURE(kDseIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the dialog shown when user feedback is disabled.
 BASE_FEATURE(kFeedbackDisabledDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the feature to remove the last confirmation dialog when relaunching
-// to update Chrome.
-BASE_FEATURE(kFewerUpdateConfirmations, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLegacySearchIntegrityCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

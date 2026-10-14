@@ -4845,7 +4845,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::OpenUpdateChromeDialog(bwi);
+                chrome::MaybeUpdateChrome(bwi);
               },
               bwi))
           .SetActionId(kActionUpgradeDialog)

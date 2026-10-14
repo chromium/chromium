@@ -351,7 +351,7 @@ void ToggleShowAiModeOmniboxButton(BrowserWindowInterface* browser);
 void ToggleShowSearchTools(BrowserWindowInterface* browser);
 void ShowAppMenu(BrowserWindowInterface* browser);
 void ShowAvatarMenu(BrowserWindowInterface* browser);
-void OpenUpdateChromeDialog(BrowserWindowInterface* browser);
+void MaybeUpdateChrome(BrowserWindowInterface* browser);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void OpenScheduledRestartDialog(BrowserWindowInterface* browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
