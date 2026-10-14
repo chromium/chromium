@@ -121,13 +121,17 @@ void TwoClientWebAppsIntegrationTestBase::SyncSignOut(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
+  bool signed_out = false;
   for (int i = 0; i < num_clients(); ++i) {
     if (GetProfile(i) != profile) {
       continue;
     }
     GetClient(i)->SignOutPrimaryAccount();
+    signed_out = true;
   }
-  AwaitWebAppQuiescence();
+  if (signed_out) {
+    AwaitWebAppQuiescence();
+  }
 #endif
 }
 
@@ -206,7 +210,6 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
               })));
     } else {
       ASSERT_TRUE(GetClient(i)->SignInNoWaitForCompletion());
-      ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
       ASSERT_TRUE(GetClient(i)->DisableAllSelectableTypes());
 #if BUILDFLAG(IS_CHROMEOS)
       ASSERT_TRUE(GetClient(i)->DisableAllSelectableOsTypes());

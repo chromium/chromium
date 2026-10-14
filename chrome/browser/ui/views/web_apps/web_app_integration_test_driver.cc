@@ -188,6 +188,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -1437,6 +1438,12 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
+  if (open_in_window && browser()->GetTabStripModel()->count() == 1) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
   MaybeNavigateTabbedBrowserInScope(site);
 
   WebAppTestInstallWithOsHooksObserver observer(profile());
@@ -1468,6 +1475,15 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
 void WebAppIntegrationTestDriver::InstallMenuOption(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
+  }
+  // Ensure the tabbed browser retains an about:blank tab when the active tab is
+  // reparented into the new app window, avoiding a costly chrome://newtab/ load
+  // triggered by ReparentWebContentsIntoAppBrowser when tab count is 1.
+  if (browser()->GetTabStripModel()->count() == 1) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
   MaybeNavigateTabbedBrowserInScope(site);
   BrowserAddedWaiter browser_added_waiter;
@@ -1517,6 +1533,15 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
 void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
+  }
+  // Ensure the tabbed browser retains an about:blank tab when the active tab is
+  // reparented into the new app window, avoiding a costly chrome://newtab/ load
+  // triggered by ReparentWebContentsIntoAppBrowser when tab count is 1.
+  if (browser()->GetTabStripModel()->count() == 1) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
 
@@ -4331,6 +4356,10 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   CHECK(executing_action_level_ > 0);
   --executing_action_level_;
+  if (delegate_->IsSyncTest()) {
+    delegate_->AwaitWebAppQuiescence();
+  }
+  FlushShortcutTasks();
 #if BUILDFLAG(IS_MAC)
   std::map<webapps::AppId, size_t> open_browsers_per_app;
   for (auto* profile : GetAllProfiles()) {
@@ -4366,13 +4395,11 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     base::FilePath app_path = GetShortcutPath(
         override_registration_->test_override().chrome_apps_folder(), app_name,
         app_id);
-    WaitForShimToQuitForTesting(app_path, app_id);
+    if (!app_path.empty()) {
+      WaitForShimToQuitForTesting(app_path, app_id);
+    }
   }
 #endif
-  if (delegate_->IsSyncTest()) {
-    delegate_->AwaitWebAppQuiescence();
-  }
-  FlushShortcutTasks();
   if (provider()) {
     provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   }
@@ -4774,7 +4801,10 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
     url_observer.StartWatchingNewWebContents();
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -5117,6 +5147,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kWebAppInstallDialog);
   disabled_features.push_back(
       features::kDesktopPWAsWindowControlsOverlayWithNoToggle);
+  disabled_features.push_back(features::kPreloadTopChromeWebUI);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
