@@ -47,12 +47,17 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
     return notifications_;
   }
 
+  void set_supports_synchronization(bool supports_synchronization) {
+    supports_synchronization_ = supports_synchronization;
+  }
+
   base::WeakPtr<StubNotificationDispatcherMac> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
   std::vector<mac_notifications::mojom::NotificationPtr> notifications_;
+  bool supports_synchronization_ = true;
 
   base::WeakPtrFactory<StubNotificationDispatcherMac> weak_factory_{this};
 };

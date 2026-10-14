@@ -15,11 +15,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
 
@@ -33,6 +35,24 @@ constexpr base::TimeDelta kMaximumServiceRestartTimerDelay = base::Seconds(256);
 // If the service ran for more than this time we will reset the restart delay to
 // |kInitialServiceRestartTimerDelay|.
 constexpr base::TimeDelta kServiceRestartTimerResetDelay = base::Seconds(10);
+
+// Wraps `callback` so that if it is destroyed without being run (e.g. when the
+// `MacNotificationService` Mojo pipe disconnects or is reset), `callback` is
+// posted asynchronously to the current task runner with `default_args` rather
+// than invoked synchronously during Mojo teardown.
+template <typename Signature, typename... Args>
+base::OnceCallback<Signature> WrapCallbackWithAsyncDefaultInvokeIfNotRun(
+    base::OnceCallback<Signature> callback,
+    Args... default_args) {
+  return mojo::WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      std::move(callback),
+      base::BindOnce(
+          [](Args... args, base::OnceCallback<Signature> cb) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(cb), std::move(args)...));
+          },
+          std::move(default_args)...));
+}
 
 }  // namespace
 
@@ -105,7 +125,10 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
       /*origin=*/std::nullopt,
       base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this),
+                     WrapCallbackWithAsyncDefaultInvokeIfNotRun(
+                         std::move(callback), std::set<std::string>(),
+                         /*supports_synchronization=*/false)));
 }
 
 void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileIdAndOrigin(
@@ -124,7 +147,10 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileIdAndOrigin(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
       origin,
       base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this),
+                     WrapCallbackWithAsyncDefaultInvokeIfNotRun(
+                         std::move(callback), std::set<std::string>(),
+                         /*supports_synchronization=*/false)));
 }
 
 void NotificationDispatcherMojo::GetAllDisplayedNotifications(
@@ -139,7 +165,10 @@ void NotificationDispatcherMojo::GetAllDisplayedNotifications(
       /*profile=*/nullptr, /*origin=*/std::nullopt,
       base::BindOnce(
           &NotificationDispatcherMojo::DispatchGetAllNotificationsReply,
-          base::Unretained(this), std::move(callback)));
+          base::Unretained(this),
+          WrapCallbackWithAsyncDefaultInvokeIfNotRun(
+              std::move(callback),
+              base::flat_set<MacNotificationIdentifier>())));
 }
 
 void NotificationDispatcherMojo::OnNotificationAction(

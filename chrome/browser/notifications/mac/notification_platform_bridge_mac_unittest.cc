@@ -691,6 +691,18 @@ TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
     EXPECT_TRUE(notifications.empty());
     EXPECT_TRUE(supports_synchronization);
   }
+  {
+    // If one dispatcher arm does not support synchronization (e.g. a dead app
+    // shim service), GetDisplayedForOrigin should still return live arms'
+    // notifications while reporting supports_synchronization = false.
+    alert_dispatcher()->set_supports_synchronization(false);
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayedForOrigin(profile(), GURL("https://gmail.com"),
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_EQ(1u, notifications.size());
+    EXPECT_FALSE(supports_synchronization);
+  }
 }
 
 TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,

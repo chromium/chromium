@@ -16,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -121,6 +122,11 @@ class FakeMacNotificationProviderFactory
     service_receiver_.reset();
     provider_receiver_.reset();
     on_disconnect_.Run();
+  }
+
+  void DisconnectServiceOnly() {
+    handler_remote_.reset();
+    service_receiver_.reset();
   }
 
   bool is_service_connected() { return service_receiver_.is_bound(); }
@@ -436,4 +442,78 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
   EmulateOkayToTerminate(/*can_terminate=*/false);
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoTest,
+       GetDisplayedNotificationsCallbacksRunOnServiceDisconnect) {
+  DisplayNotificationSync();
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  base::test::TestFuture<std::set<std::string>, bool> profile_future;
+  base::test::TestFuture<std::set<std::string>, bool> origin_future;
+  base::test::TestFuture<base::flat_set<MacNotificationIdentifier>> all_future;
+
+  notification_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, profile_future.GetCallback());
+  notification_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(
+      kProfileId, /*incognito=*/false, GURL("https://example.com"),
+      origin_future.GetCallback());
+  notification_dispatcher_->GetAllDisplayedNotifications(
+      all_future.GetCallback());
+
+  // Disconnect the service pipe before it replies to the in-flight requests.
+  provider_factory_->Disconnect();
+
+  EXPECT_THAT(profile_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(profile_future.Get<1>());
+  EXPECT_THAT(origin_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(origin_future.Get<1>());
+  EXPECT_THAT(all_future.Get(), testing::IsEmpty());
+}
+
+TEST_F(NotificationDispatcherMojoTest,
+       GetDisplayedNotificationsCallbacksRunOnServiceOnlyDisconnect) {
+  DisplayNotificationSync();
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  base::test::TestFuture<std::set<std::string>, bool> profile_future;
+  base::test::TestFuture<std::set<std::string>, bool> origin_future;
+  base::test::TestFuture<base::flat_set<MacNotificationIdentifier>> all_future;
+
+  notification_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, profile_future.GetCallback());
+  notification_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(
+      kProfileId, /*incognito=*/false, GURL("https://example.com"),
+      origin_future.GetCallback());
+  notification_dispatcher_->GetAllDisplayedNotifications(
+      all_future.GetCallback());
+
+  // Disconnect only the service receiver while keeping the provider alive.
+  provider_factory_->DisconnectServiceOnly();
+
+  EXPECT_THAT(profile_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(profile_future.Get<1>());
+  EXPECT_THAT(origin_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(origin_future.Get<1>());
+  EXPECT_THAT(all_future.Get(), testing::IsEmpty());
+
+  profile_future.Clear();
+  origin_future.Clear();
+  all_future.Clear();
+
+  // Subsequent GetDisplayed* calls while service_ is disconnected (or before a
+  // restart completes) should also invoke their callbacks rather than hanging.
+  notification_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, profile_future.GetCallback());
+  notification_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(
+      kProfileId, /*incognito=*/false, GURL("https://example.com"),
+      origin_future.GetCallback());
+  notification_dispatcher_->GetAllDisplayedNotifications(
+      all_future.GetCallback());
+
+  EXPECT_THAT(profile_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(profile_future.Get<1>());
+  EXPECT_THAT(origin_future.Get<0>(), testing::IsEmpty());
+  EXPECT_FALSE(origin_future.Get<1>());
+  EXPECT_THAT(all_future.Get(), testing::IsEmpty());
 }

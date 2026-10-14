@@ -68,8 +68,7 @@ void StubNotificationDispatcherMac::GetDisplayedNotificationsForProfileId(
       notifications.insert(notification_id);
     }
   }
-  std::move(callback).Run(std::move(notifications),
-                          /*supports_synchronization=*/true);
+  std::move(callback).Run(std::move(notifications), supports_synchronization_);
 }
 
 void StubNotificationDispatcherMac::
@@ -87,8 +86,7 @@ void StubNotificationDispatcherMac::
       notifications.insert(notification_id);
     }
   }
-  std::move(callback).Run(std::move(notifications),
-                          /*supports_synchronization=*/true);
+  std::move(callback).Run(std::move(notifications), supports_synchronization_);
 }
 
 void StubNotificationDispatcherMac::GetAllDisplayedNotifications(
