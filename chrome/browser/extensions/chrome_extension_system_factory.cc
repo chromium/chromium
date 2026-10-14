@@ -20,6 +20,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_task_queue_factory.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -80,6 +81,10 @@ ChromeExtensionSystemSharedFactory::ChromeExtensionSystemSharedFactory()
   // ExtensionService (owned by the ExtensionSystem) depends on
   // ExtensionHostRegistry.
   DependsOn(ExtensionHostRegistry::GetFactory());
+  // ExtensionService must shut down ExtensionRegistrar before
+  // ServiceWorkerTaskQueue is shut down, so that no extensions get activated
+  // afterwards.
+  DependsOn(ServiceWorkerTaskQueueFactory::GetInstance());
 }
 
 ChromeExtensionSystemSharedFactory::~ChromeExtensionSystemSharedFactory() =

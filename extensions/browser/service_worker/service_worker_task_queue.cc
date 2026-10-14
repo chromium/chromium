@@ -393,9 +393,8 @@ void ServiceWorkerTaskQueue::DispatchTasksImmediately(
 void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/362791965): Enable this check once it is no longer possible
-  // to activate an extension when the browser context is shutting down.
-  // CHECK(!browser_context_shutting_down_);
+  // Extensions must not be activated once the browser context is shutting down.
+  CHECK(!browser_context_shutting_down_, base::NotFatalUntil::M160);
 
   const ExtensionId extension_id = extension->id();
   base::UnguessableToken activation_token = base::UnguessableToken::Create();

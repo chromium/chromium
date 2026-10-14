@@ -545,7 +545,8 @@ class ServiceWorkerTaskQueue
                        bool success);
 
   // Whether the task queue (as a keyed service) has been informed that the
-  // browser context is shutting down. Used for metrics purposes.
+  // browser context is shutting down. Used for metrics purposes and to check
+  // that extensions are not activated during shutdown.
   bool browser_context_shutting_down_ = false;
 
   std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
