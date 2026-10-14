@@ -26,6 +26,8 @@ struct VerticalTabStripState {
   bool collapsed = false;
   // The width of the vertical tab strip when it is not collapsed.
   int uncollapsed_width = kVerticalTabStripDefaultUncollapsedWidth;
+
+  bool operator==(const VerticalTabStripState&) const = default;
 };
 
 }  // namespace tabs

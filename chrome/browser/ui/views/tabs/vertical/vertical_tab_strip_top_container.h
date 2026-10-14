@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 
 #include "base/callback_list.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -87,6 +88,13 @@ class VerticalTabStripTopContainer : public views::View,
   void SetToolbarHeightForLayout(int toolbar_height);
   void SetCaptionButtonWidthForLayout(int caption_button_width);
   void SetIsExitingExpandOnHoverForLayout(bool is_exiting_expand_on_hover);
+  void SetStateOverride(
+      std::optional<tabs::VerticalTabStripState> state_override);
+  void ClearStateOverride() { SetStateOverride(std::nullopt); }
+  std::optional<tabs::VerticalTabStripState> state_override_for_testing()
+      const {
+    return state_override_;
+  }
   bool WillWrapDueToOverflow(int available_width) const;
 
  private:
@@ -99,6 +107,14 @@ class VerticalTabStripTopContainer : public views::View,
   // Returns the minimum height required for the top container to display all
   // its buttons at their baseline positions.
   int GetBaselineMinHeight() const;
+
+  // Returns whether the tab strip supports hosting the embedded organizer
+  // panel, taking into account any active state overrides during resize.
+  bool SupportsEmbeddedOrganizerPanel() const;
+
+  // Returns the effective vertical tab strip state, taking into account any
+  // active state overrides.
+  tabs::VerticalTabStripState GetCurrentState() const;
 
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
@@ -130,6 +146,10 @@ class VerticalTabStripTopContainer : public views::View,
   // the expand-on-hover animation. This is because the final state needs to be
   // within the wrapped state bounds when leading caption buttons are present.
   bool is_exiting_expand_on_hover_ = false;
+
+  // When set, overrides the state controller's state for determining control
+  // visibility and layout (e.g. during a drag resize operation).
+  std::optional<tabs::VerticalTabStripState> state_override_;
 
   // This is updated during layout calculation and then applied during layout.
   mutable views::LayoutOrientation combo_button_orientation_ =

@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
@@ -119,7 +119,9 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
           ? host_size.width()
           : parent()->GetAvailableSize(this).width().value_or(0);
 
-  const bool is_collapsed = state_controller_->IsCollapsed();
+  const tabs::VerticalTabStripState state = GetCurrentState();
+  const bool is_collapsed = state.collapsed;
+  const int uncollapsed_width = state.uncollapsed_width;
   const bool is_expand_on_hover =
       state_controller_ && state_controller_->IsExpandOnHoverEnabled();
   const bool is_segmented_expand_on_hover =
@@ -277,7 +279,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
 
     const int expected_uncollapsed_width =
-        state_controller_->GetUncollapsedWidth() -
+        uncollapsed_width -
         2 * GetLayoutConstant(
                 LayoutConstant::kVerticalTabStripHorizontalPadding);
     const int layout_width =
@@ -462,6 +464,16 @@ void VerticalTabStripTopContainer::SetIsExitingExpandOnHoverForLayout(
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
+void VerticalTabStripTopContainer::SetStateOverride(
+    std::optional<tabs::VerticalTabStripState> state_override) {
+  if (state_override_ == state_override) {
+    return;
+  }
+  state_override_ = state_override;
+  UpdateControlsVisibility();
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
 bool VerticalTabStripTopContainer::WillWrapDueToOverflow(
     int available_width) const {
   return caption_button_width_ > 0 &&
@@ -519,37 +531,44 @@ int VerticalTabStripTopContainer::GetBaselineMinHeight() const {
   return std::max(toolbar_height_, min_height);
 }
 
+tabs::VerticalTabStripState VerticalTabStripTopContainer::GetCurrentState()
+    const {
+  if (state_override_.has_value()) {
+    return *state_override_;
+  }
+  if (state_controller_) {
+    return state_controller_->GetState();
+  }
+  return tabs::VerticalTabStripState{};
+}
+
+bool VerticalTabStripTopContainer::SupportsEmbeddedOrganizerPanel() const {
+  if (!state_controller_ || !state_controller_->ShouldDisplayVerticalTabs()) {
+    return false;
+  }
+  const tabs::VerticalTabStripState state = GetCurrentState();
+  const bool width_supports_panel =
+      state.uncollapsed_width > organizer_panel::kOrganizerPanelMinWidth -
+                                    organizer_panel::kOrganizerPanelMinOverlap;
+  if (state.collapsed) {
+    return state_controller_->IsExpandOnHoverEnabled() && width_supports_panel;
+  }
+  return width_supports_panel;
+}
+
 void VerticalTabStripTopContainer::UpdateControlsVisibility() {
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   const bool is_tab_search_pinned =
       prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
-  const bool embedded_supported =
-      DoesVerticalTabStripSupportEmbeddedOrganizerPanel(*browser_);
   const bool is_segmentation_eligible =
-      organizer_panel::IsOrganizerPanelFeatureEnabled() && embedded_supported &&
-      is_tab_search_pinned;
+      organizer_panel::IsOrganizerPanelFeatureEnabled() &&
+      SupportsEmbeddedOrganizerPanel() && is_tab_search_pinned;
 
-  if (is_segmentation_eligible) {
-    const bool is_collapsed =
-        state_controller_ && state_controller_->IsCollapsed();
-    const bool is_expand_on_hover =
-        state_controller_ && state_controller_->IsExpandOnHoverEnabled();
-    const bool should_show_segmented = !is_collapsed || is_expand_on_hover;
-
-    if (segmented_control_) {
-      segmented_control_->SetVisible(should_show_segmented);
-    }
-    if (combo_button_) {
-      combo_button_->SetVisible(!should_show_segmented);
-    }
-  } else {
-    // Segmentation is ineligible: hide segmented control and show combo button.
-    if (segmented_control_) {
-      segmented_control_->SetVisible(false);
-    }
-    if (combo_button_) {
-      combo_button_->SetVisible(true);
-    }
+  if (segmented_control_) {
+    segmented_control_->SetVisible(is_segmentation_eligible);
+  }
+  if (combo_button_) {
+    combo_button_->SetVisible(!is_segmentation_eligible);
   }
 }
 
