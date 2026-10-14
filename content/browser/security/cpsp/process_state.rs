@@ -76,6 +76,10 @@ pub(crate) mod ffi {
         fn complete_pending_state_removal(child_id: ChildProcessId);
 
         // Per-child process state methods.
+        fn lock_process(child_id: ChildProcessId, process_lock: &CppProcessLock);
+        fn set_process_is_used(child_id: ChildProcessId);
+        fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<CppProcessLock>;
+
         fn grant_web_ui_bindings(child_id: ChildProcessId);
         fn has_web_ui_bindings(child_id: ChildProcessId) -> bool;
 
@@ -83,11 +87,6 @@ pub(crate) mod ffi {
         fn grant_send_midi_sysex_message(child_id: ChildProcessId);
         fn can_send_midi_message(child_id: ChildProcessId) -> bool;
         fn can_send_midi_sysex_message(child_id: ChildProcessId) -> bool;
-
-        // Process lock methods.
-        fn lock_process(child_id: ChildProcessId, process_lock: &CppProcessLock);
-        fn set_process_is_used(child_id: ChildProcessId);
-        fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<CppProcessLock>;
     }
 }
 
@@ -118,6 +117,29 @@ fn prepare_to_remove_state(child_id: ChildProcessId) {
 fn complete_pending_state_removal(child_id: ChildProcessId) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.process_states.complete_pending_state_removal(child_id);
+}
+
+fn lock_process(child_id: ChildProcessId, process_lock: &ffi::CppProcessLock) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
+    let cloned_lock = ffi::clone(process_lock);
+    let lock_to_set = AssignableProcessLock::lift(cloned_lock);
+    state.set_process_lock(lock_to_set);
+}
+
+fn set_process_is_used(child_id: ChildProcessId) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
+    state.set_process_is_used();
+}
+
+fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<ffi::CppProcessLock> {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_for_query(&child_id) {
+        ffi::clone(state.process_lock())
+    } else {
+        ffi::create_invalid()
+    }
 }
 
 fn grant_web_ui_bindings(child_id: ChildProcessId) {
@@ -176,29 +198,6 @@ fn can_send_midi_sysex_message(child_id: ChildProcessId) -> bool {
     cpsp.process_states
         .get_for_query(&child_id)
         .is_some_and(|state| state.can_send_midi_sysex_message())
-}
-
-fn lock_process(child_id: ChildProcessId, process_lock: &ffi::CppProcessLock) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
-    let cloned_lock = ffi::clone(process_lock);
-    let lock_to_set = AssignableProcessLock::lift(cloned_lock);
-    state.set_process_lock(lock_to_set);
-}
-
-fn set_process_is_used(child_id: ChildProcessId) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
-    state.set_process_is_used();
-}
-
-fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<ffi::CppProcessLock> {
-    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    if let Some(state) = cpsp.process_states.get_for_query(&child_id) {
-        ffi::clone(state.process_lock())
-    } else {
-        ffi::create_invalid()
-    }
 }
 
 /// Data structure that tracks ProcessState for each RenderProcessHost based on
@@ -356,14 +355,14 @@ impl ProcessStateMaps {
 /// ChildProcessSecurityPolicy::Handles exist.
 #[derive(Debug)]
 pub(crate) struct ProcessState {
-    /// Whether a child process can host WebUI pages with bindings.
-    has_web_ui_bindings: bool,
-    /// Determines if a child process can send MIDI messages.
-    midi_permission: MidiPermission,
     /// The typestate-protected ProcessLock for this process. This determines
     /// which documents are allowed to load in a process and which site data the
     /// process is allowed to access, based on the SiteInfo principal.
     process_lock: StatefulProcessLock,
+    /// Whether a child process can host WebUI pages with bindings.
+    has_web_ui_bindings: bool,
+    /// Determines if a child process can send MIDI messages.
+    midi_permission: MidiPermission,
 }
 
 impl ProcessState {
@@ -371,10 +370,14 @@ impl ProcessState {
     /// ProcessStateMaps.
     fn new() -> Self {
         ProcessState {
+            process_lock: StatefulProcessLock::default(),
             has_web_ui_bindings: false,
             midi_permission: MidiPermission::CannotSendMidi,
-            process_lock: StatefulProcessLock::default(),
         }
+    }
+
+    fn process_lock(&self) -> &ffi::CppProcessLock {
+        self.process_lock.as_ffi()
     }
 
     fn has_web_ui_bindings(&self) -> bool {
@@ -388,10 +391,6 @@ impl ProcessState {
 
     fn can_send_midi_sysex_message(&self) -> bool {
         self.midi_permission == MidiPermission::CanSendMidiSysEx
-    }
-
-    pub(crate) fn process_lock(&self) -> &ffi::CppProcessLock {
-        self.process_lock.as_ffi()
     }
 }
 
@@ -420,6 +419,19 @@ impl MutableProcessState {
         self.0
     }
 
+    // TODO(crbug.com/568880876): Mark the process as used when it is locked to
+    // a site, so that a `Locked` lock is never unused. This must match the C++
+    // `ProcessState::SetProcessLock()`.
+    fn set_process_lock(&mut self, lock_to_set: AssignableProcessLock) {
+        let old_lock = std::mem::take(&mut self.0.process_lock);
+        self.0.process_lock = old_lock.transition_to_state(lock_to_set).into();
+    }
+
+    fn set_process_is_used(&mut self) {
+        let old_lock = std::mem::take(&mut self.0.process_lock);
+        self.0.process_lock = old_lock.set_is_used();
+    }
+
     fn grant_web_ui_bindings(&mut self) {
         self.0.has_web_ui_bindings = true;
     }
@@ -435,19 +447,6 @@ impl MutableProcessState {
 
     fn grant_send_midi_sysex_message(&mut self) {
         self.0.midi_permission = MidiPermission::CanSendMidiSysEx;
-    }
-
-    // TODO(crbug.com/568880876): Mark the process as used when it is locked to
-    // a site, so that a `Locked` lock is never unused. This must match the C++
-    // `ProcessState::SetProcessLock()`.
-    pub(crate) fn set_process_lock(&mut self, lock_to_set: AssignableProcessLock) {
-        let old_lock = std::mem::take(&mut self.0.process_lock);
-        self.0.process_lock = old_lock.transition_to_state(lock_to_set).into();
-    }
-
-    pub(crate) fn set_process_is_used(&mut self) {
-        let old_lock = std::mem::take(&mut self.0.process_lock);
-        self.0.process_lock = old_lock.set_is_used();
     }
 }
 

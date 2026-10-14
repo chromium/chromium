@@ -24,7 +24,8 @@ use std::marker::PhantomData;
 //    that does not require a dedicated site lock (`AllowsAnySite()` is true),
 //    and the process has not yet been used to render content. It can later
 //    transition to `Unlocked` (once used) or be upgraded to `Locked` (if later
-//    restricted to a specific site before rendering content).
+//    restricted to a specific site before rendering content). Similarly to
+//    `Invalid`, no access should be granted in this state.
 // 3. `Unlocked`: A terminal state where `AllowsAnySite()` is true and the
 //    process has been used to render content (e.g., default SiteInstanceGroups
 //    on Android). Because it has already hosted content, it can no longer be
@@ -49,13 +50,15 @@ use std::marker::PhantomData;
 //   State transitions consume `self` by value to enforce valid transitions.
 // - `AssignableProcessLock`: An enum of the states a lock can be set to
 //   (`NotYetAssigned`, `Locked`). Used as the input to `set_process_lock()`,
+//   Excludes `Unlocked`, which is only currently reachable via `set_is_used`.
 //   constructed from C++ via `AssignableProcessLock::lift()`.
 // - `StatefulProcessLock`: An enum encompassing all four states (including
 //   `Invalid`), stored within `ProcessState` to track a process's current lock.
 //
 // ProcessLock is currently defined in terms of a single SiteInfo with a process
 // lock URL, but it could be possible to define it in terms of multiple
-// SiteInfos that are compatible with each other.
+// SiteInfos that are compatible with each other. Such a change would not affect
+// the typestate pattern defined here.
 
 // SAFETY: `CppProcessLock` does not utilize shared or thread-bound data, so
 // *moving* it between threads is safe. Note that `CppProcessLock` is explicitly
@@ -111,8 +114,8 @@ pub struct Unlocked;
 /// state, no further transitions are allowed.
 pub struct Locked;
 
-/// A type-safe wrapper around a C++ ProcessLock that uses typestates to
-/// represent the lock's state.
+/// A zero-cost type-safe wrapper around a C++ ProcessLock that uses typestates
+/// to represent the lock's state.
 pub struct ProcessLock<S: ProcessLockState> {
     cpp_lock: UniquePtr<ffi::CppProcessLock>,
     _phantom: PhantomData<S>,
@@ -128,6 +131,8 @@ impl<S: ProcessLockState> ProcessLock<S> {
     }
 
     fn mark_used(&mut self) {
+        // Cxx requires pinning mutable references when passing them over FFI,
+        // to prevent corruption from Rust move operations.
         ffi::set_is_used(self.cpp_lock.pin_mut());
     }
 }
