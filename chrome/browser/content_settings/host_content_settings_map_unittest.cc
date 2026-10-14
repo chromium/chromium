@@ -2947,6 +2947,43 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
   ASSERT_EQ(1u, settings.size());
 }
 
+TEST_P(HostContentSettingsMapActiveExpirationTest, RecordsRevokedSettingType) {
+  constexpr char kHistogram[] =
+      "ContentSettings.ActiveExpiry.RevokedSettingType";
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  base::HistogramTester t;
+
+  const ContentSettingsType type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  const GURL url1("https://example.com");
+  const GURL url2("https://other_site.example");
+
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Seconds(100));
+  map->SetContentSettingDefaultScope(url1, url1, type, CONTENT_SETTING_ALLOW,
+                                     constraints);
+  map->SetContentSettingDefaultScope(url2, url2, type, CONTENT_SETTING_ALLOW,
+                                     constraints);
+
+  // Nothing has expired yet, so nothing is recorded.
+  RunExpirationMechanismIfFeatureEnabled(map, type);
+  t.ExpectTotalCount(kHistogram, 0);
+
+  // Once the grants are about to expire, the enforcement timer fires and
+  // revokes both of them, recording one sample each.
+  FastForwardTime(base::Seconds(101));
+  EXPECT_EQ(CONTENT_SETTING_ASK, map->GetContentSetting(url1, url1, type));
+  EXPECT_EQ(CONTENT_SETTING_ASK, map->GetContentSetting(url2, url2, type));
+  if (GetParam()) {
+    t.ExpectUniqueSample(
+        kHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(type), 2);
+  } else {
+    t.ExpectTotalCount(kHistogram, 0);
+  }
+}
+
 TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
   const ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
   const GURL url1("https://example1.com");

@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="ContentSettings.ActiveExpiry.RevokedSettingType"
+    enum="ContentType" expires_after="2027-04-14">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the content setting type of each content setting exception that is
+    actively revoked by HostContentSettingsMap because it is (nearly) expired.
+    One sample is emitted per revoked exception. Only recorded when the
+    ActiveContentSettingExpiry feature is enabled, and only for types that
+    support active expiry.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
     expires_after="2027-02-14">
   <owner>sisidovski@chromium.org</owner>
