@@ -5,15 +5,12 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -22,15 +19,12 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -51,6 +45,7 @@ namespace {
 
 using base::test::TestFuture;
 
+#if !BUILDFLAG(IS_LINUX)
 // Waits until the specified browser window becomes inactive.
 void WaitForBrowserToBecomeInactive(BrowserWindowInterface* browser) {
   if (!browser->IsActive()) {
@@ -65,6 +60,7 @@ void WaitForBrowserToBecomeInactive(BrowserWindowInterface* browser) {
   }
   EXPECT_TRUE(inactive_future.Wait());
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
  public:
@@ -88,10 +84,6 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
         SendTabToSelfClientServiceFactory::GetForProfile(
             browser()->GetProfile())
             ->GetReceivingUiHandler());
-  }
-
-  SendTabToSelfToolbarBubbleController* bubble_controller() {
-    return SendTabToSelfToolbarBubbleController::From(browser());
   }
 
  private:
@@ -124,147 +116,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   EXPECT_EQ(app_url, opened_contents->GetURL());
 }
 
-// Test suite for tests that expect the receiving bubble UI to be shown.
-// These tests must run with SendTabToSelfAutoOpen disabled, as that feature
-// automatically opens received tabs in the foreground instead of showing the
-// bubble.
-class SendTabToSelfToolbarIconControllerDisabledAutoOpenTest
-    : public SendTabToSelfToolbarIconControllerTest {
- public:
-  SendTabToSelfToolbarIconControllerDisabledAutoOpenTest() {
-    feature_list_.InitAndDisableFeature(kSendTabToSelfAutoOpen);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       DisplayNewEntry) {
-  ASSERT_TRUE(browser()->IsActive());
-
-  SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b", PageContext(),
-                           NavigationHistory());
-
-  controller()->DisplayNewEntries({&entry});
-  EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
-}
-
-// TODO(crbug.com/529823129): Re-enable this test on ChromeOS and Linux.
-// This test cannot work on Wayland because the platform does not allow clients
-// to position top level windows, activate them, and set focus.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_StorePendingNewEntryFromIncognitoBrowser \
-  DISABLED_StorePendingNewEntryFromIncognitoBrowser
-#else
-#define MAYBE_StorePendingNewEntryFromIncognitoBrowser \
-  StorePendingNewEntryFromIncognitoBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       MAYBE_StorePendingNewEntryFromIncognitoBrowser) {
-  ASSERT_TRUE(browser()->IsActive());
-
-  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
-  WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
-  WaitForBrowserToBecomeInactive(browser());
-
-  SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b", PageContext(),
-                           NavigationHistory());
-
-  EXPECT_FALSE(browser()->IsActive());
-  controller()->DisplayNewEntries({&entry});
-  EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
-
-  browser_view()->Activate();
-  WaitUntilBrowserBecomeActiveOrLastActive(browser());
-  EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
-}
-
-// TODO(crbug.com/529823129): Re-enable this test on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_StorePendingNewEntryFromWebApp \
-  DISABLED_StorePendingNewEntryFromWebApp
-#else
-#define MAYBE_StorePendingNewEntryFromWebApp StorePendingNewEntryFromWebApp
-#endif
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       MAYBE_StorePendingNewEntryFromWebApp) {
-#if BUILDFLAG(IS_OZONE)
-  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Wayland doesn't support changing window activation "
-                    "programmatically";
-  }
-#endif
-  ASSERT_TRUE(browser()->IsActive());
-  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://example.org/"));
-  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
-                                                       std::move(web_app_info));
-  BrowserWindowInterface* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
-  BrowserView::GetBrowserViewForBrowser(app_browser)->Activate();
-  WaitUntilBrowserBecomeActiveOrLastActive(app_browser);
-  WaitForBrowserToBecomeInactive(browser());
-
-  SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b", PageContext(),
-                           NavigationHistory());
-
-  EXPECT_FALSE(browser()->IsActive());
-  controller()->DisplayNewEntries({&entry});
-  EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
-
-  browser_view()->Activate();
-  WaitUntilBrowserBecomeActiveOrLastActive(browser());
-  EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       DoNotReplaceExistingEntry) {
-  controller()->set_ignore_active_for_testing(true);
-  SendTabToSelfEntry existing_entry(
-      "a", GURL("https://www.example-a.com"), "a site", base::Time(),
-      "device a", "device b", PageContext(), NavigationHistory());
-  SendTabToSelfEntry new_entry("b", GURL("https://www.example-b.com"), "b site",
-                               base::Time(), "device a", "device b",
-                               PageContext(), NavigationHistory());
-
-  controller()->DisplayNewEntries({&existing_entry});
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return bubble_controller()->IsBubbleShowing(); }));
-  EXPECT_EQ(existing_entry.GetGUID(),
-            bubble_controller()->bubble()->GetGuidForTesting());
-
-  // For some reason, displaying the initial bubble seems to deactivate the
-  // browser
-  browser_view()->Activate();
-  WaitUntilBrowserBecomeActiveOrLastActive(browser());
-
-  controller()->DisplayNewEntries({&new_entry});
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return bubble_controller()->IsBubbleShowing() &&
-           bubble_controller()->bubble()->GetGuidForTesting() ==
-               existing_entry.GetGUID();
-  }));
-  EXPECT_EQ(existing_entry.GetGUID(),
-            bubble_controller()->bubble()->GetGuidForTesting());
-
-  bubble_controller()->HideBubble();
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return bubble_controller()->IsBubbleShowing() &&
-           bubble_controller()->bubble()->GetGuidForTesting() ==
-               new_entry.GetGUID();
-  }));
-  EXPECT_EQ(new_entry.GetGUID(),
-            bubble_controller()->bubble()->GetGuidForTesting());
-  bubble_controller()->HideBubble();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&] { return !bubble_controller()->IsBubbleShowing(); }));
-}
-
-class SendTabToSelfToolbarIconControllerAutoOpenTest
+class SendTabToSelfAutoOpenBrowserTest
     : public SendTabToSelfToolbarIconControllerTest {
  public:
   void SetUpBrowserContextKeyedServices(
@@ -281,12 +133,9 @@ class SendTabToSelfToolbarIconControllerAutoOpenTest
                SendTabToSelfSyncServiceFactory::GetForProfile(profile))
         ->GetFakeSendTabToSelfModel();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest,
                        AutoOpenNewEntriesInForegroundIfActive) {
   ASSERT_TRUE(browser()->IsActive());
 
@@ -314,7 +163,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
                                   .shared_time = now + base::Seconds(1)}});
   const SendTabToSelfEntry* entry_1 = entries[0];
 
-  EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
   EXPECT_EQ(original_tab_count + 2, browser()->GetTabStripModel()->count());
   // The new tabs are opened in the foreground, with the first incoming tab
   // (index 1) being the active one.
@@ -347,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
 #if !BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest,
                        AutoOpenPendingEntriesAsBackgroundTabsOnActivation) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -400,8 +248,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
   browser_view()->Activate();
   WaitUntilBrowserBecomeActiveOrLastActive(browser());
 
-  EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
-
   EXPECT_EQ(original_tab_count + 2, browser()->GetTabStripModel()->count());
   // The new tabs are opened in the background (indices 1 and 2), and the active
   // index remains 0.
@@ -436,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    SendTabToSelfAutoOpenBrowserTest,
     ToastActionButtonSwitchesToLatestTabsOpenedInBackground) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -508,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test covers an edge case scenario where a previously opened tab is
 // closed before clicking the toast action button.
 IN_PROC_BROWSER_TEST_F(
-    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    SendTabToSelfAutoOpenBrowserTest,
     ToastActionButtonSwitchesToCorrectTabIfPreviousOneIsClosed) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -591,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test covers an edge case scenario where the first of the newly opened
 // tabs is closed before clicking the toast action button.
 IN_PROC_BROWSER_TEST_F(
-    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    SendTabToSelfAutoOpenBrowserTest,
     ToastActionButtonSwitchesToFirstAvailableNewTabAddedToBackground) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -657,8 +503,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that unopened entries persisted from a previous session are opened
 // automatically on browser startup.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
-                       AutoOpenOnRestart) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest, AutoOpenOnRestart) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Wayland doesn't support changing window activation "

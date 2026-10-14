@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -86,9 +85,6 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
       ToastController::From(browser())->GetToastCloseTimerForTesting()->Stop();
     });
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,

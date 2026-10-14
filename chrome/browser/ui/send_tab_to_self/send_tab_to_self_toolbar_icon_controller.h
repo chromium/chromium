@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
 
-#include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -13,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
@@ -30,8 +28,8 @@ namespace send_tab_to_self {
 
 class SendTabToSelfModel;
 
-// Controller for send tab to self's toolbar button that decides when to show
-// or hide the icon from the toolbar.
+// Controller for send tab to self that handles receiving incoming tabs on
+// Desktop, opening them in browser windows, and notifying the user.
 class SendTabToSelfToolbarIconController
     : public send_tab_to_self::ReceivingUiHandler,
       public BrowserCollectionObserver,
@@ -53,14 +51,8 @@ class SendTabToSelfToolbarIconController
   static SendTabToSelfToolbarIconController* FromReceivingUiHandlerInstance(
       send_tab_to_self::ReceivingUiHandler* ptr);
 
-  // Returns true if the toolbar button can be shown for the provided browser.
+  // Returns true if incoming tabs can be received for the provided browser.
   static bool CanShowOnBrowser(BrowserWindowInterface* bwi);
-
-  // Bypasses the browser activation check in DisplayNewEntries.
-  // Needed because browser activation is flaky in tests, especially on Wayland.
-  void set_ignore_active_for_testing(bool ignore) {
-    ignore_active_for_testing_ = ignore;
-  }
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
@@ -88,24 +80,9 @@ class SendTabToSelfToolbarIconController
   BrowserWindowInterface* GetActiveBrowser();
   SendTabToSelfModel* GetModel();
 
-  void ShowToolbarButton(const SendTabToSelfEntry& entry,
-                         BrowserWindowInterface* browser = nullptr);
-
-  // Callback for GetBubbleAnchorAsync() that shows the bubble once the anchor
-  // is ready.
-  void ShowBubbleWithAnchor(base::WeakPtr<BrowserWindowInterface> browser,
-                            SendTabToSelfEntry entry,
-                            BubbleAnchorResult anchor);
-
   void StartObservingBrowserCollection();
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  // In the case that we cannot immediately display a new entry
-  // (e.g. the active browser is incognito or a different profile), we store it
-  // here and wait until an appropriate browser becomes active to display it.
-  // Only used when kSendTabToSelfAutoOpen is disabled.
-  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
 
   std::vector<base::WeakPtr<tabs::TabInterface>>
       latest_tabs_opened_in_background_;
@@ -115,9 +92,6 @@ class SendTabToSelfToolbarIconController
 
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       model_observation_{this};
-
-  // If true, bypasses the browser activation check in DisplayNewEntries.
-  bool ignore_active_for_testing_ = false;
 
   base::WeakPtrFactory<SendTabToSelfToolbarIconController> weak_ptr_factory_{
       this};

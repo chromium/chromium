@@ -5,12 +5,9 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
 #include "base/i18n/message_formatter.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_activation_tracker.h"
@@ -19,11 +16,6 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -38,12 +30,10 @@ namespace send_tab_to_self {
 SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     Profile* profile)
     : profile_(profile) {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    SendTabToSelfModel* model = GetModel();
-    model_observation_.Observe(model);
-    if (model->IsReady()) {
-      OnModelReady();
-    }
+  SendTabToSelfModel* model = GetModel();
+  model_observation_.Observe(model);
+  if (model->IsReady()) {
+    OnModelReady();
   }
 }
 
@@ -66,51 +56,35 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    // If there is an active browser for this profile, open the tabs
-    // immediately.
-    if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
-      // Open the first tab in the foreground and all the others in the
-      // background.
-      OpenEntryInNewForegroundTab(profile_, *new_entries[0],
-                                  ShareActivatedEntryPoint::kAutoOpened);
-      RecordAutoOpenOutcome(AutoOpenOutcome::kTabOpenedInForeground);
-      for (size_t ii = 1; ii < new_entries.size(); ++ii) {
-        OpenEntryInNewBackgroundTab(profile_, *new_entries[ii]);
-        RecordAutoOpenOutcome(
-            AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
-      }
+  // If there is an active browser for this profile, open the tabs immediately.
+  if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
+    // Open the first tab in the foreground and all the others in the
+    // background.
+    OpenEntryInNewForegroundTab(profile_, *new_entries[0],
+                                ShareActivatedEntryPoint::kAutoOpened);
+    RecordAutoOpenOutcome(AutoOpenOutcome::kTabOpenedInForeground);
+    for (size_t ii = 1; ii < new_entries.size(); ++ii) {
+      OpenEntryInNewBackgroundTab(profile_, *new_entries[ii]);
+      RecordAutoOpenOutcome(
+          AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
+    }
 
-      // Show a toast.
-      ToastParams params(ToastId::kSendTabToSelfTabOpened);
-      params.body_string_override =
-          base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND),
-              static_cast<int>(new_entries.size()),
-              base::UTF8ToUTF16(new_entries[0]->GetDeviceName()));
-      ToastService::From(browser)->toast_controller()->MaybeShowToast(
-          std::move(params));
-    } else {
-      // If no browser is active, record the entries as pending and wait for
-      // a browser window to be activated.
-      for (size_t ii = 0; ii < new_entries.size(); ++ii) {
-        RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
-      }
-      StartObservingBrowserCollection();
-    }
+    // Show a toast.
+    ToastParams params(ToastId::kSendTabToSelfTabOpened);
+    params.body_string_override =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND),
+            static_cast<int>(new_entries.size()),
+            base::UTF8ToUTF16(new_entries[0]->GetDeviceName()));
+    ToastService::From(browser)->toast_controller()->MaybeShowToast(
+        std::move(params));
   } else {
-    // If there is an active browser for this profile, show the toolbar button
-    // immediately.
-    if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
-      // Select semi-randomly the first new entry from the list because there is
-      // no UI to show multiple entries.
-      ShowToolbarButton(*new_entries[0], browser);
-    } else {
-      // Otherwise, store the entry and wait for a browser to be activated.
-      pending_entry_ =
-          std::make_unique<SendTabToSelfEntry>(*new_entries.front());
-      StartObservingBrowserCollection();
+    // If no browser is active, record the entries as pending and wait for
+    // a browser window to be activated.
+    for (size_t ii = 0; ii < new_entries.size(); ++ii) {
+      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
     }
+    StartObservingBrowserCollection();
   }
 }
 
@@ -131,14 +105,6 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
   }
 
   browser_collection_observer_.Reset();
-
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    if (pending_entry_) {
-      ShowToolbarButton(*pending_entry_, browser);
-      pending_entry_.reset();
-    }
-    return;
-  }
 
   SendTabToSelfModel* model = GetModel();
   std::vector<const SendTabToSelfEntry*> unopened_entries =
@@ -178,7 +144,6 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
 }
 
 void SendTabToSelfToolbarIconController::OnModelReady() {
-  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   SendTabToSelfModel* model = GetModel();
   if (!model->GetUnopenedEntriesTargetedToLocalDevice().empty()) {
     if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
@@ -189,49 +154,8 @@ void SendTabToSelfToolbarIconController::OnModelReady() {
   }
 }
 
-void SendTabToSelfToolbarIconController::ShowToolbarButton(
-    const SendTabToSelfEntry& entry,
-    BrowserWindowInterface* browser) {
-  CHECK(!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
-  CHECK(browser);
-  PinnedToolbarActions* controller =
-      BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions();
-  CHECK(controller);
-
-  controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
-  controller->GetBubbleAnchorAsync(
-      kActionSendTabToSelf,
-      base::BindOnce(&SendTabToSelfToolbarIconController::ShowBubbleWithAnchor,
-                     weak_ptr_factory_.GetWeakPtr(), browser->GetWeakPtr(),
-                     entry));
-}
-
-void SendTabToSelfToolbarIconController::ShowBubbleWithAnchor(
-    base::WeakPtr<BrowserWindowInterface> browser,
-    SendTabToSelfEntry entry,
-    BubbleAnchorResult anchor) {
-  if (!anchor.has_value()) {
-    if (!browser) {
-      return;
-    }
-    // PinnedToolbarActions failed to find an anchor. Try ToolbarButtonProvider
-    // as it has fallback anchor logic.
-    auto new_anchor = ToolbarButtonProvider::From(browser.get())
-                          ->GetBubbleAnchor(kActionSendTabToSelf);
-    if (new_anchor.IsNull()) {
-      return;
-    }
-    anchor = new_anchor;
-  }
-  send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser.get())
-      ->ShowBubble(entry, anchor.value());
-  send_tab_to_self::RecordNotificationStatus(
-      send_tab_to_self::NotificationStatus::kShown);
-}
-
 void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(
     BrowserWindowInterface* browser) {
-  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   CHECK(browser);
 
   for (const base::WeakPtr<tabs::TabInterface>& tab :
@@ -256,8 +180,7 @@ void SendTabToSelfToolbarIconController::OnToastClosed() {
 BrowserWindowInterface* SendTabToSelfToolbarIconController::GetActiveBrowser() {
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  return (browser && (browser->IsActive() || ignore_active_for_testing_) &&
-          CanShowOnBrowser(browser))
+  return (browser && browser->IsActive() && CanShowOnBrowser(browser))
              ? browser
              : nullptr;
 }
