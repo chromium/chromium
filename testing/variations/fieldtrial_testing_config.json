@@ -14359,6 +14359,23 @@
             ]
         }
     ],
+    "PreventReentrantInternalSetBounds": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreventReentrantInternalSetBounds"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreventSaveUpdatePasswordOnFederatedLogin": [
         {
             "platforms": [
