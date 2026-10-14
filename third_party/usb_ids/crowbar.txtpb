@@ -13,7 +13,7 @@ stages {
     unpack {}
     patch { copybara {} }
   }
-  update { git {} }
+  publish { git {} }
 }
 latest {
   debian {
