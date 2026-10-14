@@ -68,7 +68,8 @@ class ToolbarActionsModel
     kNotPinnedNoAction = 4,
     kNotPinnedEnterpriseExtension = 5,
     kNotPinnedInstalledFromSync = 6,
-    kMaxValue = kNotPinnedInstalledFromSync,
+    kNotPinnedInstalledByDefault = 7,
+    kMaxValue = kNotPinnedInstalledByDefault,
   };
 
   // A class which is informed of changes to the model; represents the view of

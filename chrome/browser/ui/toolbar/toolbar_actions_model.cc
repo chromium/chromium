@@ -142,19 +142,22 @@ void ToolbarActionsModel::OnExtensionInstalled(
   const bool is_installed_from_sync =
       sync_service && sync_service->IsPendingSyncInstall(extension->id());
 
+  const bool is_installed_by_default = extension->was_installed_by_default();
+
   bool is_feature_enabled =
       base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault);
   bool is_toggle_on =
       profile_->GetPrefs()->GetBoolean(prefs::kExtensionsPinnedByDefault);
   // Pin the extension if policy enforces default pinning, OR if no policy is
   // set and default pinning is enabled by feature flag and user preference
-  // (excluding enterprise extensions and extensions installed from sync).
+  // (excluding enterprise extensions, extensions installed from sync, and
+  // default-installed extensions).
   const bool is_pinned_by_policy =
       pin_mode == extensions::ManagedToolbarPinMode::kDefaultPinned;
   const bool is_pinned_by_feature =
       pin_mode == extensions::ManagedToolbarPinMode::kNotSet &&
       !is_enterprise_extension && !is_installed_from_sync &&
-      is_feature_enabled && is_toggle_on;
+      !is_installed_by_default && is_feature_enabled && is_toggle_on;
 
   // We can only pin extensions that have a toolbar action.
   if (should_add_extension) {
@@ -178,6 +181,8 @@ void ToolbarActionsModel::OnExtensionInstalled(
       pin_reason = ExtensionPinReason::kNotPinnedEnterpriseExtension;
     } else if (is_installed_from_sync) {
       pin_reason = ExtensionPinReason::kNotPinnedInstalledFromSync;
+    } else if (is_installed_by_default) {
+      pin_reason = ExtensionPinReason::kNotPinnedInstalledByDefault;
     } else if (!is_feature_enabled) {
       pin_reason = ExtensionPinReason::kNotPinnedFeatureDisabled;
     } else if (!is_toggle_on) {

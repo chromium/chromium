@@ -3368,6 +3368,10 @@ Called by update_extension_permission.py.-->
     The extension was not pinned by default because it was installed via Chrome
     Sync.
   </int>
+  <int value="7" label="Not pinned (Installed by default)">
+    The extension was not pinned by default because it was pre-installed by
+    default.
+  </int>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">
