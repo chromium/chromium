@@ -237,14 +237,8 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
-  ActorSurfaceHandle actor_surface_handle;
-  if (ActorSurface* actor_surface =
-          GetSurfaceRegistry().GetForHeadless(web_contents)) {
-    actor_surface_handle = actor_surface->GetHandle();
-  } else if (auto* tab_interface =
-                 tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-    actor_surface_handle = ActorSurfaceHandle::From(tab_interface->GetHandle());
-  }
+  const ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(web_contents);
   if (!actor_surface_handle.is_null()) {
     // There should only be one active task per surface.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
@@ -908,8 +902,11 @@ bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
 
 ActorTask* ActorKeyedService::GetTaskFromTab(
     const tabs::TabInterface& tab) const {
-  ActorSurfaceHandle actor_surface_handle =
-      ActorSurfaceHandle::From(tab.GetHandle());
+  return GetTaskFromActorSurface(ActorSurfaceHandle::From(tab.GetHandle()));
+}
+
+ActorTask* ActorKeyedService::GetTaskFromActorSurface(
+    ActorSurfaceHandle actor_surface_handle) const {
   if (actor_surface_handle.is_null()) {
     return nullptr;
   }

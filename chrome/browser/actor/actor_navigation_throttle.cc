@@ -6,6 +6,7 @@
 
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -45,13 +46,6 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
 
   content::WebContents* web_contents = navigation_handle.GetWebContents();
 
-  // TODO(b/565820285): Also attach to headless pages: find the task from the
-  // page's surface instead of requiring a tab.
-  const auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
-    return;
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile) {
@@ -63,15 +57,17 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  const ActorTask* task = actor_service->GetTaskFromTab(*tab);
+  const ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(web_contents);
+  const ActorTask* task =
+      actor_service->GetTaskFromActorSurface(actor_surface_handle);
   if (!task) {
     return;
   }
 
   if (!base::FeatureList::IsEnabled(
           kGlicAttachNavigationThrottleToPausedTasks) &&
-      !task->IsActingOnActorSurface(
-          ActorSurfaceHandle::From(tab->GetHandle()))) {
+      !task->IsActingOnActorSurface(actor_surface_handle)) {
     return;
   }
 

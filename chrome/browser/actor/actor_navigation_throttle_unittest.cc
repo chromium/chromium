@@ -14,6 +14,8 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
@@ -803,6 +805,74 @@ TEST_F(ActorNavigationThrottleTest, PlainAutoToplevel_Proceed) {
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
+}
+
+// MaybeCreateAndAdd() attaches the throttle to a navigation in a tab the task
+// is acting on.
+TEST_F(ActorNavigationThrottleTest, MaybeCreateAndAdd_AttachesForActingTab) {
+  CreateTaskOnMockTab();
+  NavigateAndCommit(GURL("https://source.com"));
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ActorNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  EXPECT_EQ(registry.throttles().size(), 1u);
+}
+
+// MaybeCreateAndAdd() also attaches the throttle to a navigation in a headless
+// page (a surface without a tab) the task is acting on.
+TEST_F(ActorNavigationThrottleTest,
+       MaybeCreateAndAdd_AttachesForActingHeadlessPage) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  ActorSurface* actor_surface =
+      service->GetSurfaceRegistry().CreateHeadlessWebContents();
+  ASSERT_TRUE(actor_surface);
+  content::WebContents* headless_contents = actor_surface->GetWebContents();
+  ASSERT_FALSE(tabs::TabInterface::MaybeGetFromContents(headless_contents));
+
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  // The UI only acts on tabs, so the result reported for a headless page is
+  // not checked here; the task does control the page.
+  task->AddActorSurface(actor_surface->GetHandle(),
+                        /*stop_task_on_detach=*/true, base::DoNothing());
+  ASSERT_TRUE(task->IsActingOnActorSurface(actor_surface->GetHandle()));
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"),
+      headless_contents->GetPrimaryMainFrame());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ActorNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  EXPECT_EQ(registry.throttles().size(), 1u);
+
+  // The headless page is owned by the profile; destroy it before the test
+  // harness checks for leaked RenderWidgetHosts.
+  registry.throttles().clear();
+  service->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
+  service->GetSurfaceRegistry().DestroySurface(actor_surface->GetHandle());
+}
+
+// MaybeCreateAndAdd() doesn't attach the throttle to a page no task acts on.
+TEST_F(ActorNavigationThrottleTest, MaybeCreateAndAdd_SkipsPageWithoutTask) {
+  NavigateAndCommit(GURL("https://source.com"));
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ActorNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  EXPECT_TRUE(registry.throttles().empty());
 }
 
 }  // namespace

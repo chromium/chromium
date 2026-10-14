@@ -19,6 +19,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
@@ -151,9 +152,15 @@ class ActorKeyedService : public KeyedService,
   // in the given `tab`.
   bool IsActiveOnTab(const tabs::TabInterface& tab) const;
 
-  // Returns an ActorTask which has the given tab in its set. Returns null if no
-  // task has `tab`. Note: a returned task may be paused.
+  // Deprecated: Use GetTaskFromActorSurface() instead. Returns an ActorTask
+  // which has the given tab in its set. Returns null if no task has `tab`.
+  // Note: a returned task may be paused.
   ActorTask* GetTaskFromTab(const tabs::TabInterface& tab) const;
+
+  // Returns an ActorTask which has the given surface in its set. Returns null
+  // if no task has `actor_surface_handle`. Note: a returned task may be paused.
+  ActorTask* GetTaskFromActorSurface(
+      ActorSurfaceHandle actor_surface_handle) const;
 
   Profile* GetProfile();
 
