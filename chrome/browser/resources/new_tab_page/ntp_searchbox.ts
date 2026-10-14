@@ -10,7 +10,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from '//resources/cr_components/composebox/common.js';
-import {ContextType, getLoadTimeBoolean, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
+import {ContextType, getLoadTimeBoolean, GlifAnimationState, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordCount, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -744,10 +744,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     // now a `ContextualSearchboxHandler`.
     this.pageHandler().activateMetricsFunnel('AiModeButton');
 
-    chrome.histograms.recordUserAction(
-        'ContextualSearch.AiModeButtonClick.NtpRealbox');
-    chrome.histograms.recordBoolean(
-        'ContextualSearch.AiModeButtonClick.NtpRealbox', true);
+    recordUserAction('ContextualSearch.AiModeButtonClick.NtpRealbox');
+    recordBoolean('ContextualSearch.AiModeButtonClick.NtpRealbox', true);
 
     const isSearch = this.selectedMatch?.isSearchType ?? true;
     if (!isSearch) {
@@ -759,14 +757,14 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       const histogramName =
           'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
       // LINT.IfChange(ContextualSearchContextState)
-      chrome.histograms.recordEnumerationValue(
+      recordEnumerationValue(
           histogramName, /*WithoutContext */ 0,
           /*ContextualSearchContextState.Size + 1*/ 5);
       // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
 
       const userActionName =
           'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
-      chrome.histograms.recordUserAction(userActionName);
+      recordUserAction(userActionName);
     }
 
     if (!this.composeboxEnabled || queryText) {
@@ -779,7 +777,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       this.openComposebox_();
     }
 
-    chrome.histograms.recordBoolean(
+    recordBoolean(
         'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
         !this.isInputEmpty());
   }
@@ -823,8 +821,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   }
 
   protected onSearchboxInputPasted_() {
-    chrome.histograms.recordCount('NewTabPage.Realbox.Paste', 1);
-    chrome.histograms.recordUserAction('NewTabPage.Realbox.Paste');
+    recordCount('NewTabPage.Realbox.Paste', 1);
+    recordUserAction('NewTabPage.Realbox.Paste');
   }
 
   protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {

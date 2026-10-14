@@ -13,7 +13,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {recordContextAdditionMethod} from './common.js';
+import {recordContextAdditionMethod, recordUserAction} from './common.js';
 import {getCss} from './current_tab_chip.css.js';
 import {getHtml} from './current_tab_chip.html.js';
 
@@ -79,7 +79,7 @@ export class CurrentTabChipElement extends CurrentTabChipBase {
     e.stopPropagation();
     assert(this.currentTab);
 
-    chrome.histograms.recordUserAction(
+    recordUserAction(
         `ContextualSearch.CurrentTabChipClick.${this.composeboxSource_}`);
 
     this.fire('add-tab-context', {
