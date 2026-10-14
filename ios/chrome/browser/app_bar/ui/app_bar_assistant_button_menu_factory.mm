@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_menu_factory.h"
 
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_symbol.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -27,12 +26,11 @@
                                   checkedState:checkedState]];
   }
   if (showAIM) {
-    [actions
-        addObject:
-            [self actionWithTitleID:IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT
-                              state:AppBarAssistantButtonState::kAIM
-                     preferredState:AppBarAssistantButtonPreferredState::kAsk
-                       checkedState:checkedState]];
+    [actions addObject:[self actionWithTitleID:IDS_IOS_APP_BAR_ASK_GOOGLE
+                                         state:AppBarAssistantButtonState::kAIM
+                                preferredState:
+                                    AppBarAssistantButtonPreferredState::kAsk
+                                  checkedState:checkedState]];
   }
   if (showLens) {
     [actions addObject:[self actionWithTitleID:IDS_IOS_LENS_PRODUCT_NAME

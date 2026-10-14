@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_menu_factory.h"
 
 #import "base/apple/foundation_util.h"
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -76,7 +75,7 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAllEntries) {
   ASSERT_EQ(kAllEntriesCount, menu.children.count);
   ExpectAction(menu, kAskGeminiEntryIndex, IDS_IOS_APP_BAR_ASK_GEMINI,
                /*checked=*/false);
-  ExpectAction(menu, kAIMEntryIndex, IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT,
+  ExpectAction(menu, kAIMEntryIndex, IDS_IOS_APP_BAR_ASK_GOOGLE,
                /*checked=*/false);
   ExpectAction(menu, kLensEntryIndex, IDS_IOS_LENS_PRODUCT_NAME,
                /*checked=*/true);
@@ -107,7 +106,7 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAIMEntry) {
                                     showAccount:NO];
 
   ASSERT_EQ(1u, menu.children.count);
-  ExpectAction(menu, 0, IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT,
+  ExpectAction(menu, 0, IDS_IOS_APP_BAR_ASK_GOOGLE,
                /*checked=*/true);
 
   OCMExpect([mutator_ setPreferredAssistantButtonState:

@@ -27,7 +27,6 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -2866,7 +2865,7 @@ TEST_F(AppBarMediatorTest,
                                       signedIn:NO]);
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/true},
+      {{IDS_IOS_APP_BAR_ASK_GOOGLE, /*checked=*/true},
        {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
@@ -2884,7 +2883,7 @@ TEST_F(AppBarMediatorTest,
 
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/false},
+      {{IDS_IOS_APP_BAR_ASK_GOOGLE, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/true}});
 }
 
@@ -2938,7 +2937,7 @@ TEST_F(AppBarMediatorTest,
                                       signedIn:NO]);
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/true},
+      {{IDS_IOS_APP_BAR_ASK_GOOGLE, /*checked=*/true},
        {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false}});
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

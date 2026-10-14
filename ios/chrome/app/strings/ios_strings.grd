@@ -638,6 +638,9 @@
       <message name="IDS_IOS_APP_BAR_ASK_GEMINI" desc="Title of the button opening a gemini prompt." meaning="Tap this button to ask something to Gemini">
           Ask Gemini
           </message>
+      <message name="IDS_IOS_APP_BAR_ASK_GOOGLE" desc="Title of the button opening an AI Mode prompt." meaning="Tap this button to ask something to Google">
+        Ask Google
+      </message>
       <message name="IDS_IOS_APP_BAR_ASSISTANT_CUSTOMIZATION_TITLE" desc="Title for the menu displaying the different customization options of the toolbar button">
         Choose what button to show in the toolbar
       </message>

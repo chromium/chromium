@@ -11,7 +11,6 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_symbol.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
@@ -773,7 +772,10 @@ UIColor* AssistantHighlightBackgroundColor() {
                                        IDS_IOS_APP_BAR_ASK_GEMINI)
                     truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK)];
     case AppBarAssistantButtonState::kAIM:
-      return l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
+      return [self
+          buttonTitleWithFullTitle:l10n_util::GetNSString(
+                                       IDS_IOS_APP_BAR_ASK_GOOGLE)
+                    truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK)];
     case AppBarAssistantButtonState::kLens:
       return [self
           buttonTitleWithFullTitle:l10n_util::GetNSString(
@@ -1184,7 +1186,7 @@ UIColor* AssistantHighlightBackgroundColor() {
       label = l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI);
       break;
     case AppBarAssistantButtonState::kAIM:
-      label = l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
+      label = l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GOOGLE);
       break;
     case AppBarAssistantButtonState::kLens:
       label = l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME);
