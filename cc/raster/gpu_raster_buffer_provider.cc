@@ -316,9 +316,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode,
-      playback_settings.use_lcd_text, playback_settings.visible,
-      backing_->shared_image()->color_space(), playback_settings.hdr_headroom,
-      backing_->shared_image()->mailbox().name);
+      playback_settings.use_lcd_text, backing_->shared_image()->color_space(),
+      playback_settings.hdr_headroom, backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());

@@ -88,12 +88,11 @@ SyncToken RasterInterface::RasterSharedImage(
   const bool can_use_lcd_text = dest->alpha_type() == kOpaque_SkAlphaType;
   const auto& caps = GetCapabilities();
   bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  BeginRasterCHROMIUM(
-      background_color, needs_clear,
-      /*msaa_sample_count=*/use_msaa ? 1 : 0,
-      use_msaa ? MsaaMode::kDMSAA : MsaaMode::kNoMSAA, can_use_lcd_text,
-      /*visible=*/true, dest->color_space(),
-      /*hdr_headroom=*/0.f, dest->mailbox().name);
+  BeginRasterCHROMIUM(background_color, needs_clear,
+                      /*msaa_sample_count=*/use_msaa ? 1 : 0,
+                      use_msaa ? MsaaMode::kDMSAA : MsaaMode::kNoMSAA,
+                      can_use_lcd_text, dest->color_space(),
+                      /*hdr_headroom=*/0.f, dest->mailbox().name);
 
   RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
                  playback_rect, post_translate, post_scale,

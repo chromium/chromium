@@ -84,7 +84,6 @@ void BeginRasterCHROMIUMImmediate(GLfloat r,
                                   GLuint msaa_sample_count,
                                   gpu::raster::MsaaMode msaa_mode,
                                   GLboolean can_use_lcd_text,
-                                  GLboolean visible,
                                   GLfloat hdr_headroom,
                                   const GLbyte* mailbox) {
   const uint32_t size =
@@ -94,7 +93,7 @@ void BeginRasterCHROMIUMImmediate(GLfloat r,
           size);
   if (c) {
     c->Init(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
-            can_use_lcd_text, visible, hdr_headroom, mailbox);
+            can_use_lcd_text, hdr_headroom, mailbox);
   }
 }
 

@@ -1334,7 +1334,6 @@ void RasterImplementation::BeginRasterCHROMIUM(
     GLuint msaa_sample_count,
     MsaaMode msaa_mode,
     GLboolean can_use_lcd_text,
-    GLboolean visible,
     const gfx::ColorSpace& color_space,
     float hdr_headroom,
     const GLbyte* mailbox) {
@@ -1342,8 +1341,8 @@ void RasterImplementation::BeginRasterCHROMIUM(
 
   helper_->BeginRasterCHROMIUMImmediate(
       sk_color_4f.fR, sk_color_4f.fG, sk_color_4f.fB, sk_color_4f.fA,
-      needs_clear, msaa_sample_count, msaa_mode, can_use_lcd_text, visible,
-      hdr_headroom, mailbox);
+      needs_clear, msaa_sample_count, msaa_mode, can_use_lcd_text, hdr_headroom,
+      mailbox);
 
   raster_properties_.emplace(sk_color_4f, can_use_lcd_text,
                              color_space.ToSkColorSpace());

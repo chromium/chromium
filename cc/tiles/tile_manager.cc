@@ -1532,8 +1532,6 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   RasterSource::PlaybackSettings playback_settings;
   playback_settings.use_lcd_text = tile->can_use_lcd_text();
   playback_settings.msaa_sample_count = msaa_sample_count;
-  playback_settings.visible =
-      tile->required_for_activation() || tile->required_for_draw();
   playback_settings.hdr_headroom = target_color_params.GetHdrHeadroom();
 
   // Create and queue all image decode tasks that this tile depends on. Note

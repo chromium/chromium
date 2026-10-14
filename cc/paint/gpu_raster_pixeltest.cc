@@ -223,13 +223,13 @@ class GpuRasterPixelTest : public testing::Test,
                                           : gpu::raster::kNoMSAA;
 
     if (options.preclear) {
-      ri->BeginRasterCHROMIUM(
-          options.preclear_color,
-          /*needs_clear=*/options.preclear, options.msaa_sample_count,
-          msaa_mode, options.use_lcd_text,
-          /*visible=*/true, options.target_color_params.color_space,
-          options.target_color_params.GetHdrHeadroom(),
-          client_shared_image->mailbox().name);
+      ri->BeginRasterCHROMIUM(options.preclear_color,
+                              /*needs_clear=*/options.preclear,
+                              options.msaa_sample_count, msaa_mode,
+                              options.use_lcd_text,
+                              options.target_color_params.color_space,
+                              options.target_color_params.GetHdrHeadroom(),
+                              client_shared_image->mailbox().name);
       ri->EndRasterCHROMIUM();
     }
 
@@ -240,8 +240,7 @@ class GpuRasterPixelTest : public testing::Test,
     ri->BeginRasterCHROMIUM(
         options.background_color,
         /*needs_clear=*/!options.preclear, options.msaa_sample_count, msaa_mode,
-        options.use_lcd_text,
-        /*visible=*/true, options.target_color_params.color_space,
+        options.use_lcd_text, options.target_color_params.color_space,
         options.target_color_params.GetHdrHeadroom(),
         client_shared_image->mailbox().name);
     size_t max_op_size_limit =

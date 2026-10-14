@@ -143,7 +143,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                            GLuint msaa_sample_count,
                            MsaaMode msaa_mode,
                            GLboolean can_use_lcd_text,
-                           GLboolean visible,
                            const gfx::ColorSpace& color_space,
                            float hdr_headroom,
                            const GLbyte* mailbox) override;

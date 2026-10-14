@@ -768,7 +768,6 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLuint msaa_sample_count,
                              MsaaMode msaa_mode,
                              GLboolean can_use_lcd_text,
-                             GLboolean visible,
                              GLfloat hdr_headroom,
                              const volatile GLbyte* key);
   void DoRasterCHROMIUM(GLuint raster_shm_id,
@@ -2831,7 +2830,6 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
                                               GLuint msaa_sample_count,
                                               MsaaMode msaa_mode,
                                               GLboolean can_use_lcd_text,
-                                              GLboolean visible,
                                               GLfloat hdr_headroom,
                                               const volatile GLbyte* key) {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoBeginRasterCHROMIUM");

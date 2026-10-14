@@ -515,7 +515,7 @@ TEST_F(RasterDecoderOOPTest, SharedImageProviderRejectsActiveOutputMailbox) {
                     /*cleared=*/true);
 
   auto& cmd = *GetImmediateAs<cmds::BeginRasterCHROMIUMImmediate>();
-  cmd.Init(0.0f, 0.0f, 0.0f, 0.0f, false, 0, kNoMSAA, false, false, 1.0f,
+  cmd.Init(0.0f, 0.0f, 0.0f, 0.0f, false, 0, kNoMSAA, false, 1.0f,
            mailbox.name);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
 
