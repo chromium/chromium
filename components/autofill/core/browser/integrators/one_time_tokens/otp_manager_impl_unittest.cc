@@ -3403,4 +3403,45 @@ TEST_F(
   autofill_client().set_affiliation_service(nullptr);
 }
 
+// Tests that when PhishGuard returns a phishing verdict, the cached Gmail OTP
+// in `last_retrieved_gmail_otp_` is cleared so it does not remain cached in
+// OtpManagerImpl on a confirmed phishing site.
+TEST_F(OtpManagerImplTest,
+       OnGmailOtpRetrieved_PhishGuardPhishingVerdictClearsCachedGmailOtp) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
+                                       form->field(0)->global_id());
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(one_time_tokens::OneTimeToken(
+          one_time_tokens::OneTimeTokenType::kGmail, "111111",
+          base::TimeTicks::Now(), "cached@example.com"));
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+
+  test_api(otp_manager)
+      .OnGmailOtpRetrieved(one_time_tokens::GmailOtpRetriever::Result{
+          .token = one_time_tokens::OneTimeToken(
+              one_time_tokens::OneTimeTokenType::kGmail, "654321",
+              base::TimeTicks::Now(), "sender@example.com"),
+          .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
+      });
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  autofill_client().set_affiliation_service(nullptr);
+}
+
 }  // namespace autofill
