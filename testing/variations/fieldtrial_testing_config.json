@@ -17628,6 +17628,39 @@
             ]
         }
     ],
+    "UniversalOptOutSettings": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlobalPrivacyControlApi",
+                        "UniversalOptOutSettings"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UniversalOptOutSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2ChromeOS": [
         {
             "platforms": [
