@@ -20,6 +20,22 @@ void AdjustGridItemSpan(GridItemData& grid_lanes_item,
   GridSpan item_span = line_resolver.ResolveGridPositionsFromStyle(
       grid_lanes_item.node.Style(), grid_axis_direction);
 
+  const wtf_size_t subgrid_span_size =
+      line_resolver.SubgridSpanSize(grid_axis_direction);
+  // Clamp child spans to the inherited tracks, since subgrids cannot create
+  // implicit tracks in this axis.
+  if (subgrid_span_size != kNotFound) {
+    if (item_span.IsIndefinite()) {
+      item_span = GridSpan::IndefiniteGridSpan(
+          std::min(item_span.IndefiniteSpanSize(), subgrid_span_size));
+    } else {
+      item_span = GridSpan::TranslatedDefiniteGridSpan(
+          ClampTo<int>(item_span.UntranslatedStartLine(), 0,
+                       subgrid_span_size - 1),
+          ClampTo<int>(item_span.UntranslatedEndLine(), 1, subgrid_span_size));
+    }
+  }
+
   if (item_span.IsIndefinite()) {
     grid_lanes_item.is_auto_placed = true;
   }
