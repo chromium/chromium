@@ -42,18 +42,20 @@ void SendTabToSelfPageHandler::SendTabToDevice(
   PendingRequest request(target_device_guid, url, title,
                          std::move(commit_confirmation), entry_point);
 
-  MaybeExtractFormFields(request);
-  MaybeExtractNavigationHistory(request);
-
-  // If the URL has changed, send the request without the scroll position
-  // information.
+  // If the shared URL does not match the last committed URL (e.g. sharing a
+  // link from the context menu), send the request immediately without
+  // capturing current page context or navigation history.
   if (request.url != web_contents()->GetLastCommittedURL()) {
     SendFinalizedRequest(std::move(request), std::nullopt);
     return;
   }
 
-  // Otherwise, generate a token for the request and request the scroll
-  // position selector from the renderer.
+  request.page_context.form_field_info =
+      ExtractFormFieldsFromWebContents(web_contents());
+  MaybeExtractNavigationHistory(request);
+
+  // Generate a token for the request and request the scroll position selector
+  // from the renderer.
   base::Token request_token = base::Token::CreateRandom();
   RequestScrollPositionSelectorAndSendRequest(request_token,
                                               std::move(request));
@@ -230,13 +232,6 @@ SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
   scroll_position.text_fragment = TextFragmentData(*fragment);
   return {ScrollPositionGenerationOutcome::kSuccess,
           std::move(scroll_position)};
-}
-
-void SendTabToSelfPageHandler::MaybeExtractFormFields(PendingRequest& request) {
-  if (request.url == web_contents()->GetLastCommittedURL()) {
-    request.page_context.form_field_info =
-        ExtractFormFieldsFromWebContents(web_contents());
-  }
 }
 
 void SendTabToSelfPageHandler::MaybeExtractNavigationHistory(

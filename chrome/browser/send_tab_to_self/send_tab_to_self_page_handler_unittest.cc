@@ -60,6 +60,7 @@ using base::test::TestFuture;
 using testing::_;
 using testing::Eq;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::Return;
 
 MATCHER(IsValidNavigationHistory, "") {
@@ -414,6 +415,26 @@ TEST_F(SendTabToSelfPageHandlerWithNavigationHistoryTest,
                            ShareEntryPoint::kShareSheet);
 
   EXPECT_THAT(future.Get()->GetNavigationHistory(), IsValidNavigationHistory());
+}
+
+// Tests that navigation history from the current tab is not attached when
+// sharing a link URL that differs from the last committed URL.
+TEST_F(SendTabToSelfPageHandlerWithNavigationHistoryTest,
+       ShouldNotSendNavigationHistoryWhenSharingLink) {
+  SendTabToSelfPageHandler* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+
+  const GURL link_url("https://www.other.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  TestFuture<const SendTabToSelfEntry*> future;
+  model()->SetSendEntryCallback(future.GetRepeatingCallback());
+
+  handler->SendTabToDevice(device_id, link_url, title, base::DoNothing(),
+                           ShareEntryPoint::kShareSheet);
+
+  EXPECT_THAT(future.Get()->GetNavigationHistory().navigations, IsEmpty());
 }
 
 TEST_F(SendTabToSelfPageHandlerTest,

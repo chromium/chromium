@@ -31,8 +31,8 @@ class WebContents;
 namespace send_tab_to_self {
 
 // Handles the logic for Send Tab to Self on a specific page, including
-// capturing page context (e.g. scroll position) and sending the tab to
-// the selected device.
+// capturing page context (e.g. form fields and scroll position) and sending
+// the tab to the selected device.
 class SendTabToSelfPageHandler
     : public content::WebContentsObserver,
       public content::WebContentsUserData<SendTabToSelfPageHandler> {
@@ -45,8 +45,9 @@ class SendTabToSelfPageHandler
   static SendTabToSelfPageHandler* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
-  // Sends the tab to the target device, potentially after capturing page
-  // context (like scroll position).
+  // Sends the tab to the target device, capturing page context (form fields
+  // and scroll position) and navigation history when `url` matches the current
+  // page.
   void SendTabToDevice(
       const std::string& target_device_guid,
       const GURL& url,
@@ -107,8 +108,6 @@ class SendTabToSelfPageHandler
       const PendingRequest& request,
       const std::string& selector,
       shared_highlighting::LinkGenerationError error);
-
-  void MaybeExtractFormFields(PendingRequest& request);
 
   void MaybeExtractNavigationHistory(PendingRequest& request);
 
