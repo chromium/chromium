@@ -15,19 +15,19 @@ Usage:
 """
 
 from sys import argv
+from typing import Final
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 
 def main(argv: list[str]) -> None:
-  DUMPNAME: final = "dump.dat"
-  KIB: final = 1024
-  MIB: final = KIB * 1024
+  DUMPNAME: Final = "dump.dat"
+  KIB: Final = 1024
+  MIB: Final = KIB * 1024
 
   fig, axes = plt.subplots(2, 1)
   (ax_a, ax_b) = axes
-  axes = ax_a, ax_b, ax_c, ax_d
 
   green_patch = mpatches.Patch(color='g', label='Used')
   plum_patch = mpatches.Patch(color='plum', label='Wasted')
@@ -93,13 +93,12 @@ def main(argv: list[str]) -> None:
 
     def show_title(ax, total_size):
       diff = total_size - total_size_a
+      rel_diff = diff / total_size_a if total_size_a else 0.0
       ax.set_title(
         (
-            'Alternate Distribution uses an extra {:+.2f} KiB due to internal'
-            ' fragmentation ({:+.2%})'
-        ).format(
-          diff * KIB, diff / total_size_a
-        ),
+          'Alternate Distribution uses an extra {:+.2f} KiB due to internal'
+          ' fragmentation ({:+.2%})'
+        ).format(diff * KIB, rel_diff),
         size='medium',
       )
 

@@ -32,6 +32,9 @@ def ParseJson(filename: str) -> dict:
 
 
 def PlotSuperPageData(data: dict, output_filename: str):
+  if not data:
+    print('No superpages to plot.')
+    return
   num_superpages = len(data)
   num_partition_pages = len(data[0]['partition_pages'])
   data_np = np.zeros((num_superpages, num_partition_pages, 3))
@@ -44,7 +47,7 @@ def PlotSuperPageData(data: dict, output_filename: str):
   RED = (1.0, 0.0, 0.0)
   GREEN = (0.0, 0.8, 0.0)
   WHITE = (1.0, 1.0, 1.0)
-  cmap = matplotlib.cm.get_cmap('coolwarm')
+  cmap = plt.get_cmap('coolwarm')
 
   for superpage_index in range(len(addresses)):
     superpage = address_to_superpage[addresses[superpage_index]]
@@ -54,9 +57,8 @@ def PlotSuperPageData(data: dict, output_filename: str):
         value = BLACK
       elif partition_page['type'] == 'guard':
         value = GRAY
-      elif partition_page['all_zeros'] and 'is_active' not in partition_page:
-        # Otherwise it may be the subsequent partition page of a decommitted
-        # slot span.
+      elif 'is_active' not in partition_page:
+        # Otherwise it may be the subsequent partition page of a slot span.
         if partition_page['page_index_in_span'] == 0:
           value = WHITE
 
@@ -107,6 +109,9 @@ def PlotSuperPageData(data: dict, output_filename: str):
 
 
 def PlotSuperPageCompressionData(data: dict, output_filename: str):
+  if not data:
+    print('No superpages to plot.')
+    return
   num_superpages = len(data)
   num_pages = len(data[0]['page_sizes'])
   data_np = np.zeros((num_superpages, num_pages, 3))
@@ -115,7 +120,7 @@ def PlotSuperPageCompressionData(data: dict, output_filename: str):
   addresses = sorted(address_to_superpage.keys())
 
   WHITE = (1.0, 1.0, 1.0)
-  cmap = matplotlib.cm.get_cmap('coolwarm')
+  cmap = plt.get_cmap('coolwarm')
 
   total_compressed_size = 0
   total_uncompressed_size = 0

@@ -91,7 +91,7 @@ def _SummarizeStatsForAllocators(
   rounded_allocated_size = 0
   # We are only interested in the main malloc partition, reported in
   # |ReportPartitionAllocStats|.
-  pattern = re.compile("malloc/partitions/allocator/buckets/bucket_\d+")
+  pattern = re.compile(r"malloc/partitions/allocator/buckets/bucket_\d+")
   for entry in allocators:
     # |entry| can represent a subset of the allocations for a given allocator.
     if not pattern.match(entry):
@@ -143,10 +143,12 @@ def _SummarizeStatsForAllocators(
   size_counts.sort()
   result_for_pid['regression'] = (
     (rounded_allocated_size - total_allocated_size) * 100 / total_allocated_size
+    if total_allocated_size
+    else 0.0
   )
   result_for_pid['data'] = np.array(
     size_counts,
-    dtype=[('size', np.int), ('fragmentation', np.int), ('unused', np.int)],
+    dtype=[('size', int), ('fragmentation', int), ('unused', int)],
   )
 
 

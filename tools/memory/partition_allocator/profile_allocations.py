@@ -23,7 +23,26 @@ import os
 from matplotlib import pylab as plt
 import numpy as np
 
-from parse_trace import LoadTrace, GetAllocatorDumps, ProcessNamesAndLabels
+import trace_utils
+
+
+def _SummarizeStatsForThreadCache(result_for_pid: dict, allocators: dict):
+  size_counts = []
+  for allocator in allocators:
+    if (
+      'malloc/partitions/allocator/thread_cache/buckets_alloc/' not in allocator
+    ):
+      continue
+    size = int(allocator[allocator.rindex('/') + 1 :])
+    count = trace_utils.GetAllocatorAttr(
+      allocators[allocator]['attrs'], 'count'
+    )
+    size_counts.append((size, count))
+  size_counts.sort()
+  if size_counts:
+    result_for_pid['data'] = np.array(
+      size_counts, dtype=[('size', int), ('count', int)]
+    )
 
 
 def _ParseTrace(trace: dict) -> dict:
@@ -36,38 +55,7 @@ def _ParseTrace(trace: dict) -> dict:
     {pid  -> {'name': str, 'labels': str, 'data': np.array}.
     Where the data array contains 'size' and 'count' columns.
   """
-  dumps = GetAllocatorDumps(trace)
-  pid_to_name, pid_to_labels = ProcessNamesAndLabels(trace)
-
-  result = {}
-  for dump in dumps:
-    pid = dump['pid']
-    allocators = dump['args']['dumps']['allocators']
-
-    # The browser process also has global dumps, we do not care about these.
-    if 'global' in allocators:
-      continue
-
-    result[pid] = {
-      'name': pid_to_name[pid],
-      'labels': pid_to_labels.get(pid, ''),
-    }
-    size_counts = []
-    for allocator in allocators:
-      if (
-        'malloc/partitions/allocator/thread_cache/buckets_alloc/'
-        not in allocator
-      ):
-        continue
-      size = int(allocator[allocator.rindex('/') + 1 :])
-      count = int(allocators[allocator]['attrs']['count']['value'], 16)
-      size_counts.append((size, count))
-      size_counts.sort()
-      result[pid]['data'] = np.array(
-        size_counts, dtype=[('size', np.int), ('count', np.int)]
-      )
-
-  return result
+  return trace_utils.ParseTrace(trace, _SummarizeStatsForThreadCache)
 
 
 def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
@@ -136,7 +124,7 @@ def main():
   args = parser.parse_args()
 
   logging.info('Loading the trace')
-  trace = LoadTrace(args.trace)
+  trace = trace_utils.LoadTrace(args.trace)
 
   logging.info('Parsing the trace')
   stats_per_process = _ParseTrace(trace)

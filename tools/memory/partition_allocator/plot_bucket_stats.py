@@ -8,7 +8,7 @@ To run this:
 1. Build pa_tcache_inspect at a "close-enough" revision to the Chrome instance
    you're interested in.
 2. Run pa_tcache_inspect --pid=PID_OF_RUNNING_CHROME_PROCESS --json=output.json
-3. Run plot_bucket_stats.py --json=output.json --output=output.png
+3. Run plot_bucket_stats.py --json=output.json --output_prefix=output.png
 """
 
 import argparse

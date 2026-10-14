@@ -39,8 +39,6 @@ class ScopedSigStopper {
 base::ScopedFD OpenProcMem(pid_t pid);
 base::ScopedFD OpenPagemap(pid_t pid);
 
-char* CreateMappingAtAddress(uintptr_t address, size_t size);
-
 // Reads the memory of a remote process.
 class RemoteProcessMemoryReader {
  public:
@@ -51,10 +49,6 @@ class RemoteProcessMemoryReader {
 
   // Returns true for success.
   bool ReadMemory(uintptr_t remote_address, size_t size, char* buffer);
-  // Reads remote process memory at the *same* address in the current
-  // process. Local memory is mapped with mmap(). Returns nullptr in case of
-  // failure.
-  char* ReadAtSameAddressInLocalMemory(uintptr_t address, size_t size);
   pid_t pid() const { return pid_; }
 
  private:

@@ -160,11 +160,16 @@ int main(int argc, char** argv) {
   while (true) {
     base::TimeTicks tick = base::TimeTicks::Now();
 
-    size_t len = old_index < new_index ? new_index - old_index
-                                       : kAllocInfoSize - new_index + old_index;
+    size_t len = new_index - old_index;
+    if (len > kAllocInfoSize) {
+      LOG(WARNING) << "AllocInfo ring buffer wrapped during interval (" << len
+                   << " > " << kAllocInfoSize << "); clamping.";
+      old_index = new_index - kAllocInfoSize;
+      len = kAllocInfoSize;
+    }
 
     for (size_t i = 0; i < len; i++) {
-      size_t index = i % kAllocInfoSize;
+      size_t index = (old_index + i) % kAllocInfoSize;
       const auto& entry = alloc_info->allocs[index];
       // Skip nulls.
       if (entry.addr == 0x0) {

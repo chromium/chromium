@@ -379,12 +379,13 @@ void DisplayPerThreadData(
     tcache.get()->AccumulateStats(&stats);
     tcache.get()->AccumulateStats(&all_threads_stats);
     uint64_t count = stats.alloc_count;
-    uint64_t hit_rate = (100 * stats.alloc_hits) / count;
-    uint64_t too_large = (100 * stats.alloc_miss_too_large) / count;
-    uint64_t empty = (100 * stats.alloc_miss_empty) / count;
+    uint64_t hit_rate = count ? (100 * stats.alloc_hits) / count : 0;
+    uint64_t too_large = count ? (100 * stats.alloc_miss_too_large) / count : 0;
+    uint64_t empty = count ? (100 * stats.alloc_miss_empty) / count : 0;
 
     std::string thread_name = tid_to_name[tcache.get()->thread_id()];
-    std::string padding(20 - thread_name.size(), ' ');
+    std::string padding(thread_name.size() < 20 ? 20 - thread_name.size() : 1,
+                        ' ');
     std::cout << thread_name << padding << tcache.get()->CachedMemory() / 1024
               << "kiB\t" << (inspector.should_purge(tcache) ? 'X' : ' ')
               << "\tHit Rate = " << hit_rate << "%"
@@ -395,9 +396,11 @@ void DisplayPerThreadData(
   }
 
   uint64_t count = all_threads_stats.alloc_count;
-  uint64_t hit_rate = (100 * all_threads_stats.alloc_hits) / count;
-  uint64_t too_large = (100 * all_threads_stats.alloc_miss_too_large) / count;
-  uint64_t empty = (100 * all_threads_stats.alloc_miss_empty) / count;
+  uint64_t hit_rate = count ? (100 * all_threads_stats.alloc_hits) / count : 0;
+  uint64_t too_large =
+      count ? (100 * all_threads_stats.alloc_miss_too_large) / count : 0;
+  uint64_t empty =
+      count ? (100 * all_threads_stats.alloc_miss_empty) / count : 0;
   std::cout << "\nALL THREADS:        "
             << all_threads_stats.bucket_total_memory / 1024 << "kiB"
             << "\t\tHit Rate = " << hit_rate << "%"
@@ -495,7 +498,6 @@ base::DictValue Dump(PartitionRootInspector& root_inspector) {
 
     result.Set("num_allocated_slots", slot_span.num_allocated_slots);
     result.Set("num_unprovisioned_slots", slot_span.num_unprovisioned_slots);
-    result.Set("freelist_is_sorted", slot_span.freelist_is_sorted());
     result.Set("freelist_is_sorted", slot_span.freelist_is_sorted());
     size_t freelist_size =
         slot_span.is_decommitted()
@@ -629,7 +631,7 @@ int main(int argc, char** argv) {
             dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
         if (ok) {
           auto f =
-              base::File(json_filename, base::File::Flags::FLAG_OPEN_ALWAYS |
+              base::File(json_filename, base::File::Flags::FLAG_CREATE_ALWAYS |
                                             base::File::Flags::FLAG_WRITE);
           if (f.IsValid()) {
             f.WriteAtCurrentPos(base::as_byte_span(json_string));

@@ -10,6 +10,18 @@ _tcache_tool_supported = ((target_cpu == "x64" && is_linux) || is_mac) &&
                          use_partition_alloc_as_malloc
 
 if (_tcache_tool_supported) {
+  if (target_os == "mac") {
+    config("mac_sectaskaccess") {
+      inputs = [ "sectaskaccess_info.plist" ]
+      ldflags = [
+        "-sectcreate",
+        "__TEXT",
+        "__info_plist",
+        rebase_path(inputs[0], root_build_dir),
+      ]
+    }
+  }
+
   source_set("pa_tool_utils") {
     sources = [
       "inspect_utils.cc",
@@ -22,6 +34,10 @@ if (_tcache_tool_supported) {
       sources += [ "inspect_utils_mac.cc" ]
     }
 
+    if (target_os == "mac") {
+      public_configs = [ ":mac_sectaskaccess" ]
+    }
+
     deps = [ "//base" ]
   }
 
@@ -31,16 +47,6 @@ if (_tcache_tool_supported) {
       ":pa_tool_utils",
       "//base",
     ]
-
-    if (target_os == "mac") {
-      inputs = [ "sectaskaccess_info.plist" ]
-      ldflags = [
-        "-sectcreate",
-        "__TEXT",
-        "__info_plist",
-        rebase_path(inputs[0], root_build_dir),
-      ]
-    }
   }
 
   executable("pa_buckets_inspect") {
@@ -58,16 +64,6 @@ if (_tcache_tool_supported) {
       "//base",
       "//third_party/snappy",
     ]
-
-    if (target_os == "mac") {
-      inputs = [ "sectaskaccess_info.plist" ]
-      ldflags = [
-        "-sectcreate",
-        "__TEXT",
-        "__info_plist",
-        rebase_path(inputs[0], root_build_dir),
-      ]
-    }
   }
 }
 
@@ -75,6 +71,7 @@ group("all") {
   if (_tcache_tool_supported) {
     deps = [
       ":pa_buckets_inspect",
+      ":pa_dump_heap",
       ":pa_tcache_inspect",
     ]
   }
