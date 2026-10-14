@@ -518,6 +518,9 @@ void EnterpriseProxyService::OnPolicyPrefChanged() {
 
 void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     const base::ListValue& policy_domains) {
+  const net::ProxyConfig::DynamicRoutingConfig old_routing_config =
+      GetDynamicRoutingConfig();
+
   // If managers were currently refreshing, close the pause NetLog event before
   // destroying them, since manager destruction does not trigger
   // OnProvisioningDomainStateChanged.
@@ -558,6 +561,11 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
   }
   for (const auto& key : keys_to_remove) {
     update->Remove(key);
+  }
+
+  // TODO(crbug.com/573663900): Add policy logging on proxy config changes.
+  if (GetDynamicRoutingConfig() != old_routing_config) {
+    observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
 }
 

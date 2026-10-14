@@ -262,8 +262,13 @@ TEST_F(EnterpriseProxyServiceTest, MultiDomainServiceLifecycle) {
         EXPECT_EQ(2u, service_->GetDynamicRoutingConfig().routing_rules.size());
       });
 
-  // Phase 2 Expectations: Policy update reducing to 1 domain.
+  // Phase 2 Expectations: Policy update reducing to 1 domain immediately drops
+  // domain2's route while keeping domain1's cached route, then refreshes.
   EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
+      .WillOnce([&]() {
+        EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+        EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+      })
       .WillOnce([&]() {
         EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
       })
@@ -987,6 +992,104 @@ TEST_F(EnterpriseProxyServiceTest, NetLogEmittedOnShutdownDuringNetworkPause) {
   ASSERT_EQ(2u, pause_entries.size());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
   EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
+}
+
+TEST_F(EnterpriseProxyServiceTest, ClearsDynamicRoutingWhenPolicyCleared) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Clearing the policy synchronously clears active dynamic routing rules and
+  // notifies observers.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).WillOnce([&]() {
+    net::ProxyConfig::DynamicRoutingConfig config =
+        service_->GetDynamicRoutingConfig();
+    EXPECT_FALSE(config.is_update_in_progress);
+    EXPECT_TRUE(config.routing_rules.empty());
+  });
+  SetPolicyDomains({});
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest,
+       ClearsDynamicRoutingWhenPolicyClearedDuringRefresh) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).WillOnce([&]() {
+    EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+  });
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Clearing the policy while a fetch is in flight closes the network pause and
+  // notifies observers immediately.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).WillOnce([&]() {
+    net::ProxyConfig::DynamicRoutingConfig config =
+        service_->GetDynamicRoutingConfig();
+    EXPECT_FALSE(config.is_update_in_progress);
+    EXPECT_TRUE(config.routing_rules.empty());
+  });
+  SetPolicyDomains({});
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  auto pause_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  ASSERT_EQ(2u, pause_entries.size());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
+  EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
+
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest,
+       ClearsDynamicRoutingWhenReplacedWithMalformedPolicy) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Replacing with a permanently invalid policy entry synchronously clears
+  // dynamic routing rules without scheduling any fetch.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).WillOnce([&]() {
+    net::ProxyConfig::DynamicRoutingConfig config =
+        service_->GetDynamicRoutingConfig();
+    EXPECT_FALSE(config.is_update_in_progress);
+    EXPECT_TRUE(config.routing_rules.empty());
+  });
+  base::ListValue malformed_domains;
+  malformed_domains.Append(base::DictValue().Set("invalid_field", "value"));
+  pref_service_.SetList(kProxyProvisioningDomains,
+                        std::move(malformed_domains));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  service_->RemoveObserver(&observer);
 }
 
 class EnterpriseProxyServiceAuthChallengeTest

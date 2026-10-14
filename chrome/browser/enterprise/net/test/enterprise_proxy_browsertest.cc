@@ -10,6 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/net/test/enterprise_proxy_browsertest_base.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -324,6 +326,56 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
 
   EXPECT_TRUE(was_proxy_accessed());
   EXPECT_TRUE(was_auth_header_received());
+}
+
+// Verifies that clearing ProxyProvisioningDomains immediately clears active
+// dynamic proxy routes from the network stack so subsequent navigations connect
+// directly without hitting the proxy or triggering HTTP 407 login dialogs.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       ClearsDynamicRoutingWhenPolicyRemoved) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  domains.Append(
+      CreateDomainPolicyEntry("domain.example2.com", /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  // Confirm dynamic routes are active for kDestinationHost.
+  GURL first_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), first_url));
+  EXPECT_TRUE(was_proxy_accessed());
+  const size_t challenges_before_clear =
+      net_log_observer()
+          .GetEntriesWithType(
+              net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED)
+          .size();
+  ASSERT_GE(challenges_before_clear, 1u);
+
+  // Clear the policy (simulating sign-out / policy removal).
+  SetUserProxyProvisioningDomains(base::ListValue());
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
+
+  // Navigate to a fresh previously-proxied destination ("domain.example2.com")
+  // with a distinct NetworkAnonymizationKey so socket pooling and cached proxy
+  // credentials for kDestinationHost cannot mask stale proxy routing.
+  // Navigation must succeed directly without touching the proxy or challenging.
+  GURL second_url = https_server_.GetURL("domain.example2.com", "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), second_url));
+  EXPECT_EQ(
+      challenges_before_clear,
+      net_log_observer()
+          .GetEntriesWithType(
+              net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED)
+          .size());
 }
 
 }  // namespace enterprise::test

@@ -73,6 +73,7 @@ const std::vector<std::string>& GetTestCertHostnames() {
       kUnmatchedHost,
       "domain1.example.com",
       "domain2.example.com",
+      "domain.example2.com",
   });
   return *kHostnames;
 }
@@ -141,12 +142,14 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(https_server_.InitializeAndListen());
   https_server_.EnableConnectProxy(std::vector<net::HostPortPair>{
       net::HostPortPair(kDestinationHost, https_server_.port()),
+      net::HostPortPair("domain.example2.com", https_server_.port()),
   });
   https_server_.StartAcceptingConnections();
 
   scoped_extra_domains_ =
       std::make_unique<enterprise_net::ScopedExtraAllowedDomainsForTesting>(
-          std::vector<std::string>{"example.com", "127.0.0.1", "localhost"});
+          std::vector<std::string>{"example.com", "example2.com", "127.0.0.1",
+                                   "localhost"});
 }
 
 void EnterpriseProxyBrowserTestBase::TearDownOnMainThread() {
@@ -315,6 +318,10 @@ EnterpriseProxyBrowserTestBase::HandlePvdRequest(
     response->set_content(BuildValidPvdJson(
         "domain2.example.com", https_server_.host_port_pair().ToString(),
         {"domain2.example.com"}, /*require_auth=*/true));
+  } else if (domain == "domain.example2.com") {
+    response->set_content(BuildValidPvdJson(
+        "domain.example2.com", https_server_.host_port_pair().ToString(),
+        {"domain.example2.com"}, /*require_auth=*/true));
   } else {
     // Default / kTestPvdDomain: matches kDestinationHost with auth.
     response->set_content(BuildValidPvdJson(

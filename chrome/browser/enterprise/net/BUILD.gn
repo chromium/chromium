@@ -35,6 +35,7 @@ source_set("platform_browser_tests") {
     deps += [
       "//base/test:test_support",
       "//chrome/browser/enterprise",
+      "//chrome/browser/net",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/signin:identity_test_support",
