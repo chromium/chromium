@@ -187,8 +187,6 @@ SiteEngagementService::Helper::Helper(
     content::WebContents* web_contents,
     prerender::NoStatePrefetchManager* prefetch_manager)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SiteEngagementService::Helper>(
-          *web_contents),
       input_tracker_(this, web_contents),
       media_tracker_(this, web_contents),
       service_(SiteEngagementService::Get(web_contents->GetBrowserContext())),
@@ -256,7 +254,5 @@ void SiteEngagementService::Helper::OnVisibilityChanged(
     }
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteEngagementService::Helper);
 
 }  // namespace site_engagement

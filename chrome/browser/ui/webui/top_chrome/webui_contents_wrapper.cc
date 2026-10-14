@@ -132,8 +132,9 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
-    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents_.get());
+    site_engagement_helper_ =
+        std::make_unique<site_engagement::SiteEngagementService::Helper>(
+            web_contents_.get());
   }
 
   if (webui_resizes_host_) {
@@ -291,6 +292,7 @@ void WebUIContentsWrapper::DidReceiveFindReply(int request_id,
 }
 
 void WebUIContentsWrapper::OnProfileWillBeDestroyed(Profile* profile) {
+  site_engagement_helper_.reset();
   web_contents_.reset();
   profile_observation_.Reset();
 }
@@ -373,6 +375,7 @@ void WebUIContentsWrapper::SetHost(
 
 void WebUIContentsWrapper::SetWebContentsForTesting(
     std::unique_ptr<content::WebContents> web_contents) {
+  site_engagement_helper_.reset();
   web_contents_->SetDelegate(nullptr);
   web_contents_ = std::move(web_contents);
   web_contents_->SetDelegate(this);

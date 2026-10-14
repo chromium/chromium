@@ -36,6 +36,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
@@ -543,6 +544,10 @@ class TabFeatures {
   contextual_cueing::ContextualCueingController*
   contextual_cueing_controller() {
     return contextual_cueing_controller_.get();
+  }
+
+  site_engagement::SiteEngagementService::Helper* site_engagement_helper() {
+    return site_engagement_helper_.get();
   }
 
   // Called exactly once to initialize features.
@@ -1066,6 +1071,9 @@ class TabFeatures {
       loading_predictor_tab_helper_;
 
   std::unique_ptr<BreadcrumbManagerTabHelper> breadcrumb_manager_tab_helper_;
+
+  std::unique_ptr<site_engagement::SiteEngagementService::Helper>
+      site_engagement_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

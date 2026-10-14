@@ -160,10 +160,6 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
   # own it.
   'safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents',
-  # SiteEngagementService::Helper lives in //components/site_engagement/content
-  # and is also attached to non-tab WebContents in WebUIContentsWrapper, so
-  # WebContents must own it.
-  'site_engagement::SiteEngagementService::Helper::CreateForWebContents',
   # The task manager tag is looked up from WebContents user data by
   # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
   # also attached to non-tab WebContents (e.g. payment handler WebViews) and

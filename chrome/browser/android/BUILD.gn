@@ -28,6 +28,7 @@ source_set("tabs_public") {
     "//components/favicon/core",
     "//components/safe_browsing:buildflags",
     "//components/sessions:session_id",
+    "//components/site_engagement/content",
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",

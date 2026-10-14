@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui_name_variants.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
@@ -201,6 +202,13 @@ class WebUIContentsWrapper
 
   base::WeakPtr<WebUIContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
+  // Tracks user engagement with non-tab Top Chrome WebUIs (bubbles and side
+  // panels). `WebUIContentsPreloadManager` (via
+  // `webui::ProfilePreloadCandidateSelector`) queries `SiteEngagementService`
+  // scores for `.top-chrome` URLs to select which WebUI to preload and skips
+  // preloading when engagement is `NONE` or `MINIMAL`.
+  std::unique_ptr<site_engagement::SiteEngagementService::Helper>
+      site_engagement_helper_;
 };
 
 // WebUIContentsWrapperT is designed to be paired with the WebUIController

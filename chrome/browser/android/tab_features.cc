@@ -773,10 +773,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   PrefsTabHelper::CreateForWebContents(web_contents);
 
   if (site_engagement::SiteEngagementService::IsEnabled()) {
-    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents,
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            profile));
+    site_engagement_helper_ =
+        std::make_unique<site_engagement::SiteEngagementService::Helper>(
+            web_contents,
+            prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+                profile));
   }
 
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);

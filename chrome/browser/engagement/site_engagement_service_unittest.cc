@@ -335,7 +335,7 @@ TEST_F(SiteEngagementServiceTest, GetMedianEngagement) {
 // both times.
 TEST_F(SiteEngagementServiceTest, ScoreIncrementsOnPageRequest) {
   // Create the helper manually since it isn't present when a tab isn't created.
-  SiteEngagementService::Helper::CreateForWebContents(web_contents());
+  SiteEngagementService::Helper helper(web_contents());
 
   GURL url("http://www.google.com/");
   EXPECT_EQ(0, service_->GetScore(url));
@@ -1000,7 +1000,7 @@ TEST_F(SiteEngagementServiceTest, NavigationAccumulation) {
   GURL url("https://www.google.com/");
 
   // Create the helper manually since it isn't present when a tab isn't created.
-  SiteEngagementService::Helper::CreateForWebContents(web_contents());
+  SiteEngagementService::Helper helper(web_contents());
 
   // Only direct navigation should trigger engagement.
   NavigateWithTransitionAndExpectHigherScore(service_, url,

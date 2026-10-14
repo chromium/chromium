@@ -38,7 +38,10 @@ source_set("top_chrome") {
       "webui_contents_warmup_level_recorder.h",
       "webui_contents_wrapper.h",
     ]
-    public_deps += [ "//components/web_modal" ]
+    public_deps += [
+      "//components/site_engagement/content",
+      "//components/web_modal",
+    ]
   }
 }
 

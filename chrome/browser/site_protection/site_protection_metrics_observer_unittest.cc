@@ -116,6 +116,7 @@ class SiteProtectionMetricsObserverTest
 
   void TearDown() override {
     site_protection_observer_.reset();
+    site_engagement_helper_.reset();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
@@ -132,6 +133,7 @@ class SiteProtectionMetricsObserverTest
 
   void SetIncognito() {
     site_protection_observer_.reset();
+    site_engagement_helper_.reset();
     Profile* const otr_profile =
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
@@ -145,8 +147,9 @@ class SiteProtectionMetricsObserverTest
 
   void SetUpForNewWebContents() {
     // Create services which observe page navigation.
-    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents());
+    site_engagement_helper_ =
+        std::make_unique<site_engagement::SiteEngagementService::Helper>(
+            web_contents());
     site_protection_observer_ =
         std::make_unique<SiteProtectionMetricsObserver>(web_contents());
   }
@@ -242,6 +245,8 @@ class SiteProtectionMetricsObserverTest
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
 #endif
+  std::unique_ptr<site_engagement::SiteEngagementService::Helper>
+      site_engagement_helper_;
   std::unique_ptr<SiteProtectionMetricsObserver> site_protection_observer_;
 };
 
@@ -705,6 +710,7 @@ class SiteProtectionMetricsObserverV8OptTest
 
   void TearDown() override {
     site_protection_observer_.reset();
+    site_engagement_helper_.reset();
     DeleteContents();
     SetRenderProcessHostFactory(nullptr);
     test_render_process_host_factory_.reset();

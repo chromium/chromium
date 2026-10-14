@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/webui/buildflags.h"
@@ -356,6 +357,8 @@ class TabFeatures {
   std::unique_ptr<predictors::LoadingPredictorTabHelper>
       loading_predictor_tab_helper_;
   std::unique_ptr<BreadcrumbManagerTabHelper> breadcrumb_manager_tab_helper_;
+  std::unique_ptr<site_engagement::SiteEngagementService::Helper>
+      site_engagement_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

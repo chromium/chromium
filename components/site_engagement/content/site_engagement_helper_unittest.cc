@@ -67,18 +67,15 @@ class SiteEngagementHelperTest : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    helper_.reset();
     SiteEngagementService::ClearServiceProvider(service_provider_.get());
 
     content::RenderViewHostTestHarness::TearDown();
   }
 
   SiteEngagementService::Helper* GetHelper(content::WebContents* web_contents) {
-    SiteEngagementService::Helper::CreateForWebContents(web_contents);
-    SiteEngagementService::Helper* helper =
-        SiteEngagementService::Helper::FromWebContents(web_contents);
-
-    DCHECK(helper);
-    return helper;
+    helper_ = std::make_unique<SiteEngagementService::Helper>(web_contents);
+    return helper_.get();
   }
 
   void TrackingStarted(SiteEngagementService::Helper* helper) {
@@ -198,6 +195,7 @@ class SiteEngagementHelperTest : public content::RenderViewHostTestHarness {
   }
 
  private:
+  std::unique_ptr<SiteEngagementService::Helper> helper_;
   std::unique_ptr<TestSiteEngagementServiceProvider> service_provider_;
   TestingPrefServiceSimple pref_service_;
   permissions::TestPermissionsClient permissions_client_;
