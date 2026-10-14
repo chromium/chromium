@@ -50,8 +50,10 @@
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/enterprise/analysis/features.h"
@@ -968,8 +970,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
   SetPasteBlockFromOtherProfileRule();
 
   // Create a second profile.
-  ProfileIOS* source_profile = profile_manager_.AddProfileWithBuilder(
-      std::move(TestProfileIOS::Builder().SetName("SourceProfile")));
+  ProfileIOS* source_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
   auto source_web_state = std::make_unique<web::FakeWebState>();
   source_web_state->SetBrowserState(source_profile);
   OverlayRequestQueue::CreateForWebState(source_web_state.get());
