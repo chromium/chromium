@@ -8,6 +8,7 @@
 
 Filters out expected/known denials and displays a macOS dialog prompting to file
 a pre-filled Chromium Issue Tracker bug when an unexpected denial occurs.
+Repeated dialogs for the same denial are suppressed after dismissal.
 
 This tool MUST remain compatible with the default macOS Python interpreter
 (`/usr/bin/python3`), which is Python 3.9.6 at the time of writing. Do not use
@@ -25,16 +26,22 @@ from __future__ import annotations
 
 import argparse
 import logging
+import math
 from pathlib import Path
 import shlex
 import subprocess
 import sys
 import threading
-from typing import Sequence, Union
+import time
+from typing import Callable, Optional, Sequence, Union
 import webbrowser
 
 from bug_tracker import get_bug_url, get_denial_summary, normalize_denials
 from log_events import SandboxDenial
+
+# Duration (in seconds) to suppress repeated notifications for a denial after
+# its dialog is dismissed or times out.
+_COOLDOWN_SECONDS = 3600
 
 # Duration (in seconds) before an unanswered dialog closes itself.
 _DIALOG_GIVE_UP_SECONDS = 15
@@ -142,20 +149,33 @@ _KNOWN_SUBPATH_DENIALS: dict[str, tuple[str, ...]] = {
 }
 
 
-class DenialFilter:
-    """Filters out known and expected sandbox denials."""
+def _normalize_target(target: str) -> str:
+    """Normalizes a denial target path by stripping trailing slashes."""
+    return target.rstrip("/") if target != "/" else "/"
 
-    def __init__(self) -> None:
-        self._logger = logging.getLogger("sandbox_denial_watcher")
+
+class DenialFilter:
+    """Decides which sandbox denials should be reported.
+
+    Combines static known-denial rules with temporary suppressions that are
+    added when the user responds to a dialog.
+    """
+
+    def __init__(
+        self,
+        clock: Callable[[], float] = time.monotonic,
+        logger: Optional[logging.Logger] = None,
+    ) -> None:
+        self._clock = clock
+        self._logger = logger or logging.getLogger("sandbox_denial_watcher")
+        # Maps (action, target) to the clock time at which its suppression
+        # expires.
+        self._suppressed: dict[tuple[str, str], float] = {}
 
     def should_ignore(self, denial_event: SandboxDenial) -> bool:
-        """Returns True if the denial is a known expected denial."""
+        """Returns True if the denial is expected or currently suppressed."""
         action = denial_event.action
-        target = (
-            denial_event.target.rstrip("/")
-            if denial_event.target != "/"
-            else "/"
-        )
+        target = _normalize_target(denial_event.target)
 
         if target in _KNOWN_EXACT_DENIALS.get(action, ()):
             self._logger.debug(
@@ -179,7 +199,52 @@ class DenialFilter:
                 )
                 return True
 
+        key = (action, target)
+        expires_at = self._suppressed.get(key)
+        if expires_at is not None:
+            now = self._clock()
+            if now >= expires_at:
+                del self._suppressed[key]
+                return False
+
+            remaining = expires_at - now
+            duration_str = (
+                "for the remainder of the session"
+                if math.isinf(remaining)
+                else f"for {remaining:.1f}s"
+            )
+            denial_str = f"{action} {target}" if target else action
+            self._logger.debug(
+                "Filtered suppressed denial matching '%s' (%s): %s",
+                denial_str,
+                duration_str,
+                denial_event.event_message,
+            )
+            return True
+
         return False
+
+    def suppress(
+        self,
+        denial_event: Union[SandboxDenial, Sequence[SandboxDenial]],
+        duration_seconds: float,
+    ) -> None:
+        """Suppresses notifications for a denial for the given duration.
+
+        An existing suppression for the same action and target is only ever
+        extended, never shortened.
+        """
+        if duration_seconds <= 0:
+            return
+        expires_at = (
+            math.inf
+            if math.isinf(duration_seconds)
+            else self._clock() + duration_seconds
+        )
+        for denial in normalize_denials(denial_event):
+            key = (denial.action, _normalize_target(denial.target))
+            if self._suppressed.get(key, -math.inf) < expires_at:
+                self._suppressed[key] = expires_at
 
 
 def _validate_process_name(proc: str) -> None:
@@ -239,34 +304,61 @@ def prompt_to_file_bug(
         if f"button returned:{_FILE_BUG_BUTTON_TITLE}" in res.stdout:
             webbrowser.open(url)
             return True
+
         return False
 
 
 class SandboxDenialWatcher:
     """Watches macOS system logs for unexpected sandbox denials."""
 
-    def __init__(self) -> None:
-        self._logger = logging.getLogger("sandbox_denial_watcher")
-        for proc in _INTERESTING_PROCS:
+    def __init__(
+        self,
+        denial_filter: Optional[DenialFilter] = None,
+        batch_window_seconds: float = _BATCH_WINDOW_SECONDS,
+        cooldown_seconds: float = _COOLDOWN_SECONDS,
+        interesting_procs: Sequence[str] = _INTERESTING_PROCS,
+        logger: Optional[logging.Logger] = None,
+    ) -> None:
+        self._logger = logger or logging.getLogger("sandbox_denial_watcher")
+        self._interesting_procs = tuple(interesting_procs)
+        for proc in self._interesting_procs:
             _validate_process_name(proc)
-        self._interesting_procs = _INTERESTING_PROCS
-        self._denial_filter = DenialFilter()
-        self._prompted_denials: set[tuple[str, str]] = set()
-        self._batch_window_seconds = _BATCH_WINDOW_SECONDS
+        self._denial_filter = denial_filter or DenialFilter(logger=self._logger)
+        self._batch_window_seconds = batch_window_seconds
+        self._cooldown_seconds = cooldown_seconds
         self._batch_lock = threading.Lock()
         self._active_batches: dict[tuple[str, str], list[SandboxDenial]] = {}
+        self._prompted_denials: set[tuple[str, str]] = set()
 
     def _flush_batch(self, batch_key: tuple[str, str]) -> None:
         """Flushes a pending batch of denials and prompts the user."""
         with self._batch_lock:
             denials = self._active_batches.pop(batch_key, None)
-            if not denials or batch_key in self._prompted_denials:
+            if not denials:
                 return
-            self._prompted_denials.add(batch_key)
+            for denial in denials:
+                self._prompted_denials.add(
+                    (denial.action, _normalize_target(denial.target))
+                )
 
         url = get_bug_url(denials)
         self._logger.info("[REPORT] %s", url)
-        prompt_to_file_bug(denials)
+        if prompt_to_file_bug(denials):
+            self._denial_filter.suppress(denials, math.inf)
+        else:
+            self._denial_filter.suppress(denials, self._cooldown_seconds)
+        with self._batch_lock:
+            for denial in denials:
+                self._prompted_denials.discard(
+                    (denial.action, _normalize_target(denial.target))
+                )
+
+    def _flush_all_batches(self) -> None:
+        """Flushes all pending batches immediately."""
+        with self._batch_lock:
+            keys = list(self._active_batches.keys())
+        for key in keys:
+            self._flush_batch(key)
 
     def _report_denial(self, denial_event: SandboxDenial) -> None:
         """Logs an unexpected denial and queues it into a batch."""
@@ -274,10 +366,16 @@ class SandboxDenialWatcher:
         batch_key = (denial_event.process_name, denial_event.action)
 
         with self._batch_lock:
-            if batch_key in self._prompted_denials:
+            key = (denial_event.action, _normalize_target(denial_event.target))
+            if key in self._prompted_denials:
+                denial_str = (
+                    f"{denial_event.action} {key[1]}"
+                    if key[1]
+                    else denial_event.action
+                )
                 self._logger.debug(
                     "Skipping bug prompt for already prompted denial: %s",
-                    batch_key,
+                    denial_str,
                 )
                 return
 

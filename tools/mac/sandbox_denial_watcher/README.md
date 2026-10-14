@@ -54,11 +54,10 @@ When unexpected denials occur:
 - A single `[REPORT]` URL is emitted for the batch, and a macOS dialog appears
   with **Dismiss** and **File bug** buttons:
   - Clicking **File bug** opens your browser to a pre-filled issue on the
-    Chromium Issue Tracker containing all batched denial events.
-  - Clicking **Dismiss** closes the dialog.
-  - If neither button is clicked within 15 seconds, the dialog closes itself.
-- To avoid repeated popups, you will only be prompted once for a given denial
-  per session.
+    Chromium Issue Tracker containing all batched denial events and suppresses
+    further notifications for that denial for the remainder of the session.
+  - Clicking **Dismiss** or letting the dialog close after 15 seconds
+    suppresses notifications for that denial for one hour.
 
 ## Adding New Known Denials
 

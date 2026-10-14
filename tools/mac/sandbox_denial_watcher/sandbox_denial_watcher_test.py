@@ -7,13 +7,14 @@
 """Unit tests for sandbox_denial_watcher.py.
 
 Log lines are fed through the same parse, filter, and report steps that
-watch_logs() uses, with the `log stream` process mocked out.
+watch_logs() uses, with the macOS dialog and `log stream` process mocked out.
 """
 
 from __future__ import annotations
 
 import io
 import json
+import math
 import subprocess
 import sys
 from typing import Optional, Union
@@ -82,18 +83,28 @@ def _mock_log_process(
 
 
 class WatcherTestCase(unittest.TestCase):
-    """Base class for tests that feed log lines to the watcher."""
+    """Base class providing a fresh filter and fake clock per test."""
 
     # pylint: disable=protected-access
 
     def setUp(self) -> None:
         super().setUp()
-        self.watcher = SandboxDenialWatcher()
+        self.now = 1000.0
+        timer_patcher = patch("sandbox_denial_watcher.threading.Timer")
+        self.mock_timer = timer_patcher.start()
+        self.addCleanup(timer_patcher.stop)
+        self.denial_filter = self.make_filter()
+        self.watcher = SandboxDenialWatcher(denial_filter=self.denial_filter)
+
+    def make_filter(self) -> DenialFilter:
+        """Returns a DenialFilter that reads time from `self.now`."""
+        return DenialFilter(clock=lambda: self.now)
 
     def feed(self, *lines: bytes) -> None:
         """Handles each of `lines` as if read from `log stream`."""
         for line in lines:
             self.watcher._handle_log_line(line)
+        self.watcher._flush_all_batches()
 
 
 class ValidationTest(unittest.TestCase):
@@ -104,7 +115,7 @@ class ValidationTest(unittest.TestCase):
             _validate_process_name(name)
 
     def test_rejects_dangerous_characters(self):
-        for name in ('bad"proc', "bad\\proc", "bad\u2603proc"):
+        for name in ('bad"proc', "bad\\proc", "bad☃proc"):
             with self.subTest(name=name):
                 with self.assertRaises(ValueError):
                     _validate_process_name(name)
@@ -225,14 +236,14 @@ class FilteringTest(WatcherTestCase):
         )
         mock_prompt.assert_called_once_with([denial])
 
-    @patch("sandbox_denial_watcher.prompt_to_file_bug")
+    @patch("sandbox_denial_watcher.prompt_to_file_bug", return_value=True)
     def test_report_denial_deduplicates_prompts(self, mock_prompt):
-        denial = _denial("mach-lookup com.apple.foo")
-        self.watcher._report_denial(denial)
-        self.watcher._flush_batch((denial.process_name, denial.action))
-        self.watcher._report_denial(denial)
-        self.watcher._flush_batch((denial.process_name, denial.action))
-        mock_prompt.assert_called_once_with([denial])
+        line = _denial_line("mach-lookup com.apple.foo")
+        self.feed(line)
+        self.feed(line)
+        mock_prompt.assert_called_once_with(
+            [_denial("mach-lookup com.apple.foo")]
+        )
 
     @patch("sandbox_denial_watcher.prompt_to_file_bug")
     def test_report_denial_batches_multiple_denials(self, mock_prompt):
@@ -253,12 +264,8 @@ class FilteringTest(WatcherTestCase):
         mock_prompt.assert_called_once_with([d1, d2])
 
 
-class DenialFilterTest(unittest.TestCase):
-    """Verifies DenialFilter's known-denial matching."""
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.denial_filter = DenialFilter()
+class DenialFilterTest(WatcherTestCase):
+    """Verifies DenialFilter's known-denial and suppression bookkeeping."""
 
     def test_known_denial_match_is_logged(self):
         with self.assertLogs("sandbox_denial_watcher", level="DEBUG") as cm:
@@ -355,6 +362,140 @@ class DenialFilterTest(unittest.TestCase):
                 )
             )
         )
+
+    def test_non_positive_duration_does_not_suppress(self):
+        denial = _denial("mach-lookup com.apple.unknown")
+        self.denial_filter.suppress(denial, 0)
+        self.denial_filter.suppress(denial, -5)
+        self.assertFalse(self.denial_filter.should_ignore(denial))
+
+    def test_suppression_is_extended_but_never_shortened(self):
+        denial = _denial("mach-lookup com.apple.unknown")
+        self.denial_filter.suppress(denial, 100)
+        self.denial_filter.suppress(denial, 10)
+        self.now += 50
+        self.assertTrue(self.denial_filter.should_ignore(denial))
+
+        self.denial_filter.suppress(denial, 200)
+        self.now += 100
+        self.assertTrue(self.denial_filter.should_ignore(denial))
+
+        self.denial_filter.suppress(denial, math.inf)
+        self.now += 1e9
+        self.assertTrue(self.denial_filter.should_ignore(denial))
+
+    def test_expired_suppression_is_removed(self):
+        denial = _denial("mach-lookup com.apple.unknown")
+        self.denial_filter.suppress(denial, 10)
+        self.now += 10
+        self.assertFalse(self.denial_filter.should_ignore(denial))
+
+        # Once removed, a shorter suppression can be added again.
+        self.denial_filter.suppress(denial, 5)
+        self.assertTrue(self.denial_filter.should_ignore(denial))
+
+    def test_filters_do_not_share_suppressions(self):
+        denial = _denial("mach-lookup com.apple.unknown")
+        self.denial_filter.suppress(denial, math.inf)
+        self.assertFalse(self.make_filter().should_ignore(denial))
+
+
+class SuppressionTest(WatcherTestCase):
+    """Verifies how dialog outcomes suppress future notifications."""
+
+    # pylint: disable=protected-access
+
+    @patch(
+        "sandbox_denial_watcher.prompt_to_file_bug",
+        return_value=False,
+    )
+    def test_dismissed_denial_respects_cooldown_and_renotifies_after_expiry(
+        self, mock_prompt
+    ):
+        line_pid_1 = _denial_line(
+            "mach-lookup com.apple.unrecognized.service", pid=100
+        )
+        line_pid_2 = _denial_line(
+            "mach-lookup com.apple.unrecognized.service", pid=200
+        )
+
+        self.now = 1000.0
+        self.feed(line_pid_1)
+        self.assertEqual(mock_prompt.call_count, 1)
+
+        # Within cooldown window, even from a different PID, no notification.
+        self.now = 2800.0
+        with self.assertLogs("sandbox_denial_watcher", level="DEBUG") as cm:
+            self.feed(line_pid_2)
+        self.assertTrue(
+            any(
+                "Filtered suppressed denial matching "
+                "'mach-lookup com.apple.unrecognized.service' (for 1800.0s)"
+                in m
+                for m in cm.output
+            )
+        )
+        self.assertEqual(mock_prompt.call_count, 1)
+
+        # A prefix-overlapping target is not suppressed by the dismissed entry.
+        self.feed(
+            _denial_line("mach-lookup com.apple.unrecognized.service.helper")
+        )
+        self.assertEqual(mock_prompt.call_count, 2)
+
+        # After cooldown window expires, notification triggers again.
+        self.now = 4601.0
+        self.feed(line_pid_2)
+        self.assertEqual(mock_prompt.call_count, 3)
+
+    @patch(
+        "sandbox_denial_watcher.prompt_to_file_bug",
+        return_value=True,
+    )
+    def test_filed_bug_suppresses_denial_for_entire_session(self, mock_prompt):
+        line = _denial_line("mach-lookup com.apple.filed.service")
+
+        self.now = 1000.0
+        self.feed(line)
+        self.assertEqual(mock_prompt.call_count, 1)
+
+        # A shorter cooldown does not overwrite a session-long suppression.
+        self.denial_filter.suppress(mock_prompt.call_args[0][0], 60.0)
+
+        # Even well past the cooldown window, a filed bug is not re-notified.
+        self.now = 999999.0
+        with self.assertLogs("sandbox_denial_watcher", level="DEBUG") as cm:
+            self.feed(line)
+        self.assertTrue(
+            any(
+                "Filtered suppressed denial matching "
+                "'mach-lookup com.apple.filed.service' "
+                "(for the remainder of the session)" in m
+                for m in cm.output
+            )
+        )
+        self.assertEqual(mock_prompt.call_count, 1)
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_timed_out_dialog_respects_cooldown(self, mock_run):
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="button returned:, gave up:true\n",
+        )
+        line = _denial_line("mach-lookup com.apple.timeout.service")
+        self.now = 1000.0
+        self.feed(line)
+        self.assertEqual(mock_run.call_count, 1)
+
+        # Within cooldown window, the denial is suppressed.
+        self.now = 2800.0
+        self.feed(line)
+        self.assertEqual(mock_run.call_count, 1)
+
+        # After cooldown expires, dialog triggers again.
+        self.now = 4601.0
+        self.feed(line)
+        self.assertEqual(mock_run.call_count, 2)
 
 
 class LogStreamTest(WatcherTestCase):
