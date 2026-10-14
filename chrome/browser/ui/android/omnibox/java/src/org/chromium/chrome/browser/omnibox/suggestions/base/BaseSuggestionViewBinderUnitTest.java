@@ -146,9 +146,8 @@ public class BaseSuggestionViewBinderUnitTest {
         List<Action> list =
                 Arrays.asList(
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 mRunnable));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
@@ -174,19 +173,16 @@ public class BaseSuggestionViewBinderUnitTest {
         List<Action> list =
                 Arrays.asList(
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 call1),
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 call2),
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 call3));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
@@ -217,19 +213,16 @@ public class BaseSuggestionViewBinderUnitTest {
         final List<Action> list =
                 Arrays.asList(
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 CallbackUtils.emptyRunnable()),
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 CallbackUtils.emptyRunnable()),
                         new Action(
-                                mContext,
                                 OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine,
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
                                 CallbackUtils.emptyRunnable()));
 
         final List<ActionButtonView> actionButtons = mBaseView.getActionButtons();

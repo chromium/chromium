@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import android.content.Context;
-
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,23 +80,6 @@ public @interface BaseSuggestionViewProperties {
          */
         public Action(OmniboxDrawableState icon, String description, Runnable callback) {
             this(icon, description, null, callback);
-        }
-
-        /**
-         * Creates a new action for a suggestion, using an accessibility description from a
-         * resource.
-         *
-         * @param context Current context.
-         * @param icon OmniboxDrawableState describing the icon to show.
-         * @param descriptionRes Resource to use as a content description for the action view.
-         * @param callback Callback to invoke when user interacts with the icon.
-         */
-        public Action(
-                Context context,
-                OmniboxDrawableState icon,
-                @StringRes int descriptionRes,
-                Runnable callback) {
-            this(icon, OmniboxResourceProvider.getString(context, descriptionRes), callback);
         }
     }
 
