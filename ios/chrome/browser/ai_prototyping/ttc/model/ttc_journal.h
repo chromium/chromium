@@ -91,6 +91,11 @@ class TTCJournalDetailsBuilder {
     return *this;
   }
 
+  // Sets a simplified human-readable summary message for the entry. Entries
+  // without a summary are hidden in simplified mode.
+  TTCJournalDetailsBuilder SetSummary(std::string_view summary) &&;
+  TTCJournalDetailsBuilder& SetSummary(std::string_view summary) &;
+
   std::vector<TTCJournalDetail> Build() && { return std::move(details_); }
 
  private:
@@ -111,11 +116,19 @@ struct TTCJournalEntry {
   TTCJournalComponent component = TTCJournalComponent::kSession;
   TTCJournalEntryType type = TTCJournalEntryType::kInstant;
   std::string event_name;
+  std::string summary;
   std::vector<TTCJournalDetail> details;
 
-  // Formats the entry as a single human-readable monospaced line:
+  // Formats the entry as a detailed single monospaced line:
   // "HH:MM:SS.mmm [Component] EventName (key=val, ...)"
   std::string FormatLine() const;
+
+  // Formats the entry as a simplified human-readable line:
+  // - If `summary` is non-empty, returns `summary` (prefixed with "[ERROR] "
+  //   when `type == kError`).
+  // - If `summary` is empty, returns "" so the entry is hidden in simplified
+  //   mode.
+  std::string FormatSimplifiedLine() const;
 };
 
 // Shared in-memory session journal for iOS TTC model components.
@@ -126,6 +139,8 @@ class TTCJournal {
   static constexpr size_t kMaxEntries = 500;
 
   using EntryAddedCallback =
+      base::RepeatingCallback<void(const TTCJournalEntry&)>;
+  using EntryUpdatedCallback =
       base::RepeatingCallback<void(const TTCJournalEntry&)>;
   using ClearedCallback = base::RepeatingClosure;
 
@@ -159,10 +174,16 @@ class TTCJournal {
   TTCJournal(const TTCJournal&) = delete;
   TTCJournal& operator=(const TTCJournal&) = delete;
 
-  // Logs an instant event under `component`.
-  void Log(TTCJournalComponent component,
-           std::string_view event_name,
-           std::vector<TTCJournalDetail> details = {});
+  // Logs an instant event under `component` and returns the created entry's ID.
+  uint64_t Log(TTCJournalComponent component,
+               std::string_view event_name,
+               std::vector<TTCJournalDetail> details = {});
+
+  // Updates an existing buffered entry with `entry_id` in-place and notifies
+  // entry-updated listeners. Returns false if `entry_id` is not found in the
+  // buffer (e.g. after `Clear()` or ring-buffer eviction).
+  bool UpdateEntry(uint64_t entry_id,
+                   std::vector<TTCJournalDetail> details = {});
 
   // Logs an error event under `component`.
   void LogError(TTCJournalComponent component,
@@ -187,6 +208,8 @@ class TTCJournal {
   // Subscriptions for UI hydration and live updates:
   base::CallbackListSubscription AddEntryAddedListener(
       EntryAddedCallback callback);
+  base::CallbackListSubscription AddEntryUpdatedListener(
+      EntryUpdatedCallback callback);
   base::CallbackListSubscription AddClearedListener(ClearedCallback callback);
 
   base::TimeDelta server_clock_delta() const { return server_clock_delta_; }
@@ -199,11 +222,11 @@ class TTCJournal {
     base::Time begin_timestamp;
   };
 
-  void AppendEntry(TTCJournalComponent component,
-                   TTCJournalEntryType type,
-                   base::Time timestamp,
-                   std::string_view event_name,
-                   std::vector<TTCJournalDetail> details);
+  uint64_t AppendEntry(TTCJournalComponent component,
+                       TTCJournalEntryType type,
+                       base::Time timestamp,
+                       std::string_view event_name,
+                       std::vector<TTCJournalDetail> details);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -218,6 +241,8 @@ class TTCJournal {
 
   base::RepeatingCallbackList<void(const TTCJournalEntry&)>
       entry_added_callbacks_;
+  base::RepeatingCallbackList<void(const TTCJournalEntry&)>
+      entry_updated_callbacks_;
   base::RepeatingClosureList cleared_callbacks_;
 
   base::WeakPtrFactory<TTCJournal> async_entry_weak_factory_{this};

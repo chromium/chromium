@@ -10,6 +10,24 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
+namespace {
+
+constexpr std::string_view kSummaryDetailKey = "__summary__";
+
+std::string ExtractSummary(std::vector<TTCJournalDetail>& details) {
+  std::string summary;
+  std::erase_if(details, [&](TTCJournalDetail& detail) {
+    if (detail.key == kSummaryDetailKey) {
+      summary = std::move(detail.value);
+      return true;
+    }
+    return false;
+  });
+  return summary;
+}
+
+}  // namespace
+
 std::string_view TTCJournalComponentToString(TTCJournalComponent component) {
   switch (component) {
     case TTCJournalComponent::kSession:
@@ -31,6 +49,18 @@ TTCJournalDetailsBuilder::TTCJournalDetailsBuilder(TTCJournalDetailsBuilder&&) =
 TTCJournalDetailsBuilder& TTCJournalDetailsBuilder::operator=(
     TTCJournalDetailsBuilder&&) = default;
 TTCJournalDetailsBuilder::~TTCJournalDetailsBuilder() = default;
+
+TTCJournalDetailsBuilder TTCJournalDetailsBuilder::SetSummary(
+    std::string_view summary) && {
+  details_.push_back({std::string(kSummaryDetailKey), std::string(summary)});
+  return std::move(*this);
+}
+
+TTCJournalDetailsBuilder& TTCJournalDetailsBuilder::SetSummary(
+    std::string_view summary) & {
+  details_.push_back({std::string(kSummaryDetailKey), std::string(summary)});
+  return *this;
+}
 
 TTCJournalEntry::TTCJournalEntry() = default;
 TTCJournalEntry::TTCJournalEntry(const TTCJournalEntry&) = default;
@@ -85,6 +115,19 @@ std::string TTCJournalEntry::FormatLine() const {
   return line;
 }
 
+std::string TTCJournalEntry::FormatSimplifiedLine() const {
+  // Entries without an explicit `SetSummary()` are omitted in simplified mode.
+  if (summary.empty()) {
+    return std::string();
+  }
+
+  // Error entries with a summary are prefixed with "[ERROR] " for visibility.
+  if (type == TTCJournalEntryType::kError && !summary.starts_with("[ERROR] ")) {
+    return "[ERROR] " + summary;
+  }
+  return summary;
+}
+
 TTCJournal::PendingAsyncEntry::PendingAsyncEntry(
     base::WeakPtr<TTCJournal> journal,
     TTCJournalComponent component,
@@ -122,12 +165,31 @@ TTCJournal::TTCJournal(size_t max_entries)
 
 TTCJournal::~TTCJournal() = default;
 
-void TTCJournal::Log(TTCJournalComponent component,
-                     std::string_view event_name,
-                     std::vector<TTCJournalDetail> details) {
+uint64_t TTCJournal::Log(TTCJournalComponent component,
+                         std::string_view event_name,
+                         std::vector<TTCJournalDetail> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AppendEntry(component, TTCJournalEntryType::kInstant, base::Time::Now(),
-              event_name, std::move(details));
+  return AppendEntry(component, TTCJournalEntryType::kInstant,
+                     base::Time::Now(), event_name, std::move(details));
+}
+
+bool TTCJournal::UpdateEntry(uint64_t entry_id,
+                             std::vector<TTCJournalDetail> details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (entry_id == 0) {
+    return false;
+  }
+  auto it = std::ranges::find(entries_, entry_id, &TTCJournalEntry::id);
+  if (it == entries_.end()) {
+    return false;
+  }
+  std::string summary = ExtractSummary(details);
+  if (!summary.empty()) {
+    it->summary = std::move(summary);
+  }
+  it->details = std::move(details);
+  entry_updated_callbacks_.Notify(*it);
+  return true;
 }
 
 void TTCJournal::LogError(TTCJournalComponent component,
@@ -250,6 +312,12 @@ base::CallbackListSubscription TTCJournal::AddEntryAddedListener(
   return entry_added_callbacks_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription TTCJournal::AddEntryUpdatedListener(
+    EntryUpdatedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return entry_updated_callbacks_.Add(std::move(callback));
+}
+
 base::CallbackListSubscription TTCJournal::AddClearedListener(
     ClearedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -261,11 +329,11 @@ base::WeakPtr<TTCJournal> TTCJournal::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void TTCJournal::AppendEntry(TTCJournalComponent component,
-                             TTCJournalEntryType type,
-                             base::Time timestamp,
-                             std::string_view event_name,
-                             std::vector<TTCJournalDetail> details) {
+uint64_t TTCJournal::AppendEntry(TTCJournalComponent component,
+                                 TTCJournalEntryType type,
+                                 base::Time timestamp,
+                                 std::string_view event_name,
+                                 std::vector<TTCJournalDetail> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (entries_.size() >= max_entries_) {
     entries_.pop_front();
@@ -277,8 +345,10 @@ void TTCJournal::AppendEntry(TTCJournalComponent component,
   entry.component = component;
   entry.type = type;
   entry.event_name = std::string(event_name);
+  entry.summary = ExtractSummary(details);
   entry.details = std::move(details);
 
   entries_.push_back(std::move(entry));
   entry_added_callbacks_.Notify(entries_.back());
+  return entries_.back().id;
 }

@@ -75,11 +75,18 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   // Subscription observing entries added to TTCJournal.
   base::CallbackListSubscription _journalEntryAddedSubscription;
 
+  // Subscription observing entries updated in-place in TTCJournal.
+  base::CallbackListSubscription _journalEntryUpdatedSubscription;
+
   // Subscription observing when TTCJournal is cleared.
   base::CallbackListSubscription _journalClearedSubscription;
 
   // Optional component filter applied to displayed journal lines.
   std::optional<TTCJournalComponent> _journalComponentFilter;
+
+  // Whether the journal displays full detailed telemetry (`YES`) or simplified
+  // human-readable lines. Defaults to NO.
+  BOOL _journalDetailedMode;
 
   // Weak reference to the currently observed session controller.
   __weak TTCSessionController* _observedSessionController;
@@ -92,6 +99,7 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   if (self) {
     _currentState = TTCSessionUIState::kIdle;
     _ttcService = ttcService;
+    _journalDetailedMode = NO;
     if (_ttcService) {
       __weak TTCMediator* weakSelf = self;
       _stateChangeSubscription = _ttcService->RegisterStateChangedCallback(
@@ -102,6 +110,11 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
           _ttcService->journal().AddEntryAddedListener(
               base::BindRepeating(^(const TTCJournalEntry& entry) {
                 [weakSelf handleJournalEntryAdded:entry];
+              }));
+      _journalEntryUpdatedSubscription =
+          _ttcService->journal().AddEntryUpdatedListener(
+              base::BindRepeating(^(const TTCJournalEntry& entry) {
+                [weakSelf handleJournalEntryUpdated:entry];
               }));
       _journalClearedSubscription =
           _ttcService->journal().AddClearedListener(base::BindRepeating(^{
@@ -173,6 +186,11 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
+- (void)setJournalDetailedMode:(BOOL)detailed {
+  _journalDetailedMode = detailed;
+  [self.consumer setJournalLines:[self formattedJournalLines]];
+}
+
 #pragma mark - TTCSessionControllerObserver
 
 - (void)sessionController:(TTCSessionController*)controller
@@ -202,6 +220,7 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   [self stopObservingSessionControllerIfNeeded];
   _stateChangeSubscription = {};
   _journalEntryAddedSubscription = {};
+  _journalEntryUpdatedSubscription = {};
   _journalClearedSubscription = {};
   _ttcService = nullptr;
   _consumer = nil;
@@ -253,13 +272,35 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   }
 }
 
+// Formats a single `TTCJournalEntry` according to `_journalDetailedMode`,
+// returning `nil` if the entry should be omitted in simplified mode.
+- (NSString*)formatJournalEntry:(const TTCJournalEntry&)entry {
+  std::string formatted =
+      _journalDetailedMode ? entry.FormatLine() : entry.FormatSimplifiedLine();
+  if (formatted.empty()) {
+    return nil;
+  }
+  return base::SysUTF8ToNSString(formatted);
+}
+
 // Handles a new entry appended to `TTCJournal`.
 - (void)handleJournalEntryAdded:(const TTCJournalEntry&)entry {
   if (_journalComponentFilter.has_value() &&
       entry.component != *_journalComponentFilter) {
     return;
   }
-  [self.consumer appendJournalLine:base::SysUTF8ToNSString(entry.FormatLine())];
+  if (NSString* line = [self formatJournalEntry:entry]) {
+    [self.consumer appendJournalLine:line];
+  }
+}
+
+// Handles an existing entry updated in-place in `TTCJournal`.
+- (void)handleJournalEntryUpdated:(const TTCJournalEntry&)entry {
+  if (_journalComponentFilter.has_value() &&
+      entry.component != *_journalComponentFilter) {
+    return;
+  }
+  [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
 // Handles `TTCJournal::Clear()` notifications.
@@ -278,7 +319,9 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
         entry.component != *_journalComponentFilter) {
       continue;
     }
-    [lines addObject:base::SysUTF8ToNSString(entry.FormatLine())];
+    if (NSString* line = [self formatJournalEntry:entry]) {
+      [lines addObject:line];
+    }
   }
   return lines;
 }

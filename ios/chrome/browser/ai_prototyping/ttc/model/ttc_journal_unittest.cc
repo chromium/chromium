@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
+#include "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 
-#import <memory>
-#import <string>
-#import <vector>
+#include <memory>
+#include <string>
+#include <vector>
 
-#import "base/functional/bind.h"
-#import "base/test/task_environment.h"
-#import "base/time/time.h"
-#import "testing/gmock/include/gmock/gmock.h"
-#import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
+#include "base/functional/bind.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 
 namespace {
 
@@ -121,6 +121,38 @@ TEST_F(TTCJournalTest, TestListenersNotifiedOnAddAndClear) {
   journal.Clear();
   EXPECT_TRUE(journal.entries().empty());
   EXPECT_EQ(cleared_count, 1);
+}
+
+// Test simplified formatting with SetSummary and in-place entry updates.
+TEST_F(TTCJournalTest, TestSimplifiedSummaryAndUpdateEntry) {
+  TTCJournal journal;
+  uint64_t entry_id =
+      journal.Log(TTCJournalComponent::kConversation, "TtcInputTranscription",
+                  TTCJournalDetailsBuilder()
+                      .SetSummary("Input: Hello")
+                      .Add("text", "Hello")
+                      .Build());
+  journal.Log(TTCJournalComponent::kBackend, "ClockSync",
+              TTCJournalDetailsBuilder().Add("clock_delta", "10ms").Build());
+  journal.LogError(
+      TTCJournalComponent::kBackend, "TtcBackendError",
+      TTCJournalDetailsBuilder().SetSummary("Backend error").Build());
+  journal.LogError(TTCJournalComponent::kBackend, "InternalServerError");
+
+  ASSERT_EQ(journal.entries().size(), 4u);
+  EXPECT_EQ(journal.entries()[0].FormatSimplifiedLine(), "Input: Hello");
+  EXPECT_EQ(journal.entries()[1].FormatSimplifiedLine(), "");
+  EXPECT_EQ(journal.entries()[2].FormatSimplifiedLine(),
+            "[ERROR] Backend error");
+  EXPECT_EQ(journal.entries()[3].FormatSimplifiedLine(), "");
+
+  EXPECT_TRUE(
+      journal.UpdateEntry(entry_id, TTCJournalDetailsBuilder()
+                                        .SetSummary("Input: Hello world")
+                                        .Add("text", "Hello world")
+                                        .Build()));
+  EXPECT_EQ(journal.entries()[0].FormatSimplifiedLine(), "Input: Hello world");
+  EXPECT_FALSE(journal.UpdateEntry(999, {}));
 }
 
 }  // namespace

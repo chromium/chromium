@@ -50,7 +50,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ttc_conversation_unittest.mm",
-    "ttc_journal_unittest.mm",
+    "ttc_journal_unittest.cc",
     "ttc_keyed_service_unittest.mm",
     "ttc_session_controller_unittest.mm",
     "ttc_websocket_backend_unittest.mm",

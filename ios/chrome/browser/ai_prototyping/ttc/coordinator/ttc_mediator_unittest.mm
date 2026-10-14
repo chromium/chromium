@@ -276,36 +276,48 @@ TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
-// Tests journal hydration, live append, component filtering, and clearing.
+// Tests journal hydration, detailed mode toggle, component filtering, in-place
+// updates, and clearing.
 TEST_F(TTCMediatorTest, TestJournalHydrationFilteringAndClear) {
-  ttc_service_->journal().Log(TTCJournalComponent::kSession,
-                              "TtcSessionLifecycle");
+  ttc_service_->journal().Log(
+      TTCJournalComponent::kSession, "TtcSessionLifecycle",
+      TTCJournalDetailsBuilder().SetSummary("Session live").Build());
   ttc_service_->journal().Log(TTCJournalComponent::kBackend, "ClockSync");
 
-  OCMExpect([mock_consumer_
-      setJournalLines:[OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* lines) {
-        return lines.count == 2u &&
-               [lines[0] containsString:@"TtcSessionLifecycle"] &&
-               [lines[1] containsString:@"ClockSync"];
-      }]]);
+  OCMExpect([mock_consumer_ setJournalLines:@[ @"Session live" ]]);
   mediator_.consumer = mock_consumer_;
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
-  // Live append.
+  // Toggling detailed mode shows both entries with component tags.
   OCMExpect([mock_consumer_
-      appendJournalLine:[OCMArg checkWithBlock:^BOOL(NSString* line) {
-        return [line containsString:@"TtcInputTranscription"];
+      setJournalLines:[OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* lines) {
+        if (lines.count != 2u) {
+          return NO;
+        }
+        return [lines[0] containsString:@"[Session] TtcSessionLifecycle"] &&
+               [lines[1] containsString:@"[Backend] ClockSync"];
       }]]);
-  ttc_service_->journal().Log(TTCJournalComponent::kConversation,
-                              "TtcInputTranscription");
+  [mediator_ setJournalDetailedMode:YES];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  [mediator_ setJournalDetailedMode:NO];
+
+  // Live append and in-place update.
+  OCMExpect([mock_consumer_ appendJournalLine:@"Input: Hello"]);
+  uint64_t transcript_id = ttc_service_->journal().Log(
+      TTCJournalComponent::kConversation, "TtcInputTranscription",
+      TTCJournalDetailsBuilder().SetSummary("Input: Hello").Build());
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  OCMExpect([mock_consumer_
+      setJournalLines:(@[ @"Session live", @"Input: Hello world" ])]);
+  ttc_service_->journal().UpdateEntry(
+      transcript_id,
+      TTCJournalDetailsBuilder().SetSummary("Input: Hello world").Build());
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
   // Filter to Session only, then clear.
-  OCMExpect([mock_consumer_
-      setJournalLines:[OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* lines) {
-        return lines.count == 1u &&
-               [lines[0] containsString:@"TtcSessionLifecycle"];
-      }]]);
+  OCMExpect([mock_consumer_ setJournalLines:@[ @"Session live" ]]);
   [mediator_ setJournalComponentFilter:TTCJournalFilter::kSession];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 

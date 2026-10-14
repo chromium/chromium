@@ -45,6 +45,10 @@ enum class TTCJournalFilter {
 // Filters the session journal by `filter`.
 - (void)setJournalComponentFilter:(TTCJournalFilter)filter;
 
+// Toggles between the simplified human-readable journal view (`NO`, default)
+// and the detailed telemetry journal view (`YES`).
+- (void)setJournalDetailedMode:(BOOL)detailed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_UI_TTC_MUTATOR_H_
