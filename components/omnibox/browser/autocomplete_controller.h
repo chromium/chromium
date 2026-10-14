@@ -39,6 +39,7 @@ class ClipboardProvider;
 class ContextualSearchProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
+class GURL;
 class HistoryFuzzyProvider;
 class HistoryQuickProvider;
 class HistoryURLProvider;
@@ -265,6 +266,17 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Constructs and sets the final destination URL on the given match.
   void SetMatchDestinationURL(AutocompleteMatch* match) const;
+
+  // Computes the alternative navigation match for `match` opened for `input`,
+  // if any, or constructs one for a precomputed `alternate_nav_url`. Used to
+  // suggest a direct navigation when a search was performed for what could be
+  // an intranet hostname.
+  AutocompleteMatch ComputeAlternativeNavMatch(
+      const AutocompleteInput& input,
+      const AutocompleteMatch& match) const;
+  AutocompleteMatch ComputeAlternativeNavMatch(
+      const AutocompleteInput& input,
+      const GURL& alternate_nav_url) const;
 
   HistoryURLProvider* history_url_provider() const {
     return history_url_provider_;

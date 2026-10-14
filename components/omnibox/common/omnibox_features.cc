@@ -663,6 +663,10 @@ BASE_FEATURE(kOmniboxSessionlessVoiceSearch, ENABLED);
 // Kill switch for suppressing status icon during HTTP/HTTPS navigation.
 BASE_FEATURE(kSuppressStatusIconDuringHttpNavigation, ENABLED);
 
+// Enables computing and probing alternative navigation matches for intranet
+// redirects on Android.
+BASE_FEATURE(kOmniboxAndroidIntranetRedirect, DISABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {

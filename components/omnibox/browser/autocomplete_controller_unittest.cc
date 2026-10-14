@@ -30,13 +30,17 @@
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
+#include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -45,8 +49,8 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using ::testing::ElementsAre;
 using ::testing::Pair;
@@ -58,6 +62,9 @@ class AutocompleteControllerTest : public testing::Test {
 
   void SetUp() override {
     EnterpriseSearchManager::RegisterProfilePrefs(pref_service()->registry());
+    static_cast<TestingPrefServiceSimple*>(provider_client()->GetLocalState())
+        ->registry()
+        ->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
   }
 
   void SetAutocompleteMatches(const std::vector<AutocompleteMatch>& matches) {
@@ -91,6 +98,12 @@ class AutocompleteControllerTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return static_cast<sync_preferences::TestingPrefServiceSyncable*>(
         provider_client()->GetPrefs());
+  }
+
+  void SetIntranetRedirectBehavior(
+      omnibox::IntranetRedirectorBehavior behavior) {
+    provider_client()->GetLocalState()->SetInteger(
+        omnibox::kIntranetRedirectBehavior, static_cast<int>(behavior));
   }
 
  protected:
@@ -3774,3 +3787,61 @@ TEST_F(AutocompleteControllerTest, ExcludedProviderStoppedAndUpdatesIgnored) {
   EXPECT_TRUE(head_provider->done());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(AutocompleteControllerTest, ComputeAlternativeNavMatch_ExplicitUrl) {
+  AutocompleteInput input(u"intranet", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  GURL explicit_url("http://intranet/");
+
+  AutocompleteMatch alt_match =
+      controller_.ComputeAlternativeNavMatch(input, explicit_url);
+  EXPECT_EQ(omnibox::AutocompleteMatchType::kUrlWhatYouTyped, alt_match.type);
+  EXPECT_EQ(explicit_url, alt_match.destination_url);
+}
+
+TEST_F(AutocompleteControllerTest, ComputeAlternativeNavMatch_PolicyAllowed) {
+  SetIntranetRedirectBehavior(omnibox::IntranetRedirectorBehavior::
+                                  ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS);
+
+  AutocompleteInput input(u"intranet", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteMatch match(nullptr, 1200, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.destination_url = GURL("https://www.google.com/search?q=intranet");
+
+  AutocompleteMatch alt_match =
+      controller_.ComputeAlternativeNavMatch(input, match);
+  EXPECT_EQ(omnibox::AutocompleteMatchType::kUrlWhatYouTyped, alt_match.type);
+  EXPECT_EQ(GURL("http://intranet/"), alt_match.destination_url);
+}
+
+TEST_F(AutocompleteControllerTest, ComputeAlternativeNavMatch_PolicyDisabled) {
+  SetIntranetRedirectBehavior(
+      omnibox::IntranetRedirectorBehavior::DISABLE_FEATURE);
+
+  AutocompleteInput input(u"intranet", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteMatch match(nullptr, 1200, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.destination_url = GURL("https://www.google.com/search?q=intranet");
+
+  AutocompleteMatch alt_match =
+      controller_.ComputeAlternativeNavMatch(input, match);
+  EXPECT_FALSE(alt_match.destination_url.is_valid());
+}
+
+TEST_F(AutocompleteControllerTest,
+       ComputeAlternativeNavMatch_NonSearchMatchReturnsInvalid) {
+  SetIntranetRedirectBehavior(omnibox::IntranetRedirectorBehavior::
+                                  ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS);
+
+  AutocompleteInput input(u"intranet", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteMatch match(nullptr, 1200, false,
+                          omnibox::AutocompleteMatchType::kHistoryUrl);
+  match.destination_url = GURL("https://example.com/");
+
+  AutocompleteMatch alt_match =
+      controller_.ComputeAlternativeNavMatch(input, match);
+  EXPECT_FALSE(alt_match.destination_url.is_valid());
+}

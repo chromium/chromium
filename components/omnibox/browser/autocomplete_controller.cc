@@ -86,6 +86,7 @@
 #include "components/omnibox/browser/tab_group_provider.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
+#include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
@@ -1093,6 +1094,22 @@ void AutocompleteController::SetMatchDestinationURL(
 #if BUILDFLAG(IS_ANDROID)
   match->UpdateJavaNavigationDetails();
 #endif
+}
+
+AutocompleteMatch AutocompleteController::ComputeAlternativeNavMatch(
+    const AutocompleteInput& input,
+    const AutocompleteMatch& match) const {
+  return ComputeAlternativeNavMatch(input,
+                                    AutocompleteResult::ComputeAlternateNavUrl(
+                                        input, match, provider_client_.get()));
+}
+
+AutocompleteMatch AutocompleteController::ComputeAlternativeNavMatch(
+    const AutocompleteInput& input,
+    const GURL& alternate_nav_url) const {
+  return VerbatimMatchForInput(history_url_provider_, provider_client_.get(),
+                               input, alternate_nav_url,
+                               /*trim_http=*/false);
 }
 
 void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,

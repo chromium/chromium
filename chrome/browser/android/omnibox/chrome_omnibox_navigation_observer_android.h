@@ -16,8 +16,8 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-// Android subclass of ChromeOmniboxNavigationObserverBase. Does not run the
-// alternative-navigation probe yet.
+// Android subclass of ChromeOmniboxNavigationObserverBase. Does not yet show a
+// UI prompt when the alternative-navigation probe succeeds.
 //
 // Please see the class comment on the base class for important information
 // about the memory management of this object.
@@ -25,10 +25,12 @@ class ChromeOmniboxNavigationObserverAndroid
     : public ChromeOmniboxNavigationObserverBase {
  public:
   // Create ChromeOmniboxNavigationObserverAndroid.
-  static void Create(content::NavigationHandle* navigation_handle,
-                     Profile* profile,
-                     const std::u16string& omnibox_user_input,
-                     const AutocompleteMatch& selected_match);
+  static void Create(
+      content::NavigationHandle* navigation_handle,
+      Profile* profile,
+      const std::u16string& omnibox_user_input,
+      const AutocompleteMatch& selected_match,
+      const AutocompleteMatch& alternative_nav_match = AutocompleteMatch());
 
  private:
   friend class ChromeOmniboxNavigationObserverAndroidTest;
@@ -37,7 +39,9 @@ class ChromeOmniboxNavigationObserverAndroid
       content::NavigationHandle& navigation_handle,
       Profile* profile,
       const std::u16string& omnibox_user_input,
-      const AutocompleteMatch& selected_match);
+      const AutocompleteMatch& selected_match,
+      const AutocompleteMatch& alternative_nav_match,
+      network::mojom::URLLoaderFactory* loader_factory = nullptr);
 
   ~ChromeOmniboxNavigationObserverAndroid() override;
 };

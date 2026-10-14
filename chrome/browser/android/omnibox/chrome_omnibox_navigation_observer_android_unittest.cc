@@ -22,6 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -79,11 +80,19 @@ class ChromeOmniboxNavigationObserverAndroidTest
   }
 
   ChromeOmniboxNavigationObserverAndroid* CreateObserver(
-      content::NavigationHandle& navigation_handle) {
+      content::NavigationHandle& navigation_handle,
+      const AutocompleteMatch& alternative_nav_match = AutocompleteMatch(),
+      network::mojom::URLLoaderFactory* loader_factory = nullptr) {
     AutocompleteMatch match;
     match.keyword = kTestKeyword;
     return new ChromeOmniboxNavigationObserverAndroid(
-        navigation_handle, profile(), u" text", match);
+        navigation_handle, profile(), u" text", match, alternative_nav_match,
+        loader_factory);
+  }
+
+  ChromeOmniboxNavigationObserverBase::AlternativeFetchState GetFetchState(
+      const ChromeOmniboxNavigationObserverAndroid& observer) const {
+    return observer.fetch_state();
   }
 
   // Drives a committed navigation returning `response_code` through the
@@ -278,4 +287,22 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest, NoBackend) {
 
   EXPECT_CALL(shortcuts_observer_, OnShortcutsChanged()).Times(0);
   navigation->Commit();
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       AlternativeNavMatchIssuesHeadRequest) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  auto handle = CreateHandle(200);
+  AutocompleteMatch alt_match;
+  alt_match.destination_url = GURL("http://intranet/");
+
+  auto* observer = CreateObserver(*handle, alt_match, &test_url_loader_factory);
+  EXPECT_EQ(ChromeOmniboxNavigationObserverBase::AlternativeFetchState::
+                kFetchNotComplete,
+            GetFetchState(*observer));
+  EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      "http://intranet/", ""));
+  EXPECT_EQ(ChromeOmniboxNavigationObserverBase::AlternativeFetchState::
+                kFetchSucceeded,
+            GetFetchState(*observer));
 }

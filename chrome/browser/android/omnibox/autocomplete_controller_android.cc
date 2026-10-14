@@ -600,8 +600,13 @@ void AutocompleteControllerAndroid::CreateNavigationObserver(
         chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
   }
 
-  ChromeOmniboxNavigationObserverAndroid::Create(navigation_handle, profile_,
-                                                 input_.text(), match);
+  AutocompleteMatch alternative_nav_match;
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxAndroidIntranetRedirect)) {
+    alternative_nav_match =
+        autocomplete_controller_->ComputeAlternativeNavMatch(input_, match);
+  }
+  ChromeOmniboxNavigationObserverAndroid::Create(
+      navigation_handle, profile_, input_.text(), match, alternative_nav_match);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

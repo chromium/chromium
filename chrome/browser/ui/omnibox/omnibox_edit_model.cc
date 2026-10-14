@@ -87,7 +87,6 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -2646,8 +2645,8 @@ void OmniboxEditModel::OpenMatch(
         snapshot ? input.text()
                  : (user_input_in_progress_ ? user_text_ : url_for_editing_);
   }
-  // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
-  // to create an alternate navigational match.
+  // Create a dummy AutocompleteInput for use in calling
+  // ComputeAlternativeNavMatch() to create an alternate navigational match.
   AutocompleteInput alternate_input(
       input_text, GetPageClassification(),
       controller_->client()->GetSchemeClassifier(),
@@ -2860,10 +2859,8 @@ void OmniboxEditModel::OpenMatch(
           input.typed_url_had_http_scheme() &&
               match.type == omnibox::AutocompleteMatchType::kUrlWhatYouTyped,
           input_text, match,
-          VerbatimMatchForInput(
-              autocomplete_controller()->history_url_provider(),
-              autocomplete_controller()->autocomplete_provider_client(),
-              alternate_input, alternate_nav_url, false));
+          autocomplete_controller()->ComputeAlternativeNavMatch(
+              alternate_input, alternate_nav_url));
     }
   }
 }
