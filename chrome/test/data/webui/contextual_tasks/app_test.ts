@@ -517,6 +517,40 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('some-aep', finalUrl.searchParams.get('aep'));
   });
 
+  test(
+      'new thread click when threadFrame src is empty does not throw',
+      async () => {
+        const taskId = '123';
+        window.history.replaceState({}, '', `?chrome_task_id=${taskId}`);
+
+        const {appElement, proxy} = await createContextualTasksAppElement(
+            /*url=*/ `${fixtureUrl}?source=pending-source&aep=pending-aep`,
+            /*setupProxy=*/
+            (p) => {
+              p.handler.setIsShownInTab(false);
+              p.handler.setIsPendingErrorPage({value: taskId}, true);
+            },
+            /*waitForInitialLoadStart=*/ false);
+        appElement.removeThreadFrameListenersForTesting();
+
+        const toolbar = appElement.shadowRoot.querySelector('top-toolbar');
+        assertTrue(!!toolbar, 'Toolbar should be visible');
+
+        // Because isPendingErrorPage is true, maybeLoadPendingUrl_() has not
+        // populated threadFrame.src yet, so it is empty. Also clear pendingUrl_
+        // to simulate clicking new thread before initial URL resolution.
+        appElement.setPendingUrlForTesting('');
+        assertEquals('', appElement.getThreadUrlForTesting());
+
+        const newThreadUrl = `${fixtureUrl}?new_thread=1`;
+        proxy.handler.setThreadUrl(newThreadUrl);
+
+        toolbar.fire('new-thread-click');
+        await microtasksFinished();
+
+        assertEquals(newThreadUrl, appElement.getThreadUrlForTesting());
+      });
+
   test('logs back button metric in full tab', async () => {
     const threadUuid = 'ab12';
     const url = new URL(window.location.href);
