@@ -16,7 +16,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
@@ -144,9 +143,12 @@ public class XrImmersiveOverlay
         // It forwards SurfaceHolder callbacks and touch events to this XrImmersiveOverlay object.
         mXrSurfaceView = new XrSurfaceView();
 
-        // Register as an Insets consumer so that we can ensure we are probably rendered.
+        // Register as an Insets consumer so that we can ensure we are properly rendered. This is
+        // only needed when using display sizes (AR), see onApplyWindowInsets.
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        if (windowAndroid != null && windowAndroid.getInsetObserver() != null) {
+        if (mOverlayDelegate.useDisplaySizes()
+                && windowAndroid != null
+                && windowAndroid.getInsetObserver() != null) {
             windowAndroid
                     .getInsetObserver()
                     .addInsetsConsumer(
@@ -635,22 +637,11 @@ public class XrImmersiveOverlay
 
     @Override // InsetObserver.WindowInsetsConsumer
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
-        // On devices with three button navigation enabled, something about the raw camera access
-        // feature can cause our layout to get "squished" because it ends up blocking out space for
-        // the status bar, which doesn't happen when gesture navigation is enabled. This ensures
-        // that we properly take up the entire screen, as we expect we do in the `surfaceChanged`
-        // callback.
-        // We also consume IME (keyboard) insets here. In 3-button navigation mode, showing the
-        // keyboard forces the navigation bar to become visible for safety/accessibility. This
-        // temporarily exits the immersive fullscreen layout state, triggering Android's fallback
-        // 'adjustResize' behavior which shrinks the View (and squishes the WebGL canvas).
-        // Consuming the IME insets here forces the View to ignore the keyboard size and maintain
-        // its size, preserving the layout viewport. In gesture mode, this is less of an issue as
-        // the immersive state is preserved without navigation buttons to restore.
-        return new WindowInsetsCompat.Builder(insets)
-                .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                .build();
+        // The WebXR framebuffer is sized to the full display, so consume all insets to keep the
+        // View fullscreen. Any inset left unconsumed may cause the View to be padded (see
+        // EdgeToEdgeLayoutCoordinator), making it smaller than the framebuffer and distorting the
+        // WebXR content and the DOM overlay.
+        return WindowInsetsCompat.CONSUMED;
     }
 
     /**
