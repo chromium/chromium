@@ -288,6 +288,10 @@ class OmniboxViewViews
 
   void ClearAccessibilityLabel();
 
+  // Tail-elides the text and resets the scroll position, for when the
+  // textfield stops being where the user edits text.
+  void ElideAndResetScrollPosition();
+
   void SetAccessibilityLabel(const std::u16string& display_text,
                              const AutocompleteMatch& match,
                              bool notify_text_changed) override;
