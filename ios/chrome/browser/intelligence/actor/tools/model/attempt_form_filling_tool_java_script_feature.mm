@@ -115,7 +115,7 @@ void AttemptFormFillingToolJavaScriptFeature::GetAutofillRendererIds(
             std::move(callback).Run(ParseGetAutofillRendererIdsResult(result));
           },
           std::move(cb_for_js)),
-      base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
+      kActorJavaScriptExecutionTimeout);
 
   if (!sent) {
     std::move(cb_for_error)

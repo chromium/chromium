@@ -156,7 +156,7 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByCoordinate(
                      base::Unretained(GetInstance()), target,
                      web_state->GetWeakPtr(), web_frame->AsWeakPtr(),
                      std::move(cb_for_js), depth),
-      base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
+      kActorJavaScriptExecutionTimeout);
   if (!sent) {
     std::move(cb_for_error)
         .Run(base::unexpected(ToolExecutionResult(

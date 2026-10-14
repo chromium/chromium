@@ -114,7 +114,7 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
                 &ToActionResultCode, result));
           },
           std::move(cb_for_js)),
-      base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
+      kActorJavaScriptExecutionTimeout);
 
   if (!sent) {
     std::move(cb_for_error)
