@@ -147,113 +147,6 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
   return success;
 }
 
-std::optional<uint64_t> CdmStorageDatabase::GetSizeForFile(
-    const blink::StorageKey& storage_key,
-    const media::CdmType& cdm_type,
-    const std::string& file_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return std::nullopt;
-  }
-
-  // clang-format off
-  static constexpr char kSelectSql[] =
-      "SELECT file_size FROM cdm_storage "
-          "WHERE storage_key = ? "
-            "AND cdm_type = ? "
-            "AND file_name = ? ";
-  // clang-format on
-
-  last_operation_ = "GetSizeForFile";
-
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindBlob(1, cdm_type.AsBytes());
-  statement.BindString(2, file_name);
-
-  if (!statement.Step()) {
-    // Failing here is expected if the "file" has not yet been written to and
-    // the row does not yet exist. The Cdm Storage code doesn't distinguish
-    // between an empty file and a file which does not exist, so just return
-    // an empty file size without erroring.
-    return 0;
-  }
-
-  return statement.ColumnInt64(0);
-}
-
-std::optional<uint64_t> CdmStorageDatabase::GetSizeForStorageKey(
-    const blink::StorageKey& storage_key,
-    const base::Time begin,
-    const base::Time end) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return std::nullopt;
-  }
-
-  // clang-format off
-  static constexpr char kSelectSql[] =
-      "SELECT SUM(file_size) FROM cdm_storage "
-         "WHERE storage_key = ? "
-         "AND last_modified >= ? "
-         "AND last_modified <= ? ";
-  // clang-format on
-
-
-  last_operation_ = "GetSizeForStorageKey";
-
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindTime(1, begin);
-  statement.BindTime(2, end);
-
-  if (!statement.Step()) {
-    // Failing here is expected if the "files" are not found in the
-    // time frame for the storage key. The Cdm Storage code doesn't distinguish
-    // between an empty file and a file which does not exist, so just this
-    // returns the Sum() of the file sizes, which are all empty, without
-    // erroring.
-    return 0;
-  }
-
-  return statement.ColumnInt64(0);
-}
-
-std::optional<uint64_t> CdmStorageDatabase::GetSizeForTimeFrame(
-    const base::Time begin,
-    const base::Time end) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return std::nullopt;
-  }
-
-  // clang-format off
-  static constexpr char kSelectSql[] =
-      "SELECT SUM(file_size) FROM cdm_storage "
-         "WHERE last_modified >= ? "
-         "AND last_modified <= ? ";
-  // clang-format on
-
-  last_operation_ = "GetSizeForTimeFrame";
-
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindTime(0, begin);
-  statement.BindTime(1, end);
-
-  if (!statement.Step()) {
-    // Failing here is expected if the "files" are not found in the
-    // time frame. The Cdm Storage code doesn't distinguish between an
-    // empty file and a file which does not exist, so just this returns the
-    // Sum() of the file sizes, which are all empty, without erroring.
-    return 0;
-  }
-
-  return statement.ColumnInt64(0);
-}
-
 CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys(
     const base::Time begin,
     const base::Time end) {
@@ -265,24 +158,23 @@ CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys(
     return usage_per_storage_keys;
   }
 
-  static constexpr char kSelectStorageKeySql[] =
-      "SELECT DISTINCT storage_key FROM cdm_storage "
+  static constexpr char kSelectUsageSql[] =
+      "SELECT storage_key, SUM(file_size) FROM cdm_storage "
       "WHERE last_modified >= ? "
-      "AND last_modified <= ? ";
+      "AND last_modified <= ? "
+      "GROUP BY storage_key ";
 
-  sql::Statement get_all_storage_keys_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageKeySql));
-  get_all_storage_keys_statement.BindTime(0, begin);
-  get_all_storage_keys_statement.BindTime(1, end);
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectUsageSql));
+  statement.BindTime(0, begin);
+  statement.BindTime(1, end);
 
-  while (get_all_storage_keys_statement.Step()) {
+  while (statement.Step()) {
     std::optional<blink::StorageKey> maybe_storage_key =
-        blink::StorageKey::Deserialize(
-            get_all_storage_keys_statement.ColumnStringView(0));
+        blink::StorageKey::Deserialize(statement.ColumnStringView(0));
     if (maybe_storage_key) {
-      auto storage_key = maybe_storage_key.value();
-      usage_per_storage_keys.emplace_back(
-          storage_key, GetSizeForStorageKey(storage_key).value_or(0));
+      usage_per_storage_keys.emplace_back(maybe_storage_key.value(),
+                                          statement.ColumnInt64(1));
     }
   }
 
@@ -346,12 +238,32 @@ bool CdmStorageDatabase::DeleteDataForFilter(
     const base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (OpenDatabase() != CdmStorageOpenError::kOk) {
+    return false;
+  }
+
   CdmStorageKeyUsageSize usage_per_storage_keys =
       GetUsagePerAllStorageKeys(begin, end);
 
-  for (auto [storage_key, _] : usage_per_storage_keys) {
-    if (storage_key_matcher.Run(storage_key)) {
-      DeleteDataForStorageKey(storage_key, begin, end);
+  // clang-format off
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM cdm_storage "
+         "WHERE storage_key = ? "
+         "AND last_modified >= ? "
+         "AND last_modified <= ? ";
+  // clang-format on
+
+  bool success = true;
+  {
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+    for (const auto& [storage_key, _] : usage_per_storage_keys) {
+      if (storage_key_matcher.Run(storage_key)) {
+        statement.Reset(/*clear_bound_vars=*/true);
+        statement.BindString(0, storage_key.Serialize());
+        statement.BindTime(1, begin);
+        statement.BindTime(2, end);
+        success = statement.Run() && success;
+      }
     }
   }
 
@@ -359,7 +271,7 @@ bool CdmStorageDatabase::DeleteDataForFilter(
       GetCdmStorageManagerHistogramName(kDeleteForFilterError, in_memory()),
       false);
 
-  return DeleteIfEmptyDatabase(true);
+  return DeleteIfEmptyDatabase(success);
 }
 
 bool CdmStorageDatabase::DeleteDataForStorageKey(

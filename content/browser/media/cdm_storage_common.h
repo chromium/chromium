@@ -68,15 +68,6 @@ struct CONTENT_EXPORT CdmFileId {
   const blink::StorageKey storage_key;
 };
 
-struct CONTENT_EXPORT CdmFileIdAndContents {
-  CdmFileIdAndContents(const CdmFileId& file, std::vector<uint8_t> data);
-  CdmFileIdAndContents(const CdmFileIdAndContents&);
-  ~CdmFileIdAndContents();
-
-  const CdmFileId file;
-  const std::vector<uint8_t> data;
-};
-
 // Called in CdmStorageDatabase and CdmStorageManager to get
 // CdmStorageManager* metric names.
 std::string GetCdmStorageManagerHistogramName(const std::string& operation,

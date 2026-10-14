@@ -45,18 +45,6 @@ class CONTENT_EXPORT CdmStorageDatabase {
                  const std::string& file_name,
                  const std::vector<uint8_t>& data);
 
-  std::optional<uint64_t> GetSizeForFile(const blink::StorageKey& storage_key,
-                                         const media::CdmType& cdm_type,
-                                         const std::string& file_name);
-
-  std::optional<uint64_t> GetSizeForStorageKey(
-      const blink::StorageKey& storage_key,
-      const base::Time begin = base::Time::Min(),
-      const base::Time end = base::Time::Max());
-
-  std::optional<uint64_t> GetSizeForTimeFrame(const base::Time begin,
-                                              const base::Time end);
-
   CdmStorageKeyUsageSize GetUsagePerAllStorageKeys(
       const base::Time begin = base::Time::Min(),
       const base::Time end = base::Time::Max());

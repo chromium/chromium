@@ -23,13 +23,6 @@ CdmFileId::CdmFileId(const std::string& name,
 CdmFileId::CdmFileId(const CdmFileId&) = default;
 CdmFileId::~CdmFileId() = default;
 
-CdmFileIdAndContents::CdmFileIdAndContents(const CdmFileId& file,
-                                           std::vector<uint8_t> data)
-    : file(file), data(std::move(data)) {}
-CdmFileIdAndContents::CdmFileIdAndContents(const CdmFileIdAndContents&) =
-    default;
-CdmFileIdAndContents::~CdmFileIdAndContents() = default;
-
 std::string GetCdmStorageManagerHistogramName(const std::string& operation,
                                               bool in_memory) {
   return base::StrCat(
