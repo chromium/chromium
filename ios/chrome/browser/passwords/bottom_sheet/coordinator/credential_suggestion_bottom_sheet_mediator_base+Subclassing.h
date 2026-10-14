@@ -10,9 +10,13 @@
 
 @class FormSuggestion;
 
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
+
 namespace webauthn {
 class IOSWebAuthnCredentialsDelegate;
-}
+}  // namespace webauthn
 
 @interface CredentialSuggestionBottomSheetMediatorBase (Subclassing)
 
@@ -33,6 +37,16 @@ class IOSWebAuthnCredentialsDelegate;
 - (void)selectSuggestion:(FormSuggestion*)suggestion
                  atIndex:(NSInteger)index
               completion:(ProceduralBlock)completion;
+
+// Clears the mediator's credentials list.
+- (void)clearCredentials;
+
+// Appends `credential` to the mediator's credentials list.
+- (void)addCredential:(const password_manager::CredentialUIEntry&)credential;
+
+// Fetches passkey credentials from `webAuthnCredentialsDelegate` and appends
+// them to the mediator's credentials list.
+- (void)fetchPasskeyCredentials;
 
 // Delegate used to fetch and select passkey suggestions.
 @property(nonatomic, assign)

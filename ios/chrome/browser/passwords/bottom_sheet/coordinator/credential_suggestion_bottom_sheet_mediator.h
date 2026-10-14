@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import <optional>
-#import <vector>
 
 #import "base/memory/scoped_refptr.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
@@ -25,15 +24,12 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace password_manager {
-struct CredentialUIEntry;
 class PasswordStoreInterface;
 }  // namespace password_manager
 
 class FaviconLoader;
 class PrefService;
 class WebStateList;
-
-@class FormSuggestion;
 
 @protocol CredentialSuggestionBottomSheetPresenter;
 @protocol ReauthenticationProtocol;
@@ -70,18 +66,9 @@ class WebStateList;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns the credential associated with the form suggestion. It is an
-// optional, in case the credential can't be found.
-- (std::optional<password_manager::CredentialUIEntry>)
-    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
-
 // Refocuses the login field that was blurred to show this bottom sheet, if
 // deemed needed.
 - (void)refocus;
-
-// Sets the vector of credentials that is used for testing.
-- (void)setCredentialsForTesting:
-    (std::vector<password_manager::CredentialUIEntry>)credentials;
 
 @end
 
