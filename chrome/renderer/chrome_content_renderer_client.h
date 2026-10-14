@@ -87,6 +87,7 @@ class ChromeContentRendererClient
       public service_manager::LocalInterfaceProvider {
  public:
   ChromeContentRendererClient();
+  explicit ChromeContentRendererClient(bool create_extensions_client);
 
   ChromeContentRendererClient(const ChromeContentRendererClient&) = delete;
   ChromeContentRendererClient& operator=(const ChromeContentRendererClient&) =

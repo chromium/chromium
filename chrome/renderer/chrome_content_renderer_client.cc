@@ -366,6 +366,13 @@ std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
 }  // namespace
 
 ChromeContentRendererClient::ChromeContentRendererClient()
+    : ChromeContentRendererClient(
+          /*create_extensions_client=*/
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kSingleProcess)) {}
+
+ChromeContentRendererClient::ChromeContentRendererClient(
+    bool create_extensions_client)
 #if BUILDFLAG(IS_WIN)
     : remote_module_watcher_(nullptr, base::OnTaskRunnerDeleter(nullptr))
 #endif
@@ -383,8 +390,10 @@ ChromeContentRendererClient::ChromeContentRendererClient()
       sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  extensions_client_ =
-      std::make_unique<extensions::ScopedChromeExtensionsClient>();
+  if (create_extensions_client) {
+    extensions_client_ =
+        std::make_unique<extensions::ScopedChromeExtensionsClient>();
+  }
   ChromeExtensionsRendererClient::Create();
 #endif
 }
@@ -1696,4 +1705,3 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
                   network::mojom::ContentSecurityPolicySource::kHTTP});
 #endif
 }
-
