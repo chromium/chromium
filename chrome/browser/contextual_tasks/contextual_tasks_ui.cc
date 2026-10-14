@@ -1210,7 +1210,8 @@ void ContextualTasksUI::MoveTaskUiToNewTab() {
 }
 
 void ContextualTasksUI::ShowThreadHistory() {
-  if (page_handler_) {
+  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled() &&
+      page_handler_) {
     lens::ClientToAimMessage message;
     message.mutable_open_threads_view()->mutable_payload();
     PostAimMessage(message);

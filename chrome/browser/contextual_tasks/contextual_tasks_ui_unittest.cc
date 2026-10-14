@@ -34,11 +34,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"  // nogncheck
 #include "chrome/browser/ui/actions/chrome_actions.h"    // nogncheck
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"  // nogncheck
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/actions/actions.h"  // nogncheck
 #endif
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -4081,4 +4083,92 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
                           "?gaia_id=",
                           account_info.GetGaiaId().ToString()}));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiTest, ShowThreadHistory_NoPanelController_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+  controller.set_panel_controller(nullptr);
+
+  // Should exit safely without crashing.
+  controller.ShowThreadHistory();
+}
+
+TEST_F(ContextualTasksUiTest, ShowThreadHistory_PostsOpenThreadsViewMessage) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+
+  ContextualTasksWebContentsUserData::CreateForWebContents(
+      active_web_contents.get());
+  auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+      active_web_contents.get());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::optional<lens::ClientToSearchMessage> dispatched_message;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_message = message;
+      }));
+
+  controller.ShowThreadHistory();
+
+  ASSERT_TRUE(dispatched_message.has_value());
+  EXPECT_TRUE(dispatched_message->has_open_threads_view());
+}
+
+TEST_F(
+    ContextualTasksUiTest,
+    ShowThreadHistory_SidePanelRearchitectureWithPageHandler_PostsOpenThreadsViewSearchMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPage> legacy_page;
+  mojo::PendingReceiver<mojom::PageHandler> legacy_handler_receiver;
+  controller.CreatePageHandler(legacy_page.BindAndGetRemote(),
+                               std::move(legacy_handler_receiver));
+  EXPECT_CALL(legacy_page, PostAimMessage(_)).Times(0);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+
+  ContextualTasksWebContentsUserData::CreateForWebContents(
+      active_web_contents.get());
+  auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+      active_web_contents.get());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::optional<lens::ClientToSearchMessage> dispatched_message;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_message = message;
+      }));
+
+  controller.ShowThreadHistory();
+
+  ASSERT_TRUE(dispatched_message.has_value());
+  EXPECT_TRUE(dispatched_message->has_open_threads_view());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace contextual_tasks

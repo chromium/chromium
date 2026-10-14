@@ -66,6 +66,9 @@ message ClientToSearchMessage {
     ContextState context_state = 1;
   }
 
+  // Instructs Search Web to open the threads view (Thread History).
+  message OpenThreadsView {}
+
   oneof event_message {
     // Initial handshake ping sent by an extension iframe upon mounting.
     HandshakePing handshake_ping = 1;
@@ -80,6 +83,9 @@ message ClientToSearchMessage {
 
     // Reports the state of the context added for the next turn.
     OnContextStateChanged on_context_state_changed = 5;
+
+    // Instructs Search Web to open the threads view.
+    OpenThreadsView open_threads_view = 6;
   }
 }
 
