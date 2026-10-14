@@ -48,8 +48,7 @@ enum SharedImageUsage : uint32_t {
   // implies read. Hence adding ONLY tag to clarify that its write only in this
   // case.
   SHARED_IMAGE_USAGE_CPU_WRITE_ONLY = 1 << 11,
-  // Image will be used in RasterInterface with RawDraw.
-  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 12,
+  // 1 << 12 is unused and available.
   // Image will be created on the high performance GPU if supported.
   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 13,
   // Windows only: image will be backed by a DComp surface. A swap chain is

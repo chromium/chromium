@@ -230,12 +230,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUIDebugTools);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
 
-// Enables Raw Draw.
-COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kRawDraw);
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingRawDraw();
-COMPONENT_EXPORT(UI_BASE_FEATURES) double RawDrawTileSizeFactor();
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsRawDrawUsingMSAA();
-
 // This feature indicates that this device should have variable refresh rates
 // enabled by default if available. This overrides the default value of
 // |kEnableVariableRefreshRate|. This flag is added by cros-config and not

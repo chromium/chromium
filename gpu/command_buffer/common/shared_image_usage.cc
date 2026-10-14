@@ -43,7 +43,6 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, "MacosVideoToolbox"},
       {SHARED_IMAGE_USAGE_MIPMAP, "Mipmap"},
       {SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "CpuWriteOnly"},
-      {SHARED_IMAGE_USAGE_RAW_DRAW, "RawDraw"},
       {SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU, "HighPerformanceGpu"},
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
       {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},

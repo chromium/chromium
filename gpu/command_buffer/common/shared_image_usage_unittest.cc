@@ -64,7 +64,7 @@ TEST(SharedImageUsage, FunctionsIntersect) {
                                      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   as_usage_set =
       Intersection(as_usage_set, SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-                                     SHARED_IMAGE_USAGE_RAW_DRAW |
+                                     SHARED_IMAGE_USAGE_MIPMAP |
                                      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU);
   EXPECT_EQ(static_cast<uint32_t>(SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU),
@@ -76,30 +76,30 @@ TEST(SharedImageUsage, GlobalOperatorCasting) {
   auto as_usage_set = SHARED_IMAGE_USAGE_GLES2_READ |
                       SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                       SHARED_IMAGE_USAGE_WEBGPU_READ;
-  as_usage_set |= as_usage_set | SHARED_IMAGE_USAGE_RAW_DRAW;
+  as_usage_set |= as_usage_set | SHARED_IMAGE_USAGE_MIPMAP;
   as_usage_set |= SHARED_IMAGE_USAGE_RASTER_WRITE | as_usage_set;
   EXPECT_TRUE(as_usage_set.HasAll(
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_RAW_DRAW |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_MIPMAP |
       SHARED_IMAGE_USAGE_RASTER_WRITE));
 }
 
 TEST(SharedImageUsage, RemoveAll) {
   SharedImageUsageSet as_usage_set =
       SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_RAW_DRAW;
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_MIPMAP;
   as_usage_set.RemoveAll(SHARED_IMAGE_USAGE_RASTER_WRITE |
-                         SHARED_IMAGE_USAGE_RAW_DRAW);
+                         SHARED_IMAGE_USAGE_MIPMAP);
   EXPECT_TRUE(as_usage_set.HasAll(SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU));
   EXPECT_FALSE(as_usage_set.HasAny(SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                   SHARED_IMAGE_USAGE_RAW_DRAW));
+                                   SHARED_IMAGE_USAGE_MIPMAP));
 }
 
 TEST(SharedImageUsage, RemoveAllButNotPresent) {
   SharedImageUsageSet as_usage_set =
       SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_RAW_DRAW;
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_MIPMAP;
   // We intentionally remove 'SHARED_IMAGE_USAGE_CPU_WRITE_ONLY' even though it
   // was never added in above. We are testing that this is allowed and that it
   // will not produce an internal bit flip.
@@ -107,7 +107,7 @@ TEST(SharedImageUsage, RemoveAllButNotPresent) {
                          SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
   EXPECT_TRUE(as_usage_set.HasAll(SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-                                  SHARED_IMAGE_USAGE_RAW_DRAW));
+                                  SHARED_IMAGE_USAGE_MIPMAP));
   EXPECT_FALSE(as_usage_set.HasAny(SHARED_IMAGE_USAGE_RASTER_WRITE |
                                    SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
 }

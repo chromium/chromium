@@ -385,27 +385,6 @@ bool IsSwipeToMoveCursorEnabled() {
   return enabled;
 }
 
-// Enable raw draw for tiles.
-BASE_FEATURE(kRawDraw, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Tile size = viewport size * TileSizeFactor
-const base::FeatureParam<double> kRawDrawTileSizeFactor{&kRawDraw,
-                                                        "TileSizeFactor", 1};
-
-const base::FeatureParam<bool> kIsRawDrawUsingMSAA{&kRawDraw, "IsUsingMSAA",
-                                                   false};
-bool IsUsingRawDraw() {
-  return base::FeatureList::IsEnabled(kRawDraw);
-}
-
-double RawDrawTileSizeFactor() {
-  return kRawDrawTileSizeFactor.Get();
-}
-
-bool IsRawDrawUsingMSAA() {
-  return kIsRawDrawUsingMSAA.Get();
-}
-
 BASE_FEATURE(kVariableRefreshRateAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableVariableRefreshRate, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateEnabled() {
