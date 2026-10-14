@@ -16,8 +16,12 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+using ::testing::IsEmpty;
+using ::testing::Not;
 
 #pragma mark - Fake Audio Controller
 
@@ -436,13 +440,16 @@ TEST_F(TtcSessionControllerTest, TestDisconnectCleansUpConversation) {
   EXPECT_EQ(fake_audio.delegate, nil);
 }
 
-// Tests that `OnConversationInitialized` transitions the lifecycle to `kLive`
-// and notifies observers.
+// Tests that `OnConversationInitialized` sends the default tool definitions to
+// the backend, transitions the lifecycle to `kLive`, and notifies observers.
 TEST_F(TtcSessionControllerTest,
        TestConversationDidInitializeTransitionsToLive) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  auto backend = std::make_unique<testing::NiceMock<ttc::MockTtcBackend>>();
+  testing::NiceMock<ttc::MockTtcBackend>* mock_backend = backend.get();
+  auto conversation =
+      std::make_unique<TtcConversation>(fake_audio, std::move(backend));
   TtcConversation* conversation_ptr = conversation.get();
   TtcSessionController controller(std::move(conversation));
   FakeTtcSessionControllerObserver observer;
@@ -453,6 +460,7 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_EQ(observer.lifecycle_change_count(), 0);
 
   ASSERT_NE(conversation_ptr->delegate(), nullptr);
+  EXPECT_CALL(*mock_backend, SendToolSetUpdate(Not(IsEmpty()))).Times(1);
   conversation_ptr->delegate()->OnConversationInitialized();
 
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);

@@ -10,6 +10,7 @@
 
 #import <memory>
 #import <string>
+#import <vector>
 
 #import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
@@ -99,6 +100,10 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   base::WeakPtr<TtcConversation> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  // Sends `tool_definitions` to the underlying backend.
+  void SendToolSetUpdate(
+      const std::vector<ttc::ToolDefinition>& tool_definitions);
 
   // `ttc::TtcBackend::Observer` implementation:
   void OnBackendInitialized() override;

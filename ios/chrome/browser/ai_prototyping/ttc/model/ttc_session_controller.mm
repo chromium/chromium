@@ -19,6 +19,7 @@
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
@@ -42,6 +43,8 @@ std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
 #pragma mark - TtcConversation::Delegate
 
 void TtcSessionController::OnConversationInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  conversation_->SendToolSetUpdate(ttc::GetDefaultToolDefinitions());
   OnSessionInitialized();
 }
 

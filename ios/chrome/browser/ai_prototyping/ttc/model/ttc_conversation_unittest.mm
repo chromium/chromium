@@ -28,7 +28,9 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Not;
 
 #pragma mark - Fake Audio Controller
 
@@ -311,6 +313,16 @@ TEST_F(TtcConversationTest, TestBackendDidInitializeForwardsToDelegate) {
   mock_backend_->observer()->OnBackendInitialized();
 
   EXPECT_TRUE(delegate_.did_initialize());
+}
+
+// Tests that `SendToolSetUpdate` forwards tool definitions to the backend.
+TEST_F(TtcConversationTest, TestSendToolSetUpdateForwardsToBackend) {
+  std::vector<ttc::ToolDefinition> tools;
+  ttc::ToolDefinition tool;
+  tool.name = "open_url";
+  tools.push_back(std::move(tool));
+  EXPECT_CALL(*mock_backend_, SendToolSetUpdate(Not(IsEmpty()))).Times(1);
+  conversation_->SendToolSetUpdate(tools);
 }
 
 // Tests that backend closure forwards to conversation delegate.

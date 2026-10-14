@@ -171,6 +171,14 @@ void TtcConversation::Disconnect() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void TtcConversation::SendToolSetUpdate(
+    const std::vector<ttc::ToolDefinition>& tool_definitions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (backend_) {
+    backend_->SendToolSetUpdate(tool_definitions);
+  }
+}
+
 #pragma mark - TTCAudioControllerDelegate
 
 void TtcConversation::OnAudioChunkCaptured(NSData* pcm_data) {
