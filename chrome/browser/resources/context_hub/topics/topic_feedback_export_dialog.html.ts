@@ -145,8 +145,8 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
         The file contains your topics, your ratings and comments, and the URLs,
         titles and times of the pages you visited in this window, except what
         you exclude above, plus your Chrome version and experiment state. Only
-        the Topics team can access it. It's deleted after 90 days; to have it
-        deleted sooner, contact the Topics team.
+        the Topics team can access it. It's deleted 18 months after upload; to
+        have it deleted sooner, contact the Topics team.
       </p>
       <cr-checkbox id="acknowledge" ?checked="${this.acknowledged_}"
           @checked-changed="${this.onAcknowledgeCheckedChanged_}">
