@@ -8397,7 +8397,7 @@
       "lingqi@chromium.org",
       "//content/browser/preloading/prerender/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 168
   },
   {
     "name": "prerender2",
