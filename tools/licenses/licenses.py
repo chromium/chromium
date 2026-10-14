@@ -200,7 +200,7 @@ SPECIAL_CASES = {
     "Name": "Chromium OS system API",
     "URL": "https://www.chromium.org/chromium-os",
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "BSD-3-Clause",
     # Absolute path here is resolved as relative to the source root.
     "License File": ["//LICENSE.chromium_os"],
   },
@@ -208,21 +208,21 @@ SPECIAL_CASES = {
     "Name": "ipcz",
     "URL": ("https://chromium.googlesource.com/chromium/src/third_party/ipcz"),
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "BSD-3-Clause",
     "License File": ["//third_party/ipcz/LICENSE"],
   },
   os.path.join('third_party', 'lss'): {
     "Name": "linux-syscall-support",
     "URL": "https://chromium.googlesource.com/linux-syscall-support/",
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "BSD-3-Clause",
     "License File": ["//third_party/lss/LICENSE"],
   },
   os.path.join('third_party', 'openscreen', 'src', 'third_party', 'abseil'): {
     "Name": "abseil",
     "URL": "https://github.com/abseil/abseil-cpp/",
     "Shipped": "yes",
-    "License": "Apache 2.0",
+    "License": "Apache-2.0",
     "License File": ["//third_party/abseil-cpp/LICENSE"],
   },
   os.path.join(
@@ -263,13 +263,13 @@ SPECIAL_CASES = {
     "Name": "V8 JavaScript Engine",
     "URL": "https://v8.dev/",
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "BSD-3-Clause",
   },
   os.path.join('v8', 'strongtalk'): {
     "Name": "Strongtalk",
     "URL": "https://www.strongtalk.org/",
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "BSD-3-Clause",
     # Absolute path here is resolved as relative to the source root.
     "License File": ["//v8/LICENSE.strongtalk"],
   },
@@ -294,7 +294,7 @@ SPECIAL_CASES = {
     "Name": "SPIRV-Tools",
     "URL": "https://github.com/KhronosGroup/SPIRV-Tools",
     "Shipped": "yes",
-    "License": "Apache 2.0",
+    "License": "Apache-2.0",
     "License File": [
       "//third_party/swiftshader/third_party/SPIRV-Tools/LICENSE",
     ],
@@ -313,7 +313,7 @@ SPECIAL_CASES = {
     "Name": "Sample 3",
     "URL": "https://sample3",
     "Shipped": "yes",
-    "License": "Apache 2.0",
+    "License": "Apache-2.0",
     "License File": ["//third_party/sample3/the_license"],
   },
 }

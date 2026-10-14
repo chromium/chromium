@@ -7,7 +7,7 @@ output:
 "AlwaysIncluded","https://chromium.googlesource.com/chromium/src/+/main/extra_dir/LICENSE","Apache 2.0","Chromium","Yes","Yes","N/A","UNKNOWN[Apache 2.0]"
 "narluga","https://chromium.googlesource.com/chromium/src/+/main/subdir/third_party/narluga_v1/LICENSE","Apache 2.0","Chromium","Yes","Yes","N/A","UNKNOWN[Apache 2.0]"
 "narluga","https://chromium.googlesource.com/chromium/src/+/main/subdir/third_party/narluga_v2/LICENSE","MIT","Chromium","Yes","Yes","N/A","ALLOWED"
-"Sample 3","https://chromium.googlesource.com/chromium/src/+/main/third_party/sample3/the_license","Apache 2.0","Chromium","Yes","Yes","N/A","UNKNOWN[Apache 2.0]"
+"Sample 3","https://chromium.googlesource.com/chromium/src/+/main/third_party/sample3/the_license","Apache-2.0","Chromium","Yes","Yes","N/A","ALLOWED"
 "Sample 4 (Restricted Approved)","https://chromium.googlesource.com/chromium/src/+/main/third_party/sample4/LICENSE","My-Custom-License","Chromium","Yes","Yes","N/A","APPROVED[(My-Custom-License, b/123456789)]"
 "Sample 5 (Restricted Not Approved)","https://chromium.googlesource.com/chromium/src/+/main/third_party/sample5/LICENSE","My-Custom-License","Chromium","Yes","Yes","N/A","UNKNOWN[My-Custom-License]"
 "Sample 6 (Reciprocal)","https://chromium.googlesource.com/chromium/src/+/main/third_party/sample6/LICENSE","CDDL-1.0","Chromium","Yes","Yes","N/A","ALLOWED"
