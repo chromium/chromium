@@ -180,8 +180,6 @@ namespace {
 BASE_FEATURE(kRenderWidgetHostHiddenCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kDeduplicateSetInputScope, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Arabic (101) HKL: 00000401
 const std::wstring_view kArabic101KeyboardLayoutName = L"00000401";
 
@@ -433,18 +431,13 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   // once for each hwnd.
   if (window_->GetHost() && GetInputMethod()) {
     InputScope input_scope = ShouldDoLearning() ? IS_DEFAULT : IS_PRIVATE;
-    if (base::FeatureList::IsEnabled(kDeduplicateSetInputScope)) {
-      aura::WindowTreeHost* host = window_->GetHost();
-      InputScope last_input_scope =
-          host->window()->GetProperty(kLastInputScopeKey);
-      if (last_input_scope != input_scope) {
-        ui::tsf_inputscope::SetInputScope(
-            RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
-        host->window()->SetProperty(kLastInputScopeKey, input_scope);
-      }
-    } else {
+    aura::WindowTreeHost* host = window_->GetHost();
+    InputScope last_input_scope =
+        host->window()->GetProperty(kLastInputScopeKey);
+    if (last_input_scope != input_scope) {
       ui::tsf_inputscope::SetInputScope(
           RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+      host->window()->SetProperty(kLastInputScopeKey, input_scope);
     }
   }
 #endif
