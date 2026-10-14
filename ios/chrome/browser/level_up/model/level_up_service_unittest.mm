@@ -73,27 +73,26 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(1, 3));
 
   // Complete 3rd task -> Should reach Level 2!
-  service_->MarkTaskCompleted(TaskType::kPinTabs);
+  service_->MarkTaskCompleted(TaskType::kGemini);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
   // Reaching Level 3 requires 8 total tasks. 8 - 3 = 5 remaining.
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(5, 5));
 
   // Complete 4 more tasks (total 7).
-  service_->MarkTaskCompleted(TaskType::kGemini);
   service_->MarkTaskCompleted(TaskType::kPaymentMethods);
   service_->MarkTaskCompleted(TaskType::kClearBrowsingData);
   service_->MarkTaskCompleted(TaskType::kSafeBrowsing);
+  service_->MarkTaskCompleted(TaskType::kIncognito);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(1, 5));
 
   // Complete 8th task -> Should reach Level 3!
-  service_->MarkTaskCompleted(TaskType::kIncognito);
-  EXPECT_EQ(service_->GetCurrentLevel(), 3);
-  // Reaching Level 4 requires all 12 tasks. 12 - 8 = 4 remaining.
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(4, 4));
-
-  // Complete remaining 4 tasks (total 12).
   service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
+  EXPECT_EQ(service_->GetCurrentLevel(), 3);
+  // Reaching Level 4 requires all 11 tasks. 11 - 8 = 3 remaining.
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(3, 3));
+
+  // Complete remaining 3 tasks (total 11).
   service_->MarkTaskCompleted(TaskType::kLensWebsiteSearch);
   service_->MarkTaskCompleted(TaskType::kAISearch);
   service_->MarkTaskCompleted(TaskType::kLensCameraSearch);
@@ -106,7 +105,7 @@ TEST_F(LevelUpServiceTest, TestLevelMonotonicity) {
   // Complete 3 tasks to reach Level 2.
   service_->MarkTaskCompleted(TaskType::kTabGroups);
   service_->MarkTaskCompleted(TaskType::kAutofill);
-  service_->MarkTaskCompleted(TaskType::kPinTabs);
+  service_->MarkTaskCompleted(TaskType::kGemini);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
 
   // Manually force the highest level preference to Level 3 (simulating a sync
@@ -122,7 +121,7 @@ TEST_F(LevelUpServiceTest, TestLevelMonotonicity) {
   EXPECT_EQ(new_service->GetCurrentLevel(), 3);
 
   // Completing another task (4 total) should still keep us at Level 3.
-  new_service->MarkTaskCompleted(TaskType::kGemini);
+  new_service->MarkTaskCompleted(TaskType::kPaymentMethods);
   EXPECT_EQ(new_service->GetCurrentLevel(), 3);
 }
 
@@ -214,7 +213,7 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
   // Complete tasks and increment stats.
   service_->MarkTaskCompleted(TaskType::kTabGroups);
   service_->MarkTaskCompleted(TaskType::kAutofill);
-  service_->MarkTaskCompleted(TaskType::kPinTabs);
+  service_->MarkTaskCompleted(TaskType::kGemini);
   EXPECT_EQ(2, service_->GetCurrentLevel());
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
 
@@ -235,7 +234,7 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
   EXPECT_EQ(1, service_->GetCurrentLevel());
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kAutofill));
-  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPinTabs));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kGemini));
 
   // Verify all stats are reset.
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
@@ -346,7 +345,7 @@ TEST_F(LevelUpServiceTest, TestGetRecommendedTasksCategoryRecency) {
 // Tests that GetRecommendedTasks backfills with completed tasks when almost all
 // tasks are completed.
 TEST_F(LevelUpServiceTest, TestGetRecommendedTasksBackfillCompleted) {
-  // Complete all 12 tasks.
+  // Complete all 11 tasks.
   const auto& tasks = service_->GetTasks();
   for (const auto& [type, info] : tasks) {
     service_->MarkTaskCompleted(type);

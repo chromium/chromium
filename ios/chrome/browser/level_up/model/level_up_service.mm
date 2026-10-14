@@ -538,7 +538,6 @@ LevelUpService::GetStatTriggerUserActions() const {
 void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kTabGroups] = CreateTabGroupsTaskInfo();
   tasks_[TaskType::kAutofill] = CreateAutofillTaskInfo();
-  tasks_[TaskType::kPinTabs] = CreatePinTabsTaskInfo();
   tasks_[TaskType::kGemini] = CreateGeminiTaskInfo();
   tasks_[TaskType::kPaymentMethods] = CreatePaymentMethodsTaskInfo();
   tasks_[TaskType::kClearBrowsingData] = CreateClearBrowsingDataTaskInfo();
