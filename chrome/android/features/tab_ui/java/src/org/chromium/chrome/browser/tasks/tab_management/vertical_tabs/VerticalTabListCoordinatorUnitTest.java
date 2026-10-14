@@ -5096,6 +5096,124 @@ public class VerticalTabListCoordinatorUnitTest {
         assertNull(getOnDragListener(decorView));
     }
 
+    /**
+     * Starts a rail drag out of the main list with the given start result and returns the delegate
+     * last installed on the handler: the originating delegate if the drag started, otherwise the
+     * non-originating one it was reset to.
+     */
+    private TabSwitcherDragHandler.DragHandlerDelegate dragOutMainList(boolean dragStarts) {
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, false);
+        when(mTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(dragStarts);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
+        return delegateCaptor.getValue();
+    }
+
+    @Test
+    public void testExternalDragObserver_NotifiedOnStartAndEnd() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        VerticalTabListCoordinator.ExternalDragObserver observer =
+                mock(VerticalTabListCoordinator.ExternalDragObserver.class);
+        mCoordinator.setExternalDragObserver(observer);
+
+        TabSwitcherDragHandler.DragHandlerDelegate delegate =
+                dragOutMainList(/* dragStarts= */ true);
+
+        verify(observer).onExternalDragStarted();
+        verify(observer, never()).onExternalDragEnded();
+        assertTrue(mCoordinator.isExternalDragInProgress());
+
+        delegate.handleExternalDragEnd(
+                mCoordinator.getView(), 0f, 0f, /* isOSNewWindowDrop= */ false);
+
+        verify(observer).onExternalDragEnded();
+        assertFalse(mCoordinator.isExternalDragInProgress());
+    }
+
+    @Test
+    public void testExternalDragObserver_PinnedList_NotifiedOnStart() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+        createCoordinator();
+        VerticalTabListCoordinator.ExternalDragObserver observer =
+                mock(VerticalTabListCoordinator.ExternalDragObserver.class);
+        mCoordinator.setExternalDragObserver(observer);
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, true);
+        when(mTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+
+        getPinnedOnDragOutListener()
+                .onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        verify(observer).onExternalDragStarted();
+        assertTrue(mCoordinator.isExternalDragInProgress());
+    }
+
+    @Test
+    public void testExternalDragObserver_DragFailsToStart_NotNotified() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        VerticalTabListCoordinator.ExternalDragObserver observer =
+                mock(VerticalTabListCoordinator.ExternalDragObserver.class);
+        mCoordinator.setExternalDragObserver(observer);
+
+        dragOutMainList(/* dragStarts= */ false);
+
+        verify(observer, never()).onExternalDragStarted();
+        verify(observer, never()).onExternalDragEnded();
+        assertFalse(mCoordinator.isExternalDragInProgress());
+    }
+
+    @Test
+    public void testExternalDragObserver_DestroyedMidDrag_NotifiedOfEnd() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        VerticalTabListCoordinator.ExternalDragObserver observer =
+                mock(VerticalTabListCoordinator.ExternalDragObserver.class);
+        mCoordinator.setExternalDragObserver(observer);
+        dragOutMainList(/* dragStarts= */ true);
+
+        mCoordinator.destroy();
+
+        verify(observer).onExternalDragEnded();
+        assertFalse(mCoordinator.isExternalDragInProgress());
+    }
+
+    @Test
+    public void testExternalDragObserver_Cleared_NotNotified() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        VerticalTabListCoordinator.ExternalDragObserver observer =
+                mock(VerticalTabListCoordinator.ExternalDragObserver.class);
+        mCoordinator.setExternalDragObserver(observer);
+        TabSwitcherDragHandler.DragHandlerDelegate delegate =
+                dragOutMainList(/* dragStarts= */ true);
+        mCoordinator.setExternalDragObserver(null);
+
+        delegate.handleExternalDragEnd(
+                mCoordinator.getView(), 0f, 0f, /* isOSNewWindowDrop= */ false);
+
+        verify(observer, never()).onExternalDragEnded();
+        // The drag is still tracked as ended.
+        assertFalse(mCoordinator.isExternalDragInProgress());
+    }
+
     private void layOutLists(int mainHeight, int pinnedHeight) {
         VerticalTabDragUtils.setLocationProviderForTesting(
                 (view, out) -> {

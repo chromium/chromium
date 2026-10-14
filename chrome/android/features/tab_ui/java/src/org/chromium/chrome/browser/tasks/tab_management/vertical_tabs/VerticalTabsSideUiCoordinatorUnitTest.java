@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,28 +39,35 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.ExternalDragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
@@ -934,6 +942,124 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testExternalDragStarted_PausesSideUiAndDefersCollapseState() {
+        ExternalDragObserver observer = captureExternalDragObserver();
+
+        observer.onExternalDragStarted();
+
+        verify(mMockSideUiCoordinator).pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        // The collapse state is deferred: a forced collapse is recorded but not applied.
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
+        assertEquals(
+                RailCollapseState.COLLAPSED, mCollapseController.getEffectiveRailCollapseState());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testExternalDragEnded_ResumesSideUiThenAppliesCollapseStateOnPostedTask() {
+        ExternalDragObserver observer = captureExternalDragObserver();
+        observer.onExternalDragStarted();
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+
+        observer.onExternalDragEnded();
+
+        // Nothing happens inside the drag-end dispatch.
+        verify(mMockSideUiCoordinator, never()).resumeSideUiUpdates(anyInt());
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
+
+        ShadowLooper.runUiThreadTasks();
+
+        InOrder inOrder = inOrder(mMockSideUiCoordinator, mMockTabListCoordinator);
+        inOrder.verify(mMockSideUiCoordinator).resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+        inOrder.verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
+        verify(mMockTabListCoordinator, times(1)).setRailCollapseState(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testExternalDragEnded_NewDragBeforePostedTask_StaysFrozen() {
+        ExternalDragObserver observer = captureExternalDragObserver();
+        observer.onExternalDragStarted();
+        observer.onExternalDragEnded();
+        observer.onExternalDragStarted();
+        when(mMockTabListCoordinator.isExternalDragInProgress()).thenReturn(true);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mMockSideUiCoordinator, never()).resumeSideUiUpdates(anyInt());
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
+
+        // The second drag ends and posts its own task.
+        when(mMockTabListCoordinator.isExternalDragInProgress()).thenReturn(false);
+        observer.onExternalDragEnded();
+        ShadowLooper.runUiThreadTasks();
+        // Unfrozen exactly once, applying the state recorded during the drags.
+        verify(mMockSideUiCoordinator, times(1)).resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+        verify(mMockTabListCoordinator, times(1)).setRailCollapseState(RailCollapseState.COLLAPSED);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testExternalDragEnded_DestroyedBeforePostedTask_DoesNotResume() {
+        ExternalDragObserver observer = captureExternalDragObserver();
+        observer.onExternalDragStarted();
+        observer.onExternalDragEnded();
+
+        mCoordinator.destroy();
+        ShadowLooper.runUiThreadTasks();
+
+        // Unregistering is what resumes a paused container on destroy.
+        verify(mMockSideUiCoordinator).unregisterSideUiContainer(mCoordinator);
+        verify(mMockSideUiCoordinator, never()).resumeSideUiUpdates(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testDestroy_ClearsExternalDragObserverBeforeDestroyingList() {
+        mCoordinator.destroy();
+
+        InOrder inOrder = inOrder(mMockTabListCoordinator);
+        inOrder.verify(mMockTabListCoordinator).setExternalDragObserver(null);
+        inOrder.verify(mMockTabListCoordinator).destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testOnPreSideUiSpecsChange_Frozen_NoTransition() {
+        when(mMockSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS))
+                .thenReturn(true);
+        SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
+
+        // A width change that would animate if the rail were not frozen.
+        SideUiSpecs newSpecs = new SideUiSpecs(mCollapsedRailWidth, 0);
+        assertNull(
+                mCoordinator.onPreSideUiSpecsChange(
+                        newSpecs,
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ false)));
+        verify(mMockTabListCoordinator, never()).setInTransition(true);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SIDE_UI_ALLOW_PAUSE)
+    public void testExternalDrag_FlagDisabled_DoesNothing() {
+        ExternalDragObserver observer = captureExternalDragObserver();
+
+        observer.onExternalDragStarted();
+        observer.onExternalDragEnded();
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mMockSideUiCoordinator, never()).pauseSideUiUpdates(anyInt());
+        verify(mMockSideUiCoordinator, never()).resumeSideUiUpdates(anyInt());
+        // The collapse state is not deferred.
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
+    }
+
     private void enableManualResize() {
         FeatureOverrides.newBuilder()
                 .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
@@ -980,5 +1106,13 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Configuration config = new Configuration(mActivity.getResources().getConfiguration());
         config.screenWidthDp = ViewUtils.pxToDp(mActivity, widthPx);
         mActivityController.configurationChange(config);
+    }
+
+    /** Returns the {@link ExternalDragObserver} the coordinator registered with the list. */
+    private ExternalDragObserver captureExternalDragObserver() {
+        ArgumentCaptor<ExternalDragObserver> captor =
+                ArgumentCaptor.forClass(ExternalDragObserver.class);
+        verify(mMockTabListCoordinator).setExternalDragObserver(captor.capture());
+        return captor.getValue();
     }
 }
