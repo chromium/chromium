@@ -118,7 +118,9 @@ Value::Value(BinaryValue&& in_bytes) noexcept : data_(std::move(in_bytes)) {}
 
 Value::Value(const char* in_string) : Value(std::string_view(in_string)) {}
 
-Value::Value(std::string&& in_string) noexcept : data_(std::move(in_string)) {}
+Value::Value(std::string&& in_string) noexcept : data_(std::move(in_string)) {
+  DCHECK(base::IsStringUTF8AllowingNoncharacters(GetString()));
+}
 
 Value::Value(std::string_view in_string) : Value(std::string(in_string)) {}
 
@@ -273,7 +275,9 @@ ValueView::ValueView(int64_t value) noexcept : data_(value) {}
 
 ValueView::ValueView(base::span<const uint8_t> value) noexcept : data_(value) {}
 
-ValueView::ValueView(std::string_view value) noexcept : data_(value) {}
+ValueView::ValueView(std::string_view value) noexcept : data_(value) {
+  DCHECK(base::IsStringUTF8AllowingNoncharacters(value));
+}
 
 ValueView::ValueView(base::span<const Value> value) noexcept : data_(value) {}
 
