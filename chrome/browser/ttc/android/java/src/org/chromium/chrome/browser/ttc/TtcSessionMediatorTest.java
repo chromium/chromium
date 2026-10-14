@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,8 +52,10 @@ public class TtcSessionMediatorTest {
 
     @Mock private TtcKeyedService mService;
     @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private ActivityLifecycleDispatcher mOtherLifecycleDispatcher;
 
     private PropertyModel mModel;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -62,8 +65,13 @@ public class TtcSessionMediatorTest {
         mModel = new PropertyModel(TtcSessionProperties.ALL_KEYS);
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         when(mService.isEnabled()).thenReturn(true);
+        // Matches the real service, which owns one tracker that ends its session.
+        TtcSessionWindowTracker windowTracker = new TtcSessionWindowTracker(mService::endSession);
+        when(mService.getWindowTracker()).thenReturn(windowTracker);
         TtcKeyedServiceFactory.setForTesting(mService);
         when(mLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(ActivityState.RESUMED_WITH_NATIVE);
+        when(mOtherLifecycleDispatcher.getCurrentActivityState())
                 .thenReturn(ActivityState.RESUMED_WITH_NATIVE);
         when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(true);
     }
@@ -77,6 +85,34 @@ public class TtcSessionMediatorTest {
 
     private TtcSessionMediator createMediator() {
         return createMediator(/* profileAvailable= */ true);
+    }
+
+    /**
+     * Creates the mediator for a second window on the same profile, sharing {@link #mService}. It
+     * has its own model and lifecycle, and its profile is supplied by {@code profileSupplier}.
+     */
+    private TtcSessionMediator createOtherWindowMediator(
+            SettableMonotonicObservableSupplier<Profile> profileSupplier) {
+        if (profileSupplier.get() == null) profileSupplier.set(mProfile);
+        return new TtcSessionMediator(
+                new PropertyModel(TtcSessionProperties.ALL_KEYS),
+                mWindowAndroid,
+                profileSupplier,
+                mOtherLifecycleDispatcher);
+    }
+
+    private TtcSessionMediator createOtherWindowMediator() {
+        return createOtherWindowMediator(ObservableSuppliers.createMonotonic());
+    }
+
+    /**
+     * Switches the window whose profile is supplied by {@code profileSupplier} to incognito. The
+     * factory returns {@link #mService} for every profile, so the off-the-record profile having no
+     * service is modeled by the service not being enabled for it.
+     */
+    private void switchToIncognito(SettableMonotonicObservableSupplier<Profile> profileSupplier) {
+        when(mService.isEnabled()).thenReturn(false);
+        profileSupplier.set(mIncognitoProfile);
     }
 
     // Profile observation.
@@ -154,6 +190,24 @@ public class TtcSessionMediatorTest {
     }
 
     @Test
+    public void testPillClickEndsSession() {
+        when(mService.isSessionActive()).thenReturn(true);
+        createMediator();
+
+        mModel.get(TtcSessionProperties.ON_CLICK_LISTENER).onClick(null);
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testPillClickWithoutServiceIsNoOp() {
+        when(mService.isEnabled()).thenReturn(false);
+        createMediator();
+
+        mModel.get(TtcSessionProperties.ON_CLICK_LISTENER).onClick(null);
+        verify(mService, never()).endSession();
+    }
+
+    @Test
     public void testToggleRequestsPermissionAndStartsWhenGranted() {
         when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
         TtcSessionMediator mediator = createMediator();
@@ -208,15 +262,6 @@ public class TtcSessionMediatorTest {
     }
 
     @Test
-    public void testStopWithNativeWithoutSessionIsNoOp() {
-        when(mService.isSessionActive()).thenReturn(false);
-        TtcSessionMediator mediator = createMediator();
-
-        mediator.onStopWithNative();
-        verify(mService, never()).endSession();
-    }
-
-    @Test
     public void testDestroyEndsSessionAndUnregisters() {
         when(mService.isSessionActive()).thenReturn(true);
         TtcSessionMediator mediator = createMediator();
@@ -225,6 +270,116 @@ public class TtcSessionMediatorTest {
         verify(mService).endSession();
         verify(mService).removeObserver(mediator);
         verify(mLifecycleDispatcher).unregister(mediator);
+    }
+
+    @Test
+    public void testSwitchingToIncognitoInOnlyWindowEndsSession() {
+        when(mService.isSessionActive()).thenReturn(true);
+        createMediator();
+
+        switchToIncognito(mProfileSupplier);
+        verify(mService).endSession();
+        assertFalse(mModel.get(TtcSessionProperties.VISIBLE));
+    }
+
+    @Test
+    public void testSameServiceAgainDoesNotEndSession() {
+        when(mService.isSessionActive()).thenReturn(true);
+        createMediator();
+
+        // A different profile object that maps to the same service.
+        mProfileSupplier.set(mock(Profile.class));
+        verify(mService, never()).endSession();
+        assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+    }
+
+    // Multiple windows sharing the profile's session.
+
+    @Test
+    public void testStopInOneWindowKeepsSessionWhileAnotherIsVisible() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        otherMediator.onStopWithNative();
+        verify(mService, never()).endSession();
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testDestroyInOneWindowKeepsSessionWhileAnotherIsVisible() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        // Closing a window stops it and then destroys it.
+        otherMediator.onStopWithNative();
+        otherMediator.destroy();
+        verify(mService, never()).endSession();
+        assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testSwitchingToIncognitoInOneWindowKeepsSessionWhileAnotherIsVisible() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        SettableMonotonicObservableSupplier<Profile> otherProfileSupplier =
+                ObservableSuppliers.createMonotonic();
+        createOtherWindowMediator(otherProfileSupplier);
+
+        switchToIncognito(otherProfileSupplier);
+        verify(mService, never()).endSession();
+        assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testRestartedWindowKeepsSessionAlive() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        mediator.onStopWithNative();
+        mediator.onStartWithNative();
+        otherMediator.onStopWithNative();
+        verify(mService, never()).endSession();
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testWindowStartedBeforeProfileAvailableKeepsSessionAlive() {
+        when(mService.isSessionActive()).thenReturn(true);
+        // The window is already resumed when its profile becomes available.
+        TtcSessionMediator mediator = createMediator(/* profileAvailable= */ false);
+        mProfileSupplier.set(mProfile);
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        otherMediator.onStopWithNative();
+        verify(mService, never()).endSession();
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testStoppedWindowDoesNotKeepSessionAlive() {
+        when(mService.isSessionActive()).thenReturn(true);
+        when(mOtherLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(ActivityState.STOPPED_WITH_NATIVE);
+        TtcSessionMediator mediator = createMediator();
+        createOtherWindowMediator();
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
     }
 
     // Model updates from the service.

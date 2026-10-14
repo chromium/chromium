@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionPillView.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionProperties.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTracker.java",
   ]
   deps = [
     ":java_resources",
@@ -52,8 +53,10 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTrackerTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",

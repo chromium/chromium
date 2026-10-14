@@ -40,6 +40,8 @@ public class TtcKeyedService {
 
     private long mNativePtr;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final TtcSessionWindowTracker mWindowTracker =
+            new TtcSessionWindowTracker(this::endSession);
 
     @CalledByNative
     private static TtcKeyedService create(long nativePtr) {
@@ -87,6 +89,14 @@ public class TtcKeyedService {
 
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    /**
+     * Returns the tracker for the windows that are visible and hosting this profile's session UI.
+     * The session ends once none are left.
+     */
+    TtcSessionWindowTracker getWindowTracker() {
+        return mWindowTracker;
     }
 
     @CalledByNative

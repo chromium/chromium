@@ -8,10 +8,10 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the floating TTC session pill. */
 @NullMarked
@@ -25,9 +25,9 @@ class TtcSessionProperties {
     /** The user's microphone level in [0, 1], used to animate the microphone icon. */
     static final WritableFloatPropertyKey AUDIO_LEVEL = new WritableFloatPropertyKey();
 
-    /** Click listener for the pill. Tapping the pill ends the session. */
-    static final ReadableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
-            new ReadableObjectPropertyKey<>();
+    /** Click listener for the pill, set by the mediator. Tapping the pill ends the session. */
+    static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
         VISIBLE, STATUS_TEXT_RES_ID, AUDIO_LEVEL, ON_CLICK_LISTENER

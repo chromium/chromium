@@ -62,7 +62,8 @@ public class TtcSessionCoordinator {
      * @param anchorView The activity's content area; the pill is pinned to its bottom-end corner.
      * @param windowAndroid The activity's window, used for the microphone permission.
      * @param profileSupplier Supplies the profile sessions run against.
-     * @param lifecycleDispatcher Used to end the session when the activity is stopped, since
+     * @param lifecycleDispatcher Used to report this window's visibility to the profile's {@link
+     *     TtcSessionWindowTracker}, which ends the session once no window is visible, since
      *     microphone capture can't continue in the background.
      */
     public TtcSessionCoordinator(
@@ -78,7 +79,6 @@ public class TtcSessionCoordinator {
                                 TtcSessionProperties.STATUS_TEXT_RES_ID,
                                 R.string.ttc_session_connecting)
                         .with(TtcSessionProperties.AUDIO_LEVEL, 0f)
-                        .with(TtcSessionProperties.ON_CLICK_LISTENER, v -> endSession())
                         .build();
         if (usesMobileSessionUi(anchorView.getContext())) {
             // The pill is only built the first time a session makes the model visible. Attached
@@ -107,10 +107,6 @@ public class TtcSessionCoordinator {
      */
     public void toggleSession() {
         mMediator.toggleSession();
-    }
-
-    private void endSession() {
-        mMediator.endSession();
     }
 
     /** Builds the pill on demand for {@link LazyConstructionPropertyMcp}. */

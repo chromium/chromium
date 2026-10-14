@@ -23,8 +23,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Runs TTC sessions for one activity and keeps the session pill's {@link PropertyModel} in sync
  * with the {@link TtcKeyedService}: follows the active profile, starts and ends sessions (prompting
- * for the microphone permission first), ends the session when the activity is stopped, and mirrors
- * the service's state into the model.
+ * for the microphone permission first), and mirrors the service's state into the model.
+ *
+ * <p>The session belongs to the profile and is shared by every window. This mediator reports its
+ * window's visibility to the profile's {@link TtcSessionWindowTracker}, which ends the session once
+ * no window is visible, rather than ending it when this window alone stops.
  */
 @NullMarked
 class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativeObserver {
@@ -61,7 +64,8 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
      *     starts.
      * @param windowAndroid The activity's window, used for the microphone permission.
      * @param profileSupplier Supplies the profile sessions run against.
-     * @param lifecycleDispatcher Used to end the session when the activity is stopped, since
+     * @param lifecycleDispatcher Used to report this window's visibility to the profile's {@link
+     *     TtcSessionWindowTracker}, which ends the session once no window is visible, since
      *     microphone capture can't continue in the background.
      */
     TtcSessionMediator(
@@ -73,14 +77,21 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
+        // Tapping the pill ends the session. TtcKeyedService#endSession() is a no-op when no
+        // session is active.
+        mModel.set(
+                TtcSessionProperties.ON_CLICK_LISTENER,
+                v -> {
+                    if (mService != null) mService.endSession();
+                });
         mLifecycleDispatcher.register(this);
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
     }
 
     void destroy() {
-        endSession();
         mLifecycleDispatcher.unregister(this);
         mProfileSupplier.removeObserver(mProfileObserver);
+        // Only ends the session if no other window is still showing it.
         detachFromService();
     }
 
@@ -112,20 +123,17 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                 });
     }
 
-    /** Ends the session if one is active. */
-    void endSession() {
-        if (mService == null || !mService.isSessionActive()) return;
-        mService.endSession();
-    }
-
     // StartStopWithNativeObserver:
 
     @Override
-    public void onStartWithNative() {}
+    public void onStartWithNative() {
+        if (mService != null) mService.getWindowTracker().addVisibleWindow(this);
+    }
 
     @Override
     public void onStopWithNative() {
-        endSession();
+        // Only ends the session if no other window is still showing it.
+        if (mService != null) mService.getWindowTracker().removeVisibleWindow(this);
     }
 
     // TtcKeyedService.Observer:
@@ -171,10 +179,12 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     }
 
     private void onProfileAvailable(Profile profile) {
-        // Stop anything running against the previous profile before switching.
-        endSession();
+        TtcKeyedService service = TtcSessionCoordinator.getServiceIfAvailable(profile);
+        if (service == mService) return;
+        // This window stops hosting the previous profile's session. That only ends the session if
+        // no other window is still showing it.
         detachFromService();
-        mService = TtcSessionCoordinator.getServiceIfAvailable(profile);
+        mService = service;
         if (mService == null) {
             mModel.set(TtcSessionProperties.VISIBLE, false);
             return;
@@ -184,11 +194,18 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                 mService.isSessionActive()
                         ? ServiceState.SESSION_ACTIVE
                         : ServiceState.SESSION_INACTIVE);
+        // The window may have started before the profile was available.
+        if (isActivityStarted()) mService.getWindowTracker().addVisibleWindow(this);
     }
 
+    /**
+     * Stops observing the current service and removes this window from its {@link
+     * TtcSessionWindowTracker}, which ends the session if no other window is still showing it.
+     */
     private void detachFromService() {
         clearError();
         if (mService == null) return;
+        mService.getWindowTracker().removeVisibleWindow(this);
         mService.removeObserver(this);
         mService = null;
     }
