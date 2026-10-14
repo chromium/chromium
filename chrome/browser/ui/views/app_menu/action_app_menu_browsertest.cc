@@ -311,7 +311,13 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
 
   AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
   ASSERT_TRUE(search_bar);
-  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
+  views::View* search_icon =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          AppMenuSearchBarView::kSearchIconElementId,
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetElementContext());
+  ASSERT_TRUE(search_icon);
+  EXPECT_TRUE(search_icon->GetVisible());
 
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());

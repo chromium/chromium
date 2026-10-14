@@ -18,8 +18,7 @@
 #include "ui/events/event.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {
@@ -28,12 +27,24 @@ class AppMenuSearchBarViewTest : public ChromeViewsTestBase {
  public:
   AppMenuSearchBarViewTest() = default;
   ~AppMenuSearchBarViewTest() override = default;
+
+ protected:
+  // Finds the search bar's child views by their element identifiers.
+  views::View* GetSearchIcon(AppMenuSearchBarView* search_bar) {
+    return search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kSearchIconElementId);
+  }
+
+  views::Button* GetBackButton(AppMenuSearchBarView* search_bar) {
+    return views::Button::AsButton(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kBackButtonElementId));
+  }
 };
 
 TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
 
-  views::ImageView* icon = search_bar->search_icon_for_testing();
+  views::View* icon = GetSearchIcon(search_bar.get());
   ASSERT_NE(icon, nullptr);
 
   EXPECT_TRUE(search_bar->GetText().empty());
@@ -65,7 +76,7 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
 
 TEST_F(AppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  views::ImageView* icon = search_bar->search_icon_for_testing();
+  views::View* icon = GetSearchIcon(search_bar.get());
 
   // Mouse press activates focus and enables cursor.
   EXPECT_TRUE(search_bar->OnMousePressed(ui::MouseEvent(
@@ -137,8 +148,8 @@ TEST_F(AppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
 
 TEST_F(AppMenuSearchBarViewTest, LeadingIconToggles) {
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  views::ImageView* icon = search_bar->search_icon_for_testing();
-  views::ImageButton* back_button = search_bar->back_button_for_testing();
+  views::View* icon = GetSearchIcon(search_bar.get());
+  views::Button* back_button = GetBackButton(search_bar.get());
   ASSERT_NE(icon, nullptr);
   ASSERT_NE(back_button, nullptr);
 
@@ -165,7 +176,7 @@ TEST_F(AppMenuSearchBarViewTest, BackPressClearsText) {
   EXPECT_TRUE(search_bar->is_active_for_testing());
   EXPECT_TRUE(search_bar->GetCursorEnabled());
 
-  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+  views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON,
@@ -188,7 +199,7 @@ TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesTextChanged) {
       search_bar->AddTextChangedCallback(
           base::BindLambdaForTesting([&]() { ++notifications; }));
 
-  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+  views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON,

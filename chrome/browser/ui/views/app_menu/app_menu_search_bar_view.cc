@@ -27,6 +27,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -36,6 +37,11 @@ constexpr int kCornerRadius = 8;
 constexpr int kIconPadding = 12;
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
+                                      kSearchIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
+                                      kBackButtonElementId);
 
 AppMenuSearchBarView::AppMenuSearchBarView() {
   const auto* provider = ChromeLayoutProvider::Get();
@@ -62,6 +68,7 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
               : vector_icons::kSearchChromeRefreshOldIcon,
           ui::kColorIcon, icon_size));
   search_icon->SetCanProcessEventsWithinSubtree(false);
+  search_icon->SetProperty(views::kElementIdentifierKey, kSearchIconElementId);
   search_icon_ = AddChildView(std::move(search_icon));
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
@@ -74,6 +81,7 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
       l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetVisible(false);
+  back_button->SetProperty(views::kElementIdentifierKey, kBackButtonElementId);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button_ = AddChildView(std::move(back_button));
 

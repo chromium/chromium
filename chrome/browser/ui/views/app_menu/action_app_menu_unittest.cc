@@ -1633,6 +1633,18 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
   }
   ~ActionAppMenuWithSearchTest() override = default;
 
+ protected:
+  // Finds the search bar's child views by their element identifiers.
+  views::View* GetSearchIcon(AppMenuSearchBarView* search_bar) {
+    return search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kSearchIconElementId);
+  }
+
+  views::Button* GetBackButton(AppMenuSearchBarView* search_bar) {
+    return views::Button::AsButton(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kBackButtonElementId));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1684,7 +1696,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 12, 8, 12));
 
   // Check initial empty state.
-  views::ImageView* icon = search_bar->search_icon_for_testing();
+  views::View* icon = GetSearchIcon(search_bar);
   ASSERT_NE(icon, nullptr);
 
   EXPECT_TRUE(search_bar->GetText().empty());
@@ -1846,8 +1858,8 @@ TEST_F(ActionAppMenuWithSearchTest, ShortSearchQueryKeepsNormalMenu) {
   search_bar->SetText(u"P");
 
   EXPECT_EQ(root->GetSubmenu()->children().size(), row_count);
-  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
-  EXPECT_FALSE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
+  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1875,8 +1887,8 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
-  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
-  EXPECT_FALSE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
+  EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->is_active_for_testing());
 
   // Clicking a result runs its action.
@@ -1908,8 +1920,8 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   // A single "No results" row follows the search bar, and back is offered.
   EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
   EXPECT_EQ(submenu->children().size(), *search_row_index + 2);
-  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
-  EXPECT_FALSE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
+  EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1938,7 +1950,7 @@ TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
   EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
-  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1958,16 +1970,16 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   const size_t row_count_at_open = submenu->children().size();
 
   search_bar->SetText(u"Downloads");
-  ASSERT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   ASSERT_FALSE(search_bar->GetText().empty());
   ASSERT_TRUE(search_bar->GetCursorEnabled());
   ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
 
-  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+  views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyDefaultMouseClick();
 
-  EXPECT_FALSE(search_bar->back_button_for_testing()->GetVisible());
-  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_TRUE(search_bar->GetCursorEnabled());
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
@@ -2010,12 +2022,12 @@ TEST_F(ActionAppMenuWithSearchTest,
   // The same notification row stays above the search bar while the results
   // are shown.
   search_bar->SetText(u"Downloads");
-  ASSERT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
   EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()),
             search_row_index_at_open);
 
-  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+  views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyDefaultMouseClick();
 
   // Back adds the normal rows below the search bar again, but not the

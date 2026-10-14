@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
@@ -27,6 +28,9 @@ class AppMenuSearchBarView : public views::Textfield, public ui::EventObserver {
   // The icon occupying the leading slot.
   enum class LeadingIcon { kSearch, kBack };
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButtonElementId);
+
   using views::Textfield::OnEvent;
 
   AppMenuSearchBarView();
@@ -36,11 +40,6 @@ class AppMenuSearchBarView : public views::Textfield, public ui::EventObserver {
 
   void SetLeadingIcon(LeadingIcon icon);
 
-  views::ImageView* search_icon_for_testing() { return search_icon_; }
-  const views::ImageView* search_icon_for_testing() const {
-    return search_icon_;
-  }
-  views::ImageButton* back_button_for_testing() { return back_button_; }
   bool is_active_for_testing() const { return is_active_; }
 
   void HandleKeyEvent(ui::KeyEvent* event);
