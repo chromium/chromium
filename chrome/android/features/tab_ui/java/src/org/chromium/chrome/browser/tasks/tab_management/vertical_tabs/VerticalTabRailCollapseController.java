@@ -40,6 +40,10 @@ import org.chromium.ui.base.WindowAndroid;
  * construction, and is written back when the user changes it and whenever this window becomes the
  * top resumed activity. Shared prefs therefore hold the preference of the last active window, which
  * a new window (e.g. one created by dragging a tab out of this window) starts with.
+ *
+ * <p>Applying can be deferred with {@link #setApplyDeferred(boolean)}. Inputs are still recorded
+ * while deferred, so the derived state stays accurate, but it only reaches the view layer once
+ * deferral ends.
  */
 @NullMarked
 class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateObserver {
@@ -98,6 +102,12 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
     // available width. When true, the rail collapses and the collapse button is disabled,
     // regardless of the other inputs.
     private boolean mIsForcedCollapsed;
+
+    // Whether applying the effective state is deferred. See setApplyDeferred().
+    private boolean mIsApplyDeferred;
+
+    // Whether applyEffectiveState() was called while deferred.
+    private boolean mHasPendingApply;
 
     /**
      * @param setRailCollapseStateCallback Applies the effective {@link RailCollapseState} to the
@@ -265,6 +275,39 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Sets whether applying the effective state is deferred.
+     *
+     * <p>While deferred, {@link #applyEffectiveState()} records that it was requested instead of
+     * pushing to the view layer or publishing to {@link #getRailCollapseStateSupplier()}. Inputs
+     * are still recorded, so {@link #getEffectiveRailCollapseState()} and the other derived state
+     * stay accurate. This covers every apply path, including those triggered directly by an input
+     * such as {@link #setWindowWidthBoundary(int)}.
+     *
+     * <p>This is used while the rail's View is frozen at a fixed width (e.g. during a tab drag):
+     * applying a new collapse state then would lay out the rail's contents for a width the View
+     * does not have. When deferral ends, the latest state is applied once if it may differ from the
+     * applied one, i.e. if an apply was requested meanwhile or the effective state moved away from
+     * the published one.
+     *
+     * @param isDeferred Whether applying the effective state should be deferred.
+     */
+    void setApplyDeferred(boolean isDeferred) {
+        if (mIsApplyDeferred == isDeferred) return;
+        mIsApplyDeferred = isDeferred;
+        if (isDeferred) return;
+
+        // Also re-sync if the effective state moved without an apply request (e.g. a user input
+        // whose Side UI update was dropped). The collapse button state only depends on the forced
+        // collapse input, whose changes always request an apply.
+        boolean hasStateChanged =
+                getEffectiveRailCollapseState() != mRailCollapseStateSupplier.get();
+        if (!mHasPendingApply && !hasStateChanged) return;
+
+        mHasPendingApply = false;
+        applyEffectiveState();
+    }
+
+    /**
      * Pushes the effective rail collapse state and whether the collapse button is enabled to the
      * view layer, then publishes the state to {@link #getRailCollapseStateSupplier()}.
      *
@@ -273,8 +316,16 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
      * VerticalTabsSideUiCoordinator#onSideUiSpecsChanged} or {@link #setWindowWidthBoundary}), or
      * by {@link #requestEffectiveStateChangeByUser()} when no {@link RailStateChangeDelegate} is
      * registered.
+     *
+     * <p>While applying is deferred (see {@link #setApplyDeferred(boolean)}), this only records the
+     * request, and the latest state is applied once deferral ends.
      */
     void applyEffectiveState() {
+        if (mIsApplyDeferred) {
+            mHasPendingApply = true;
+            return;
+        }
+
         @RailCollapseState int effectiveState = getEffectiveRailCollapseState();
         mSetRailCollapseStateCallback.onResult(effectiveState);
         mSetCollapseButtonEnabledCallback.onResult(!isForcedCollapsed());

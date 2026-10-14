@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -420,5 +421,169 @@ public class VerticalTabRailCollapseControllerUnitTest {
         mController.onResizeLive(/* proposedWidthDp= */ 200);
         mController.onResizeLive(/* proposedWidthDp= */ 40);
         assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+    }
+
+    @Test
+    public void testSetApplyDeferred_DefersForcedCollapseUntilDeferralEnds() {
+        mController.setApplyDeferred(true);
+
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+        verify(mMockCollapseButtonEnabledCallback, never()).onResult(anyBoolean());
+        assertEquals(
+                RailCollapseState.EXPANDED, (int) mController.getRailCollapseStateSupplier().get());
+
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback).onResult(RailCollapseState.COLLAPSED);
+        verify(mMockCollapseButtonEnabledCallback).onResult(false);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                (int) mController.getRailCollapseStateSupplier().get());
+    }
+
+    @Test
+    public void testSetApplyDeferred_AppliesLatestStateOnce() {
+        mController.setApplyDeferred(true);
+
+        // Several apply requests while deferred, ending back on a state that is not forced.
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FULLY_EXPANDABLE);
+        mController.applyEffectiveState();
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback).onResult(RailCollapseState.EXPANDED);
+        verify(mMockSetRailStateCallback, times(1)).onResult(anyInt());
+        verify(mMockCollapseButtonEnabledCallback, times(1)).onResult(true);
+    }
+
+    @Test
+    public void testSetApplyDeferred_NothingPending_DoesNotApply() {
+        VerticalTabUtils.setRailCollapsedInSharedPref(true);
+        mController = createController();
+        mController.setRailStateChangeDelegate(mMockDelegate);
+        mController.setApplyDeferred(true);
+
+        // The effective state moves and comes back, without any apply request.
+        mController.setHovering(true);
+        mController.setHovering(false);
+
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+        verify(mMockCollapseButtonEnabledCallback, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void testSetApplyDeferred_AppliesStateMovedWithoutApplyRequest() {
+        VerticalTabUtils.setRailCollapsedInSharedPref(true);
+        mController = createController();
+        mController.setRailStateChangeDelegate(mMockDelegate);
+        mController.setApplyDeferred(true);
+
+        // The delegate is notified, but nothing calls applyEffectiveState(), e.g. because the
+        // resulting Side UI update was dropped.
+        mController.setHovering(true);
+        verify(mMockDelegate).handleUserRequestedStateChange();
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+
+        // Ending deferral re-syncs the applied state anyway.
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback, times(1)).onResult(anyInt());
+        verify(mMockSetRailStateCallback).onResult(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                (int) mController.getRailCollapseStateSupplier().get());
+    }
+
+    @Test
+    public void testSetApplyDeferred_StillNotifiesDelegate() {
+        mController.setRailStateChangeDelegate(mMockDelegate);
+        mController.setApplyDeferred(true);
+
+        mController.toggleCollapseState();
+        verify(mMockDelegate).handleUserRequestedStateChange();
+
+        mController.setHovering(true);
+        verify(mMockDelegate, times(2)).handleUserRequestedStateChange();
+
+        // The delegate's Side UI update applying the state only marks it as pending.
+        mController.applyEffectiveState();
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+        assertEquals(
+                RailCollapseState.EXPANDED, (int) mController.getRailCollapseStateSupplier().get());
+
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback, times(1)).onResult(anyInt());
+        verify(mMockSetRailStateCallback).onResult(RailCollapseState.EXPANDED_FOR_HOVERING);
+    }
+
+    @Test
+    public void testSetApplyDeferred_RepeatedCallsAreNoOps() {
+        mController.setApplyDeferred(true);
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+
+        // Deferring again neither applies nor drops the pending request.
+        mController.setApplyDeferred(true);
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+
+        mController.setApplyDeferred(false);
+        verify(mMockSetRailStateCallback, times(1)).onResult(RailCollapseState.COLLAPSED);
+
+        // Ending deferral again does not re-apply.
+        mController.setApplyDeferred(false);
+        verify(mMockSetRailStateCallback, times(1)).onResult(anyInt());
+    }
+
+    @Test
+    public void testSetApplyDeferred_DefersToggleFallback() {
+        mController.setApplyDeferred(true);
+
+        mController.toggleCollapseState();
+
+        // The preference changes immediately, but the fallback apply is deferred.
+        assertTrue(mController.isCollapsedByUserForTesting());
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+        assertEquals(
+                RailCollapseState.EXPANDED, (int) mController.getRailCollapseStateSupplier().get());
+
+        mController.setApplyDeferred(false);
+
+        verify(mMockSetRailStateCallback).onResult(RailCollapseState.COLLAPSED);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                (int) mController.getRailCollapseStateSupplier().get());
+    }
+
+    @Test
+    public void testSetApplyDeferred_InputsStillRecorded() {
+        VerticalTabUtils.setRailCollapsedInSharedPref(true);
+        mController = createController();
+        mController.setApplyDeferred(true);
+
+        mController.setHovering(true);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mController.getEffectiveRailCollapseState());
+
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        assertTrue(mController.isForcedCollapsed());
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+
+        mController.onResizeCommitted(/* finalWidthDp= */ 200);
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FULLY_EXPANDABLE);
+        assertFalse(mController.isForcedCollapsed());
+        assertEquals(RailCollapseState.EXPANDED, mController.getEffectiveRailCollapseState());
+
+        verify(mMockSetRailStateCallback, never()).onResult(anyInt());
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                (int) mController.getRailCollapseStateSupplier().get());
     }
 }
