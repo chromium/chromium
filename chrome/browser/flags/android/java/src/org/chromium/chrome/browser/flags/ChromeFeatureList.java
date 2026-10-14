@@ -793,8 +793,6 @@ public abstract class ChromeFeatureList {
     public static final String SEND_TAB_TO_SELF_GESTURE = "SendTabToSelfGesture";
     public static final String SEND_TAB_TO_SELF_MULTI_TAB_SHARE = "SendTabToSelfMultiTabShare";
     public static final String SEND_TAB_TO_SELF_OPEN_NATIVE_APP = "SendTabToSelfOpenNativeApp";
-    public static final String SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS =
-            "SendTabToSelfPropagateFormFields";
     public static final String SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION =
             "SendTabToSelfRecordSnackbarActivation";
     public static final String SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID =

@@ -38,12 +38,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -179,11 +176,10 @@ public class SendTabToSelfNotificationTest {
 
     /**
      * Verifies that tapping a notification with serialized page context attaches the page context
-     * extra to the launcher intent when form field propagation is enabled.
+     * extra to the launcher intent and marks the entry opened.
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithPageContext() {
         byte[] pageContextBytes = new byte[] {0x08, 0x01};
         Intent intent = createTapIntent(pageContextBytes);
@@ -197,31 +193,11 @@ public class SendTabToSelfNotificationTest {
     }
 
     /**
-     * Verifies that tapping a notification with page context does not attach the page context extra
-     * to the launcher intent when form field propagation is disabled.
-     */
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
-    public void testNotificationTap_WithPageContext_FeatureDisabled() {
-        byte[] pageContextBytes = new byte[] {0x08, 0x01};
-        Intent intent = createTapIntent(pageContextBytes);
-
-        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
-
-        intended(hasComponent(ChromeLauncherActivity.class.getName()));
-        intended(hasData(URL));
-        intended(not(hasExtraWithKey(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT)));
-        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
-    }
-
-    /**
      * Verifies that tapping a notification without page context does not attach the page context
-     * extra to the launcher intent when form field propagation is enabled.
+     * extra to the launcher intent and marks the entry opened.
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithoutPageContext() {
         Intent intent = createTapIntent(/* pageContextBytes= */ null);
 

@@ -42,7 +42,6 @@ namespace {
 class IOSSendTabToSelfInfoBarDelegateTest : public PlatformTest {
  public:
   IOSSendTabToSelfInfoBarDelegateTest() {
-    feature_list_.InitAndEnableFeature(kSendTabToSelfPropagateFormFields);
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web_state_ptr_ = fake_web_state.get();
     web_state_ptr_->SetBrowserState(&browser_state_);
@@ -79,7 +78,6 @@ class IOSSendTabToSelfInfoBarDelegateTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   web::FakeBrowserState browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

@@ -291,11 +291,10 @@ public class NotificationManagerTest {
 
     /**
      * Verifies that tapping a notification with page context attaches the serialized page context
-     * extra to the launcher intent when form field propagation is enabled.
+     * extra to the launcher intent.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
-    public void testNotificationTap_WithPageContext_FeatureEnabled() {
+    public void testNotificationTap_WithPageContext() {
         byte[] pageContextBytes = new byte[] {1, 2, 3, 4};
         Intent intent = createTapIntent(pageContextBytes);
 
@@ -314,34 +313,10 @@ public class NotificationManagerTest {
     }
 
     /**
-     * Verifies that tapping a notification with page context does not attach the page context extra
-     * when form field propagation is disabled.
-     */
-    @Test
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
-    public void testNotificationTap_WithPageContext_FeatureDisabled() {
-        byte[] pageContextBytes = new byte[] {1, 2, 3, 4};
-        Intent intent = createTapIntent(pageContextBytes);
-
-        NotificationSharedPrefManager.addActiveNotification(
-                new NotificationSharedPrefManager.ActiveNotification(1, GUID));
-
-        NotificationManager.handleIntent(intent);
-
-        // Verify that the started intent does not contain the page context extra.
-        Intent startedIntent =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
-        Assert.assertNotNull(startedIntent);
-        Assert.assertNull(
-                startedIntent.getByteArrayExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT));
-    }
-
-    /**
      * Verifies that tapping a notification without page context does not attach the page context
      * extra.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithoutPageContext() {
         Intent intent = createTapIntent();
 
@@ -366,11 +341,10 @@ public class NotificationManagerTest {
     }
 
     /**
-     * Verifies that NotificationManager.showNotification creates a notification whose content
-     * intent carries the serialized page context extra when form field propagation is enabled.
+     * Verifies that `NotificationManager.showNotification` creates a notification whose content
+     * intent carries the serialized page context extra.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testShowNotificationWithPageContext() {
         byte[] pageContextBytes = new byte[] {1, 2, 3};
         boolean shown =

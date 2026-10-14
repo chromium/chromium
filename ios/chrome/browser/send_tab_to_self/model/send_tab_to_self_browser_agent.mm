@@ -646,9 +646,7 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   send_tab_to_self::PageContext page_context;
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateFormFields) &&
-      web_state) {
+  if (web_state) {
     page_context = send_tab_to_self::ExtractFormFieldsFromWebState(web_state);
   }
 

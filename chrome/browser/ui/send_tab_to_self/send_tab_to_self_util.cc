@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/url_constants.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -68,8 +66,7 @@ base::WeakPtr<content::WebContents> OpenEntryInNewTabWithDisposition(
         /*restoration_attempted=*/scroll_to_text_fragment.has_value());
   }
 
-  if (handle &&
-      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+  if (handle) {
     FillWebContents(params.navigated_or_inserted_contents,
                     url::Origin::Create(entry.GetURL()),
                     entry.GetPageContext());

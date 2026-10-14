@@ -205,8 +205,7 @@ void AndroidNotificationHandler::ShowNotification(
       GetScrollPositionAsTextFragment(&entry);
 
   std::vector<uint8_t> page_context_bytes;
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
-      !entry.GetPageContext().form_field_info.fields.empty()) {
+  if (!entry.GetPageContext().form_field_info.fields.empty()) {
     std::string serialized_page_context =
         PageContextToProto(entry.GetPageContext()).SerializeAsString();
     page_context_bytes.assign(serialized_page_context.begin(),
@@ -367,9 +366,7 @@ void AndroidNotificationHandler::OnNavigationStarted(
   CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   if (content::WebContents* new_contents =
           nav_params->navigated_or_inserted_contents) {
-    if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-      FillWebContents(new_contents, url::Origin::Create(url), page_context);
-    }
+    FillWebContents(new_contents, url::Origin::Create(url), page_context);
     RecordHasScrollPositionOnOpened(!page_context.scroll_position.IsEmpty());
 
     // Attach a visual label indicating the sender device name to the newly

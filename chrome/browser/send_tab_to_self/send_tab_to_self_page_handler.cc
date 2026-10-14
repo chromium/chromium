@@ -233,8 +233,7 @@ SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
 }
 
 void SendTabToSelfPageHandler::MaybeExtractFormFields(PendingRequest& request) {
-  if (request.url == web_contents()->GetLastCommittedURL() &&
-      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+  if (request.url == web_contents()->GetLastCommittedURL()) {
     request.page_context.form_field_info =
         ExtractFormFieldsFromWebContents(web_contents());
   }

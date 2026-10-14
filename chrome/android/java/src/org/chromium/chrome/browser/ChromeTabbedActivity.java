@@ -3205,15 +3205,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 && IntentUtils.isTrustedIntentFromSelf(intent)) {
             SendTabToSelfMetricsRecorder.attachScrollObserverToTab(
                     resultTab, loadUrlParams.getInternalScrollToTextFragment());
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)) {
-                byte[] pageContext =
-                        IntentUtils.safeGetByteArrayExtra(
-                                intent, IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT);
-                if (pageContext != null) {
-                    SendTabToSelfAndroidBridge.fillWebContents(
-                            resultTab, pageContext, loadUrlParams.getUrl());
-                }
+            byte[] pageContext =
+                    IntentUtils.safeGetByteArrayExtra(
+                            intent, IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT);
+            if (pageContext != null) {
+                SendTabToSelfAndroidBridge.fillWebContents(
+                        resultTab, pageContext, loadUrlParams.getUrl());
             }
         }
     }

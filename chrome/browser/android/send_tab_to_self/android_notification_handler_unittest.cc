@@ -604,21 +604,9 @@ TEST_F(AndroidNotificationHandlerWithTabGridAutoOpenSupportTest,
   TabModelList::RemoveTabModel(tab_model_.get());
 }
 
-class AndroidNotificationHandlerWithFormFieldsPropagationTest
-    : public AndroidNotificationHandlerTest {
- public:
-  AndroidNotificationHandlerWithFormFieldsPropagationTest() {
-    feature_list_.InitAndEnableFeature(kSendTabToSelfPropagateFormFields);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies that ShowNotification receives the entry containing form field data
-// when Chrome is not in the foreground.
-TEST_F(AndroidNotificationHandlerWithFormFieldsPropagationTest,
-       ShowNotificationWithPageContext) {
+// Verifies that `ShowNotification` receives the entry containing form field
+// data when Chrome is not in the foreground.
+TEST_F(AndroidNotificationHandlerTest, ShowNotificationWithPageContext) {
   PageContext page_context;
   PageContext::FormField field;
   field.name_attribute = u"username";
@@ -641,11 +629,10 @@ TEST_F(AndroidNotificationHandlerWithFormFieldsPropagationTest,
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 }
 
-// Verifies that AndroidNotificationHandler::ShowNotification correctly
-// serializes the entry's PageContext and invokes
-// Java_NotificationManager_showNotification via JNI without errors when form
-// field propagation is enabled.
-TEST_F(AndroidNotificationHandlerWithFormFieldsPropagationTest,
+// Verifies that `AndroidNotificationHandler::ShowNotification` correctly
+// serializes the entry's `PageContext` and invokes
+// `Java_NotificationManager_showNotification` via JNI without errors.
+TEST_F(AndroidNotificationHandlerTest,
        ShowNotificationInvokesJavaNotificationManager) {
   PageContext page_context;
   PageContext::FormField field;

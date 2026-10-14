@@ -6,8 +6,6 @@
 
 #import <memory>
 
-#import "base/feature_list.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -66,16 +64,12 @@ void MaybeRestoreScrollPosition(
 }
 
 // Attempts to perform form filling for the given `entry` if it contains
-// form data and the feature is enabled.
+// form data.
 void MaybePerformFormFilling(
     web::WebState* web_state,
     const send_tab_to_self::SendTabToSelfEntry* entry) {
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateFormFields)) {
-    send_tab_to_self::FillWebState(web_state,
-                                   url::Origin::Create(entry->GetURL()),
-                                   entry->GetPageContext());
-  }
+  send_tab_to_self::FillWebState(
+      web_state, url::Origin::Create(entry->GetURL()), entry->GetPageContext());
 }
 
 }  // namespace
