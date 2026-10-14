@@ -42,8 +42,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -1599,11 +1597,7 @@ TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
 class DevToolsUIBindingsExtensionsTest : public testing::Test {
  public:
   void SetUp() override {
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        TemplateURLServiceFactory::GetInstance(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-    profile_ = profile_builder.Build();
+    profile_ = std::make_unique<TestingProfile>();
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
     bindings_ = std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
         web_contents_);
@@ -1681,43 +1675,5 @@ TEST_F(DevToolsUIBindingsExtensionsTest, AddsExtensionsToLocalFrontend) {
   EXPECT_TRUE(content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
       web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       extension_->url()));
-}
-
-TEST_F(DevToolsUIBindingsExtensionsTest,
-       UpdatesForbiddenOriginsOnSearchEngineChange) {
-  GURL local_url("devtools://devtools/bundled/devtools_app.html");
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents_,
-                                                             local_url);
-
-  static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings_.get())
-      ->LoadCompleted();
-
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(template_url_service);
-  template_url_service->Load();
-
-  base::Value captured_forbidden_origins;
-  EXPECT_CALL(*bindings_, CallClientMethodImpl(
-                              "DevToolsAPI", "setOriginsForbiddenForExtensions",
-                              _, _, _, _))
-      .WillRepeatedly(
-          [&](const std::string& object_name, const std::string& method_name,
-              base::Value arg1, base::Value arg2, base::Value arg3,
-              base::OnceCallback<void(base::Value)> completion_callback) {
-            captured_forbidden_origins = std::move(arg1);
-          });
-
-  TemplateURLData data;
-  data.SetShortName(u"example.com");
-  data.SetURL("https://example.com/url?bar={searchTerms}");
-  data.new_tab_url = "https://ntp.example.com/newtab";
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-  ASSERT_TRUE(captured_forbidden_origins.is_list());
-  EXPECT_TRUE(
-      captured_forbidden_origins.GetList().contains("https://ntp.example.com"));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

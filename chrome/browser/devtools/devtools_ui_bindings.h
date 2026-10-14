@@ -14,7 +14,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
@@ -28,8 +27,6 @@
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "extensions/buildflags/buildflags.h"
@@ -40,6 +37,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -73,7 +71,6 @@ class Profile;
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public TemplateURLServiceObserver,
 #if !BUILDFLAG(IS_ANDROID)
                            public ThemeServiceObserver,
 #endif
@@ -457,11 +454,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
-  void UpdateOriginsForbiddenForExtensions();
-
-  // TemplateURLServiceObserver:
-  void OnTemplateURLServiceChanged() override;
-  void OnTemplateURLServiceShuttingDown() override;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // extensions::ExtensionRegistryObserver:
@@ -510,8 +502,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   using ExtensionsAPIs = std::map<std::string, std::string>;
   ExtensionsAPIs extensions_api_;
   std::string initial_target_id_;
-  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
-      template_url_service_observation_{this};
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

@@ -870,11 +870,6 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
   ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
       ->AddObserver(this);
 #endif
-  if (auto* template_url_service =
-          TemplateURLServiceFactory::GetForProfile(
-              profile_->GetOriginalProfile())) {
-    template_url_service_observation_.Observe(template_url_service);
-  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (auto* registry = extensions::ExtensionRegistry::Get(profile_)) {
     extension_registry_observation_.Observe(registry);
@@ -2915,12 +2910,23 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
   }
 
   base::ListValue results;
+  base::ListValue forbidden_origins;
   extensions::ExtensionManagement* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext());
 
+  // NOTE: on Android, GetNewTabPageURL may return invalid URL. This is short
+  // work around.
+  // TODO(crbug.com/505013947): Fix the root cause.
+  auto origin = url::Origin::Create(search::GetNewTabPageURL(profile_));
+  if (!origin.opaque()) {
+    forbidden_origins.Append(origin.Serialize());
+  }
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
+    if (extensions::Manifest::IsComponentLocation(extension->location())) {
+      forbidden_origins.Append(extension->origin().Serialize());
+    }
     if (extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
             .is_empty()) {
       continue;
@@ -2968,52 +2974,11 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     devtools_extension_ids_.insert(extension->id());
   }
 
-  UpdateOriginsForbiddenForExtensions();
+  CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
+                   base::Value(std::move(forbidden_origins)));
   CallClientMethod("DevToolsAPI", "addExtensions",
                    base::Value(std::move(results)));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-}
-
-void DevToolsUIBindings::UpdateOriginsForbiddenForExtensions() {
-  if (!is_local_frontend_) {
-    return;
-  }
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  const extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_->GetOriginalProfile());
-  if (!registry) {
-    return;
-  }
-
-  base::ListValue forbidden_origins;
-  // NOTE: on Android, GetNewTabPageURL may return invalid URL. This is short
-  // work around.
-  // TODO(crbug.com/505013947): Fix the root cause.
-  auto origin = url::Origin::Create(search::GetNewTabPageURL(profile_));
-  if (!origin.opaque()) {
-    forbidden_origins.Append(origin.Serialize());
-  }
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       registry->enabled_extensions()) {
-    if (extensions::Manifest::IsComponentLocation(extension->location())) {
-      forbidden_origins.Append(extension->origin().Serialize());
-    }
-  }
-
-  CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
-                   base::Value(std::move(forbidden_origins)));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-}
-
-void DevToolsUIBindings::OnTemplateURLServiceChanged() {
-  if (!frontend_loaded_ || !is_local_frontend_) {
-    return;
-  }
-  UpdateOriginsForbiddenForExtensions();
-}
-
-void DevToolsUIBindings::OnTemplateURLServiceShuttingDown() {
-  template_url_service_observation_.Reset();
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
