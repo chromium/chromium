@@ -157,10 +157,15 @@ std::string SkcmsMatrix3x3ToString(const skcms_Matrix3x3& m) {
 }
 
 base::span<const uint8_t> as_byte_span(const SkData& sk_data LIFETIME_BOUND) {
-  // SAFETY: `data` is not null.  `bytes` and `size` come from the same
-  // container.  (`base::as_bytes_span` doesn't work because `data` accessor
-  // returns `void*`.)
-  return UNSAFE_BUFFERS(base::span(sk_data.bytes(), sk_data.size()));
+  // This useless local dodges an issue (false positive?) with the
+  // checker for `LIFETIME_BOUND`, which will complain that this is
+  // "returning address of local temporary object
+  // [-Werror,-Wreturn-stack-address]." It might be some strange
+  // interaction with the function `base::as_byte_span()`?
+  //
+  // The returned value is bounded by the same lifetime as `sk_data`.
+  SkSpan<const uint8_t> skspan = sk_data.byteSpan();
+  return base::span(skspan);
 }
 
 base::span<uint8_t> as_writable_byte_span(SkData& data LIFETIME_BOUND) {
