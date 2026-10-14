@@ -14,14 +14,15 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -32,7 +33,11 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -153,9 +158,12 @@ class LoginApitest : public LoginScreenApitestBase {
 
   std::unique_ptr<extensions::TestExtensionRegistryObserver>
   GetTestExtensionRegistryObserver(const std::string& extension_id) {
-    const user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
     return std::make_unique<extensions::TestExtensionRegistryObserver>(
         extensions::ExtensionRegistry::Get(profile), extension_id);
   }
@@ -163,9 +171,12 @@ class LoginApitest : public LoginScreenApitestBase {
   virtual void SetUpInSessionExtension() {
     SetUpSessionExtensionUserPolicyBuilder();
 
-    const user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
 
     extension_force_install_mixin_.InitWithEmbeddedPolicyMixin(
         profile, &policy_test_server_mixin_, user_policy_builder_.get(),
@@ -222,8 +233,11 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {
   // Check that the active user is of type |USER_TYPE_PUBLIC_ACCOUNT|.
   // We cannot use the email as an identifier as a different email is generated
   // for managed guest sessions.
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  auto* active_user = user_manager->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
   ASSERT_TRUE(active_user);
   EXPECT_EQ(user_manager::UserType::kPublicAccount, active_user->GetType());
   EXPECT_FALSE(active_user->CanLock());
@@ -233,8 +247,13 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionWithPassword) {
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->GetActiveUser()->CanLock());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
+  ASSERT_TRUE(active_user);
+  EXPECT_TRUE(active_user->CanLock());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionNoAccounts) {

@@ -13,11 +13,14 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -68,9 +71,12 @@ class BrowserCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   Profile* GetActiveUserProfile() {
-    const user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
   }
 
   void OpenNewBrowserPage(std::string page, WindowOpenDisposition disposition) {
