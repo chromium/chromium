@@ -765,6 +765,22 @@ TEST_F(ReadAloudPlaybackControllerTest, SeekToTimeMaxReportsBadMessage) {
             "ReadAloudPlaybackController: Invalid position in SeekToTime");
 }
 
+TEST_F(ReadAloudPlaybackControllerTest, SeekRelativeMaxReportsBadMessage) {
+  CreateSession();
+  mojo::test::BadMessageObserver bad_message_observer;
+  controller_remote_->SeekRelative(base::TimeDelta::Max());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "ReadAloudPlaybackController: Invalid offset in SeekRelative");
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekRelativeMinReportsBadMessage) {
+  CreateSession();
+  mojo::test::BadMessageObserver bad_message_observer;
+  controller_remote_->SeekRelative(base::TimeDelta::Min());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "ReadAloudPlaybackController: Invalid offset in SeekRelative");
+}
+
 TEST_F(ReadAloudPlaybackControllerTest,
        FactoryDisconnectTriggersReceiverTeardownAfterSessionReset) {
   CreateSession();
@@ -2148,6 +2164,155 @@ TEST_F(ReadAloudPlaybackControllerTest,
   EXPECT_THAT(mock_client_->progress_history(),
               testing::ElementsAre(testing::Pair(
                   base::TimeDelta(), testing::Gt(base::Seconds(30)))));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekRelativeOnEmptyTimelineIsNoOp) {
+  CreateSession();
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+
+  // A finite offset with no text content must safely no-op without
+  // disconnecting or reporting progress.
+  controller_remote_->SeekRelative(base::Seconds(10));
+  controller_remote_->SeekRelative(base::Seconds(-10));
+  FlushAll();
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_THAT(mock_client_->progress_history(), testing::IsEmpty());
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeForwardFromCurrentPosition) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  // About 33 seconds long.
+  SetSingleTextSegment(RepeatedSentences(15));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // Like the real renderer, the seek's Flush() restarts media time at zero.
+  EXPECT_CALL(*mock_renderer, Flush()).WillOnce([mock_renderer] {
+    mock_renderer->set_media_time(base::TimeDelta());
+  });
+  // 5s played since the start: +10s lands at 15s.
+  mock_renderer->set_media_time(base::Seconds(5));
+  controller_remote_->SeekRelative(base::Seconds(10));
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(15), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeBackwardUsesPositionAfterPreviousSeek) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  // About 33 seconds long.
+  SetSingleTextSegment(RepeatedSentences(15));
+  controller_remote_->SeekToTime(base::Seconds(15));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // Like the real renderer, the seek's Flush() restarts media time at zero.
+  EXPECT_CALL(*mock_renderer, Flush()).WillOnce([mock_renderer] {
+    mock_renderer->set_media_time(base::TimeDelta());
+  });
+  // 2s played since the previous seek (17s overall): -7s lands at 10s.
+  mock_renderer->set_media_time(base::Seconds(2));
+  controller_remote_->SeekRelative(base::Seconds(-7));
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(10), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeRapidConsecutiveCallsAccumulate) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(15));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // Back-to-back seeks before any audio for the first target has played must
+  // accumulate from the previous target rather than from the stale position.
+  controller_remote_->SeekRelative(base::Seconds(10));
+  controller_remote_->SeekRelative(base::Seconds(10));
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(10), testing::_),
+                           testing::Pair(base::Seconds(20), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeNegativeBeyondZeroClampsToStart) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(15));
+  controller_remote_->SeekToTime(base::Seconds(5));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  EXPECT_CALL(*mock_renderer, Flush()).Times(1);
+  controller_remote_->SeekRelative(base::Seconds(-10));
+  FlushAll();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::TimeDelta(), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekRelativeBeyondDurationClampsToEnd) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(15));
+  FlushAll();
+  ASSERT_THAT(mock_client_->progress_history(),
+              testing::Not(testing::IsEmpty()));
+  const base::TimeDelta total_duration =
+      mock_client_->progress_history().back().second;
+  mock_client_->ClearProgressHistory();
+
+  EXPECT_CALL(*mock_renderer, Flush()).Times(1);
+  controller_remote_->SeekRelative(base::Seconds(60));
+  FlushAll();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(total_duration, total_duration)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeToCurrentPositionDoesNotFlush) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(15));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // Rewinding while already at the start clamps back to the current position.
+  EXPECT_CALL(*mock_renderer, Flush()).Times(0);
+  controller_remote_->SeekRelative(base::Seconds(-10));
+  FlushAll();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_THAT(mock_client_->progress_history(), testing::IsEmpty());
+  mock_renderer = nullptr;
 }
 
 }  // namespace readaloud

@@ -264,6 +264,12 @@ class FakePlaybackController
       std::move(seek_to_time_callback_).Run();
     }
   }
+  void SeekRelative(base::TimeDelta offset) override {
+    last_seek_relative_offset_ = offset;
+    if (seek_relative_callback_) {
+      std::move(seek_relative_callback_).Run();
+    }
+  }
   void SetVoice(const std::string& voice_id) override {}
   void SetPlaybackRate(float rate) override {
     last_playback_rate_ = rate;
@@ -288,6 +294,9 @@ class FakePlaybackController
   void set_seek_to_time_callback(base::OnceClosure callback) {
     seek_to_time_callback_ = std::move(callback);
   }
+  void set_seek_relative_callback(base::OnceClosure callback) {
+    seek_relative_callback_ = std::move(callback);
+  }
   void set_playback_rate_callback(base::OnceClosure callback) {
     set_playback_rate_callback_ = std::move(callback);
   }
@@ -307,6 +316,9 @@ class FakePlaybackController
   }
   std::optional<base::TimeDelta> last_seek_time() const {
     return last_seek_time_;
+  }
+  std::optional<base::TimeDelta> last_seek_relative_offset() const {
+    return last_seek_relative_offset_;
   }
   float last_playback_rate() const { return last_playback_rate_; }
   void set_initialize_audio_callback(base::OnceClosure callback) {
@@ -371,12 +383,14 @@ class FakePlaybackController
   base::OnceClosure pause_callback_;
   base::OnceClosure seek_to_word_callback_;
   base::OnceClosure seek_to_time_callback_;
+  base::OnceClosure seek_relative_callback_;
   base::OnceClosure set_playback_rate_callback_;
   int play_count_ = 0;
   int pause_count_ = 0;
   std::optional<uint32_t> last_seek_segment_index_;
   std::optional<uint32_t> last_seek_character_offset_;
   std::optional<base::TimeDelta> last_seek_time_;
+  std::optional<base::TimeDelta> last_seek_relative_offset_;
   float last_playback_rate_ = 1.0f;
   base::OnceClosure initialize_audio_callback_;
   int initialize_audio_called_count_ = 0;
@@ -1538,6 +1552,38 @@ TEST_F(ReadAloudServiceTest, SeekIgnoresNegativeAndMaxTime) {
   service()->Seek(base::TimeDelta::Max());
   fake_controller()->FlushForTesting();
   EXPECT_EQ(fake_controller()->last_seek_time(), std::nullopt);
+}
+
+TEST_F(ReadAloudServiceTest, SeekRelativeForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_seek_relative_callback(run_loop.QuitClosure());
+  service()->SeekRelative(base::Seconds(10));
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->last_seek_relative_offset(), base::Seconds(10));
+}
+
+TEST_F(ReadAloudServiceTest, SeekRelativeNegativeOffsetForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_seek_relative_callback(run_loop.QuitClosure());
+  service()->SeekRelative(base::Seconds(-5));
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->last_seek_relative_offset(), base::Seconds(-5));
+}
+
+TEST_F(ReadAloudServiceTest, SeekRelativeIgnoresMinAndMaxOffset) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  service()->SeekRelative(base::TimeDelta::Max());
+  service()->SeekRelative(base::TimeDelta::Min());
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_relative_offset(), std::nullopt);
 }
 
 TEST_F(ReadAloudServiceTest, SeekToWordForwardedToUtility) {

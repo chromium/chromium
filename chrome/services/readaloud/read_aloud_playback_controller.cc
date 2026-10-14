@@ -422,17 +422,8 @@ void ReadAloudPlaybackController::ReportProgress() {
   if (!client_.is_bound()) {
     return;
   }
-  // Both values are 1.0x content time: `AudioClock` media time already counts
-  // content rather than wall time, so nothing is scaled by the playback rate.
   const base::TimeDelta duration = timeline_.GetTotalDuration();
-  base::TimeDelta media_time;
-  if (audio_resources_ && audio_resources_->audio_renderer) {
-    media_time = audio_resources_->audio_renderer->GetMediaTime();
-  }
-  // The duration is an estimate until every chunk is synthesized, so the
-  // played audio can briefly run past it. Clamp to keep the
-  // `elapsed <= duration` contract the browser enforces.
-  const base::TimeDelta elapsed = std::min(seek_base_ + media_time, duration);
+  const base::TimeDelta elapsed = GetCurrentElapsedTime();
 
   const std::pair<base::TimeDelta, base::TimeDelta> progress(elapsed, duration);
   if (last_reported_progress_ == progress) {
@@ -440,6 +431,20 @@ void ReadAloudPlaybackController::ReportProgress() {
   }
   last_reported_progress_ = progress;
   client_->OnPlaybackProgressChanged(elapsed, duration);
+}
+
+base::TimeDelta ReadAloudPlaybackController::GetCurrentElapsedTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Both values are 1.0x content time: `AudioClock` media time already counts
+  // content rather than wall time, so nothing is scaled by the playback rate.
+  base::TimeDelta media_time;
+  if (audio_resources_ && audio_resources_->audio_renderer) {
+    media_time = audio_resources_->audio_renderer->GetMediaTime();
+  }
+  // The duration is an estimate until every chunk is synthesized, so the
+  // played audio can briefly run past it. Clamp to keep the
+  // `elapsed <= duration` contract the browser enforces.
+  return std::min(seek_base_ + media_time, timeline_.GetTotalDuration());
 }
 
 void ReadAloudPlaybackController::Pause() {
@@ -477,6 +482,31 @@ void ReadAloudPlaybackController::SeekToTime(base::TimeDelta position) {
   }
   std::optional<TimelinePosition> target =
       timeline_.ResolveTimeOffset(position);
+  if (!target.has_value()) {
+    return;
+  }
+  ExecuteSeek(*target);
+}
+
+void ReadAloudPlaybackController::SeekRelative(base::TimeDelta offset) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (offset.is_inf()) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Invalid offset in SeekRelative");
+    return;
+  }
+  const base::TimeDelta total_duration = timeline_.GetTotalDuration();
+  const base::TimeDelta current_time = GetCurrentElapsedTime();
+  const base::TimeDelta target_time =
+      std::clamp(current_time + offset, base::TimeDelta(), total_duration);
+  // Skip the pipeline flush when the seek would not move the position (e.g.
+  // rewinding while already at the start).
+  if (target_time == current_time) {
+    return;
+  }
+  std::optional<TimelinePosition> target =
+      timeline_.ResolveTimeOffset(target_time);
+  // Only fails for an empty timeline.
   if (!target.has_value()) {
     return;
   }

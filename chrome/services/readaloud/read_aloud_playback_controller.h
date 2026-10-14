@@ -86,6 +86,7 @@ class ReadAloudPlaybackController
   void Pause() override;
   void SeekToWord(uint32_t segment_index, uint32_t character_offset) override;
   void SeekToTime(base::TimeDelta position) override;
+  void SeekRelative(base::TimeDelta offset) override;
   void SetVoice(const std::string& voice_id) override;
   void SetPlaybackRate(float rate) override;
   void FlushBuffers() override;
@@ -173,6 +174,10 @@ class ReadAloudPlaybackController
   // estimated total duration, both in 1.0x content time. Skipped if both
   // values are unchanged since the last report.
   void ReportProgress();
+
+  // Returns the current playback position in 1.0x content time: `seek_base_`
+  // plus the renderer's media time, clamped to the estimated total duration.
+  base::TimeDelta GetCurrentElapsedTime() const;
 
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
       receiver_;

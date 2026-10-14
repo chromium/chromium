@@ -39,6 +39,9 @@ MockReadAloudPlaybackController::MockReadAloudPlaybackController(
   ON_CALL(*this, SeekToTime)
       .WillByDefault(::testing::Invoke(
           this, &MockReadAloudPlaybackController::DefaultSeekToTime));
+  ON_CALL(*this, SeekRelative)
+      .WillByDefault(::testing::Invoke(
+          this, &MockReadAloudPlaybackController::DefaultSeekRelative));
   ON_CALL(*this, SetPlaybackRate)
       .WillByDefault(::testing::Invoke(
           this, &MockReadAloudPlaybackController::DefaultSetPlaybackRate));
@@ -228,6 +231,25 @@ void MockReadAloudPlaybackController::DefaultSeekToTime(
   if (state_ == read_aloud::mojom::PlaybackState::kPlaying) {
     StartTimer();
   }
+}
+
+// Seeks relative to the last reported word boundary, clamped to the document
+// bounds, and then snaps to the nearest word boundary like SeekToTime().
+void MockReadAloudPlaybackController::DefaultSeekRelative(
+    base::TimeDelta offset) {
+  if (word_boundaries_.empty() || offset.is_inf()) {
+    return;
+  }
+  // `current_boundary_index_` points at the next word to report, so the
+  // current position is the timestamp of the previously reported word.
+  base::TimeDelta current_position;
+  if (current_boundary_index_ > 0) {
+    const size_t last_reported_index =
+        std::min(current_boundary_index_, word_boundaries_.size()) - 1;
+    current_position = word_boundaries_[last_reported_index].audio_timestamp;
+  }
+  DefaultSeekToTime(std::clamp(current_position + offset, base::TimeDelta(),
+                               CalculateTotalDuration()));
 }
 
 // Gracefully handles invalid/NaN rates by ignoring them, and clamps

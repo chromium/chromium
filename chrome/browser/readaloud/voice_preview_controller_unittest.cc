@@ -113,6 +113,7 @@ class FakePlaybackController
   }
   void SeekToWord(uint32_t segment_index, uint32_t character_offset) override {}
   void SeekToTime(base::TimeDelta position) override {}
+  void SeekRelative(base::TimeDelta offset) override {}
   void SetVoice(const std::string& voice_id) override {}
   void SetPlaybackRate(float rate) override {}
   void FlushBuffers() override {}

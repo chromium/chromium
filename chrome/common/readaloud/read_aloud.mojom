@@ -81,6 +81,11 @@ interface ReadAloudPlaybackController {
   Pause();
   SeekToWord(uint32 segment_index, uint32 character_offset);
   SeekToTime(mojo_base.mojom.TimeDelta position);
+  // Seeks forward (`offset > 0`) or backward (`offset < 0`) relative to the
+  // current 1.0x playback position, clamped to `[0, total_duration]`.
+  // Non-finite offsets (`TimeDelta::Min()` or `TimeDelta::Max()`) are rejected
+  // as a bad message.
+  SeekRelative(mojo_base.mojom.TimeDelta offset);
   SetVoice(string voice_id);
   // Sets the speech audio speed multiplier (`1.0` is normal speed).
   // `rate` must be positive (> 0.0); out-of-bounds rates (< 0.25 or > 4.0)

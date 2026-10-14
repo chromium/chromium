@@ -202,7 +202,16 @@ void ReadAloudService::Seek(base::TimeDelta absolute_time) {
     utility_player_->SeekToTime(absolute_time);
   }
 }
-void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
+
+void ReadAloudService::SeekRelative(base::TimeDelta offset) {
+  if (offset.is_inf()) {
+    return;
+  }
+  if (utility_player_.is_bound()) {
+    utility_player_->SeekRelative(offset);
+  }
+}
+
 void ReadAloudService::SetPlaybackRate(float rate) {
   if (utility_player_.is_bound()) {
     utility_player_->SetPlaybackRate(rate);

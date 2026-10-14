@@ -77,6 +77,7 @@ class MockReadAloudPlaybackController
               (uint32_t segment_index, uint32_t character_offset),
               (override));
   MOCK_METHOD(void, SeekToTime, (base::TimeDelta position), (override));
+  MOCK_METHOD(void, SeekRelative, (base::TimeDelta offset), (override));
   MOCK_METHOD(void, SetVoice, (const std::string& voice_id), (override));
   MOCK_METHOD(void, SetPlaybackRate, (float rate), (override));
   MOCK_METHOD(void, FlushBuffers, (), (override));
@@ -90,6 +91,7 @@ class MockReadAloudPlaybackController
   void DefaultPause();
   void DefaultSeekToWord(uint32_t segment_index, uint32_t character_offset);
   void DefaultSeekToTime(base::TimeDelta position);
+  void DefaultSeekRelative(base::TimeDelta offset);
   void DefaultSetPlaybackRate(float rate);
 
   void set_simulated_latency(base::TimeDelta latency) {
