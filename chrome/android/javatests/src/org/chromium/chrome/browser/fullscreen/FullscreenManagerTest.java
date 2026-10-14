@@ -1081,6 +1081,7 @@ public class FullscreenManagerTest {
         // TODO(crbug.com/489060623): Update the test for snap animation.
         ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572787748
     public void testPersistentFullscreenWithOptionsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page =
@@ -1333,6 +1334,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572787748
     public void testFullscreenPageHeightLegacy() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, false);
         Assert.assertTrue(getPersistentFullscreenMode());
@@ -1353,6 +1355,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572787748
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, true);
         Assert.assertTrue(getPersistentFullscreenMode());
