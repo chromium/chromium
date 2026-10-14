@@ -37,6 +37,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/is_potentially_trustworthy.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -50,6 +51,11 @@ const char kExampleLoginUrl[] = "https://example.com/login";
 const char kExampleOtherUrl[] = "https://example.com/other";
 const char kAttackerUrl[] = "https://attacker.com";
 const char kAttackerLoginUrl[] = "https://attacker.com/login";
+const char kInsecureUrl[] = "http://example.com";
+const char kLocalhostUrl[] = "http://localhost:8080";
+// Potentially trustworthy per `net::IsOriginPotentiallyTrustworthy()`, but not
+// a web origin.
+const char kFileUrl[] = "file:///tmp/device-trust.html";
 const char kWildcardPattern[] = "*";
 const char kFunnelHistogram[] = "Enterprise.DeviceTrust.Attestation.Funnel";
 const char kPolicyLevelHistogram[] =
@@ -246,6 +252,35 @@ TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreOpaqueOrigin) {
   SetAllowlistPatterns({kWildcardPattern});
   EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
   web::FakeWebFrame* main_frame_ptr = SetupMainFrame(url::Origin());
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that main frames with an insecure (HTTP) origin do not trigger the
+// API setup even with a wildcard allowlist, without querying the policy
+// matcher.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreInsecureOrigin) {
+  SetAllowlistPatterns({kWildcardPattern});
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kInsecureUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that an HTTP localhost origin is potentially trustworthy and
+// triggers the API setup when allowlisted.
+TEST_F(DeviceTrustChallengeTabHelperTest, SetUpAPIForLocalhostOrigin) {
+  SetAllowlistPatterns({kLocalhostUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kLocalhostUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+}
+
+// Verifies that a potentially trustworthy origin that is not a web origin
+// (file:) does not trigger the API setup even with a wildcard allowlist.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreTrustworthyNonWebOrigin) {
+  SetAllowlistPatterns({kWildcardPattern});
+  const url::Origin origin = url::Origin::Create(GURL(kFileUrl));
+  ASSERT_TRUE(net::IsOriginPotentiallyTrustworthy(origin));
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(origin, GURL(kFileUrl));
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
 }
 
@@ -628,6 +663,40 @@ TEST_F(DeviceTrustChallengeTabHelperTest,
   EXPECT_EQ(count, 0);
   run_loop.Run();
   EXPECT_EQ(count, 1);
+  EXPECT_TRUE(response.challenge_response.empty());
+  EXPECT_EQ(response.error,
+            enterprise_connectors::DeviceTrustError::kInvalidOrigin);
+}
+
+// Verifies that an insecure (HTTP) origin is rejected even with a wildcard
+// allowlist, without querying the policy matcher or building a challenge
+// response.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseRejectsInsecureOriginWithWildcardAllowlist) {
+  SetAllowlistPatterns({kWildcardPattern});
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, testing::_, testing::_))
+      .Times(0);
+  AttestationResult response =
+      SendRequest(url::Origin::Create(GURL(kInsecureUrl)));
+  EXPECT_TRUE(response.challenge_response.empty());
+  EXPECT_EQ(response.error,
+            enterprise_connectors::DeviceTrustError::kInvalidOrigin);
+}
+
+// Verifies that a request from a potentially trustworthy origin that is not a
+// web origin (file:) is rejected before the policy is consulted.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseRejectsTrustworthyNonWebOrigin) {
+  SetAllowlistPatterns({kWildcardPattern});
+  const url::Origin origin = url::Origin::Create(GURL(kFileUrl));
+  ASSERT_TRUE(net::IsOriginPotentiallyTrustworthy(origin));
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, testing::_, testing::_))
+      .Times(0);
+  AttestationResult response = SendRequest(origin);
   EXPECT_TRUE(response.challenge_response.empty());
   EXPECT_EQ(response.error,
             enterprise_connectors::DeviceTrustError::kInvalidOrigin);

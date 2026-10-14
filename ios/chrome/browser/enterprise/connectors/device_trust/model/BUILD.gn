@@ -52,6 +52,7 @@ source_set("model") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
+    "//net",
     "//url",
   ]
 }
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test/fakes",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

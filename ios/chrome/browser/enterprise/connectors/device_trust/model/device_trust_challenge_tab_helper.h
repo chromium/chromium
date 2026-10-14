@@ -63,7 +63,11 @@ class DeviceTrustChallengeTabHelper
   // Initiates the asynchronous device attestation signing process for
   // `challenge`.
   //
-  // `security_origin` is the security origin of the calling frame.
+  // `security_origin` is the security origin of the calling frame. Requests
+  // from origins that are not trustworthy web origins (HTTP(S) and
+  // potentially trustworthy, e.g. HTTPS or localhost) are rejected with
+  // `kInvalidOrigin`; this covers opaque origins, plain HTTP, and non-web
+  // schemes such as `file:`.
   // `request_url` is the optional full URL of the frame. When present, valid,
   // and same-origin with `security_origin`, `request_url` is used for policy
   // allowlist matching to support path-scoped patterns (e.g.
