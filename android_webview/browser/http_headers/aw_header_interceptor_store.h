@@ -100,7 +100,8 @@ class AwHeaderInterceptorStore {
   // This method can only be called from the UI thread, though the result can
   // be copied and passed to other threads (see the documentation of
   // InterceptorEntry).
-  const std::vector<scoped_refptr<InterceptorEntry>>& GetInterceptors() const;
+  using InterceptorEntryPtr = scoped_refptr<InterceptorEntry>;
+  const std::vector<InterceptorEntryPtr>& GetInterceptors() const;
 
   // Returns the number of registered interceptors.
   int32_t GetInterceptorCountForTesting() const;

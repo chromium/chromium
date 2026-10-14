@@ -1085,6 +1085,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 /* intercept_only=*/true,
                 /* security_options=*/std::nullopt,
                 /* origin_matched_headers=*/{},
+                /* profile_header_interceptors=*/{},
+                /* web_contents_header_interceptors=*/{},
                 std::move(browser_context_handle),
                 /* navigation_id=*/std::nullopt);
           },
@@ -1239,6 +1241,13 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
   AwCookieAccessPolicy* cookie_access_policy =
       aw_browser_context->GetCookieManager()->cookie_access_policy();
 
+  // Copy the profile header interceptors from the UI thread so that the
+  // underlying collection does not have to deal with thread safety,
+  // so that the header interceptors are locked for the lifetime of the frame.
+  using InterceptorEntryPtr = AwHeaderInterceptorStore::InterceptorEntryPtr;
+  std::vector<InterceptorEntryPtr> profile_header_interceptors =
+      aw_browser_context->GetHeaderInterceptorStore().GetInterceptors();
+
   if (frame) {
     auto security_options =
         std::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
@@ -1268,6 +1277,15 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
     std::optional<WebContentsKey> web_contents_key;
     web_contents_key = GetWebContentsKey(*web_contents);
 
+    AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+    std::vector<InterceptorEntryPtr> web_contents_header_interceptors;
+    if (aw_contents) {
+      // See comment above about making a copy of the Profile Header
+      // Interceptors.
+      web_contents_header_interceptors =
+          aw_contents->GetHeaderInterceptorStore().GetInterceptors();
+    }
+
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
@@ -1276,6 +1294,8 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
                        aw_browser_context->GetOriginMatchedHeaders(),
+                       std::move(profile_header_interceptors),
+                       std::move(web_contents_header_interceptors),
                        std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
@@ -1290,6 +1310,9 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
             aw_browser_context->GetOriginMatchedHeaders(),
+            std::move(profile_header_interceptors),
+            /*web_contents_header_interceptors=*/
+            std::vector<InterceptorEntryPtr>(),
             std::move(browser_context_handle), navigation_id));
   }
 }
@@ -1422,7 +1445,6 @@ bool AwContentBrowserClient::ShouldPreconnectNavigation(
   // This didn't make a performance improvement in WebView.
   return false;
 }
-
 
 blink::mojom::OriginTrialsSettingsPtr
 AwContentBrowserClient::GetOriginTrialsSettings() {

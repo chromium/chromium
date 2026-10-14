@@ -52,6 +52,23 @@ AwWebResourceRequest& AwWebResourceRequest::operator=(
     AwWebResourceRequest&& other) = default;
 AwWebResourceRequest::~AwWebResourceRequest() = default;
 
+net::HttpRequestHeaders AwWebResourceRequest::GetHeadersAsHttpRequestHeaders()
+    const {
+  CHECK_EQ(header_names.size(), header_values.size());
+  net::HttpRequestHeaders headers;
+  for (size_t i = 0; i < header_names.size(); i++) {
+    headers.SetHeader(header_names[i], header_values[i]);
+  }
+  return headers;
+}
+
+void AwWebResourceRequest::SetHeadersFromHttpRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
+  header_names.clear();
+  header_values.clear();
+  ConvertRequestHeadersToVectors(headers, &header_names, &header_values);
+}
+
 }  // namespace android_webview
 //
 namespace jni_zero {

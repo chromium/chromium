@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "net/http/http_response_headers.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -39,6 +40,13 @@ struct AwWebResourceRequest final {
   AwWebResourceRequest(AwWebResourceRequest&& other);
   AwWebResourceRequest& operator=(AwWebResourceRequest&& other);
   ~AwWebResourceRequest();
+
+  // Gets a copy of the headers as `net::HttpRequestHeaders`.
+  net::HttpRequestHeaders GetHeadersAsHttpRequestHeaders() const;
+
+  // Updates the headers on this request from the given
+  // `net::HttpRequestHeaders`.
+  void SetHeadersFromHttpRequestHeaders(const net::HttpRequestHeaders& headers);
 
   std::string url;
   std::string method;

@@ -11,12 +11,14 @@
 #include <string>
 
 #include "android_webview/browser/aw_settings.h"
+#include "android_webview/browser/http_headers/aw_header_interceptor_store.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 
 namespace content {
 class WebContents;
@@ -122,6 +124,15 @@ class AwContentsIoThreadClient {
   void ShouldInterceptRequestAsync(
       AwWebResourceRequest request,
       ShouldInterceptRequestResponseCallback callback);
+
+  using InterceptHeadersResponseCallback = base::OnceCallback<void(
+      base::expected<network::HttpRequestHeadersUpdateParams, std::string>)>;
+  void InterceptHeadersAsync(
+      std::vector<scoped_refptr<AwHeaderInterceptorStore::InterceptorEntry>>
+          eligible_interceptors,
+      AwWebResourceRequest request,
+      network::HttpRequestHeadersUpdateParams previous_header_updates,
+      InterceptHeadersResponseCallback callback);
 
   // Retrieve the AllowContentAccess setting value of this AwContents.
   // This method is called on the IO thread only.

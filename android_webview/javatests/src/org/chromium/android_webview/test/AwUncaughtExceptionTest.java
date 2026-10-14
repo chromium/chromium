@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.common.crash.AwCrashReporterClient;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.JniAndroid;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -32,9 +33,13 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Test suite for actions that should cause java exceptions to be propagated to the embedding
@@ -318,5 +323,61 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
 
         Assert.assertTrue(
                 latch.await(SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testHeaderInterceptor_forwardsExceptionToUiThreadAndCancelsRequest()
+            throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String requestPath = "/";
+            String requestUrl =
+                    server.setResponse(requestPath, "Hello, World", Collections.emptyList());
+            CountDownLatch exceptionLatch = new CountDownLatch(1);
+            String msg = "Example exception";
+
+            expectUncaughtException(
+                    mBackgroundThread,
+                    RuntimeException.class,
+                    msg,
+                    /* reportable= */ true,
+                    () -> {
+                        mCleanupBackgroundThread = false;
+                        exceptionLatch.countDown();
+                        // Do not return to native as this will terminate the process.
+                        Looper.loop();
+                    });
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mContentsClient = new TestAwContentsClient();
+                        mTestContainerView =
+                                mActivityTestRule.createDetachedAwTestContainerView(
+                                        mContentsClient);
+                        mAwContents = mTestContainerView.getAwContents();
+                        mAwContents
+                                .getHeaderInterceptorStore()
+                                .addInterceptor(
+                                        request -> {
+                                            throw new RuntimeException(msg);
+                                        },
+                                        List.of(server.getResponseUrl("/*")));
+                    });
+
+            OnReceivedErrorHelper onReceivedErrorHelper =
+                    mContentsClient.getOnReceivedErrorHelper();
+            int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
+
+            ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.loadUrl(requestUrl));
+
+            Assert.assertTrue(exceptionLatch.await(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            onReceivedErrorHelper.waitForCallback(
+                    onReceivedErrorCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+            Assert.assertEquals(0, server.getRequestCount(requestPath));
+
+            mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
+        }
     }
 }

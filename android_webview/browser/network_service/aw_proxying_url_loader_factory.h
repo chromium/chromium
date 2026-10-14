@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/http_headers/aw_header_interceptor_store.h"
 #include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "base/containers/flat_set.h"
@@ -66,6 +67,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
  public:
   using SecurityOptions =
       embedder_support::AndroidStreamReaderURLLoader::SecurityOptions;
+  using InterceptorEntryPtr = AwHeaderInterceptorStore::InterceptorEntryPtr;
 
   // Create a factory that will create specialized URLLoaders for Android
   // WebView. If |intercept_only| parameter is true the loader created by
@@ -85,6 +87,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
+      std::vector<InterceptorEntryPtr> profile_header_interceptors,
+      std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -112,6 +116,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
+      std::vector<InterceptorEntryPtr> profile_header_interceptors,
+      std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -164,6 +170,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   std::optional<SecurityOptions> security_options_;
 
   std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
+  std::vector<InterceptorEntryPtr> profile_header_interceptors_;
+  std::vector<InterceptorEntryPtr> web_contents_header_interceptors_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 

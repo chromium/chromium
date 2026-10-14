@@ -54,6 +54,12 @@ class AwProxyingURLLoaderFactoryTest : public testing::Test {
         /*security_options=*/std::nullopt,
         /*origin_matched_headers=*/
         std::vector<scoped_refptr<AwOriginMatchedHeader>>(),
+        /*profile_header_interceptors=*/
+        std::vector<
+            scoped_refptr<AwHeaderInterceptorStore::InterceptorEntry>>(),
+        /*web_contents_header_interceptors=*/
+        std::vector<
+            scoped_refptr<AwHeaderInterceptorStore::InterceptorEntry>>(),
         /*browser_context_handle=*/nullptr,
         /*navigation_id=*/std::nullopt);
 

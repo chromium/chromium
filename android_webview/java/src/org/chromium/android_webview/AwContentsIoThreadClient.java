@@ -8,8 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.android_webview.http_headers.AwHeaderInterceptor;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * Delegate for handling callbacks. All methods are called on the IO thread.
@@ -20,6 +24,8 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("android_webview")
 @NullMarked
 public abstract class AwContentsIoThreadClient {
+    private static final String TAG = "IoThreadClient";
+
     // TODO(crbug.com/389047726): Rename this to IoThreadClient.
     @CalledByNative
     public abstract int getCacheMode();
@@ -56,4 +62,24 @@ public abstract class AwContentsIoThreadClient {
 
     @CalledByNative
     public abstract boolean shouldIncludeCookiesInIntercept();
+
+    @CalledByNative
+    @JniType("std::optional<std::map<std::string, std::optional<std::string>>>")
+    public static @Nullable Map<String, @Nullable String> interceptHeaders(
+            @JniType("android_webview::AwWebResourceRequest") AwWebResourceRequest request,
+            AwHeaderInterceptor interceptor) {
+        try {
+            return interceptor.interceptHeaders(request);
+        } catch (Throwable e) {
+            Log.e(TAG, "Client raised exception in interceptHeaders. Re-throwing on UI thread.");
+
+            AwThreadUtils.postToUiThreadLooper(
+                    () -> {
+                        Log.e(TAG, "The following exception was raised by interceptHeaders:");
+                        throw e;
+                    });
+
+            return null;
+        }
+    }
 }

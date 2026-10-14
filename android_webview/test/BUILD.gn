@@ -501,6 +501,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/FullScreenVideoTestAwContentsClient.java",
     "../javatests/src/org/chromium/android_webview/test/GeolocationTest.java",
     "../javatests/src/org/chromium/android_webview/test/GetTitleTest.java",
+    "../javatests/src/org/chromium/android_webview/test/HeaderInterceptorTest.java",
     "../javatests/src/org/chromium/android_webview/test/HttpAuthDatabaseTest.java",
     "../javatests/src/org/chromium/android_webview/test/HttpCacheQuotaTest.java",
     "../javatests/src/org/chromium/android_webview/test/JsJavaInteractionTest.java",
@@ -722,6 +723,7 @@ android_library("webview_instrumentation_test_utils_java") {
   ]
   srcjar_deps = [ ":webview_instrumentation_test_native_jni" ]
   deps = [
+    "//android_webview:browser_java",
     "//android_webview:common_variations_java",
     "//android_webview/proto:aw_variations_seed_proto_java",
     "//base:base_java_test_support",
