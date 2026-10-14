@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -20,6 +19,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -74,8 +74,8 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
 
   void RequestAccessToken(AccessTokenFetcher::TokenCallback callback);
   void PreparePayload(LeakDetectionInitiator initiator,
-                      const std::string& username,
-                      const std::string& password,
+                      std::u16string username,
+                      PasswordString password,
                       SingleLeakRequestDataCallback callback);
 
   // Notifies that the access token was obtained.
@@ -142,11 +142,11 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::RequestAccessToken(
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::PreparePayload(
     LeakDetectionInitiator initiator,
-    const std::string& username,
-    const std::string& password,
+    std::u16string username,
+    PasswordString password,
     SingleLeakRequestDataCallback callback) {
-  PrepareSingleLeakRequestData(initiator, username, password,
-                               std::move(callback));
+  PrepareSingleLeakRequestData(initiator, std::move(username),
+                               std::move(password), std::move(callback));
 }
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotAccessToken(
@@ -215,8 +215,7 @@ void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
     payload_helper_->OnGotAccessToken(/*access_token=*/std::nullopt);
   }
   payload_helper_->PreparePayload(
-      initiator, base::UTF16ToUTF8(credentials_.username_value),
-      base::UTF16ToUTF8(credentials_.password_value.value()),
+      initiator, credentials_.username_value, credentials_.password_value,
       base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

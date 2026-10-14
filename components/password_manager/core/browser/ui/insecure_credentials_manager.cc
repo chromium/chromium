@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -108,17 +109,24 @@ void InsecureCredentialsManager::SaveInsecureCredential(
   // that have the same canonicalized username and password.
   const std::u16string canonicalized_username =
       CanonicalizeUsername(leak.username());
+  std::optional<crypto::SecureU16String> leak_password;
   for (const auto& credential : presenter_->GetSavedPasswords()) {
-    if (!credential.password_issues.contains(InsecureType::kLeaked) &&
-        CanonicalizeUsername(credential.username) == canonicalized_username &&
-        credential.password == leak.password()) {
-      CredentialUIEntry credential_to_update = credential;
-      credential_to_update.password_issues.insert_or_assign(
-          InsecureType::kLeaked,
-          InsecurityMetadata(base::Time::Now(), IsMuted(false),
-                             should_trigger_notification));
-      presenter_->EditSavedCredentials(credential, credential_to_update);
+    if (credential.password_issues.contains(InsecureType::kLeaked) ||
+        CanonicalizeUsername(credential.username) != canonicalized_username) {
+      continue;
     }
+    if (!leak_password) {
+      leak_password.emplace(leak.password().secure_value());
+    }
+    if (credential.password != *leak_password) {
+      continue;
+    }
+    CredentialUIEntry credential_to_update = credential;
+    credential_to_update.password_issues.insert_or_assign(
+        InsecureType::kLeaked,
+        InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                           should_trigger_notification));
+    presenter_->EditSavedCredentials(credential, credential_to_update);
   }
 }
 

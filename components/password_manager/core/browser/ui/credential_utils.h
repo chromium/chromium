@@ -39,10 +39,7 @@ struct CanonicalizedCredential {
 #if !BUILDFLAG(IS_ANDROID)
   CanonicalizedCredential(const LeakCheckCredential& credential)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(credential.username())),
-        // TODO(crbug.com/513276101): Remove the explicit copy constructor call
-        // when LeakCheckCredential is converted to store password as
-        // PasswordString.
-        password(std::u16string(credential.password())) {}
+        password(credential.password()) {}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   friend bool operator==(const CanonicalizedCredential&,

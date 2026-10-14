@@ -13,6 +13,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +50,7 @@ MATCHER_P(CredentialIs, credential, "") {
 }
 
 LeakCheckCredential TestCredential() {
-  return LeakCheckCredential(kUsername, kPassword);
+  return LeakCheckCredential(kUsername, PasswordString(kPassword));
 }
 
 std::vector<LeakCheckCredential> TestCredentials() {

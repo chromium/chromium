@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/supports_user_data.h"
+#include "components/password_manager/core/browser/password_string.h"
 
 namespace password_manager {
 
@@ -17,7 +18,7 @@ enum class LeakDetectionInitiator;
 // it.
 class LeakCheckCredential : public base::SupportsUserData {
  public:
-  LeakCheckCredential(std::u16string username, std::u16string password);
+  LeakCheckCredential(std::u16string username, PasswordString password);
   // Movable.
   LeakCheckCredential(LeakCheckCredential&&);
   LeakCheckCredential& operator=(LeakCheckCredential&&);
@@ -28,11 +29,11 @@ class LeakCheckCredential : public base::SupportsUserData {
   LeakCheckCredential& operator=(const LeakCheckCredential&) = delete;
 
   const std::u16string& username() const { return username_; }
-  const std::u16string& password() const { return password_; }
+  const PasswordString& password() const { return password_; }
 
  private:
   std::u16string username_;
-  std::u16string password_;
+  PasswordString password_;
 };
 
 // The class checks a list of credentials against Google service of leaked

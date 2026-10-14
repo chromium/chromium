@@ -21,6 +21,8 @@ source_set("leak_detection_interface_headers") {
       "bulk_leak_check_service.h",
       "bulk_leak_check_service_interface.h",
     ]
+    public_deps =
+        [ "//components/password_manager/core/browser:password_string" ]
   }
   deps = [
     "//base",

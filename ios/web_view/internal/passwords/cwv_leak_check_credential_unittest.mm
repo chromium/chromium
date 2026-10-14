@@ -68,11 +68,11 @@ TEST_F(CWVLeakCheckCredentialTest, CWVPasswordInitializationCanonical) {
 // with equivalent credentials.
 TEST_F(CWVLeakCheckCredentialTest, Equals) {
   CWVLeakCheckCredential* credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(u"username",
-                                                               u"password")];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             u"username", PasswordString(u"password"))];
   CWVLeakCheckCredential* same_credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(u"username",
-                                                               u"password")];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             u"username", PasswordString(u"password"))];
 
   EXPECT_NSEQ(credential, same_credential);
   EXPECT_EQ(credential.hash, same_credential.hash);
@@ -82,14 +82,14 @@ TEST_F(CWVLeakCheckCredentialTest, Equals) {
 // with different credentials.
 TEST_F(CWVLeakCheckCredentialTest, NotEquals) {
   CWVLeakCheckCredential* credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(u"username",
-                                                               u"password")];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             u"username", PasswordString(u"password"))];
   CWVLeakCheckCredential* different_password = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(u"username",
-                                                               u"secret")];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             u"username", PasswordString(u"secret"))];
   CWVLeakCheckCredential* different_username = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(u"bob",
-                                                               u"password")];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             u"bob", PasswordString(u"password"))];
 
   EXPECT_NSNE(credential, different_password);
   EXPECT_NE(credential.hash, different_password.hash);

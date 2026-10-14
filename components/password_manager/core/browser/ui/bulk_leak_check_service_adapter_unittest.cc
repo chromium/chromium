@@ -75,7 +75,7 @@ StoredCredential MakeSavedPassword(std::string_view signon_realm,
 LeakCheckCredential MakeLeakCheckCredential(std::u16string_view username,
                                             std::u16string_view password) {
   return LeakCheckCredential(std::u16string(username),
-                             std::u16string(password));
+                             PasswordString(std::u16string(password)));
 }
 
 struct MockBulkLeakCheck : BulkLeakCheck {

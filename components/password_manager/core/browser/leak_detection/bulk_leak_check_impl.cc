@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -57,7 +56,7 @@ HolderPtr RemoveFromQueue(BulkLeakCheckImpl::CredentialHolder* weak_holder,
 }  // namespace
 
 LeakCheckCredential::LeakCheckCredential(std::u16string username,
-                                         std::u16string password)
+                                         PasswordString password)
     : username_(std::move(username)), password_(std::move(password)) {}
 
 LeakCheckCredential::LeakCheckCredential(LeakCheckCredential&&) = default;
@@ -96,8 +95,7 @@ void BulkLeakCheckImpl::CheckCredentials(
         waiting_encryption_.back()->credential;
     PrepareSingleLeakRequestData(
         task_tracker_, *payload_task_runner_, initiator, encryption_key_,
-        base::UTF16ToUTF8(credential.username()),
-        base::UTF16ToUTF8(credential.password()),
+        credential.username(), credential.password(),
         base::BindOnce(&BulkLeakCheckImpl::OnPayloadReady,
                        weak_ptr_factory_.GetWeakPtr(),
                        waiting_encryption_.back().get()));

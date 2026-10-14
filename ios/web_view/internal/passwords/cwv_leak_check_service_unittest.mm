@@ -11,6 +11,7 @@
 #import "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #import "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/web_view/internal/passwords/cwv_leak_check_credential_internal.h"
 #import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
@@ -28,6 +29,7 @@ using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
 using password_manager::LeakDetectionInitiator;
 using password_manager::MockLeakDetectionCheckFactory;
+using password_manager::PasswordString;
 
 namespace ios_web_view {
 
@@ -116,8 +118,8 @@ class CWVLeakCheckServiceTest : public PlatformTest {
 // when processing credentials.
 TEST_F(CWVLeakCheckServiceTest, State) {
   CWVLeakCheckCredential* credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername1,
-                                                               kPassword1)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername1, PasswordString(kPassword1))];
 
   EXPECT_EQ(CWVLeakCheckServiceStateIdle, service_.state);
 
@@ -132,8 +134,8 @@ TEST_F(CWVLeakCheckServiceTest, State) {
 // Tests that cancel changes the state to canceled.
 TEST_F(CWVLeakCheckServiceTest, Cancel) {
   CWVLeakCheckCredential* credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername1,
-                                                               kPassword1)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername1, PasswordString(kPassword1))];
 
   EXPECT_EQ(CWVLeakCheckServiceStateIdle, service_.state);
 
@@ -149,15 +151,15 @@ TEST_F(CWVLeakCheckServiceTest, Cancel) {
 // Tests that credentials are converted to internal LeakCheckCredential.
 TEST_F(CWVLeakCheckServiceTest, PreparesCredentials) {
   CWVLeakCheckCredential* credential1 = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername1,
-                                                               kPassword1)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername1, PasswordString(kPassword1))];
   CWVLeakCheckCredential* credential2 = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername2,
-                                                               kPassword2)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername2, PasswordString(kPassword2))];
 
   std::vector<LeakCheckCredential> expected;
-  expected.emplace_back(kUsername1, kPassword1);
-  expected.emplace_back(kUsername2, kPassword2);
+  expected.emplace_back(kUsername1, PasswordString(kPassword1));
+  expected.emplace_back(kUsername2, PasswordString(kPassword2));
 
   FakeBulkLeakCheck* leak_check;
   EXPECT_CALL(mock_leak_factory(), TryCreateBulkLeakCheck)
@@ -170,8 +172,8 @@ TEST_F(CWVLeakCheckServiceTest, PreparesCredentials) {
 // Tests that observers are notified of state changes.
 TEST_F(CWVLeakCheckServiceTest, DidChangeState) {
   CWVLeakCheckCredential* credential = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername1,
-                                                               kPassword1)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername1, PasswordString(kPassword1))];
 
   id observer = OCMProtocolMock(@protocol(CWVLeakCheckServiceObserver));
 
@@ -196,11 +198,11 @@ TEST_F(CWVLeakCheckServiceTest, DidChangeState) {
 // Tests that observers are notified of completed credentials.
 TEST_F(CWVLeakCheckServiceTest, DidCheckCredential) {
   CWVLeakCheckCredential* credential1 = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername1,
-                                                               kPassword1)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername1, PasswordString(kPassword1))];
   CWVLeakCheckCredential* credential2 = [[CWVLeakCheckCredential alloc]
-      initWithCredential:std::make_unique<LeakCheckCredential>(kUsername2,
-                                                               kPassword2)];
+      initWithCredential:std::make_unique<LeakCheckCredential>(
+                             kUsername2, PasswordString(kPassword2))];
 
   id observer = OCMProtocolMock(@protocol(CWVLeakCheckServiceObserver));
   [service_ addObserver:observer];

@@ -60,7 +60,7 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
 
   for (const auto& credential : canonicalized) {
     credentials.emplace_back(credential.canonicalized_username,
-                             credential.password.value());
+                             credential.password);
     if (key) {
       DCHECK(data);
       credentials.back().SetUserData(key, data->Clone());
@@ -91,7 +91,7 @@ void BulkLeakCheckServiceAdapter::OnEdited(
     // Here no extra canonicalization is needed, as there are no other
     // credentials we could de-dupe before we pass it on to the service.
     std::vector<LeakCheckCredential> credentials;
-    credentials.emplace_back(credential.username, credential.password.value());
+    credentials.emplace_back(credential.username, credential.password);
     service_->CheckUsernamePasswordPairs(LeakDetectionInitiator::kEditCheck,
                                          std::move(credentials));
   }

@@ -8,19 +8,23 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "crypto/secure_util.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -57,12 +61,22 @@ LookupSingleLeakPayload ProduceHashes(std::string_view username,
   return payload;
 }
 
+LookupSingleLeakPayload ProduceHashes(std::u16string_view username,
+                                      const PasswordString& password) {
+  crypto::SecureU16String secure_password = password.secure_value();
+  std::string password_utf8 = base::UTF16ToUTF8(secure_password);
+  LookupSingleLeakPayload payload =
+      ProduceHashes(base::UTF16ToUTF8(username), password_utf8);
+  crypto::SecureZeroBuffer(base::as_writable_byte_span(password_utf8));
+  return payload;
+}
+
 // Despite the function is short, it executes long. That's why it should be done
 // asynchronously.
 LookupSingleLeakData PrepareLookupSingleLeakData(
     LeakDetectionInitiator initiator,
-    std::string_view username,
-    std::string_view password) {
+    std::u16string_view username,
+    PasswordString password) {
   LookupSingleLeakData data;
   data.payload = ProduceHashes(username, password);
   if (data.payload.encrypted_payload.empty()) {
@@ -81,8 +95,8 @@ LookupSingleLeakData PrepareLookupSingleLeakData(
 LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
     LeakDetectionInitiator initiator,
     const std::string& encryption_key,
-    std::string_view username,
-    std::string_view password) {
+    std::u16string username,
+    PasswordString password) {
   LookupSingleLeakPayload payload = ProduceHashes(username, password);
   if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
@@ -136,15 +150,15 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
 }  // namespace
 
 void PrepareSingleLeakRequestData(LeakDetectionInitiator initiator,
-                                  const std::string& username,
-                                  const std::string& password,
+                                  std::u16string username,
+                                  PasswordString password,
                                   SingleLeakRequestDataCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&PrepareLookupSingleLeakData, initiator, username,
-                     password),
+      base::BindOnce(&PrepareLookupSingleLeakData, initiator,
+                     std::move(username), std::move(password)),
       std::move(callback));
 }
 
@@ -153,13 +167,13 @@ void PrepareSingleLeakRequestData(
     base::TaskRunner& task_runner,
     LeakDetectionInitiator initiator,
     const std::string& encryption_key,
-    const std::string& username,
-    const std::string& password,
+    std::u16string username,
+    PasswordString password,
     base::OnceCallback<void(LookupSingleLeakPayload)> callback) {
   task_tracker.PostTaskAndReplyWithResult(
       &task_runner, FROM_HERE,
       base::BindOnce(&PrepareLookupSingleLeakDataWithKey, initiator,
-                     encryption_key, username, password),
+                     encryption_key, std::move(username), std::move(password)),
       std::move(callback));
 }
 

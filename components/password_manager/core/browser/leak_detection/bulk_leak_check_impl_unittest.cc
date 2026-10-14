@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_delegate.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_request_factory.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "crypto/sha2.h"
@@ -81,7 +82,8 @@ struct PayloadAndCallback {
 };
 
 LeakCheckCredential TestCredential(std::u16string_view username) {
-  return LeakCheckCredential(std::u16string(username), kTestPassword16);
+  return LeakCheckCredential(std::u16string(username),
+                             PasswordString(kTestPassword16));
 }
 
 class BulkLeakCheckTest : public testing::Test {

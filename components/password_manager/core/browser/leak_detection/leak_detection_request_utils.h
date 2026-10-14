@@ -16,6 +16,7 @@ class CancelableTaskTracker;
 
 namespace password_manager {
 
+class PasswordString;
 struct SingleLookupResponse;
 
 enum class LeakDetectionInitiator {
@@ -75,8 +76,8 @@ using SingleLeakResponseAnalysisCallback =
 // Callback is invoked on the calling thread with the protobuf and the
 // encryption key used.
 void PrepareSingleLeakRequestData(LeakDetectionInitiator initiator,
-                                  const std::string& username,
-                                  const std::string& password,
+                                  std::u16string username,
+                                  PasswordString password,
                                   SingleLeakRequestDataCallback callback);
 
 // Asynchronously creates a data payload for a credential check with the given
@@ -87,8 +88,8 @@ void PrepareSingleLeakRequestData(
     base::TaskRunner& task_runner,
     LeakDetectionInitiator initiator,
     const std::string& encryption_key,
-    const std::string& username,
-    const std::string& password,
+    std::u16string username,
+    PasswordString password,
     base::OnceCallback<void(LookupSingleLeakPayload)> callback);
 
 // Analyses the |response| asynchronously and checks if the credential was

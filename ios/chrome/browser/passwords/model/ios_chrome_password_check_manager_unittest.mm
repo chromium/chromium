@@ -187,8 +187,9 @@ TEST_F(IOSChromePasswordCheckManagerTest, NoLeakedFound) {
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
-      ->OnCredentialDone(LeakCheckCredential(kUsername116, kPassword116),
-                         IsLeaked(false));
+      ->OnCredentialDone(
+          LeakCheckCredential(kUsername116, PasswordString(kPassword116)),
+          IsLeaked(false));
   RunUntilIdle();
 
   EXPECT_THAT(manager().GetInsecureCredentials(), IsEmpty());
@@ -203,8 +204,9 @@ TEST_F(IOSChromePasswordCheckManagerTest, OnLeakFoundCreatesCredential) {
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
-      ->OnCredentialDone(LeakCheckCredential(kUsername116, kPassword116),
-                         IsLeaked(true));
+      ->OnCredentialDone(
+          LeakCheckCredential(kUsername116, PasswordString(kPassword116)),
+          IsLeaked(true));
   RunUntilIdle();
 
   AddIssueToCredential(&cred, InsecureType::kLeaked, base::Minutes(0));
