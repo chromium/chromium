@@ -3884,6 +3884,29 @@ public class ExternalNavigationHandlerTest {
                         START_OTHER_ACTIVITY);
     }
 
+    @Test
+    @SmallTest
+    public void testHttpBlockBypassedByWebApk() {
+        mDelegate.setAllowExternalNavigationForHttpProtocols(false);
+
+        // 1. Resolve to a specialized app (not WebAPK). It should be blocked.
+        mDelegate.add(new IntentActivity("https://example.com", "com.example.app"));
+        checkUrl("https://example.com", redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        // 2. Resolve to an invalid WebAPK. It should be blocked.
+        mDelegate.add(
+                new IntentActivity("https://invalid.example.com", INVALID_WEBAPK_PACKAGE_NAME));
+        checkUrl("https://invalid.example.com", redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        // 3. Resolve to a valid WebAPK. It should NOT be blocked.
+        mDelegate.add(new IntentActivity(IMDB_WEBPAGE_FOR_TOM_HANKS, WEBAPK_PACKAGE_NAME));
+        checkUrl(IMDB_WEBPAGE_FOR_TOM_HANKS, redirectHandlerForLinkClick())
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, START_WEBAPK);
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -4362,7 +4385,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean allowExternalNavigationForHttpProtocols(GURL url) {
+        public boolean allowExternalNavigationForHttpProtocols(
+                GURL url, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             return mAllowExternalNavigationForHttpProtocols;
         }
 

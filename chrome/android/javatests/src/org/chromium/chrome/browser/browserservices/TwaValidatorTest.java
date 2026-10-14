@@ -8,6 +8,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -29,6 +31,8 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /** Instrumentation tests for {@link TwaValidator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -81,6 +85,27 @@ public class TwaValidatorTest {
     @MediumTest
     public void testIsTwaInstalledForUrl_empty() {
         assertFalse(TwaValidator.isTwaInstalledForUrl(GURL.emptyGURL()));
+    }
+
+    @Test
+    @MediumTest
+    public void testIsTwaInstalledForUrl_withResolveInfoSupplier() {
+        TwaValidator.setDomainVerificationDelegateForTesting(
+                (context, packageName, origin) -> false);
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = TEST_SUPPORT_PACKAGE;
+
+        assertFalse(
+                TwaValidator.isTwaInstalledForUrl(new GURL(TEST_URL), () -> List.of(resolveInfo)));
+
+        InstalledWebappPermissionManager.addDelegateApp(TEST_ORIGIN, TEST_SUPPORT_PACKAGE);
+
+        assertTrue(
+                TwaValidator.isTwaInstalledForUrl(new GURL(TEST_URL), () -> List.of(resolveInfo)));
+        assertFalse(
+                TwaValidator.isTwaInstalledForUrl(GURL.emptyGURL(), () -> List.of(resolveInfo)));
     }
 
     @Test

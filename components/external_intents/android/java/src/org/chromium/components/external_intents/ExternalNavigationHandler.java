@@ -2023,9 +2023,12 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         if (shouldBlockExternalNavigationForHttpProtocols(
-                mDelegate.allowExternalNavigationForHttpProtocols(params.getUrl()),
+                mDelegate.allowExternalNavigationForHttpProtocols(params.getUrl(), resolvingInfos),
                 shouldReturnAsResult,
-                resolveActivity)) {
+                resolveActivity,
+                resolvingInfos,
+                params,
+                intentTargetUrl)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -2163,8 +2166,15 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     private boolean shouldBlockExternalNavigationForHttpProtocols(
             boolean allowExternalNavigation,
             boolean shouldReturnAsResult,
-            ResolveActivitySupplier resolveActivity) {
+            ResolveActivitySupplier resolveActivity,
+            QueryIntentActivitiesSupplier resolvingInfos,
+            ExternalNavigationParams params,
+            GURL intentTargetUrl) {
         if (allowExternalNavigation || shouldReturnAsResult) {
+            return false;
+        }
+
+        if (pickWebApkIfSoleIntentHandler(params, resolvingInfos, intentTargetUrl) != null) {
             return false;
         }
 
