@@ -558,12 +558,6 @@ void LogAccountLinkingPromptInteractionDuration(
       duration);
 }
 
-void LogPixAccountLinkingPromptAccepted() {
-  base::UmaHistogramBoolean(
-      base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptAccepted"}),
-      /*sample=*/true);
-}
-
 void LogPixAccountLinkingPromptShown() {
   base::UmaHistogramBoolean(
       base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptShown"}),

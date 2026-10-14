@@ -505,9 +505,6 @@ void LogAccountLinkingPromptInteractionDuration(
 // Logs that the Pix account linking prompt was shown.
 void LogPixAccountLinkingPromptShown();
 
-// Logs that the Pix account linking prompt was accepted by user.
-void LogPixAccountLinkingPromptAccepted();
-
 // Logs the result and latency of the client token fetch during account linking.
 void LogAccountLinkingGetClientTokenResultAndLatency(
     std::string_view fop_suffix,
