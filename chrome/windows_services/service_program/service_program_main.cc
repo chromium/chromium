@@ -4,6 +4,8 @@
 
 #include "chrome/windows_services/service_program/service_program_main.h"
 
+#include <windows.h>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -21,6 +23,36 @@
 #include "chrome/windows_services/service_program/process_wrl_module.h"
 #include "chrome/windows_services/service_program/service.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
+
+namespace {
+
+// Refuses to follow NTFS junctions that were not created by an elevated actor,
+// failing such traversals with ERROR_UNTRUSTED_MOUNT_POINT. This blocks the
+// attack in which an unprivileged caller plants a junction to redirect a
+// privileged service's file operation to a location of the caller's choosing.
+// This governs every file operation the process performs. The mitigation cannot
+// be disabled once applied; it remains in effect for the lifetime of the
+// process.
+//
+// Requires Windows 11 22H2 or a serviced Windows 10; silently skipped on
+// earlier versions.
+void EnableRedirectionGuard() {
+  PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY policy = {};
+  policy.EnforceRedirectionTrust = 1;
+  if (::SetProcessMitigationPolicy(ProcessRedirectionTrustPolicy, &policy,
+                                   sizeof(policy))) {
+    return;
+  }
+
+  // Versions of Windows that predate Redirection Guard reject the policy.
+  // That is expected, so do not log it.
+  const DWORD error = ::GetLastError();
+  PLOG_IF(ERROR,
+          error != ERROR_INVALID_PARAMETER && error != ERROR_NOT_SUPPORTED)
+      << "Failed to enable Redirection Guard";
+}
+
+}  // namespace
 
 int ServiceProgramMain(ServiceDelegate& delegate) {
   // Initialize the CommandLine singleton from the environment.
@@ -51,6 +83,8 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
   logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*cmd_line);
+
+  EnableRedirectionGuard();
 
   // Initialize COM for the current thread.
   base::win::ScopedCOMInitializer com_initializer(

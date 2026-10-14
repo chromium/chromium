@@ -41,6 +41,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_handle_util.h"
+#include "base/win/windows_version.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/windows_services/service_program/test_service_idl.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
@@ -236,6 +237,28 @@ TEST_F(ServiceTest, IsRunningUnattended) {
       test_service->IsRunningUnattended(&is_running_unattended));
   ASSERT_EQ(is_running_unattended != VARIANT_FALSE,
             base::Environment::Create()->HasVar(env_vars::kHeadless));
+}
+
+// Tests that the service process runs with Redirection Guard enabled.
+TEST_F(ServiceTest, RedirectionGuard) {
+  // Redirection Guard is not available on all supported versions of Windows,
+  // where both setting and querying the policy fail.
+  if (base::win::GetVersion() < base::win::Version::WIN11_22H2) {
+    GTEST_SKIP() << "Redirection Guard requires Windows 11 22H2 or later";
+  }
+
+  // Holding `test_service` keeps the service running while its process
+  // mitigation policy is queried.
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateService(test_service));
+  base::Process service_process;
+  ASSERT_NO_FATAL_FAILURE(GetServiceProcess(test_service, service_process));
+
+  PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY policy = {};
+  ASSERT_TRUE(::GetProcessMitigationPolicy(service_process.Handle(),
+                                           ProcessRedirectionTrustPolicy,
+                                           &policy, sizeof(policy)));
+  EXPECT_TRUE(policy.EnforceRedirectionTrust);
 }
 
 // Tests that a service can handle rapid use that should result in some requests
