@@ -20,8 +20,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/i18n/char_iterator.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -32,17 +30,12 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_util.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "third_party/icu/source/common/unicode/uchar.h"
-#include "third_party/icu/source/common/unicode/uscript.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 namespace {
@@ -559,67 +552,6 @@ bool NameInfo::IsNameVariantOf(std::u16string_view value,
 
 std::optional<FieldType> NameInfo::GetStorableTypeOf(FieldType type) const {
   return GetRootForType(type)->GetStorableTypeOf(type);
-}
-
-bool NameInfo::HasNameEligibleForPhoneticNameMigration() const {
-  if (!IsAlternativeNameSupported()) {
-    return false;
-  }
-  // A full name is eligible to be migrated into a phonetic name if it contains
-  // only Katakana or Hiragana characters (Japanese phonetic symbols) and
-  // whitespaces or separators, but no Kanji (regular Japanese characters),
-  // Latin characters, etc.
-  bool phonetic_characters_found = false;
-  UErrorCode error = U_ZERO_ERROR;
-
-  std::string full_name = base::UTF16ToUTF8(name_->GetValue());
-  re2::RE2::GlobalReplace(&full_name, kCjkNameSeparatorsRe, "");
-  const std::u16string processed_full_name = base::UTF8ToUTF16(full_name);
-
-  for (base::i18n::UTF16CharIterator iter(processed_full_name); !iter.end();
-       iter.Advance()) {
-    UScriptCode character = uscript_getScript(iter.get(), &error);
-    if (U_FAILURE(error)) {
-      DLOG(ERROR) << "uscript_getScript failed, error code: "
-                  << u_errorName(error);
-      return false;
-    }
-
-    // Whitespaces, dashes and hyphens (e.g. katakana dot) are separators that
-    // can be ignored.
-    if (u_isUWhiteSpace(character) ||
-        u_hasBinaryProperty(character, UCHAR_DASH) ||
-        u_hasBinaryProperty(character, UCHAR_HYPHEN)) {
-      continue;
-    }
-
-    if (character == USCRIPT_KATAKANA_OR_HIRAGANA ||
-        character == USCRIPT_KATAKANA || character == USCRIPT_HIRAGANA) {
-      phonetic_characters_found = true;
-      continue;
-    }
-
-    // If the character is none of the above (e.g. Kanji, Latin alphabet etc.),
-    // the string does not meet either condition.
-    return false;
-  }
-
-  return phonetic_characters_found;
-}
-
-void NameInfo::MigrateRegularNameToPhoneticName() {
-  DCHECK(HasNameEligibleForPhoneticNameMigration());
-  alternative_name_->SetValueForType(ALTERNATIVE_FULL_NAME,
-                                     name_->GetValueForType(NAME_FULL),
-                                     VerificationStatus::kNoStatus);
-  alternative_name_->SetValueForType(ALTERNATIVE_FAMILY_NAME,
-                                     name_->GetValueForType(NAME_LAST),
-                                     VerificationStatus::kNoStatus);
-  alternative_name_->SetValueForType(ALTERNATIVE_GIVEN_NAME,
-                                     name_->GetValueForType(NAME_FIRST),
-                                     VerificationStatus::kNoStatus);
-
-  name_->UnsetAddressComponentAndItsSubcomponents();
 }
 
 std::u16string NameInfo::GetValueForComparisonForType(

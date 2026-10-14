@@ -120,17 +120,6 @@ class NameInfo : public FormGroup {
   // It should only be used for `FieldTypeGroup::kName` types.
   std::optional<FieldType> GetStorableTypeOf(FieldType type) const;
 
-  // Returns true if the regular name should be migrated to a phonetic name.
-  // The incorrect assignment happened in the past when we did not have proper
-  // support for phonetic names.
-  // TODO(crbug.com/359768803): Remove this method once the migration is done.
-  bool HasNameEligibleForPhoneticNameMigration() const;
-
-  // Moves the regular name data to the phonetic name fields and clears the
-  // regular name tree.
-  // TODO(crbug.com/359768803): Remove this method once the migration is done.
-  void MigrateRegularNameToPhoneticName();
-
   // Convenience method to get the value of `field_type` to be used for
   // comparison. Returns an empty string if `field_type` is not
   // supported. `common_country_code` of this and the component it's being

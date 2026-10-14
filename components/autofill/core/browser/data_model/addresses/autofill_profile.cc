@@ -1300,10 +1300,6 @@ void AutofillProfile::ClearFields(const FieldTypeSet& fields) {
   }
 }
 
-void AutofillProfile::MigrateRegularNameToPhoneticName() {
-  name_.MigrateRegularNameToPhoneticName();
-}
-
 UsageHistoryInformation& AutofillProfile::usage_history() {
   return usage_history_information_;
 }
