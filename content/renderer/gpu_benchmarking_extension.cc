@@ -640,14 +640,14 @@ void GpuBenchmarking::EnsureRemoteInterface() {
 gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<GpuBenchmarking>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("setNeedsDisplayOnAllLayers",
-                 &GpuBenchmarking::SetNeedsDisplayOnAllLayers)
-      .SetMethod("setRasterizeOnlyVisibleContent",
-                 &GpuBenchmarking::SetRasterizeOnlyVisibleContent)
-      .SetMethod("printToSkPicture", &GpuBenchmarking::PrintToSkPicture)
-      .SetMethod("printPagesToSkPictures",
-                 &GpuBenchmarking::PrintPagesToSkPictures)
-      .SetMethod("printPagesToXPS", &GpuBenchmarking::PrintPagesToXPS)
+      .SetMethod<&GpuBenchmarking::SetNeedsDisplayOnAllLayers>(
+          "setNeedsDisplayOnAllLayers")
+      .SetMethod<&GpuBenchmarking::SetRasterizeOnlyVisibleContent>(
+          "setRasterizeOnlyVisibleContent")
+      .SetMethod<&GpuBenchmarking::PrintToSkPicture>("printToSkPicture")
+      .SetMethod<&GpuBenchmarking::PrintPagesToSkPictures>(
+          "printPagesToSkPictures")
+      .SetMethod<&GpuBenchmarking::PrintPagesToXPS>("printPagesToXPS")
       .SetValue("DEFAULT_INPUT",
                 GestureSourceTypeAsInt(
                     content::mojom::GestureSourceType::kDefaultInput))
@@ -674,47 +674,47 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
       .SetValue(
           "EVERY_OTHER_VSYNC_INPUT_PATTERN",
           static_cast<int>(content::mojom::InputEventPattern::kEveryOtherVsync))
-      .SetMethod("gestureSourceTypeSupported",
-                 &GpuBenchmarking::GestureSourceTypeSupported)
-      .SetMethod("smoothScrollBy", &GpuBenchmarking::SmoothScrollBy)
-      .SetMethod("smoothScrollByXY", &GpuBenchmarking::SmoothScrollByXY)
-      .SetMethod("smoothDrag", &GpuBenchmarking::SmoothDrag)
-      .SetMethod("swipe", &GpuBenchmarking::Swipe)
-      .SetMethod("scrollBounce", &GpuBenchmarking::ScrollBounce)
-      .SetMethod("pinchBy", &GpuBenchmarking::PinchBy)
-      .SetMethod("pageScaleFactor", &GpuBenchmarking::PageScaleFactor)
-      .SetMethod("setPageScaleFactor", &GpuBenchmarking::SetPageScaleFactor)
-      .SetMethod("setBrowserControlsShown",
-                 &GpuBenchmarking::SetBrowserControlsShown)
-      .SetMethod("tap", &GpuBenchmarking::Tap)
-      .SetMethod("pointerActionSequence",
-                 &GpuBenchmarking::PointerActionSequence)
-      .SetMethod("visualViewportX", &GpuBenchmarking::VisualViewportX)
-      .SetMethod("visualViewportY", &GpuBenchmarking::VisualViewportY)
-      .SetMethod("visualViewportHeight", &GpuBenchmarking::VisualViewportHeight)
-      .SetMethod("visualViewportWidth", &GpuBenchmarking::VisualViewportWidth)
-      .SetMethod("clearImageCache", &GpuBenchmarking::ClearImageCache)
-      .SetMethod("runMicroBenchmark", &GpuBenchmarking::RunMicroBenchmark)
-      .SetMethod("sendMessageToMicroBenchmark",
-                 &GpuBenchmarking::SendMessageToMicroBenchmark)
-      .SetMethod("hasGpuChannel", &GpuBenchmarking::HasGpuChannel)
-      .SetMethod("hasGpuProcess", &GpuBenchmarking::HasGpuProcess)
-      .SetMethod("crashGpuProcess", &GpuBenchmarking::CrashGpuProcess)
-      .SetMethod("terminateGpuProcessNormally",
-                 &GpuBenchmarking::TerminateGpuProcessNormally)
-      .SetMethod("getGpuDriverBugWorkarounds",
-                 &GpuBenchmarking::GetGpuDriverBugWorkarounds)
-      .SetMethod("startProfiling", &GpuBenchmarking::StartProfiling)
-      .SetMethod("stopProfiling", &GpuBenchmarking::StopProfiling)
-      .SetMethod("freeze", &GpuBenchmarking::Freeze)
+      .SetMethod<&GpuBenchmarking::GestureSourceTypeSupported>(
+          "gestureSourceTypeSupported")
+      .SetMethod<&GpuBenchmarking::SmoothScrollBy>("smoothScrollBy")
+      .SetMethod<&GpuBenchmarking::SmoothScrollByXY>("smoothScrollByXY")
+      .SetMethod<&GpuBenchmarking::SmoothDrag>("smoothDrag")
+      .SetMethod<&GpuBenchmarking::Swipe>("swipe")
+      .SetMethod<&GpuBenchmarking::ScrollBounce>("scrollBounce")
+      .SetMethod<&GpuBenchmarking::PinchBy>("pinchBy")
+      .SetMethod<&GpuBenchmarking::PageScaleFactor>("pageScaleFactor")
+      .SetMethod<&GpuBenchmarking::SetPageScaleFactor>("setPageScaleFactor")
+      .SetMethod<&GpuBenchmarking::SetBrowserControlsShown>(
+          "setBrowserControlsShown")
+      .SetMethod<&GpuBenchmarking::Tap>("tap")
+      .SetMethod<&GpuBenchmarking::PointerActionSequence>(
+          "pointerActionSequence")
+      .SetMethod<&GpuBenchmarking::VisualViewportX>("visualViewportX")
+      .SetMethod<&GpuBenchmarking::VisualViewportY>("visualViewportY")
+      .SetMethod<&GpuBenchmarking::VisualViewportHeight>("visualViewportHeight")
+      .SetMethod<&GpuBenchmarking::VisualViewportWidth>("visualViewportWidth")
+      .SetMethod<&GpuBenchmarking::ClearImageCache>("clearImageCache")
+      .SetMethod<&GpuBenchmarking::RunMicroBenchmark>("runMicroBenchmark")
+      .SetMethod<&GpuBenchmarking::SendMessageToMicroBenchmark>(
+          "sendMessageToMicroBenchmark")
+      .SetMethod<&GpuBenchmarking::HasGpuChannel>("hasGpuChannel")
+      .SetMethod<&GpuBenchmarking::HasGpuProcess>("hasGpuProcess")
+      .SetMethod<&GpuBenchmarking::CrashGpuProcess>("crashGpuProcess")
+      .SetMethod<&GpuBenchmarking::TerminateGpuProcessNormally>(
+          "terminateGpuProcessNormally")
+      .SetMethod<&GpuBenchmarking::GetGpuDriverBugWorkarounds>(
+          "getGpuDriverBugWorkarounds")
+      .SetMethod<&GpuBenchmarking::StartProfiling>("startProfiling")
+      .SetMethod<&GpuBenchmarking::StopProfiling>("stopProfiling")
+      .SetMethod<&GpuBenchmarking::Freeze>("freeze")
 #if BUILDFLAG(IS_MAC)
-      .SetMethod("addCoreAnimationStatusEventListener",
-                 &GpuBenchmarking::AddCoreAnimationStatusEventListener)
+      .SetMethod<&GpuBenchmarking::AddCoreAnimationStatusEventListener>(
+          "addCoreAnimationStatusEventListener")
 #endif
-      .SetMethod("addSwapCompletionEventListener",
-                 &GpuBenchmarking::AddSwapCompletionEventListener)
-      .SetMethod("isAcceleratedCanvasImageSource",
-                 &GpuBenchmarking::IsAcceleratedCanvasImageSource);
+      .SetMethod<&GpuBenchmarking::AddSwapCompletionEventListener>(
+          "addSwapCompletionEventListener")
+      .SetMethod<&GpuBenchmarking::IsAcceleratedCanvasImageSource>(
+          "isAcceleratedCanvasImageSource");
 }
 
 void GpuBenchmarking::SetNeedsDisplayOnAllLayers() {

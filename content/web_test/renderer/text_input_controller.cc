@@ -107,29 +107,29 @@ gin::ObjectTemplateBuilder
 TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
   return gin::Wrappable<TextInputControllerBindings>::GetObjectTemplateBuilder(
              isolate)
-      .SetMethod("insertText", &TextInputControllerBindings::InsertText)
-      .SetMethod("unmarkText", &TextInputControllerBindings::UnmarkText)
-      .SetMethod("unmarkAndUnselectText",
-                 &TextInputControllerBindings::UnmarkAndUnselectText)
-      .SetMethod("doCommand", &TextInputControllerBindings::DoCommand)
-      .SetMethod("extendSelectionAndDelete",
-                 &TextInputControllerBindings::ExtendSelectionAndDelete)
-      .SetMethod("deleteSurroundingText",
-                 &TextInputControllerBindings::DeleteSurroundingText)
-      .SetMethod("setMarkedText", &TextInputControllerBindings::SetMarkedText)
-      .SetMethod("setMarkedTextFromExistingText",
-                 &TextInputControllerBindings::SetMarkedTextFromExistingText)
-      .SetMethod("hasMarkedText", &TextInputControllerBindings::HasMarkedText)
-      .SetMethod("markedRange", &TextInputControllerBindings::MarkedRange)
-      .SetMethod("selectedRange", &TextInputControllerBindings::SelectedRange)
-      .SetMethod("firstRectForCharacterRange",
-                 &TextInputControllerBindings::FirstRectForCharacterRange)
-      .SetMethod("setComposition", &TextInputControllerBindings::SetComposition)
-      .SetMethod(
-          "setCompositionWithReplacementRange",
-          &TextInputControllerBindings::SetCompositionWithReplacementRange)
-      .SetMethod("forceTextInputStateUpdate",
-                 &TextInputControllerBindings::ForceTextInputStateUpdate);
+      .SetMethod<&TextInputControllerBindings::InsertText>("insertText")
+      .SetMethod<&TextInputControllerBindings::UnmarkText>("unmarkText")
+      .SetMethod<&TextInputControllerBindings::UnmarkAndUnselectText>(
+          "unmarkAndUnselectText")
+      .SetMethod<&TextInputControllerBindings::DoCommand>("doCommand")
+      .SetMethod<&TextInputControllerBindings::ExtendSelectionAndDelete>(
+          "extendSelectionAndDelete")
+      .SetMethod<&TextInputControllerBindings::DeleteSurroundingText>(
+          "deleteSurroundingText")
+      .SetMethod<&TextInputControllerBindings::SetMarkedText>("setMarkedText")
+      .SetMethod<&TextInputControllerBindings::SetMarkedTextFromExistingText>(
+          "setMarkedTextFromExistingText")
+      .SetMethod<&TextInputControllerBindings::HasMarkedText>("hasMarkedText")
+      .SetMethod<&TextInputControllerBindings::MarkedRange>("markedRange")
+      .SetMethod<&TextInputControllerBindings::SelectedRange>("selectedRange")
+      .SetMethod<&TextInputControllerBindings::FirstRectForCharacterRange>(
+          "firstRectForCharacterRange")
+      .SetMethod<&TextInputControllerBindings::SetComposition>("setComposition")
+      .SetMethod<
+          &TextInputControllerBindings::SetCompositionWithReplacementRange>(
+          "setCompositionWithReplacementRange")
+      .SetMethod<&TextInputControllerBindings::ForceTextInputStateUpdate>(
+          "forceTextInputStateUpdate");
 }
 
 void TextInputControllerBindings::InsertText(const std::string& text) {

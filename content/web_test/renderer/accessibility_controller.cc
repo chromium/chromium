@@ -93,23 +93,23 @@ AccessibilityControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<
              AccessibilityControllerBindings>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("logAccessibilityEvents",
-                 &AccessibilityControllerBindings::LogAccessibilityEvents)
-      .SetMethod("setNotificationListener",
-                 &AccessibilityControllerBindings::SetNotificationListener)
-      .SetMethod("unsetNotificationListener",
-                 &AccessibilityControllerBindings::UnsetNotificationListener)
-      .SetProperty("focusedElement",
-                   &AccessibilityControllerBindings::FocusedElement)
-      .SetProperty("rootElement", &AccessibilityControllerBindings::RootElement)
-      .SetMethod("accessibleElementById",
-                 &AccessibilityControllerBindings::AccessibleElementById)
+      .SetMethod<&AccessibilityControllerBindings::LogAccessibilityEvents>(
+          "logAccessibilityEvents")
+      .SetMethod<&AccessibilityControllerBindings::SetNotificationListener>(
+          "setNotificationListener")
+      .SetMethod<&AccessibilityControllerBindings::UnsetNotificationListener>(
+          "unsetNotificationListener")
+      .SetProperty<&AccessibilityControllerBindings::FocusedElement>(
+          "focusedElement")
+      .SetProperty<&AccessibilityControllerBindings::RootElement>("rootElement")
+      .SetMethod<&AccessibilityControllerBindings::AccessibleElementById>(
+          "accessibleElementById")
       // TODO(hajimehoshi): These are for backward compatibility. Remove them.
-      .SetMethod("addNotificationListener",
-                 &AccessibilityControllerBindings::SetNotificationListener)
-      .SetMethod("removeNotificationListener",
-                 &AccessibilityControllerBindings::UnsetNotificationListener)
-      .SetMethod("reset", &AccessibilityControllerBindings::Reset);
+      .SetMethod<&AccessibilityControllerBindings::SetNotificationListener>(
+          "addNotificationListener")
+      .SetMethod<&AccessibilityControllerBindings::UnsetNotificationListener>(
+          "removeNotificationListener")
+      .SetMethod<&AccessibilityControllerBindings::Reset>("reset");
 }
 
 void AccessibilityControllerBindings::LogAccessibilityEvents() {

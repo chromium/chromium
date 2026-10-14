@@ -56,7 +56,7 @@ gin::ObjectTemplateBuilder DomAutomationController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<DomAutomationController>::GetObjectTemplateBuilder(
              isolate)
-      .SetMethod("send", &DomAutomationController::SendMsg);
+      .SetMethod<&DomAutomationController::SendMsg>("send");
 }
 
 void DomAutomationController::OnDestruct() {}

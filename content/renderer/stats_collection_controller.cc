@@ -46,9 +46,9 @@ gin::ObjectTemplateBuilder StatsCollectionController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<StatsCollectionController>::GetObjectTemplateBuilder(
              isolate)
-      .SetMethod("getHistogram", &StatsCollectionController::GetHistogram)
-      .SetMethod("getBrowserHistogram",
-                 &StatsCollectionController::GetBrowserHistogram);
+      .SetMethod<&StatsCollectionController::GetHistogram>("getHistogram")
+      .SetMethod<&StatsCollectionController::GetBrowserHistogram>(
+          "getBrowserHistogram");
 }
 
 std::string StatsCollectionController::GetHistogram(

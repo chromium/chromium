@@ -165,10 +165,10 @@ SkiaBenchmarking::~SkiaBenchmarking() = default;
 gin::ObjectTemplateBuilder SkiaBenchmarking::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<SkiaBenchmarking>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("rasterize", &SkiaBenchmarking::Rasterize)
-      .SetMethod("getOps", &SkiaBenchmarking::GetOps)
-      .SetMethod("getOpTimings", &SkiaBenchmarking::GetOpTimings)
-      .SetMethod("getInfo", &SkiaBenchmarking::GetInfo);
+      .SetMethod<&SkiaBenchmarking::Rasterize>("rasterize")
+      .SetMethod<&SkiaBenchmarking::GetOps>("getOps")
+      .SetMethod<&SkiaBenchmarking::GetOpTimings>("getOpTimings")
+      .SetMethod<&SkiaBenchmarking::GetInfo>("getInfo");
 }
 
 void SkiaBenchmarking::Rasterize(gin::Arguments* args) {

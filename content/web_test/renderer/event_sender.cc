@@ -716,80 +716,80 @@ void EventSenderBindings::Install(base::WeakPtr<EventSender> sender,
 gin::ObjectTemplateBuilder EventSenderBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<EventSenderBindings>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("enableDOMUIEventLogging",
-                 &EventSenderBindings::EnableDOMUIEventLogging)
-      .SetMethod("fireKeyboardEventsToElement",
-                 &EventSenderBindings::FireKeyboardEventsToElement)
-      .SetMethod("clearKillRing", &EventSenderBindings::ClearKillRing)
-      .SetMethod("contextClick", &EventSenderBindings::ContextClick)
-      .SetMethod("clearTouchPoints", &EventSenderBindings::ClearTouchPoints)
-      .SetMethod("releaseTouchPoint", &EventSenderBindings::ReleaseTouchPoint)
-      .SetMethod("updateTouchPoint", &EventSenderBindings::UpdateTouchPoint)
-      .SetMethod("cancelTouchPoint", &EventSenderBindings::CancelTouchPoint)
-      .SetMethod("setTouchModifier", &EventSenderBindings::SetTouchModifier)
-      .SetMethod("setTouchCancelable", &EventSenderBindings::SetTouchCancelable)
-      .SetMethod("dumpFilenameBeingDragged",
-                 &EventSenderBindings::DumpFilenameBeingDragged)
-      .SetMethod("touchStart", &EventSenderBindings::TouchStart)
-      .SetMethod("touchMove", &EventSenderBindings::TouchMove)
-      .SetMethod("touchCancel", &EventSenderBindings::TouchCancel)
-      .SetMethod("touchEnd", &EventSenderBindings::TouchEnd)
-      .SetMethod("notifyStartOfTouchScroll",
-                 &EventSenderBindings::NotifyStartOfTouchScroll)
-      .SetMethod("leapForward", &EventSenderBindings::LeapForward)
-      .SetMethod("lastEventTimestamp", &EventSenderBindings::LastEventTimestamp)
-      .SetMethod("beginDragWithFiles", &EventSenderBindings::BeginDragWithFiles)
-      .SetMethod("beginDragWithStringData",
-                 &EventSenderBindings::BeginDragWithStringData)
-      .SetMethod("addTouchPoint", &EventSenderBindings::AddTouchPoint)
-      .SetMethod("gestureScrollPopup", &EventSenderBindings::GestureScrollPopup)
-      .SetMethod("gestureTap", &EventSenderBindings::GestureTap)
-      .SetMethod("gestureTapDown", &EventSenderBindings::GestureTapDown)
-      .SetMethod("gestureShowPress", &EventSenderBindings::GestureShowPress)
-      .SetMethod("gestureTapCancel", &EventSenderBindings::GestureTapCancel)
-      .SetMethod("gestureLongPress", &EventSenderBindings::GestureLongPress)
-      .SetMethod("gestureLongTap", &EventSenderBindings::GestureLongTap)
-      .SetMethod("gestureTwoFingerTap",
-                 &EventSenderBindings::GestureTwoFingerTap)
-      .SetMethod("keyDown", &EventSenderBindings::KeyDown)
-      .SetMethod("keyDownAsync", &EventSenderBindings::KeyDownAsync)
-      .SetMethod("keyDownOnly", &EventSenderBindings::KeyDownOnly)
-      .SetMethod("keyUp", &EventSenderBindings::KeyUp)
-      .SetMethod("mouseDown", &EventSenderBindings::MouseDown)
-      .SetMethod("mouseMoveTo", &EventSenderBindings::MouseMoveTo)
-      .SetMethod("mouseLeave", &EventSenderBindings::MouseLeave)
-      .SetMethod("mouseUp", &EventSenderBindings::MouseUp)
-      .SetMethod("setMouseButtonState",
-                 &EventSenderBindings::SetMouseButtonState)
-      .SetMethod("scheduleAsynchronousClick",
-                 &EventSenderBindings::ScheduleAsynchronousClick)
-      .SetMethod("scheduleAsynchronousKeyDown",
-                 &EventSenderBindings::ScheduleAsynchronousKeyDown)
-      .SetMethod("consumeUserActivation",
-                 &EventSenderBindings::ConsumeUserActivation)
-      .SetProperty("forceLayoutOnEvents",
-                   &EventSenderBindings::ForceLayoutOnEvents,
-                   &EventSenderBindings::SetForceLayoutOnEvents)
+      .SetMethod<&EventSenderBindings::EnableDOMUIEventLogging>(
+          "enableDOMUIEventLogging")
+      .SetMethod<&EventSenderBindings::FireKeyboardEventsToElement>(
+          "fireKeyboardEventsToElement")
+      .SetMethod<&EventSenderBindings::ClearKillRing>("clearKillRing")
+      .SetMethod<&EventSenderBindings::ContextClick>("contextClick")
+      .SetMethod<&EventSenderBindings::ClearTouchPoints>("clearTouchPoints")
+      .SetMethod<&EventSenderBindings::ReleaseTouchPoint>("releaseTouchPoint")
+      .SetMethod<&EventSenderBindings::UpdateTouchPoint>("updateTouchPoint")
+      .SetMethod<&EventSenderBindings::CancelTouchPoint>("cancelTouchPoint")
+      .SetMethod<&EventSenderBindings::SetTouchModifier>("setTouchModifier")
+      .SetMethod<&EventSenderBindings::SetTouchCancelable>("setTouchCancelable")
+      .SetMethod<&EventSenderBindings::DumpFilenameBeingDragged>(
+          "dumpFilenameBeingDragged")
+      .SetMethod<&EventSenderBindings::TouchStart>("touchStart")
+      .SetMethod<&EventSenderBindings::TouchMove>("touchMove")
+      .SetMethod<&EventSenderBindings::TouchCancel>("touchCancel")
+      .SetMethod<&EventSenderBindings::TouchEnd>("touchEnd")
+      .SetMethod<&EventSenderBindings::NotifyStartOfTouchScroll>(
+          "notifyStartOfTouchScroll")
+      .SetMethod<&EventSenderBindings::LeapForward>("leapForward")
+      .SetMethod<&EventSenderBindings::LastEventTimestamp>("lastEventTimestamp")
+      .SetMethod<&EventSenderBindings::BeginDragWithFiles>("beginDragWithFiles")
+      .SetMethod<&EventSenderBindings::BeginDragWithStringData>(
+          "beginDragWithStringData")
+      .SetMethod<&EventSenderBindings::AddTouchPoint>("addTouchPoint")
+      .SetMethod<&EventSenderBindings::GestureScrollPopup>("gestureScrollPopup")
+      .SetMethod<&EventSenderBindings::GestureTap>("gestureTap")
+      .SetMethod<&EventSenderBindings::GestureTapDown>("gestureTapDown")
+      .SetMethod<&EventSenderBindings::GestureShowPress>("gestureShowPress")
+      .SetMethod<&EventSenderBindings::GestureTapCancel>("gestureTapCancel")
+      .SetMethod<&EventSenderBindings::GestureLongPress>("gestureLongPress")
+      .SetMethod<&EventSenderBindings::GestureLongTap>("gestureLongTap")
+      .SetMethod<&EventSenderBindings::GestureTwoFingerTap>(
+          "gestureTwoFingerTap")
+      .SetMethod<&EventSenderBindings::KeyDown>("keyDown")
+      .SetMethod<&EventSenderBindings::KeyDownAsync>("keyDownAsync")
+      .SetMethod<&EventSenderBindings::KeyDownOnly>("keyDownOnly")
+      .SetMethod<&EventSenderBindings::KeyUp>("keyUp")
+      .SetMethod<&EventSenderBindings::MouseDown>("mouseDown")
+      .SetMethod<&EventSenderBindings::MouseMoveTo>("mouseMoveTo")
+      .SetMethod<&EventSenderBindings::MouseLeave>("mouseLeave")
+      .SetMethod<&EventSenderBindings::MouseUp>("mouseUp")
+      .SetMethod<&EventSenderBindings::SetMouseButtonState>(
+          "setMouseButtonState")
+      .SetMethod<&EventSenderBindings::ScheduleAsynchronousClick>(
+          "scheduleAsynchronousClick")
+      .SetMethod<&EventSenderBindings::ScheduleAsynchronousKeyDown>(
+          "scheduleAsynchronousKeyDown")
+      .SetMethod<&EventSenderBindings::ConsumeUserActivation>(
+          "consumeUserActivation")
+      .SetProperty<&EventSenderBindings::ForceLayoutOnEvents,
+                   &EventSenderBindings::SetForceLayoutOnEvents>(
+          "forceLayoutOnEvents")
 #if BUILDFLAG(IS_WIN)
-      .SetProperty("WM_KEYDOWN", &EventSenderBindings::WmKeyDown,
-                   &EventSenderBindings::SetWmKeyDown)
-      .SetProperty("WM_KEYUP", &EventSenderBindings::WmKeyUp,
-                   &EventSenderBindings::SetWmKeyUp)
-      .SetProperty("WM_CHAR", &EventSenderBindings::WmChar,
-                   &EventSenderBindings::SetWmChar)
-      .SetProperty("WM_DEADCHAR", &EventSenderBindings::WmDeadChar,
-                   &EventSenderBindings::SetWmDeadChar)
-      .SetProperty("WM_SYSKEYDOWN", &EventSenderBindings::WmSysKeyDown,
-                   &EventSenderBindings::SetWmSysKeyDown)
-      .SetProperty("WM_SYSKEYUP", &EventSenderBindings::WmSysKeyUp,
-                   &EventSenderBindings::SetWmSysKeyUp)
-      .SetProperty("WM_SYSCHAR", &EventSenderBindings::WmSysChar,
-                   &EventSenderBindings::SetWmSysChar)
-      .SetProperty("WM_SYSDEADCHAR", &EventSenderBindings::WmSysDeadChar,
-                   &EventSenderBindings::SetWmSysDeadChar)
+      .SetProperty<&EventSenderBindings::WmKeyDown,
+                   &EventSenderBindings::SetWmKeyDown>("WM_KEYDOWN")
+      .SetProperty<&EventSenderBindings::WmKeyUp,
+                   &EventSenderBindings::SetWmKeyUp>("WM_KEYUP")
+      .SetProperty<&EventSenderBindings::WmChar,
+                   &EventSenderBindings::SetWmChar>("WM_CHAR")
+      .SetProperty<&EventSenderBindings::WmDeadChar,
+                   &EventSenderBindings::SetWmDeadChar>("WM_DEADCHAR")
+      .SetProperty<&EventSenderBindings::WmSysKeyDown,
+                   &EventSenderBindings::SetWmSysKeyDown>("WM_SYSKEYDOWN")
+      .SetProperty<&EventSenderBindings::WmSysKeyUp,
+                   &EventSenderBindings::SetWmSysKeyUp>("WM_SYSKEYUP")
+      .SetProperty<&EventSenderBindings::WmSysChar,
+                   &EventSenderBindings::SetWmSysChar>("WM_SYSCHAR")
+      .SetProperty<&EventSenderBindings::WmSysDeadChar,
+                   &EventSenderBindings::SetWmSysDeadChar>("WM_SYSDEADCHAR")
 #endif
-      .SetProperty("dragMode", &EventSenderBindings::IsDragMode,
-                   &EventSenderBindings::SetIsDragMode);
+      .SetProperty<&EventSenderBindings::IsDragMode,
+                   &EventSenderBindings::SetIsDragMode>("dragMode");
 }
 
 void EventSenderBindings::EnableDOMUIEventLogging() {

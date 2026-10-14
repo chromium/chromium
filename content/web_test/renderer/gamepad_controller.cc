@@ -117,23 +117,23 @@ gin::ObjectTemplateBuilder GamepadControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<GamepadControllerBindings>::GetObjectTemplateBuilder(
              isolate)
-      .SetMethod("connect", &GamepadControllerBindings::Connect)
-      .SetMethod("dispatchConnected",
-                 &GamepadControllerBindings::DispatchConnected)
-      .SetMethod("disconnect", &GamepadControllerBindings::Disconnect)
-      .SetMethod("dispatchRawInputChanged",
-                 &GamepadControllerBindings::DispatchRawInputChanged)
-      .SetMethod("setId", &GamepadControllerBindings::SetId)
-      .SetMethod("setButtonCount", &GamepadControllerBindings::SetButtonCount)
-      .SetMethod("setButtonData", &GamepadControllerBindings::SetButtonData)
-      .SetMethod("setAxisCount", &GamepadControllerBindings::SetAxisCount)
-      .SetMethod("setAxisData", &GamepadControllerBindings::SetAxisData)
-      .SetMethod("setDualRumbleVibrationActuator",
-                 &GamepadControllerBindings::SetDualRumbleVibrationActuator)
-      .SetMethod("setTriggerRumbleVibrationActuator",
-                 &GamepadControllerBindings::SetTriggerRumbleVibrationActuator)
-      .SetMethod("setTouchCount", &GamepadControllerBindings::SetTouchCount)
-      .SetMethod("setTouchData", &GamepadControllerBindings::SetTouchData);
+      .SetMethod<&GamepadControllerBindings::Connect>("connect")
+      .SetMethod<&GamepadControllerBindings::DispatchConnected>(
+          "dispatchConnected")
+      .SetMethod<&GamepadControllerBindings::Disconnect>("disconnect")
+      .SetMethod<&GamepadControllerBindings::DispatchRawInputChanged>(
+          "dispatchRawInputChanged")
+      .SetMethod<&GamepadControllerBindings::SetId>("setId")
+      .SetMethod<&GamepadControllerBindings::SetButtonCount>("setButtonCount")
+      .SetMethod<&GamepadControllerBindings::SetButtonData>("setButtonData")
+      .SetMethod<&GamepadControllerBindings::SetAxisCount>("setAxisCount")
+      .SetMethod<&GamepadControllerBindings::SetAxisData>("setAxisData")
+      .SetMethod<&GamepadControllerBindings::SetDualRumbleVibrationActuator>(
+          "setDualRumbleVibrationActuator")
+      .SetMethod<&GamepadControllerBindings::SetTriggerRumbleVibrationActuator>(
+          "setTriggerRumbleVibrationActuator")
+      .SetMethod<&GamepadControllerBindings::SetTouchCount>("setTouchCount")
+      .SetMethod<&GamepadControllerBindings::SetTouchData>("setTouchData");
 }
 
 void GamepadControllerBindings::Connect(int index) {

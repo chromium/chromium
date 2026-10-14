@@ -281,186 +281,186 @@ const gin::WrapperInfo* WebAXObjectProxy::wrapper_info() const {
 gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<WebAXObjectProxy>::GetObjectTemplateBuilder(isolate)
-      .SetProperty("role", &WebAXObjectProxy::Role)
-      .SetProperty("stringValue", &WebAXObjectProxy::StringValue)
-      .SetProperty("language", &WebAXObjectProxy::Language)
-      .SetProperty("x", &WebAXObjectProxy::X)
-      .SetProperty("y", &WebAXObjectProxy::Y)
-      .SetProperty("width", &WebAXObjectProxy::Width)
-      .SetProperty("height", &WebAXObjectProxy::Height)
-      .SetProperty("inPageLinkTarget", &WebAXObjectProxy::InPageLinkTarget)
-      .SetProperty("intValue", &WebAXObjectProxy::IntValue)
-      .SetProperty("minValue", &WebAXObjectProxy::MinValue)
-      .SetProperty("maxValue", &WebAXObjectProxy::MaxValue)
-      .SetProperty("stepValue", &WebAXObjectProxy::StepValue)
-      .SetProperty("valueDescription", &WebAXObjectProxy::ValueDescription)
-      .SetProperty("childrenCount", &WebAXObjectProxy::ChildrenCount)
-      .SetProperty("selectionIsBackward",
-                   &WebAXObjectProxy::SelectionIsBackward)
-      .SetProperty("selectionAnchorObject",
-                   &WebAXObjectProxy::SelectionAnchorObject)
-      .SetProperty("selectionAnchorOffset",
-                   &WebAXObjectProxy::SelectionAnchorOffset)
-      .SetProperty("selectionAnchorAffinity",
-                   &WebAXObjectProxy::SelectionAnchorAffinity)
-      .SetProperty("selectionFocusObject",
-                   &WebAXObjectProxy::SelectionFocusObject)
-      .SetProperty("selectionFocusOffset",
-                   &WebAXObjectProxy::SelectionFocusOffset)
-      .SetProperty("selectionFocusAffinity",
-                   &WebAXObjectProxy::SelectionFocusAffinity)
-      .SetProperty("isAtomic", &WebAXObjectProxy::IsAtomic)
-      .SetProperty("isAutofillAvailable",
-                   &WebAXObjectProxy::IsAutofillAvailable)
-      .SetProperty("isBusy", &WebAXObjectProxy::IsBusy)
-      .SetProperty("isRequired", &WebAXObjectProxy::IsRequired)
-      .SetProperty("isEditable", &WebAXObjectProxy::IsEditable)
-      .SetProperty("isEditableRoot", &WebAXObjectProxy::IsEditableRoot)
-      .SetProperty("isRichlyEditable", &WebAXObjectProxy::IsRichlyEditable)
-      .SetProperty("isFocused", &WebAXObjectProxy::IsFocused)
-      .SetProperty("isFocusable", &WebAXObjectProxy::IsFocusable)
-      .SetProperty("isModal", &WebAXObjectProxy::IsModal)
-      .SetProperty("isSelected", &WebAXObjectProxy::IsSelected)
-      .SetProperty("isSelectable", &WebAXObjectProxy::IsSelectable)
-      .SetProperty("isMultiLine", &WebAXObjectProxy::IsMultiLine)
-      .SetProperty("isMultiSelectable", &WebAXObjectProxy::IsMultiSelectable)
-      .SetProperty("isExpanded", &WebAXObjectProxy::IsExpanded)
-      .SetProperty("checked", &WebAXObjectProxy::Checked)
-      .SetProperty("isVisible", &WebAXObjectProxy::IsVisible)
-      .SetProperty("isVisited", &WebAXObjectProxy::IsVisited)
-      .SetProperty("isCollapsed", &WebAXObjectProxy::IsCollapsed)
-      .SetProperty("hasPopup", &WebAXObjectProxy::HasPopup)
-      .SetProperty("isValid", &WebAXObjectProxy::IsValid)
-      .SetProperty("isReadOnly", &WebAXObjectProxy::IsReadOnly)
-      .SetProperty("isIgnored", &WebAXObjectProxy::IsIgnored)
-      .SetProperty("restriction", &WebAXObjectProxy::Restriction)
-      .SetProperty("activeDescendant", &WebAXObjectProxy::ActiveDescendant)
-      .SetProperty("backgroundColor", &WebAXObjectProxy::BackgroundColor)
-      .SetProperty("color", &WebAXObjectProxy::Color)
-      .SetProperty("colorValue", &WebAXObjectProxy::ColorValue)
-      .SetProperty("fontFamily", &WebAXObjectProxy::FontFamily)
-      .SetProperty("fontSize", &WebAXObjectProxy::FontSize)
-      .SetProperty("autocomplete", &WebAXObjectProxy::Autocomplete)
-      .SetProperty("current", &WebAXObjectProxy::Current)
-      .SetProperty("invalid", &WebAXObjectProxy::Invalid)
-      .SetProperty("keyShortcuts", &WebAXObjectProxy::KeyShortcuts)
-      .SetProperty("ariaColumnCount", &WebAXObjectProxy::AriaColumnCount)
-      .SetProperty("ariaColumnIndex", &WebAXObjectProxy::AriaColumnIndex)
-      .SetProperty("ariaColumnSpan", &WebAXObjectProxy::AriaColumnSpan)
-      .SetProperty("ariaRowCount", &WebAXObjectProxy::AriaRowCount)
-      .SetProperty("ariaRowIndex", &WebAXObjectProxy::AriaRowIndex)
-      .SetProperty("ariaRowSpan", &WebAXObjectProxy::AriaRowSpan)
-      .SetProperty("live", &WebAXObjectProxy::Live)
-      .SetProperty("orientation", &WebAXObjectProxy::Orientation)
-      .SetProperty("relevant", &WebAXObjectProxy::Relevant)
-      .SetProperty("roleDescription", &WebAXObjectProxy::RoleDescription)
-      .SetProperty("sort", &WebAXObjectProxy::Sort)
-      .SetProperty("url", &WebAXObjectProxy::Url)
-      .SetProperty("hierarchicalLevel", &WebAXObjectProxy::HierarchicalLevel)
-      .SetProperty("posInSet", &WebAXObjectProxy::PosInSet)
-      .SetProperty("setSize", &WebAXObjectProxy::SetSize)
-      .SetProperty("clickPointX", &WebAXObjectProxy::ClickPointX)
-      .SetProperty("clickPointY", &WebAXObjectProxy::ClickPointY)
-      .SetProperty("rowCount", &WebAXObjectProxy::RowCount)
-      .SetProperty("rowHeadersCount", &WebAXObjectProxy::RowHeadersCount)
-      .SetProperty("columnCount", &WebAXObjectProxy::ColumnCount)
-      .SetProperty("columnHeadersCount", &WebAXObjectProxy::ColumnHeadersCount)
-      .SetProperty("isClickable", &WebAXObjectProxy::IsClickable)
+      .SetProperty<&WebAXObjectProxy::Role>("role")
+      .SetProperty<&WebAXObjectProxy::StringValue>("stringValue")
+      .SetProperty<&WebAXObjectProxy::Language>("language")
+      .SetProperty<&WebAXObjectProxy::X>("x")
+      .SetProperty<&WebAXObjectProxy::Y>("y")
+      .SetProperty<&WebAXObjectProxy::Width>("width")
+      .SetProperty<&WebAXObjectProxy::Height>("height")
+      .SetProperty<&WebAXObjectProxy::InPageLinkTarget>("inPageLinkTarget")
+      .SetProperty<&WebAXObjectProxy::IntValue>("intValue")
+      .SetProperty<&WebAXObjectProxy::MinValue>("minValue")
+      .SetProperty<&WebAXObjectProxy::MaxValue>("maxValue")
+      .SetProperty<&WebAXObjectProxy::StepValue>("stepValue")
+      .SetProperty<&WebAXObjectProxy::ValueDescription>("valueDescription")
+      .SetProperty<&WebAXObjectProxy::ChildrenCount>("childrenCount")
+      .SetProperty<&WebAXObjectProxy::SelectionIsBackward>(
+          "selectionIsBackward")
+      .SetProperty<&WebAXObjectProxy::SelectionAnchorObject>(
+          "selectionAnchorObject")
+      .SetProperty<&WebAXObjectProxy::SelectionAnchorOffset>(
+          "selectionAnchorOffset")
+      .SetProperty<&WebAXObjectProxy::SelectionAnchorAffinity>(
+          "selectionAnchorAffinity")
+      .SetProperty<&WebAXObjectProxy::SelectionFocusObject>(
+          "selectionFocusObject")
+      .SetProperty<&WebAXObjectProxy::SelectionFocusOffset>(
+          "selectionFocusOffset")
+      .SetProperty<&WebAXObjectProxy::SelectionFocusAffinity>(
+          "selectionFocusAffinity")
+      .SetProperty<&WebAXObjectProxy::IsAtomic>("isAtomic")
+      .SetProperty<&WebAXObjectProxy::IsAutofillAvailable>(
+          "isAutofillAvailable")
+      .SetProperty<&WebAXObjectProxy::IsBusy>("isBusy")
+      .SetProperty<&WebAXObjectProxy::IsRequired>("isRequired")
+      .SetProperty<&WebAXObjectProxy::IsEditable>("isEditable")
+      .SetProperty<&WebAXObjectProxy::IsEditableRoot>("isEditableRoot")
+      .SetProperty<&WebAXObjectProxy::IsRichlyEditable>("isRichlyEditable")
+      .SetProperty<&WebAXObjectProxy::IsFocused>("isFocused")
+      .SetProperty<&WebAXObjectProxy::IsFocusable>("isFocusable")
+      .SetProperty<&WebAXObjectProxy::IsModal>("isModal")
+      .SetProperty<&WebAXObjectProxy::IsSelected>("isSelected")
+      .SetProperty<&WebAXObjectProxy::IsSelectable>("isSelectable")
+      .SetProperty<&WebAXObjectProxy::IsMultiLine>("isMultiLine")
+      .SetProperty<&WebAXObjectProxy::IsMultiSelectable>("isMultiSelectable")
+      .SetProperty<&WebAXObjectProxy::IsExpanded>("isExpanded")
+      .SetProperty<&WebAXObjectProxy::Checked>("checked")
+      .SetProperty<&WebAXObjectProxy::IsVisible>("isVisible")
+      .SetProperty<&WebAXObjectProxy::IsVisited>("isVisited")
+      .SetProperty<&WebAXObjectProxy::IsCollapsed>("isCollapsed")
+      .SetProperty<&WebAXObjectProxy::HasPopup>("hasPopup")
+      .SetProperty<&WebAXObjectProxy::IsValid>("isValid")
+      .SetProperty<&WebAXObjectProxy::IsReadOnly>("isReadOnly")
+      .SetProperty<&WebAXObjectProxy::IsIgnored>("isIgnored")
+      .SetProperty<&WebAXObjectProxy::Restriction>("restriction")
+      .SetProperty<&WebAXObjectProxy::ActiveDescendant>("activeDescendant")
+      .SetProperty<&WebAXObjectProxy::BackgroundColor>("backgroundColor")
+      .SetProperty<&WebAXObjectProxy::Color>("color")
+      .SetProperty<&WebAXObjectProxy::ColorValue>("colorValue")
+      .SetProperty<&WebAXObjectProxy::FontFamily>("fontFamily")
+      .SetProperty<&WebAXObjectProxy::FontSize>("fontSize")
+      .SetProperty<&WebAXObjectProxy::Autocomplete>("autocomplete")
+      .SetProperty<&WebAXObjectProxy::Current>("current")
+      .SetProperty<&WebAXObjectProxy::Invalid>("invalid")
+      .SetProperty<&WebAXObjectProxy::KeyShortcuts>("keyShortcuts")
+      .SetProperty<&WebAXObjectProxy::AriaColumnCount>("ariaColumnCount")
+      .SetProperty<&WebAXObjectProxy::AriaColumnIndex>("ariaColumnIndex")
+      .SetProperty<&WebAXObjectProxy::AriaColumnSpan>("ariaColumnSpan")
+      .SetProperty<&WebAXObjectProxy::AriaRowCount>("ariaRowCount")
+      .SetProperty<&WebAXObjectProxy::AriaRowIndex>("ariaRowIndex")
+      .SetProperty<&WebAXObjectProxy::AriaRowSpan>("ariaRowSpan")
+      .SetProperty<&WebAXObjectProxy::Live>("live")
+      .SetProperty<&WebAXObjectProxy::Orientation>("orientation")
+      .SetProperty<&WebAXObjectProxy::Relevant>("relevant")
+      .SetProperty<&WebAXObjectProxy::RoleDescription>("roleDescription")
+      .SetProperty<&WebAXObjectProxy::Sort>("sort")
+      .SetProperty<&WebAXObjectProxy::Url>("url")
+      .SetProperty<&WebAXObjectProxy::HierarchicalLevel>("hierarchicalLevel")
+      .SetProperty<&WebAXObjectProxy::PosInSet>("posInSet")
+      .SetProperty<&WebAXObjectProxy::SetSize>("setSize")
+      .SetProperty<&WebAXObjectProxy::ClickPointX>("clickPointX")
+      .SetProperty<&WebAXObjectProxy::ClickPointY>("clickPointY")
+      .SetProperty<&WebAXObjectProxy::RowCount>("rowCount")
+      .SetProperty<&WebAXObjectProxy::RowHeadersCount>("rowHeadersCount")
+      .SetProperty<&WebAXObjectProxy::ColumnCount>("columnCount")
+      .SetProperty<&WebAXObjectProxy::ColumnHeadersCount>("columnHeadersCount")
+      .SetProperty<&WebAXObjectProxy::IsClickable>("isClickable")
       //
       // NEW bounding rect calculation - high-level interface
       //
-      .SetProperty("boundsX", &WebAXObjectProxy::BoundsX)
-      .SetProperty("boundsY", &WebAXObjectProxy::BoundsY)
-      .SetProperty("boundsWidth", &WebAXObjectProxy::BoundsWidth)
-      .SetProperty("boundsHeight", &WebAXObjectProxy::BoundsHeight)
-      .SetMethod("allAttributes", &WebAXObjectProxy::AllAttributes)
-      .SetMethod("attributesOfChildren",
-                 &WebAXObjectProxy::AttributesOfChildren)
-      .SetMethod("ariaActiveDescendantElement",
-                 &WebAXObjectProxy::AriaActiveDescendantElement)
-      .SetMethod("ariaControlsElementAtIndex",
-                 &WebAXObjectProxy::AriaControlsElementAtIndex)
-      .SetMethod("ariaDetailsElementAtIndex",
-                 &WebAXObjectProxy::AriaDetailsElementAtIndex)
-      .SetMethod("ariaErrorMessageElementAtIndex",
-                 &WebAXObjectProxy::AriaErrorMessageElementAtIndex)
-      .SetMethod("ariaFlowToElementAtIndex",
-                 &WebAXObjectProxy::AriaFlowToElementAtIndex)
-      .SetMethod("ariaOwnsElementAtIndex",
-                 &WebAXObjectProxy::AriaOwnsElementAtIndex)
-      .SetMethod("boundsForRange", &WebAXObjectProxy::BoundsForRange)
-      .SetMethod("childAtIndex", &WebAXObjectProxy::ChildAtIndex)
-      .SetMethod("elementAtPoint", &WebAXObjectProxy::ElementAtPoint)
-      .SetMethod("rowHeaderAtIndex", &WebAXObjectProxy::RowHeaderAtIndex)
-      .SetMethod("columnHeaderAtIndex", &WebAXObjectProxy::ColumnHeaderAtIndex)
-      .SetMethod("rowIndexRange", &WebAXObjectProxy::RowIndexRange)
-      .SetMethod("columnIndexRange", &WebAXObjectProxy::ColumnIndexRange)
-      .SetMethod("cellForColumnAndRow", &WebAXObjectProxy::CellForColumnAndRow)
-      .SetMethod("setSelectedTextRange",
-                 &WebAXObjectProxy::SetSelectedTextRange)
-      .SetMethod("setSelection", &WebAXObjectProxy::SetSelection)
-      .SetMethod("isAttributeSettable", &WebAXObjectProxy::IsAttributeSettable)
-      .SetMethod("isPressActionSupported",
-                 &WebAXObjectProxy::IsPressActionSupported)
-      .SetMethod("hasDefaultAction", &WebAXObjectProxy::HasDefaultAction)
-      .SetMethod("parentElement", &WebAXObjectProxy::ParentElement)
-      .SetMethod("increment", &WebAXObjectProxy::Increment)
-      .SetMethod("decrement", &WebAXObjectProxy::Decrement)
-      .SetMethod("showMenu", &WebAXObjectProxy::ShowMenu)
-      .SetMethod("press", &WebAXObjectProxy::Press)
-      .SetMethod("setValue", &WebAXObjectProxy::SetValue)
-      .SetMethod("isEqual", &WebAXObjectProxy::IsEqual)
-      .SetMethod("setNotificationListener",
-                 &WebAXObjectProxy::SetNotificationListener)
-      .SetMethod("unsetNotificationListener",
-                 &WebAXObjectProxy::UnsetNotificationListener)
-      .SetMethod("takeFocus", &WebAXObjectProxy::TakeFocus)
-      .SetMethod("scrollToMakeVisible", &WebAXObjectProxy::ScrollToMakeVisible)
-      .SetMethod("scrollToMakeVisibleWithSubFocus",
-                 &WebAXObjectProxy::ScrollToMakeVisibleWithSubFocus)
-      .SetMethod("scrollToGlobalPoint", &WebAXObjectProxy::ScrollToGlobalPoint)
-      .SetMethod("scrollUp", &WebAXObjectProxy::ScrollUp)
-      .SetMethod("scrollDown", &WebAXObjectProxy::ScrollDown)
-      .SetMethod("scrollX", &WebAXObjectProxy::ScrollX)
-      .SetMethod("scrollY", &WebAXObjectProxy::ScrollY)
-      .SetMethod("toString", &WebAXObjectProxy::ToString)
-      .SetMethod("wordStart", &WebAXObjectProxy::WordStart)
-      .SetMethod("wordEnd", &WebAXObjectProxy::WordEnd)
-      .SetMethod("nextOnLine", &WebAXObjectProxy::NextOnLine)
-      .SetMethod("previousOnLine", &WebAXObjectProxy::PreviousOnLine)
-      .SetMethod("misspellingAtIndex", &WebAXObjectProxy::MisspellingAtIndex)
+      .SetProperty<&WebAXObjectProxy::BoundsX>("boundsX")
+      .SetProperty<&WebAXObjectProxy::BoundsY>("boundsY")
+      .SetProperty<&WebAXObjectProxy::BoundsWidth>("boundsWidth")
+      .SetProperty<&WebAXObjectProxy::BoundsHeight>("boundsHeight")
+      .SetMethod<&WebAXObjectProxy::AllAttributes>("allAttributes")
+      .SetMethod<&WebAXObjectProxy::AttributesOfChildren>(
+          "attributesOfChildren")
+      .SetMethod<&WebAXObjectProxy::AriaActiveDescendantElement>(
+          "ariaActiveDescendantElement")
+      .SetMethod<&WebAXObjectProxy::AriaControlsElementAtIndex>(
+          "ariaControlsElementAtIndex")
+      .SetMethod<&WebAXObjectProxy::AriaDetailsElementAtIndex>(
+          "ariaDetailsElementAtIndex")
+      .SetMethod<&WebAXObjectProxy::AriaErrorMessageElementAtIndex>(
+          "ariaErrorMessageElementAtIndex")
+      .SetMethod<&WebAXObjectProxy::AriaFlowToElementAtIndex>(
+          "ariaFlowToElementAtIndex")
+      .SetMethod<&WebAXObjectProxy::AriaOwnsElementAtIndex>(
+          "ariaOwnsElementAtIndex")
+      .SetMethod<&WebAXObjectProxy::BoundsForRange>("boundsForRange")
+      .SetMethod<&WebAXObjectProxy::ChildAtIndex>("childAtIndex")
+      .SetMethod<&WebAXObjectProxy::ElementAtPoint>("elementAtPoint")
+      .SetMethod<&WebAXObjectProxy::RowHeaderAtIndex>("rowHeaderAtIndex")
+      .SetMethod<&WebAXObjectProxy::ColumnHeaderAtIndex>("columnHeaderAtIndex")
+      .SetMethod<&WebAXObjectProxy::RowIndexRange>("rowIndexRange")
+      .SetMethod<&WebAXObjectProxy::ColumnIndexRange>("columnIndexRange")
+      .SetMethod<&WebAXObjectProxy::CellForColumnAndRow>("cellForColumnAndRow")
+      .SetMethod<&WebAXObjectProxy::SetSelectedTextRange>(
+          "setSelectedTextRange")
+      .SetMethod<&WebAXObjectProxy::SetSelection>("setSelection")
+      .SetMethod<&WebAXObjectProxy::IsAttributeSettable>("isAttributeSettable")
+      .SetMethod<&WebAXObjectProxy::IsPressActionSupported>(
+          "isPressActionSupported")
+      .SetMethod<&WebAXObjectProxy::HasDefaultAction>("hasDefaultAction")
+      .SetMethod<&WebAXObjectProxy::ParentElement>("parentElement")
+      .SetMethod<&WebAXObjectProxy::Increment>("increment")
+      .SetMethod<&WebAXObjectProxy::Decrement>("decrement")
+      .SetMethod<&WebAXObjectProxy::ShowMenu>("showMenu")
+      .SetMethod<&WebAXObjectProxy::Press>("press")
+      .SetMethod<&WebAXObjectProxy::SetValue>("setValue")
+      .SetMethod<&WebAXObjectProxy::IsEqual>("isEqual")
+      .SetMethod<&WebAXObjectProxy::SetNotificationListener>(
+          "setNotificationListener")
+      .SetMethod<&WebAXObjectProxy::UnsetNotificationListener>(
+          "unsetNotificationListener")
+      .SetMethod<&WebAXObjectProxy::TakeFocus>("takeFocus")
+      .SetMethod<&WebAXObjectProxy::ScrollToMakeVisible>("scrollToMakeVisible")
+      .SetMethod<&WebAXObjectProxy::ScrollToMakeVisibleWithSubFocus>(
+          "scrollToMakeVisibleWithSubFocus")
+      .SetMethod<&WebAXObjectProxy::ScrollToGlobalPoint>("scrollToGlobalPoint")
+      .SetMethod<&WebAXObjectProxy::ScrollUp>("scrollUp")
+      .SetMethod<&WebAXObjectProxy::ScrollDown>("scrollDown")
+      .SetMethod<&WebAXObjectProxy::ScrollX>("scrollX")
+      .SetMethod<&WebAXObjectProxy::ScrollY>("scrollY")
+      .SetMethod<&WebAXObjectProxy::ToString>("toString")
+      .SetMethod<&WebAXObjectProxy::WordStart>("wordStart")
+      .SetMethod<&WebAXObjectProxy::WordEnd>("wordEnd")
+      .SetMethod<&WebAXObjectProxy::NextOnLine>("nextOnLine")
+      .SetMethod<&WebAXObjectProxy::PreviousOnLine>("previousOnLine")
+      .SetMethod<&WebAXObjectProxy::MisspellingAtIndex>("misspellingAtIndex")
       // TODO(hajimehoshi): This is for backward compatibility. Remove them.
-      .SetMethod("addNotificationListener",
-                 &WebAXObjectProxy::SetNotificationListener)
-      .SetMethod("removeNotificationListener",
-                 &WebAXObjectProxy::UnsetNotificationListener)
+      .SetMethod<&WebAXObjectProxy::SetNotificationListener>(
+          "addNotificationListener")
+      .SetMethod<&WebAXObjectProxy::UnsetNotificationListener>(
+          "removeNotificationListener")
       //
       // NEW accessible name and description accessors
       //
-      .SetProperty("name", &WebAXObjectProxy::Name)
-      .SetProperty("nameFrom", &WebAXObjectProxy::NameFrom)
-      .SetMethod("nameElementCount", &WebAXObjectProxy::NameElementCount)
-      .SetMethod("nameElementAtIndex", &WebAXObjectProxy::NameElementAtIndex)
-      .SetProperty("description", &WebAXObjectProxy::Description)
-      .SetProperty("descriptionFrom", &WebAXObjectProxy::DescriptionFrom)
-      .SetProperty("placeholder", &WebAXObjectProxy::Placeholder)
-      .SetProperty("misspellingsCount", &WebAXObjectProxy::MisspellingsCount)
-      .SetMethod("descriptionElementCount",
-                 &WebAXObjectProxy::DescriptionElementCount)
-      .SetMethod("descriptionElementAtIndex",
-                 &WebAXObjectProxy::DescriptionElementAtIndex)
+      .SetProperty<&WebAXObjectProxy::Name>("name")
+      .SetProperty<&WebAXObjectProxy::NameFrom>("nameFrom")
+      .SetMethod<&WebAXObjectProxy::NameElementCount>("nameElementCount")
+      .SetMethod<&WebAXObjectProxy::NameElementAtIndex>("nameElementAtIndex")
+      .SetProperty<&WebAXObjectProxy::Description>("description")
+      .SetProperty<&WebAXObjectProxy::DescriptionFrom>("descriptionFrom")
+      .SetProperty<&WebAXObjectProxy::Placeholder>("placeholder")
+      .SetProperty<&WebAXObjectProxy::MisspellingsCount>("misspellingsCount")
+      .SetMethod<&WebAXObjectProxy::DescriptionElementCount>(
+          "descriptionElementCount")
+      .SetMethod<&WebAXObjectProxy::DescriptionElementAtIndex>(
+          "descriptionElementAtIndex")
       //
       // NEW bounding rect calculation - low-level interface
       //
-      .SetMethod("offsetContainer", &WebAXObjectProxy::OffsetContainer)
-      .SetMethod("boundsInContainerX", &WebAXObjectProxy::BoundsInContainerX)
-      .SetMethod("boundsInContainerY", &WebAXObjectProxy::BoundsInContainerY)
-      .SetMethod("boundsInContainerWidth",
-                 &WebAXObjectProxy::BoundsInContainerWidth)
-      .SetMethod("boundsInContainerHeight",
-                 &WebAXObjectProxy::BoundsInContainerHeight)
-      .SetMethod("hasNonIdentityTransform",
-                 &WebAXObjectProxy::HasNonIdentityTransform);
+      .SetMethod<&WebAXObjectProxy::OffsetContainer>("offsetContainer")
+      .SetMethod<&WebAXObjectProxy::BoundsInContainerX>("boundsInContainerX")
+      .SetMethod<&WebAXObjectProxy::BoundsInContainerY>("boundsInContainerY")
+      .SetMethod<&WebAXObjectProxy::BoundsInContainerWidth>(
+          "boundsInContainerWidth")
+      .SetMethod<&WebAXObjectProxy::BoundsInContainerHeight>(
+          "boundsInContainerHeight")
+      .SetMethod<&WebAXObjectProxy::HasNonIdentityTransform>(
+          "hasNonIdentityTransform");
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::GetChildAtIndex(unsigned index) {

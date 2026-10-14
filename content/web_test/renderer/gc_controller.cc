@@ -57,10 +57,10 @@ const gin::WrapperInfo* GCController::wrapper_info() const {
 gin::ObjectTemplateBuilder GCController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<GCController>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("collect", &GCController::Collect)
-      .SetMethod("collectAll", &GCController::CollectAll)
-      .SetMethod("minorCollect", &GCController::MinorCollect)
-      .SetMethod("asyncCollectAll", &GCController::AsyncCollectAll);
+      .SetMethod<&GCController::Collect>("collect")
+      .SetMethod<&GCController::CollectAll>("collectAll")
+      .SetMethod<&GCController::MinorCollect>("minorCollect")
+      .SetMethod<&GCController::AsyncCollectAll>("asyncCollectAll");
 }
 
 void GCController::Collect(const gin::Arguments& args) {
