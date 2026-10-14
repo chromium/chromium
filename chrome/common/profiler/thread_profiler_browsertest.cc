@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/timer/timer.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
@@ -230,3 +231,13 @@ IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessThreadPool) {
                              metrics::BROWSER_PROCESS,
                              metrics::THREAD_POOL_THREAD));
 }
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+using ThreadProfilerChromeForTestingBrowserTest = PlatformBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ThreadProfilerChromeForTestingBrowserTest,
+                       DisabledByDefault) {
+  EXPECT_FALSE(
+      ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess());
+}
+#endif
