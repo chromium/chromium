@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/android/jni_string.h"
-#include "base/check.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/safety_hub/android/jni_headers/NotificationPermissionReviewBridge_jni.h"
@@ -44,56 +45,34 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaNotificationPermissions(
 
 std::vector<NotificationPermissions> GetNotificationPermissions(
     Profile* profile) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-  std::unique_ptr<NotificationPermissionsReviewResult> result =
-      service->GetNotificationPermissions();
-
-  return result->GetSortedNotificationPermissions();
+  return {};
 }
 
 void IgnoreOriginForNotificationPermissionReview(Profile* profile,
-                                                 const std::string& origin) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-
-  const ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromString(origin);
-  service->AddPatternToNotificationPermissionReviewBlocklist(
-      primary_pattern, ContentSettingsPattern::Wildcard());
-}
+                                                 const std::string& origin) {}
 
 void UndoIgnoreOriginForNotificationPermissionReview(
     Profile* profile,
-    const std::string& origin) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-
-  const ContentSettingsPattern& primary_pattern =
-      ContentSettingsPattern::FromString(origin);
-  service->RemovePatternFromNotificationPermissionReviewBlocklist(
-      primary_pattern, ContentSettingsPattern::Wildcard());
-}
+    const std::string& origin) {}
 
 void AllowNotificationPermissionForOrigin(Profile* profile,
                                           const std::string& origin) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-
-  service->SetNotificationPermissionsForOrigin(origin, CONTENT_SETTING_ALLOW);
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString(origin),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_ALLOW);
 }
 
 void ResetNotificationPermissionForOrigin(Profile* profile,
                                           const std::string& origin) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-
-  service->SetNotificationPermissionsForOrigin(origin, CONTENT_SETTING_DEFAULT);
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString(origin),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_DEFAULT);
 }
 
 static std::vector<NotificationPermissions>

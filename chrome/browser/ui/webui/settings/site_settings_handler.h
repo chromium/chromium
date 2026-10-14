@@ -334,9 +334,6 @@ class SiteSettingsHandler
   // grant objects granted via the File System Access API, per origin.
   base::ListValue PopulateFileSystemGrantData();
 
-  // Sends the list of notification permissions to review to the WebUI.
-  void SendNotificationPermissionReviewList();
-
   // Returns the list of permissions blocked at the system level.
   base::Value GetSystemDeniedPermissions();
 

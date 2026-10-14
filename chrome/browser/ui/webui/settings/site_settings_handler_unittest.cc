@@ -387,8 +387,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(profile()));
 
-    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
-
     SetUpIsolatedWebApp();
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
@@ -1019,13 +1017,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void ValidateCallbacksForNotificationPermission(int index) {
-    // When a notification permission is set or reset, there are two consecutive
-    // callbacks. The first one is to notify content setting observers, and
-    // the second one is to update safety check notification permission review.
     ASSERT_EQ("contentSettingSitePermissionChanged",
               web_ui()->call_data()[index]->arg1()->GetString());
-    ASSERT_EQ("notification-permission-review-list-maybe-changed",
-              web_ui()->call_data()[index + 1]->arg1()->GetString());
   }
 
   // Content setting group name for the relevant ContentSettingsType.
@@ -1049,7 +1042,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
   // The number of listeners that are expected to fire when notification content
   // setting is changed.
-  const size_t kNumberNotificationsContentSettingListeners = 2;
+  const size_t kNumberNotificationsContentSettingListeners = 1;
 
   // The number of listeners that are expected to fire when cookies content
   // setting is changed.
@@ -2230,10 +2223,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     set_args.Append(false);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    ASSERT_EQ(2U, web_ui()->call_data().size());
-    // When HandleSetCategoryPermissionForPattern is called for a notification
-    // permission, there are two callbacks that make call_data size increase
-    // by 2 instead of 1.
+    ASSERT_EQ(1U, web_ui()->call_data().size());
     ValidateCallbacksForNotificationPermission(0);
   }
 
@@ -2372,10 +2362,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForInvalidOrigins) {
   set_args.Append(false);  // Incognito.
 
   handler()->HandleSetCategoryPermissionForPattern(set_args);
-  ASSERT_EQ(2U, web_ui()->call_data().size());
-  // When HandleSetCategoryPermissionForPattern is called for a notification
-  // permission, there are two callbacks that make call_data size increase
-  // by 2 instead of 1.
+  ASSERT_EQ(1U, web_ui()->call_data().size());
   ValidateCallbacksForNotificationPermission(0);
 
   // Reset blocked origin.
@@ -2401,10 +2388,7 @@ TEST_F(SiteSettingsHandlerTest, SetCategory_GetException_ResetCategory) {
         content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
     set_args.Append(false);  // Incognito.
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    EXPECT_EQ(2U, web_ui()->call_data().size());
-    // When HandleSetCategoryPermissionForPattern is called for a notification
-    // permission, there are two callbacks that make call_data size increase
-    // by 2 instead of 1.
+    EXPECT_EQ(1U, web_ui()->call_data().size());
     ValidateCallbacksForNotificationPermission(0);
   }
 
@@ -2413,7 +2397,7 @@ TEST_F(SiteSettingsHandlerTest, SetCategory_GetException_ResetCategory) {
   get_exception_list_args.Append(kNotifications);
   handler()->HandleGetExceptionList(get_exception_list_args);
   ValidateOrigin(google, "", google, CONTENT_SETTING_BLOCK,
-                 site_settings::SiteSettingSource::kPreference, 3U);
+                 site_settings::SiteSettingSource::kPreference, 2U);
 
   {
     // Reset things back to how they were.
@@ -2423,16 +2407,13 @@ TEST_F(SiteSettingsHandlerTest, SetCategory_GetException_ResetCategory) {
     reset_args.Append(kNotifications);
     reset_args.Append(false);  // Incognito.
     handler()->HandleResetCategoryPermissionForPattern(reset_args);
-    EXPECT_EQ(5U, web_ui()->call_data().size());
-    // When HandleResetCategoryPermissionForPattern is called for a notification
-    // permission, there are two callbacks that make call_data size increase
-    // by 2 instead of 1.
-    ValidateCallbacksForNotificationPermission(3);
+    EXPECT_EQ(3U, web_ui()->call_data().size());
+    ValidateCallbacksForNotificationPermission(2);
   }
 
   // Verify the reset was successful.
   handler()->HandleGetExceptionList(get_exception_list_args);
-  ValidateNoOrigin(6U);
+  ValidateNoOrigin(4U);
 }
 
 TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
@@ -2524,15 +2505,12 @@ TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
   set_notification_pattern_args.Append(false);
   handler()->HandleSetCategoryPermissionForPattern(
       set_notification_pattern_args);
-  ASSERT_EQ(5U, web_ui()->call_data().size());
-  // When HandleSetCategoryPermissionForPattern is called for a notification
-  // permission, there are two callbacks that make call_data size increase
-  // by 2 instead of 1.
+  ASSERT_EQ(4U, web_ui()->call_data().size());
   ValidateCallbacksForNotificationPermission(3);
   // A user-set pattern should not show up as default.
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_ALLOW,
-                 site_settings::SiteSettingSource::kPreference, 6U);
+                 site_settings::SiteSettingSource::kPreference, 5U);
 
   base::ListValue set_notification_origin_args;
   set_notification_origin_args.Append(google);
@@ -2543,15 +2521,12 @@ TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
   set_notification_origin_args.Append(false);
   handler()->HandleSetCategoryPermissionForPattern(
       set_notification_origin_args);
-  ASSERT_EQ(8U, web_ui()->call_data().size());
-  // When HandleSetCategoryPermissionForPattern is called for a notification
-  // permission, there are two callbacks that make call_data size increase
-  // by 2 instead of 1.
-  ValidateCallbacksForNotificationPermission(6);
+  ASSERT_EQ(6U, web_ui()->call_data().size());
+  ValidateCallbacksForNotificationPermission(5);
   // A user-set per-origin permission should not show up as default.
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_BLOCK,
-                 site_settings::SiteSettingSource::kPreference, 9U);
+                 site_settings::SiteSettingSource::kPreference, 7U);
 
   // Enterprise-policy set defaults should not show up as default.
   source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
@@ -2793,7 +2768,7 @@ TEST_F(SiteSettingsHandlerTest, SetCategoryPermissionForPattern_Incognito) {
     set_args.Append(true);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    EXPECT_EQ(3U, web_ui()->call_data().size());
+    EXPECT_EQ(2U, web_ui()->call_data().size());
 
     ASSERT_EQ(CONTENT_SETTING_BLOCK, incognito_map->GetContentSetting(
                                          GURL(kOrigin), GURL(std::string()),
@@ -2814,7 +2789,7 @@ TEST_F(SiteSettingsHandlerTest, SetCategoryPermissionForPattern_Incognito) {
     set_args.Append(false);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    EXPECT_EQ(6U, web_ui()->call_data().size());
+    EXPECT_EQ(4U, web_ui()->call_data().size());
 
     ASSERT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(GURL(kOrigin), GURL(std::string()),
@@ -7025,7 +7000,7 @@ TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {
     set_args.Append(false);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    ASSERT_EQ(2U, web_ui()->call_data().size());
+    ASSERT_EQ(1U, web_ui()->call_data().size());
 
     tester.ExpectBucketCount(kScopeTypeHistogram,
                              ContentSettingsPattern::Scope::kOriginScoped,
@@ -7047,7 +7022,7 @@ TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {
     set_args.Append(false);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    ASSERT_EQ(3U, web_ui()->call_data().size());
+    ASSERT_EQ(2U, web_ui()->call_data().size());
 
     tester.ExpectBucketCount(kScopeTypeHistogram,
                              ContentSettingsPattern::Scope::kWithDomainWildcard,

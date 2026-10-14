@@ -14,11 +14,9 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
-#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -91,7 +89,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
         safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
 
     safety_hub_test_util::CreateRevokedPermissionsService(profile());
-    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
 
     pass_service->UpdateInsecureCredentialCountAsync();
     RunUntilIdle();
@@ -107,27 +104,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
   }
 
  protected:
-  void CreateMockNotificationPermissionForReview() {
-    const GURL kUrl = GURL("https://www.example.com:443");
-    auto* site_engagement_service =
-        site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
-
-    // Set a host to have minimum engagement. This should be in review list.
-    hcsm()->SetContentSettingDefaultScope(kUrl, GURL(),
-                                          ContentSettingsType::NOTIFICATIONS,
-                                          CONTENT_SETTING_ALLOW);
-    auto* notifications_engagement_service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile());
-    notifications_engagement_service->RecordNotificationDisplayed(kUrl, 7);
-
-    site_engagement::SiteEngagementScore score =
-        site_engagement_service->CreateEngagementScore(kUrl);
-    score.Reset(0.5, base::Time::Now());
-    score.Commit();
-    EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
-              site_engagement_service->GetEngagementLevel(kUrl));
-  }
-
   void CreateMockUnusedSitePermissionForReview() {
     const GURL kUrl = GURL("https://www.example.com:443");
     base::DictValue dict;
@@ -263,17 +239,6 @@ TEST_F(SafetyHubHatsServiceTest, GetOverallState_SafeBrowsingInfo) {
             safety_hub::SafetyHubCardState::kInfo);
 }
 
-TEST_F(SafetyHubHatsServiceTest, GetOverallState_NotificationPermission) {
-  // When there are notification permissions to review, the overall state should
-  // be "warning".
-  auto* notification_service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-  CreateMockNotificationPermissionForReview();
-  safety_hub_test_util::UpdateSafetyHubServiceAsync(notification_service);
-  EXPECT_EQ(service()->GetOverallState(),
-            safety_hub::SafetyHubCardState::kWarning);
-}
-
 TEST_F(SafetyHubHatsServiceTest, GetOverallState_UnusedSitePermissions) {
   // When there are unused permissions to review, the overall state should
   // be "warning".
@@ -337,12 +302,11 @@ TEST_F(SafetyHubHatsServiceTest, GetOverallState_Multi) {
   EXPECT_EQ(service()->GetOverallState(),
             safety_hub::SafetyHubCardState::kWeak);
 
-  // When adding notification permissions to review, we should get into a
+  // When adding unused site permissions to review, we should get into a
   // "warning" state.
-  auto* notification_service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-  CreateMockNotificationPermissionForReview();
-  safety_hub_test_util::UpdateSafetyHubServiceAsync(notification_service);
+  auto* rp_service = RevokedPermissionsServiceFactory::GetForProfile(profile());
+  CreateMockUnusedSitePermissionForReview();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(rp_service);
   EXPECT_EQ(service()->GetOverallState(),
             safety_hub::SafetyHubCardState::kWarning);
 

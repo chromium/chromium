@@ -58,7 +58,6 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -1914,10 +1913,6 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     ResetHeuristicData(profile_, url, content_type);
   }
 
-  if (content_type == ContentSettingsType::NOTIFICATIONS) {
-    SendNotificationPermissionReviewList();
-  }
-
   if (content_type == ContentSettingsType::COOKIES &&
       primary_pattern.MatchesAllHosts() &&
       !secondary_pattern.MatchesAllHosts()) {
@@ -2039,10 +2034,6 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
       base::RecordAction(base::UserMetricsAction(
           "SoundContentSetting.UnmuteBy.PatternException"));
     }
-  }
-
-  if (content_type == ContentSettingsType::NOTIFICATIONS) {
-    SendNotificationPermissionReviewList();
   }
 
   if (content_type == ContentSettingsType::COOKIES &&
@@ -2851,21 +2842,6 @@ base::ListValue SiteSettingsHandler::PopulateFileSystemGrantData() {
     grants.Append(std::move(origin_file_system_permission_grants));
   }
   return grants;
-}
-
-void SiteSettingsHandler::SendNotificationPermissionReviewList() {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-  // Notify observers that the permission review list could have changed. Note
-  // that the list is not guaranteed to have changed. In places where
-  // determining whether the list has changed is cause for performance concerns,
-  // an unchanged list may be sent. This is the case for
-  // HandleResetCategoryPermissionForPattern and
-  // HandleSetCategoryPermissionForPattern.
-  FireWebUIListener(
-      site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
-      service->PopulateNotificationPermissionReviewData());
 }
 
 base::Value SiteSettingsHandler::GetSystemDeniedPermissions() {

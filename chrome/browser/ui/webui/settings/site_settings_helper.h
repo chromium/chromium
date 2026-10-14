@@ -121,8 +121,6 @@ inline constexpr char kSettingValue[] = "settingValue";
 inline constexpr char kSites[] = "sites";
 inline constexpr char kSource[] = "source";
 inline constexpr char kType[] = "type";
-inline constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
-    "notification-permission-review-list-maybe-changed";
 
 // Returns whether a group name has been registered for the given type.
 bool HasRegisteredGroupName(ContentSettingsType type);

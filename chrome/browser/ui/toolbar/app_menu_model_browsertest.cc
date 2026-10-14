@@ -143,8 +143,6 @@ class AppMenuModelTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUpOnMainThread();
     safety_hub_test_util::CreateRevokedPermissionsService(
         browser()->GetProfile());
-    safety_hub_test_util::CreateNotificationPermissionsReviewService(
-        browser()->GetProfile());
   }
 
   AppMenuModelTest(const AppMenuModelTest&) = delete;
@@ -1276,14 +1274,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DisableSettingsItem) {
 
 class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
  public:
-  TestAppMenuModelSafetyHubTest() {
-    // Disruptive notification revocation disables the notification review
-    // module.
-    // TODO(https://crbug.com/496616827): Clean up this test when removing the
-    // notification review module logic.
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kSafetyHubDisruptiveNotificationRevocation);
-  }
+  TestAppMenuModelSafetyHubTest() = default;
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -1301,9 +1292,6 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TestAppMenuModelSafetyHubTest,

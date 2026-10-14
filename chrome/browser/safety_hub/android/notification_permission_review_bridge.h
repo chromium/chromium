@@ -7,13 +7,28 @@
 
 #include <jni.h>
 
+#include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 
 class Profile;
+
+struct NotificationPermissions {
+  ContentSettingsPattern primary_pattern;
+  ContentSettingsPattern secondary_pattern;
+  int notification_count;
+
+  NotificationPermissions(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          int notification_count)
+      : primary_pattern(primary_pattern),
+        secondary_pattern(secondary_pattern),
+        notification_count(notification_count) {}
+  ~NotificationPermissions() = default;
+};
 
 // JNI helper methods to enable unit testing.
 NotificationPermissions FromJavaNotificationPermissions(

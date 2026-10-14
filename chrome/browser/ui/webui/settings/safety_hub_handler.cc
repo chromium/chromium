@@ -24,8 +24,6 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
@@ -319,65 +317,17 @@ base::ListValue SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   return result;
 }
 
-void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
-    const base::ListValue& args) {
-  AllowJavascript();
-
-  const base::Value& callback_id = args[0];
-
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
-
-  if (!service) {
-    RejectJavascriptCallback(callback_id, base::Value());
-  }
-
-  base::ListValue result = service->PopulateNotificationPermissionReviewData();
-
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
-}
-
-void SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::ListValue& origins = args[0].GetList();
-
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-
-  for (const auto& origin : origins) {
-    const ContentSettingsPattern primary_pattern =
-        ContentSettingsPattern::FromString(origin.GetString());
-    service->AddPatternToNotificationPermissionReviewBlocklist(
-        primary_pattern, ContentSettingsPattern::Wildcard());
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SafetyHubHandler::HandleResetNotificationPermissionForOrigins(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::ListValue& origins = args[0].GetList();
-
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-
-  for (const auto& origin : origins) {
-    service->SetNotificationPermissionsForOrigin(origin.GetString(),
-                                                 CONTENT_SETTING_DEFAULT);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
 void SafetyHubHandler::HandleDismissActiveMenuNotification(
     const base::ListValue& args) {
   SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
       ->DismissActiveNotification();
+}
+
+void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
+    const base::ListValue& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, base::ListValue());
 }
 
 void SafetyHubHandler::HandleDismissPasswordMenuNotification(
@@ -392,57 +342,6 @@ void SafetyHubHandler::HandleDismissExtensionsMenuNotification(
   SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
       ->DismissActiveNotificationOfModule(
           safety_hub::SafetyHubModuleType::EXTENSIONS);
-}
-
-void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::ListValue& origins = args[0].GetList();
-
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-
-  for (const auto& origin : origins) {
-    service->SetNotificationPermissionsForOrigin(origin.GetString(),
-                                                 CONTENT_SETTING_BLOCK);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SafetyHubHandler::HandleAllowNotificationPermissionForOrigins(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::ListValue& origins = args[0].GetList();
-
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-
-  for (const auto& origin : origins) {
-    service->SetNotificationPermissionsForOrigin(origin.GetString(),
-                                                 CONTENT_SETTING_ALLOW);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SafetyHubHandler::HandleUndoIgnoreOriginsForNotificationPermissionReview(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::ListValue& origins = args[0].GetList();
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-
-  for (const auto& origin : origins) {
-    const ContentSettingsPattern& primary_pattern =
-        ContentSettingsPattern::FromString(origin.GetString());
-    service->RemovePatternFromNotificationPermissionReviewBlocklist(
-        primary_pattern, ContentSettingsPattern::Wildcard());
-  }
-  SendNotificationPermissionReviewList();
 }
 
 void SafetyHubHandler::HandleGetSafeBrowsingCardData(
@@ -536,12 +435,6 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
         IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME);
   }
 
-  if (modules.contains(SafetyHubModule::kNotifications)) {
-    AppendModuleNameToString(
-        subheader, IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME,
-        IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME);
-  }
-
   if (modules.contains(SafetyHubModule::kUnusedSitePermissions)) {
     AppendModuleNameToString(
         subheader, IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME,
@@ -580,13 +473,6 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   // Extensions module
   if (GetNumberOfExtensionsThatNeedReview() > 0) {
     modules.insert(SafetyHubModule::kExtensions);
-  }
-  // Notifications module
-  NotificationPermissionsReviewService* npr_service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(npr_service);
-  if (!npr_service->PopulateNotificationPermissionReviewData().empty()) {
-    modules.insert(SafetyHubModule::kNotifications);
   }
   // Unused site permission module
   if (!PopulateUnusedSitePermissionsData().empty()) {
@@ -646,16 +532,6 @@ void SafetyHubHandler::RegisterMessages() {
           &SafetyHubHandler::HandleGetNotificationPermissionReviewList,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "ignoreNotificationPermissionReviewForOrigins",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "resetNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleResetNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "dismissActiveMenuNotification",
       base::BindRepeating(
           &SafetyHubHandler::HandleDismissActiveMenuNotification,
@@ -669,22 +545,6 @@ void SafetyHubHandler::RegisterMessages() {
       "dismissSafetyHubExtensionsMenuNotification",
       base::BindRepeating(
           &SafetyHubHandler::HandleDismissExtensionsMenuNotification,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "blockNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleBlockNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "allowNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleAllowNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "undoIgnoreNotificationPermissionReviewForOrigins",
-      base::BindRepeating(
-          &SafetyHubHandler::
-              HandleUndoIgnoreOriginsForNotificationPermissionReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getSafeBrowsingCardData",
@@ -724,20 +584,6 @@ void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
   // concerns, an unchanged list may be sent.
   FireWebUIListener("unused-permission-review-list-maybe-changed",
                     PopulateUnusedSitePermissionsData());
-}
-
-void SafetyHubHandler::SendNotificationPermissionReviewList() {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  if (!service) {
-    return;
-  }
-
-  // Notify observers that the permission review list could have changed. Note
-  // that the list is not guaranteed to have changed.
-  FireWebUIListener(
-      site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
-      service->PopulateNotificationPermissionReviewData());
 }
 
 void SafetyHubHandler::InitSafetyHubExtensionResults() {

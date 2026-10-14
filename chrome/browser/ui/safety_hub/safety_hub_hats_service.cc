@@ -14,9 +14,6 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_result.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_result.h"
@@ -124,19 +121,6 @@ safety_hub::SafetyHubCardState SafetyHubHatsService::GetOverallState() {
     auto* result =
         static_cast<RevokedPermissionsResult*>(opt_usp_result.value().get());
     if (!result->GetRevokedOrigins().empty()) {
-      return safety_hub::SafetyHubCardState::kWarning;
-    }
-  }
-
-  NotificationPermissionsReviewService* npr_service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(
-          &profile_.get());
-  std::optional<std::unique_ptr<SafetyHubResult>> opt_npr_result =
-      npr_service->GetCachedResult();
-  if (opt_npr_result.has_value()) {
-    auto* result = static_cast<NotificationPermissionsReviewResult*>(
-        opt_npr_result.value().get());
-    if (!result->GetSortedNotificationPermissions().empty()) {
       return safety_hub::SafetyHubCardState::kWarning;
     }
   }

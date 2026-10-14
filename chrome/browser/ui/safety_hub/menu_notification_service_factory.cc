@@ -10,8 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -48,7 +46,6 @@ SafetyHubMenuNotificationServiceFactory::
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(RevokedPermissionsServiceFactory::GetInstance());
-  DependsOn(NotificationPermissionsReviewServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordStatusCheckServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
@@ -64,17 +61,14 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
   RevokedPermissionsService* revoked_permissions_service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
-  NotificationPermissionsReviewService* notification_permission_review_service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<SafetyHubMenuNotificationService>(
-      profile->GetPrefs(), revoked_permissions_service,
-      notification_permission_review_service, profile);
+      profile->GetPrefs(), revoked_permissions_service, profile);
 #else
   PasswordStatusCheckService* password_check_service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
-      profile->GetPrefs(), revoked_permissions_service,
-      notification_permission_review_service, password_check_service, profile);
+      profile->GetPrefs(), revoked_permissions_service, password_check_service,
+      profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -301,17 +301,12 @@ source_set("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "notification_permission_review_bridge_unittest.cc",
-    "unused_site_permissions_bridge_unittest.cc",
-  ]
+  sources = [ "unused_site_permissions_bridge_unittest.cc" ]
 
   deps = [
     ":android",
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/engagement",
-    "//chrome/browser/permissions",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/test:test_support",

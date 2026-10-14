@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,11 +109,6 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
 // with |context|.
 void CreateRevokedPermissionsService(content::BrowserContext* context);
 
-// Creates a new instance of the NotificationPermissionsReviewService and
-// associates it with |context|.
-void CreateNotificationPermissionsReviewService(
-    content::BrowserContext* context);
-
 // This will run the UpdateAsync function on the provided SafetyHubService and
 // return when both the background task and UI task are completed. It will
 // temporary add an observer to the service, which will be removed again before
@@ -131,8 +125,8 @@ void UpdateRevokedPermissionsServiceAsync(RevokedPermissionsService* service);
 // provided url.
 bool IsUrlInSettingsList(ContentSettingsForOneType content_settings, GURL url);
 
-// Create a series of notifications on a site that has not been interacted with
-// that will result in a Safety Hub menu notification being shown.
+// Creates a revoked permission entry and updates the revoked permissions
+// service so that a Safety Hub menu notification will be shown.
 void GenerateSafetyHubMenuNotification(Profile* profile);
 
 }  // namespace safety_hub_test_util

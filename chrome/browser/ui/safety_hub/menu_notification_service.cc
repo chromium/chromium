@@ -12,14 +12,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -38,11 +36,6 @@ const base::TimeDelta kPasswordCheckNotificationInterval = base::Days(0);
 // Interval to show notification for revoked permissions in Safety Hub
 // notifications.
 const base::TimeDelta kRevokedPermissionsNotificationInterval = base::Days(10);
-
-// Interval to show notification for notification permissions in Safety Hub
-// notifications.
-const base::TimeDelta kNotificationPermissionsNotificationInterval =
-    base::Days(10);
 
 // Interval to show notification for safe browsing in Safety Hub notifications.
 const base::TimeDelta kSafeBrowsingNotificationInterval = base::Days(90);
@@ -65,7 +58,6 @@ SafetyHubModuleInfoElement::SafetyHubModuleInfoElement(
 SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     PrefService* pref_service,
     RevokedPermissionsService* revoked_permissions_service,
-    NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
     PasswordStatusCheckService* password_check_service,
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -88,19 +80,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
       base::BindRepeating(&SafetyHubService::GetCachedResult,
                           base::Unretained(revoked_permissions_service)),
       stored_notifications);
-  if (!base::FeatureList::IsEnabled(
-          features::kSafetyHubDisruptiveNotificationRevocation)) {
-    pref_dict_key_map_
-        [safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS] =
-            "notification-permissions";
-    SetInfoElement(
-        safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-        MenuNotificationPriority::LOW,
-        kNotificationPermissionsNotificationInterval,
-        base::BindRepeating(&SafetyHubService::GetCachedResult,
-                            base::Unretained(notification_permissions_service)),
-        stored_notifications);
-  }
   SetInfoElement(safety_hub::SafetyHubModuleType::SAFE_BROWSING,
                  MenuNotificationPriority::MEDIUM,
                  kSafeBrowsingNotificationInterval,

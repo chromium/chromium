@@ -38,7 +38,6 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
  public:
   enum class SafetyHubModule {
     kExtensions,
-    kNotifications,
     kPasswords,
     kSafeBrowsing,
     kUnusedSitePermissions,
@@ -74,24 +73,6 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(
       SafetyHubHandlerTest,
       HandleAcknowledgeRevokedAbusiveAndUnusedSitePermissionsList);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           HandleIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           HandleBlockNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           HandleAllowNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           HandleResetNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           PopulateNotificationPermissionReviewData);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafetyHubHandlerTest,
-      HandleUndoIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
-                           SendNotificationPermissionReviewList_FeatureEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafetyHubHandlerTest,
-      SendNotificationPermissionReviewList_FeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, RevokeAllContentSettingTypes);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerParameterizedTest,
                            PasswordCardState);
@@ -152,26 +133,8 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   void SendUnusedSitePermissionsReviewList();
 
   // Returns the list of notification permissions that needs to be reviewed.
+  // TODO(https://crbug.com/496616827): Remove once WebUI calls are cleaned up.
   void HandleGetNotificationPermissionReviewList(const base::ListValue& args);
-
-  // Handles ignoring origins for the review notification permissions feature.
-  void HandleIgnoreOriginsForNotificationPermissionReview(
-      const base::ListValue& args);
-
-  // Handles resetting a notification permission for given origins.
-  void HandleResetNotificationPermissionForOrigins(const base::ListValue& args);
-
-  // Handles blocking notification permissions for multiple origins.
-  void HandleBlockNotificationPermissionForOrigins(const base::ListValue& args);
-
-  // Handles allowing notification permissions for multiple origins.
-  void HandleAllowNotificationPermissionForOrigins(const base::ListValue& args);
-
-  // Handles reverting the action of ignoring origins for review notification
-  // permissions feature by removing them from the notification permission
-  // verification blocklist.
-  void HandleUndoIgnoreOriginsForNotificationPermissionReview(
-      const base::ListValue& args);
 
   // Handles dismissing the active menu notification for Safety Hub.
   void HandleDismissActiveMenuNotification(const base::ListValue& args);
@@ -202,9 +165,6 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
 
   // Returns the subheader for Safety Hub entry point in settings.
   void HandleGetSafetyHubEntryPointSubheader(const base::ListValue& args);
-
-  // Sends the list of notification permissions to review to the WebUI.
-  void SendNotificationPermissionReviewList();
 
   // Creates the safety hub results object which tracks triggering
   // extensions.

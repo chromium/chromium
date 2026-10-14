@@ -270,7 +270,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
-#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
@@ -1179,7 +1178,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   NotificationDisplayServiceFactory::GetInstance();
   NotificationMetricsLoggerFactory::GetInstance();
-  NotificationPermissionsReviewServiceFactory::GetInstance();
   NotificationsEngagementServiceFactory::GetInstance();
   NotifierStateTrackerFactory::GetInstance();
 #if BUILDFLAG(USE_NSS_CERTS)

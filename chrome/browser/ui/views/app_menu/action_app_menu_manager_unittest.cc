@@ -586,7 +586,7 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
                                               -> std::unique_ptr<KeyedService> {
         Profile* profile = Profile::FromBrowserContext(context);
         auto service = std::make_unique<SafetyHubMenuNotificationService>(
-            profile->GetPrefs(), nullptr, nullptr,
+            profile->GetPrefs(), nullptr,
 #if !BUILDFLAG(IS_ANDROID)
             nullptr,
 #endif
