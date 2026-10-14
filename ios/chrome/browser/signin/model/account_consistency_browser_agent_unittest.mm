@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -56,8 +57,10 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    scene_state_ =
+        [[FakeSceneState alloc] initWithProfile:personal_profile_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     browser_ =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
@@ -87,7 +90,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_);
     AccountConsistencyBrowserAgent::CreateForBrowser(
         browser_, base_view_controller_mock_,
-        AuthenticationServiceFactory::GetForProfile(profile_.get()));
+        AuthenticationServiceFactory::GetForProfile(personal_profile_.get()));
     agent_ = AccountConsistencyBrowserAgent::FromBrowser(browser_);
 
     WebStateList* web_state_list = browser_->GetWebStateList();
@@ -112,15 +115,18 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   }
 
  protected:
+  // Returns the `FakeSystemIdentityManager` from the application context.
+  FakeSystemIdentityManager* GetSystemIdentityManager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
+  }
+
   // Signs the user in an account with a fake identity.
   void SignIn() {
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-    FakeSystemIdentityManager* system_identity_manager =
-        FakeSystemIdentityManager::FromSystemIdentityManager(
-            GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentity(fake_identity);
+    GetSystemIdentityManager()->AddIdentity(fake_identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
     auth_service->SignIn(fake_identity,
                          signin_metrics::AccessPoint::kStartPage);
   }
@@ -129,7 +135,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_ = nullptr;
+  raw_ptr<TestProfileIOS> personal_profile_ = nullptr;
   FakeSceneState* scene_state_ = nil;
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<AccountConsistencyBrowserAgent> agent_ = nullptr;
@@ -196,14 +202,9 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
 TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountShowsAccountMenu) {
   SignIn();
   FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
-  FakeSystemIdentityManager* system_identity_manager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  system_identity_manager->AddIdentity(fake_identity2);
-  // Register a second profile.
-  TestProfileIOS::Builder builder;
-  builder.SetName("work_profile");
-  profile_manager_.AddProfileWithBuilder(std::move(builder));
+  GetSystemIdentityManager()->AddIdentity(fake_identity2);
+  AddManagedProfileWithBuilder(profile_manager_,
+                               [FakeSystemIdentity fakeManagedIdentity]);
 
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn((id)nil);
@@ -233,10 +234,8 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnRestorGaiaCookiesCallsCommand) {
 // account view.
 TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountShowsAddAccount) {
   SignIn();
-  // Register a second profile.
-  TestProfileIOS::Builder builder;
-  builder.SetName("work_profile");
-  profile_manager_.AddProfileWithBuilder(std::move(builder));
+  AddManagedProfileWithBuilder(profile_manager_,
+                               [FakeSystemIdentity fakeManagedIdentity]);
 
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn((id)nil);
@@ -270,10 +269,8 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnManageAccountsCallsCommand) {
 // menu.
 TEST_F(AccountConsistencyBrowserAgentTest, OnManageAccountsShowsAccountMenu) {
   SignIn();
-  // Register a second profile.
-  TestProfileIOS::Builder builder;
-  builder.SetName("work_profile");
-  profile_manager_.AddProfileWithBuilder(std::move(builder));
+  AddManagedProfileWithBuilder(profile_manager_,
+                               [FakeSystemIdentity fakeManagedIdentity]);
 
   // Since there is another profile, the agent should trigger the account menu
   // instead of the manage accounts screen.
