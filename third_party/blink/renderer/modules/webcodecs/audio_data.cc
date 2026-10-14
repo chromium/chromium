@@ -7,7 +7,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -166,11 +165,11 @@ class ScopedAlignedDest {
 
 template <typename SampleType>
 void CopyToInterleaved(base::span<uint8_t> dest_data,
-                       const std::vector<raw_ptr<uint8_t>>& src_channels_data,
+                       const media::AudioBuffer& src_buffer,
                        const int frame_offset,
                        const int frames_to_copy,
                        ExceptionState& exception_state) {
-  const int channels = static_cast<int>(src_channels_data.size());
+  const int channels = src_buffer.channel_count();
 
   if (!base::CheckMul(frames_to_copy, channels).IsValid<int>()) {
     exception_state.ThrowTypeError(
@@ -181,25 +180,24 @@ void CopyToInterleaved(base::span<uint8_t> dest_data,
   ScopedAlignedDest<SampleType> aligned_dest(dest_data);
   base::span<SampleType> dest = aligned_dest.span();
 
+  const size_t offset = base::checked_cast<size_t>(frame_offset);
   const size_t channel_count = base::checked_cast<size_t>(channels);
   const size_t frames = base::checked_cast<size_t>(frames_to_copy);
   CHECK_EQ(dest.size(), frames * channel_count);
 
-  UNSAFE_TODO({
-    for (size_t ch = 0; ch < channel_count; ++ch) {
-      const SampleType* src_start =
-          reinterpret_cast<SampleType*>(src_channels_data[ch].get()) +
-          frame_offset;
-      for (size_t i = 0; i < frames; ++i) {
-        dest[i * channel_count + ch] = src_start[i];
-      }
+  for (size_t ch = 0; ch < channel_count; ++ch) {
+    auto src_start =
+        src_buffer.planar_channel_cast<const SampleType>(ch).subspan(offset,
+                                                                     frames);
+    for (size_t i = 0; i < frames; ++i) {
+      dest[i * channel_count + ch] = src_start[i];
     }
-  });
+  }
 }
 
 template <typename SampleType>
 void CopyToPlanar(base::span<uint8_t> dest_data,
-                  const uint8_t* src_data,
+                  base::span<const SampleType> src_data,
                   const int src_channel_count,
                   const int dest_channel_index,
                   const int frame_offset,
@@ -210,7 +208,6 @@ void CopyToPlanar(base::span<uint8_t> dest_data,
   if (!base::CheckMul(frame_offset, src_channel_count)
            .AssignIfValid(&offset_in_samples)) {
     overflow = true;
-    return;
   }
 
   // Check for potential overflows in the index calculation of the for-loop
@@ -226,15 +223,15 @@ void CopyToPlanar(base::span<uint8_t> dest_data,
   base::span<SampleType> dest = aligned_dest.span();
 
   const size_t frames = base::checked_cast<size_t>(frames_to_copy);
+  const size_t channels = base::checked_cast<size_t>(src_channel_count);
+  const size_t channel_idx = base::checked_cast<size_t>(dest_channel_index);
   CHECK_EQ(dest.size(), frames);
 
-  UNSAFE_TODO({
-    const SampleType* src_start =
-        reinterpret_cast<const SampleType*>(src_data) + offset_in_samples;
-    for (size_t i = 0; i < frames; ++i) {
-      dest[i] = src_start[i * src_channel_count + dest_channel_index];
-    }
-  });
+  auto src_start = src_data.subspan(offset_in_samples);
+
+  for (size_t i = 0; i < frames; ++i) {
+    dest[i] = src_start[i * channels + channel_idx];
+  }
 }
 
 media::SampleFormat RemovePlanar(media::SampleFormat format) {
@@ -575,7 +572,7 @@ void AudioData::copyTo(AllowSharedBufferSource* destination,
     return;
   }
 
-  uint32_t copy_size_in_bytes =
+  const uint32_t copy_size_in_bytes =
       allocationSize(copy_to_options, exception_state);
 
   if (exception_state.HadException())
@@ -627,16 +624,8 @@ void AudioData::copyTo(AllowSharedBufferSource* destination,
   }
 
   // Simple copy, without conversion or (de)interleaving.
-  CHECK_LE(copy_to_options->planeIndex(),
+  CHECK_LT(copy_to_options->planeIndex(),
            static_cast<uint32_t>(data_->channel_count()));
-
-  size_t src_data_size = 0;
-  if (media::IsInterleaved(src_format)) {
-    src_data_size = data_->data_size();
-  } else {
-    src_data_size =
-        media::SampleFormatToBytesPerChannel(src_format) * data_->frame_count();
-  }
 
   // Copy data.
   uint32_t offset_in_samples = copy_to_options->frameOffset();
@@ -659,13 +648,13 @@ void AudioData::copyTo(AllowSharedBufferSource* destination,
     return;
   }
 
-  UNSAFE_TODO({
-    const uint8_t* src_data =
-        data_->channel_data()[copy_to_options->planeIndex()];
-    const uint8_t* data_start = src_data + offset_in_bytes;
-    CHECK_LE(data_start + copy_size_in_bytes, src_data + src_data_size);
-    memcpy(dest_wrapper.data(), data_start, copy_size_in_bytes);
-  });
+  base::span<const uint8_t> src_data =
+      media::IsInterleaved(src_format)
+          ? data_->interleaved_data()
+          : data_->planar_channel(copy_to_options->planeIndex());
+
+  dest_wrapper.copy_from_nonoverlapping(
+      src_data.subspan(offset_in_bytes, copy_size_in_bytes));
 }
 
 void AudioData::CopyConvert(base::span<uint8_t> dest,
@@ -763,25 +752,24 @@ void AudioData::CopyToInterleaved(base::span<uint8_t> dest,
   const int frames_to_copy = copy_to_options->hasFrameCount()
                                  ? copy_to_options->frameCount()
                                  : available_frames;
-  const auto& channel_data = data_->channel_data();
 
   CHECK_LE(frame_offset + frames_to_copy, data_->frame_count());
 
   switch (dest_format) {
     case media::kSampleFormatU8:
-      ::blink::CopyToInterleaved<uint8_t>(dest, channel_data, frame_offset,
+      ::blink::CopyToInterleaved<uint8_t>(dest, *data_, frame_offset,
                                           frames_to_copy, exception_state);
       return;
     case media::kSampleFormatS16:
-      ::blink::CopyToInterleaved<int16_t>(dest, channel_data, frame_offset,
+      ::blink::CopyToInterleaved<int16_t>(dest, *data_, frame_offset,
                                           frames_to_copy, exception_state);
       return;
     case media::kSampleFormatS32:
-      ::blink::CopyToInterleaved<int32_t>(dest, channel_data, frame_offset,
+      ::blink::CopyToInterleaved<int32_t>(dest, *data_, frame_offset,
                                           frames_to_copy, exception_state);
       return;
     case media::kSampleFormatF32:
-      ::blink::CopyToInterleaved<float>(dest, channel_data, frame_offset,
+      ::blink::CopyToInterleaved<float>(dest, *data_, frame_offset,
                                         frames_to_copy, exception_state);
       return;
     default:
@@ -807,32 +795,28 @@ void AudioData::CopyToPlanar(base::span<uint8_t> dest,
   const int channels = data_->channel_count();
   const int channel_index = copy_to_options->planeIndex();
 
-  // Interleaved data could all be in the same plane.
-  CHECK_EQ(1u, data_->channel_data().size());
-  const uint8_t* src_data = data_->channel_data()[0];
-
   CHECK_LE(frame_offset + frames_to_copy, data_->frame_count());
 
   switch (dest_format) {
     case media::kSampleFormatPlanarU8:
-      ::blink::CopyToPlanar<uint8_t>(dest, src_data, channels, channel_index,
-                                     frame_offset, frames_to_copy,
-                                     exception_state);
+      ::blink::CopyToPlanar<uint8_t>(
+          dest, data_->interleaved_data_cast<const uint8_t>(), channels,
+          channel_index, frame_offset, frames_to_copy, exception_state);
       return;
     case media::kSampleFormatPlanarS16:
-      ::blink::CopyToPlanar<int16_t>(dest, src_data, channels, channel_index,
-                                     frame_offset, frames_to_copy,
-                                     exception_state);
+      ::blink::CopyToPlanar<int16_t>(
+          dest, data_->interleaved_data_cast<const int16_t>(), channels,
+          channel_index, frame_offset, frames_to_copy, exception_state);
       return;
     case media::kSampleFormatPlanarS32:
-      ::blink::CopyToPlanar<int32_t>(dest, src_data, channels, channel_index,
-                                     frame_offset, frames_to_copy,
-                                     exception_state);
+      ::blink::CopyToPlanar<int32_t>(
+          dest, data_->interleaved_data_cast<const int32_t>(), channels,
+          channel_index, frame_offset, frames_to_copy, exception_state);
       return;
     case media::kSampleFormatPlanarF32:
-      ::blink::CopyToPlanar<float>(dest, src_data, channels, channel_index,
-                                   frame_offset, frames_to_copy,
-                                   exception_state);
+      ::blink::CopyToPlanar<float>(
+          dest, data_->interleaved_data_cast<const float>(), channels,
+          channel_index, frame_offset, frames_to_copy, exception_state);
       return;
     default:
       NOTREACHED();

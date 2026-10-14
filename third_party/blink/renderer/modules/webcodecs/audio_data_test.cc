@@ -314,7 +314,7 @@ TEST_F(AudioDataTest, TransferBuffer) {
   EXPECT_EQ(audio_data->numberOfFrames(), data.size());
   EXPECT_EQ(audio_data->numberOfChannels(), 1u);
 
-  EXPECT_EQ(audio_data->data()->channel_data()[0], buffer_data_ptr);
+  EXPECT_EQ(audio_data->data()->interleaved_data().data(), buffer_data_ptr);
   auto* options = CreateCopyToOptions(0, 0, {});
   uint32_t allocations_size =
       audio_data->allocationSize(options, scope.GetExceptionState());
@@ -353,7 +353,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
   // Making sure that the data was copied, not just aliased.
-  EXPECT_NE(audio_data->data()->channel_data()[0], buffer_data_ptr);
+  EXPECT_NE(audio_data->data()->interleaved_data().data(), buffer_data_ptr);
   EXPECT_EQ(audio_data->numberOfFrames(), frames);
   auto* options = CreateCopyToOptions(0, 0, {});
   uint32_t allocations_size =
