@@ -469,6 +469,7 @@ public class UrlBar extends AutocompleteEditText {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onFocusChanged(
             boolean focused, @FocusDirection int direction, Rect previouslyFocusedRect) {
+        boolean wasFocused = mFocused;
         mFocused = focused;
 
         if (!mFocused) {
@@ -497,6 +498,10 @@ public class UrlBar extends AutocompleteEditText {
             // limits.
             setEllipsize(focused ? null : TextUtils.TruncateAt.END);
             if (focused) clearBoundsEllipsisSpans(getText());
+        }
+
+        if (wasFocused && !focused) {
+            scrollDisplayText(mCurrentScrollType, /* originChanged= */ false);
         }
 
         if (mFocusChangeCallback != null) {
