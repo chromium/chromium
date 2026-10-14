@@ -277,6 +277,9 @@ struct MenuItemAvailability {
           iconForModel:ComposeboxModelOption::kThinkingNoGenUI];
     case ComposeboxMenuItemType::kModelFlash:
       return [_inputState.uiConfig iconForModel:ComposeboxModelOption::kFlash];
+    case ComposeboxMenuItemType::kModelProLatest:
+      return
+          [_inputState.uiConfig iconForModel:ComposeboxModelOption::kProLatest];
     case ComposeboxMenuItemType::kAttachmentTabs:
       return SymbolWithPointSize(SymbolNewTabGroupAction,
                                  kSymbolActionPointSize);
@@ -336,6 +339,9 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kModelFlash:
       return [_inputState.uiConfig
           menuLabelForModel:ComposeboxModelOption::kFlash];
+    case ComposeboxMenuItemType::kModelProLatest:
+      return [_inputState.uiConfig
+          menuLabelForModel:ComposeboxModelOption::kProLatest];
     case ComposeboxMenuItemType::kAttachmentTabs:
       return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION);
     case ComposeboxMenuItemType::kAttachmentCamera:
@@ -407,6 +413,9 @@ struct MenuItemAvailability {
                                   ComposeboxModelOption::kThinkingNoGenUI);
     case ComposeboxMenuItemType::kModelFlash:
       return MenuItemAvailability(_inputState, ComposeboxModelOption::kFlash);
+    case ComposeboxMenuItemType::kModelProLatest:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxModelOption::kProLatest);
     case ComposeboxMenuItemType::kUnknown:
     case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
