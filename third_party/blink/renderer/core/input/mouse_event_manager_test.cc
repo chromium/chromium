@@ -89,8 +89,7 @@ TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   // These navigations swap new documents into the existing LocalFrame.
   EXPECT_EQ(frame, MainFrame().GetFrame());
 
-  LayoutObject* b =
-      GetDocument().getElementById(AtomicString("b"))->GetLayoutObject();
+  LayoutObject* b = GetElementById("b")->GetLayoutObject();
 
   // We need the first frame to layout before we can hit test the mouse pos.
   Compositor().BeginFrame();
@@ -131,8 +130,7 @@ TEST_F(MouseEventManagerTest,
   GetEventHandler().MarkHoverStateDirty();
   GetEventHandler().RecomputeMouseHoverStateIfNeeded();
 
-  LayoutObject* target =
-      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
+  LayoutObject* target = GetElementById("target")->GetLayoutObject();
   Color hover_color =
       target->Style().VisitedDependentColor(GetCSSPropertyBackgroundColor());
   // :hover pseudo-class should match when the pointer is over the element.

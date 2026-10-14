@@ -222,12 +222,10 @@ TEST_F(CSSStyleSheetResourceSimTest, CachedWithDifferentMQEval) {
 
   Compositor().BeginFrame();
 
-  Document* frame1_doc = To<HTMLIFrameElement>(GetDocument().getElementById(
-                                                   AtomicString("frame1")))
-                             ->contentDocument();
-  Document* frame2_doc = To<HTMLIFrameElement>(GetDocument().getElementById(
-                                                   AtomicString("frame2")))
-                             ->contentDocument();
+  Document* frame1_doc =
+      To<HTMLIFrameElement>(GetElementById("frame1"))->contentDocument();
+  Document* frame2_doc =
+      To<HTMLIFrameElement>(GetElementById("frame2"))->contentDocument();
   ASSERT_TRUE(frame1_doc);
   ASSERT_TRUE(frame2_doc);
   frame1_doc->UpdateStyleAndLayout(DocumentUpdateReason::kTest);

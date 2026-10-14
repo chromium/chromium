@@ -41,8 +41,7 @@ TEST_F(SVGFilterElementSimTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  const Element* target_element =
-      GetDocument().getElementById(AtomicString("target"));
+  const Element* target_element = GetElementById("target");
   const LayoutObject* target = target_element->GetLayoutObject();
 
   EXPECT_TRUE(target->Style().HasFilter());

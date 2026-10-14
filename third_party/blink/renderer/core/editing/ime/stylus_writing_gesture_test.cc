@@ -145,7 +145,7 @@ Element& StylusWritingGestureTest::SetUpElement(String element) {
   font_resource.Complete(ReadAhemWoff2());
   GetDocument().GetStyleEngine().InvalidateStyleAndLayoutForFontUpdates();
   Compositor().BeginFrame();
-  return *GetDocument().getElementById(AtomicString("target"));
+  return *GetElementById("target");
 }
 
 HTMLInputElement* StylusWritingGestureTest::SetUpSingleInput(bool is_RTL) {

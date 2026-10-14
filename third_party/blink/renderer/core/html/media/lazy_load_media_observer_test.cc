@@ -271,8 +271,7 @@ TEST_F(LazyLoadMediaTest, VideoAttributeChangedFromLazyToEager) {
                                        "video/mp4");
 
   // Change the loading attribute from lazy to eager.
-  GetDocument()
-      .getElementById(AtomicString("my_video"))
+  GetElementById("my_video")
       ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   Compositor().BeginFrame();
@@ -310,8 +309,7 @@ TEST_F(LazyLoadMediaTest, AudioAttributeChangedFromLazyToEager) {
                                        "audio/mpeg");
 
   // Change the loading attribute from lazy to eager.
-  GetDocument()
-      .getElementById(AtomicString("my_audio"))
+  GetElementById("my_audio")
       ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   test::RunPendingTasks();

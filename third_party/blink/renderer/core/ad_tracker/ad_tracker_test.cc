@@ -4291,7 +4291,7 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AttributeScript) {
   base::RunLoop().RunUntilIdle();
 
   // Click the div to trigger the event handler.
-  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  Element* div = GetElementById("test_div");
   div->DispatchSimulatedClick(nullptr);
   base::RunLoop().RunUntilIdle();
 
@@ -4365,7 +4365,7 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_DocumentWriteAttributeScript) {
   base::RunLoop().RunUntilIdle();
 
   // Click the div to trigger the event handler.
-  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  Element* div = GetElementById("test_div");
   ASSERT_TRUE(div);
   div->DispatchSimulatedClick(nullptr);
   base::RunLoop().RunUntilIdle();
@@ -4401,7 +4401,7 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_InnerHTMLAttributeScript) {
   base::RunLoop().RunUntilIdle();
 
   // Click the div to trigger the event handler.
-  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  Element* div = GetElementById("test_div");
   ASSERT_TRUE(div);
   div->DispatchSimulatedClick(nullptr);
   base::RunLoop().RunUntilIdle();
@@ -4483,7 +4483,7 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_SetAttributeNodeAttributeScript) {
   base::RunLoop().RunUntilIdle();
 
   // Click the div to trigger the event handler.
-  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  Element* div = GetElementById("test_div");
   ASSERT_TRUE(div);
   div->DispatchSimulatedClick(nullptr);
   base::RunLoop().RunUntilIdle();
@@ -4611,7 +4611,7 @@ TEST_F(AdTrackerSimTest, JavascriptUrlDetected) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the second iframe (test) is created.
-  Element* test_element = GetDocument().getElementById(AtomicString("test"));
+  Element* test_element = GetElementById("test");
   ASSERT_TRUE(test_element);
 
   auto* test_frame = To<HTMLFrameOwnerElement>(test_element)->ContentFrame();
@@ -4649,7 +4649,7 @@ TEST_F(AdTrackerSimTest, JavascriptUrlAnchorDetected) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the iframe (test) is created.
-  Element* test_element = GetDocument().getElementById(AtomicString("test"));
+  Element* test_element = GetElementById("test");
   ASSERT_TRUE(test_element);
 
   auto* test_frame = To<HTMLFrameOwnerElement>(test_element)->ContentFrame();
@@ -4687,7 +4687,7 @@ TEST_F(AdTrackerSimTest, JavascriptUrlFormDetected) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the iframe (test) is created.
-  Element* test_element = GetDocument().getElementById(AtomicString("test"));
+  Element* test_element = GetElementById("test");
   ASSERT_TRUE(test_element);
 
   auto* test_frame = To<HTMLFrameOwnerElement>(test_element)->ContentFrame();

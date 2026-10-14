@@ -38,7 +38,7 @@ TEST_F(InlineLayoutTest, BlockWithSingleTextNode) {
   Compositor().BeginFrame();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   ConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   BlockNode node(block_flow);
@@ -64,7 +64,7 @@ TEST_F(InlineLayoutTest, BlockWithTextAndAtomicInline) {
   Compositor().BeginFrame();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   ConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   BlockNode node(block_flow);

@@ -126,7 +126,7 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScript) {
             "loading");
 
   // The markup following the inline script must have been parsed normally.
-  Element* last = GetDocument().getElementById(AtomicString("last"));
+  Element* last = GetElementById("last");
   ASSERT_TRUE(last);
   ASSERT_TRUE(last->parentElement());
   EXPECT_EQ(last->parentElement()->localName(),
@@ -167,14 +167,14 @@ TEST_F(XMLDocumentParserSimTest, FinalDataAndLoadCompletionDuringInlineScript) {
                 AtomicString("data-ready-state")),
             "loading");
 
-  Element* last = GetDocument().getElementById(AtomicString("last"));
+  Element* last = GetElementById("last");
   ASSERT_TRUE(last);
   ASSERT_TRUE(last->parentElement());
   EXPECT_EQ(last->parentElement()->localName(),
             StrCat({"e", String::Number(kNestingDepth - 1)}));
 
   // The data received together with the completion must have been parsed.
-  Element* tail = GetDocument().getElementById(AtomicString("tail"));
+  Element* tail = GetElementById("tail");
   ASSERT_TRUE(tail);
   EXPECT_EQ(tail->parentElement(), GetDocument().body());
 

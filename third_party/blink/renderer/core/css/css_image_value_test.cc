@@ -35,13 +35,13 @@ TEST_F(CSSImageValueTest, BlockPotentiallyDanglingMarkup) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* t1 = GetDocument().getElementById(AtomicString("t1"));
+  auto* t1 = GetElementById("t1");
   const StyleImage* image1 =
       t1->ComputedStyleRef().BackgroundLayers().GetImage();
   ASSERT_TRUE(image1);
   EXPECT_TRUE(image1->ErrorOccurred());
 
-  auto* t2 = GetDocument().getElementById(AtomicString("t2"));
+  auto* t2 = GetElementById("t2");
   const StyleImage* image2 =
       t2->ComputedStyleRef().BackgroundLayers().GetImage();
   ASSERT_TRUE(image2);
@@ -96,7 +96,7 @@ TEST_F(CSSImageValueTest, PreserveDanglingMarkupFlagInTypedOM) {
   }
 
   // 4. Verify that the fetch was correctly BLOCKED (ErrorOccurred() == true).
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
   const StyleImage* target_image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
@@ -139,7 +139,7 @@ TEST_F(CSSImageValueTest, RegisteredPropertyDoesNotLaunderDanglingMarkup) {
   GetDocument().UpdateStyleAndLayoutTree();
   Compositor().BeginFrame();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
   const StyleImage* image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
@@ -193,7 +193,7 @@ TEST_F(CSSImageValueTest, MakeComputedDoesNotLaunderDanglingMarkup) {
   GetDocument().UpdateStyleAndLayoutTree();
   Compositor().BeginFrame();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
   const StyleImage* image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
@@ -225,7 +225,7 @@ TEST_F(CSSImageValueTest, FilterUrlDoesNotLaunderDanglingMarkup) {
   GetDocument().UpdateStyleAndLayoutTree();
   Compositor().BeginFrame();
 
-  auto* victim = GetDocument().getElementById(AtomicString("victim"));
+  auto* victim = GetElementById("victim");
   ASSERT_TRUE(victim);
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(victim);
   String serialized = computed->GetPropertyValue(CSSPropertyID::kFilter);

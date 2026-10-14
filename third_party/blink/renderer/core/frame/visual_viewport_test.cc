@@ -2505,9 +2505,7 @@ TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
 TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  GetDocument()
-      .getElementById(AtomicString("bottom"))
-      ->scrollIntoViewForTesting();
+  GetElementById("bottom")->scrollIntoViewForTesting();
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 

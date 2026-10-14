@@ -4606,8 +4606,7 @@ TEST_F(StyleEngineSimTest, OwnerColorScheme) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* frame_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("frame")));
+  auto* frame_element = To<HTMLIFrameElement>(GetElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   ASSERT_TRUE(frame_document);
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
@@ -4651,12 +4650,10 @@ TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* dark_document = To<HTMLIFrameElement>(GetDocument().getElementById(
-                                                  AtomicString("dark-frame")))
-                            ->contentDocument();
-  auto* light_document = To<HTMLIFrameElement>(GetDocument().getElementById(
-                                                   AtomicString("light-frame")))
-                             ->contentDocument();
+  auto* dark_document =
+      To<HTMLIFrameElement>(GetElementById("dark-frame"))->contentDocument();
+  auto* light_document =
+      To<HTMLIFrameElement>(GetElementById("light-frame"))->contentDocument();
   ASSERT_TRUE(dark_document);
   ASSERT_TRUE(light_document);
 
@@ -4780,8 +4777,7 @@ TEST_F(StyleEngineSimTest, IFramePreferredColorScheme) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* frame_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("frame")));
+  auto* frame_element = To<HTMLIFrameElement>(GetElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   ASSERT_TRUE(frame_document);
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kLight,
@@ -6366,7 +6362,7 @@ TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(80, target->OffsetWidth());
 }
 
@@ -6421,7 +6417,7 @@ TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
 
   // User-defined font faces should not override author-defined font faces
   // regardless of cascade layers.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(80, target->OffsetWidth());
 }
 
@@ -7075,7 +7071,7 @@ TEST_F(StyleEngineSimTest, ResizeWithBlockingSheetTransition) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  Element* trans = GetDocument().getElementById(AtomicString("trans"));
+  Element* trans = GetElementById("trans");
   ASSERT_TRUE(trans);
 
   // Completing the linked stylesheet should not start a transition since the
@@ -7118,7 +7114,7 @@ TEST_F(StyleEngineSimTest, FocusWithBlockingSheetTransition) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  Element* trans = GetDocument().getElementById(AtomicString("trans"));
+  Element* trans = GetElementById("trans");
   ASSERT_TRUE(trans);
 
   // Completing the linked stylesheet should not start a transition since the
@@ -7147,13 +7143,13 @@ TEST_F(StyleEngineSimTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  Element* first = GetDocument().getElementById(AtomicString("first"));
+  Element* first = GetElementById("first");
   EXPECT_TRUE(first);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),
       first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  Element* second = GetDocument().getElementById(AtomicString("second"));
+  Element* second = GetElementById("second");
   EXPECT_TRUE(second);
   EXPECT_EQ(
       Color::FromRGB(255, 0, 0),
@@ -7167,19 +7163,19 @@ TEST_F(StyleEngineSimTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  first = GetDocument().getElementById(AtomicString("first"));
+  first = GetElementById("first");
   EXPECT_TRUE(first);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),
       first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  second = GetDocument().getElementById(AtomicString("second"));
+  second = GetElementById("second");
   EXPECT_TRUE(second);
   EXPECT_EQ(
       Color::FromRGB(255, 0, 0),
       second->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  Element* third = GetDocument().getElementById(AtomicString("third"));
+  Element* third = GetElementById("third");
   EXPECT_TRUE(third);
   EXPECT_EQ(
       Color::FromRGB(255, 0, 0),
@@ -7190,25 +7186,25 @@ TEST_F(StyleEngineSimTest,
     <div id="fourth"> Fourth </div>
   )HTML");
 
-  first = GetDocument().getElementById(AtomicString("first"));
+  first = GetElementById("first");
   EXPECT_TRUE(first);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),
       first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  second = GetDocument().getElementById(AtomicString("second"));
+  second = GetElementById("second");
   EXPECT_TRUE(second);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),
       second->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  third = GetDocument().getElementById(AtomicString("third"));
+  third = GetElementById("third");
   EXPECT_TRUE(third);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),
       third->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  Element* fourth = GetDocument().getElementById(AtomicString("fourth"));
+  Element* fourth = GetElementById("fourth");
   EXPECT_TRUE(fourth);
   EXPECT_EQ(
       Color::FromRGB(0, 0, 0),

@@ -298,7 +298,7 @@ TEST_F(DragControllerSimTest, LargeImageStartsDrag) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element* image_element = GetDocument().getElementById(AtomicString("big"));
+  Element* image_element = GetElementById("big");
   ASSERT_TRUE(image_element);
 
   const gfx::Point drag_origin(50, 50);
@@ -339,7 +339,7 @@ TEST_F(DragControllerSimTest, ImageDragWithEmptyUrlDoesNotStartDrag) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* image_element = GetDocument().getElementById(AtomicString("empty"));
+  Element* image_element = GetElementById("empty");
   ASSERT_TRUE(image_element);
 
   const gfx::Point drag_origin(50, 50);
@@ -377,7 +377,7 @@ TEST_F(DragControllerSimTest, LinkDragWithEmptyHrefDoesNotStartDrag) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* link_element = GetDocument().getElementById(AtomicString("link"));
+  Element* link_element = GetElementById("link");
   ASSERT_TRUE(link_element);
 
   const gfx::Point drag_origin(10, 10);

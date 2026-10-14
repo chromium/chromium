@@ -76,8 +76,7 @@ TEST_F(ElementFragmentAnchorTest, FocusHandlerRunBeforeRaf) {
   // Click on the anchor element. This will cause a synchronous same-document
   // navigation. The fragment shouldn't activate yet as parsing will be blocked
   // due to the unloaded stylesheet.
-  auto* anchor = To<HTMLAnchorElement>(
-      GetDocument().getElementById(AtomicString("anchorlink")));
+  auto* anchor = To<HTMLAnchorElement>(GetElementById("anchorlink"));
   anchor->click();
   ASSERT_EQ(GetDocument().body(), GetDocument().ActiveElement())
       << "Active element changed while rendering is blocked";
@@ -88,8 +87,7 @@ TEST_F(ElementFragmentAnchorTest, FocusHandlerRunBeforeRaf) {
 
   // Now that the document has fully parsed the anchor should invoke at this
   // point.
-  ASSERT_EQ(GetDocument().getElementById(AtomicString("bottom")),
-            GetDocument().ActiveElement());
+  ASSERT_EQ(GetElementById("bottom"), GetDocument().ActiveElement());
 
   // The background color shouldn't yet be updated.
   ASSERT_EQ(GetDocument()
@@ -145,8 +143,8 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentNoLayoutUntilLoad) {
     )HTML");
   Compositor().BeginFrame();
 
-  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  HTMLFrameOwnerElement* iframe =
+      To<HTMLFrameOwnerElement>(GetElementById("child"));
   ScrollableArea* child_viewport =
       iframe->contentDocument()->View()->LayoutViewport();
   Element* fragment =
@@ -203,8 +201,8 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
       <div id="fragment">fragment content</div>
     )HTML");
 
-  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  HTMLFrameOwnerElement* iframe =
+      To<HTMLFrameOwnerElement>(GetElementById("child"));
   iframe->setAttribute(html_names::kStyleAttr, AtomicString("width:100px"));
 
   Compositor().BeginFrame();
@@ -253,7 +251,7 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
                   ->anchor_node_.Get());
 
   // Remove the fragment anchor from the DOM and perform GC.
-  GetDocument().getElementById(AtomicString("anchor"))->remove();
+  GetElementById("anchor")->remove();
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
@@ -304,8 +302,7 @@ TEST_F(ElementFragmentAnchorTest, SVGDocumentDoesntCreateFragment) {
       </svg>
     )SVG");
 
-  auto* img =
-      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("image")));
+  auto* img = To<HTMLImageElement>(GetElementById("image"));
   auto* svg = To<SVGImage>(img->CachedImage()->GetImage());
   auto* view =
       DynamicTo<LocalFrameView>(svg->GetPageForTesting()->MainFrame()->View());

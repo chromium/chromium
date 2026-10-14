@@ -31,8 +31,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord) {
     <p id='first'>First paragraph text</p>
     <p>new block</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 0));
@@ -60,8 +59,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_ExtraSpace) {
 
      text</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 6));
@@ -91,7 +89,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_WithComment) {
     </div>
     <p>new block</p>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("span"))->firstChild();
+  Node* node = GetElementById("span")->firstChild();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 9));
@@ -113,8 +111,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedTextNode) {
     <!DOCTYPE html>
     <p id='first'>First <b>bold text</b> paragraph text</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 5));
@@ -142,8 +139,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedBlock) {
     <!DOCTYPE html>
     <div id='first'>First paragraph <div id='div'>div</div> text</div>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 5));
@@ -163,8 +159,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedBlockInNestedText) {
     <!DOCTYPE html>
     <div id='first'>First <b>bold<div id='div'>div</div></b> paragraph text</div>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 5));
@@ -183,8 +178,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedInvisibleBlock) {
     <!DOCTYPE html>
     <div id='first'>First <div id='div' style='display:none'>invisible</div> paragraph text</div>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 5));
@@ -207,8 +201,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord) {
     <p>new block</p>
     <p id='first'>First paragraph next word</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
 
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
@@ -234,8 +227,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_ExtraSpace) {
 
          paragraph text</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 25));
@@ -265,7 +257,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_WithComment) {
     </div>
     <p>new block</p>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("span"))->firstChild();
+  Node* node = GetElementById("span")->firstChild();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 9));
@@ -287,7 +279,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedTextNode) {
     <!DOCTYPE html>
     <p id='first'>First <b>bold text</b> paragraph text</p>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("first"))->lastChild();
+  Node* node = GetElementById("first")->lastChild();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 11));
@@ -315,7 +307,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedBlock) {
     <!DOCTYPE html>
     <div id='first'>First <div id='div'>div</div> paragraph text</div>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("div"))->nextSibling();
+  Node* node = GetElementById("div")->nextSibling();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 11));
@@ -335,7 +327,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedBlockInNestedText) {
     <!DOCTYPE html>
     <div id='first'>First <b><div id='div'>div</div>bold</b> paragraph text</div>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("first"))->lastChild();
+  Node* node = GetElementById("first")->lastChild();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 11));
@@ -357,7 +349,7 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedInvisibleBlock) {
     <!DOCTYPE html>
     <div id='first'>First <div id='div' style='display:none'>invisible</div> paragraph text</div>
   )HTML");
-  Node* node = GetDocument().getElementById(AtomicString("div"))->nextSibling();
+  Node* node = GetElementById("div")->nextSibling();
   BackwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<BackwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 0));
@@ -377,8 +369,7 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_HalfWord) {
     <p id='first'>First paragraph text</p>
     <p>new block</p>
   )HTML");
-  Node* node =
-      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* node = GetElementById("first")->firstChild();
   ForwardSameBlockWordIterator* iterator =
       MakeGarbageCollected<ForwardSameBlockWordIterator>(
           PositionInFlatTree(*node, 2));

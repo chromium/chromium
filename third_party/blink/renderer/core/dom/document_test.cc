@@ -2311,7 +2311,7 @@ class DocumentFocusUseCounterTest : public DocumentSimTest {
       <label id="label" for="label-target">Label</label>
     )HTML");
     GetDocument().body()->AppendChild(container);
-    return GetDocument().getElementById(AtomicString("label"));
+    return GetElementById("label");
   }
 };
 
@@ -2409,7 +2409,7 @@ TEST_F(DocumentFocusUseCounterTest, LabelFocusAllowedWithFeatureDisabled) {
   SetUpChildFrame("focus-without-user-activation 'none'");
   Element* label = AddLabel();
   ASSERT_TRUE(label);
-  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  Element* target = GetElementById("label-target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(GetDocument().FocusedElement());
 
@@ -2423,7 +2423,7 @@ TEST_F(DocumentFocusUseCounterTest, LabelClickAllowedWithFeatureDisabled) {
   ScopedBlockingFocusWithoutUserActivationForTest feature(false);
   SetUpChildFrame("focus-without-user-activation 'none'");
   ASSERT_TRUE(AddLabel());
-  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  Element* target = GetElementById("label-target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(GetDocument().FocusedElement());
 
@@ -2444,7 +2444,7 @@ TEST_F(DocumentFocusUseCounterTest,
   SetUpChildFrame("focus-without-user-activation 'none'");
   Element* label = AddLabel();
   ASSERT_TRUE(label);
-  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  Element* target = GetElementById("label-target");
   ASSERT_TRUE(target);
 
   ScriptState::Scope script_scope(ToScriptStateForMainWorld(ChildFrame()));

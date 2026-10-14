@@ -102,7 +102,7 @@ TEST_F(TrackedElementRectTest, ChildOfStickyContainerDoesNotOccludeSibling) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);
@@ -147,7 +147,7 @@ TEST_F(TrackedElementRectTest, ChildWithOwnStickyTransformDoesOccludeSibling) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);
@@ -198,7 +198,7 @@ TEST_F(TrackedElementRectTest, GrandchildrenOcclusionScenario) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);
@@ -243,7 +243,7 @@ TEST_F(TrackedElementRectTest, ChildWithWillChangeTransformScenario) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);
@@ -304,7 +304,7 @@ TEST_F(TrackedElementRectTest, CommonTransformAncestorScenario) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);
@@ -348,8 +348,7 @@ TEST_F(TrackedElementRectTest, FixedOccluderDoesOcclude) {
     </div>
   )HTML");
 
-  Element* tracked_child =
-      GetDocument().getElementById(AtomicString("tracked_child"));
+  Element* tracked_child = GetElementById("tracked_child");
   ASSERT_TRUE(tracked_child);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(tracked_child);
@@ -407,7 +406,7 @@ TEST_F(TrackedElementRectTest, CommonFixedAncestorScenario) {
     </div>
   )HTML");
 
-  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* child1 = GetElementById("child1");
   ASSERT_TRUE(child1);
 
   gfx::Rect visible_bounds = TrackElementAndGetVisibleBounds(child1);

@@ -111,7 +111,7 @@ class IftCustomFontDataTest : public SimTest {
     font_resource.Complete(*font_bytes);
     test::RunPendingTasks();
 
-    GetDocument().getElementById(AtomicString("target"))->setTextContent(text);
+    GetElementById("target")->setTextContent(text);
 
     const SimpleFontData* font_data =
         source->GetFontData(FontDescription(), FontSelectionCapabilities());

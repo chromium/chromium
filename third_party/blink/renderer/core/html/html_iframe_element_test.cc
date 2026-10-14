@@ -378,8 +378,7 @@ TEST_F(HTMLIFrameElementSimTest, SetTrackedElement) {
     <iframe id="my-iframe" src="https://iframe.com"></iframe>
   )");
 
-  auto* iframe = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("my-iframe")));
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("my-iframe"));
 
   viz::TrackedElementFeature tracking_feature =
       viz::TrackedElementFeature::kIframeTracking;

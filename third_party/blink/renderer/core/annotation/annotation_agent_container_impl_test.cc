@@ -634,7 +634,7 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
 
   FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EphemeralRange range =
       EphemeralRange(Position(target, 0), Position(target, 1));
   ASSERT_EQ("TARGET", PlainText(range));
@@ -717,12 +717,11 @@ TEST_F(AnnotationAgentContainerImplTest, CreateBoundAgentWithNodeId) {
 
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
-  container->CreateAgent(
-      std::move(remote_receiver_pair.first),
-      std::move(remote_receiver_pair.second),
-      mojom::blink::AnnotationType::kSharedHighlight,
-      mojom::blink::Selector::NewNodeId(DOMNodeIds::IdForNode(
-          GetDocument().getElementById(AtomicString("text")))));
+  container->CreateAgent(std::move(remote_receiver_pair.first),
+                         std::move(remote_receiver_pair.second),
+                         mojom::blink::AnnotationType::kSharedHighlight,
+                         mojom::blink::Selector::NewNodeId(
+                             DOMNodeIds::IdForNode(GetElementById("text"))));
 
   EXPECT_EQ(GetAgentCount(*container), 1ul);
   EXPECT_TRUE(host.agent_.is_connected());

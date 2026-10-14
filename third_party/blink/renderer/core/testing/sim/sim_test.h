@@ -51,14 +51,18 @@ class SimTest : public testing::Test {
   // These methods should be accessed inside test body after a call to SetUp.
   LocalDOMWindow& Window();
   SimPage& GetPage();
-  Document& GetDocument();
-  WebViewImpl& WebView();
+  Document& GetDocument() const;
+  WebViewImpl& WebView() const;
   WebLocalFrameImpl& MainFrame();
   WebLocalFrameImpl& LocalFrameRoot();
   frame_test_helpers::TestWebFrameClient& WebFrameClient();
   frame_test_helpers::TestWebFrameWidget& GetWebFrameWidget();
   SimCompositor& Compositor();
   frame_test_helpers::WebViewHelper& WebViewHelper();
+
+  // Returns the element in the main frame with the given `id`. Returns
+  // `nullptr` if no such element is found.
+  Element* GetElementById(const char* id) const;
 
   Vector<String>& ConsoleMessages();
   void ResizeView(const gfx::Size&);

@@ -85,8 +85,8 @@ class HTMLPermissionElementFuzzer
     Compositor().BeginFrame();
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-    auto* permission_element = To<HTMLGeolocationElement>(
-        GetDocument().getElementById(AtomicString("target")));
+    auto* permission_element =
+        To<HTMLGeolocationElement>(GetElementById("target"));
 
     // If the element doesn't exist (e.g. if style caused it to not render or be
     // removed?), return.

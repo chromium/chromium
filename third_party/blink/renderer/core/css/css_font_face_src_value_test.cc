@@ -58,7 +58,7 @@ tps://example.com/exfil<secret.woff2') format("woff2");
   // The element should render with the fallback monospace font.
   // The test passes if it doesn't crash — a missing SimSubresourceRequest
   // for an actual network fetch would cause a CHECK failure.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
 }
 

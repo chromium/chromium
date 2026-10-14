@@ -60,8 +60,7 @@ TEST_F(FrameSchedulerTest, BackForwardCacheOptOut_FrameNavigated) {
 
   // Click on the anchor element. This will cause a synchronous same-document
   // navigation. Same document navigations don't affect anything.
-  auto* anchor = To<HTMLAnchorElement>(
-      GetDocument().getElementById(AtomicString("anchorlink")));
+  auto* anchor = To<HTMLAnchorElement>(GetElementById("anchorlink"));
   anchor->click();
 
   EXPECT_TRUE(bf_cache_metrics_contains(SchedulingPolicy::Feature::kWebSocket));

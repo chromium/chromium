@@ -30,7 +30,7 @@ TEST_F(HTMLDataListElementTest, FinishedParsingChildren) {
   LoadURL("https://example.com/");
   main_resource.Complete("<datalist id=list></datalist>");
 
-  auto* data_list = GetDocument().getElementById(AtomicString("list"));
+  auto* data_list = GetElementById("list");
   ASSERT_TRUE(data_list);
   EXPECT_TRUE(data_list->IsFinishedParsingChildren());
 }
@@ -93,15 +93,14 @@ TEST_F(HTMLDataListElementTest,
     </script>
   )HTML");
 
-  auto* input = To<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* input = To<HTMLInputElement>(GetElementById("target"));
   ASSERT_TRUE(input);
   Element* picker = input->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdPickerIndicator);
   ASSERT_TRUE(picker);
   EXPECT_FALSE(picker->IsFocusable());
 
-  auto* list = GetDocument().getElementById(AtomicString("options"));
+  auto* list = GetElementById("options");
   ASSERT_TRUE(list);
   list->RemoveChildren();
 }

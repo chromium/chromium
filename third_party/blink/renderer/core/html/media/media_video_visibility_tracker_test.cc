@@ -1092,19 +1092,18 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetContents) {
 
   // Verify that the DisplayItemClientId passed as a parameter to
   // `GetClientIdsSet` is not in the set.
-  auto* ignored_div = GetDocument().getElementById(AtomicString("ignored_div"));
+  auto* ignored_div = GetElementById("ignored_div");
   ASSERT_TRUE(ignored_div);
   const auto set = GetClientIdsSet(ignored_div->GetLayoutObject()->Id());
   EXPECT_FALSE(set.Contains(ignored_div->GetLayoutObject()->Id()));
 
   // Verify that elements that do not produce visual output are not in the set.
-  auto* invisible_div =
-      GetDocument().getElementById(AtomicString("invisible_div"));
+  auto* invisible_div = GetElementById("invisible_div");
   ASSERT_TRUE(invisible_div);
   EXPECT_FALSE(set.Contains(invisible_div->GetLayoutObject()->Id()));
 
   // Verify that elements that produce visual output are in the set.
-  auto* visible_div = GetDocument().getElementById(AtomicString("visible_div"));
+  auto* visible_div = GetElementById("visible_div");
   ASSERT_TRUE(visible_div);
   EXPECT_TRUE(set.Contains(visible_div->GetLayoutObject()->Id()));
 }
@@ -1143,7 +1142,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetEndIndexEqualToStartIndex) {
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
 
-  auto* target_div = GetDocument().getElementById(AtomicString("target_div"));
+  auto* target_div = GetElementById("target_div");
   ASSERT_TRUE(target_div);
   const auto set = GetClientIdsSet(target_div->GetLayoutObject()->Id());
 

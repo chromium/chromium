@@ -45,7 +45,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   LoadURL("https://example.com/");
   main_resource.Complete("<div id=\"target\"></div>");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   // CSS.registerProperty({
   //   name: '--x',
@@ -135,7 +135,7 @@ TEST_F(AnimationSimTest, NonTickingAnimationDispatchesStartEventOnNextFrame) {
   Compositor().BeginFrame();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* start_listener = MakeGarbageCollected<CountingEventListener>();
   target->addEventListener(event_type_names::kAnimationstart, start_listener);
 

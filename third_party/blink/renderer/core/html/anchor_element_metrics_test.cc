@@ -44,8 +44,7 @@ class AnchorElementMetricsTest : public SimTest {
     LoadURL(source);
     main_resource.Complete("<a id='anchor' href=''>example</a>");
 
-    auto* anchor_element = To<HTMLAnchorElement>(
-        GetDocument().getElementById(AtomicString("anchor")));
+    auto* anchor_element = To<HTMLAnchorElement>(GetElementById("anchor"));
     anchor_element->SetHref(AtomicString(target));
     // We need layout to have happened before calling
     // CreateAnchorElementMetrics.
@@ -116,7 +115,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureImageLink) {
     </body>)HTML",
       kViewportHeight / 2, 10 * kViewportHeight));
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -133,7 +132,7 @@ TEST_F(AnchorElementMetricsTest, AnchorWithoutTextSibling) {
   main_resource.Complete(
       R"HTML(<body><a id='anchor' href="https://example.com/page2">foo</a></body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -147,7 +146,7 @@ TEST_F(AnchorElementMetricsTest, AnchorWithEmptyTextSibling) {
   main_resource.Complete(
       R"HTML(<body> <a id='anchor' href="https://example.com/page2">foo</a> </body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -161,7 +160,7 @@ TEST_F(AnchorElementMetricsTest, AnchorWithPreviousTextSibling) {
   main_resource.Complete(
       R"HTML(<body>bar<a id='anchor' href="https://example.com/page2">foo</a></body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -175,7 +174,7 @@ TEST_F(AnchorElementMetricsTest, AnchorWithNextTextSibling) {
   main_resource.Complete(
       R"HTML(<body><a id='anchor' href="https://example.com/page2">foo</a>bar</body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -189,7 +188,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFontSize) {
   main_resource.Complete(
       R"HTML(<body><a id='anchor' style="font-size: 23px" href="https://example.com/page2">foo</a>bar</body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -203,7 +202,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFontWeight) {
   main_resource.Complete(
       R"HTML(<body><a id='anchor' style='font-weight: 438' href="https://example.com/page2">foo</a>bar</body>)HTML");
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -227,7 +226,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureExtract) {
     </body>)HTML",
       2 * kViewportHeight, 10 * kViewportHeight));
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* anchor = GetElementById("anchor");
   auto* anchor_element = To<HTMLAnchorElement>(anchor);
 
   auto metrics = CreateAnchorElementMetrics(*anchor_element);
@@ -282,7 +281,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframe) {
     </body>)HTML",
       kViewportHeight / 2, 5 * kViewportHeight));
 
-  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  Element* iframe = GetElementById("iframe");
   auto* iframe_element = To<HTMLIFrameElement>(iframe);
   Frame* sub = iframe_element->ContentFrame();
   auto* subframe = To<LocalFrame>(sub);

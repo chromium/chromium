@@ -1829,8 +1829,7 @@ TEST_F(MediaDevicesSimTest, SetPreferredSinkIdRejectsInIframe) {
     <iframe id="test-iframe" src="about:blank"></iframe>
   )");
 
-  auto* iframe = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("test-iframe")));
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("test-iframe"));
   ASSERT_TRUE(iframe);
   auto* child_frame = To<LocalFrame>(iframe->ContentFrame());
   ASSERT_TRUE(child_frame);

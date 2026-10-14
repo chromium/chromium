@@ -487,7 +487,7 @@ TEST_F(ScriptAncestryTrackerTest, AttributeScript) {
   test::RunPendingTasks();
 
   // Trigger the click event to fire the event handler.
-  Element* div = GetDocument().getElementById(AtomicString("test_div"));
+  Element* div = GetElementById("test_div");
   div->DispatchSimulatedClick(nullptr);
   V8ScriptId initial_id =
       test_observer_->WaitAndFindScriptIdByUrl("initial_marked_script.js");

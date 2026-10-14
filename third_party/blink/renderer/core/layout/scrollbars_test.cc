@@ -663,7 +663,7 @@ TEST_P(ScrollbarsTest, OverlayScrolblarNotCreatedInUnscrollableAxis) {
 
   Compositor().BeginFrame();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* scrollable_area = target->GetLayoutBox()->GetScrollableArea();
 
   ASSERT_FALSE(scrollable_area->VerticalScrollbar());
@@ -1346,9 +1346,7 @@ TEST_P(ScrollbarsTest, MouseOverCustomScrollbarCornerFrame) {
   Compositor().BeginFrame();
 
   Document& iframe_document =
-      *To<HTMLIFrameElement>(
-           GetDocument().getElementById(AtomicString("iframe")))
-           ->contentDocument();
+      *To<HTMLIFrameElement>(GetElementById("iframe"))->contentDocument();
 
   // Ensure hittest has DIV and scrollbar.
   HitTestResult hit_test_result = HitTest(195, 195);
@@ -2792,9 +2790,8 @@ TEST_P(ScrollbarsTest, AutosizeExpandingContentScrollable) {
   // Not scrollable due to no overflow.
   EXPECT_FALSE(layout_viewport->UserInputScrollable(kVerticalScrollbar));
 
-  GetDocument()
-      .getElementById(AtomicString("spacer"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 900px"));
+  GetElementById("spacer")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("height: 900px"));
   Compositor().BeginFrame();
 
   // Now scrollable due to overflow.
@@ -2922,8 +2919,7 @@ TEST_P(ScrollbarsTest, OverlayScrollbarHitTest) {
       ->SetScrollbarsHiddenForTesting(false);
 
   // Enable the iframe scrollbar.
-  auto* iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  auto* iframe_element = To<HTMLIFrameElement>(GetElementById("iframe"));
   iframe_element->contentDocument()
       ->View()
       ->LayoutViewport()
@@ -2960,8 +2956,7 @@ TEST_P(ScrollbarsTest, RecorderedOverlayScrollbarHitTest) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* target =
-      GetDocument().getElementById(AtomicString("target"))->GetLayoutBox();
+  auto* target = GetElementById("target")->GetLayoutBox();
   target->GetScrollableArea()->SetScrollbarsHiddenForTesting(false);
   ASSERT_TRUE(target->Layer()->NeedsReorderOverlayOverflowControls());
 
@@ -2971,8 +2966,7 @@ TEST_P(ScrollbarsTest, RecorderedOverlayScrollbarHitTest) {
   EXPECT_EQ(target->GetNode(), result.InnerNode());
   result = HitTest(150, 5);
   EXPECT_FALSE(result.GetScrollbar());
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("stacked")),
-            result.InnerNode());
+  EXPECT_EQ(GetElementById("stacked"), result.InnerNode());
 }
 
 TEST_P(ScrollbarsTest,
@@ -3399,7 +3393,7 @@ TEST_P(ScrollbarsTest, UseCounterCustomScrollbarPercentSize) {
 
   // Show vertical scrollbar which uses fixed lengths for thickness
   // (width: 10px) and thumb minimum length (min-height: 10px).
-  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* child = GetElementById("child");
   child->setAttribute(html_names::kStyleAttr,
                       AtomicString("width: 50px; height: 200px"));
   Compositor().BeginFrame();
@@ -3455,7 +3449,7 @@ TEST_P(ScrollbarsTest, CheckScrollCornerIfThereIsNoScrollbar) {
 
   Compositor().BeginFrame();
 
-  auto* element = GetDocument().getElementById(AtomicString("container"));
+  auto* element = GetElementById("container");
   auto* scrollable_container = GetScrollableArea(*element);
 
   // There should initially be a scrollbar and a scroll corner.
@@ -3490,7 +3484,7 @@ TEST_P(ScrollbarsTest, NoNeedsBeginFrameForCustomScrollbarAfterBeginFrame) {
   while (Compositor().NeedsBeginFrame())
     Compositor().BeginFrame();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* scrollbar = To<CustomScrollbar>(
       target->GetLayoutBox()->GetScrollableArea()->HorizontalScrollbar());
   LayoutCustomScrollbarPart* thumb = scrollbar->GetPart(kThumbPart);
@@ -3529,7 +3523,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {
 
   Compositor().BeginFrame();
 
-  auto* target1 = GetDocument().getElementById(AtomicString("target1"));
+  auto* target1 = GetElementById("target1");
   auto* scrollable_area1 = target1->GetLayoutBox()->GetScrollableArea();
   EXPECT_EQ(
       33, CustomScrollbar::HypotheticalScrollbarThickness(
@@ -3538,7 +3532,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {
             CustomScrollbar::HypotheticalScrollbarThickness(
                 scrollable_area1, kVerticalScrollbar, target1->GetLayoutBox()));
 
-  auto* target2 = GetDocument().getElementById(AtomicString("target2"));
+  auto* target2 = GetElementById("target2");
   auto* scrollable_area2 = target2->GetLayoutBox()->GetScrollableArea();
   EXPECT_EQ(
       13, CustomScrollbar::HypotheticalScrollbarThickness(
@@ -3959,8 +3953,7 @@ TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
   Compositor().BeginFrame();
 
   auto* test_slot = DynamicTo<HTMLSlotElement>(
-      GetDocument()
-          .getElementById(AtomicString("test-element"))
+      GetElementById("test-element")
           ->GetShadowRoot()
           ->getElementById(AtomicString("test-slot")));
   ScrollableAreaTraversal scrollers(test_slot);
@@ -4023,13 +4016,13 @@ TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
     )HTML");
   Compositor().BeginFrame();
 
-  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  Element* scroller1 = GetElementById("scroller1");
   ASSERT_TRUE(scroller1);
-  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  Element* scroller2 = GetElementById("scroller2");
   ASSERT_TRUE(scroller2);
-  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  Element* scroller3 = GetElementById("scroller3");
   ASSERT_TRUE(scroller3);
-  Element* scroller4 = GetDocument().getElementById(AtomicString("scroller4"));
+  Element* scroller4 = GetElementById("scroller4");
   ASSERT_TRUE(scroller4);
 
   HitTestResult hit_test_result = HitTest(50, 50);
@@ -4209,13 +4202,13 @@ TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
     )HTML");
   Compositor().BeginFrame();
 
-  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  Element* scroller1 = GetElementById("scroller1");
   ASSERT_TRUE(scroller1);
-  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  Element* scroller2 = GetElementById("scroller2");
   ASSERT_TRUE(scroller2);
-  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  Element* scroller3 = GetElementById("scroller3");
   ASSERT_TRUE(scroller3);
-  Element* scroller4 = GetDocument().getElementById(AtomicString("scroller4"));
+  Element* scroller4 = GetElementById("scroller4");
   ASSERT_TRUE(scroller4);
 
   HitTestResult hit_test_result = HitTest(200, 200);
@@ -4395,11 +4388,11 @@ TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
     )HTML");
   Compositor().BeginFrame();
 
-  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  Element* scroller1 = GetElementById("scroller1");
   ASSERT_TRUE(scroller1);
-  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  Element* scroller2 = GetElementById("scroller2");
   ASSERT_TRUE(scroller2);
-  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  Element* scroller3 = GetElementById("scroller3");
   ASSERT_TRUE(scroller3);
 
   HitTestResult hit_test_result1 = HitTest(50, 50);
@@ -4590,8 +4583,8 @@ TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
 
   ClearCounters();
 
-  Element* subframe_1 = GetDocument().getElementById(AtomicString("subframe1"));
-  Element* subframe_2 = GetDocument().getElementById(AtomicString("subframe2"));
+  Element* subframe_1 = GetElementById("subframe1");
+  Element* subframe_2 = GetElementById("subframe2");
   EXPECT_GT(30, subframe_1->OffsetLeft());
   EXPECT_GT(30, subframe_1->OffsetTop());
   EXPECT_EQ(100, subframe_2->OffsetLeft());
@@ -4778,26 +4771,26 @@ TEST_P(ScrollbarsTest, ScrollableAreaTraversal) {
     )HTML");
   Compositor().BeginFrame();
 
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller4"));
+  Element* scroller = GetElementById("scroller4");
   ASSERT_TRUE(scroller);
   ScrollableAreaTraversal traversal(scroller);
   auto iterator = traversal.begin();
   ASSERT_TRUE(iterator->GetLayoutBox());
   EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
 
-  scroller = GetDocument().getElementById(AtomicString("scroller3"));
+  scroller = GetElementById("scroller3");
   ASSERT_TRUE(scroller);
   ++iterator;
   ASSERT_TRUE(iterator->GetLayoutBox());
   EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
 
-  scroller = GetDocument().getElementById(AtomicString("scroller2"));
+  scroller = GetElementById("scroller2");
   ASSERT_TRUE(scroller);
   ++iterator;
   ASSERT_TRUE(iterator->GetLayoutBox());
   EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
 
-  scroller = GetDocument().getElementById(AtomicString("scroller1"));
+  scroller = GetElementById("scroller1");
   ASSERT_TRUE(scroller);
   ++iterator;
   ASSERT_TRUE(iterator->GetLayoutBox());
@@ -4919,7 +4912,7 @@ class ScrollbarTrackMarginsTest : public ScrollbarsTest {
     // No DCHECK failure. Issue 801123.
     Compositor().BeginFrame();
 
-    Element* div = GetDocument().getElementById(AtomicString("d1"));
+    Element* div = GetElementById("d1");
     ASSERT_TRUE(div);
 
     auto* div_scrollable = GetScrollableArea(*div);
@@ -5061,7 +5054,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
     <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
-  auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
+  auto* auto_ = GetElementById("auto");
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Width(), 100);
@@ -5071,7 +5064,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   EXPECT_EQ(box_auto_scrollbars.left, 0);
   EXPECT_EQ(box_auto_scrollbars.right, 0);
 
-  auto* stable = GetDocument().getElementById(AtomicString("stable"));
+  auto* stable = GetElementById("stable");
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Width(), 85);
@@ -5081,8 +5074,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 15);
 
-  auto* stable_both_edges =
-      GetDocument().getElementById(AtomicString("stable_both_edges"));
+  auto* stable_both_edges = GetElementById("stable_both_edges");
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Width(), 70);
@@ -5126,7 +5118,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
     <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
-  auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
+  auto* auto_ = GetElementById("auto");
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Height(), 100);
@@ -5136,7 +5128,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   EXPECT_EQ(box_auto_scrollbars.left, 0);
   EXPECT_EQ(box_auto_scrollbars.right, 0);
 
-  auto* stable = GetDocument().getElementById(AtomicString("stable"));
+  auto* stable = GetElementById("stable");
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Height(), 85);
@@ -5146,8 +5138,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_both_edges =
-      GetDocument().getElementById(AtomicString("stable_both_edges"));
+  auto* stable_both_edges = GetElementById("stable_both_edges");
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Height(), 70);
@@ -5192,7 +5183,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
     <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
-  auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
+  auto* auto_ = GetElementById("auto");
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Width(), 100);
@@ -5202,7 +5193,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_auto_scrollbars.left, 0);
   EXPECT_EQ(box_auto_scrollbars.right, 0);
 
-  auto* stable = GetDocument().getElementById(AtomicString("stable"));
+  auto* stable = GetElementById("stable");
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Width(), 100);
@@ -5212,8 +5203,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_both_edges =
-      GetDocument().getElementById(AtomicString("stable_both_edges"));
+  auto* stable_both_edges = GetElementById("stable_both_edges");
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Width(), 100);
   EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Width(), 100);
@@ -5258,7 +5248,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
     <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
-  auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
+  auto* auto_ = GetElementById("auto");
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Height(), 100);
@@ -5268,7 +5258,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_auto_scrollbars.left, 0);
   EXPECT_EQ(box_auto_scrollbars.right, 0);
 
-  auto* stable = GetDocument().getElementById(AtomicString("stable"));
+  auto* stable = GetElementById("stable");
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Height(), 100);
@@ -5278,8 +5268,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_both_edges =
-      GetDocument().getElementById(AtomicString("stable_both_edges"));
+  auto* stable_both_edges = GetElementById("stable_both_edges");
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Height(), 100);
   EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Height(), 100);

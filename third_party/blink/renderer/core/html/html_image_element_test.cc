@@ -148,8 +148,7 @@ TEST_F(HTMLImageElementSimTest, ResetAnimationForBitmapImage) {
   // Run pending tasks to let the image resource load and dirty layout.
   test::RunPendingTasks();
 
-  HTMLImageElement* image_element =
-      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("gif")));
+  HTMLImageElement* image_element = To<HTMLImageElement>(GetElementById("gif"));
   ASSERT_NE(image_element, nullptr);
   ASSERT_TRUE(image_element->CachedImage());
   ASSERT_TRUE(image_element->CachedImage()->HasImage());

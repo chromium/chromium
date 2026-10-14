@@ -1506,8 +1506,7 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectAddAllowedButton) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
 
   auto* button = MakeGarbageCollected<HTMLButtonElement>(GetDocument());
@@ -1543,11 +1542,10 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectRemoveDisallowedButton) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
 
-  auto* button = GetDocument().getElementById(AtomicString("target-button"));
+  auto* button = GetElementById("target-button");
   select->removeChild(button);
 
   test::RunPendingTasks();
@@ -1576,15 +1574,13 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectNestedButton) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
 
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   auto* first_button = MakeGarbageCollected<HTMLButtonElement>(GetDocument());
   auto* second_button = MakeGarbageCollected<HTMLButtonElement>(GetDocument());
-  auto* option = To<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("option")));
+  auto* option = To<HTMLOptionElement>(GetElementById("option"));
 
   div->appendChild(first_button);
   option->appendChild(div);

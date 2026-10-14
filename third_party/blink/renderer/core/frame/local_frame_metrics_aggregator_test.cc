@@ -936,8 +936,7 @@ TEST_F(LocalFrameMetricsAggregatorSimTest, GetMetricsAggregator) {
 
   auto* root_view = GetDocument().View();
   root_view->ResetMetricsAggregatorForTesting();
-  auto* subframe_view = To<HTMLFrameOwnerElement>(
-                            GetDocument().getElementById(AtomicString("frame")))
+  auto* subframe_view = To<HTMLFrameOwnerElement>(GetElementById("frame"))
                             ->contentDocument()
                             ->View();
   auto* aggregator_from_subframe = subframe_view->GetMetricsAggregator();
@@ -988,9 +987,7 @@ TEST_F(LocalFrameMetricsAggregatorSimTest, IntersectionObserverCountsInChildFram
   Compositor().BeginFrame();
   ChooseNextFrameForTest();
   TestIntersectionObserverCounts(
-      *To<HTMLFrameOwnerElement>(
-           GetDocument().getElementById(AtomicString("frame")))
-           ->contentDocument());
+      *To<HTMLFrameOwnerElement>(GetElementById("frame"))->contentDocument());
 }
 
 TEST_F(LocalFrameMetricsAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
@@ -1024,9 +1021,7 @@ TEST_F(LocalFrameMetricsAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
 
   // Make a change to the subframe that results in FCP for that subframe.
   auto* subframe_document =
-      To<HTMLFrameOwnerElement>(
-          GetDocument().getElementById(AtomicString("frame")))
-          ->contentDocument();
+      To<HTMLFrameOwnerElement>(GetElementById("frame"))->contentDocument();
   Element* target = subframe_document->getElementById(AtomicString("target"));
   target->SetInnerHTMLWithoutTrustedTypes("test1");
 
@@ -1353,7 +1348,7 @@ TEST_P(LocalFrameMetricsAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) 
       should_trigger ? 1 : 0);
 
   // Cause FCP on the next frame.
-  Element* target = GetDocument().getElementById(AtomicString("card"));
+  Element* target = GetElementById("card");
   target->SetInnerHTMLWithoutTrustedTypes("hello world");
 
   Compositor().BeginFrame();

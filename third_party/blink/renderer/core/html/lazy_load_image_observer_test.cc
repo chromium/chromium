@@ -391,7 +391,7 @@ TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrinting) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("child frame element onload"));
 
-  Element* img = GetDocument().getElementById(AtomicString("my_image"));
+  Element* img = GetElementById("my_image");
   ASSERT_TRUE(img);
 
   test::RunPendingTasks();
@@ -442,8 +442,7 @@ TEST_F(LazyLoadImagesTest, LoadAllImagesIfPrintingIFrame) {
   EXPECT_FALSE(ConsoleMessages().Contains("main body image onload"));
   EXPECT_FALSE(ConsoleMessages().Contains("iframe image onload"));
 
-  auto* iframe = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("iframe"));
   ASSERT_TRUE(iframe);
   ASSERT_TRUE(iframe->ContentFrame());
 
@@ -480,8 +479,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromLazyToEager) {
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
                                       "image/png");
-  GetDocument()
-      .getElementById(AtomicString("my_image"))
+  GetElementById("my_image")
       ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   test::RunPendingTasks();
@@ -504,8 +502,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromAutoToEager) {
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
                                       "image/png");
-  GetDocument()
-      .getElementById(AtomicString("my_image"))
+  GetElementById("my_image")
       ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
@@ -521,8 +518,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
 
   SimSubresourceRequest full_resource("https://example.com/image.png",
                                       "image/png");
-  GetDocument()
-      .getElementById(AtomicString("my_image"))
+  GetElementById("my_image")
       ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
@@ -657,8 +653,7 @@ TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  auto* lazy =
-      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("lazy")));
+  auto* lazy = To<HTMLImageElement>(GetElementById("lazy"));
   EXPECT_FALSE(lazy->CachedImage()->IsLoading());
 
   // Scroll down such that the image is visible.

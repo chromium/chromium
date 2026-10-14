@@ -528,8 +528,7 @@ TEST_F(ExtensionScriptTrackerTest, ScriptInjectionPolicyLifecycle) {
 
   LocalFrame* frame = GetDocument().GetFrame();
   ASSERT_TRUE(frame);
-  auto* child_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  auto* child_element = To<HTMLIFrameElement>(GetElementById("child"));
   ASSERT_TRUE(child_element);
   LocalFrame* child_frame = To<LocalFrame>(child_element->ContentFrame());
   ASSERT_TRUE(child_frame);

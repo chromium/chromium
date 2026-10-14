@@ -79,9 +79,7 @@ class PointerLockControllerTest : public SimTest {
     return PointerLockController::kLockRateLimitWindow;
   }
 
-  Element* GetTargetElement() {
-    return GetDocument().getElementById(AtomicString("target"));
-  }
+  Element* GetTargetElement() { return GetElementById("target"); }
 
   // Simulates receiving a response from the browser process to a previous
   // pointer lock request.

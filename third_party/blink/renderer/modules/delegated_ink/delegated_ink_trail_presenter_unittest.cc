@@ -166,8 +166,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   }
 
   DelegatedInkTrailPresenter* presenter =
-      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
-                      GetDocument().GetFrame());
+      CreatePresenter(GetElementById("canvas"), GetDocument().GetFrame());
   DCHECK(presenter);
 
   InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
@@ -229,8 +228,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   }
 
   DelegatedInkTrailPresenter* presenter =
-      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
-                      GetDocument().GetFrame());
+      CreatePresenter(GetElementById("canvas"), GetDocument().GetFrame());
   DCHECK(presenter);
 
   InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
@@ -291,8 +289,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   GetDocument().GetPage()->SetPageScaleFactor(kScale);
 
   DelegatedInkTrailPresenter* presenter =
-      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
-                      GetDocument().GetFrame());
+      CreatePresenter(GetElementById("canvas"), GetDocument().GetFrame());
   DCHECK(presenter);
 
   InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
@@ -359,8 +356,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   WebView().SetVisualViewportOffset(gfx::PointF(kOffsetX, kOffsetY));
 
   DelegatedInkTrailPresenter* presenter =
-      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
-                      GetDocument().GetFrame());
+      CreatePresenter(GetElementById("canvas"), GetDocument().GetFrame());
   DCHECK(presenter);
 
   DummyExceptionStateForTesting exception_state;
@@ -428,8 +424,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasNotAtOrigin) {
   }
 
   DelegatedInkTrailPresenter* presenter =
-      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
-                      GetDocument().GetFrame());
+      CreatePresenter(GetElementById("canvas"), GetDocument().GetFrame());
   DCHECK(presenter);
 
   InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
@@ -522,8 +517,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasInIFrame) {
         GetViewportHeight() - (kIframeTopOffset + kCanvasTopOffset)));
   }
 
-  auto* iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  auto* iframe_element = To<HTMLIFrameElement>(GetElementById("iframe"));
   auto* iframe_localframe = To<LocalFrame>(iframe_element->ContentFrame());
   Document* iframe_document = iframe_element->contentDocument();
 
@@ -647,8 +641,8 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, NestedIframe) {
         GetViewportHeight() - (kInnerIframeTopOffset + kCanvasTopOffset)));
   }
 
-  auto* outer_iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("OuterIframe")));
+  auto* outer_iframe_element =
+      To<HTMLIFrameElement>(GetElementById("OuterIframe"));
   auto* inner_iframe_element = To<HTMLIFrameElement>(
       outer_iframe_element->contentDocument()->getElementById(
           AtomicString("InnerIframe")));
@@ -739,9 +733,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   }
 
   Document* iframe_document =
-      To<HTMLIFrameElement>(
-          GetDocument().getElementById(AtomicString("iframe")))
-          ->contentDocument();
+      To<HTMLIFrameElement>(GetElementById("iframe"))->contentDocument();
 
   DelegatedInkTrailPresenter* presenter =
       CreatePresenter(nullptr, iframe_document->GetFrame());
@@ -862,8 +854,7 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasExtendsOutsideOfIframe) {
   TestDelegatedInkMetadata expected_metadata(gfx::RectF(
       kIframeLeftOffset, kIframeTopOffset, kIframeWidth, kIframeHeight));
 
-  auto* iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  auto* iframe_element = To<HTMLIFrameElement>(GetElementById("iframe"));
   auto* iframe_localframe = To<LocalFrame>(iframe_element->ContentFrame());
   Document* iframe_document = iframe_element->contentDocument();
 
@@ -954,8 +945,7 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasLeftAndAboveIframeBoundaries) {
       kIframeLeftOffset, kIframeTopOffset, kCanvasWidth + kCanvasLeftOffset,
       kCanvasHeight + kCanvasTopOffset));
 
-  auto* iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  auto* iframe_element = To<HTMLIFrameElement>(GetElementById("iframe"));
   auto* iframe_localframe = To<LocalFrame>(iframe_element->ContentFrame());
   Document* iframe_document = iframe_element->contentDocument();
 
@@ -1074,8 +1064,8 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, OuterIframeClipsInnerIframe) {
                  kOuterIframeHeight + kOuterIframeTopOffset -
                      kInnerIframeTopOffset - kCanvasTopOffset));
 
-  auto* outer_iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("OuterIframe")));
+  auto* outer_iframe_element =
+      To<HTMLIFrameElement>(GetElementById("OuterIframe"));
   auto* inner_iframe_element = To<HTMLIFrameElement>(
       outer_iframe_element->contentDocument()->getElementById(
           AtomicString("InnerIframe")));

@@ -198,8 +198,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
   ASSERT_TRUE(img->GetLayoutObject());
@@ -268,8 +267,7 @@ TEST_F(ImageReplacementSimTest, OriginalImageIsEncodedCorrectly) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
   ASSERT_TRUE(img->GetLayoutObject());
@@ -347,8 +345,7 @@ TEST_F(ImageReplacementSimTest, OriginalImageRespectsOrientation) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
   ASSERT_TRUE(img->GetLayoutObject());
@@ -391,8 +388,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementSendsTrackedElementId) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->GetLayoutObject());
 
@@ -430,8 +426,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementDoesNotSendTrackedElementId) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->GetLayoutObject());
 
@@ -465,8 +460,7 @@ TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   gfx::Point center =
       img->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint();
@@ -522,8 +516,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRendering) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
@@ -585,8 +578,7 @@ TEST_F(ImageReplacementSimTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
@@ -642,8 +634,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementWaitsForLoadAndResumes) {
   )");
   // Image not loaded yet.
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
@@ -684,8 +675,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRemovedFromDocument) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
 
@@ -727,8 +717,7 @@ TEST_F(ImageReplacementSimTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
   img->remove();
@@ -748,8 +737,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementCreateWithEmptySrcFails) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
@@ -770,8 +758,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementMovedToNewDocument) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
 
@@ -789,8 +776,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementMovedToNewDocument) {
   EXPECT_TRUE(img->HasImageReplacement());
   EXPECT_TRUE(img->UserAgentShadowRoot()->HasChildren());
 
-  HTMLIFrameElement* iframe = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  HTMLIFrameElement* iframe = To<HTMLIFrameElement>(GetElementById("iframe"));
   ASSERT_TRUE(iframe);
   Document* new_document = iframe->contentDocument();
   ASSERT_TRUE(new_document);
@@ -829,8 +815,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementCreateWithFailedLoadFails) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->CachedImage()->ErrorOccurred());
 
@@ -850,8 +835,7 @@ TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
   )");
   // Image not loaded yet.
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
@@ -905,8 +889,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementResetAfterSrcChange) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
@@ -961,8 +944,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementSendsObjectFit) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->GetLayoutObject());
 
@@ -1005,8 +987,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementNotResetAfterSizeChange) {
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1077,8 +1058,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1149,8 +1129,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   // Perform initial layout and deliver ResizeObserver notifications to trigger
@@ -1227,8 +1206,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1294,8 +1272,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1361,8 +1338,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1408,8 +1384,8 @@ TEST_F(ImageReplacementSimTest,
 
   // Script updates img.src to baz.png, but also removes source1 so foo.png is
   // no longer in the picture's candidate set.
-  auto* picture = GetDocument().getElementById(AtomicString("picture"));
-  auto* source1 = GetDocument().getElementById(AtomicString("source1"));
+  auto* picture = GetElementById("picture");
+  auto* source1 = GetElementById("source1");
   picture->removeChild(source1);
   img->setAttribute(html_names::kSrcAttr, AtomicString("baz.png"));
   Compositor().BeginFrame();
@@ -1438,8 +1414,7 @@ TEST_F(ImageReplacementSimTest,
 
   Vector<char> gif_data = GetTransparentGifBytes();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   Compositor().BeginFrame();
@@ -1517,8 +1492,7 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPI) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_TRUE(img->complete());
 
@@ -1611,8 +1585,7 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIDisabled) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   v8::HandleScope handle_scope(Window().GetIsolate());
@@ -1658,8 +1631,7 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIElementRemoved) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
 
   v8::HandleScope handle_scope(Window().GetIsolate());
@@ -1708,8 +1680,7 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIWaitsForImageLoad) {
     <img src="foo.png" id="target">
   )");
 
-  HTMLImageElement* img = To<HTMLImageElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  HTMLImageElement* img = To<HTMLImageElement>(GetElementById("target"));
   ASSERT_TRUE(img);
   ASSERT_FALSE(img->complete());
 

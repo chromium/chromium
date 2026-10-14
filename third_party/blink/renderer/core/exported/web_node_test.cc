@@ -89,7 +89,7 @@ TEST_F(WebNodeSimTest, IsFocused) {
 
   css_resource.Start();
 
-  WebNode input_node(GetDocument().getElementById(AtomicString("focusable")));
+  WebNode input_node(GetElementById("focusable"));
   EXPECT_FALSE(input_node.IsFocusable());
   EXPECT_FALSE(GetDocument().HaveRenderBlockingStylesheetsLoaded());
 

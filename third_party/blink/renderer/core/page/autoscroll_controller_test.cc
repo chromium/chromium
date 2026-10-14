@@ -231,8 +231,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsNotPropagated) {
   EXPECT_FALSE(controller.IsAutoscrolling());
 
   LocalFrame* frame = GetDocument().GetFrame();
-  LayoutBox* scrollable =
-      GetDocument().getElementById(AtomicString("scrollable"))->GetLayoutBox();
+  LayoutBox* scrollable = GetElementById("scrollable")->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
       frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));
@@ -280,8 +279,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsPropagatedInYDirection) {
   EXPECT_FALSE(controller.IsAutoscrolling());
 
   LocalFrame* frame = GetDocument().GetFrame();
-  LayoutBox* scrollable =
-      GetDocument().getElementById(AtomicString("scrollable"))->GetLayoutBox();
+  LayoutBox* scrollable = GetElementById("scrollable")->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
       frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));
@@ -419,7 +417,7 @@ TEST_F(AutoscrollControllerTest, TextSelectionAutoScroll) {
   EXPECT_FALSE(controller.AutoscrollInProgress());
   EXPECT_FALSE(window_performance->IsAutoscrollActive());
 
-  WebElement element = GetDocument().getElementById(AtomicString("log"));
+  WebElement element = GetElementById("log");
   EXPECT_EQ("pointerdown scroll", element.InnerHTML().Utf8());
 
   const auto selection =

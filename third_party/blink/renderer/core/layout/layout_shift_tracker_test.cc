@@ -171,9 +171,8 @@ TEST_F(LayoutShiftTrackerSimTest, SubframeWeighting) {
   EXPECT_FLOAT_EQ(0.1 * (60.0 / 400.0), layout_shift_tracker.WeightedScore());
 
   // Move subframe halfway outside the viewport.
-  GetDocument()
-      .getElementById(AtomicString("i"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("left: 600px"));
+  GetElementById("i")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("left: 600px"));
 
   div->removeAttribute(html_names::kStyleAttr);
 

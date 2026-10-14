@@ -425,10 +425,10 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_Streaming) {
   LoadURL("https://example.com");
 
   main_resource.Write("<html><body><div id='a'></div>");
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("a")));
+  EXPECT_TRUE(GetElementById("a"));
 
   main_resource.Write("<div id='b'></div>");
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("b")));
+  EXPECT_TRUE(GetElementById("b"));
 
   main_resource.Write("</body></html>");
   main_resource.Finish();
@@ -448,14 +448,14 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_Buffered) {
   main_resource.Finish();
 
   // Chunks should be buffered, not processed yet.
-  EXPECT_FALSE(GetDocument().getElementById(AtomicString("a")));
-  EXPECT_FALSE(GetDocument().getElementById(AtomicString("b")));
+  EXPECT_FALSE(GetElementById("a"));
+  EXPECT_FALSE(GetElementById("b"));
 
   GetDocument().Loader()->ResumeParser();
 
   // All chunks should have been processed now.
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("a")));
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("b")));
+  EXPECT_TRUE(GetElementById("a"));
+  EXPECT_TRUE(GetElementById("b"));
 }
 
 // Test reentrancy into DocumentLoader during the initial `CommitData()` call.
@@ -472,7 +472,7 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_ReentrancyFromInitialCommit) {
 
   main_resource.Finish();
 
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("reentered")));
+  EXPECT_TRUE(GetElementById("reentered"));
 }
 
 // Test reentrancy into DocumentLoader from a `CommitData()` call while draining
@@ -507,8 +507,8 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_ReentrancyDuringIteration) {
   EXPECT_EQ(1, reenter_call_count_);
   main_resource.Finish();
 
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("chunk2")));
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("reentered")));
+  EXPECT_TRUE(GetElementById("chunk2"));
+  EXPECT_TRUE(GetElementById("reentered"));
 }
 
 TEST_F(DocumentLoaderSimTest, DocumentOpenUpdatesUrl) {

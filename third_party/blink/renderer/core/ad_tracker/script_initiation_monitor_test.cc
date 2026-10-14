@@ -143,8 +143,7 @@ TEST_F(ScriptInitiationMonitorSimTest, LocalRootScoping) {
     <body>Subframe</body>
   )HTML");
 
-  auto* child_element = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  auto* child_element = To<HTMLFrameOwnerElement>(GetElementById("child"));
   LocalFrame* child_frame = To<LocalFrame>(child_element->ContentFrame());
   ASSERT_NE(child_frame, nullptr);
 

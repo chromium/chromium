@@ -801,8 +801,7 @@ class ContentCaptureSimTest : public SimTest {
 
     static_cast<WebLocalFrame*>(MainFrame().FindFrameByName("frame"))
         ->SetContentCaptureClient(&child_client_);
-    auto* child_frame_element = To<HTMLIFrameElement>(
-        GetDocument().getElementById(AtomicString("frame")));
+    auto* child_frame_element = To<HTMLIFrameElement>(GetElementById("frame"));
     child_document_ = child_frame_element->contentDocument();
     child_document_->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     Compositor().BeginFrame();

@@ -307,8 +307,7 @@ TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {
   main_request.Complete(StrCat({"<a id='link' href='", kScheme,
                                 ":https://example.com/dest.html'>link</a>"}));
 
-  auto* anchor =
-      To<HTMLAnchorElement>(GetDocument().getElementById(AtomicString("link")));
+  auto* anchor = To<HTMLAnchorElement>(GetElementById("link"));
   ASSERT_NE(anchor, nullptr);
 
   anchor->click();
@@ -333,8 +332,7 @@ TEST_F(FrameLoaderSimTest, DirectLaunchSchemeTargetBlankBlocked) {
   main_request.Complete(StrCat({"<a id='link' target='_blank' href='", kScheme,
                                 "://https://example.com/dest.html'>link</a>"}));
 
-  auto* anchor =
-      To<HTMLAnchorElement>(GetDocument().getElementById(AtomicString("link")));
+  auto* anchor = To<HTMLAnchorElement>(GetElementById("link"));
   ASSERT_NE(anchor, nullptr);
 
   anchor->click();

@@ -147,7 +147,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById(AtomicString("box"));
+  Element* box = GetElementById("box");
   std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -206,7 +206,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById(AtomicString("box"));
+  Element* box = GetElementById("box");
   std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -255,7 +255,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById(AtomicString("box"));
+  Element* box = GetElementById("box");
   std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -320,7 +320,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById(AtomicString("inner"));
+  Element* box = GetElementById("inner");
   std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 

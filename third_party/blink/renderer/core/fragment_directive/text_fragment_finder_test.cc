@@ -111,7 +111,7 @@ TEST_F(TextFragmentFinderTest, DOMMutation) {
 
   {
     EXPECT_CALL(*client, NoMatchFound()).Times(1);
-    Node* input = GetDocument().getElementById(AtomicString("input"));
+    Node* input = GetElementById("input");
     input->remove();
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
@@ -158,8 +158,8 @@ TEST_F(TextFragmentFinderTest, TextMatchInRange) {
     </div>
   )HTML");
 
-  Element* const p1 = GetDocument().getElementById(AtomicString("p1"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p1 = GetElementById("p1");
+  Element* const p3 = GetElementById("p3");
 
   auto* new_range = MakeGarbageCollected<Range>(GetDocument(), Position(p1, 0),
                                                 Position(p3, 0));
@@ -198,8 +198,8 @@ TEST_F(TextFragmentFinderTest, TextEndMatchNotInRange) {
     </div>
   )HTML");
 
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p2 = GetElementById("p2");
+  Element* const p3 = GetElementById("p3");
 
   auto* new_range = MakeGarbageCollected<Range>(GetDocument(), Position(p2, 0),
                                                 Position(p3, 0));
@@ -284,8 +284,8 @@ TEST_F(TextFragmentFinderTest, TextMatchNotFoundBeforeRange) {
     </div>
   )HTML");
 
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p2 = GetElementById("p2");
+  Element* const p3 = GetElementById("p3");
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), Position(p2, 0),
                                             Position(p3, 0));
@@ -321,8 +321,8 @@ TEST_F(TextFragmentFinderTest, TextMatchNotFoundAfterRange) {
     </div>
   )HTML");
 
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p2 = GetElementById("p2");
+  Element* const p3 = GetElementById("p3");
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), Position(p2, 0),
                                             Position(p3, 0));
@@ -358,8 +358,8 @@ TEST_F(TextFragmentFinderTest, TextDidFindMatchInRange) {
     </div>
   )HTML");
 
-  Element* const p1 = GetDocument().getElementById(AtomicString("p1"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p1 = GetElementById("p1");
+  Element* const p3 = GetElementById("p3");
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), Position(p1, 0),
                                             Position(p3, 0));
@@ -398,8 +398,8 @@ TEST_F(TextFragmentFinderTest, TextMatchWithSuffixInRange) {
     </div>
   )HTML");
 
-  Element* const p1 = GetDocument().getElementById(AtomicString("p1"));
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
+  Element* const p1 = GetElementById("p1");
+  Element* const p2 = GetElementById("p2");
 
   auto* new_range = MakeGarbageCollected<Range>(GetDocument(), Position(p1, 0),
                                                 Position(p2, 0));
@@ -435,8 +435,8 @@ TEST_F(TextFragmentFinderTest, TextMatchWithPrefixNotInRange) {
     </div>
   )HTML");
 
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
-  Element* const p3 = GetDocument().getElementById(AtomicString("p3"));
+  Element* const p2 = GetElementById("p2");
+  Element* const p3 = GetElementById("p3");
 
   auto* new_range = MakeGarbageCollected<Range>(GetDocument(), Position(p2, 0),
                                                 Position(p3, 0));
@@ -473,8 +473,8 @@ TEST_F(TextFragmentFinderTest, TextMatchWithSuffixNotInRange) {
     </div>
   )HTML");
 
-  Element* const p1 = GetDocument().getElementById(AtomicString("p1"));
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
+  Element* const p1 = GetElementById("p1");
+  Element* const p2 = GetElementById("p2");
 
   auto* new_range = MakeGarbageCollected<Range>(GetDocument(), Position(p1, 0),
                                                 Position(p2, 0));
@@ -510,8 +510,8 @@ TEST_F(TextFragmentFinderTest, TextMatchPartialNodeNotInRange) {
     </div>
   )HTML");
 
-  Element* const p1 = GetDocument().getElementById(AtomicString("p1"));
-  Element* const p2 = GetDocument().getElementById(AtomicString("p2"));
+  Element* const p1 = GetElementById("p1");
+  Element* const p2 = GetElementById("p2");
 
   auto* new_range = MakeGarbageCollected<Range>(
       GetDocument(), Position(*p1->firstChild(), 6), Position(p2, 0));

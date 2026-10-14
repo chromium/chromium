@@ -74,7 +74,7 @@ TEST_F(ScrollIntoViewTest, InstantScroll) {
 
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   content->scrollIntoViewForTesting(
@@ -107,7 +107,7 @@ TEST_F(ScrollIntoViewTest, ScrollPaddingOnDocumentElWhenBodyDefinesViewport) {
 
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
@@ -137,7 +137,7 @@ TEST_F(ScrollIntoViewTest,
 
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
@@ -173,7 +173,7 @@ TEST_F(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
 
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
@@ -229,9 +229,9 @@ TEST_F(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
 
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->scrollIntoViewForTesting();
-  Element* scroller = GetDocument().getElementById(AtomicString("container"));
+  Element* scroller = GetElementById("container");
 
   ASSERT_EQ(scroller->scrollLeft(), 0);
 }
@@ -246,7 +246,7 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
       "<div id='space' style='height: 1000px'></div>"
       "<div id='content' style='height: 1000px'></div>");
 
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
@@ -281,8 +281,8 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* container = GetElementById("container");
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
@@ -324,12 +324,10 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
     </div>
   )HTML");
 
-  Element* container1 =
-      GetDocument().getElementById(AtomicString("container1"));
-  Element* container2 =
-      GetDocument().getElementById(AtomicString("container2"));
-  Element* content1 = GetDocument().getElementById(AtomicString("content1"));
-  Element* content2 = GetDocument().getElementById(AtomicString("content2"));
+  Element* container1 = GetElementById("container1");
+  Element* container2 = GetElementById("container2");
+  Element* content1 = GetElementById("content1");
+  Element* content2 = GetElementById("content2");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
@@ -381,10 +379,9 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* content = GetDocument().getElementById(AtomicString("content"));
-  Element* visibleElement =
-      GetDocument().getElementById(AtomicString("visibleElement"));
+  Element* container = GetElementById("container");
+  Element* content = GetElementById("content");
+  Element* visibleElement = GetElementById("visibleElement");
 
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
@@ -445,8 +442,8 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* container = GetElementById("container");
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
@@ -498,7 +495,7 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   int window_height = 600;
   int window_width = 800;
 
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   ASSERT_EQ(Window().scrollY(), 0);
 
@@ -559,10 +556,9 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* inner_container =
-      GetDocument().getElementById(AtomicString("inner_container"));
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* container = GetElementById("container");
+  Element* inner_container = GetElementById("inner_container");
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
@@ -609,8 +605,8 @@ TEST_F(ScrollIntoViewTest, SmoothScrollAnchor) {
     </div>
   )HTML");
 
-  Element* content = GetDocument().getElementById(AtomicString("content"));
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* content = GetElementById("content");
+  Element* container = GetElementById("container");
   ASSERT_EQ(container->scrollTop(), 0);
 
   // Scrolling the container
@@ -637,7 +633,7 @@ TEST_F(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
       <div style='height: 500px'>hello</div>
     </div>
   )HTML");
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   Compositor().BeginFrame();
   ASSERT_EQ(container->scrollTop(), 0);
   const int kFindIdentifier = 12345;
@@ -659,7 +655,7 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
       "<div id='space' style='height: 1000px'></div>"
       "<div id='content' style='height: 1000px'></div></html>");
 
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* content = GetElementById("content");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
@@ -726,8 +722,8 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
 
   Compositor().BeginFrame();
 
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* root = GetElementById("root");
+  Element* inner = GetElementById("inner");
 
   // Make sure the root scroller is set since that's what we're trying to test
   // here.
@@ -737,7 +733,7 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
     ASSERT_EQ(root, rs_controller.GlobalRootScroller());
   }
 
-  Element* editable = GetDocument().getElementById(AtomicString("target"));
+  Element* editable = GetElementById("target");
 
   // Ensure the input is focused, as it normally would be when ScrollIntoView
   // is invoked with this param.
@@ -824,14 +820,14 @@ TEST_F(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
 
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->scrollIntoViewForTesting();
 
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
 
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* inner = GetElementById("inner");
+  Element* outer = GetElementById("outer");
   outer->removeChild(inner);
 
   // Make sure that we don't try to animate the removed scroller.
@@ -852,7 +848,7 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   ASSERT_EQ(Window().scrollY(), 0);
 
   // A smooth UserScroll.
-  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* content = GetElementById("content");
   scroll_into_view_util::ScrollRectToVisible(
       *content->GetLayoutObject(), content->BoundingBoxForScrollIntoView(),
       scroll_into_view_util::CreateScrollIntoViewParams(
@@ -888,7 +884,7 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
@@ -959,10 +955,8 @@ TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
   local_child.Complete(child_html);
   xorigin_child.Complete(child_html);
 
-  Element* local_child_frame =
-      GetDocument().getElementById(AtomicString("localChildFrame"));
-  Element* xorigin_child_frame =
-      GetDocument().getElementById(AtomicString("xoriginChildFrame"));
+  Element* local_child_frame = GetElementById("localChildFrame");
+  Element* xorigin_child_frame = GetElementById("xoriginChildFrame");
   Document* local_child_document =
       To<HTMLIFrameElement>(local_child_frame)->contentDocument();
   Document* xorigin_child_document =
@@ -1051,8 +1045,7 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  Element* child_frame =
-      GetDocument().getElementById(AtomicString("childFrame"));
+  Element* child_frame = GetElementById("childFrame");
   ASSERT_TRUE(child_frame);
   Document* child_document =
       To<HTMLIFrameElement>(child_frame)->contentDocument();

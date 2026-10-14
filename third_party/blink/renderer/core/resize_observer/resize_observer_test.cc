@@ -75,8 +75,8 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMContentBoxAndSVG) {
   ResizeObserver::Delegate* delegate =
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
   ResizeObserver* observer = ResizeObserver::Create(&Window(), delegate);
-  Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
-  Element* svg_target = GetDocument().getElementById(AtomicString("svgTarget"));
+  Element* dom_target = GetElementById("domTarget");
+  Element* svg_target = GetElementById("svgTarget");
   ResizeObservation* dom_observation = MakeGarbageCollected<ResizeObservation>(
       dom_target, observer, ResizeObserverBoxOptions::kContentBox);
   ResizeObservation* svg_observation = MakeGarbageCollected<ResizeObservation>(
@@ -120,8 +120,7 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMBorderBox) {
   ResizeObserver::Delegate* delegate =
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
   ResizeObserver* observer = ResizeObserver::Create(&Window(), delegate);
-  Element* dom_border_target =
-      GetDocument().getElementById(AtomicString("domBorderTarget"));
+  Element* dom_border_target = GetElementById("domBorderTarget");
   auto* dom_border_observation = MakeGarbageCollected<ResizeObservation>(
       dom_border_target, observer, ResizeObserverBoxOptions::kBorderBox);
 
@@ -155,9 +154,8 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMDevicePixelContentBox) {
   ResizeObserver::Delegate* delegate =
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
   ResizeObserver* observer = ResizeObserver::Create(&Window(), delegate);
-  Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
-  Element* dom_dp_target =
-      GetDocument().getElementById(AtomicString("domDPTarget"));
+  Element* dom_target = GetElementById("domTarget");
+  Element* dom_dp_target = GetElementById("domDPTarget");
 
   auto* dom_dp_nested_observation = MakeGarbageCollected<ResizeObservation>(
       dom_dp_target, observer,
@@ -205,7 +203,7 @@ TEST_F(ResizeObserverUnitTest, TestBoxOverwrite) {
   ResizeObserver::Delegate* delegate =
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
   ResizeObserver* observer = ResizeObserver::Create(&Window(), delegate);
-  Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
+  Element* dom_target = GetElementById("domTarget");
 
   // Assert no observations (depth returned is kDepthBottom)
   size_t min_observed_depth = ResizeObserverController::kDepthBottom;
@@ -233,7 +231,7 @@ TEST_F(ResizeObserverUnitTest, TestNonBoxTarget) {
   ResizeObserverOptions* border_box_option = ResizeObserverOptions::Create();
   border_box_option->setBox(V8ResizeObserverBoxOptions::Enum::kBorderBox);
 
-  Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
+  Element* dom_target = GetElementById("domTarget");
 
   auto* entry = MakeGarbageCollected<ResizeObserverEntry>(dom_target);
 

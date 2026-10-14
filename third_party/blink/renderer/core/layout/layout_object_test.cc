@@ -1255,7 +1255,7 @@ TEST_F(LayoutObjectSimTest, TouchActionUpdatesSubframeEventHandler) {
   Document* iframe_doc = frame_owner_element->contentDocument();
   Element* inner = iframe_doc->getElementById(AtomicString("inner"));
   Element* iframe_doc_element = iframe_doc->documentElement();
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
 
   EventHandlerRegistry& registry =
       iframe_doc->GetFrame()->GetEventHandlerRegistry();
@@ -1315,7 +1315,7 @@ TEST_F(LayoutObjectSimTest, HitTestForOcclusionInIframe) {
   HitTestResult result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), target);
 
-  Element* occluder = GetDocument().getElementById(AtomicString("occluder"));
+  Element* occluder = GetElementById("occluder");
   occluder->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-150px");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   result = HitTestForOcclusion(*target);
@@ -1342,7 +1342,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImage) {
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* target_object = target->GetLayoutObject();
   auto* image_resource_content = target_object->FirstLineStyleRef()
                                      .BackgroundLayers()
@@ -1358,19 +1358,13 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImage) {
   // invalidate it.
   EXPECT_TRUE(target_object->ShouldDoFullPaintInvalidation());
 
-  auto* first_line1 = GetDocument()
-                          .getElementById(AtomicString("first-line1"))
-                          ->GetLayoutObject();
+  auto* first_line1 = GetElementById("first-line1")->GetLayoutObject();
   EXPECT_TRUE(first_line1->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(first_line1->SlowFirstChild()->ShouldDoFullPaintInvalidation());
-  auto* first_line2 = GetDocument()
-                          .getElementById(AtomicString("first-line2"))
-                          ->GetLayoutObject();
+  auto* first_line2 = GetElementById("first-line2")->GetLayoutObject();
   EXPECT_TRUE(first_line2->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(first_line2->SlowFirstChild()->ShouldDoFullPaintInvalidation());
-  auto* second_line = GetDocument()
-                          .getElementById(AtomicString("second-line"))
-                          ->GetLayoutObject();
+  auto* second_line = GetElementById("second-line")->GetLayoutObject();
   EXPECT_FALSE(second_line->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(second_line->SlowFirstChild()->ShouldDoFullPaintInvalidation());
 
@@ -1456,16 +1450,14 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImageDirtyStyleCrash) {
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  CSSStyleSheet* sheet =
-      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
-          ->sheet();
+  CSSStyleSheet* sheet = To<HTMLStyleElement>(GetElementById("style"))->sheet();
   {
     // "Mutate" the rules to clear the StyleSheetContents RuleSet member.
     CSSStyleSheet::RuleMutationScope scope(sheet);
   }
   EXPECT_FALSE(sheet->Contents()->HasRuleSet());
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* target_object = target->GetLayoutObject();
   auto* image_resource_content = target_object->FirstLineStyleRef()
                                      .BackgroundLayers()

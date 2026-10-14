@@ -558,8 +558,8 @@ class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
 
   void TestScrollContainerHitTest(gfx::PointF box1_target_offset,
                                   gfx::PointF box2_target_offset) {
-    Element* box1 = GetDocument().getElementById(AtomicString("box1"));
-    Element* box2 = GetDocument().getElementById(AtomicString("box2"));
+    Element* box1 = GetElementById("box1");
+    Element* box2 = GetElementById("box2");
 
     const cc::ElementId box1_dom_node_id =
         box1->GetLayoutBox()->GetScrollableArea()->GetScrollElementId();
@@ -829,8 +829,7 @@ TEST_F(WebFrameWidgetImplSimTest, TestStartStylusWritingForInputElement) {
       </body>
       )HTML");
   Compositor().BeginFrame();
-  Element* first =
-      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
+  Element* first = DynamicTo<Element>(GetElementById("first"));
   WebPointerEvent event(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
@@ -858,8 +857,7 @@ TEST_F(WebFrameWidgetImplSimTest,
       </body>
       )HTML");
   Compositor().BeginFrame();
-  Element* first =
-      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
+  Element* first = DynamicTo<Element>(GetElementById("first"));
   WebPointerEvent event(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
@@ -889,10 +887,8 @@ TEST_F(WebFrameWidgetImplSimTest,
       </body>
       )HTML");
   Compositor().BeginFrame();
-  Element* first =
-      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
-  Element* second =
-      DynamicTo<Element>(GetDocument().getElementById(AtomicString("second")));
+  Element* first = DynamicTo<Element>(GetElementById("first"));
+  Element* second = DynamicTo<Element>(GetElementById("second"));
   WebPointerEvent event(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
@@ -1299,10 +1295,6 @@ class WebFrameWidgetProximateBoundsCollectionSimTestBase
         blink::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
                             OnStartStylusWritingComplete,
                         weak_factory_.GetWeakPtr()));
-  }
-
-  Element* GetElementById(const char* id) {
-    return GetDocument().getElementById(AtomicString(id));
   }
 
   const mojom::blink::ProximateCharacterRangeBounds* GetLastProximateBounds()
@@ -2048,10 +2040,10 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLInputElement* first = DynamicTo<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("first")));
-  HTMLInputElement* second = DynamicTo<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("second")));
+  HTMLInputElement* first =
+      DynamicTo<HTMLInputElement>(GetElementById("first"));
+  HTMLInputElement* second =
+      DynamicTo<HTMLInputElement>(GetElementById("second"));
   // Focus the first element and check the line bounds.
   first->SetValue("ABCD");
   first->Focus();
@@ -2112,7 +2104,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectForContenteditable) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  Element* first = GetDocument().getElementById(AtomicString("first"));
+  Element* first = GetElementById("first");
   first->Focus();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
@@ -2272,8 +2264,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLInputElement* first = DynamicTo<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("first")));
+  HTMLInputElement* first =
+      DynamicTo<HTMLInputElement>(GetElementById("first"));
   // Focus the element and check the line bounds.
   first->Focus();
   first->SetValue("hello world");
@@ -2285,9 +2277,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
     i.Offset(0, 200);
   }
 
-  GetDocument()
-      .getElementById(AtomicString("d"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
+  GetElementById("d")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("height: 200px"));
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   Vector<gfx::Rect> actual =
       widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
@@ -2336,8 +2327,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("first")));
+  HTMLTextAreaElement* first =
+      DynamicTo<HTMLTextAreaElement>(GetElementById("first"));
   // Focus the element and check the line bounds.
   first->Focus();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
@@ -2408,8 +2399,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("first")));
+  HTMLTextAreaElement* first =
+      DynamicTo<HTMLTextAreaElement>(GetElementById("first"));
   // Focus the element and check the line bounds.
   first->Focus();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
@@ -2472,8 +2463,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("first")));
+  HTMLTextAreaElement* first =
+      DynamicTo<HTMLTextAreaElement>(GetElementById("first"));
   // Focus the element and check the line bounds.
   first->Focus();
   gfx::Point origin =
@@ -2538,8 +2529,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   font_resource.Complete(
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
-  HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("first")));
+  HTMLTextAreaElement* first =
+      DynamicTo<HTMLTextAreaElement>(GetElementById("first"));
 
   first->Focus();
   first->SetValue("hello world\rgoodbye world");

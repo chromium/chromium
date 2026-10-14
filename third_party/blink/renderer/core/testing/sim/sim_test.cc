@@ -159,11 +159,11 @@ SimPage& SimTest::GetPage() {
   return *page_;
 }
 
-Document& SimTest::GetDocument() {
+Document& SimTest::GetDocument() const {
   return *WebView().MainFrameImpl()->GetFrame()->GetDocument();
 }
 
-WebViewImpl& SimTest::WebView() {
+WebViewImpl& SimTest::WebView() const {
   return *web_view_helper_->GetWebView();
 }
 
@@ -190,6 +190,10 @@ SimCompositor& SimTest::Compositor() {
 
 frame_test_helpers::WebViewHelper& SimTest::WebViewHelper() {
   return *web_view_helper_;
+}
+
+Element* SimTest::GetElementById(const char* id) const {
+  return GetDocument().getElementById(AtomicString(id));
 }
 
 Vector<String>& SimTest::ConsoleMessages() {

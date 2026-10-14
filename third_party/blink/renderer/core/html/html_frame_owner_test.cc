@@ -51,9 +51,8 @@ TEST_P(HTMLFrameOwnerTest, InsertWithContentFrameCrashes) {
   child.Complete("<!doctype html>child");
   test::RunPendingTasks();
 
-  auto* container = GetDocument().getElementById(AtomicString("container"));
-  auto* el = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("el")));
+  auto* container = GetElementById("container");
+  auto* el = To<HTMLFrameOwnerElement>(GetElementById("el"));
 
   ASSERT_TRUE(el && el->ContentFrame());
 

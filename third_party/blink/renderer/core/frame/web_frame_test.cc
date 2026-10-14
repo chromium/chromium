@@ -12838,8 +12838,7 @@ TEST_F(WebFrameSimTest, HitTestWithIgnoreClippingAtNegativeOffset) {
   HitTestResult result(request, location);
   frame_view->GetLayoutView()->HitTest(location, result);
 
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("top")),
-            result.InnerNode());
+  EXPECT_EQ(GetElementById("top"), result.InnerNode());
 }
 
 TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
@@ -12927,8 +12926,8 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   auto* local_frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
   auto* frame_view = local_frame->View();
 
-  Element* box1 = GetDocument().getElementById(AtomicString("box1"));
-  Element* box2 = GetDocument().getElementById(AtomicString("box2"));
+  Element* box1 = GetElementById("box1");
+  Element* box2 = GetElementById("box2");
 
   gfx::Rect box1_rect = box1->GetLayoutObject()->AbsoluteBoundingBoxRect();
   gfx::Rect box2_rect = box2->GetLayoutObject()->AbsoluteBoundingBoxRect();
@@ -12991,7 +12990,7 @@ TEST_F(WebFrameSimTest, TallBlockRectFindTest) {
   auto* local_frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
   auto* frame_view = local_frame->View();
 
-  Element* target = GetDocument().getElementById(AtomicString("textnode"));
+  Element* target = GetElementById("textnode");
   gfx::Rect span_rect = target->GetLayoutObject()->AbsoluteBoundingBoxRect();
   WebView().ZoomToFindInPageRect(span_rect);
 
@@ -13145,7 +13144,7 @@ TEST_F(WebFrameSimTest, TestFocusPreventScrollNotScrollElementIntoView) {
   Compositor().BeginFrame();
 
   ScrollableArea* area = GetDocument().View()->LayoutViewport();
-  Element* input = GetDocument().getElementById(AtomicString("target"));
+  Element* input = GetElementById("target");
   gfx::Rect input_rect(0, 1000, 100, 20);
 
   // Focus the element with `preventScroll: true` to ensure it does not scroll
@@ -13342,7 +13341,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   TopDocumentRootScrollerController& rs_controller =
       GetDocument().GetPage()->GlobalRootScrollerController();
 
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* scroller = GetElementById("scroller");
   ASSERT_EQ(scroller, rs_controller.GlobalRootScroller());
 
   auto* frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
@@ -13458,7 +13457,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
       ->FrameWidget()
       ->ScrollFocusedEditableElementIntoView();
 
-  Element* input = GetDocument().getElementById(AtomicString("target"));
+  Element* input = GetElementById("target");
   gfx::Rect input_rect(input->GetBoundingClientRect()->top(),
                        input->GetBoundingClientRect()->left(),
                        input->GetBoundingClientRect()->width(),
@@ -13481,7 +13480,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
 
   // Additional gut-check that we actually scrolled the non-user-scrollable
   // clip element to make sure the input is in view.
-  Element* clip = GetDocument().getElementById(AtomicString("clip"));
+  Element* clip = GetElementById("clip");
   EXPECT_GT(clip->scrollTop(), 0);
 }
 
@@ -13518,8 +13517,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedSelectionIntoView) {
   Compositor().BeginFrame();
   WebView().AdvanceFocus(false);
 
-  auto* input = To<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* input = To<HTMLInputElement>(GetElementById("target"));
   input->select();
 
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
@@ -13675,7 +13673,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
 
   Compositor().BeginFrame();
 
-  Element* input = GetDocument().getElementById(AtomicString("target"));
+  Element* input = GetElementById("target");
   input->Focus();
 
   ScrollableArea* area = GetDocument().View()->LayoutViewport();
