@@ -124,7 +124,8 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 TEST_F(FontCacheTest, FallbackForArabicNastaliq) {
   ScopedNastaliqScriptForTest scoped_feature(true);
   FontCache& font_cache = FontCache::Get();
@@ -162,7 +163,8 @@ TEST_F(FontCacheTest, FallbackForArabicNastaliq) {
   ASSERT_TRUE(ar_font_data);
   EXPECT_NE(nastaliq_family, ar_font_data->PlatformData().FontFamilyName());
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 TEST_F(FontCacheTest, firstAvailableOrFirst) {
   EXPECT_TRUE(FontCache::FirstAvailableOrFirst("").empty());

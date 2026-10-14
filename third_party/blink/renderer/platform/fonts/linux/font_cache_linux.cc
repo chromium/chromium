@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "ui/gfx/font_fallback_linux.h"
 
 namespace blink {
@@ -84,6 +86,23 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
         FallbackOnStandardFontStyle(font_description, c);
     if (font_data)
       return font_data;
+  }
+
+  // Many Linux distributions' fontconfig rules (e.g., 65-nonlatin.conf) only
+  // list legacy fonts for Urdu ("ur") and do not yet include "Noto Nastaliq
+  // Urdu". Prefer "Noto Nastaliq Urdu" when the locale script is
+  // USCRIPT_ARABIC_NASTALIQ and the character is in the Arabic script.
+  if (font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
+      Character::GetScriptBasedOnUnicodeBlock(c) == USCRIPT_ARABIC &&
+      RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, kNotoNastaliqUrdu,
+                                    ("Noto Nastaliq Urdu"));
+    if (const SimpleFontData* nastaliq =
+            GetFontData(font_description, kNotoNastaliqUrdu)) {
+      if (nastaliq->GlyphForCharacter(c)) {
+        return nastaliq;
+      }
+    }
   }
 
   gfx::FallbackFontData fallback_font;
