@@ -72,18 +72,6 @@ void OnPdfPipeDisconnected(scoped_refptr<PdfExtractionState> state) {
       FROM_HERE, base::BindOnce(std::move(state->callback), std::nullopt));
 }
 
-void RecordPdfRequestState(bool is_top_level_pdf, bool pdf_found) {
-  PdfRequestStates state;
-  if (is_top_level_pdf) {
-    state = pdf_found ? PdfRequestStates::kPdfMainDoc_PdfFound
-                      : PdfRequestStates::kPdfMainDoc_PdfNotFound;
-  } else {
-    state = pdf_found ? PdfRequestStates::kNonPdfMainDoc_PdfFound
-                      : PdfRequestStates::kNonPdfMainDoc_PdfNotFound;
-  }
-  base::UmaHistogramEnumeration(kPdfContentsRequestedHistogram, state);
-}
-
 // Truncate the UTF-8 string to the nearest UTF-8 character that will leave the
 // string size less than or equal to the byte limit. Returns true if the text
 // was truncated.
@@ -169,20 +157,6 @@ void OnReceivedPdfBytes(scoped_refptr<PdfExtractionState> state,
     return;
   }
 
-  // The sample is recorded in milliseconds.
-  base::UmaHistogramTimes(is_top_level_pdf ? kPdfBytesTopLevelLatencyHistogram
-                                           : kPdfBytesEmbeddedLatencyHistogram,
-                          elapsed_timer.Elapsed());
-
-  // The sample is recorded in KB. Bytes extraction size is capped at 64MB by
-  // default.
-  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
-    base::UmaHistogramCounts100000(is_top_level_pdf
-                                       ? kPdfBytesTopLevelSizeHistogram
-                                       : kPdfBytesEmbeddedSizeHistogram,
-                                   pdf_bytes.size() / 1024);
-  }
-
   // Warning!: `pdf_bytes_` can be larger than pdf_size_limit.
   // `pdf_size_limit` applies to the original PDF size, but the PDF is
   // re-serialized and returned, so it is not identical to the original.
@@ -191,10 +165,12 @@ void OnReceivedPdfBytes(scoped_refptr<PdfExtractionState> state,
           pdf::mojom::PdfListener::GetPdfBytesStatus::kSizeLimitExceeded ||
       pdf_bytes.size() > pdf_size_limit;
 
-  base::UmaHistogramBoolean(is_top_level_pdf
-                                ? kPdfBytesTopLevelSizeLimitExceededHistogram
-                                : kPdfBytesEmbeddedSizeLimitExceededHistogram,
-                            size_limit_exceeded);
+  RecordPdfBytesExtraction(
+      is_top_level_pdf, elapsed_timer.Elapsed(),
+      status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess
+          ? std::optional<size_t>(pdf_bytes.size())
+          : std::nullopt,
+      size_limit_exceeded);
 
   if (size_limit_exceeded) {
     std::move(callback).Run(PdfResult(std::move(pdf_origin)));
@@ -294,8 +270,8 @@ void FetchPdfContentForWebContents(content::WebContents& web_contents,
 
   if (options.format() == PdfOptions::Format::kBytes) {
     // This metric is specific to Glic, which requests PDF bytes only.
-    RecordPdfRequestState(is_top_level_pdf,
-                          /*pdf_found=*/pdf_helper != nullptr);
+    RecordPdfContentsRequested(is_top_level_pdf,
+                               /*pdf_found=*/pdf_helper != nullptr);
   }
 
   // When document load is not complete:

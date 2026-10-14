@@ -2614,8 +2614,9 @@ chromium-metrics-reviews@google.com.
     Records the size (KB) of the extraction result of the {PdfExtractionType} of
     {PdfType}. Note for PDF text extraction, this is the byte size of the UTF-16
     string returned by PDFium. It is recorded immediately after the extraction
-    result is returned by PDFium, without any processing. Recorded once per
-    successful {PdfExtractionType}.
+    result is returned by PDFium, without any processing. On Android, where PDF
+    bytes are read from the PDF file instead of PDFium, this is the size of the
+    file. Recorded once per successful {PdfExtractionType}.
   </summary>
   <token key="PdfExtractionType" variants="PdfExtractionType"/>
   <token key="PdfType" variants="PdfType"/>
@@ -3473,7 +3474,9 @@ chromium-metrics-reviews@google.com.
     Recorded whenever the glic web client requests to obtain PDF contents from
     the focused tab. Records an enum sample that answers a) is the main document
     a PDF (based on its MIME type) and b) were PDF contents actually found
-    within the web page (only if Chrome's PDF plugin is actually active).
+    within the web page (only if Chrome's PDF plugin is actually active). On
+    Android, the main document is a PDF if the tab shows the native PDF page,
+    and PDF contents are found if the PDF page is backed by a file.
   </summary>
 </histogram>
 

@@ -8,13 +8,16 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/android/tab_android.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
@@ -56,6 +59,30 @@ std::optional<PdfResult> ReadPdfFileOnBackgroundThread(
   return PdfResult(std::move(origin), std::move(*bytes));
 }
 
+// Records the same metrics as top-level PDF bytes extraction on other
+// platforms, since PDFs on Android are always top-level documents.
+void OnPdfFileRead(base::ElapsedTimer elapsed_timer,
+                   FetchPdfContentResultCallback callback,
+                   std::optional<PdfResult> result) {
+  // The callback is cancelled if PDF extraction has already timed out. Do not
+  // record metrics in that case.
+  if (!callback || callback.IsCancelled()) {
+    return;
+  }
+  // Like other platforms, only record metrics for completed extractions, not
+  // for failures to read the file.
+  if (result.has_value()) {
+    RecordPdfBytesExtraction(
+        /*is_top_level_pdf=*/true, elapsed_timer.Elapsed(),
+        result->size_exceeded
+            ? std::nullopt
+            : std::optional<size_t>(
+                  std::get<std::vector<uint8_t>>(result->data).size()),
+        result->size_exceeded);
+  }
+  std::move(callback).Run(std::move(result));
+}
+
 }  // namespace
 
 void FetchPdfContentForWebContentsAndroid(
@@ -67,9 +94,12 @@ void FetchPdfContentForWebContentsAndroid(
     // Incognito PDFs are backed by an in-memory file (a `/proc/` path to a
     // memfd), which may not be readable reliably. Glic does not run in
     // incognito, so do not support it.
-    if (tab_android && !tab_android->IsIncognito() && tab_android->IsPdf()) {
-      std::string filepath = tab_android->GetCanonicalFilepath();
-      if (!filepath.empty()) {
+    if (tab_android && !tab_android->IsIncognito()) {
+      const bool is_pdf = tab_android->IsPdf();
+      std::string filepath =
+          is_pdf ? tab_android->GetCanonicalFilepath() : std::string();
+      RecordPdfContentsRequested(is_pdf, /*pdf_found=*/!filepath.empty());
+      if (is_pdf && !filepath.empty()) {
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
             // `GetLastCommittedURL()` returns the virtual URL, which is the
@@ -80,7 +110,8 @@ void FetchPdfContentForWebContentsAndroid(
                 &ReadPdfFileOnBackgroundThread, std::move(filepath),
                 options.size_limit(),
                 url::Origin::Create(web_contents.GetLastCommittedURL())),
-            std::move(callback));
+            base::BindOnce(&OnPdfFileRead, base::ElapsedTimer(),
+                           std::move(callback)));
         return;
       }
     }

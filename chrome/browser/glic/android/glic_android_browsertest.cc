@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/escape.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/android/tab_android.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -93,8 +95,22 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
 
   // 3. Trigger TypeScript test method via GlicApiBrowserTest helper. The test
   // verifies that the fetched PDF bytes match the content of the PDF file.
+  base::HistogramTester histogram_tester;
   ExecuteJsTest({.params = base::Value(kPdfContent)});
   tab_android->SetPdfNativePageForTesting("", "");
+
+  // 4. Verify that the PDF fetch metrics are recorded once, for the single
+  // fetch requested by the TypeScript test.
+  histogram_tester.ExpectUniqueSample(
+      page_content_annotations::kPdfBytesTopLevelSizeLimitExceededHistogram,
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      page_content_annotations::kPdfBytesTopLevelLatencyHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
+      page_content_annotations::kPdfBytesTopLevelSizeHistogram, 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      page_content_annotations::kPdfContentsRequestedHistogram,
+      page_content_annotations::PdfRequestStates::kPdfMainDoc_PdfFound, 1);
 }
 
 // Tests that Mojo pipe stays resilient when device screen orientation changes.

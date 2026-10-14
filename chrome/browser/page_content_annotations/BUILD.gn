@@ -119,6 +119,7 @@ source_set("fetcher") {
     ]
     deps += [
       "//chrome/browser/android:tabs_public",
+      "//components/page_content_annotations/content:metrics",
       "//net",
       "//url",
     ]

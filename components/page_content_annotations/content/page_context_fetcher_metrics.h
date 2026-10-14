@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTEXT_FETCHER_METRICS_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTEXT_FETCHER_METRICS_H_
 
+#include <cstddef>
+#include <optional>
+
+#include "base/time/time.h"
+
 namespace page_content_annotations {
 
 // TODO(b/562182406): Once embedded PDF text extraction is supported, create
@@ -107,6 +112,18 @@ enum class ScreenshotCaptureStatus {
 
 void RecordPdfTextExtractionStatus(PdfTextExtractionStatus status);
 void RecordScreenshotCaptureStatus(ScreenshotCaptureStatus status);
+
+// Records `kPdfContentsRequestedHistogram` for a Glic PDF bytes request.
+// `is_pdf_main_doc` is whether the main document is a PDF, and `pdf_found` is
+// whether PDF contents were found.
+void RecordPdfContentsRequested(bool is_pdf_main_doc, bool pdf_found);
+
+// Records the PDF bytes extraction histograms for a completed extraction.
+// `pdf_size_bytes` is recorded only if set.
+void RecordPdfBytesExtraction(bool is_top_level_pdf,
+                              base::TimeDelta latency,
+                              std::optional<size_t> pdf_size_bytes,
+                              bool size_limit_exceeded);
 
 }  // namespace page_content_annotations
 

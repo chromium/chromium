@@ -1184,6 +1184,7 @@ source_set("browser_tests") {
       "//chrome/test:test_support_ui_android",
       "//chrome/test/data/webui/glic:generate_test_files",
       "//components/messages/android:test_support",
+      "//components/page_content_annotations/content:metrics",
     ]
   }
 
