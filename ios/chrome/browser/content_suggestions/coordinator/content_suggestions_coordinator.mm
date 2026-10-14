@@ -885,7 +885,6 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card {
-  UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, card);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeCardRegistryForProfile(self.profile);

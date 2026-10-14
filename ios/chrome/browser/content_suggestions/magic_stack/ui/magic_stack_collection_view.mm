@@ -464,6 +464,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       [self.diffableDataSource.snapshot itemIdentifiers];
   if ([items count] > page && !_hasSeenEphemeralCard &&
       [self isCardEphemeral:items[page]]) {
+    _hasSeenEphemeralCard = YES;
     [self.audience logEphemeralCardVisibility:items[page].type];
   }
 }

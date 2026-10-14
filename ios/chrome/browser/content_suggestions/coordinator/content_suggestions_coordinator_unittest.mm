@@ -53,6 +53,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 @interface ContentSuggestionsCoordinator (Testing) <
     MagicStackModuleContainerDelegate>
 - (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card;
+- (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)moduleType;
 @end
 
 // Testing Suite for ContentSuggestionsCoordinator
@@ -111,10 +112,17 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
   ContentSuggestionsCoordinator* coordinator_;
 };
 
-// Tests that calling -logEphemeralCardVisibility: updates the correct counter.
+// Tests that calling -logEphemeralCardVisibility: updates the correct counter
+// without duplicating the top module impression histogram.
 TEST_F(ContentSuggestionsCoordinatorTest, TestLogEphemeralCardVisibility) {
+  base::HistogramTester histogram_tester;
+  [coordinator_ logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                                  kPriceTrackingPromo];
   [coordinator_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                kPriceTrackingPromo];
   EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
                    "ephemeral_pref_counter.price_tracking_promo_counter"));
+  histogram_tester.ExpectUniqueSample(
+      "IOS.MagicStack.Module.TopImpression",
+      ContentSuggestionsModuleType::kPriceTrackingPromo, 1);
 }

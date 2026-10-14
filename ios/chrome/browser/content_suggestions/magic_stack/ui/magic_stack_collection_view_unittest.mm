@@ -100,6 +100,11 @@ TEST_F(MagicStackCollectionViewControllerTest,
   // Test that scrolling to card triggers audience signal.
   [view_controller_ logNavigationToPage:1];
   EXPECT_OCMOCK_VERIFY((id)audience_);
+
+  // Test that scrolling to the ephemeral card again does not trigger the
+  // audience signal more than once.
+  [view_controller_ logNavigationToPage:1];
+  EXPECT_OCMOCK_VERIFY((id)audience_);
 }
 
 // Tests that MagicStackTargetPage computes the correct page with clamping and
