@@ -33,7 +33,8 @@ void ElementSMILAnimations::RemoveAnimation(const QualifiedName& attribute,
 
 bool ElementSMILAnimations::Apply(SMILTime elapsed) {
   bool did_apply = false;
-  for (SMILAnimationSandwich* sandwich : sandwiches_.Values()) {
+  HeapVector<Member<SMILAnimationSandwich>> sandwiches(sandwiches_.Values());
+  for (SMILAnimationSandwich* sandwich : sandwiches) {
     sandwich->UpdateActiveAnimationStack(elapsed);
     if (sandwich->ApplyAnimationValues())
       did_apply = true;
