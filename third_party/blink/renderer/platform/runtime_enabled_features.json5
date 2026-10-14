@@ -1367,9 +1367,6 @@
       status: "stable",
     },
     {
-      name: "CompositeBoxShadowAnimation",
-    },
-    {
       name: "CompositeClipPathAnimation",
       status: "stable",
       public: true,

@@ -22,7 +22,6 @@ class CORE_EXPORT PaintWorkletInput : public cc::PaintWorkletInput {
   enum class PaintWorkletInputType {
     kCSS,
     kBackgroundColor,
-    kBoxShadow,
     kClipPath,
   };
 

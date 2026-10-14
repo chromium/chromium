@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
-#include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
@@ -557,7 +556,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(post_layout_snapshot_clients_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
-  visitor->Trace(box_shadow_paint_image_generator_);
   visitor->Trace(clip_path_paint_image_generator_);
   visitor->Trace(lcpp_);
   visitor->Trace(v8_local_compile_hints_producer_);
@@ -823,9 +821,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
     if (background_color_paint_image_generator_) {
       background_color_paint_image_generator_->Shutdown();
     }
-    if (box_shadow_paint_image_generator_) {
-      box_shadow_paint_image_generator_->Shutdown();
-    }
     if (clip_path_paint_image_generator_) {
       clip_path_paint_image_generator_->Shutdown();
     }
@@ -916,21 +911,6 @@ void LocalFrame::SetBackgroundColorPaintImageGeneratorForTesting(
     BackgroundColorPaintImageGenerator* generator_for_testing) {
   LocalFrame& local_root = LocalFrameRoot();
   local_root.background_color_paint_image_generator_ = generator_for_testing;
-}
-
-BoxShadowPaintImageGenerator* LocalFrame::GetBoxShadowPaintImageGenerator() {
-  // There is no compositor thread in certain testing environment, and we should
-  // not composite background color animation in those cases.
-  if (!Thread::CompositorThread()) {
-    return nullptr;
-  }
-  LocalFrame& local_root = LocalFrameRoot();
-  // One box shadow paint worklet per root frame.
-  if (!local_root.box_shadow_paint_image_generator_) {
-    local_root.box_shadow_paint_image_generator_ =
-        BoxShadowPaintImageGenerator::Create(local_root);
-  }
-  return local_root.box_shadow_paint_image_generator_.Get();
 }
 
 ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {

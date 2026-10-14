@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
-#include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -238,7 +237,6 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
     case CSSPropertyID::kFilter:
       return CompositorElementIdNamespace::kEffectFilter;
     case CSSPropertyID::kBackgroundColor:
-    case CSSPropertyID::kBoxShadow:
     case CSSPropertyID::kClipPath:
     case CSSPropertyID::kVariable:
       // TODO(crbug.com/883721): Variables and these raster-inducing properties
