@@ -389,13 +389,15 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       bool min_block_size_should_encompass_intrinsic_size = false,
       std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
 
-  // Return the inline contribution of `grid_lanes_item` calculated to either
+  // Return the inline contribution of `subgridded_item` calculated to either
   // the min-width or the max-width based on `sizing_constraint`.
   // `opt_layout_subtree` supplies the child's finalized geometry so grid-lanes
   // subgrids compute their inline contribution using inherited tracks.
+  // `sizing_subtree` may be empty except for regular grid subgrids, which
+  // require it to compute intrinsic track sizes in their standalone axis.
   LayoutUnit CalculateItemInlineContribution(
       const GridSizingSubtree& sizing_subtree,
-      const GridItemData& grid_lanes_item,
+      const SubgriddedItemData& subgridded_item,
       SizingConstraint sizing_constraint,
       const GridLayoutSubtree* opt_layout_subtree);
 

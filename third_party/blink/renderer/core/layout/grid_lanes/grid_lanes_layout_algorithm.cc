@@ -649,35 +649,28 @@ void MarkBreakInsideInSpannedLanes(
 
 LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
     const GridSizingSubtree& sizing_subtree,
-    const GridItemData& grid_lanes_item,
+    const SubgriddedItemData& subgridded_item,
     SizingConstraint sizing_constraint,
     const GridLayoutSubtree* opt_layout_subtree) {
   CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
   // We need to compute the available space for the item if we are using it
   // to compute min/max content sizes.
-  const SubgriddedItemData subgridded_item =
-      grid_lanes_item.is_subgridded_to_parent_grid
-          ? sizing_subtree.LookupSubgriddedItemData(grid_lanes_item)
-          : SubgriddedItemData(grid_lanes_item, &sizing_subtree.LayoutData(),
-                               GetConstraintSpace().GetWritingMode());
   const ConstraintSpace space_for_measure = CreateConstraintSpaceForMeasure(
       subgridded_item,
       /*opt_fixed_inline_size=*/std::nullopt,
       /*make_grid_axis_definite=*/true,
       /*is_for_min_max_sizing=*/false, opt_layout_subtree);
 
-  const auto& item_node = grid_lanes_item.node;
+  const auto& item_node = subgridded_item->node;
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     // A grid subgrid can have a standalone column axis and needs its sizing
     // subtree to calculate min/max sizes. A grid-lanes subgrid instead
     // calculates its contribution using its inherited geometry.
-    if (grid_lanes_item.IsSubgrid() && !item_node.IsGridLanes()) {
-      const GridSizingSubtree& subgrid_sizing_subtree =
-          sizing_subtree.SubgridSizingSubtree(grid_lanes_item);
-      if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
+    if (subgridded_item.IsSubgrid() && !item_node.IsGridLanes()) {
+      if (sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
               kForColumns)) {
         return To<GridNode>(item_node).ComputeSubgridMinMaxSizes(
-            subgrid_sizing_subtree, space_for_measure);
+            sizing_subtree, space_for_measure);
       }
       return MinMaxSizesResult();
     }
@@ -1575,25 +1568,36 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // Iterating `grid_items` directly skips items subgridded to this
     // container, so every item here can be wrapped in a `SubgriddedItemData`
     // against this container's layout data.
+    const SubgriddedItemData subgridded_item(grid_lanes_item, &layout_data,
+                                             container_writing_mode);
+
+    // A subgrid's inline contribution can depend on its descendants through
+    // its own track geometry, whereas a non-subgrid item can be measured
+    // directly from its contents without a child subtree. A grid-lanes subgrid
+    // has no standalone grid track axis, so its finalized inherited geometry
+    // in `child_layout_subtree` is sufficient. A regular grid subgrid may have
+    // a standalone axis whose intrinsic tracks still need to be sized, so it
+    // requires `child_sizing_subtree`.
+    const bool can_calculate_inline_contribution =
+        !is_subgrid || (grid_lanes_item.node.IsGridLanes()
+                            ? child_layout_subtree != nullptr
+                            : static_cast<bool>(child_sizing_subtree));
+    if (!is_for_layout && can_calculate_inline_contribution) {
+      opt_fixed_inline_size = CalculateItemInlineContribution(
+          child_sizing_subtree, subgridded_item, *sizing_constraint,
+          child_layout_subtree);
+    }
+
     const ConstraintSpace space =
         is_for_layout
             ? CreateConstraintSpaceForLayout(
-                  SubgriddedItemData(grid_lanes_item, &layout_data,
-                                     container_writing_mode),
-                  child_layout_subtree, &containing_grid_area,
+                  subgridded_item, child_layout_subtree, &containing_grid_area,
                   /*unavailable_block_size=*/LayoutUnit(),
                   /*min_block_size_should_encompass_intrinsic_size=*/false,
                   /*opt_child_block_offset=*/std::nullopt,
                   opt_fixed_inline_size)
             : CreateConstraintSpaceForMeasure(
-                  SubgriddedItemData(grid_lanes_item, &layout_data,
-                                     container_writing_mode),
-                  sizing_subtree
-                      ? std::optional<LayoutUnit>(
-                            CalculateItemInlineContribution(
-                                *sizing_subtree, grid_lanes_item,
-                                *sizing_constraint, child_layout_subtree))
-                      : std::nullopt,
+                  subgridded_item, opt_fixed_inline_size,
                   /*make_grid_axis_definite=*/true,
                   /*is_for_min_max_sizing=*/true, child_layout_subtree);
 
