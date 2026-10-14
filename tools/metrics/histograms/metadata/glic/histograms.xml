@@ -2060,8 +2060,10 @@ chromium-metrics-reviews@google.com.
     down by {InvocationSource} that instance was created with. This histogram
     answers the question: What is the total number of times each event occurred
     across all Glic instances created via {InvocationSource}? An event is
-    recorded each time it occurs. In M151, the default invocation source was
-    fixed to no longer be the TopChromeButton.
+    recorded each time it occurs. Events that are recorded before an initial
+    invocation source is assigned are also backfilled for that invocation
+    source. In M151, the default invocation source was fixed to no longer be the
+    TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
@@ -2088,8 +2090,10 @@ chromium-metrics-reviews@google.com.
     {InvocationSource} that instance was created with. This histogram answers
     the question: How many instances created via {InvocationSource} had each
     event type occur at least once? Even if an event occurs multiple times in an
-    instance, only one event is recorded per instance. In M151, the default
-    invocation source was fixed to no longer be the TopChromeButton.
+    instance, only one event is recorded per instance. Events that are recorded
+    before an initial invocation source is assigned are also backfilled for that
+    invocation source. In M151, the default invocation source was fixed to no
+    longer be the TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>

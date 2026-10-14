@@ -356,18 +356,17 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
     histogram_tester.ExpectUniqueSample("Glic.Instance.InitialInvocationSource",
                                         source, 1);
     const std::string source_str = GetInvocationSourceString(source);
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"}),
-        GlicInstanceEvent::kTabBound, 1);
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"}),
-        GlicInstanceEvent::kTabBound, 1);
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"}),
-        GlicInstanceEvent::kOpen, 1);
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"}),
-        GlicInstanceEvent::kOpen, 1);
+    const std::string event_counts_histogram =
+        base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"});
+    const std::string had_event_histogram =
+        base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"});
+    for (GlicInstanceEvent event :
+         {GlicInstanceEvent::kInstanceCreated,
+          GlicInstanceEvent::kInstanceCreatedWithoutWarming,
+          GlicInstanceEvent::kTabBound, GlicInstanceEvent::kOpen}) {
+      histogram_tester.ExpectBucketCount(event_counts_histogram, event, 1);
+      histogram_tester.ExpectBucketCount(had_event_histogram, event, 1);
+    }
   }
 }
 
