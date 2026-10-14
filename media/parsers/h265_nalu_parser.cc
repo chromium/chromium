@@ -131,10 +131,22 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
 
   READ_BITS_OR_RETURN(6, &nalu->nal_unit_type);
   READ_BITS_OR_RETURN(6, &nalu->nuh_layer_id);
-  IN_RANGE_IF_OR_RETURN(nalu->nuh_layer_id, 0, 62,
-                        validate_extended_bitstream_);
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
-  TRUE_OR_RETURN(nalu->nuh_temporal_id_plus1 != 0);
+  // The two-byte NAL unit header may fall inside an encrypted subsample when a
+  // CENC packager leaves only a minimal clear leader (as little as one byte).
+  // In that case the header bits read above are ciphertext, so validating them
+  // by value would spuriously reject a valid stream. Only validate when the
+  // header is known to be in the clear; otherwise reset the fields that live in
+  // the encrypted second header byte to safe defaults so bogus values are not
+  // propagated downstream (they are re-parsed after decryption).
+  if (!IsNaluHeaderEncrypted(nalu->data)) {
+    IN_RANGE_IF_OR_RETURN(nalu->nuh_layer_id, 0, 62,
+                          validate_extended_bitstream_);
+    TRUE_OR_RETURN(nalu->nuh_temporal_id_plus1 != 0);
+  } else {
+    nalu->nuh_layer_id = 0;
+    nalu->nuh_temporal_id_plus1 = 1;
+  }
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
            << " at: " << reinterpret_cast<const void*>(nalu->data.data())
@@ -144,6 +156,22 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   previous_nalu_range_.Add(nalu->data.data(),
                            base::to_address(nalu->data.end()));
   return kOk;
+}
+
+bool H265NaluParser::IsNaluHeaderEncrypted(
+    base::span<const uint8_t> nalu_data) const {
+  // The NAL unit header is the first two bytes of the NALU; nuh_layer_id's low
+  // bits and nuh_temporal_id_plus1 live in the second byte. Some CENC packagers
+  // leave only a minimal clear leader, placing that second byte inside an
+  // encrypted subsample. Return true when the header overlaps an encrypted
+  // range so the caller can skip value-based validation of ciphertext.
+  if (encrypted_ranges_.empty() || nalu_data.size() < 2u) {
+    return false;
+  }
+  auto header = nalu_data.first(2u);
+  Ranges<const uint8_t*> header_range;
+  header_range.Add(header.data(), base::to_address(header.end()));
+  return encrypted_ranges_.IntersectionWith(header_range).size() > 0u;
 }
 
 std::vector<SubsampleEntry> H265NaluParser::GetCurrentSubsamples() {

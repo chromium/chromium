@@ -193,4 +193,46 @@ TEST_F(H265NaluParserTest,
   EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
 }
 
+// A NALU whose second header byte is encrypted (here 0x00, which would make
+// nuh_temporal_id_plus1 == 0) must not be rejected: the byte is ciphertext, so
+// value-based validation is skipped and the fields are reset to safe defaults.
+TEST_F(H265NaluParserTest, EncryptedSecondHeaderByteSkipsValidation) {
+  constexpr uint8_t kStream[] = {
+      0x00, 0x00, 0x01,  // start code.
+      0x28,              // header byte 1: nal unit type = 20, IDR slice.
+      0x00,              // header byte 2: nuh_temporal_id_plus1 == 0.
+      0x01, 0x02, 0x03,  // bogus encrypted payload.
+  };
+  // Clear bytes = 4 (start code + first header byte); the second header byte
+  // and the payload are encrypted.
+  std::vector<SubsampleEntry> subsamples;
+  subsamples.emplace_back(4u, 4u);
+  H265NaluParser parser;
+  parser.SetEncryptedStream(kStream, subsamples);
+
+  H265NALU nalu;
+  EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));
+  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
+  // Fields living in the encrypted second header byte are reset to safe
+  // defaults; the real values are re-parsed after decryption.
+  EXPECT_EQ(0, nalu.nuh_layer_id);
+  EXPECT_EQ(1, nalu.nuh_temporal_id_plus1);
+}
+
+// The same bytes in a fully clear stream must still be rejected, since the
+// second header byte is real syntax with nuh_temporal_id_plus1 == 0.
+TEST_F(H265NaluParserTest, ClearSecondHeaderByteStillValidated) {
+  constexpr uint8_t kStream[] = {
+      0x00, 0x00, 0x01,  // start code.
+      0x28,              // header byte 1: nal unit type = 20, IDR slice.
+      0x00,              // header byte 2: nuh_temporal_id_plus1 == 0.
+      0x01, 0x02, 0x03,  // bogus payload.
+  };
+  H265NaluParser parser;
+  parser.SetStream(kStream);
+
+  H265NALU nalu;
+  EXPECT_EQ(H265NaluParser::kInvalidStream, parser.AdvanceToNextNALU(&nalu));
+}
+
 }  // namespace media
