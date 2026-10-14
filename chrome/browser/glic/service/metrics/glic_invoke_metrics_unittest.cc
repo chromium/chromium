@@ -369,6 +369,32 @@ TEST(GlicInvokeMetricsTest, RejectedInvocationTerminatedHasEntryPath) {
   EXPECT_EQ(GetIntMetric(*events[0], "EntryPath"), kEntryPathToggleWireValue);
 }
 
+// structured.xml GlicCuiOutcome wire values.
+constexpr int kOutcomeAbandonedWireValue = 2;
+constexpr int kOutcomeFailedWireValue = 3;
+
+TEST(GlicInvokeMetricsTest, PanelClosedIsAbandoned) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.RecordError(GlicInvokeError::kPanelClosed);
+
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Outcome"), kOutcomeAbandonedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvokeError"),
+            static_cast<int>(GlicInvokeError::kPanelClosed));
+}
+
+TEST(GlicInvokeMetricsTest, ClientLoadErrorIsFailed) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.RecordError(GlicInvokeError::kClientLoadError);
+
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Outcome"), kOutcomeFailedWireValue);
+}
+
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 }  // namespace

@@ -239,6 +239,25 @@ void GlicInstanceCoordinatorImpl::CancelInvoke(GlicInstanceImpl* instance) {
   }
 }
 
+void GlicInstanceCoordinatorImpl::CancelShowOnlyInvokes(
+    GlicInstanceImpl* instance,
+    GlicInvokeError error) {
+  // Take the handlers out first: cancelling one re-enters
+  // OnInvokeHandlerComplete(), which would otherwise mutate the map under us.
+  std::vector<std::unique_ptr<GlicInvokeHandler>> show_only;
+  auto [begin, end] = invoke_handlers_.equal_range(instance);
+  for (auto it = begin; it != end;) {
+    if (it->second && !it->second->requires_client_invoke()) {
+      show_only.push_back(std::move(invoke_handlers_.extract(it++).mapped()));
+    } else {
+      ++it;
+    }
+  }
+  for (auto& handler : show_only) {
+    handler->Cancel(error);
+  }
+}
+
 std::vector<std::unique_ptr<GlicInvokeHandler>>
 GlicInstanceCoordinatorImpl::TakeInvokeHandlers(GlicInstance* instance) {
   auto [begin, end] = invoke_handlers_.equal_range(instance);

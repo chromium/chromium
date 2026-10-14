@@ -1614,6 +1614,20 @@ void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
   // Must be called early to avoid use-after-free if instance is deleted.
   if (reason == EmbedderCloseReason::kExplicitlyClosed) {
     instance_metrics().ResetShownState(key);
+    // The user dismissed the UI this instance was showing before the client
+    // became usable, so an invocation that only came to show that UI is
+    // abandoned rather than left to time out. Only the active embedder
+    // counts: closing an inactive one, or the old embedder while moving the
+    // conversation to another surface (detach/attach), does not take the UI
+    // away. Invocations that will send something to the client keep running,
+    // as the client may still act on them (and keep the instance alive, see
+    // MaybeRemoveBlankInstanceOnClose()).
+    if (IsActiveEmbedder(key) &&
+        host_.client_load_state() != ClientLoadState::kReady &&
+        coordinator_delegate_) {
+      coordinator_delegate_->CancelShowOnlyInvokes(
+          this, GlicInvokeError::kPanelClosed);
+    }
   }
 
   // Deactivation might delete 'this'

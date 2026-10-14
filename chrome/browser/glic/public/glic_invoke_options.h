@@ -254,7 +254,11 @@ enum class GlicInvokeError {
   kInstanceDestroyedArchived = 23,
   kInstanceDestroyedSignedOut = 24,
   kInstanceDestroyedShutdown = 25,
-  kMaxValue = kInstanceDestroyedShutdown,
+  // The user explicitly closed the panel the invocation was showing before
+  // the client became usable (see Host::client_load_state()). Invocations
+  // that already have a usable client are not affected by a close.
+  kPanelClosed = 26,
+  kMaxValue = kPanelClosed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/public/glic_invoke_options.cc:GlicInvokeErrorToString)
 

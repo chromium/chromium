@@ -186,6 +186,8 @@ std::string_view GlicInvokeErrorToString(GlicInvokeError error) {
       return "Glic instance was destroyed: signed out";
     case GlicInvokeError::kInstanceDestroyedShutdown:
       return "Glic instance was destroyed: shutdown";
+    case GlicInvokeError::kPanelClosed:
+      return "Panel was closed before the client was ready";
   }
   NOTREACHED();
 }

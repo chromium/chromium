@@ -1035,11 +1035,11 @@ class GlicInvokeNeverReadyClientBrowserTest : public GlicInvokeBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Closing the panel while the client is still loading leaves the toolbar
-// button's invocation running until blank instance removal destroys the
-// instance, which then ends the invocation.
+// Closing the panel while the client is still loading abandons the toolbar
+// button's invocation right away (kPanelClosed); blank instance removal then
+// destroys the instance.
 IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
-                       ToggleCloseWhileLoadingEndsWithBlankInstanceClosed) {
+                       ToggleCloseWhileLoadingEndsWithPanelClosed) {
   GlicHistogramTester histogram_tester;
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
@@ -1054,15 +1054,14 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
                       mojom::InvocationSource::kTopChromeButton);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
 
-  histogram_tester.ExpectUniqueSample(
-      "Glic.InvokeResult2.TopChromeButton",
-      GlicInvokeError::kInstanceDestroyedBlankInstanceClosed, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.TopChromeButton",
+                                      GlicInvokeError::kPanelClosed, 1);
 }
 
-// Show-only invocations from other entry points don't keep a blank instance
-// alive either, and end the same way once it's removed.
+// Show-only invocations from other entry points are abandoned the same way
+// when their panel is closed, and don't keep a blank instance alive either.
 IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
-                       ShowOnlyInvokeEndsWithBlankInstanceClosed) {
+                       ShowOnlyInvokeEndsWithPanelClosed) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   base::test::TestFuture<GlicInvokeError> error_future;
   GlicInvokeOptions options(glic::Target(*tab),
@@ -1075,9 +1074,30 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
 
   instance->CloseAllEmbedders();
 
-  EXPECT_EQ(error_future.Get(),
-            GlicInvokeError::kInstanceDestroyedBlankInstanceClosed);
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+}
+
+// Backgrounding the panel (e.g. switching tabs) is not a close: the
+// invocation keeps waiting for the client.
+IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
+                       ShowOnlyInvokeSurvivesTabSwitch) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK(WaitForGlicClose(instance));
+
+  // Give the blank instance removal timer a chance to run.
+  WaitForDuration(base::Milliseconds(300));
+  EXPECT_FALSE(error_future.IsReady());
+  EXPECT_EQ(GetInstanceForTab(tab), instance);
 }
 
 // Invocations that send something to the web client keep a blank instance
