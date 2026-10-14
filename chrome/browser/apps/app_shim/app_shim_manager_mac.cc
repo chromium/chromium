@@ -1556,6 +1556,13 @@ void AppShimManager::OnShimFocus(AppShimHost* host) {
     return;
   }
 
+  auto found_app = apps_.find(host->GetAppId());
+  CHECK(found_app != apps_.end());
+  AppState* app_state = found_app->second.get();
+  if (app_state->IsMultiProfile()) {
+    return;
+  }
+
   // Legacy apps don't own their own windows, so when we focus the app,
   // what we really want to do is focus the Chrome windows.
   Profile* profile = ProfileForPath(host->GetProfilePath());

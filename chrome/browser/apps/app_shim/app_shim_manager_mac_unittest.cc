@@ -465,16 +465,16 @@ class AppShimManagerTest : public testing::Test {
                                          &bootstrap_aa_thethird_result_))
             ->GetWeakPtr();
 
-    host_aa_unique_ = std::make_unique<TestHost>(profile_path_a_, kTestAppIdA,
+    host_aa_unique_ = std::make_unique<TestHost>(base::FilePath(), kTestAppIdA,
                                                  manager_.get());
     host_ab_unique_ = std::make_unique<TestHost>(profile_path_a_, kTestAppIdB,
                                                  manager_.get());
-    host_ba_unique_ = std::make_unique<TestHost>(profile_path_b_, kTestAppIdA,
+    host_ba_unique_ = std::make_unique<TestHost>(base::FilePath(), kTestAppIdA,
                                                  manager_.get());
     host_bb_unique_ = std::make_unique<TestHost>(profile_path_b_, kTestAppIdB,
                                                  manager_.get());
     host_aa_duplicate_unique_ = std::make_unique<TestHost>(
-        profile_path_a_, kTestAppIdA, manager_.get());
+        base::FilePath(), kTestAppIdA, manager_.get());
 
     host_aa_ = host_aa_unique_->GetWeakPtr();
     host_ab_ = host_ab_unique_->GetWeakPtr();
@@ -1370,19 +1370,21 @@ TEST_F(AppShimManagerTest, LoadProfile) {
 // Tests that calls to OnShimFocus, OnShimHide correctly handle a null extension
 // being provided by the extension system.
 TEST_F(AppShimManagerTest, ExtensionUninstalled) {
-  LaunchAndActivate(bootstrap_aa_, std::move(host_aa_unique_), &profile_a_);
+  LaunchAndActivate(bootstrap_ab_, std::move(host_ab_unique_), &profile_a_);
 
-  ShimNormalFocus(host_aa_.get());
-  EXPECT_NE(nullptr, host_aa_.get());
+  EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdB))
+      .WillRepeatedly(Return(false));
+  ShimNormalFocus(host_ab_.get());
+  EXPECT_NE(nullptr, host_ab_.get());
 
   // Set up the mock to return a null extension, as if it were uninstalled.
-  EXPECT_CALL(*delegate_, AppIsInstalled(&profile_a_, kTestAppIdA))
+  EXPECT_CALL(*delegate_, AppIsInstalled(&profile_a_, kTestAppIdB))
       .WillRepeatedly(Return(false));
 
   // Trying to focus will do nothing -- the shim will have to be closed by
   // the user manually.
-  ShimNormalFocus(host_aa_.get());
-  EXPECT_NE(nullptr, host_aa_.get());
+  ShimNormalFocus(host_ab_.get());
+  EXPECT_NE(nullptr, host_ab_.get());
 }
 
 TEST_F(AppShimManagerTest, PreExistingHost) {
@@ -2469,6 +2471,40 @@ TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
               AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
                   kTestAppIdA));
   }
+}
+
+TEST_F(AppShimManagerTest, OnShimFocusMultiProfileWithoutRemoteCocoa) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
+
+  // Simulate a multi-profile web app that opens in a browser tab (does not use
+  // RemoteCocoa).
+  EXPECT_CALL(*delegate_, AppUsesRemoteCocoa(_, kTestAppIdA))
+      .WillRepeatedly(Return(false));
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(&profile_a_));
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kBackground));
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
+      manager_->LaunchNotificationProvider(kTestAppIdA);
+  EXPECT_TRUE(provider.is_bound());
+  ASSERT_NE(nullptr, host_aa_.get());
+  EXPECT_FALSE(host_aa_->UsesRemoteViews());
+
+  // Focusing a multi-profile shim that does not use RemoteViews should be a
+  // no-op and must not call GetProfilePath() or ShowAppWindows().
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).Times(0);
+  ShimNormalFocus(host_aa_.get());
 }
 
 }  // namespace apps
