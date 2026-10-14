@@ -3361,6 +3361,26 @@ bool EnclaveManager::IsRegistered() const {
   return user_ && user_->registered();
 }
 
+void EnclaveManager::IsRegisteredForAccount(
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsLoaded()) {
+    Load(base::BindOnce(&EnclaveManager::IsRegisteredForAccount,
+                        weak_ptr_factory_.GetWeakPtr(), gaia_id,
+                        std::move(callback)));
+    return;
+  }
+  auto it = local_state_->users().find(gaia_id.ToString());
+  std::move(callback).Run(it != local_state_->users().end() &&
+                          it->second.registered());
+}
+
+bool EnclaveManager::has_store_keys_lock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return store_keys_lock_depth_ > 0;
+}
+
 bool EnclaveManager::has_pending_keys() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pending_keys_ != nullptr;

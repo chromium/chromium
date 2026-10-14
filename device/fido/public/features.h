@@ -174,6 +174,22 @@ BASE_DECLARE_FEATURE(kWebAuthnU2fFallbackRequiresPreferredEs256);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnFilterAlgorithmsForAuthenticator);
 
+// Enables the local browser-based Google Password Manager passkey authenticator
+// on desktop, replacing the cloud enclave authenticator.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnLocalGpmPasskeys);
+
+enum class LocalGpmPasskeysMode {
+  // Only accounts that are not already registered with the enclave use the
+  // local authenticator.
+  kNewUsersOnly,
+  // All accounts use the local authenticator, regardless of enclave
+  // registration state.
+  kAllUsers,
+};
+COMPONENT_EXPORT(FIDO_PUBLIC)
+extern const base::FeatureParam<LocalGpmPasskeysMode>
+    kWebAuthnLocalGpmPasskeysMode;
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

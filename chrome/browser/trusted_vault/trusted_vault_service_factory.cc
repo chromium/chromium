@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,9 +78,14 @@ std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
       std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
           trusted_vault::SecurityDomainId::kChromeSync, frontend);
 
+  auto passkeys_client =
+      base::FeatureList::IsEnabled(device::kWebAuthnLocalGpmPasskeys)
+          ? std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+                trusted_vault::SecurityDomainId::kPasskeys, frontend)
+          : nullptr;
+
   return std::make_unique<trusted_vault::TrustedVaultService>(
-      std::move(chrome_sync_client),
-      /*passkeys_security_domain_client=*/nullptr);
+      std::move(chrome_sync_client), std::move(passkeys_client));
 }
 #endif
 

@@ -29,6 +29,7 @@ source_set("impl") {
     "//chrome/browser/webauthn",
     "//chrome/common:version_header",
     "//components/signin/public/identity_manager",
+    "//device/fido/public",
     "//google_apis",
   ]
 
@@ -48,6 +49,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/site_isolation",
+    "//device/fido/public",
   ]
 }
 
@@ -89,6 +91,7 @@ if (is_android) {
       "//components/signin/public/identity_manager:test_support",
       "//components/site_isolation",
       "//content/test:test_support",
+      "//device/fido/public",
       "//google_apis",
     ]
   }

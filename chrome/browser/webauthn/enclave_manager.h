@@ -270,6 +270,15 @@ class EnclaveManager : public EnclaveManagerInterface {
   bool IsLoaded() const override;
   // Returns true if the current user has been registered with the enclave.
   bool IsRegistered() const override;
+  // Invokes `callback` with true if the account identified by `gaia_id` has
+  // been registered with the enclave, irrespective of whether it is the current
+  // primary account, loading persistent state first if needed.
+  void IsRegisteredForAccount(const GaiaId& gaia_id,
+                              base::OnceCallback<void(bool)> callback);
+  // Returns true if at least one `StoreKeysLock` (see `GetStoreKeysLock`) is
+  // outstanding, i.e. an explicit flow is waiting for keys to be provided via
+  // `StoreKeys`.
+  bool has_store_keys_lock() const;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
   // or `AddDeviceAndPINToAccount` can be called.
   bool has_pending_keys() const;

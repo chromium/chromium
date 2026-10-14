@@ -779,6 +779,59 @@ TEST_F(EnclaveManagerTest, GetAccessTokenErrorMetric_Failure) {
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
 }
 
+TEST_F(EnclaveManagerTest, IsRegisteredForAccount) {
+  auto is_registered_for_account = [this](const GaiaId& gaia_id) {
+    BoolFuture future;
+    manager_.IsRegisteredForAccount(gaia_id, future.GetCallback());
+    return future.Get();
+  };
+
+  const GaiaId gaia1 =
+      identity_test_env_.identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  EXPECT_FALSE(is_registered_for_account(gaia1));
+
+  ASSERT_TRUE(Register());
+  EXPECT_TRUE(manager_.IsRegistered());
+  EXPECT_TRUE(is_registered_for_account(gaia1));
+
+  // After switching to a different, unregistered primary account, the
+  // registration of the first account is still reported.
+  identity_test_env_.MakePrimaryAccountAvailable("test2@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  const GaiaId gaia2 =
+      identity_test_env_.identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  EXPECT_FALSE(manager_.IsRegistered());
+  EXPECT_TRUE(is_registered_for_account(gaia1));
+  EXPECT_FALSE(is_registered_for_account(gaia2));
+
+  NoArgFuture write_future;
+  if (manager_.RunWhenStoppedForTesting(write_future.GetCallback())) {
+    EXPECT_TRUE(write_future.Wait());
+  }
+  manager_.ResetForTesting();
+  ASSERT_FALSE(manager_.IsLoaded());
+  EXPECT_TRUE(is_registered_for_account(gaia1));
+  EXPECT_TRUE(manager_.IsLoaded());
+}
+
+TEST_F(EnclaveManagerTest, HasStoreKeysLock) {
+  EXPECT_FALSE(manager_.has_store_keys_lock());
+  {
+    auto lock1 = manager_.GetStoreKeysLock();
+    EXPECT_TRUE(manager_.has_store_keys_lock());
+    {
+      auto lock2 = manager_.GetStoreKeysLock();
+      EXPECT_TRUE(manager_.has_store_keys_lock());
+    }
+    EXPECT_TRUE(manager_.has_store_keys_lock());
+  }
+  EXPECT_FALSE(manager_.has_store_keys_lock());
+}
+
 TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia1 =
       identity_test_env_.identity_manager()

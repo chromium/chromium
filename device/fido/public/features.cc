@@ -181,4 +181,17 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_FEATURE(kWebAuthnFilterAlgorithmsForAuthenticator,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_FEATURE(kWebAuthnLocalGpmPasskeys, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<LocalGpmPasskeysMode>::Option
+    kWebAuthnLocalGpmPasskeysModes[] = {
+        {LocalGpmPasskeysMode::kNewUsersOnly, "new_users_only"},
+        {LocalGpmPasskeysMode::kAllUsers, "all_users"},
+};
+constexpr base::FeatureParam<LocalGpmPasskeysMode>
+    kWebAuthnLocalGpmPasskeysMode{&kWebAuthnLocalGpmPasskeys, "mode",
+                                  LocalGpmPasskeysMode::kNewUsersOnly,
+                                  &kWebAuthnLocalGpmPasskeysModes};
 }  // namespace device
