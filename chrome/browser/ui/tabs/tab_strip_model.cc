@@ -41,6 +41,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -89,6 +90,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sessions/core/session_id.h"
@@ -2789,6 +2791,22 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandGlicUnshare:
       return true;
 
+    case CommandAiModeShare:
+    case CommandAiModeCreateNewThread: {
+      if (!contextual_tasks::
+              IsContextualTasksSidePanelRearchitectureEnabled() ||
+          !contextual_tasks::CanShareTabContext(profile())) {
+        return false;
+      }
+      const std::vector<tabs::TabInterface*> tabs =
+          GetTabsAtIndices(GetIndicesForCommand(context_index));
+      return std::ranges::any_of(tabs, [](tabs::TabInterface* tab) {
+        content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+        return contents && contextual_tasks::IsUrlValidForContextSharing(
+                               contents->GetLastCommittedURL());
+      });
+    }
+
     case CommandCopyURL:
       DCHECK(delegate()->IsForWebApp());
       return true;
@@ -3155,6 +3173,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandGlicCreateNewChat:
     case CommandGlicSwitchToRecentConversation:
       // These are handled by GlicTabSubMenuModel.
+      break;
+    case CommandAiModeShare:
+    case CommandAiModeCreateNewThread:
+      // Handled by ContextualTasksTabSubMenuModel.
       break;
     case CommandGlicUnshare: {
       std::vector<int> indices = GetIndicesForCommand(context_index);

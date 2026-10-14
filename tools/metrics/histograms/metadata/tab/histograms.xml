@@ -76,6 +76,9 @@ chromium-metrics-reviews@google.com.
       summary="the Add to new group from menu item command"/>
   <variant name="AddToReadLater" summary="the Add to Read Later command"/>
   <variant name="AddToSplit" summary="the Add to Split command"/>
+  <variant name="AiModeCreateNewThread"
+      summary="the Start New Thread with AI Mode command"/>
+  <variant name="AiModeShare" summary="the Share with AI Mode command"/>
   <variant name="ArrangeSplit" summary="the Arrange Split command"/>
   <variant name="CloseAllTabs" summary="the Close All Tabs command"/>
   <variant name="CloseOtherTabs" summary="the Close Other Tabs command"/>
