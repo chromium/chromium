@@ -487,9 +487,7 @@ Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
 
 CanvasImageProvider*
 Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
-  if (!IsAccelerated()) {
-    return GetOrCreateSWCanvasImageProvider();
-  }
+  CHECK(is_accelerated_);
 
   if (canvas_image_provider_) {
     return canvas_image_provider_.get();
@@ -511,12 +509,6 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
       context_provider_wrapper_->ContextProvider().ImageDecodeCache(
           kN32_SkColorType);
 
-  if (!context_provider_wrapper_) {
-    context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-    if (context_provider_wrapper_) {
-      context_provider_wrapper_->AddObserver(this);
-    }
-  }
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
