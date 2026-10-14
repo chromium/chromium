@@ -146,6 +146,10 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       ui::AlphaBlend(kColorTabBackgroundActiveFrameInactive,
                      kColorTabBackgroundInactiveFrameInactive,
                      /* 40% opacity */ 0.4 * SK_AlphaOPAQUE)};
+  mixer[kColorTabForegroundInactiveHoverFrameActive] = {
+      kColorTabForegroundInactiveFrameActive};
+  mixer[kColorTabForegroundInactiveHoverFrameInactive] = {
+      kColorTabForegroundInactiveFrameInactive};
   mixer[kColorTabBackgroundSelectedFrameActive] = {
       ui::AlphaBlend(kColorTabBackgroundActiveFrameActive,
                      kColorTabBackgroundInactiveFrameActive,

@@ -161,9 +161,10 @@ class TabStyle {
       const bool frame_active,
       const ui::ColorProvider* color_provider) const;
 
-  // Returns the tab foreground color of the the text based on `active` and the
-  // activation state of the window.
+  // Returns the tab foreground color of the text based on `apparently_active`,
+  // `hovered`, and the activation state of the window.
   SkColor GetTabForegroundColor(const bool apparently_active,
+                                const bool hovered,
                                 const bool frame_active,
                                 const ui::ColorProvider* color_provider) const;
 

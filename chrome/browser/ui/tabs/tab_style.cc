@@ -164,7 +164,8 @@ std::tuple<float, float, float, SkColor> TabStyle::GetContrastRatioValues(
   float radial_highlight_opacity_ = get_hover_opacity(kRadialGradientContrast);
 
   const SkColor inactive_fg =
-      GetTabForegroundColor(false, frame_active, color_provider);
+      GetTabForegroundColor(/*apparently_active=*/false, /*hovered=*/false,
+                            frame_active, color_provider);
   // The contrast ratio for the separator between inactive tabs.
   constexpr float kTabSeparatorContrast = 2.5f;
   SkColor separator_color_ =
@@ -180,8 +181,8 @@ TabStyle::TabColors TabStyle::CalculateTargetColors(
     const bool hovered,
     const bool frame_active,
     const ui::ColorProvider* color_provider) const {
-  const SkColor foreground_color =
-      GetTabForegroundColor(apparently_active, frame_active, color_provider);
+  const SkColor foreground_color = GetTabForegroundColor(
+      apparently_active, hovered, frame_active, color_provider);
   const SkColor background_color =
       GetTabBackgroundColor(state, hovered, frame_active, color_provider);
   const ui::ColorId focus_ring_color =
@@ -195,19 +196,26 @@ TabStyle::TabColors TabStyle::CalculateTargetColors(
 
 SkColor TabStyle::GetTabForegroundColor(
     const bool apparently_active,
+    const bool hovered,
     const bool frame_active,
     const ui::ColorProvider* color_provider) const {
   if (!color_provider) {
     return gfx::kPlaceholderColor;
   }
 
-  static constexpr std::array<std::array<ChromeColorIds, 2>, 2> kColorIds = {
+  if (apparently_active) {
+    constexpr std::array<ChromeColorIds, 2> kActiveColorIds = {
+        kColorTabForegroundActiveFrameInactive,
+        kColorTabForegroundActiveFrameActive};
+    return color_provider->GetColor(kActiveColorIds[frame_active]);
+  }
+
+  constexpr std::array<std::array<ChromeColorIds, 2>, 2> kInactiveColorIds = {
       {{kColorTabForegroundInactiveFrameInactive,
         kColorTabForegroundInactiveFrameActive},
-       {kColorTabForegroundActiveFrameInactive,
-        kColorTabForegroundActiveFrameActive}}};
-
-  return color_provider->GetColor(kColorIds[apparently_active][frame_active]);
+       {kColorTabForegroundInactiveHoverFrameInactive,
+        kColorTabForegroundInactiveHoverFrameActive}}};
+  return color_provider->GetColor(kInactiveColorIds[hovered][frame_active]);
 }
 
 SkColor TabStyle::GetTabBackgroundColor(

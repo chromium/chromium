@@ -1006,6 +1006,8 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
+  E_CPONLY(kColorTabForegroundInactiveHoverFrameActive) \
+  E_CPONLY(kColorTabForegroundInactiveHoverFrameInactive) \
   E_CPONLY(kColorTabDividerFrameActive) \
   E_CPONLY(kColorTabDividerFrameInactive) \
   E_CPONLY(kColorTabHoverCardBackground) \
