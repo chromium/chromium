@@ -38,10 +38,6 @@ constexpr char kTextInputID[] = "username";
 // Tests that the software keyboard is displayed normally when
 // `shouldSuppressInputViews` defaults to `NO`.
 - (void)testInputViewsDisplayedByDefault {
-  // TODO(crbug.com/556733164): Add iPad support.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"iPad is currently unsupported.");
-  }
   [self loadPageAndFocusInput];
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
@@ -49,10 +45,6 @@ constexpr char kTextInputID[] = "username";
 // Tests that the software keyboard is suppressed when
 // `shouldSuppressInputViews` is set to `YES`.
 - (void)testInputViewsSuppressedWhenSuppressionEnabled {
-  // TODO(crbug.com/556733164): Add iPad support.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"iPad is currently unsupported.");
-  }
   [SuppressInputViewsAppInterface setShouldSuppressInputViews:YES];
   [self loadPageAndFocusInput];
   // The keyboard appears some time after the input gains focus, so check that
@@ -69,10 +61,6 @@ constexpr char kTextInputID[] = "username";
 // Tests that toggling `shouldSuppressInputViews` dynamically updates keyboard
 // visibility while preserving input focus.
 - (void)testInputViewsToggledDynamically {
-  // TODO(crbug.com/556733164): Add iPad support.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"iPad is currently unsupported.");
-  }
   [self loadPageAndFocusInput];
   [ChromeEarlGrey waitForKeyboardToAppear];
 

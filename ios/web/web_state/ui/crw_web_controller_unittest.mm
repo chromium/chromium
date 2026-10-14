@@ -68,7 +68,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
-#import "ui/base/device_form_factor.h"
 #import "url/scheme_host_port.h"
 
 @interface CRWWebController (Testing)
@@ -372,10 +371,6 @@ TEST_F(CRWWebControllerTest, UnsetObscuredContentInsetsPreservesWebViewInsets) {
 // Tests `shouldSuppressInputViews` default value, toggling this property, and
 // propagating the state when creating a new web view.
 TEST_F(CRWWebControllerTest, SetShouldSuppressInputViews) {
-  // TODO(crbug.com/556733164): Add iPad support.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP();
-  }
   EXPECT_FALSE(web_controller().shouldSuppressInputViews);
 
   OCMExpect([mock_web_view_ setShouldSuppressInputViews:YES]);

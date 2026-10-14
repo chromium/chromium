@@ -22,8 +22,8 @@
 // hierarchy.
 - (void)reloadInputViews;
 
-// Disconnects the suppressor and reloads input views on the active first
-// responder in the owning view's hierarchy.
+// Restores any suppressed `inputAssistantItem` groups, reloads input views on
+// the active first responder, and disconnects from the owning view.
 - (void)disconnect;
 
 @end
