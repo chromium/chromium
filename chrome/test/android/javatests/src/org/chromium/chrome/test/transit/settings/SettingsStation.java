@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.test.transit.settings;
 
-import static org.chromium.base.test.transit.Condition.fulfilled;
-import static org.chromium.base.test.transit.Condition.notFulfilled;
-import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import androidx.recyclerview.widget.RecyclerView;
+import android.view.View;
 
 import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
@@ -23,37 +25,25 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
         extends Station<SettingsActivity> {
     public final FragmentElement<FragmentT, SettingsActivity> fragmentElement;
+    public @Nullable ViewElement<View> searchBoxElement;
 
     public SettingsStation(Class<FragmentT> fragmentClass) {
         super(SettingsActivity.class);
         fragmentElement = declareElement(new FragmentElement<>(fragmentClass, mActivityElement));
-        // Wait until the fragment's RecyclerView has finished laying out its items (including the
-        // adapter re-inflation triggered by SettingsContainmentHelper on the initial layout pass)
-        // so that subsequent actions such as scrollToPref() can run unconditionally.
-        declareEnterCondition(
-                uiThreadCondition(
-                        "Fragment RecyclerView is laid out",
-                        fragmentElement,
-                        fragment -> {
-                            RecyclerView listView = fragment.getListView();
-                            if (listView == null || !listView.isShown()) {
-                                return notFulfilled("RecyclerView is not shown");
-                            }
-                            if (listView.isLayoutRequested()
-                                    || listView.hasPendingAdapterUpdates()) {
-                                return notFulfilled(
-                                        "RecyclerView layout is pending (isLayoutRequested=%b,"
-                                                + " hasPendingAdapterUpdates=%b)",
-                                        listView.isLayoutRequested(),
-                                        listView.hasPendingAdapterUpdates());
-                            }
-                            if (listView.getAdapter() != null
-                                    && listView.getAdapter().getItemCount() > 0
-                                    && listView.getChildCount() == 0) {
-                                return notFulfilled("RecyclerView has no child views laid out yet");
-                            }
-                            return fulfilled();
-                        }));
+
+        // SettingsSearchCoordinator shows the search box in the app bar in a posted task, which
+        // resizes the settings list. Declare the search box ViewElement (or NoView) so that the
+        // station is only entered after the search box visibility and layout have settled.
+        declareElementFactory(
+                mActivityElement,
+                delayedElements -> {
+                    if (fragmentClass == MainSettings.class
+                            || mActivityElement.value().isTwoColumnSettingsVisible()) {
+                        searchBoxElement = delayedElements.declareView(withId(R.id.search_box));
+                    } else {
+                        delayedElements.declareNoView(withId(R.id.search_box));
+                    }
+                });
     }
 
     public PreferenceFacility scrollToPref(String prefKey) {
