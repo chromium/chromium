@@ -11,17 +11,51 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
-class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
+#if BUILDFLAG(IS_ANDROID)
+#include "base/command_line.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/gfx/switches.h"
+#endif
+
+// Base fixture for the NTP Mocha tests.
+class NewTabPageMochaBrowserTest : public WebUIMochaBrowserTest {
+ protected:
+  NewTabPageMochaBrowserTest() {
+    set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
+    // Lab devices run with animations off, which makes pages prefer reduced
+    // motion. Tests that set the preference themselves need the default.
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+  }
+
+  void OnWebContentsAvailable(content::WebContents* web_contents) override {
+    // With a hardware keyboard attached, opening the NTP focuses the omnibox,
+    // so the page gets no focus events. Move focus back to the page.
+    web_contents->Focus();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
+class NewTabPageBrowserTest : public NewTabPageMochaBrowserTest {
  protected:
   NewTabPageBrowserTest() {
-    set_test_loader_host(chrome::kChromeUINewTabPageHost);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/
+        {
+#if BUILDFLAG(IS_ANDROID)
+            // Customization buttons on the WebUI NTP are feature-flagged on
+            // Android.
+            ntp_features::kNtpCustomizeWebUiAndroid,
+#endif
+        },
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                ntp_realbox::kNtpRealboxNext,
                                contextual_tasks::kContextualTasksContext});
@@ -31,10 +65,9 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class NewTabPageNextBrowserTest : public WebUIMochaBrowserTest {
+class NewTabPageNextBrowserTest : public NewTabPageMochaBrowserTest {
  protected:
   NewTabPageNextBrowserTest() {
-    set_test_loader_host(chrome::kChromeUINewTabPageHost);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                               ntp_realbox::kNtpRealboxNext},
@@ -80,7 +113,14 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensUploadDialog) {
   RunTest("new_tab_page/lens_upload_dialog_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, Logo) {
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// position checks.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Logo DISABLED_Logo
+#else
+#define MAYBE_Logo Logo
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Logo) {
   RunTest("new_tab_page/logo_test.js", "mocha.run()");
 }
 
@@ -129,7 +169,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, CrComposeboxAutocompleteContextTest) {
           "runMochaSuite('CrComposeboxAutocompleteContextTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
+// TODO(crbug.com/565815899): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ComposeboxContextMenu DISABLED_ComposeboxContextMenu
+#else
+#define MAYBE_ComposeboxContextMenu ComposeboxContextMenu
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxContextMenu) {
   RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
           "runMochaSuite('NewTabPageComposeboxContextMenuTest')");
 }
@@ -277,12 +323,20 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Misc) {
           "runMochaSuite('NewTabPageAppTest Misc')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbThemingRemoveScrim) {
+// TODO(crbug.com/571327206): The OneGoogleBar is disabled on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_OgbThemingRemoveScrim DISABLED_OgbThemingRemoveScrim
+#define MAYBE_OgbScrim DISABLED_OgbScrim
+#else
+#define MAYBE_OgbThemingRemoveScrim OgbThemingRemoveScrim
+#define MAYBE_OgbScrim OgbScrim
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_OgbThemingRemoveScrim) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest OgbThemingRemoveScrim')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbScrim) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_OgbScrim) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest OgbScrim')");
 }
@@ -336,7 +390,9 @@ class NewTabPageAppComposeboxInvariantTest
 };
 
 // TODO(crbug.com/564567296): Flaky timeout on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// alignment checks.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_InvariantChecks DISABLED_InvariantChecks
 #else
 #define MAYBE_InvariantChecks InvariantChecks
@@ -411,22 +467,39 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
 // The VoiceSearchCoherence Mocha suite is split into several browser tests so
 // that each of them finishes well within the test launcher timeout on slower
 // (e.g. debug) bots.
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceDialog) {
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// size checks.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_VoiceSearchCoherenceDialog DISABLED_VoiceSearchCoherenceDialog
+#define MAYBE_VoiceSearchCoherenceEvents DISABLED_VoiceSearchCoherenceEvents
+#define MAYBE_VoiceSearchCoherenceAnimation \
+  DISABLED_VoiceSearchCoherenceAnimation
+#define MAYBE_VoiceSearchCoherenceLiveTranscript \
+  DISABLED_VoiceSearchCoherenceLiveTranscript
+#else
+#define MAYBE_VoiceSearchCoherenceDialog VoiceSearchCoherenceDialog
+#define MAYBE_VoiceSearchCoherenceEvents VoiceSearchCoherenceEvents
+#define MAYBE_VoiceSearchCoherenceAnimation VoiceSearchCoherenceAnimation
+#define MAYBE_VoiceSearchCoherenceLiveTranscript \
+  VoiceSearchCoherenceLiveTranscript
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceDialog) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Dialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceEvents) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceEvents) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Events')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceAnimation) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceAnimation) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Animation')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceLiveTranscript) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest,
+                       MAYBE_VoiceSearchCoherenceLiveTranscript) {
   RunTest(
       "new_tab_page/app_test.js",
       "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence LiveTranscript')");

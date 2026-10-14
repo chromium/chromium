@@ -1483,6 +1483,8 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
     assertTrue(composeboxObservers.every(observer => observer.disconnected));
   });
 
+  // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+  // <if expr="not is_android">
   test(
       'smartTabSharingActive causes hasTabs true and input has has-tabs class',
       async () => {
@@ -1502,4 +1504,5 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
         const inputElement = testProxy.element.getInputElement();
         assertTrue(inputElement.classList.contains('has-tabs'));
       });
+  // </if>
 });
