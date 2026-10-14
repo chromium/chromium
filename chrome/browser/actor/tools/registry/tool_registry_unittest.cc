@@ -16,6 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
@@ -337,6 +338,20 @@ TEST(ToolRegistryTest, ScrollToToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(ScrollToToolRequest::kDomNodeIdParam));
 }
 
+TEST(ToolRegistryTest, AddBookmarkToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      AddBookmarkToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kAddBookmark);
+  EXPECT_EQ(definition->name, AddBookmarkToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(AddBookmarkToolRequest::kUrlParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(AddBookmarkToolRequest::kUrlParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(AddBookmarkToolRequest::kTitleParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(AddBookmarkToolRequest::kTitleParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -624,6 +639,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsScrollToTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kScrollTo, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsAddBookmarkTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kAddBookmark, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

@@ -5,11 +5,15 @@
 #include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "chrome/browser/actor/tools/bookmark_management_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -17,11 +21,39 @@
 
 namespace actor {
 
-AddBookmarkToolRequest::AddBookmarkToolRequest(GURL url,
-                                               std::u16string title)
+namespace {
+
+// Default description for the `add_bookmark` tool.
+constexpr std::string_view kAddBookmarkToolDescription =
+    "Adds a bookmark for the specified URL and title.";
+
+// Description for the `url` parameter of the `add_bookmark` tool.
+constexpr std::string_view kAddBookmarkUrlParamDescription =
+    "The URL of the webpage to bookmark.";
+
+// Description for the `title` parameter of the `add_bookmark` tool.
+constexpr std::string_view kAddBookmarkTitleParamDescription =
+    "The title for the bookmark.";
+
+}  // namespace
+
+AddBookmarkToolRequest::AddBookmarkToolRequest(GURL url, std::u16string title)
     : url_(std::move(url)), title_(std::move(title)) {}
 
 AddBookmarkToolRequest::~AddBookmarkToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> AddBookmarkToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kAddBookmark, kModelFacingName,
+                               kAddBookmarkToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddStringProperty(kUrlParam, kAddBookmarkUrlParamDescription,
+                                 ToolSchemaBuilder::kFormatUri)
+              .AddStringProperty(kTitleParam,
+                                 kAddBookmarkTitleParamDescription))
+      .Build();
+}
 
 AddBookmarkToolRequest::AddBookmarkToolRequest(
     const AddBookmarkToolRequest& other) = default;

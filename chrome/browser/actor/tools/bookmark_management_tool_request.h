@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_BOOKMARK_MANAGEMENT_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_BOOKMARK_MANAGEMENT_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -19,9 +20,15 @@ class ToolRequestVisitorFunctor;
 class AddBookmarkToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "AddBookmark";
+  static constexpr std::string_view kModelFacingName = "add_bookmark";
+  static constexpr std::string_view kUrlParam = "url";
+  static constexpr std::string_view kTitleParam = "title";
 
   AddBookmarkToolRequest(GURL url, std::u16string title);
   ~AddBookmarkToolRequest() override;
+
+  // Returns the `ToolId::kAddBookmark` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
   AddBookmarkToolRequest(const AddBookmarkToolRequest& other);
   AddBookmarkToolRequest& operator=(const AddBookmarkToolRequest& other);
 
