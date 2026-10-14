@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 
+#import <memory>
+
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
@@ -219,7 +221,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   AppState* appState = profileState.appState;
   if (appState.startupInformation.isFirstRun) {
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    _scopedForceOrientation =
+        std::make_unique<ScopedForcePortraitOrientation>(appState);
 
     if (IsBestOfAppFREEnabled()) {
       id<BrowserProvider> presentingInterface =

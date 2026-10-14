@@ -108,7 +108,8 @@ id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
   }
   if ([self shouldShowChoiceScreen]) {
     AppState* appState = profileState.appState;
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    _scopedForceOrientation =
+        std::make_unique<ScopedForcePortraitOrientation>(appState);
   }
 }
 

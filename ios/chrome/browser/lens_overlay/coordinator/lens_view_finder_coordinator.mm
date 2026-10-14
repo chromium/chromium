@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 
+#import <memory>
+
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
@@ -321,7 +323,8 @@ LensViewFinderTransition TransitionFromPresentationStyle(
     return;
   }
   if (AppState* appState = sceneState.profileState.appState) {
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    _scopedForceOrientation =
+        std::make_unique<ScopedForcePortraitOrientation>(appState);
   }
 }
 

@@ -9,7 +9,6 @@ source_set("ui_bundled") {
     "scoped_force_portrait_orientation.mm",
   ]
   frameworks = [ "Foundation.framework" ]
-  deps = [ "//ui/base" ]
 }
 
 source_set("unit_tests") {

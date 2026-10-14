@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-
 @protocol PortraitOrientationManager;
 
 // A scoped object using `manager` to force the UI in portrait orientation
@@ -29,9 +27,5 @@ class ScopedForcePortraitOrientation {
   // The target blocking the portrait only.
   __weak id<PortraitOrientationManager> manager_;
 };
-
-// Returns a ScopedForcePortraitOrientation on iPhone or null.
-std::unique_ptr<ScopedForcePortraitOrientation>
-ForcePortraitOrientationOnIphone(id<PortraitOrientationManager> manager);
 
 #endif  // IOS_CHROME_BROWSER_UI_DEVICE_ORIENTATION_SCOPED_FORCE_PORTRAIT_ORIENTATION_H_

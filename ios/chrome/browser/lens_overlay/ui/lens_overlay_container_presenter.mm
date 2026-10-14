@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_presenter.h"
 
+#import <memory>
+
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -82,7 +84,8 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
   CHECK(profile);
   if (appState && profile &&
       !IsLensOverlayLandscapeOrientationEnabled(profile->GetPrefs())) {
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    _scopedForceOrientation =
+        std::make_unique<ScopedForcePortraitOrientation>(appState);
   }
 
   [self.delegate lensOverlayContainerPresenterWillBeginPresentation:self];
