@@ -68,6 +68,9 @@ void RecentTabsDynamicMenu::BuildRecentTabsActions(
   }
   cancelable_task_tracker_.TryCancelAll();
   parent_item->ResetActionList();
+  // Recent tabs items (including the omission of tabs from other devices when
+  // syncer::kCrossDeviceTabsInAppMenu is enabled) are constructed by
+  // RecentTabsBuilder.
   CreateRecentTabsAction(
       parent_item,
       RecentTabsBuilder::BuildRecentTabs(

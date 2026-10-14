@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -468,7 +469,10 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
 std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
     Profile* profile) {
   std::vector<RecentTabItem> items;
-  if (!profile ||
+  // With kCrossDeviceTabsInAppMenu, tabs from other devices are listed in a
+  // dedicated app menu entry instead of the History submenu.
+  if (base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu) ||
+      !profile ||
       !remote_tabs_menu_util::ShouldShowTabsFromOtherDevices(profile)) {
     return items;
   }

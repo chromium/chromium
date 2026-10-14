@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -510,7 +511,10 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 }
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
-  if (!remote_tabs_menu_util::ShouldShowTabsFromOtherDevices(
+  // With kCrossDeviceTabsInAppMenu, tabs from other devices are listed in a
+  // dedicated app menu entry instead of the History submenu.
+  if (base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu) ||
+      !remote_tabs_menu_util::ShouldShowTabsFromOtherDevices(
           browser_->GetProfile())) {
     return;
   }
