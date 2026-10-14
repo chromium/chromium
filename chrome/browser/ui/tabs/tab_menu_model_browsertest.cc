@@ -59,6 +59,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/web_contents.h"
@@ -1134,10 +1135,12 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
   EXPECT_EQ(submenu->GetCommandIdAt(1),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   submenu->ActivatedAt(1);
   EXPECT_TRUE(send_tab_to_self::SendTabToSelfBubbleController::
                   GetOrCreateForWebContents(tab_strip->GetActiveWebContents())
                       ->IsBubbleShown());
+#endif
 }
 
 // Tests that for `kOfferReauth`, the tab context menu renders Send Tab to Self

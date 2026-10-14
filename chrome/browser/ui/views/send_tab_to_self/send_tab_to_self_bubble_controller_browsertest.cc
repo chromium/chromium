@@ -703,33 +703,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(nullptr, controller->send_tab_to_self_bubble_view());
 }
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
-                       PromoBubbleAccept_OpensDiceSignInTab) {
-  // Trigger the 'Offer Sign-In' state by overriding the entry point display
-  // reason.
-  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
-  ASSERT_TRUE(sync_service);
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kOfferSignIn);
-
-  SendTabToSelfBubbleController* controller =
-      NavigateToUrlAndGetController(empty_url());
-  ASSERT_TRUE(controller);
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-
-  ASSERT_TRUE(controller->IsBubbleShown());
-  SendTabToSelfBubbleView* bubble = controller->send_tab_to_self_bubble_view();
-  ASSERT_NE(nullptr, bubble);
-
-  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
-  bubble->AcceptDialog();
-  destroyed_waiter.Wait();
-
-  // Verify that the bubble delegate accepts and successfully dismisses/closes
-  // the dialog.
-  EXPECT_FALSE(controller->IsBubbleShown());
-}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

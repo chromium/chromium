@@ -32,7 +32,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -142,10 +141,7 @@ int GetSubtitleID(bool is_signin_promo,
         switch (signed_in_state) {
           case SignedInState::kSignedOut:
           case SignedInState::kWebOnlySignedIn:
-            return base::FeatureList::IsEnabled(
-                       send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)
-                       ? IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY
-                       : IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL;
+            return IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY;
           case SignedInState::kSignInPending:
           case SignedInState::kSyncPaused:
             return IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_LABEL;
