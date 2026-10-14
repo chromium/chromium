@@ -761,11 +761,6 @@ BASE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS)
-// Feature flag to ignore invalid grant errors in AuthenticationService.
-BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kMagiChromePasskeySignIn, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kMagiChromePasskeySignInFlowType{

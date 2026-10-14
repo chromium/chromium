@@ -691,12 +691,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS)
-// Feature flag to ignore invalid grant errors in AuthenticationService.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Controls the MagiChrome passkey sign-in experiment, enabling either the
 // Autofill-based promo flow or the native Views-based banner flow.

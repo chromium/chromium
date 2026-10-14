@@ -204,9 +204,7 @@ class AuthenticationService : public KeyedService,
   id<RefreshAccessTokenError> GetCachedMDMError(id<SystemIdentity> identity);
 
   // Handles an MDM error `error` associated with `identity`.
-  // Returns whether the notification associated with `user_info` was fully
-  // handled.
-  bool HandleMDMError(id<SystemIdentity> identity,
+  void HandleMDMError(id<SystemIdentity> identity,
                       id<RefreshAccessTokenError> error);
 
   // Invoked when the MDM error associated with `identity` has been handled.
@@ -215,16 +213,12 @@ class AuthenticationService : public KeyedService,
   // Verifies that the authenticated user is still associated with a valid
   // SystemIdentity. This method must only be called when the user is
   // authenticated with the shared authentication library. If there is no valid
-  // SystemIdentity associated with the currently authenticated user, or the
-  // identity is `invalid_identity`, this method will sign the user out.
-  //
-  // `invalid_identity` is an additional identity to consider invalid. It can be
-  // nil if there is no such additional identity to ignore.
+  // SystemIdentity associated with the currently authenticated user, this
+  // method will sign the user out.
   //
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
-  void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
-                               bool device_restore);
+  void HandleForgottenIdentity(bool device_restore);
   void HandleForgottenIdentityCallback(const CoreAccountInfo account_info);
 
   // Checks if the authenticated identity was removed by calling
