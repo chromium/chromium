@@ -99,6 +99,7 @@ constexpr CGFloat kGlassStackViewMarginPortrait = 10;
 // The margin between the stack views and the location bar.
 // Regular-Regular (iPad) size class margin.
 constexpr CGFloat kLocationBarStackViewMarginRegularRegular = 40;
+constexpr CGFloat kLegacyLocationBarStackViewMarginRegularRegular = 15;
 // iPhone portrait margin.
 constexpr CGFloat kLocationBarStackViewMarginPortrait = 9;
 constexpr CGFloat kGlassLocationBarStackViewMarginPortrait = 8;
@@ -1409,6 +1410,10 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     return colorPalette ? colorPalette.omniboxColor
                         : [UIColor colorNamed:kSolidWhiteColor];
   }
+  if (IsNextOldDesignEnabled() && !IsGlassToolbarEnabled()) {
+    return _incognito ? [UIColor colorNamed:kStaticGrey900Color]
+                      : [UIColor colorNamed:kTextfieldBackgroundColor];
+  }
   return ToolbarElementBackgroundColor(_incognito);
 }
 
@@ -1979,18 +1984,18 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     ]];
   }
   _trailingStackView = [self makeStackViewWithButtons:@[
-    _shareButton, _assistantButton, _tabGridButton, _toolsMenuButton
+    _assistantButton, _shareButton, _tabGridButton, _toolsMenuButton
   ]];
 
   if (IsNextOldDesignEnabled()) {
     _allButtons = @[
-      _backButton, _forwardButton, _reloadButton, _stopButton, _shareButton,
-      _assistantButton, _tabGridButton, _toolsMenuButton
+      _backButton, _forwardButton, _reloadButton, _stopButton, _assistantButton,
+      _shareButton, _tabGridButton, _toolsMenuButton
     ];
   } else {
     _allButtons = @[
-      _navigationButtonsContainer, _reloadButton, _stopButton, _shareButton,
-      _assistantButton, _tabGridButton, _toolsMenuButton
+      _navigationButtonsContainer, _reloadButton, _stopButton, _assistantButton,
+      _shareButton, _tabGridButton, _toolsMenuButton
     ];
   }
 
@@ -2110,9 +2115,11 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       constraintEqualToAnchor:self.view.widthAnchor];
   widthConstraint.priority = UILayoutPriorityRequired - 1;
 
-  [_locationBarContainer.widthAnchor
-      constraintLessThanOrEqualToConstant:kLocationBarMaxWidth]
-      .active = YES;
+  if (!IsNextOldDesignEnabled()) {
+    [_locationBarContainer.widthAnchor
+        constraintLessThanOrEqualToConstant:kLocationBarMaxWidth]
+        .active = YES;
+  }
 
   if (IsNextOldDesignEnabled()) {
     _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
@@ -2141,7 +2148,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
                        constant:-locationBarMargin],
   ];
 
-  CGFloat regularMargin = kLocationBarStackViewMarginRegularRegular;
+  CGFloat regularMargin = IsNextOldDesignEnabled()
+                              ? kLegacyLocationBarStackViewMarginRegularRegular
+                              : kLocationBarStackViewMarginRegularRegular;
   _regularRegularConstraints = @[
     [_locationBarContainer.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:_leadingStackView.trailingAnchor
@@ -2495,10 +2504,14 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [self updateGuide:kForwardButtonGuide
            withView:_forwardButton
                hide:hideToolbar];
-  // The toolbar share button is only visible in compact height; in regular
-  // height, the location bar steady view owns `kShareButtonGuide`.
+  // The toolbar share button is only visible in compact height (or in
+  // Regular-Regular when NextOldDesign is enabled); otherwise, the location bar
+  // steady view owns `kShareButtonGuide`.
+  BOOL isShareVisibleInLayout =
+      IsCompactHeight(self) ||
+      (IsNextOldDesignEnabled() && IsRegularXRegularSizeClass(self));
   BOOL hideShare =
-      hideToolbar || !IsCompactHeight(self) || _shareButton.forceHidden;
+      hideToolbar || !isShareVisibleInLayout || _shareButton.forceHidden;
   [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideShare];
 
   // The assistant button is hidden in non Regular-Regular size classes, but the

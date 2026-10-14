@@ -358,14 +358,11 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 void CheckButtonsVisibilityIPad() {
   CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
+  if ([ChromeEarlGrey isChromeNextEnabled] &&
+      ![ChromeEarlGrey isNextOldDesignEnabled]) {
     CheckVisibilityInToolbar(ToolbarShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(LocationBarShareButton(), ButtonVisibilityPrimary);
-    if ([ChromeEarlGrey isNextOldDesignEnabled]) {
-      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
-    } else {
-      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
-    }
+    CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
   } else {
     CheckVisibilityInToolbar(ToolbarShareButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
@@ -678,7 +675,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Tests share button is enabled only on pages that can be shared.
 - (void)testShareButton {
-  if ([ChromeEarlGrey isChromeNextEnabled] && [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isChromeNextEnabled] &&
+      ![ChromeEarlGrey isNextOldDesignEnabled] &&
+      [ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Share button is hidden on iPad toolbar under Chrome Next.");
   }

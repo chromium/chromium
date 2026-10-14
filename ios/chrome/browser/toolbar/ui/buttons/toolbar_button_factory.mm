@@ -112,7 +112,9 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
       [[ToolbarButton alloc] initWithImageLoader:imageLoader
                                        incognito:_incognito];
   button.geminiHandler = self.geminiHandler;
-  button.visibilityMask = ToolbarButtonVisibility::kCompactHeight;
+  button.visibilityMask = IsNextOldDesignEnabled()
+                              ? ToolbarButtonVisibility::kWideLayout
+                              : ToolbarButtonVisibility::kCompactHeight;
   button.accessibilityIdentifier = kToolbarShareButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
   return button;
