@@ -106,6 +106,17 @@ struct SameSizeAsShapeResult {
 
 ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
 
+bool ShapeResultRun::CanUseMonospaceGlyphCompaction(unsigned num_glyphs) const {
+  // Compact storage requires a fixed-pitch LTR 1:1 run.
+  if (num_glyphs != num_characters_) {
+    return false;
+  }
+  // Fixed-pitch metadata is only a prefilter. TryMakeCompactFrom() must still
+  // validate every shaped glyph before using compact storage.
+  const SimpleFontData* font_data = font_data_.Get();
+  return IsHorizontal() && IsLtr() && font_data && font_data->IsFixedPitch();
+}
+
 wtf_size_t ShapeResultRun::NextSafeToBreakOffset(wtf_size_t offset) const {
   DCHECK_LE(offset, num_characters_);
   if (glyph_data_.IsCompact()) [[unlikely]] {
@@ -1658,6 +1669,10 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
 
   run->width_ = total_advance.ClampNegativeToZero().ToFloat();
   has_vertical_offsets_ |= has_vertical_offsets;
+  if (RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled() &&
+      run->CanUseMonospaceGlyphCompaction(num_glyphs)) {
+    run->glyph_data_.TryMakeCompact();
+  }
 #if EXPENSIVE_DCHECKS_ARE_ON()
   run->CheckConsistency();
 #endif
@@ -1864,6 +1879,12 @@ wtf_size_t ShapeResult::CopyRangeInternal(wtf_size_t run_index,
           target->runs_.back() = merged_run;
         } else {
           target->runs_.push_back(sub_run);
+        }
+        ShapeResultRun* const back = target->runs_.back().Get();
+        if (RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled() &&
+            back->CanUseMonospaceGlyphCompaction(back->glyph_data_.size()))
+            [[unlikely]] {
+          back->glyph_data_.TryMakeCompact();
         }
       }
       should_merge = false;

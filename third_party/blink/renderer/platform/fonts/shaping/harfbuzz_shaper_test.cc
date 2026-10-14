@@ -1167,6 +1167,29 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetLatin) {
   ASSERT_NEAR(result->Width(), result->PositionForOffset(12), 0.1);
 }
 
+TEST_F(HarfBuzzShaperTest, MonospaceGlyphCompactionRequiresHorizontalLtrRun) {
+  FontDescription::VariantLigatures ligatures;
+  Font* font = blink::test::CreateTestFont(
+      AtomicString("Noto Mono"),
+      test::BlinkWebTestsDir() +
+          "/third_party/NotoMono-hintedLocalizedFamilyName/"
+          "NotoMono-Regular.subset.ttf",
+      16, &ligatures);
+  const SimpleFontData* const font_data = font->PrimaryFont();
+  ASSERT_TRUE(font_data->IsFixedPitch());
+
+  const auto CanCompact = [&](hb_direction_t direction) {
+    return MakeGarbageCollected<ShapeResultRun>(
+               font_data, direction, CanvasRotationInVertical::kRegular,
+               HB_SCRIPT_LATIN, 0, 8, 8)
+        ->CanUseMonospaceGlyphCompaction(/*num_glyphs*/ 8);
+  };
+  EXPECT_TRUE(CanCompact(HB_DIRECTION_LTR));
+  EXPECT_FALSE(CanCompact(HB_DIRECTION_RTL));
+  EXPECT_FALSE(CanCompact(HB_DIRECTION_TTB));
+  EXPECT_FALSE(CanCompact(HB_DIRECTION_BTT));
+}
+
 TEST_F(HarfBuzzShaperTest, PositionForOffsetArabic) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 

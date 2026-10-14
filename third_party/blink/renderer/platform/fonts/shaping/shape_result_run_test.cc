@@ -8,12 +8,90 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
+#include <string>
+#include <utility>
 
+#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkString.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
 namespace {
+
+// Avoids platform font-backend classification.
+class TestTypeface final : public SkTypeface {
+ public:
+  explicit TestTypeface(bool is_fixed_pitch)
+      : SkTypeface(SkFontStyle(), is_fixed_pitch) {}
+
+ private:
+  class EmptyLocalizedStrings final : public LocalizedStrings {
+   public:
+    bool next(LocalizedString*) override { return false; }
+  };
+
+  sk_sp<SkTypeface> onMakeClone(const SkFontArguments&) const override {
+    return sk_ref_sp(this);
+  }
+  std::unique_ptr<SkScalerContext> onCreateScalerContext(
+      const SkScalerContextEffects&,
+      const SkDescriptor*) const override {
+    NOTREACHED();
+  }
+  void onFilterRec(SkScalerContextRec*) const override {}
+  std::unique_ptr<SkAdvancedTypefaceMetrics> onGetAdvancedMetrics()
+      const override {
+    NOTREACHED();
+  }
+  void getPostScriptGlyphNames(SkString*) const override {}
+  void getGlyphToUnicodeMap(SkSpan<SkUnichar>) const override {}
+  std::unique_ptr<SkStreamAsset> onOpenStream(int*) const override {
+    return nullptr;
+  }
+  bool onGlyphMaskNeedsCurrentColor() const override { return false; }
+  int onGetVariationDesignPosition(
+      SkSpan<SkFontArguments::VariationPosition::Coordinate>) const override {
+    return 0;
+  }
+  int onGetVariationDesignParameters(
+      SkSpan<SkFontParameters::Variation::Axis>) const override {
+    return 0;
+  }
+  void onGetFontDescriptor(SkFontDescriptor*, bool*) const override {}
+  void onCharsToGlyphs(SkSpan<const SkUnichar>,
+                       SkSpan<SkGlyphID> glyphs) const override {
+    for (SkGlyphID& glyph : glyphs) {
+      glyph = 0;
+    }
+  }
+  int onCountGlyphs() const override { return 0; }
+  int onGetUPEM() const override { return 0; }
+  void onGetFamilyName(SkString* family_name) const override {
+    family_name->reset();
+  }
+  bool onGetPostScriptName(SkString*) const override { return false; }
+  LocalizedStrings* onCreateFamilyNameIterator() const override {
+    return new EmptyLocalizedStrings;
+  }
+  int onGetTableTags(SkSpan<SkFontTableTag>) const override { return 0; }
+  size_t onGetTableData(SkFontTableTag, size_t, size_t, void*) const override {
+    return 0;
+  }
+};
+
+SimpleFontData* CreateTestFontData(bool is_fixed_pitch) {
+  sk_sp<SkTypeface> typeface = sk_make_sp<TestTypeface>(is_fixed_pitch);
+  auto* platform_data = MakeGarbageCollected<FontPlatformData>(
+      std::move(typeface), std::string(), 0, false, false,
+      TextRenderingMode::kAutoTextRendering, ResolvedFontFeatures());
+  return MakeGarbageCollected<SimpleFontData>(platform_data);
+}
 
 ShapeResultRun* CreateTestShapeResultRun(wtf_size_t num_glyphs,
                                          wtf_size_t num_characters,
@@ -43,6 +121,29 @@ class ShapeResultRunTest : public testing::Test {
     }
     run->width_ = num_glyphs * 10.0f;
     return run;
+  }
+
+  ShapeResultRun* CreateRepeatedGlyphRun(const SimpleFontData* font,
+                                         unsigned num_glyphs) {
+    ShapeResultRun* run =
+        CreateConstantAdvanceRun(num_glyphs, num_glyphs, font);
+    for (unsigned i = 0; i < num_glyphs; ++i) {
+      run->glyph_data_.MutableGlyphAt(i).glyph = 42;
+    }
+    return run;
+  }
+
+  bool GlyphDataWouldCompact(const ShapeResultRun& run) {
+    ShapeResultRun* copy = MakeGarbageCollected<ShapeResultRun>(run);
+    return copy->glyph_data_.TryMakeCompact();
+  }
+
+  bool CanCompact(const ShapeResultRun& run) {
+    return run.CanUseMonospaceGlyphCompaction(run.glyph_data_.size());
+  }
+
+  bool TryMakeCompactIfEligible(ShapeResultRun* run) {
+    return CanCompact(*run) && run->glyph_data_.TryMakeCompact();
   }
 
   ShapeResultRun* CreateCompactRun(wtf_size_t num_glyphs,
@@ -161,6 +262,49 @@ TEST_F(ShapeResultRunTest, LargeNumCharacters) {
   ShapeResultRun* run =
       CreateTestShapeResultRun(/*num_glyphs*/ 2, kNumCharacters);
   EXPECT_EQ(kNumCharacters, run->NumCharacters());
+}
+
+TEST_F(ShapeResultRunTest, NonFixedPitchRepeatedGlyphsDoNotCompact) {
+  const SimpleFontData* const font_data =
+      CreateTestFontData(/*is_fixed_pitch=*/false);
+  ASSERT_FALSE(font_data->IsFixedPitch());
+
+  ShapeResultRun* run = CreateRepeatedGlyphRun(font_data, 16);
+  ASSERT_TRUE(GlyphDataWouldCompact(*run));
+  EXPECT_FALSE(CanCompact(*run));
+  EXPECT_FALSE(TryMakeCompactIfEligible(run));
+  EXPECT_FALSE(run->GetGlyphDataRange().IsCompactSource());
+
+  ShapeResultRun* sub_run = run->CreateSubRun(2, 14);
+  ASSERT_TRUE(sub_run);
+  ASSERT_TRUE(GlyphDataWouldCompact(*sub_run));
+  EXPECT_FALSE(CanCompact(*sub_run));
+  EXPECT_FALSE(TryMakeCompactIfEligible(sub_run));
+  EXPECT_FALSE(sub_run->GetGlyphDataRange().IsCompactSource());
+}
+
+TEST_F(ShapeResultRunTest, FixedPitchDoesNotGuaranteeConstantAdvances) {
+  const SimpleFontData* const font_data =
+      CreateTestFontData(/*is_fixed_pitch=*/true);
+  ASSERT_TRUE(font_data->IsFixedPitch());
+  constexpr unsigned kNumGlyphs = 16;
+  ShapeResultRun* uniform_run =
+      CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs, font_data);
+  ASSERT_TRUE(TryMakeCompactIfEligible(uniform_run));
+  EXPECT_TRUE(uniform_run->GetGlyphDataRange().IsCompactSource());
+
+  for (unsigned variable_index : {0u, kNumGlyphs / 2, kNumGlyphs - 1}) {
+    SCOPED_TRACE(variable_index);
+    ShapeResultRun* run =
+        CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs, font_data);
+    run->glyph_data_.MutableGlyphAt(variable_index).SetAdvance(20.0f);
+    run->width_ += 10.0f;
+    ASSERT_TRUE(CanCompact(*run));
+    EXPECT_FALSE(TryMakeCompactIfEligible(run));
+    EXPECT_FALSE(run->GetGlyphDataRange().IsCompactSource());
+    EXPECT_EQ(TextRunLayoutUnit(20),
+              run->glyph_data_.GlyphAt(variable_index).advance);
+  }
 }
 
 TEST_F(ShapeResultRunTest, GlyphDataCopyFromRange) {

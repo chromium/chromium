@@ -100,6 +100,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   bool IsHorizontal() const {
     return HB_DIRECTION_IS_HORIZONTAL(HbDirection());
   }
+  bool CanUseMonospaceGlyphCompaction(unsigned num_glyphs) const;
   CanvasRotationInVertical CanvasRotation() const { return canvas_rotation_; }
   wtf_size_t NextSafeToBreakOffset(wtf_size_t) const;
   wtf_size_t PreviousSafeToBreakOffset(wtf_size_t) const;
