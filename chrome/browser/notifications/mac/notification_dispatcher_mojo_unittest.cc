@@ -445,6 +445,26 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
 }
 
 TEST_F(NotificationDispatcherMojoTest,
+       ServiceDisconnectRecoversWhenProviderStaysConnected) {
+  DisplayNotificationSync();
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  // Simulate the service pipe closing while the provider stays connected (e.g.
+  // a dummy provider or a shim that drops the service receiver).
+  task_environment_.FastForwardBy(base::Seconds(30));
+  base::test::TestFuture<void> disconnect_future;
+  ExpectDisconnect(disconnect_future.GetCallback());
+  provider_factory_->DisconnectServiceOnly();
+  EXPECT_TRUE(disconnect_future.Wait());
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+
+  // Expect the service to be restarted after the restart timer fires.
+  EmulateOkayToTerminate(/*can_terminate=*/false);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoTest,
        GetDisplayedNotificationsCallbacksRunOnServiceDisconnect) {
   DisplayNotificationSync();
   EXPECT_TRUE(provider_factory_->is_service_connected());
@@ -503,6 +523,10 @@ TEST_F(NotificationDispatcherMojoTest,
 
   // Subsequent GetDisplayed* calls while service_ is disconnected (or before a
   // restart completes) should also invoke their callbacks rather than hanging.
+  EXPECT_CALL(service(), GetDisplayedNotifications).WillOnce([&]() {
+    provider_factory_->DisconnectServiceOnly();
+  });
+
   notification_dispatcher_->GetDisplayedNotificationsForProfileId(
       kProfileId, /*incognito=*/false, profile_future.GetCallback());
   notification_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(

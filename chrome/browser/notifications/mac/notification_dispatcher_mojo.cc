@@ -280,6 +280,9 @@ NotificationDispatcherMojo::GetOrCreateService() {
         base::Unretained(this), ShutdownType::kUnexpected));
     provider_->BindNotificationService(service_.BindNewPipeAndPassReceiver(),
                                        handler_.BindNewPipeAndPassRemote());
+    service_.set_disconnect_handler(base::BindOnce(
+        &NotificationDispatcherMojo::OnServiceDisconnectedGracefully,
+        base::Unretained(this), ShutdownType::kUnexpected));
   }
   return service_.get();
 }
