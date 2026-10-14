@@ -27,6 +27,10 @@
   width: 100vw;
 }
 
+:host([is-modal-dialog_]) {
+  min-height: 560px;
+}
+
 /* Keep consistent with managed_user_profile_notice_disclosure_refresh.css */
 @media screen and ((max-width: 1024px) or (max-height: 750px)) {
   :host {

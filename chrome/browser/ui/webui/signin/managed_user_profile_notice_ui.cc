@@ -54,6 +54,7 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -80,6 +81,8 @@ void AddResourcePaths(content::WebUIDataSource* source) {
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_CSS_JS},
       {"signals_disclaimer.css.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_CSS_JS},
+      {"signals_disclaimer_refresh.css.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_REFRESH_CSS_JS},
       {"managed_user_profile_notice_disclosure_refresh.css.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_CSS_JS},
       {"managed_user_profile_notice_refresh_shared.css.js",
@@ -88,12 +91,16 @@ void AddResourcePaths(content::WebUIDataSource* source) {
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_HTML_JS},
       {"signals_disclaimer.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_HTML_JS},
+      {"signals_disclaimer_refresh.html.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_REFRESH_HTML_JS},
       {"managed_user_profile_notice_disclosure_refresh.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_HTML_JS},
       {"managed_user_profile_notice_disclosure.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_JS},
       {"signals_disclaimer.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_JS},
+      {"signals_disclaimer_refresh.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_REFRESH_JS},
       {"managed_user_profile_notice_disclosure_refresh.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_JS},
       {"managed_user_profile_notice_state.css.js",
@@ -448,6 +455,39 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 }
 
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
+
+// static
+GURL ManagedUserProfileNoticeUI::GetUrl(ScreenType screen_type,
+                                        Profile& profile) {
+  const bool is_in_search_engine_choice_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(&profile))
+          .IsInSearchEngineChoiceScreenRegion();
+
+  bool use_refreshed_ui = false;
+  switch (screen_type) {
+    // Screens shown in the profile picker and FRE flows.
+    case ScreenType::kEntepriseAccountSyncEnabled:
+    case ScreenType::kEntepriseAccountSyncDisabled:
+    case ScreenType::kConsumerAccountSyncDisabled:
+    case ScreenType::kProfilePicker:
+    case ScreenType::kFirstRun:
+      use_refreshed_ui = switches::IsFirstRunDesktopRefreshEnabled(
+          is_in_search_engine_choice_region);
+      break;
+    case ScreenType::kDeviceSignalsDisclaimer:
+      use_refreshed_ui = switches::IsEnterpriseSigninDialogsRefreshEnabled(
+          is_in_search_engine_choice_region);
+      break;
+    case ScreenType::kEnterpriseAccountCreation:
+    case ScreenType::kEnterpriseOIDC:
+      break;
+  }
+
+  return use_refreshed_ui
+             ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+             : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl);
+}
 
 ManagedUserProfileNoticeHandler*
 ManagedUserProfileNoticeUI::GetHandlerForTesting() {

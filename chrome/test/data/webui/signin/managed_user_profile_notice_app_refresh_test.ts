@@ -8,6 +8,7 @@ import type {ManagedUserProfileNoticeAppRefreshElement} from 'chrome://managed-u
 import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl, ScreenType, State} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import type {ManagedUserProfileNoticeDisclosureRefreshElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_disclosure_refresh.js';
+import type {SignalsDisclaimerRefreshElement} from 'chrome://managed-user-profile-notice/signals_disclaimer_refresh.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,7 +54,8 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
    * Checks that the expected image url is displayed.
    */
   function checkImageUrl(
-      targetElement: ManagedUserProfileNoticeDisclosureRefreshElement,
+      targetElement: ManagedUserProfileNoticeDisclosureRefreshElement|
+      SignalsDisclaimerRefreshElement,
       expectedUrl: string) {
     assertTrue(isVisible(targetElement.$.avatar));
     assertEquals(expectedUrl, targetElement.$.avatar.src);
@@ -97,6 +99,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
 
     const allSections = [
       '#disclosure',
+      '#signals-disclaimer',
       '#processing',
       '#error',
       '#timeout',
@@ -107,6 +110,12 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         State.DISCLOSURE, ['#disclosure', '#proceedButton', '#cancelButton'],
         allSections.filter(id => id !== '#disclosure'),
         testManagedUserProfileInfo.proceedLabel);
+
+    await checkState(
+        State.SIGNALS_DISCLAIMER,
+        ['#signals-disclaimer', '#proceedButton', '#cancelButton'],
+        allSections.filter(id => id !== '#signals-disclaimer'),
+        app.i18n('signalsDisclaimerContinueLabel'));
 
     await checkState(
         State.PROCESSING, ['#processing', '#cancelButton'],
@@ -125,6 +134,70 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         State.SUCCESS, ['#success', '#proceedButton'],
         [...allSections.filter(id => id !== '#success'), '#cancelButton'],
         testManagedUserProfileInfo.proceedLabel);
+  });
+
+  test('signalsDisclaimerSection', async function() {
+    webUIListenerCallback('on-state-changed', State.SIGNALS_DISCLAIMER);
+    await microtasksFinished();
+
+    const targetElement =
+        app.shadowRoot.querySelector<SignalsDisclaimerRefreshElement>(
+            '#signals-disclaimer');
+    assertTrue(!!targetElement);
+
+    assertTrue(isVisible(targetElement.$.title));
+    assertEquals(
+        app.i18n('signalsDisclaimerTitle'),
+        targetElement.$.title.textContent.trim());
+    assertTrue(isVisible(targetElement.$.subtitle));
+    assertTrue(targetElement.$.subtitle.textContent.includes(
+        app.i18n('signalsDisclaimerSubtitle')));
+    assertTrue(isVisible(app.$.proceedButton));
+    assertEquals(
+        app.i18n('signalsDisclaimerContinueLabel'),
+        app.$.proceedButton.textContent.trim());
+    assertTrue(isVisible(app.$.cancelButton));
+    assertEquals(
+        app.i18n('signalsDisclaimerCancelLabel'),
+        app.$.cancelButton.textContent.trim());
+
+    checkImageUrl(targetElement, AVATAR_URL_1);
+    assertTrue(isChildVisible(targetElement, '.work-badge'));
+
+    assertTrue(isVisible(targetElement.$.learnMoreLink));
+    targetElement.$.learnMoreLink.click();
+    await browserProxy.whenCalled('learnMoreClicked');
+  });
+
+  test('signalsDisclaimerKeyboardInteractions', async function() {
+    webUIListenerCallback('on-state-changed', State.SIGNALS_DISCLAIMER);
+    await microtasksFinished();
+
+    const targetElement =
+        app.shadowRoot.querySelector<SignalsDisclaimerRefreshElement>(
+            '#signals-disclaimer');
+    assertTrue(!!targetElement);
+    const learnMoreLink = targetElement.$.learnMoreLink;
+    assertTrue(isVisible(learnMoreLink));
+
+    assertEquals(0, learnMoreLink.tabIndex);
+
+    function pressKey(key: string): KeyboardEvent {
+      const event = new KeyboardEvent(
+          'keydown', {key, bubbles: true, cancelable: true, composed: true});
+      learnMoreLink.dispatchEvent(event);
+      return event;
+    }
+
+    // Only Enter and Space keys should activate the link.
+    assertFalse(pressKey('q').defaultPrevented);
+    assertEquals(0, browserProxy.getCallCount('learnMoreClicked'));
+
+    assertTrue(pressKey('Enter').defaultPrevented);
+    assertEquals(1, browserProxy.getCallCount('learnMoreClicked'));
+
+    assertTrue(pressKey(' ').defaultPrevented);
+    assertEquals(2, browserProxy.getCallCount('learnMoreClicked'));
   });
 
   test('onProfileInfoChangedDisclosureSection', async function() {

@@ -19,7 +19,9 @@
 #endif  //  !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class BrowserWindowInterface;
+class GURL;
 class ManagedUserProfileNoticeHandler;
+class Profile;
 
 namespace content {
 class WebUI;
@@ -60,6 +62,11 @@ class ManagedUserProfileNoticeUI : public ui::MojoWebUIController {
   ManagedUserProfileNoticeUI(const ManagedUserProfileNoticeUI&) = delete;
   ManagedUserProfileNoticeUI& operator=(const ManagedUserProfileNoticeUI&) =
       delete;
+
+  // Returns the URL to load, choosing between the legacy and the refreshed
+  // ManagedUserProfileNotice UI based on the feature flags relevant to
+  // `screen_type`. Callers should use it instead of referencing URLs directly.
+  static GURL GetUrl(ScreenType screen_type, Profile& profile);
 
   // Allows tests to trigger page events.
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();

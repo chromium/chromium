@@ -10,6 +10,7 @@ import './managed_user_profile_notice_disclosure_refresh.js';
 import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state.js';
 import './managed_user_profile_notice_data_handling.js';
+import './signals_disclaimer_refresh.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -213,12 +214,12 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       case ScreenType.ENTERPRISE_ACCOUNT_SYNC_ENABLED:
       case ScreenType.ENTERPRISE_ACCOUNT_SYNC_DISABLED:
       case ScreenType.CONSUMER_ACCOUNT_SYNC_DISABLED:
+      case ScreenType.DEVICE_SIGNALS_DISCLAIMER:
         return AppMode.PROFILE_PICKER;
       case ScreenType.FIRST_RUN:
         return AppMode.FIRST_RUN;
       case ScreenType.ENTERPRISE_ACCOUNT_CREATION:
       case ScreenType.ENTERPRISE_OIDC:
-      case ScreenType.DEVICE_SIGNALS_DISCLAIMER:
         assertNotReached();
       default:
         assertNotReachedCase(screenType);
@@ -234,10 +235,14 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     return this.isState_(State.DISCLOSURE) ||
         this.isState_(State.VALUE_PROPOSITION) ||
         this.isState_(State.USER_DATA_HANDLING) ||
-        this.isState_(State.TIMEOUT) || this.isState_(State.PROCESSING);
+        this.isState_(State.TIMEOUT) || this.isState_(State.PROCESSING) ||
+        this.isState_(State.SIGNALS_DISCLAIMER);
   }
 
   protected getCancelLabel_(): string {
+    if (this.isState_(State.SIGNALS_DISCLAIMER)) {
+      return this.i18n('signalsDisclaimerCancelLabel');
+    }
     if (this.isState_(State.VALUE_PROPOSITION) &&
         !loadTimeData.getBoolean('enforcedByPolicy')) {
       return this.i18n('cancelValueProp');
@@ -268,7 +273,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       case State.TIMEOUT:
         return this.i18n('retryLabel');
       case State.SIGNALS_DISCLAIMER:
-        assertNotReached();
+        return this.i18n('signalsDisclaimerContinueLabel');
       default:
         assertNotReachedCase(this.currentState_);
     }

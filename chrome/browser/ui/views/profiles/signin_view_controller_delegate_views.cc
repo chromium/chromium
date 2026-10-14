@@ -283,7 +283,9 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   ManagedUserProfileNoticeParams::CreateForWebContents(
       web_view->GetWebContents(), &browser, screen_type,
       std::move(create_param));
-  web_view->LoadInitialURL(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+
+  web_view->LoadInitialURL(
+      ManagedUserProfileNoticeUI::GetUrl(screen_type, *browser.GetProfile()));
   return web_view;
 }
 #endif

@@ -17,6 +17,7 @@ export class TestManagedUserProfileNoticeBrowserProxy extends TestBrowserProxy
       'initializedWithSize',
       'proceed',
       'cancel',
+      'learnMoreClicked',
     ]);
 
     this.managedUserProfileInfo_ = info;

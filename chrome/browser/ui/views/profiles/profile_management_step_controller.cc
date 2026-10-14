@@ -428,9 +428,12 @@ class DeviceSignalsDisclaimerStepController
         },
         std::move(step_shown_callback.value()), web_contents_.get());
 
-    host().ShowScreen(web_contents_.get(),
-                      GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-                      std::move(navigation_finished_closure));
+    host().ShowScreen(
+        web_contents_.get(),
+        ManagedUserProfileNoticeUI::GetUrl(
+            ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
+            *profile),
+        std::move(navigation_finished_closure));
   }
 
  private:

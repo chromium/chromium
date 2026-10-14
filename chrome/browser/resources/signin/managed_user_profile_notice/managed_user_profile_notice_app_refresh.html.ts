@@ -64,6 +64,11 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
         @selected-data-handling-changed="${this.onSelectedDataHandlingChanged_}">
     </managed-user-profile-notice-data-handling>
   ` : ''}
+  ${this.isState_(State.SIGNALS_DISCLAIMER) ? html`
+    <signals-disclaimer-refresh id="signals-disclaimer"
+        picture-url="${this.profileInfo_.pictureUrl}">
+    </signals-disclaimer-refresh>
+  ` : ''}
 </div>
 <div class="action-container">
   <cr-button id="proceedButton"

@@ -83,6 +83,16 @@
       calc(var(--disclaimer-card-width) * 2 + var(--disclaimer-cards-gap));
 }
 
+.link {
+  color: var(--color-sys-primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: auto;
+}
+
 .disclaimer-container {
   display: flex;
   gap: var(--disclaimer-cards-gap);
