@@ -111,17 +111,6 @@ constexpr float kMinColorTemperatureInKelvin = 4500;
 constexpr float kNeutralColorTemperatureInKelvin = 6500;
 constexpr float kMaxColorTemperatureInKelvin = 7500;
 
-// Returns the color temperature range bucket in which |temperature| resides.
-// The range buckets are:
-// 0 => Range [0 : 20) (least warm).
-// 1 => Range [20 : 40).
-// 2 => Range [40 : 60).
-// 3 => Range [60 : 80).
-// 4 => Range [80 : 100] (most warm).
-int GetTemperatureRange(float temperature) {
-  return std::clamp(std::floor(5 * temperature), 0.0f, 4.0f);
-}
-
 // Returns the color matrix that corresponds to the given |temperature|.
 // The matrix will be affected by the current |ambient_temperature_| if
 // |apply_ambient_temperature| is true. This matrix should be applied to
@@ -680,11 +669,7 @@ void NightLightControllerImpl::OnAmbientColorEnabledPrefChanged() {
 
 void NightLightControllerImpl::OnColorTemperaturePrefChanged() {
   DCHECK(active_user_pref_service());
-  const float color_temperature = GetColorTemperature();
-  UMA_HISTOGRAM_EXACT_LINEAR(
-      "Ash.NightLight.Temperature", GetTemperatureRange(color_temperature),
-      5 /* number of buckets defined in GetTemperatureRange() */);
-  RefreshDisplaysTemperature(color_temperature);
+  RefreshDisplaysTemperature(GetColorTemperature());
 }
 
 void NightLightControllerImpl::RefreshFeatureState(RefreshReason reason) {

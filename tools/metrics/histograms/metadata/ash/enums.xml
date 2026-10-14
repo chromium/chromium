@@ -130,17 +130,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Custom Schedule"/>
 </enum>
 
-<enum name="AshNightLightTemperatureRanges">
-  <summary>
-    Defines the ranges in which the value of the color temperature may reside
-  </summary>
-  <int value="0" label="[0 to 20) (coldest)"/>
-  <int value="1" label="[20 to 40)"/>
-  <int value="2" label="[40 to 60)"/>
-  <int value="3" label="[60 to 80)"/>
-  <int value="4" label="[80 to 100] (warmest)"/>
-</enum>
-
 <enum name="AshPipEvents">
   <summary>Various individual Picture-in-picture events.</summary>
   <int value="0" label="PIP start"/>
