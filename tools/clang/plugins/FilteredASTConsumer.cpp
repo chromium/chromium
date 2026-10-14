@@ -4,6 +4,8 @@
 
 #include "FilteredASTConsumer.h"
 
+#include <algorithm>
+#include <cassert>
 #include <memory>
 
 #include "clang/AST/Decl.h"
@@ -49,6 +51,12 @@ class FilteredASTConsumer::NonSystemCodeInSystemHeaderFinder
       clang::SourceLocation loc =
           source_manager_.getExpansionLoc(range.getBegin());
       if (source_manager_.isInSystemHeader(loc)) {
+        // MacroExpands() fires in preprocessing order, which advances
+        // monotonically through the translation unit, so `locations_` stays
+        // sorted by isBeforeInTranslationUnit(). HasNonSystemCodeIn() relies
+        // on this to binary-search instead of scanning linearly.
+        assert(locations_.empty() || source_manager_.isBeforeInTranslationUnit(
+                                         locations_.back(), loc));
         locations_.push_back(loc);
       }
     }
@@ -57,13 +65,17 @@ class FilteredASTConsumer::NonSystemCodeInSystemHeaderFinder
   // Returns true if code from a non-system file shows up in `range`, which has
   // to consist of file locations.
   bool HasNonSystemCodeIn(clang::SourceRange range) const {
-    for (clang::SourceLocation loc : locations_) {
-      if (!source_manager_.isBeforeInTranslationUnit(loc, range.getBegin()) &&
-          !source_manager_.isBeforeInTranslationUnit(range.getEnd(), loc)) {
-        return true;
-      }
-    }
-    return false;
+    auto is_before = [&](clang::SourceLocation a, clang::SourceLocation b) {
+      return source_manager_.isBeforeInTranslationUnit(a, b);
+    };
+    // `locations_` is sorted (see MacroExpands()), so find the first recorded
+    // location that is not before `range`'s start...
+    auto it = std::lower_bound(locations_.begin(), locations_.end(),
+                               range.getBegin(), is_before);
+    // ...and check whether it also falls at or before `range`'s end. Any
+    // later locations can't be in `range` either, since they're sorted.
+    return it != locations_.end() &&
+           !source_manager_.isBeforeInTranslationUnit(range.getEnd(), *it);
   }
 
  private:
