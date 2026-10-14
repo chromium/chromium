@@ -132,6 +132,28 @@ const WindowCycleList* GetCycleList() {
   return Shell::Get()->window_cycle_controller()->window_cycle_list();
 }
 
+class ShutdownVerifyingShellDelegate : public TestShellDelegate {
+ public:
+  ShutdownVerifyingShellDelegate() = default;
+  ShutdownVerifyingShellDelegate(const ShutdownVerifyingShellDelegate&) =
+      delete;
+  ShutdownVerifyingShellDelegate& operator=(
+      const ShutdownVerifyingShellDelegate&) = delete;
+  ~ShutdownVerifyingShellDelegate() override = default;
+
+  // TestShellDelegate:
+  void SetTabScrubberEnabled(bool enabled) override {
+    TestShellDelegate::SetTabScrubberEnabled(enabled);
+    if (enabled) {
+      // When `WindowCycleList::~WindowCycleList()` re-enables the tab scrubber
+      // during `Shell::~Shell()`, `WindowCycleController` and
+      // `EventRewriterController` must still be alive on `Shell`.
+      EXPECT_NE(nullptr, Shell::Get()->window_cycle_controller());
+      EXPECT_NE(nullptr, Shell::Get()->event_rewriter_controller());
+    }
+  }
+};
+
 }  // namespace
 
 // Wrapper for WindowCycleList that exposes internal state to test functions.
@@ -3943,6 +3965,73 @@ TEST_F(SameAppWindowCycleControllerTest, RecordingSameAppCycleMetrics) {
   histogram_tester.ExpectBucketCount(
       "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/3,
       /*expected_count=*/2);
+}
+
+// Verifies that if all cycled windows are destroyed while `cycle_view_` is
+// still null (during the initial 150ms UI show delay), window cycling is
+// immediately canceled rather than leaving an empty `WindowCycleList` alive.
+TEST_F(WindowCycleControllerTest,
+       DestroyAllWindowsDuringInitialDelayCancelsCycling) {
+  WindowCycleList::SetDisableInitialDelayForTesting(false);
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
+  wm::ActivateWindow(window0.get());
+
+  controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_FALSE(CycleViewExists());
+
+  window0.reset();
+  EXPECT_TRUE(controller->IsCycling());
+  window1.reset();
+  EXPECT_FALSE(controller->IsCycling());
+}
+
+class WindowCycleControllerShutdownTest : public WindowCycleControllerTest {
+ public:
+  WindowCycleControllerShutdownTest() = default;
+  WindowCycleControllerShutdownTest(const WindowCycleControllerShutdownTest&) =
+      delete;
+  WindowCycleControllerShutdownTest& operator=(
+      const WindowCycleControllerShutdownTest&) = delete;
+  ~WindowCycleControllerShutdownTest() override = default;
+
+ protected:
+  // WindowCycleControllerTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    WindowCycleControllerTest::SetUpInitParams(init_params);
+    init_params.delegate = std::make_unique<ShutdownVerifyingShellDelegate>();
+  }
+};
+
+// Verifies that `Shell::~Shell()` cancels any active window cycling session
+// early during teardown (while `Shell::window_cycle_controller()` and
+// `Shell::event_rewriter_controller()` are still valid), even when cycling in
+// per-active-desk mode on an empty active desk where closing windows on other
+// desks does not notify `WindowCycleList::OnWindowDestroying()`.
+TEST_F(WindowCycleControllerShutdownTest,
+       ShellDestructionCancelsActiveWindowCycling) {
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Create a shell-owned app window on Desk 1, then switch to empty Desk 2 and
+  // enable per-desk Alt+Tab mode so `WindowCycleList` is created with an empty
+  // `windows_` list.
+  std::ignore = CreateWindowWithAppType(AppType::SYSTEM_APP).release();
+  ActivateDesk(desks_controller->GetDeskAtIndex(1));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kAltTabPerDesk, true);
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  controller->StartCycling(/*same_app_only=*/false);
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_TRUE(GetWindows(controller).empty());
+  // Leave cycling active as the test finishes so `Shell::~Shell()` tears it
+  // down during `AshTestBase::TearDown()`.
 }
 
 }  // namespace ash

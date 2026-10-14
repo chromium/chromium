@@ -121,3 +121,16 @@ source_set("browser_tests") {
     "//ui/wm",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "chrome_shell_delegate_unittest.cc" ]
+
+  deps = [
+    ":shell_delegate",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_ash_test_base",
+    "//testing/gtest",
+  ]
+}

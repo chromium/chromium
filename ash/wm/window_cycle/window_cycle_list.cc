@@ -335,12 +335,12 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
     auto* new_target_window =
         windows_.empty() ? nullptr : windows_[current_index_].get();
     cycle_view_->HandleWindowDestruction(window, new_target_window);
+  }
 
-    if (windows_.empty()) {
-      // This deletes us.
-      Shell::Get()->window_cycle_controller()->CancelCycling();
-      return;
-    }
+  if (windows_.empty()) {
+    // This deletes us.
+    Shell::Get()->window_cycle_controller()->CancelCycling();
+    return;
   }
 }
 

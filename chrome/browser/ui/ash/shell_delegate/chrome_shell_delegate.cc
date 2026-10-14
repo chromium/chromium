@@ -264,7 +264,9 @@ bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
 }
 
 void ChromeShellDelegate::SetTabScrubberEnabled(bool enabled) {
-  ash::TabScrubber::GetInstance()->SetEnabled(enabled);
+  if (ash::TabScrubber* tab_scrubber = ash::TabScrubber::GetInstance()) {
+    tab_scrubber->SetEnabled(enabled);
+  }
 }
 
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {

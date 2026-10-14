@@ -257,7 +257,9 @@ void WindowCycleController::CompleteCycling() {
 }
 
 void WindowCycleController::CancelCycling() {
-  StopCycling();
+  if (IsCycling()) {
+    StopCycling();
+  }
 }
 
 void WindowCycleController::MaybeResetCycleList() {

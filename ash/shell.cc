@@ -876,6 +876,11 @@ Shell::~Shell() {
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
       base::NullCallback());
 
+  // Cancel any active or pending Alt+Tab window cycling before closing app
+  // windows and resetting `event_rewriter_controller_`, which
+  // `WindowCycleList::~WindowCycleList()` depends on.
+  window_cycle_controller_->CancelCycling();
+
   // Close and destroy all application windows here, so that the window manager
   // related objects, which app windows relies on, can be sefely deleted.
   CloseAllAppWindows();
