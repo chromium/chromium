@@ -278,6 +278,7 @@ pnp_id_table(const char *key)
     case 4343116: return "Beltronic Industrieelektronik GmbH";
     case 4343119: return "Baug \046 Olufsen";
     case 4343365: return "B.F. Engineering Corporation";
+    case 4343380: return "Barnfind Technologies";
     case 4343618: return "Barco Graphics N.V";
     case 4343636: return "Budzetron Inc";
     case 4343898: return "BitHeadz, Inc.";
@@ -1146,7 +1147,7 @@ pnp_id_table(const char *key)
     case 4805720: return "integrated Technology Express Inc";
     case 4805955: return "ICSL";
     case 4806217: return "Intervoice Inc";
-    case 4806221: return "Iiyama North America";
+    case 4806221: return "iiyama Corporation";
     case 4806223: return "InfoVision Optoelectronics \050Kunshan\051 Co.,Ltd China";
     case 4806226: return "Inlife\055Handnet Co., Ltd.";
     case 4806227: return "Intevac Photonics Inc.";
@@ -2354,6 +2355,7 @@ pnp_id_table(const char *key)
     case 5588308: return "Universal Empowering Technologies";
     case 5588551: return "UNIGRAF\055USA";
     case 5588559: return "UFO Systems Inc";
+    case 5588818: return "Ugreen Group Ltd.";
     case 5589058: return "XOCECO";
     case 5589315: return "Uniform Industrial Corporation";
     case 5589586: return "Ueda Japan Radio Co., Ltd.";

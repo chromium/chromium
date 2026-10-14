@@ -2634,7 +2634,7 @@ deps = {
     Var('chromium_git') + '/external/google3/cros_components.git' + '@' + Var('cros_components_revision'),
 
   'src/third_party/libdisplay-info/src': {
-      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/emersion/libdisplay-info.git' + '@' + '66b802d05b374cd8f388dc6ad1e7ae4f08cb3300',
+      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/emersion/libdisplay-info.git' + '@' + 'c67a3e9bedb05ab61c7443704a1a107e76254595',
       'condition': 'checkout_linux and checkout_mutter',
   },
 

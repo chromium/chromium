@@ -28,12 +28,16 @@ source_set("libdisplay_info") {
 
   sources = [
     "src/cta-vic-table.c",
+    "src/cta-vic.c",
     "src/cta.c",
     "src/cvt.c",
     "src/displayid.c",
+    "src/displayid2.c",
     "src/dmt-table.c",
+    "src/dmt.c",
     "src/edid.c",
     "src/gtf.c",
+    "src/hdmi-vic.c",
     "src/info.c",
     "src/log.c",
     "src/memory-stream.c",
