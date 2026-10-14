@@ -119,6 +119,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // media position in seconds has changed.
   void MaybeNotifyProgressPositionChanged();
 
+  // Updates the accessible value text, along with the accessible minimum,
+  // maximum and current range values, from the current media duration and
+  // position. Does not fire an accessibility event.
+  void UpdateAccessibleValue();
+
   // Handles the event when user drags the progress line using a mouse or
   // gesture on a tablet. If the user only intends to click, these functions are
   // still called but the work will be skipped.
@@ -167,6 +172,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
 
   // The media position last announced for accessibility.
   base::TimeDelta last_announced_position_ = base::TimeDelta::Min();
+
+  // Whether the next position change should fire a value changed event. Only
+  // user initiated seeks are announced, so that positions advancing with
+  // playback do not make screen readers announce every second.
+  bool announce_next_position_change_ = false;
 
   // The progress phase offset changing as time passes for the progress wave to
   // move.

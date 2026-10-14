@@ -5,9 +5,11 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include <cmath>
+#include <utility>
 
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/time_formatting.h"
 #include "cc/paint/paint_flags.h"
 #include "components/global_media_controls/public/format_duration.h"
 #include "components/strings/grit/components_strings.h"
@@ -95,6 +97,18 @@ constexpr float kFocusRingRadius = 18.0f;
 // Defines how much the current media position will change for increment.
 constexpr base::TimeDelta kCurrentPositionChange = base::Seconds(5);
 
+// Spelled-out duration (e.g. "2 minutes, 0 seconds") so screen readers don't
+// read "2:00" as a time of day. Floors to match the visible timestamp label.
+std::u16string GetAccessibleDuration(base::TimeDelta duration) {
+  std::u16string result;
+  if (!base::TimeDurationCompactFormatWithSeconds(
+          base::Seconds(duration.InSeconds()), base::DURATION_WIDTH_WIDE,
+          &result)) {
+    return GetFormattedDuration(duration);
+  }
+  return result;
+}
+
 }  // namespace
 
 MediaProgressView::MediaProgressView(
@@ -132,7 +146,7 @@ MediaProgressView::MediaProgressView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
-  GetViewAccessibility().SetValue(GetFormattedDuration(base::TimeDelta()));
+  UpdateAccessibleValue();
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
@@ -180,6 +194,7 @@ bool MediaProgressView::HandleAccessibleAction(
     return views::View::HandleAccessibleAction(action_data);
   }
   if (new_value != current_value_) {
+    announce_next_position_change_ = true;
     seek_callback_.Run(new_value);
     return true;
   }
@@ -389,6 +404,7 @@ bool MediaProgressView::OnKeyPressed(const ui::KeyEvent& event) {
   double new_value =
       CalculateNewValue(current_position_ + direction * kCurrentPositionChange);
   if (new_value != current_value_) {
+    announce_next_position_change_ = true;
     seek_callback_.Run(new_value);
     return true;
   }
@@ -466,6 +482,12 @@ void MediaProgressView::UpdateProgress(
   media_duration_ = media_position.duration();
   is_live_ = media_duration_.is_max();
 
+  // Update here, not in MaybeNotifyProgressPositionChanged(). That one returns
+  // early unless the position moved a whole second. The duration can change
+  // while the position stays put, which would leave a stale max. See
+  // HTMLMediaElement::DurationChanged().
+  UpdateAccessibleValue();
+
   // Always update all internal state (progress and wave phase)
   // so the state is accurate the moment we become visible.
   double new_value = CalculateNewValue(current_position_);
@@ -521,13 +543,42 @@ base::TimeDelta MediaProgressView::GetUpdateInterval() const {
                                            : kDefaultProgressUpdateInterval;
 }
 
+void MediaProgressView::UpdateAccessibleValue() {
+  // Refresh the value without firing an event. Focus still reads the current
+  // value. MaybeNotifyProgressPositionChanged() decides when to announce, so
+  // playback does not speak every second.
+  views::ScopedAccessibilityEventBlocker scoped_event_blocker(
+      GetViewAccessibility());
+
+  // Before the first UpdateProgress() the position still holds its sentinel
+  // value, so clamp it to zero.
+  const base::TimeDelta position =
+      std::max(current_position_, base::TimeDelta());
+
+  GetViewAccessibility().SetValue(GetAccessibleDuration(position));
+
+  // Live media has no end, and the duration starts at a sentinel. Report an
+  // empty range for both, so no stale or fake bounds leak out.
+  const bool has_range = !media_duration_.is_max();
+  GetViewAccessibility().SetMinValueForRange(0.0f);
+  GetViewAccessibility().SetMaxValueForRange(
+      has_range ? static_cast<float>(media_duration_.InSeconds()) : 0.0f);
+  GetViewAccessibility().SetValueForRange(
+      has_range ? static_cast<float>(position.InSeconds()) : 0.0f);
+}
+
 void MediaProgressView::MaybeNotifyProgressPositionChanged() {
   if (current_position_.InSeconds() == last_announced_position_.InSeconds()) {
     return;
   }
   last_announced_position_ = current_position_;
   on_update_progress_callback_.Run(current_position_);
-  GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
+
+  // Only announce positions the user asked for.
+  if (std::exchange(announce_next_position_change_, false)) {
+    GetViewAccessibility().NotifyEvent(ax::mojom::Event::kValueChanged,
+                                       /*send_native_event=*/true);
+  }
 }
 
 void MediaProgressView::OnProgressDragStarted(double location) {
@@ -603,6 +654,7 @@ void MediaProgressView::HandleSeeking(double location) {
   if (base::i18n::IsRTL()) {
     seek_to_progress = 1.0 - seek_to_progress;
   }
+  announce_next_position_change_ = true;
   seek_callback_.Run(seek_to_progress);
 }
 

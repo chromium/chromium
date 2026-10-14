@@ -11,11 +11,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_test_api.h"
 
@@ -97,6 +99,11 @@ class MediaProgressViewTest : public views::ViewsTestBase {
   MOCK_METHOD1(OnProgressUpdated, void(base::TimeDelta));
 
  private:
+  // Pin the locale so the expected strings below hold regardless of the host
+  // configuration.
+  base::i18n::ScopedDefaultIcuLocale scoped_locale_{
+      base::i18n::GetKnownLanguageTag("en-US")};
+
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaProgressView> view_ = nullptr;
   raw_ptr<base::MockOneShotTimer> update_progress_timer_ = nullptr;
@@ -490,7 +497,18 @@ TEST_F(MediaProgressViewTest, MediaProgressAccessibleValue) {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
-            u"0:00");
+            u"0 seconds");
+
+  // Before the first UpdateProgress() the position and duration still hold
+  // their sentinel values, which must not leak into the accessible range.
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange),
+      0.0f);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      0.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            0.0f);
 
   media_session::MediaPosition media_position(
       /*playback_rate=*/0, /*duration=*/base::Seconds(6),
@@ -501,7 +519,280 @@ TEST_F(MediaProgressViewTest, MediaProgressAccessibleValue) {
   data = ui::AXNodeData();
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
-            u"0:03");
+            u"3 seconds");
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange),
+      0.0f);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      6.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            3.0f);
+}
+
+TEST_F(MediaProgressViewTest, MediaProgressAccessibleValueSpellsOutMinutes) {
+  // A whole number of minutes must not be read back as a time of day. "2:00"
+  // would be announced as "2 o'clock", which is the bug this guards against.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(120), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+            u"2 minutes, 0 seconds");
+}
+
+TEST_F(MediaProgressViewTest, MediaProgressAccessibleValueFloorsSubSeconds) {
+  // Fractional seconds are floored to match the visible timestamp label.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Milliseconds(125600),
+      /*position=*/base::Milliseconds(63600), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+            u"1 minute, 3 seconds");
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      125.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            63.0f);
+}
+
+TEST_F(MediaProgressViewTest, MediaProgressAccessibleMaxUpdatesWithDuration) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(100),
+      /*position=*/base::Seconds(10), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      100.0f);
+
+  // Same position, new duration. The max must update even though the position
+  // did not change.
+  media_position = media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(200),
+      /*position=*/base::Seconds(10), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
+  view()->UpdateProgress(media_position);
+
+  data = ui::AXNodeData();
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      200.0f);
+}
+
+TEST_F(MediaProgressViewTest,
+       MediaProgressAccessibleCollapsedRangeForLiveMedia) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+            u"5 minutes, 0 seconds");
+  // Live media has no end, so the range collapses to zero.
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange),
+      0.0f);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      0.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            0.0f);
+}
+
+TEST_F(MediaProgressViewTest,
+       MediaProgressAccessibleRangeClearedWhenGoingLive) {
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false));
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      600.0f);
+
+  // Switching to live must not leave the previous bounds behind, otherwise the
+  // scrubber advertises a range it can no longer be seeked within.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(150), /*end_of_media=*/false));
+
+  data = ui::AXNodeData();
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      0.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            0.0f);
+}
+
+TEST_F(MediaProgressViewTest, MediaProgressAccessibleRangeAfterLiveEnds) {
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false));
+  // While live, the position moves but the range value is not updated.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(150), /*end_of_media=*/false));
+  // Back to normal at the same position as the last live update. The range
+  // value must catch up even though the position did not change.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(700),
+      /*position=*/base::Seconds(150), /*end_of_media=*/false));
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange),
+      0.0f);
+  EXPECT_EQ(
+      data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange),
+      700.0f);
+  EXPECT_EQ(data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange),
+            150.0f);
+}
+
+TEST_F(MediaProgressViewTest, OnlyAnnouncesPositionChangesFromUserSeeks) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*this, SeekTo(testing::_)).Times(testing::AnyNumber());
+
+  // Position changes driven by ongoing playback must be applied silently,
+  // otherwise screen readers re-announce the scrubber once per second and
+  // interrupt themselves mid-phrase.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(3), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 0);
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(4), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 0);
+
+  // A keyboard seek marks the next position change as user initiated.
+  ui::KeyEvent right_key(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                         ui::EF_NONE);
+  EXPECT_TRUE(view()->OnKeyPressed(right_key));
+
+  // The controller responds to the seek with a new position, which is the one
+  // the user should hear.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(9), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
+
+  // Playback continues silently again after the seek was announced.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(10), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
+}
+
+TEST_F(MediaProgressViewTest, AnnouncesPositionChangeFromAccessibleAction) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*this, SeekTo(testing::_)).Times(testing::AnyNumber());
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(3), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 0);
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kIncrement;
+  EXPECT_TRUE(view()->HandleAccessibleAction(action_data));
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(8), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
+}
+
+TEST_F(MediaProgressViewTest, AnnouncesPositionChangeFromMouseSeek) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*this, SeekTo(testing::_)).Times(testing::AnyNumber());
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(3), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 0);
+
+  // Pressing does not seek, so nothing should be announced for it.
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(view()->OnMousePressed(pressed_event));
+
+  // Releasing seeks to the clicked position.
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, point, point,
+                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                                ui::EF_LEFT_MOUSE_BUTTON);
+  view()->OnMouseReleased(released_event);
+
+  // The controller responds to the seek with a new position, which is the one
+  // the user should hear.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
+
+  // Playback continues silently again after the seek was announced.
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(301), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
+}
+
+TEST_F(MediaProgressViewTest, AnnouncesPositionChangeFromGestureSeek) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*this, SeekTo(testing::_)).Times(testing::AnyNumber());
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(3), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 0);
+
+  // Tapping down does not seek, so nothing should be announced for it.
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::GestureEvent tapped_event(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+  view()->OnGestureEvent(&tapped_event);
+
+  // Ending the gesture seeks to the tapped position.
+  ui::GestureEvent released_event(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
+  view()->OnGestureEvent(&released_event);
+
+  view()->UpdateProgress(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kValueChanged, view()), 1);
 }
 
 TEST_F(MediaProgressViewTest, PausesForDraggingIfPlayedAfterDraggingStarted) {
