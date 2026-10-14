@@ -62,6 +62,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
@@ -1860,13 +1861,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
             TabModelSelector tabModelSelector = getTabModelSelector();
             assert tabModelSelector != null;
+            boolean isColdStart = !tabModelSelector.isTabStateInitialized();
+            long waitStartTimeMs = TimeUtils.uptimeMillis();
             TabModelUtils.runOnTabStateInitialized(
                     tabModelSelector,
                     (selector) -> {
+                        long waitDurationMs = TimeUtils.uptimeMillis() - waitStartTimeMs;
                         var windowAndroid = assertNonNull(getWindowAndroid());
                         ActorForegroundServiceController.get()
                                 .restoreActiveWindowBackgroundTabs(
-                                        selector, windowAndroid, getTabDelegateFactory());
+                                        selector,
+                                        windowAndroid,
+                                        getTabDelegateFactory(),
+                                        waitDurationMs,
+                                        isColdStart);
                     });
         }
 

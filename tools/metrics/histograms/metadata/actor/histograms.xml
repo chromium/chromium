@@ -143,6 +143,43 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Actor.BackgroundActuation.Restore.Latency.Total{StartupType}"
+    units="ms" expires_after="2027-10-14">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    Records the total UI-thread latency spent restoring active background
+    actuation sessions into a foreground window{StartupType}. Excludes
+    synchronous disk flush time when saving tab state on background task
+    completion. Only recorded when at least one background tab is restored. Note
+    that this metric is only recorded on Android.
+  </summary>
+  <token key="StartupType">
+    <variant name="" summary="across both cold and warm starts"/>
+    <variant name=".ColdStart"
+        summary="when TabModel state is not yet initialized (cold start,
+                 including wait for tab state initialization)"/>
+    <variant name=".WarmStart"
+        summary="when TabModel state is already initialized (warm start)"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Actor.BackgroundActuation.Restore.Latency.WaitForTabStateInitialized"
+    units="ms" expires_after="2027-10-14">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    Records the time spent waiting for TabModelSelector tab state initialization
+    before restoring active window background tabs when ChromeTabbedActivity
+    starts with native and tab state was not already initialized. Only recorded
+    when at least one background tab is restored into the foreground window.
+    Note that this metric is only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.BackgroundActuation.Trigger"
     enum="ActorBackgroundActuationTrigger" expires_after="2027-10-01">
   <owner>bbetini@google.com</owner>

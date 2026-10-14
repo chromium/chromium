@@ -283,12 +283,13 @@ public class ActorTabStateHelperIntegrationTest {
 
                         // Execute restoration
                         List<BackgroundSession> sessionsToRemove =
-                                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
-                                        selector,
-                                        activeWindowId,
-                                        window,
-                                        backgroundSessions,
-                                        delegateFactory);
+                                ActorBackgroundActuationManager
+                                        .restoreActiveWindowBackgroundTabsForTesting(
+                                                selector,
+                                                activeWindowId,
+                                                window,
+                                                backgroundSessions,
+                                                delegateFactory);
                         backgroundSessions.removeAll(sessionsToRemove);
                     } finally {
                         BackgroundTabPoolManager.release(pool);
@@ -355,12 +356,13 @@ public class ActorTabStateHelperIntegrationTest {
 
                         // Execute restoration
                         List<BackgroundSession> sessionsToRemove =
-                                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
-                                        selector,
-                                        windowId,
-                                        window,
-                                        backgroundSessions,
-                                        delegateFactory);
+                                ActorBackgroundActuationManager
+                                        .restoreActiveWindowBackgroundTabsForTesting(
+                                                selector,
+                                                windowId,
+                                                window,
+                                                backgroundSessions,
+                                                delegateFactory);
                         backgroundSessions.removeAll(sessionsToRemove);
                     } finally {
                         BackgroundTabPoolManager.release(pool);

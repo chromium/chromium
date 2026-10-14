@@ -42,6 +42,15 @@ public class ActorMetrics implements ActorKeyedService.Observer {
             "Actor.BackgroundActuation.OnTabAdded.Latency.ColdStart";
     public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM =
             "Actor.BackgroundActuation.OnTabAdded.Latency.WarmStart";
+    public static final String ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL =
+            "Actor.BackgroundActuation.Restore.Latency.Total";
+    public static final String ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD =
+            "Actor.BackgroundActuation.Restore.Latency.Total.ColdStart";
+    public static final String ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM =
+            "Actor.BackgroundActuation.Restore.Latency.Total.WarmStart";
+    public static final String
+            ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED =
+                    "Actor.BackgroundActuation.Restore.Latency.WaitForTabStateInitialized";
     public static final String ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS =
             "Actor.Notification.FetchConversationId.Status";
     public static final String ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS =
@@ -297,6 +306,36 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                 isColdStart
                         ? ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD
                         : ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM,
+                durationMs);
+    }
+
+    /**
+     * Records the time in milliseconds spent waiting for tab state initialization before background
+     * tab restoration executes.
+     *
+     * @param durationMs The elapsed wait time in milliseconds.
+     */
+    public static void recordWaitForTabStateInitializedLatency(long durationMs) {
+        RecordHistogram.recordMediumTimesHistogram(
+                ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED,
+                durationMs);
+    }
+
+    /**
+     * Records the total UI-thread duration in milliseconds spent restoring background sessions into
+     * the active foreground window.
+     *
+     * @param durationMs The elapsed restoration time in milliseconds.
+     * @param isColdStart Whether the {@link org.chromium.chrome.browser.tabmodel.TabModelSelector}
+     *     tab state was uninitialized when restoration was requested.
+     */
+    public static void recordTotalRestoreLatency(long durationMs, boolean isColdStart) {
+        RecordHistogram.recordMediumTimesHistogram(
+                ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL, durationMs);
+        RecordHistogram.recordMediumTimesHistogram(
+                isColdStart
+                        ? ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD
+                        : ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM,
                 durationMs);
     }
 

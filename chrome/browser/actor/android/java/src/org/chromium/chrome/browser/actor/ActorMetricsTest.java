@@ -904,4 +904,31 @@ public class ActorMetricsTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    public void testRecordRestoreLatencies() {
+        String waitHistogram =
+                ActorMetrics
+                        .ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED;
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(waitHistogram, 240)
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL,
+                                325,
+                                85)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD,
+                                325)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM,
+                                85)
+                        .build();
+
+        ActorMetrics.recordWaitForTabStateInitializedLatency(240);
+        ActorMetrics.recordTotalRestoreLatency(325, /* isColdStart= */ true);
+        ActorMetrics.recordTotalRestoreLatency(85, /* isColdStart= */ false);
+
+        watcher.assertExpected();
+    }
 }

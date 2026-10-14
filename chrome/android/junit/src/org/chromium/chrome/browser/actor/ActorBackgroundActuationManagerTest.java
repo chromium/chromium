@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -66,9 +69,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorBackgroundActuationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowSystemClock.class})
 public class ActorBackgroundActuationManagerTest {
     // Subclass to supply a mock ActivityWindowAndroid without running
     // ChromeTabbedActivity#onCreate.
@@ -397,7 +402,7 @@ public class ActorBackgroundActuationManagerTest {
         // 2. Restore the FCM-initiated tab to the foreground window.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
@@ -433,7 +438,7 @@ public class ActorBackgroundActuationManagerTest {
         // non-FCM task on the same tab records TASK_INIT_BY_CHROME.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         List<BackgroundSession> restoredAgain =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
@@ -481,7 +486,7 @@ public class ActorBackgroundActuationManagerTest {
         // 2. Restore the FCM-initiated tab to the foreground window.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
@@ -955,7 +960,7 @@ public class ActorBackgroundActuationManagerTest {
 
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertEquals(1, restored.size());
@@ -1001,7 +1006,7 @@ public class ActorBackgroundActuationManagerTest {
 
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertTrue(restored.isEmpty());
@@ -1048,7 +1053,7 @@ public class ActorBackgroundActuationManagerTest {
 
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertEquals(
@@ -1100,7 +1105,7 @@ public class ActorBackgroundActuationManagerTest {
 
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertEquals(
@@ -1123,7 +1128,7 @@ public class ActorBackgroundActuationManagerTest {
         // Do not add liveTab to pool to simulate eviction/destruction from pool
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertEquals(1, restored.size());
@@ -1178,7 +1183,7 @@ public class ActorBackgroundActuationManagerTest {
 
         List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
         List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
                         mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
 
         assertEquals(1, restored.size());
@@ -1253,5 +1258,221 @@ public class ActorBackgroundActuationManagerTest {
         verify(mActorKeyedService).getTask(600);
         assertFalse(mManager.hasBackgroundSessionForTask(999));
         verify(mActorKeyedService).getTask(999);
+    }
+
+    @Test
+    public void testRestoreActiveWindowBackgroundTabs_WarmStart_RecordsWarmRestoreLatency() {
+        setupTransitionMocks();
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(500);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(500);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
+        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
+
+        doAnswer(
+                        inv -> {
+                            ShadowSystemClock.advanceBy(45, TimeUnit.MILLISECONDS);
+                            return null;
+                        })
+                .when(mTab)
+                .updateAttachment(mWindowAndroid, mTabDelegateFactory);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL, 45)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM,
+                                45)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD)
+                        .expectNoRecords(
+                                ActorMetrics
+                                        .ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED)
+                        .build();
+
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
+        assertEquals(0, mManager.getBackgroundSessions().size());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRestoreActiveWindowBackgroundTabs_ColdStart_RecordsWaitAndColdRestoreLatency() {
+        setupTransitionMocks();
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(500);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(500);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
+        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
+
+        doAnswer(
+                        inv -> {
+                            ShadowSystemClock.advanceBy(40, TimeUnit.MILLISECONDS);
+                            return null;
+                        })
+                .when(mTab)
+                .updateAttachment(mWindowAndroid, mTabDelegateFactory);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics
+                                        .ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED,
+                                250)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL, 290)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD,
+                                290)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM)
+                        .build();
+
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 250,
+                        /* isColdStart= */ true));
+        assertEquals(0, mManager.getBackgroundSessions().size());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRestoreActiveWindowBackgroundTabs_ZeroTabsRestored_DoesNotRecordLatency() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM)
+                        .expectNoRecords(
+                                ActorMetrics
+                                        .ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED)
+                        .build();
+
+        // Case 1: Empty sessions list.
+        assertFalse(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 200,
+                        /* isColdStart= */ true));
+
+        // Case 2: Session whose LiveBackgroundTab was evicted from the pool.
+        setupTransitionMocks();
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(500);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(500);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
+        try {
+            pool.removeLiveTabByOriginalId(100);
+        } finally {
+            BackgroundTabPoolManager.release(pool);
+        }
+
+        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
+
+        assertFalse(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 200,
+                        /* isColdStart= */ true));
+        assertEquals(0, mManager.getBackgroundSessions().size());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskCompleted_WarmActivity_RecordsInMemoryWarmRestoreLatency() {
+        setupTransitionMocks();
+        setupWarmActivityMocks();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(777);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(777);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        doAnswer(
+                        inv -> {
+                            ShadowSystemClock.advanceBy(30, TimeUnit.MILLISECONDS);
+                            return null;
+                        })
+                .when(mTab)
+                .updateAttachment(eq(mWindowAndroid), any());
+        doAnswer(
+                        inv -> {
+                            ShadowSystemClock.advanceBy(55, TimeUnit.MILLISECONDS);
+                            return null;
+                        })
+                .when(mTabPersistentStore)
+                .saveState();
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL, 30)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_WARM,
+                                30)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD)
+                        .build();
+
+        mManager.onTaskCompleted(777);
+
+        watcher.assertExpected();
+        verify(mTabPersistentStore).saveState();
+        assertEquals(0, mManager.getBackgroundSessions().size());
     }
 }
