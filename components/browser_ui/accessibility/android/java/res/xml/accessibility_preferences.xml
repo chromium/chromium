@@ -41,6 +41,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="jump_start_omnibox"
+        android:persistent="false"
         android:summary="@string/jump_start_omnibox_summary"
         android:title="@string/jump_start_omnibox_title" />
 
