@@ -152,13 +152,20 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
     run->glyph_data_.CopyFromRange(glyphs);
 
-    InlineLayoutUnit total_advance;
-    for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_.MutableGlyphs()) {
-      glyph_data.character_index -= start;
-      total_advance += glyph_data.advance;
+    if (run->glyph_data_.IsCompact()) {
+      run->width_ = InlineLayoutUnit::FromRawValue(
+          int64_t{run->glyph_data_.CompactAdvance().RawValue()} *
+          number_of_glyphs);
+    } else {
+      InlineLayoutUnit total_advance;
+      for (HarfBuzzRunGlyphData& glyph_data :
+           run->glyph_data_.MutableGlyphs()) {
+        glyph_data.character_index -= start;
+        total_advance += glyph_data.advance;
+      }
+      run->width_ = total_advance;
     }
 
-    run->width_ = total_advance;
     run->num_characters_ = number_of_characters;
 
     return run;
@@ -176,6 +183,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
         start_index_, /*num_glyphs=*/0,
         num_characters_ + other.num_characters_);
     // Note: We populate grapheme data on demand, e.g. hit testing.
+    // The left run must end where the second identity mapping starts.
+    // TODO(crbug.com/523940241): Handle RTL compact runs.
+    if (glyph_data_.IsCompact() && !IsRtl() &&
+        num_characters_ == glyph_data_.size() &&
+        run->glyph_data_.TryCopyFromCompact(glyph_data_, other.glyph_data_)) {
+      run->width_ = width_ + other.width_;
+      return run;
+    }
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
@@ -275,6 +290,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
     struct CompactGlyphData final : public GarbageCollected<CompactGlyphData> {
       CompactGlyphData(TextRunLayoutUnit shared_advance, wtf_size_t num_glyphs)
           : advance(shared_advance), glyphs(num_glyphs) {}
+      CompactGlyphData(TextRunLayoutUnit shared_advance,
+                       base::span<const uint16_t> ids)
+          : advance(shared_advance), glyphs(ids) {}
       void Trace(Visitor* visitor) const { visitor->Trace(glyphs); }
 
 #if DCHECK_IS_ON()
@@ -437,8 +455,12 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    // The caller must adjust `HarfBuzzRunGlyphData::character_index`.
+    // The caller must adjust non-compact character indices.
     void CopyFromRange(const GlyphDataRange& range) {
+      if (range.IsCompactSource() && !range.HasOffsets()) {
+        CopyFromCompactRange(range);
+        return;
+      }
       const unsigned num_glyphs = range.size();
       ResetToNonCompact(num_glyphs);
       range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
@@ -571,6 +593,25 @@ struct PLATFORM_EXPORT ShapeResultRun final
       });
     }
 
+    bool TryCopyFromCompact(const GlyphDataCollection& first,
+                            const GlyphDataCollection& second) {
+      if (!first.IsCompact() || !second.IsCompact() ||
+          first.HasNonZeroOffsets() || second.HasNonZeroOffsets() ||
+          first.compact_->advance != second.compact_->advance) {
+        return false;
+      }
+      const unsigned n1 = first.compact_->glyphs.size();
+      const unsigned n2 = second.compact_->glyphs.size();
+      auto* compact = MakeGarbageCollected<CompactGlyphData>(
+          first.compact_->advance, n1 + n2);
+      auto [first_glyphs, second_glyphs] =
+          base::span<uint16_t>(compact->glyphs).split_at(n1);
+      first_glyphs.copy_from(first.compact_->glyphs);
+      second_glyphs.copy_from(second.compact_->glyphs);
+      SetCompact(compact);
+      return true;
+    }
+
     void ExpandInto(unsigned start,
                     base::span<HarfBuzzRunGlyphData> dest) const {
       CHECK_LE(start, size());
@@ -649,6 +690,17 @@ struct PLATFORM_EXPORT ShapeResultRun final
       ResizeDataExactly(num_glyphs);
       ExpandCompactInto(0, base::span<HarfBuzzRunGlyphData>(data_));
       ClearCompact();
+    }
+
+    NOINLINE void CopyFromCompactRange(const GlyphDataRange& range) {
+      const unsigned num_glyphs = range.size();
+      if (num_glyphs >= kMinGlyphsToCompact) {
+        SetCompact(MakeGarbageCollected<CompactGlyphData>(
+            range.CompactSourceAdvance(), range.CompactGlyphs()));
+        return;
+      }
+      ResetToNonCompact(num_glyphs);
+      range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
     }
 
     void AllocateOffsets() {
@@ -783,6 +835,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
                            CompactTrailingCharactersMatchFullStorage);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactZeroOffsetDoesNotMaterialize);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactSubRunStaysCompact);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactSmallSubRunUsesFullStorage);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactRunsMergeWithoutMaterializing);
 
   GlyphDataCollection glyph_data_;
   Member<SimpleFontData> font_data_;

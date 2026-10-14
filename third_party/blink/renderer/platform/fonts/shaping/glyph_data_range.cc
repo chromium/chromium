@@ -37,6 +37,10 @@ TextRunLayoutUnit GlyphDataRange::CompactSourceAdvance() const {
   return run_->glyph_data_.CompactAdvance();
 }
 
+base::span<const uint16_t> GlyphDataRange::CompactGlyphs() const {
+  return run_->glyph_data_.CompactGlyphs(index_, size_);
+}
+
 base::span<const GlyphOffset> GlyphDataRange::Offsets() const {
   if (HasOffsets()) [[unlikely]] {
     return run_->glyph_data_.Offsets().subspan(index_, size_);

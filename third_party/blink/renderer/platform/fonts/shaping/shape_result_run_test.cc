@@ -764,4 +764,63 @@ TEST_F(ShapeResultRunTest, CompactZeroOffsetDoesNotMaterialize) {
   EXPECT_FALSE(run->glyph_data_.HasNonZeroOffsets());
 }
 
+TEST_F(ShapeResultRunTest, CompactSubRunStaysCompact) {
+  ShapeResultRun* run = CreateCompactRun(12, 12);
+
+  ShapeResultRun* sub_run = run->CreateSubRun(2, 10);
+  ASSERT_TRUE(sub_run);
+  EXPECT_TRUE(sub_run->glyph_data_.IsCompact());
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+  EXPECT_EQ(sub_run->NumGlyphs(), 8u);
+  EXPECT_EQ(sub_run->NumCharacters(), 8u);
+  EXPECT_EQ(sub_run->StartIndex(), 2u);
+  EXPECT_EQ(sub_run->Width(), 80.0f);
+  GlyphDataRange glyphs(*sub_run);
+  for (unsigned i = 0; i < glyphs.size(); ++i) {
+    const HarfBuzzRunGlyphData glyph = glyphs.GlyphAtForTest(i);
+    EXPECT_EQ(glyph.glyph, 44u + i);
+    EXPECT_EQ(glyph.character_index, i);
+    EXPECT_EQ(glyph.advance, TextRunLayoutUnit::FromFloatRound(10.0f));
+  }
+}
+
+TEST_F(ShapeResultRunTest, CompactSmallSubRunUsesFullStorage) {
+  ShapeResultRun* run = CreateCompactRun(12, 12);
+
+  ShapeResultRun* sub_run = run->CreateSubRun(2, 6);
+  ASSERT_TRUE(sub_run);
+  EXPECT_FALSE(sub_run->glyph_data_.IsCompact());
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+  EXPECT_EQ(sub_run->NumGlyphs(), 4u);
+  EXPECT_EQ(sub_run->NumCharacters(), 4u);
+  EXPECT_EQ(sub_run->StartIndex(), 2u);
+  EXPECT_EQ(sub_run->Width(), 40.0f);
+  for (unsigned i = 0; i < sub_run->NumGlyphs(); ++i) {
+    const HarfBuzzRunGlyphData& glyph = sub_run->glyph_data_[i];
+    EXPECT_EQ(glyph.glyph, 44u + i);
+    EXPECT_EQ(glyph.character_index, i);
+    EXPECT_EQ(glyph.advance, TextRunLayoutUnit::FromFloatRound(10.0f));
+  }
+}
+
+TEST_F(ShapeResultRunTest, CompactRunsMergeWithoutMaterializing) {
+  ShapeResultRun* first = CreateCompactRun(8, 8);
+  ShapeResultRun* second = CreateCompactRun(8, 8);
+  second->start_index_ = 8;
+
+  ShapeResultRun* merged = first->MergeIfPossible(*second);
+  ASSERT_TRUE(merged);
+  EXPECT_TRUE(first->glyph_data_.IsCompact());
+  EXPECT_TRUE(second->glyph_data_.IsCompact());
+  EXPECT_TRUE(merged->glyph_data_.IsCompact());
+  EXPECT_EQ(16u, merged->NumGlyphs());
+  EXPECT_EQ(16u, merged->NumCharacters());
+  EXPECT_EQ(160.0f, merged->Width());
+  for (unsigned i = 0; i < merged->NumGlyphs(); ++i) {
+    const HarfBuzzRunGlyphData glyph = merged->glyph_data_.GlyphAt(i);
+    EXPECT_EQ(42u + i % 8, glyph.glyph);
+    EXPECT_EQ(i, glyph.character_index);
+  }
+}
+
 }  // namespace blink
