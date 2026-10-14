@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -23,12 +24,20 @@
 #include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/live_caption/caption_bubble_controller.h"
+#include "components/live_caption/caption_controller_base.h"
+#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_installer.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -81,6 +90,75 @@ class FakeSpeechRecognitionBrowserObserver
  private:
   int availability_changed_count_ = 0;
   std::optional<bool> last_availability_;
+};
+
+class TestCaptionListener : public captions::CaptionControllerBase::Listener {
+ public:
+  explicit TestCaptionListener(content::GlobalRenderFrameHostId excluded_rfh_id)
+      : excluded_rfh_id_(excluded_rfh_id) {}
+  ~TestCaptionListener() override = default;
+
+  bool OnTranscription(content::RenderFrameHost*,
+                       captions::CaptionBubbleContext*,
+                       const media::SpeechRecognitionResult&) override {
+    return true;
+  }
+  void OnAudioStreamEnd(content::RenderFrameHost*,
+                        captions::CaptionBubbleContext*) override {}
+  void OnLanguageIdentificationEvent(
+      content::RenderFrameHost*,
+      captions::CaptionBubbleContext*,
+      const media::mojom::LanguageIdentificationEventPtr&) override {}
+  bool IsTranscriptionAllowed(content::RenderFrameHost* rfh) override {
+    return rfh && rfh->GetGlobalId() != excluded_rfh_id_;
+  }
+
+ private:
+  content::GlobalRenderFrameHostId excluded_rfh_id_;
+};
+
+class StubCaptionBubbleController : public captions::CaptionBubbleController {
+ public:
+  StubCaptionBubbleController() = default;
+  ~StubCaptionBubbleController() override = default;
+
+  bool OnTranscription(content::RenderFrameHost*,
+                       captions::CaptionBubbleContext*,
+                       const media::SpeechRecognitionResult&) override {
+    return true;
+  }
+  void OnAudioStreamEnd(content::RenderFrameHost*,
+                        captions::CaptionBubbleContext*) override {}
+  void OnLanguageIdentificationEvent(
+      content::RenderFrameHost*,
+      captions::CaptionBubbleContext*,
+      const media::mojom::LanguageIdentificationEventPtr&) override {}
+  void OnError(captions::CaptionBubbleContext*,
+               captions::CaptionBubbleErrorType,
+               captions::OnErrorClickedCallback,
+               captions::OnDoNotShowAgainClickedCallback) override {}
+  void UpdateCaptionStyle(std::optional<ui::CaptionStyle>) override {}
+  bool IsWidgetVisibleForTesting() override { return false; }
+  bool IsGenericErrorMessageVisibleForTesting() override { return false; }
+  std::string GetBubbleLabelTextForTesting() override { return ""; }
+  void CloseActiveModelForTesting() override {}
+};
+
+class TestCaptionControllerDelegate
+    : public captions::CaptionControllerBase::Delegate {
+ public:
+  TestCaptionControllerDelegate() = default;
+  ~TestCaptionControllerDelegate() override = default;
+
+  std::unique_ptr<captions::CaptionBubbleController>
+  CreateCaptionBubbleController(
+      captions::CaptionBubbleSettings*,
+      const std::string&,
+      std::unique_ptr<captions::TranslationViewWrapperBase>) override {
+    return std::make_unique<StubCaptionBubbleController>();
+  }
+  void AddCaptionStyleObserver(ui::NativeThemeObserver*) override {}
+  void RemoveCaptionStyleObserver(ui::NativeThemeObserver*) override {}
 };
 
 }  // namespace
@@ -445,7 +523,8 @@ class SpeechRecognitionClientBrowserInterfaceTest : public testing::Test {
         std::make_unique<SpeechRecognitionClientBrowserInterface>(
             profile_.get());
     browser_interface_->BindSpeechRecognitionBrowserObserver(
-        observer_receiver_.BindNewPipeAndPassRemote());
+        observer_receiver_.BindNewPipeAndPassRemote(),
+        content::GlobalRenderFrameHostId());
     task_environment_.RunUntilIdle();
   }
 
@@ -604,6 +683,117 @@ TEST_F(SpeechRecognitionClientBrowserInterfaceTest,
   mock_soda().NotifySodaInstalledForTesting(LanguageCode::kEsEs);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(observer()->last_availability().value_or(false));
+}
+
+TEST_F(SpeechRecognitionClientBrowserInterfaceTest,
+       HeadlessCaptionChecksIsTranscriptionAllowedPerFrame) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{media::kHeadlessLiveCaption},
+      /*disabled_features=*/{
+          media::kLiveCaptionSpeechRecognitionSmallExpertModel});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  std::unique_ptr<content::WebContents> allowed_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> excluded_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::RenderFrameHost* allowed_rfh =
+      allowed_web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* excluded_rfh =
+      excluded_web_contents->GetPrimaryMainFrame();
+
+  captions::LiveCaptionControllerFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<captions::LiveCaptionController>(
+            profile()->GetPrefs(),
+            TestingBrowserProcess::GetGlobal()->GetTestingLocalState(), "en-US",
+            context, std::make_unique<TestCaptionControllerDelegate>());
+      }));
+  auto* controller =
+      captions::LiveCaptionControllerFactory::GetForProfile(profile());
+  controller->AddListener(
+      std::make_unique<TestCaptionListener>(excluded_rfh->GetGlobalId()));
+
+  mock_soda().NotifySodaInstalledForTesting(LanguageCode::kNone);
+  mock_soda().NotifySodaInstalledForTesting(LanguageCode::kEnUs);
+  profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
+  profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode, "en-US");
+
+  browser_interface_ =
+      std::make_unique<SpeechRecognitionClientBrowserInterface>(profile());
+
+  mojo::Remote<media::mojom::SpeechRecognitionClientBrowserInterface>
+      allowed_remote;
+  browser_interface_->BindReceiver(allowed_remote.BindNewPipeAndPassReceiver(),
+                                   allowed_rfh->GetGlobalId());
+  FakeSpeechRecognitionBrowserObserver allowed_observer;
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
+      allowed_observer_receiver(&allowed_observer);
+  allowed_remote->BindSpeechRecognitionBrowserObserver(
+      allowed_observer_receiver.BindNewPipeAndPassRemote());
+
+  mojo::Remote<media::mojom::SpeechRecognitionClientBrowserInterface>
+      excluded_remote;
+  browser_interface_->BindReceiver(excluded_remote.BindNewPipeAndPassReceiver(),
+                                   excluded_rfh->GetGlobalId());
+  FakeSpeechRecognitionBrowserObserver excluded_observer;
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
+      excluded_observer_receiver(&excluded_observer);
+  excluded_remote->BindSpeechRecognitionBrowserObserver(
+      excluded_observer_receiver.BindNewPipeAndPassRemote());
+
+  FakeSpeechRecognitionBrowserObserver no_frame_observer;
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
+      no_frame_observer_receiver(&no_frame_observer);
+  browser_interface_->BindSpeechRecognitionBrowserObserver(
+      no_frame_observer_receiver.BindNewPipeAndPassRemote(),
+      content::GlobalRenderFrameHostId());
+
+  FakeSpeechRecognitionBrowserObserver destroyed_frame_observer;
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
+      destroyed_frame_observer_receiver(&destroyed_frame_observer);
+  browser_interface_->BindSpeechRecognitionBrowserObserver(
+      destroyed_frame_observer_receiver.BindNewPipeAndPassRemote(),
+      content::GlobalRenderFrameHostId(99999, 99999));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return allowed_observer.last_availability().has_value() &&
+           excluded_observer.last_availability().has_value() &&
+           no_frame_observer.last_availability().has_value() &&
+           destroyed_frame_observer.last_availability().has_value();
+  }));
+  EXPECT_TRUE(allowed_observer.last_availability().value_or(false));
+  EXPECT_FALSE(excluded_observer.last_availability().value_or(true));
+  EXPECT_FALSE(no_frame_observer.last_availability().value_or(true));
+  EXPECT_FALSE(destroyed_frame_observer.last_availability().value_or(true));
+
+  // Even if the caption bubble UI listener is added while in headless mode
+  // (e.g. via OnError() -> CreateUI()), the excluded frame should still be
+  // blocked.
+  controller->create_ui_for_testing();
+  ASSERT_NE(controller->caption_bubble_controller_for_testing(), nullptr);
+  EXPECT_TRUE(controller->IsTranscriptionAllowed(allowed_rfh));
+  EXPECT_FALSE(controller->IsTranscriptionAllowed(excluded_rfh));
+  int prev_excluded_count = excluded_observer.availability_changed_count();
+  mock_soda().NotifySodaInstalledForTesting(LanguageCode::kEnUs);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return excluded_observer.availability_changed_count() > prev_excluded_count;
+  }));
+  EXPECT_TRUE(allowed_observer.last_availability().value_or(false));
+  EXPECT_FALSE(excluded_observer.last_availability().value_or(true));
+
+  // Enabling regular Live Caption should allow transcription for all observers.
+  profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return allowed_observer.last_availability().value_or(false) &&
+           excluded_observer.last_availability().value_or(false) &&
+           no_frame_observer.last_availability().value_or(false) &&
+           destroyed_frame_observer.last_availability().value_or(false);
+  }));
 }
 
 }  // namespace speech

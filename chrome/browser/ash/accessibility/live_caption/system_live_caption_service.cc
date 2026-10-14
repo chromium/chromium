@@ -379,7 +379,8 @@ void SystemLiveCaptionService::BindToBrowserInterface() {
   if (source_ == AudioSource::kLoopback) {
     SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
         ->BindSpeechRecognitionBrowserObserver(
-            browser_observer_receiver_.BindNewPipeAndPassRemote());
+            browser_observer_receiver_.BindNewPipeAndPassRemote(),
+            content::GlobalRenderFrameHostId());
   }
 }
 

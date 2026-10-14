@@ -432,6 +432,8 @@ TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {
   SetCommittedOriginOnAllFrames(excluded_origin);
 
   // Verify that transcriptions are allowed initially.
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(
+      web_contents()->GetPrimaryMainFrame()));
   EXPECT_TRUE(live_caption_controller()->DispatchTranscription(
       web_contents()->GetPrimaryMainFrame(), nullptr,
       media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
@@ -439,6 +441,8 @@ TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {
   // Setting the excluded origin list to include our origin should cause them to
   // start being ignored.
   integration->SetExcludedOrigins({excluded_origin});
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(
+      web_contents()->GetPrimaryMainFrame()));
   EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
       web_contents()->GetPrimaryMainFrame(), nullptr,
       media::SpeechRecognitionResult("some other transcript",
@@ -475,7 +479,10 @@ TEST_F(GlicMediaIntegrationTest, DefaultExcludedOriginsStopTranscription) {
       url::Origin::Create(GURL("https://www.youtube.com"));
   SetCommittedOriginOnAllFrames(youtube_origin);
 
-  // Dispatching a transcription should be stopped.
+  // Transcription should not be allowed and dispatching a transcription should
+  // be stopped.
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(
+      web_contents()->GetPrimaryMainFrame()));
   EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
       web_contents()->GetPrimaryMainFrame(), nullptr,
       media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
@@ -491,7 +498,10 @@ TEST_F(GlicMediaIntegrationTest, DefaultExcludedHttpOriginsStopTranscription) {
       url::Origin::Create(GURL("http://www.youtube.com"));
   SetCommittedOriginOnAllFrames(youtube_origin);
 
-  // Dispatching a transcription should be stopped.
+  // Transcription should not be allowed and dispatching a transcription should
+  // be stopped.
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(
+      web_contents()->GetPrimaryMainFrame()));
   EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
       web_contents()->GetPrimaryMainFrame(), nullptr,
       media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
@@ -505,6 +515,8 @@ TEST_F(GlicMediaIntegrationTest, NonExcludedOriginAllowsTranscription) {
       url::Origin::Create(GURL("https://example.com"));
   SetCommittedOriginOnAllFrames(other_origin);
 
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(
+      web_contents()->GetPrimaryMainFrame()));
   EXPECT_TRUE(live_caption_controller()->DispatchTranscription(
       web_contents()->GetPrimaryMainFrame(), nullptr,
       media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));

@@ -130,11 +130,13 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
+#include "components/live_caption/live_caption_controller.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -300,18 +302,30 @@ void BindNetworkHintsHandler(
 }
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+bool IsSpeechRecognitionAllowed(Profile* profile,
+                                content::RenderFrameHost* frame_host) {
+  if (!profile || !captions::IsLiveCaptionFeatureSupported()) {
+    return false;
+  }
+  PrefService* profile_prefs = profile->GetPrefs();
+  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
+    return true;
+  }
+  if (!captions::IsHeadlessCaptionFeatureSupported() ||
+      !profile_prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)) {
+    return false;
+  }
+  auto* controller =
+      captions::LiveCaptionControllerFactory::GetForProfileIfExists(profile);
+  return controller && controller->IsTranscriptionAllowed(frame_host);
+}
+
 void BindSpeechRecognitionContextHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
-  if (!profile) {
-    return;
-  }
-  PrefService* profile_prefs = profile->GetPrefs();
-  if (!(profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-        profile_prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)) ||
-      !captions::IsLiveCaptionFeatureSupported()) {
+  if (!IsSpeechRecognitionAllowed(profile, frame_host)) {
     return;
   }
 
@@ -335,7 +349,7 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
     Profile* profile = Profile::FromBrowserContext(
         frame_host->GetProcess()->GetBrowserContext());
     SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile)
-        ->BindReceiver(std::move(receiver));
+        ->BindReceiver(std::move(receiver), frame_host->GetGlobalId());
   }
 }
 
@@ -345,10 +359,7 @@ void BindSpeechRecognitionRecognizerClientHandler(
         client_receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
-  PrefService* profile_prefs = profile->GetPrefs();
-  if ((profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-       profile_prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)) &&
-      captions::IsLiveCaptionFeatureSupported()) {
+  if (IsSpeechRecognitionAllowed(profile, frame_host)) {
     captions::LiveCaptionSpeechRecognitionHost::Create(
         frame_host, std::move(client_receiver));
   }

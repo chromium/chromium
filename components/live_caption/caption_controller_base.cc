@@ -190,10 +190,28 @@ void CaptionControllerBase::RemoveListener(Listener* listener) {
   NOTREACHED();
 }
 
+bool CaptionControllerBase::Listener::IsTranscriptionAllowed(
+    content::RenderFrameHost* rfh) {
+  // Fail closed so listeners like `CaptionBubbleController` don't allow
+  // transcription in headless mode.
+  return false;
+}
+
 void CaptionControllerBase::RemoveSoon(Listener* listener) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CaptionControllerBase::RemoveListener,
                                 weak_ptr_factory_.GetWeakPtr(), listener));
+}
+
+bool CaptionControllerBase::IsTranscriptionAllowed(
+    content::RenderFrameHost* rfh) {
+  for (auto& listener : listeners_) {
+    if (listener->IsTranscriptionAllowed(rfh)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool CaptionControllerBase::DispatchTranscription(

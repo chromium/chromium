@@ -62,6 +62,10 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
    public:
     virtual ~Listener() = default;
 
+    // Returns whether transcription is allowed for audio that originated in
+    // the RFH.
+    virtual bool IsTranscriptionAllowed(content::RenderFrameHost* rfh);
+
     // Called when a transcription is received from the service for audio that
     // originated in the RFH.  This may be null if the audio was not associated
     // with any particulat RFH.
@@ -101,6 +105,10 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // Schedules the removal of a `Listener`. It will not be removed immediately
   // to avoid issues if called during listener iteration.
   void RemoveSoon(Listener*);
+
+  // Returns whether at least one listener allows transcription for audio from
+  // `rfh`.
+  bool IsTranscriptionAllowed(content::RenderFrameHost* rfh);
 
   // Routes a transcription to all listeners.  Returns whether the transcription
   // was routed successfully, which currently means that at least one listener

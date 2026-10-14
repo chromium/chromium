@@ -169,10 +169,23 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     }
   }
 
+  bool IsTranscriptionAllowed(content::RenderFrameHost* rfh) override {
+    if (!rfh || !integration_) {
+      return false;
+    }
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    if (!web_contents) {
+      return false;
+    }
+
+    return !integration_->IsExcludedByOrigin(web_contents);
+  }
+
   bool OnTranscription(content::RenderFrameHost* rfh,
                        captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
-    if (!rfh) {
+    if (!IsTranscriptionAllowed(rfh)) {
       return false;
     }
 
@@ -180,10 +193,6 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     auto* integration = static_cast<GlicMediaIntegrationImpl*>(
         glic::GlicMediaIntegration::GetFor(web_contents));
     CHECK(integration);
-
-    if (integration->IsExcludedByOrigin(web_contents)) {
-      return false;
-    }
 
     bool continue_transcribing = false;
     if (auto* context =
@@ -226,6 +235,14 @@ void GlicMediaIntegrationImpl::Initialize() {
 
   rtc_observer_ = std::make_unique<GlicMediaPeerConnectionObserver>();
 
+  // Default to turning off for YT. Set this before enabling the headless
+  // caption pref so that any synchronous availability notifications already
+  // see the excluded origins.
+  std::vector<url::Origin> excluded_origins = {
+      url::Origin::Create(GURL("https://www.youtube.com")),
+      url::Origin::Create(GURL("http://www.youtube.com"))};
+  SetExcludedOrigins(std::move(excluded_origins));
+
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       glic::prefs::kGlicMediaUnderstandingEnabled,
@@ -237,12 +254,6 @@ void GlicMediaIntegrationImpl::Initialize() {
   // For now, enable the pref if we get this far.  Do this after getting the
   // Live Caption controller, since it resets the pref to false.
   profile_->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
-
-  // Default to turning off for YT.
-  std::vector<url::Origin> excluded_origins = {
-      url::Origin::Create(GURL("https://www.youtube.com")),
-      url::Origin::Create(GURL("http://www.youtube.com"))};
-  SetExcludedOrigins(std::move(excluded_origins));
 }
 
 void GlicMediaIntegrationImpl::OnPrefChanged() {
