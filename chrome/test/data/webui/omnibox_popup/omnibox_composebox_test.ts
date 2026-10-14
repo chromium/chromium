@@ -51,6 +51,17 @@ suite('OmniboxComposeboxTest', () => {
     loadTimeData.overrideValues({
       composeboxShowZps: true,
       askGBlockAutoTabZeroStateSuggestions: false,
+      // Read by the cr-omnibox-composebox constructor; pinned so the tests do
+      // not depend on the page's flag defaults.
+      searchboxLayoutMode: 'TallBottomContext',
+      caretAnimationEnabled: true,
+      energyEffectEnabled: true,
+      contextualMenuUsePecApi: true,
+      contextManagementInComposeboxEnabled: false,
+      composeboxSmartComposeEnabled: true,
+      contextButtonShapeIsOblong: true,
+      webuiOmniboxSimplificationEnabled: true,
+      voiceSearchCoherenceComposeboxesEnabled: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -69,6 +80,11 @@ suite('OmniboxComposeboxTest', () => {
         mockPageHandler,
         testProxy.handler as unknown as SearchboxPageHandlerRemote,
         testProxy.callbackRouter as unknown as SearchboxPageCallbackRouter));
+    // The element shows voice search by default, and the voice search overlay
+    // asks the handler for the page classification when connected.
+    testProxy.handler.setPromiseResolveFor('getPageClassification', {
+      metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+    });
 
     omniboxComposebox = document.createElement('cr-omnibox-composebox');
     document.body.appendChild(omniboxComposebox);
@@ -242,7 +258,7 @@ suite('OmniboxComposeboxTest', () => {
   test('Tool chip renders when context menu is enabled', async () => {
     omniboxComposebox.contextMenuEnabled = true;
     omniboxComposebox.inToolMode = true;
-    omniboxComposebox.searchboxLayoutMode = '';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('');
     await microtasksFinished();
 
     const toolChip =
@@ -254,7 +270,7 @@ suite('OmniboxComposeboxTest', () => {
   test('Tool chip does not render when context menu is disabled', async () => {
     omniboxComposebox.contextMenuEnabled = false;
     omniboxComposebox.inToolMode = true;
-    omniboxComposebox.searchboxLayoutMode = '';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('');
     await microtasksFinished();
 
     const toolChip =
@@ -266,7 +282,7 @@ suite('OmniboxComposeboxTest', () => {
   test('Tool chip does not render when not in tool mode', async () => {
     omniboxComposebox.contextMenuEnabled = true;
     omniboxComposebox.inToolMode = false;
-    omniboxComposebox.searchboxLayoutMode = '';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('');
     await microtasksFinished();
 
     const toolChip =
@@ -278,7 +294,7 @@ suite('OmniboxComposeboxTest', () => {
   test('Tool chip does not render when in compact layout', async () => {
     omniboxComposebox.contextMenuEnabled = true;
     omniboxComposebox.inToolMode = true;
-    omniboxComposebox.searchboxLayoutMode = 'Compact';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('Compact');
     await microtasksFinished();
 
     const toolChip =
@@ -864,7 +880,8 @@ suite('OmniboxComposeboxTest', () => {
       'submit button is rendered in TallBottomContext with valid input',
       async () => {
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         omniboxComposebox.input = 'test';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -879,7 +896,8 @@ suite('OmniboxComposeboxTest', () => {
       'submit button is not rendered when searchboxNextEnabled is false',
       async () => {
         omniboxComposebox.searchboxNextEnabled = false;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         omniboxComposebox.input = 'test';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -894,7 +912,7 @@ suite('OmniboxComposeboxTest', () => {
       'submit button is not rendered when layout is not TallBottomContext',
       async () => {
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'Compact';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting('Compact');
         omniboxComposebox.input = 'test';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -906,10 +924,10 @@ suite('OmniboxComposeboxTest', () => {
       });
 
   test(
-      'submit button is not rendered when there is no input text',
-      async () => {
+      'submit button is not rendered when there is no input text', async () => {
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         omniboxComposebox.input = '';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -922,7 +940,7 @@ suite('OmniboxComposeboxTest', () => {
 
   test('submit button click leads to handler called', async () => {
     omniboxComposebox.searchboxNextEnabled = true;
-    omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('TallBottomContext');
     omniboxComposebox.input = 'test';
     omniboxComposebox.lastQueriedInput = 'test';
     await omniboxComposebox.updateComplete;
@@ -956,7 +974,8 @@ suite('OmniboxComposeboxTest', () => {
       async () => {
         // Given a file that does not support unimodal and empty input.
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         const mockToken = 'mock-file-token';
         const file = new ComposeboxFile(
             mockToken, 'test.png', 'image/png', InputType.kLensImage,
@@ -978,7 +997,8 @@ suite('OmniboxComposeboxTest', () => {
       'submit button click leads to submitQuery called when no match selected',
       async () => {
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         omniboxComposebox.input = 'test query';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -1000,7 +1020,7 @@ suite('OmniboxComposeboxTest', () => {
 
   test('submit button is disabled during file upload', async () => {
     omniboxComposebox.searchboxNextEnabled = true;
-    omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+    omniboxComposebox.setBaseSearchboxLayoutModeForTesting('TallBottomContext');
     omniboxComposebox.input = 'test';
     await omniboxComposebox.updateComplete;
     await microtasksFinished();
@@ -1023,50 +1043,54 @@ suite('OmniboxComposeboxTest', () => {
     assertTrue(composeboxSubmit!.hasAttribute('disabled'));
   });
 
-  test('clicking submit button after file upload succeeds calls handler', async () => {
-    omniboxComposebox.searchboxNextEnabled = true;
-    omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
-    omniboxComposebox.input = 'test';
-    await omniboxComposebox.updateComplete;
-    await microtasksFinished();
-    const testToken = '12345678901234567890123456789012';
-    const testFileInfo = {
-      fileName: 'test_file.pdf',
-      mimeType: 'application/pdf',
-      imageDataUrl: null,
-      isDeletable: true,
-      selectionTime: new Date(),
-      thumbnailUrl: null,
-    };
+  test(
+      'clicking submit button after file upload succeeds calls handler',
+      async () => {
+        omniboxComposebox.searchboxNextEnabled = true;
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
+        omniboxComposebox.input = 'test';
+        await omniboxComposebox.updateComplete;
+        await microtasksFinished();
+        const testToken = '12345678901234567890123456789012';
+        const testFileInfo = {
+          fileName: 'test_file.pdf',
+          mimeType: 'application/pdf',
+          imageDataUrl: null,
+          isDeletable: true,
+          selectionTime: new Date(),
+          thumbnailUrl: null,
+        };
 
-    testProxy.page.addFileContext(testToken, testFileInfo);
-    await testProxy.page.$.flushForTesting();
-    await microtasksFinished();
-    testProxy.page.onContextualInputStatusChanged(
-        testToken, ContextUploadStatus.kUploadSuccessful, null);
-    await testProxy.page.$.flushForTesting();
-    await omniboxComposebox.updateComplete;
-    await microtasksFinished();
+        testProxy.page.addFileContext(testToken, testFileInfo);
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        testProxy.page.onContextualInputStatusChanged(
+            testToken, ContextUploadStatus.kUploadSuccessful, null);
+        await testProxy.page.$.flushForTesting();
+        await omniboxComposebox.updateComplete;
+        await microtasksFinished();
 
-    // When the submit button is clicked.
-    const composeboxSubmit =
-        omniboxComposebox.shadowRoot.querySelector('cr-composebox-submit');
-    assertFalse(composeboxSubmit!.hasAttribute('disabled'));
-    const submitContainer =
-        composeboxSubmit!.shadowRoot.querySelector<HTMLElement>(
-            '#submitContainer');
-    submitContainer!.click();
-    await microtasksFinished();
+        // When the submit button is clicked.
+        const composeboxSubmit =
+            omniboxComposebox.shadowRoot.querySelector('cr-composebox-submit');
+        assertFalse(composeboxSubmit!.hasAttribute('disabled'));
+        const submitContainer =
+            composeboxSubmit!.shadowRoot.querySelector<HTMLElement>(
+                '#submitContainer');
+        submitContainer!.click();
+        await microtasksFinished();
 
-    // Then submitQuery is called.
-    assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
-  });
+        // Then submitQuery is called.
+        assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
+      });
 
   test(
       'submit disabled when tool is Deep Search (default entrypoint)',
       async () => {
         omniboxComposebox.searchboxNextEnabled = true;
-        omniboxComposebox.searchboxLayoutMode = 'TallBottomContext';
+        omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+            'TallBottomContext');
         omniboxComposebox.entrypointName = 'Omnibox';
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -1377,6 +1401,9 @@ suite('OmniboxComposeboxTest', () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         omniboxComposebox = document.createElement('cr-omnibox-composebox');
         omniboxComposebox.showVoiceSearch = true;
+        // The element turns the voice animation off when voice coherence is
+        // disabled; this test is about the legacy audio-wave animation.
+        omniboxComposebox.disableVoiceSearchAnimation = false;
         document.body.appendChild(omniboxComposebox);
         await omniboxComposebox.updateComplete;
 
@@ -2552,12 +2579,15 @@ suite('OmniboxComposeboxTest', () => {
       await microtasksFinished();
       await omniboxComposebox.updateComplete;
       assertFalse(omniboxComposebox.inToolMode);
+      // The image is still attached for the submission.
+      assertEquals(1, omniboxComposebox.attachedContext.size);
 
       // Submit:
       await submitVoiceSearch();
 
       assertFalse(omniboxComposebox.inToolMode);
-      assertEquals(1, omniboxComposebox.attachedContext.size);
+      // Deletable inputs are cleared once the query is submitted.
+      assertEquals(0, omniboxComposebox.attachedContext.size);
     });
 
     test(

@@ -487,9 +487,10 @@ class OmniboxAimWebUiInteractiveTestBase
         InvokePageAction(kActionAiMode), WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
         InAnyContext(ExecuteJsAt(
-            kAimPopupWebView, {"omnibox-aim-app"},
-            "el => { el.setSearchboxLayoutModeForTesting('TallBottomContext'); "
-            "el.setHasAllowedInputsForTesting(true); }")));
+            kAimPopupWebView, {"omnibox-aim-app", "#composebox"},
+            "el => { "
+            "el.setBaseSearchboxLayoutModeForTesting('TallBottomContext'); "
+            "el.hasAllowedInputs = true; }")));
   }
 
   // Opens the AIM popup in a new tab to ensure a clean state.
@@ -551,7 +552,7 @@ class OmniboxAimWebUiInteractiveTestBase
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimLayoutSettled);
     StateChange layout_settled;
     layout_settled.event = kAimLayoutSettled;
-    layout_settled.where = DeepQuery{"omnibox-aim-app"};
+    layout_settled.where = DeepQuery{"omnibox-aim-app", "#composebox"};
     layout_settled.test_function =
         "(el) => window.innerHeight > 170 || el.offsetHeight > 170";
     layout_settled.continue_across_navigation = true;

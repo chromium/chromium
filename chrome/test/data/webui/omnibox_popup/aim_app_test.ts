@@ -272,12 +272,7 @@ suite('AimAppTest', function() {
     document.body.appendChild(app);
 
     const point = {x: 10, y: 20};
-    app.$.composebox.dispatchEvent(
-        new CustomEvent('context-menu-entrypoint-click', {
-          detail: point,
-          bubbles: true,
-          composed: true,
-        }));
+    app.$.composebox.fire('context-menu-entrypoint-click', point);
 
     const result = await handler.whenCalled('showContextMenu');
     assertEquals(point.x, result.x);
@@ -297,12 +292,7 @@ suite('AimAppTest', function() {
     assertTrue(!!contextButton);
 
     // Click event triggers workaround.
-    app.$.composebox.dispatchEvent(
-        new CustomEvent('context-menu-entrypoint-click', {
-          detail: {x: 10, y: 20},
-          bubbles: true,
-          composed: true,
-        }));
+    app.$.composebox.fire('context-menu-entrypoint-click', {x: 10, y: 20});
 
     assertTrue(contextButton.classList.contains('menu-open'));
 
@@ -317,37 +307,29 @@ suite('AimAppTest', function() {
     const app: OmniboxAimAppElement = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
     await microtasksFinished();
+    const composebox = app.$.composebox;
 
-    // Force a 'Tall' layout mode.
-    app.setSearchboxLayoutModeForTesting('TallBottomContext');
-    app.setHasAllowedInputsForTesting(false);
-
-    assertEquals('Compact', app.getSearchboxLayoutModeForTesting());
+    // Force a 'Tall' layout mode without allowed inputs.
+    composebox.setBaseSearchboxLayoutModeForTesting('TallBottomContext');
+    composebox.inputState = createDefaultInputState();
+    await microtasksFinished();
+    assertFalse(composebox.hasAllowedInputs);
+    assertEquals('Compact', composebox.searchboxLayoutMode);
 
     // Now simulate allowed inputs.
-    app.$.composebox.dispatchEvent(new CustomEvent('input-state-changed', {
-      detail: {
-        inputState: {
-          ...createDefaultInputState(),
-          allowedModels: [1],
-        },
-      },
-    }));
-
+    composebox.inputState = {
+      ...createDefaultInputState(),
+      allowedModels: [1],
+    };
     await microtasksFinished();
-    assertTrue(app.getHasAllowedInputsForTesting());
-    assertEquals('TallBottomContext', app.getSearchboxLayoutModeForTesting());
+    assertTrue(composebox.hasAllowedInputs);
+    assertEquals('TallBottomContext', composebox.searchboxLayoutMode);
 
     // Now simulate no allowed inputs again.
-    app.$.composebox.dispatchEvent(new CustomEvent('input-state-changed', {
-      detail: {
-        inputState: createDefaultInputState(),
-      },
-    }));
-
+    composebox.inputState = createDefaultInputState();
     await microtasksFinished();
-    assertTrue(!app.getHasAllowedInputsForTesting());
-    assertEquals('Compact', app.getSearchboxLayoutModeForTesting());
+    assertFalse(composebox.hasAllowedInputs);
+    assertEquals('Compact', composebox.searchboxLayoutMode);
   });
 
   test(
@@ -474,15 +456,15 @@ suite('AimAppTest', function() {
     await voiceSearch.updateComplete;
 
     // Verify CSS custom properties and computed min dimensions are updated on
-    // composebox and the voice search overlay container.
-    assertTrue(app.$.composebox.classList.contains('has-permission-prompt'));
+    // the inner #composebox and the voice search overlay container.
+    assertTrue(app.$.composebox.hasAttribute('has-permission-prompt_'));
     assertEquals(
         '220px',
-        app.$.composebox.style.getPropertyValue(
+        composebox.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_height'));
     assertEquals(
         '250px',
-        app.$.composebox.style.getPropertyValue(
+        composebox.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_width'));
     assertEquals('220px', window.getComputedStyle(voiceSearch).minHeight);
     assertEquals('250px', window.getComputedStyle(voiceSearch).minWidth);
@@ -505,58 +487,70 @@ suite('AimAppTest', function() {
     await voiceSearch.updateComplete;
 
     // Verify CSS custom properties are reset while full width is preserved.
-    assertFalse(app.$.composebox.classList.contains('has-permission-prompt'));
+    assertFalse(app.$.composebox.hasAttribute('has-permission-prompt_'));
     assertEquals(
         '',
-        app.$.composebox.style.getPropertyValue(
+        composebox.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_height'));
     assertEquals(
         '',
-        app.$.composebox.style.getPropertyValue(
+        composebox.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_width'));
     assertEquals(
         600, Math.round(app.$.composebox.getBoundingClientRect().width));
     document.body.style.width = '';
   });
 
-  test(
-      'Passes props and attributes to OmniboxComposeboxElement',
-      async function() {
-        loadTimeData.overrideValues({
-          composeboxSmartComposeEnabled: true,
-          caretAnimationEnabled: false,
-          contextualMenuUsePecApi: true,
-          searchboxLayoutMode: 'TallBottomContext',
-          contextButtonShapeIsOblong: true,
-          webuiOmniboxSimplificationEnabled: true,
-          webuiOmniboxFullPopupEnabled: true,
-          voiceSearchCoherenceComposeboxesEnabled: true,
-        });
-        const app = document.createElement('omnibox-aim-app');
-        document.body.appendChild(app);
-        await microtasksFinished();
-        app.setHasAllowedInputsForTesting(true);
-        await app.updateComplete;
+  test('ComposeboxConfiguresItselfAndHostPassesPopupSettings', async () => {
+    loadTimeData.overrideValues({
+      composeboxSmartComposeEnabled: true,
+      caretAnimationEnabled: false,
+      contextualMenuUsePecApi: true,
+      searchboxLayoutMode: 'TallBottomContext',
+      contextButtonShapeIsOblong: true,
+      webuiOmniboxSimplificationEnabled: true,
+      webuiOmniboxFullPopupEnabled: true,
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
 
-        const composebox = app.$.composebox;
+    const composebox = app.$.composebox;
+    composebox.inputState = {
+      ...createDefaultInputState(),
+      allowedModels: [1],
+    };
+    await composebox.updateComplete;
 
-        assertTrue(composebox.hasAttribute('searchbox-next-enabled'));
-        assertTrue(composebox.hasAttribute('disable-caret-color-animation'));
-        assertEquals(
-            'TallBottomContext',
-            composebox.getAttribute('searchbox-layout-mode'));
-        assertEquals('forward', composebox.submitButtonIconType);
-        assertTrue(composebox.isOblongShape);
-        assertTrue(composebox.webuiOmniboxSimplificationEnabled);
-        assertTrue(composebox.closeOnEscape);
-        assertTrue(composebox.showVoiceSearch);
-        assertFalse(composebox.disableVoiceSearchAnimation);
-        assertFalse(composebox.showMenuOnClick);
-        assertTrue(composebox.shouldShowGhostFiles);
-        assertTrue(composebox.usePecApi);
-        assertTrue(composebox.smartComposeEnabled);
-        assertTrue(composebox.composeboxNoFlickerSuggestionsFix);
-      });
+    // Configured by the composebox itself.
+    assertTrue(composebox.hasAttribute('searchbox-next-enabled'));
+    assertTrue(composebox.hasAttribute('disable-caret-color-animation'));
+    assertEquals(
+        'TallBottomContext', composebox.getAttribute('searchbox-layout-mode'));
+    assertEquals('forward', composebox.submitButtonIconType);
+    assertTrue(composebox.isOblongShape);
+    assertTrue(composebox.webuiOmniboxSimplificationEnabled);
+    assertTrue(composebox.showVoiceSearch);
+    assertFalse(composebox.disableVoiceSearchAnimation);
+    assertFalse(composebox.showMenuOnClick);
+    assertTrue(composebox.shouldShowGhostFiles);
+    assertTrue(composebox.usePecApi);
+    assertTrue(composebox.smartComposeEnabled);
+    assertTrue(composebox.composeboxNoFlickerSuggestionsFix);
+
+    // Passed down by the host, which knows which popup it is.
+    assertTrue(composebox.closeOnEscape);
+  });
+
+  test('StandalonePopupDoesNotCloseOnEscape', async () => {
+    // Default setup: webuiOmniboxFullPopupEnabled is false.
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    assertFalse(app.$.composebox.closeOnEscape);
+  });
 
   test('ResetsSubmittingOnClose', async function() {
     const app = document.createElement('omnibox-aim-app');
@@ -576,15 +570,11 @@ suite('AimAppTest', function() {
     await microtasksFinished();
 
     app.$.composebox.input = 'test draft text';
-    app.$.composebox.dispatchEvent(new CustomEvent('close-composebox', {
-      bubbles: true,
-      composed: true,
-      detail: {composeboxText: 'test draft text'},
-    }));
+    app.$.composebox.fire(
+        'close-composebox', {composeboxText: 'test draft text'});
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('requestClose'));
     assertEquals('test draft text', handler.getArgs('requestClose')[0]);
   });
 });
-

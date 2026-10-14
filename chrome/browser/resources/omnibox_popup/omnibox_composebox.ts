@@ -14,18 +14,21 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
+import '/strings.m.js';
 
 import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, hasOnlyAutoAddedTabs, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
-import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
+import {ComposeboxEmbedderMixin, SubmitButtonIconType} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -77,6 +80,23 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         type: String,
         reflect: true,
       },
+      // Mixin properties whose defaults are overridden below. Re-listed so
+      // Lit wraps this class's accessors; a bare `override accessor` would
+      // shadow the mixin's reactive ones.
+      searchboxNextEnabled: {type: Boolean, reflect: true},
+      composeboxNoFlickerSuggestionsFix: {type: Boolean},
+      disableCaretColorAnimation: {type: Boolean, reflect: true},
+      energyEffectEnabled: {type: Boolean, reflect: true},
+      showMenuOnClick: {type: Boolean},
+      shouldShowGhostFiles: {type: Boolean},
+      usePecApi: {type: Boolean, reflect: true},
+      contextManagementInComposeboxEnabled: {type: Boolean, reflect: true},
+      smartComposeEnabled: {type: Boolean, reflect: true},
+      submitButtonIconType: {type: String},
+      isOblongShape: {type: Boolean},
+      webuiOmniboxSimplificationEnabled: {type: Boolean},
+      showVoiceSearch: {type: Boolean},
+      disableVoiceSearchAnimation: {type: Boolean},
       entrypointName: {type: String, reflect: true},
       enableCarouselScrolling: {type: Boolean},
       askGComposeboxLensChipEnabled_: {type: Boolean},
@@ -86,6 +106,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       isContentSharingEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
       askGComposeboxPlaceholderEnabled_: {type: Boolean},
+      baseSearchboxLayoutMode_: {type: String},
+      hasPermissionPrompt_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -94,6 +119,31 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   accessor enableCarouselScrolling: boolean = false;
   override accessor animationState: GlowAnimationState =
       GlowAnimationState.NONE;
+  // Host-independent configuration; `closeOnEscape` is set by the host page.
+  override accessor searchboxNextEnabled: boolean = true;
+  override accessor composeboxNoFlickerSuggestionsFix: boolean = true;
+  override accessor disableCaretColorAnimation: boolean =
+      !loadTimeData.getBoolean('caretAnimationEnabled');
+  override accessor energyEffectEnabled: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
+  override accessor showMenuOnClick: boolean = false;
+  override accessor shouldShowGhostFiles: boolean = true;
+  override accessor usePecApi: boolean =
+      loadTimeData.getBoolean('contextualMenuUsePecApi');
+  override accessor contextManagementInComposeboxEnabled: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
+  override accessor smartComposeEnabled: boolean =
+      loadTimeData.getBoolean('composeboxSmartComposeEnabled');
+  override accessor submitButtonIconType: SubmitButtonIconType =
+      SubmitButtonIconType.FORWARD;
+  override accessor isOblongShape: boolean =
+      loadTimeData.getBoolean('contextButtonShapeIsOblong');
+  override accessor webuiOmniboxSimplificationEnabled: boolean =
+      loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
+  override accessor showVoiceSearch: boolean = true;
+  // Voice search animation is disabled outside of voice coherence.
+  override accessor disableVoiceSearchAnimation: boolean =
+      !loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
   protected accessor expanding_: boolean = true;
   protected accessor askGComposeboxLensChipEnabled_: boolean =
       getLoadTimeBoolean('askGComposeboxLensChipEnabled', false);
@@ -102,6 +152,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor isLensSearchEligible_: boolean = false;
   protected accessor askGComposeboxPlaceholderEnabled_: boolean =
       getLoadTimeBoolean('askGComposeboxPlaceholderEnabled', false);
+  protected accessor baseSearchboxLayoutMode_: string =
+      loadTimeData.getString('searchboxLayoutMode');
+  // Set while the voice search permission prompt is showing.
+  protected accessor hasPermissionPrompt_: boolean = false;
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();
@@ -134,6 +188,15 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+
+    this.searchboxLayoutMode = this.computeSearchboxLayoutMode_();
+
+    this.addEventListener(
+        'composebox-submit', () => this.onComposeboxSubmit_());
+    this.addEventListener(
+        'voice-permission-prompt-changed',
+        e => this.onVoicePermissionPromptChanged_(
+            e as CustomEvent<VoicePermissionPromptState>));
   }
 
   override connectedCallback() {
@@ -193,6 +256,19 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         changedPrivateProperties.has('askGComposeboxPlaceholderEnabled_')) {
       this.updateInputPlaceholder();
     }
+
+    if (changedPrivateProperties.has('baseSearchboxLayoutMode_') ||
+        changedPrivateProperties.has('hasAllowedInputs')) {
+      this.searchboxLayoutMode = this.computeSearchboxLayoutMode_();
+    }
+  }
+
+  private computeSearchboxLayoutMode_(): string {
+    if (this.baseSearchboxLayoutMode_.startsWith('Tall') &&
+        !this.hasAllowedInputs) {
+      return 'Compact';
+    }
+    return this.baseSearchboxLayoutMode_;
   }
 
   override updateInputPlaceholder() {
@@ -332,6 +408,46 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     return true;
   }
 
+  // ===========================================================================
+  // Host API
+  // ===========================================================================
+
+  // Force the button to keep its hover background visually while
+  // the menu is open, even if the mouse doesn't move out of the button
+  // area after clicking.
+  setContextMenuOpen(open: boolean) {
+    this.getContextEntrypointElement()?.classList.toggle('menu-open', open);
+  }
+
+  // ===========================================================================
+  // Common event handlers
+  // ===========================================================================
+
+  private onComposeboxSubmit_() {
+    this.clearAllInputs(
+        /* querySubmitted= */ true, /* shouldBlockAutoSuggestedTabs= */ false);
+  }
+
+  // Fired from voice search component if minimum height and width are non
+  // zero when permission prompt is displayed, or any time when permission
+  // prompt hides.
+  private onVoicePermissionPromptChanged_(
+      e: CustomEvent<VoicePermissionPromptState>) {
+    this.hasPermissionPrompt_ = e.detail.isOpened;
+    // Only #composebox reads these. The voice search overlay sets its own
+    // copy in ComposeboxMixin.onVoicePermissionChanged().
+    const composebox = this.$.composebox;
+    if (e.detail.isOpened) {  // Permission prompt opened.
+      composebox.style.setProperty(
+          '--cr_composebox_minimum_height', `${e.detail.height}px`);
+      composebox.style.setProperty(
+          '--cr_composebox_minimum_width', `${e.detail.width}px`);
+    } else {  // Permission prompt closed.
+      composebox.style.removeProperty('--cr_composebox_minimum_height');
+      composebox.style.removeProperty('--cr_composebox_minimum_width');
+    }
+  }
+
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
@@ -438,6 +554,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
              match => this.result?.suggestionGroupsMap[match.suggestionGroupId]
                           ?.renderType === RenderType.kGrid) ??
          false);
+  }
+
+  setBaseSearchboxLayoutModeForTesting(mode: string) {
+    this.baseSearchboxLayoutMode_ = mode;
   }
 }
 

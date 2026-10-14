@@ -181,7 +181,7 @@
 /* Only set min height/width if it exists;
  * otherwise use existing min height/width.
  */
-#composebox.has-permission-prompt::part(composebox) {
+#composebox[has-permission-prompt_]::part(composebox) {
   min-height: var(--cr_composebox_minimum_height);
   min-width: var(--cr_composebox_minimum_width);
 }
