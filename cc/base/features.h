@@ -21,8 +21,7 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSizeOopifEffectSurfacesAtExternalScale);
 // for N frames (default 1) to reduce contention with main frames, allowing
 // main a chance to commit.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferImplInvalidation);
-CC_BASE_EXPORT extern const base::FeatureParam<int>
-    kDeferImplInvalidationFrames;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeferImplInvalidationFrames);
 
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
@@ -36,12 +35,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSmallerInterestArea);
 
 constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
 constexpr static int kDefaultInterestAreaSizeInPixelsWhenEnabled = 500;
-CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kInterestAreaSizeInPixels);
 
 // When enabled, old prepaint tiles in the "eventually" region get reclaimed
 // after some time.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);
-CC_BASE_EXPORT extern const base::FeatureParam<int> kReclaimDelayInSeconds;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kReclaimDelayInSeconds);
 
 // When enabled, TileManager running into OOM will forcibly mark tiles as OOM so
 // that it doesn't wait for resource releases that will never come.
@@ -64,8 +63,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // When this feature is enabled we will use the corresponding mode definted by
 // `kScrollEventDispatchModeParamName`.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWaitForLateScrollEvents);
-CC_BASE_EXPORT extern const base::FeatureParam<double>
-    kWaitForLateScrollEventsDeadlineRatio;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kWaitForLateScrollEventsDeadlineRatio);
 
 // When enabled, image quality settings will be preserved in the discardable
 // image map.
@@ -77,8 +77,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);
 
 // Android Webview Memory Multiplier configurations.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWebViewMemoryMultiplier);
-CC_BASE_EXPORT extern const base::FeatureParam<int> kWebViewMemoryMultiplierParam;
-CC_BASE_EXPORT extern const base::FeatureParam<int> kWebViewMemoryMultiplierSoftPercentageParam;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kWebViewMemoryMultiplierParam);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kWebViewMemoryMultiplierSoftPercentageParam);
 
 // Check if the above feature is enabled. For performance purpose.
 CC_BASE_EXPORT bool IsCCSlimmingEnabled();
@@ -118,8 +120,8 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimScheduler);
 // `blink::InputHandlerProxy` to directly enforce the deadline. This isolates us
 // from cc scheduling bugs. Allowing us to no longer dispatch events, even if
 // frame production has yet to complete.
-CC_BASE_EXPORT extern const base::FeatureParam<std::string>
-    kScrollEventDispatchMode;
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                          kScrollEventDispatchMode);
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeDispatchScrollEventsImmediately[];
 CC_BASE_EXPORT extern const char
@@ -150,8 +152,15 @@ CC_BASE_EXPORT extern const char kNewContentForCheckerboardedScrollsPerScroll[];
 // priority will be changed *before* a frame is drawn with checkerboarding, and
 // will be reset at the first frame that is painted without checkerboarding.
 CC_BASE_EXPORT extern const char kNewContentForCheckerboardedScrollsPerFrame[];
-CC_BASE_EXPORT extern const base::FeatureParam<std::string>
-    kNewContentForCheckerboardedScrollsParam;
+// Modes for `kNewContentForCheckerboardedScrolls`; the string values above are
+// the corresponding field trial param values.
+enum class NewContentForCheckerboardedScrollsMode {
+  kPerScroll,
+  kPerFrame,
+};
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    NewContentForCheckerboardedScrollsMode,
+    kNewContentForCheckerboardedScrollsParam);
 
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.

@@ -40,8 +40,11 @@ BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/446920991): Reduce back to 1 frame delay once we have a
 // separate delay for handling latency sensitive input.
-const base::FeatureParam<int> kDeferImplInvalidationFrames{
-    &kDeferImplInvalidation, "frames", 4};
+BASE_FEATURE_PARAM(int,
+                   kDeferImplInvalidationFrames,
+                   &kDeferImplInvalidation,
+                   "frames",
+                   4);
 
 // Note that kUseDMSAAForTiles only controls vulkan launch on android. We will
 // be using a separate flag to control the launch on GL.
@@ -63,13 +66,19 @@ BASE_FEATURE(kReclaimPrepaintTilesWhenIdle, base::FEATURE_DISABLED_BY_DEFAULT);
 // to find a better balance between checkerboarding and memory.
 BASE_FEATURE(kSmallerInterestArea, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kInterestAreaSizeInPixels{
-    &kSmallerInterestArea, "size_in_pixels", kDefaultInterestAreaSizeInPixels};
+BASE_FEATURE_PARAM(int,
+                   kInterestAreaSizeInPixels,
+                   &kSmallerInterestArea,
+                   "size_in_pixels",
+                   kDefaultInterestAreaSizeInPixels);
 
 BASE_FEATURE(kReclaimOldPrepaintTiles, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
-                                                     "reclaim_delay_s", 30};
+BASE_FEATURE_PARAM(int,
+                   kReclaimDelayInSeconds,
+                   &kSmallerInterestArea,
+                   "reclaim_delay_s",
+                   30);
 
 BASE_FEATURE(kTileOOMFreezeMitigation, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -81,8 +90,11 @@ BASE_FEATURE(kClearCanvasResourcesInBackground,
 
 BASE_FEATURE(kWaitForLateScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<double> kWaitForLateScrollEventsDeadlineRatio{
-    &kWaitForLateScrollEvents, "deadline_ratio", 0.333};
+BASE_FEATURE_PARAM(double,
+                   kWaitForLateScrollEventsDeadlineRatio,
+                   &kWaitForLateScrollEvents,
+                   "deadline_ratio",
+                   0.333);
 
 BASE_FEATURE(kPreserveDiscardableImageMapQuality,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -91,11 +103,17 @@ BASE_FEATURE(kCCSlimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebViewMemoryMultiplier, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kWebViewMemoryMultiplierParam{
-    &kWebViewMemoryMultiplier, "MemoryMultiplier", 20};
+BASE_FEATURE_PARAM(int,
+                   kWebViewMemoryMultiplierParam,
+                   &kWebViewMemoryMultiplier,
+                   "MemoryMultiplier",
+                   20);
 
-const base::FeatureParam<int> kWebViewMemoryMultiplierSoftPercentageParam{
-    &kWebViewMemoryMultiplier, "MemoryMultiplierSoftPercentage", 50};
+BASE_FEATURE_PARAM(int,
+                   kWebViewMemoryMultiplierSoftPercentageParam,
+                   &kWebViewMemoryMultiplier,
+                   "MemoryMultiplierSoftPercentage",
+                   50);
 
 bool IsCCSlimmingEnabled() {
   static const bool enabled = base::FeatureList::IsEnabled(kCCSlimming);
@@ -115,10 +133,11 @@ constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
 constexpr const char
     kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[] =
         "DispatchScrollEventsUntilDeadline";
-const base::FeatureParam<std::string> kScrollEventDispatchMode(
-    &kWaitForLateScrollEvents,
-    "mode",
-    kScrollEventDispatchModeDispatchScrollEventsUntilDeadline);
+BASE_FEATURE_PARAM(std::string,
+                   kScrollEventDispatchMode,
+                   &kWaitForLateScrollEvents,
+                   "mode",
+                   kScrollEventDispatchModeDispatchScrollEventsUntilDeadline);
 
 BASE_FEATURE(kTreesInViz, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -135,10 +154,19 @@ constexpr const char kNewContentForCheckerboardedScrollsPerScroll[] =
     "per_scroll";
 constexpr const char kNewContentForCheckerboardedScrollsPerFrame[] =
     "per_frame";
-const base::FeatureParam<std::string> kNewContentForCheckerboardedScrollsParam(
-    &kNewContentForCheckerboardedScrolls,
-    "mode",
-    kNewContentForCheckerboardedScrollsPerFrame);
+constexpr base::FeatureParam<NewContentForCheckerboardedScrollsMode>::Option
+    kNewContentForCheckerboardedScrollsModeOptions[] = {
+        {NewContentForCheckerboardedScrollsMode::kPerScroll,
+         kNewContentForCheckerboardedScrollsPerScroll},
+        {NewContentForCheckerboardedScrollsMode::kPerFrame,
+         kNewContentForCheckerboardedScrollsPerFrame},
+};
+BASE_FEATURE_ENUM_PARAM(NewContentForCheckerboardedScrollsMode,
+                        kNewContentForCheckerboardedScrollsParam,
+                        &kNewContentForCheckerboardedScrolls,
+                        "mode",
+                        NewContentForCheckerboardedScrollsMode::kPerFrame,
+                        &kNewContentForCheckerboardedScrollsModeOptions);
 
 BASE_FEATURE(kPreventDuplicateImageDecodes, base::FEATURE_DISABLED_BY_DEFAULT);
 

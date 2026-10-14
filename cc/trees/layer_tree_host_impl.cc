@@ -504,7 +504,7 @@ void LayerTreeHostImpl::DidEndScroll() {
   if (base::FeatureList::IsEnabled(
           features::kNewContentForCheckerboardedScrolls) &&
       ::features::kNewContentForCheckerboardedScrollsParam.Get() ==
-          ::features::kNewContentForCheckerboardedScrollsPerScroll) {
+          ::features::NewContentForCheckerboardedScrollsMode::kPerScroll) {
     prioritize_new_content_due_to_checkerboarding_ = false;
   }
 
@@ -2919,18 +2919,18 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   // painting in the next frame.
   if (base::FeatureList::IsEnabled(
           features::kNewContentForCheckerboardedScrolls)) {
-    const std::string param =
-        ::features::kNewContentForCheckerboardedScrollsParam.Get();
-    if (param == ::features::kNewContentForCheckerboardedScrollsPerScroll) {
-      if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
-          frame->checkerboarded_needs_record) {
-        prioritize_new_content_due_to_checkerboarding_ = true;
-      }
-    } else if (param ==
-               ::features::kNewContentForCheckerboardedScrollsPerFrame) {
-      prioritize_new_content_due_to_checkerboarding_ =
-          GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
-          frame->checkerboarded_needs_record;
+    switch (::features::kNewContentForCheckerboardedScrollsParam.Get()) {
+      case ::features::NewContentForCheckerboardedScrollsMode::kPerScroll:
+        if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
+            frame->checkerboarded_needs_record) {
+          prioritize_new_content_due_to_checkerboarding_ = true;
+        }
+        break;
+      case ::features::NewContentForCheckerboardedScrollsMode::kPerFrame:
+        prioritize_new_content_due_to_checkerboarding_ =
+            GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
+            frame->checkerboarded_needs_record;
+        break;
     }
   }
 
@@ -4650,7 +4650,7 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
     if (base::FeatureList::IsEnabled(
             features::kNewContentForCheckerboardedScrolls) &&
         ::features::kNewContentForCheckerboardedScrollsParam.Get() ==
-            ::features::kNewContentForCheckerboardedScrollsPerFrame) {
+            ::features::NewContentForCheckerboardedScrollsMode::kPerFrame) {
       prioritize_new_content_due_to_checkerboarding_ = false;
       const auto& scroll_tree = active_tree_->property_trees()->scroll_tree();
       if (const gfx::Rect* cull_rect =
