@@ -3386,7 +3386,7 @@
 <translation id="3569617221227793022">منطقه زمانی درحال‌حاضر روی <ph name="TIME_ZONE_ENTRY" /> تنظیم شده است. این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
 <translation id="3570112771874223231">‏محتوای صفحه و نشانی‌های وبی که Gemini هنگام انجام تکلیف استفاده می‌کند با Google هم‌رسانی خواهند شد و ممکن است برای ایمنی بازبینی شوند.</translation>
-<translation id="3571734092741541777">تنظیم</translation>
+<translation id="3571734092741541777">تنظیم کردن</translation>
 <translation id="3575121482199441727">اجازه دادن برای این سایت</translation>
 <translation id="3575224072358507281">‏طبق خط‌مشی رازداری خود (measurementlab.net/privacy)، نشانی IP و نتایج سنجش شبکه را برای Measurement Lab جمع‌آوری کند</translation>
 <translation id="3576324189521867626">نصب موفقیت‌آمیز بود</translation>
@@ -3835,7 +3835,7 @@
 <translation id="3874532133373654352">سازمان شما نحوه استفاده از داده‌های جمع‌آوری‌شده با این ویژگی‌ها را مدیریت می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">این ویژگی از هوش مصنوعی استفاده می‌کند و در مرحله آزمایش است</translation>
 <translation id="3875511946736639169">فعال کردن تصاویر</translation>
-<translation id="3875777964669698078">درحال آوانویسی...</translation>
+<translation id="3875777964669698078">درحال ترانویسی...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> طوری تنظیم شده که در زبانه مرورگر جدید باز شود، پیوندهای پشتیبانی‌شده نیز در مرورگر باز خواهد شد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">اندازه پنجره‌های بالا تغییر کرد</translation>
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
