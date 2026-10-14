@@ -10974,9 +10974,11 @@ const std::optional<GURL>& NavigationRequest::GetInitiatorBaseUrl() {
   return common_params().initiator_base_url;
 }
 
-const std::vector<std::string>& NavigationRequest::GetDnsAliases() {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return response_head_ ? response_head_->dns_aliases : *emptyvector_result;
+base::span<const std::string> NavigationRequest::GetDnsAliases() {
+  if (response_head_) {
+    return response_head_->dns_aliases;
+  }
+  return {};
 }
 
 bool NavigationRequest::IsSameProcess() {

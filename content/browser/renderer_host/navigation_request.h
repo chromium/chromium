@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -489,7 +490,7 @@ class CONTENT_EXPORT NavigationRequest
   const std::optional<GURL>& GetInitiatorBaseUrl() override;
   scoped_refptr<InitiatorNavigationState> GetInitiatorNavigationState()
       override;
-  const std::vector<std::string>& GetDnsAliases() override;
+  base::span<const std::string> GetDnsAliases() override;
   bool IsSameProcess() override;
   ProcessSelectionUserData& GetProcessSelectionUserData() override;
   NavigationEntry* GetNavigationEntry() const override;

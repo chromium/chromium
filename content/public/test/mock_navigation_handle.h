@@ -9,9 +9,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
@@ -255,11 +255,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(scoped_refptr<InitiatorNavigationState>,
               GetInitiatorNavigationState,
               ());
-  const std::vector<std::string>& GetDnsAliases() override {
-    static const base::NoDestructor<std::vector<std::string>>
-        emptyvector_result;
-    return *emptyvector_result;
-  }
+  base::span<const std::string> GetDnsAliases() override { return {}; }
   MOCK_METHOD(void,
               RegisterThrottleForTesting,
               (std::unique_ptr<NavigationThrottle>));

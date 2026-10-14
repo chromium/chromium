@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/sanitized_object.h"
@@ -690,7 +691,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Retrieves any DNS aliases for the requested URL. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
   // the connection, in no particular order.
-  virtual const std::vector<std::string>& GetDnsAliases() = 0;
+  virtual base::span<const std::string> GetDnsAliases() = 0;
 
   // Whether the new document will be hosted in the same process as the current
   // document or not. Set only when the navigation commits.
