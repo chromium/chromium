@@ -230,7 +230,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    base::OnceClosure context_lost_callback)
+    base::OnceClosure context_lost_callback,
+    bool create_initial_resource)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -308,7 +309,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     }
   }
 
-  resource_ = NewOrRecycledResource();
+  if (create_initial_resource) {
+    resource_ = NewOrRecycledResource();
+  }
   FlushForImageListener::Get()->AddObserver(this);
 }
 

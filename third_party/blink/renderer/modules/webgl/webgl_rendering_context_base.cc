@@ -54,6 +54,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -1047,16 +1048,27 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     auto resource_provider = std::make_unique<CanvasNon2DResourceProvider>(
         size, format, GetAlphaType(), GetColorSpace(),
         drawing_buffer_tone_mapping_hdr_metadata_, shared_context_wrapper,
-        shared_image_usages);
+        shared_image_usages, /*context_lost_callback=*/base::OnceClosure(),
+        /*create_initial_resource=*/false);
     if (!resource_provider->IsValid()) {
       return nullptr;
     }
 
+    if (!resource_provider->image_pool()) {
+      return nullptr;
+    }
+    auto resource = resource_provider->image_pool()->GetImage();
+    if (!resource) {
+      return nullptr;
+    }
+    resource->Initialize(/*client=*/nullptr, shared_context_wrapper,
+                         drawing_buffer_tone_mapping_hdr_metadata_,
+                         /*is_accelerated=*/true);
+
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
-    auto client_si = resource_provider->resource()->GetSharedImage();
-    gpu::SyncToken sync_token =
-        resource_provider->resource()->acquire_sync_token();
+    auto client_si = resource->GetSharedImage();
+    gpu::SyncToken sync_token = resource->acquire_sync_token();
     auto access = client_si->BeginRasterAccess(raster_interface, sync_token,
                                                /*readonly=*/false);
     sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
