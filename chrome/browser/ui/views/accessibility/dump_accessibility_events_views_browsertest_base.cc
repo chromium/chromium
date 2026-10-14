@@ -358,12 +358,10 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
 }
 
 void DumpAccessibilityEventsViewsTestBase::WaitForPendingSerialization() {
-  Widget* target_widget =
-      GetTargetRootView() ? GetTargetRootView()->GetWidget() : widget_.get();
-  if (!IsViewsAXEnabled() || !target_widget || !target_widget->ax_manager()) {
+  if (!IsViewsAXEnabled() || !widget_ || !widget_->ax_manager()) {
     return;
   }
-  WidgetAXManagerTestApi test_api(target_widget->ax_manager());
+  WidgetAXManagerTestApi test_api(widget_->ax_manager());
   if (test_api.processing_update_posted()) {
     test_api.WaitForNextSerialization();
   }
