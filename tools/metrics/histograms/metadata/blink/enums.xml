@@ -9335,7 +9335,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="421" label="Proofreader"/>
   <int value="422" label="Rewriter"/>
   <int value="423" label="Writer"/>
-  <int value="424" label="DRAFT_InstallElement"/>
+  <int value="424" label="Install"/>
   <int value="425" label="Languagedetector"/>
   <int value="426" label="Translator"/>
   <int value="427" label="DocumentModelcontext"/>

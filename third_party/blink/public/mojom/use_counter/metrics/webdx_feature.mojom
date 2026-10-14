@@ -485,7 +485,7 @@ enum WebDXFeature {
   kProofreader = 421,
   kRewriter = 422,
   kWriter = 423,
-  kDRAFT_InstallElement = 424,
+  kInstall = 424,
   kLanguagedetector = 425,
   kTranslator = 426,
   kDocumentModelcontext = 427,

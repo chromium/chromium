@@ -262,9 +262,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install) {
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
   // Check use counter.
-  histograms.ExpectBucketCount(
-      "Blink.UseCounter.WebDXFeatures",
-      blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
+  histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                               blink::mojom::WebDXFeature::kInstall, 1);
 
   histograms.ExpectBucketCount(kInstallResultUma,
                                web_app::WebInstallServiceResult::kSuccess, 1);
@@ -391,9 +390,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithManifest) {
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
-  histograms.ExpectBucketCount(
-      "Blink.UseCounter.WebDXFeatures",
-      blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
+  histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                               blink::mojom::WebDXFeature::kInstall, 1);
   histograms.ExpectBucketCount(kInstallResultUma,
                                web_app::WebInstallServiceResult::kSuccess, 1);
   histograms.ExpectBucketCount(
