@@ -132,6 +132,22 @@ size_t AlignToPageSize(size_t size) {
   return bits::AlignUp(size, base::GetPageSize());
 }
 
+size_t SharedMemoryHeaderSize() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, this shared memory may be mapped by two processes using
+  // different page sizes, one with 4k pages and the other with 16k pages. To
+  // ensure the offset calculations are consistent between them, always align
+  // to at least Android's max supported page size (16k).
+  //
+  // Still check `base::GetPageSize()` in case someone is experimenting with an
+  // even larger (unsupported) page size.
+  return bits::AlignUp(sizeof(SharedState),
+                       std::max<size_t>(16 * 1024, base::GetPageSize()));
+#else
+  return AlignToPageSize(sizeof(SharedState));
+#endif
+}
+
 }  // namespace
 
 DiscardableSharedMemory::DiscardableSharedMemory() = default;
@@ -144,7 +160,7 @@ DiscardableSharedMemory::~DiscardableSharedMemory() = default;
 
 bool DiscardableSharedMemory::CreateAndMap(size_t size) {
   CheckedNumeric<size_t> checked_size = size;
-  checked_size += AlignToPageSize(sizeof(SharedState));
+  checked_size += SharedMemoryHeaderSize();
   if (!checked_size.IsValid()) {
     return false;
   }
@@ -183,8 +199,8 @@ bool DiscardableSharedMemory::Map(size_t size) {
     return false;
   }
 
-  shared_memory_mapping_ = shared_memory_region_.MapAt(
-      0, AlignToPageSize(sizeof(SharedState)) + size);
+  shared_memory_mapping_ =
+      shared_memory_region_.MapAt(0, SharedMemoryHeaderSize() + size);
   if (!shared_memory_mapping_.IsValid()) {
     return false;
   }
@@ -275,8 +291,8 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 
 #if BUILDFLAG(IS_ANDROID)
   // Ensure that the platform won't discard the required pages.
-  return LockPages(shared_memory_region_,
-                   AlignToPageSize(sizeof(SharedState)) + offset, length);
+  return LockPages(shared_memory_region_, SharedMemoryHeaderSize() + offset,
+                   length);
 #elif BUILDFLAG(IS_APPLE)
   // On macOS, there is no mechanism to lock pages. However, we do need to call
   // madvise(MADV_FREE_REUSE) in order to correctly update accounting for memory
@@ -315,8 +331,7 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   DCHECK(shared_memory_mapping_.IsValid());
 
   // Allow the pages to be discarded by the platform, if supported.
-  UnlockPages(shared_memory_region_,
-              AlignToPageSize(sizeof(SharedState)) + offset, length);
+  UnlockPages(shared_memory_region_, SharedMemoryHeaderSize() + offset, length);
 
   size_t start = offset / base::GetPageSize();
   size_t end = start + length / base::GetPageSize();
@@ -364,22 +379,22 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
 
 span<uint8_t> DiscardableSharedMemory::memory() {
   return shared_memory_mapping_.GetMemoryAsSpan<uint8_t>().subspan(
-      AlignToPageSize(sizeof(SharedState)));
+      SharedMemoryHeaderSize());
 }
 
 span<const uint8_t> DiscardableSharedMemory::memory() const {
   return shared_memory_mapping_.GetMemoryAsSpan<const uint8_t>().subspan(
-      AlignToPageSize(sizeof(SharedState)));
+      SharedMemoryHeaderSize());
 }
 
 span<uint8_t> DiscardableSharedMemory::mapped_memory() {
   return shared_memory_mapping_.mapped_memory().subspan(
-      AlignToPageSize(sizeof(SharedState)));
+      SharedMemoryHeaderSize());
 }
 
 span<const uint8_t> DiscardableSharedMemory::mapped_memory() const {
   return shared_memory_mapping_.mapped_memory().subspan(
-      AlignToPageSize(sizeof(SharedState)));
+      SharedMemoryHeaderSize());
 }
 
 bool DiscardableSharedMemory::Purge(Time current_time) {
