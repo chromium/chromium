@@ -226,7 +226,6 @@ class PaymentsFormDataImporterTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kAutofillFixCvcImport};
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   syncer::TestSyncService sync_service_;
@@ -273,9 +272,9 @@ TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
 }
 
 // Tests that FormFieldData::user_input is preferred over FormFieldData::value
-// for credit card numbers.
+// for credit card numbers and CVCs.
 // Using FormFieldData::user_input enables showing the save-card prompt for
-// sites which use JavaScript to set the credit-card <input> to '***'.
+// sites which use JavaScript to set the credit-card or CVC <input> to '***'.
 TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_PreferUserInput) {
   FormData form = CreateFullCreditCardForm("Jim Johansen", "••••••••••••••••",
                                            "02", "2999");

@@ -115,7 +115,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletDirectOffersNotificationBubble);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletReminderNotice);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillFixCvcImport);
 #if BUILDFLAG(IS_IOS)
 // When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
 // of failing a CHECK.

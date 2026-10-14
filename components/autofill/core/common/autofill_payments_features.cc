@@ -323,12 +323,6 @@ BASE_FEATURE(kAutofillEnableWalletDirectOffersNotificationBubble,
 BASE_FEATURE(kAutofillEnableWalletReminderNotice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, PaymentsFormDataImporter prefers FormFieldData::user_input() over
-// FormFieldData::value() for import to avoid silently importing obfuscated
-// values.
-// TODO(crbug.com/526738761): Clean up after launch.
-BASE_FEATURE(kAutofillFixCvcImport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
 // of failing a CHECK.
