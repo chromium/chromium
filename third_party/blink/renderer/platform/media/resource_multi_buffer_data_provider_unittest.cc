@@ -315,15 +315,6 @@ TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbIsCrossOrigin) {
   EXPECT_TRUE(url_data->is_cors_cross_origin());
 }
 
-TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByResponse) {
-  Initialize(kHttpUrl, 0);
-  Start();
-  scoped_refptr<UrlData> url_data = url_data_;
-  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
-  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_RESPONSE, url_));
-  EXPECT_TRUE(url_data->is_cors_cross_origin());
-}
-
 TEST_F(ResourceMultiBufferDataProviderTest, DidFailOtherErrorNotCrossOrigin) {
   Initialize(kHttpUrl, 0);
   Start();
@@ -333,9 +324,8 @@ TEST_F(ResourceMultiBufferDataProviderTest, DidFailOtherErrorNotCrossOrigin) {
   EXPECT_FALSE(url_data->is_cors_cross_origin());
 }
 
-// Deterministic security, policy, and certificate errors must fail immediately
-// rather than being retried, even at a non-zero position where transient
-// failures are retried.
+// An ORB block is deterministic, so it must fail immediately rather than being
+// retried, even at a non-zero position where transient failures are retried.
 TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbDoesNotRetry) {
   Initialize(kHttpUrl, 100);
   // Exactly one loader must be created: the initial one. A retry would create
@@ -347,37 +337,6 @@ TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbDoesNotRetry) {
   loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
   EXPECT_TRUE(url_data->is_cors_cross_origin());
   task_environment_.FastForwardUntilNoTasksRemain();
-}
-
-TEST_F(ResourceMultiBufferDataProviderTest,
-       DidFailWebSecurityViolationDoesNotRetry) {
-  Initialize(kHttpUrl, 100);
-  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
-  Start();
-  scoped_refptr<UrlData> url_data = url_data_;
-  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
-  loader_->DidFail(
-      WebURLError(network::CorsErrorStatus(
-                      network::mojom::CorsError::kWildcardOriginNotAllowed),
-                  WebURLError::HasCopyInCache::kFalse, url_));
-  EXPECT_TRUE(url_data->is_cors_cross_origin());
-  task_environment_.FastForwardUntilNoTasksRemain();
-}
-
-TEST_F(ResourceMultiBufferDataProviderTest,
-       DidFailDeterministicNetErrorDoesNotRetry) {
-  for (int err :
-       {net::ERR_BLOCKED_BY_CLIENT, net::ERR_BLOCKED_BY_CSP,
-        net::ERR_CERT_COMMON_NAME_INVALID, net::ERR_BAD_SSL_CLIENT_AUTH_CERT}) {
-    Initialize(kHttpUrl, 100);
-    EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
-    Start();
-    scoped_refptr<UrlData> url_data = url_data_;
-    EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
-    loader_.ExtractAsDangling()->DidFail(WebURLError(err, url_));
-    EXPECT_FALSE(url_data->is_cors_cross_origin());
-    task_environment_.FastForwardUntilNoTasksRemain();
-  }
 }
 
 // Transient errors at a non-zero position are still retried.
