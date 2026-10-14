@@ -1032,6 +1032,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.R) // TODO(crbug.com/573646619): Re-enable.
     public void testDelegatePostSigninGeneralError_retrySuccess() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
