@@ -17,7 +17,8 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
@@ -78,7 +79,8 @@ constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
 // use-after-free.
 drive::DriveIntegrationService* GetDriveIntegrationService(
     const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   if (!profile) {
     VLOG(1) << "No profile for account_id";
     return nullptr;

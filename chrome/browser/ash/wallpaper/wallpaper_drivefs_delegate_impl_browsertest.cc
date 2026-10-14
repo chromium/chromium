@@ -24,8 +24,8 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
@@ -84,7 +84,8 @@ class WallpaperDriveFsDelegateImplBrowserTest
 
   const AccountId& GetAccountId() const {
     user_manager::User* user =
-        ProfileHelper::Get()->GetUserByProfile(browser()->GetProfile());
+        BrowserContextHelper::Get()->GetUserByBrowserContext(
+            browser()->GetProfile());
     DCHECK(user);
     return user->GetAccountId();
   }
