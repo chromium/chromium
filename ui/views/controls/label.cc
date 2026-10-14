@@ -112,8 +112,29 @@ std::u16string_view Label::GetText() const {
 }
 
 void Label::SetText(std::u16string_view new_text) {
-  if (new_text == GetText()) {
+  // Compare with the raw text ("&New" and u"New" have the same
+  // GetText() but a different mnemonic).
+  if (new_text == raw_text_) {
     return;
+  }
+
+  raw_text_ = std::u16string(new_text);
+  UpdateText();
+}
+
+void Label::UpdateText() {
+  std::u16string new_text = raw_text_;
+  mnemonic_range_ = gfx::Range::InvalidRange();
+  if (mnemonic_mode_ != MnemonicMode::kNone) {
+    int mnemonic_position = -1;
+    int mnemonic_span = 0;
+    new_text = gfx::LocateAndRemoveAcceleratorChar(
+        raw_text_, &mnemonic_position, &mnemonic_span);
+    if (mnemonic_position >= 0) {
+      const size_t start = static_cast<size_t>(mnemonic_position);
+      mnemonic_range_ =
+          gfx::Range(start, start + static_cast<size_t>(mnemonic_span));
+    }
   }
 
   std::u16string current_text(GetText());
@@ -134,7 +155,7 @@ void Label::SetText(std::u16string_view new_text) {
       GetViewAccessibility().SetName(
           std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else {
-      GetViewAccessibility().SetName(std::u16string(new_text));
+      GetViewAccessibility().SetName(new_text);
     }
   }
 
@@ -226,6 +247,28 @@ void Label::SetTextStyleRange(int style, const gfx::Range& range) {
   full_text_->ApplyWeight(details.weight, range);
   ClearDisplayText();
   PreferredSizeChanged();
+}
+
+Label::MnemonicMode Label::GetMnemonicMode() const {
+  return mnemonic_mode_;
+}
+
+void Label::SetMnemonicMode(MnemonicMode mode) {
+  if (mode == mnemonic_mode_) {
+    return;
+  }
+
+  // The text only changes when switching to or from kNone. Between kHide and
+  // kUnderline, only the underline changes.
+  const bool text_changes =
+      mode == MnemonicMode::kNone || mnemonic_mode_ == MnemonicMode::kNone;
+  mnemonic_mode_ = mode;
+  if (text_changes) {
+    UpdateText();
+  } else {
+    ClearDisplayText();
+  }
+  OnPropertyChanged(&mnemonic_mode_, PropertyEffects::kPaint);
 }
 
 bool Label::GetAutoColorReadabilityEnabled() const {
@@ -883,6 +926,9 @@ std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
   render_text->SetMultiline(multiline);
   render_text->SetMaxLines(multiline ? GetMaxLines() : size_t{0});
   render_text->SetWordWrapBehavior(full_text_->word_wrap_behavior());
+  if (mnemonic_mode_ == MnemonicMode::kUnderline && mnemonic_range_.IsValid()) {
+    render_text->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, mnemonic_range_);
+  }
 
   // Setup render text for selection controller.
   if (GetSelectable()) {
@@ -1609,6 +1655,7 @@ void Label::OnDisplayTextTruncation() {
 
 BEGIN_METADATA(Label)
 ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(Label::MnemonicMode, MnemonicMode)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
@@ -1637,3 +1684,8 @@ ADD_PROPERTY_METADATA(int, MaximumWidth)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::Label::MnemonicMode,
+                       {views::Label::MnemonicMode::kNone, u"kNone"},
+                       {views::Label::MnemonicMode::kHide, u"kHide"},
+                       {views::Label::MnemonicMode::kUnderline, u"kUnderline"})
