@@ -79,7 +79,6 @@ class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
 
  private:
   raw_ptr<FakeSendTabToSelfModel> model_ = nullptr;
-  base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
 
 IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,

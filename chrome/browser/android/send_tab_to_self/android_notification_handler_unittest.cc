@@ -120,7 +120,6 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
   MockAndroidNotificationHandler* handler() { return handler_.get(); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{kSendTabToSelfAutoOpen};
   std::unique_ptr<TestTabModel> tab_model_;
   tabs::MockTabInterface mock_tab_interface_;
   std::unique_ptr<MockAndroidNotificationHandler> handler_;
@@ -617,11 +616,11 @@ TEST_F(AndroidNotificationHandlerTest, ShowNotificationWithPageContext) {
       GURL(kExampleUrl), "Title", kDeviceId, page_context, NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  EXPECT_CALL(*handler(),
-              ShowNotification(AllOf(
-                  Property(&SendTabToSelfEntry::GetGUID, Eq(guid)),
-                  Property(&SendTabToSelfEntry::GetPageContext,
-                           Eq(page_context)))));
+  EXPECT_CALL(
+      *handler(),
+      ShowNotification(AllOf(
+          Property(&SendTabToSelfEntry::GetGUID, Eq(guid)),
+          Property(&SendTabToSelfEntry::GetPageContext, Eq(page_context)))));
 
   // Chrome is in background (no tab model added), so entries are displayed as
   // notifications.

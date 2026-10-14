@@ -126,11 +126,7 @@ import java.util.function.Supplier;
  * nothing will crash since the bulk of the behaviors from the coordinator are either unit tested by
  * classes hosted insider the coordinator or have to be verified in an integration test.
  */
-@EnableFeatures({
-    ChromeFeatureList.GLIC,
-    ChromeFeatureList.FAVICON_DISABLE_HOST_FALLBACK,
-    ChromeFeatureList.SEND_TAB_TO_SELF_AUTO_OPEN
-})
+@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.FAVICON_DISABLE_HOST_FALLBACK})
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneCoordinatorUnitTest {

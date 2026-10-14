@@ -75,7 +75,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
-@EnableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_AUTO_OPEN})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563033707
 public class SendTabToSelfReceiverTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();

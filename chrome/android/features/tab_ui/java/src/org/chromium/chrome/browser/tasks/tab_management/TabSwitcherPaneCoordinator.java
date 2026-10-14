@@ -228,7 +228,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Callback<EdgeToEdgeController> mOnEdgeToEdgeControllerChangedCallback =
             new ValueChangedCallback<>(this::onEdgeToEdgeControllerChanged);
     private final @Nullable TabGroupLabeller mTabGroupLabeller;
-    private final @Nullable SendTabToSelfTabLabeller mSendTabToSelfTabLabeller;
+    private final SendTabToSelfTabLabeller mSendTabToSelfTabLabeller;
     private final MonotonicObservableSupplier<TabModel> mTabModelSupplier;
     private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -623,14 +623,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             } else {
                 mTabGroupLabeller = null;
             }
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_AUTO_OPEN)) {
-                mSendTabToSelfTabLabeller =
-                        new SendTabToSelfTabLabeller(
-                                mTabListCoordinator.getTabListNotificationHandler(),
-                                tabModelSupplier);
-            } else {
-                mSendTabToSelfTabLabeller = null;
-            }
+            mSendTabToSelfTabLabeller =
+                    new SendTabToSelfTabLabeller(
+                            mTabListCoordinator.getTabListNotificationHandler(), tabModelSupplier);
 
             mOnVisibilityChanged.onResult(
                     isVisibleSupplier.addSyncObserverAndPostIfNonNull(mOnVisibilityChanged));
@@ -701,9 +696,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.destroy();
         }
-        if (mSendTabToSelfTabLabeller != null) {
-            mSendTabToSelfTabLabeller.destroy();
-        }
+        mSendTabToSelfTabLabeller.destroy();
         mTabModelSupplier.removeObserver(mOnTabModelChange);
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
@@ -799,9 +792,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.showAll();
         }
-        if (mSendTabToSelfTabLabeller != null) {
-            mSendTabToSelfTabLabeller.showAll(tabs);
-        }
+        mSendTabToSelfTabLabeller.showAll(tabs);
     }
 
     /** Performs soft cleanup which removes thumbnails to relieve memory usage. */
