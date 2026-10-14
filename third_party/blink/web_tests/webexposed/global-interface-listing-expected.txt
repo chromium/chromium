@@ -4750,22 +4750,16 @@ interface HTMLInputElement : HTMLElement
     setter width
 interface HTMLInstallElement : HTMLElement
     attribute @@toStringTag
-    getter initialPermissionStatus
     getter invalidReason
     getter isValid
     getter manifest
     getter manifestId
     getter oninstallresult
-    getter onpromptaction
-    getter onpromptdismiss
     getter onvalidationstatuschange
-    getter permissionStatus
     method constructor
     setter manifest
     setter manifestId
     setter oninstallresult
-    setter onpromptaction
-    setter onpromptdismiss
     setter onvalidationstatuschange
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag

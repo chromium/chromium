@@ -902,16 +902,12 @@ html element ins
     property cite
     property dateTime
 html element install
-    property initialPermissionStatus
     property invalidReason
     property isValid
     property manifest
     property manifestId
     property oninstallresult
-    property onpromptaction
-    property onpromptdismiss
     property onvalidationstatuschange
-    property permissionStatus
 html element kbd
 html element label
     property control

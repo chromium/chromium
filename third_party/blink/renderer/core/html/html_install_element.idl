@@ -13,10 +13,10 @@ interface HTMLInstallElement : HTMLElement {
   [CEReactions, Reflect, URL] attribute USVString manifestId;
   // Relative URLs are resolved against the current document's base URL.
   [CEReactions, Reflect, URL] attribute USVString manifest;
-};
 
-// TODO(crbug.com/533049447): <install> reports outcomes via installresult, so
-// the onpromptaction/onpromptdismiss handlers from InPagePermissionMixin are
-// never fired here. Split the mixin so these dead handlers aren't exposed on
-// <install>.
-HTMLInstallElement includes InPagePermissionMixin;
+  // Declare only the members needed by <install> instead of including
+  // InPagePermissionMixin; permission state and prompt events don't apply.
+  [MeasureAs=CapabilityElementIsValid] readonly attribute boolean isValid;
+  [MeasureAs=CapabilityElementInvalidReason] readonly attribute DOMString invalidReason;
+  [MeasureAs=CapabilityElementOnValidationStatusChange] attribute EventHandler onvalidationstatuschange;
+};
