@@ -3988,16 +3988,16 @@ class MenuElementsAccessibilityBrowserTest
   }
 
   // A <menulist> that violates its content model (because of the <button>),
-  // so its radio <menuitem>s are exposed as kRadioButton inside a kList.
+  // so its <menuitemradio>s are exposed as kRadioButton inside a kList.
   // The menu's items are Copy, Invalid, Radio A, Radio B, Paste.
   static constexpr char kViolatedMenuWithRadiosHtml[] = R"HTML(
       <!DOCTYPE html>
       <menulist id="menu">
         <menuitem>Copy</menuitem>
         <button>Invalid</button>
-        <fieldset checkable="single">
-          <menuitem>Radio A</menuitem>
-          <menuitem>Radio B</menuitem>
+        <fieldset>
+          <menuitemradio>Radio A</menuitemradio>
+          <menuitemradio>Radio B</menuitemradio>
         </fieldset>
         <menuitem>Paste</menuitem>
       </menulist>)HTML";

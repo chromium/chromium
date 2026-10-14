@@ -1853,7 +1853,9 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     case ElementType::kHTMLMapElement:
     case ElementType::kHTMLMenuBarElement:
     case ElementType::kHTMLMenuElement:
+    case ElementType::kHTMLMenuItemCheckboxElement:
     case ElementType::kHTMLMenuItemElement:
+    case ElementType::kHTMLMenuItemRadioElement:
     case ElementType::kHTMLMenuListElement:
     case ElementType::kHTMLMetaElement:
     case ElementType::kHTMLModElement:

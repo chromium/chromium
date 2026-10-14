@@ -116,7 +116,10 @@
 #include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_checkbox_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_radio_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
@@ -2596,23 +2599,27 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     }
   }
 
-  if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(*GetNode())) {
+  if (auto* menu_item = DynamicTo<HTMLMenuItemElementBase>(*GetNode())) {
     // When the content model is violated, the whole menu tree drops its menu
     // semantics. Checkable items become plain checkboxes and radios rather
     // than list items, because a list item cannot carry a checked state and
     // the item's checkability would otherwise be lost entirely.
     const HTMLMenuOwnerElement* owner = menu_item->OwningMenuElement();
     const bool is_in_violation_mode = owner && owner->IsInViolationMode();
-    switch (menu_item->CheckableState()) {
-      case HTMLFieldSetElement::Checkable::Single:
-        return is_in_violation_mode ? ax::mojom::blink::Role::kRadioButton
-                                    : ax::mojom::blink::Role::kMenuItemRadio;
-      case HTMLFieldSetElement::Checkable::Multiple:
-        return is_in_violation_mode ? ax::mojom::blink::Role::kCheckBox
-                                    : ax::mojom::blink::Role::kMenuItemCheckBox;
-      case HTMLFieldSetElement::Checkable::None:
-        return is_in_violation_mode ? ax::mojom::blink::Role::kListItem
-                                    : ax::mojom::blink::Role::kMenuItem;
+
+    if (IsA<HTMLMenuItemRadioElement>(*menu_item)) {
+      return is_in_violation_mode ? ax::mojom::blink::Role::kRadioButton
+                                  : ax::mojom::blink::Role::kMenuItemRadio;
+    }
+
+    if (IsA<HTMLMenuItemCheckboxElement>(*menu_item)) {
+      return is_in_violation_mode ? ax::mojom::blink::Role::kCheckBox
+                                  : ax::mojom::blink::Role::kMenuItemCheckBox;
+    }
+
+    if (IsA<HTMLMenuItemElement>(*menu_item)) {
+      return is_in_violation_mode ? ax::mojom::blink::Role::kListItem
+                                  : ax::mojom::blink::Role::kMenuItem;
     }
     NOTREACHED();
   }
@@ -6717,11 +6724,11 @@ bool AXNodeObject::CanHaveChildren() const {
       break;
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kRadioButton:
-      // A checkable <menuitem> maps to checkbox/radio when its menu violates
+      // A checkable menu item maps to checkbox/radio when its menu violates
       // its content model. Unlike <input type=checkbox>, it holds its label in
       // DOM children, which must stay exposed so that the name can be computed
       // from contents.
-      if (IsA<HTMLMenuItemElement>(GetElement())) {
+      if (IsA<HTMLMenuItemCheckableElementBase>(GetElement())) {
         break;
       }
       [[fallthrough]];

@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -66,34 +65,6 @@ bool WillReattachChildLayoutObject(const Element& parent) {
 }
 
 }  // namespace
-
-void HTMLFieldSetElement::ParseAttribute(
-    const AttributeModificationParams& params) {
-  const QualifiedName& name = params.name;
-  const AtomicString& old_value = params.old_value;
-  const AtomicString& new_value = params.new_value;
-
-  if (name == html_names::kCheckableAttr) {
-    // Uncheck all child menu items, if any exist, when `checkable` content
-    // attribute is removed.
-    if (new_value.IsNull()) {
-      UpdateMenuItemCheckableExclusivity(/*checked_menu_item=*/nullptr);
-    } else if (EqualIgnoringAsciiCase(new_value, keywords::kSingle) &&
-               !old_value.IsNull()) {
-      HTMLMenuItemElement* first_checked_menu_item = nullptr;
-      for (HTMLMenuItemElement& menu_item :
-           Traversal<HTMLMenuItemElement>::DescendantsOf(*this)) {
-        if (menu_item.checked()) {
-          first_checked_menu_item = &menu_item;
-          break;
-        }
-      }
-      UpdateMenuItemCheckableExclusivity(first_checked_menu_item);
-    }
-  } else {
-    HTMLFormControlElement::ParseAttribute(params);
-  }
-}
 
 HTMLFieldSetElement::HTMLFieldSetElement(Document& document)
     : HTMLFormControlElement(html_names::kFieldsetTag, document) {
@@ -257,35 +228,6 @@ bool HTMLFieldSetElement::IsDisabledFormControl() const {
   // only supposed to affect its descendants:
   // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-disabled
   return false;
-}
-
-HTMLFieldSetElement::Checkable HTMLFieldSetElement::CheckableState() const {
-  const AtomicString& attr = FastGetAttribute(html_names::kCheckableAttr);
-  if (attr.IsNull()) {
-    // missing value default
-    return Checkable::None;
-  }
-  if (EqualIgnoringAsciiCase(attr, keywords::kSingle)) {
-    // "single"
-    return Checkable::Single;
-  }
-  // "multiple"; invalid value default; empty value default
-  return Checkable::Multiple;
-}
-
-void HTMLFieldSetElement::UpdateMenuItemCheckableExclusivity(
-    HTMLMenuItemElement* checked_menu_item) {
-  // If `checked_menu_item` is null, then uncheck *all* child menuitems.
-  DCHECK(!checked_menu_item || checked_menu_item->checked());
-  DCHECK_NE(CheckableState(), Checkable::Multiple);
-
-  for (HTMLMenuItemElement& menu_item :
-       Traversal<HTMLMenuItemElement>::DescendantsOf(*this)) {
-    if (&menu_item != checked_menu_item) {
-      menu_item.setChecked(false,
-                           HTMLMenuItemElement::CheckedBehavior::kNoEvents);
-    }
-  }
 }
 
 // <fieldset> should never be considered disabled, but should still match the

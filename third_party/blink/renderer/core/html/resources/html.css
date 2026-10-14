@@ -2566,11 +2566,13 @@ select optgroup optgroup {
     border-block-start: 1px solid currentColor;
   }
 
-  menuitem::checkmark {
+  menuitemcheckbox::checkmark,
+  menuitemradio::checkmark {
     content: '\2713' / '';
   }
 
-  menuitem:not(:checked)::checkmark {
+  menuitemcheckbox:not(:checked)::checkmark,
+  menuitemradio:not(:checked)::checkmark {
     visibility: hidden;
   }
 
@@ -2585,11 +2587,19 @@ select optgroup optgroup {
     display: contents;
   }
 
-  menuitem {
+  menuitem,
+  menuitemcheckbox,
+  menuitemradio {
     display: inline-flex;
     /* menuitems in a menubar do not open on interest (hover), unless a menu
      * is already open (see below) */
     interest-delay-start: calc(infinity * 1s);
+  }
+
+  menulist menuitem,
+  menulist menuitemcheckbox,
+  menulist menuitemradio {
+    display: flex;
   }
 
   /* menuitems in a menubar that has an open menu trigger instantly on
@@ -2600,12 +2610,11 @@ select optgroup optgroup {
   }
 
   menulist menuitem {
-    display: flex;
     interest-delay-start: normal;
   }
 
   menubar, menulist {
-    menuitem {
+    menuitem, menuitemcheckbox, menuitemradio {
       align-items: center;
       user-select: none;
       gap: 0.5em;
@@ -2622,10 +2631,14 @@ select optgroup optgroup {
       padding-inline: 0.5em;
     }
 
-    menuitem:enabled:hover {
+    menuitem:enabled:hover,
+    menuitemcheckbox:enabled:hover,
+    menuitemradio:enabled:hover {
       background-color: color-mix(currentColor 10%, transparent);
     }
-    menuitem:disabled {
+    menuitem:disabled,
+    menuitemcheckbox:disabled,
+    menuitemradio:disabled {
       color: color-mix(currentColor 50%, transparent);
     }
 

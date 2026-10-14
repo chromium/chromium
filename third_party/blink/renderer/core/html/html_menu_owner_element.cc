@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
-#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_sub_menu_element.h"
 #include "third_party/blink/renderer/core/html/menu_mutation_observer.h"
@@ -192,10 +192,10 @@ bool HTMLMenuOwnerElement::IsTopLevelOwnerForClickHandling() const {
 }
 
 void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
-  auto menuitem_for_event = [this, &event]() -> HTMLMenuItemElement* {
+  auto menuitem_for_event = [this, &event]() -> HTMLMenuItemElementBase* {
     for (NodeEventContext& node_context : event.GetEventPath()) {
       Node& node = node_context.GetNode();
-      if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(node)) {
+      if (auto* menu_item = DynamicTo<HTMLMenuItemElementBase>(node)) {
         return menu_item;
       }
       if (&node == this) {
@@ -213,7 +213,7 @@ void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
     } else if (event.type() == event_type_names::kClick) {
       if (!processing_click_ && last_mouseup_menu_item_ &&
           last_mouseup_menu_item_ != menuitem_for_event()) {
-        HTMLMenuItemElement* item_to_click = last_mouseup_menu_item_;
+        HTMLMenuItemElementBase* item_to_click = last_mouseup_menu_item_;
         last_mouseup_menu_item_ = nullptr;
         processing_click_ = true;
         item_to_click->DispatchSimulatedClick(&event);
@@ -246,13 +246,13 @@ void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
 
 int HTMLMenuOwnerElement::IndexOfSelectedOption() const {
   auto* focused_menuitem =
-      DynamicTo<HTMLMenuItemElement>(GetDocument().FocusedElement());
+      DynamicTo<HTMLMenuItemElementBase>(GetDocument().FocusedElement());
   if (!focused_menuitem) {
     return -1;
   }
 
   int index = 0;
-  for (HTMLMenuItemElement& menuitem : ItemList()) {
+  for (HTMLMenuItemElementBase& menuitem : ItemList()) {
     if (menuitem == focused_menuitem) {
       return index;
     }

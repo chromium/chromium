@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -32,7 +33,7 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
       (command == CommandEventType::kShowPopover ||
        command == CommandEventType::kTogglePopover) &&
       popoverOpen()) {
-    if (HTMLMenuItemElement::IsActivationFromKeyboard(activate_event)) {
+    if (HTMLMenuItemElementBase::IsActivationFromKeyboard(activate_event)) {
       FocusTrigger trigger = activate_event->IsFullyTrusted()
                                  ? FocusTrigger::kUserGesture
                                  : FocusTrigger::kScript;

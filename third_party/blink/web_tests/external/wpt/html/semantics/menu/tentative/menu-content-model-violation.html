@@ -212,11 +212,11 @@
 
 <menulist id="invalid-item-roles">
   <menuitem id="invalid-plain-item">Plain</menuitem>
-  <fieldset checkable="single">
-    <menuitem id="invalid-radio-item">Radio</menuitem>
+  <fieldset>
+    <menuitemradio id="invalid-radio-item">Radio</menuitemradio>
   </fieldset>
-  <fieldset checkable="multiple">
-    <menuitem id="invalid-checkbox-item">Checkbox</menuitem>
+  <fieldset>
+    <menuitemcheckbox id="invalid-checkbox-item">Checkbox</menuitemcheckbox>
   </fieldset>
   <button>Invalid</button>
 </menulist>
@@ -748,12 +748,12 @@ promise_test(async () => {
   menu.showPopover();
 
   assert_equals(await test_driver.get_computed_role(menu), 'list', 'Menulist');
-  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-plain-item')), 'listitem', 'Plain menuitem');
+  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-plain-item')), 'listitem', 'menuitem element');
   // Checkable menuitems become checkbox/radio rather than listitem because
   // listitem does not support a checked state, which would leave AT users with
   // no way to know the item is checkable.
-  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-radio-item')), 'radio', 'Menuitem in a checkable=single fieldset');
-  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-checkbox-item')), 'checkbox', 'Menuitem in a checkable=multiple fieldset');
+  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-radio-item')), 'radio', 'menuitemradio element');
+  assert_equals(await test_driver.get_computed_role(document.getElementById('invalid-checkbox-item')), 'checkbox', 'menuitemcheckbox element');
 
   menu.hidePopover();
 }, 'Menuitems fall back to listitem, radio, and checkbox roles when the content model is violated');

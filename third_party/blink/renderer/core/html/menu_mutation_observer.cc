@@ -160,6 +160,8 @@ ElementAccessibilityIssueReason MenuMutationObserver::CheckForIssue(
          ancestor; ancestor = get_parent_even_if_disconnected(ancestor)) {
       if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
         if (ancestor_element->HasTagName(html_names::kMenuitemTag) ||
+            ancestor_element->HasTagName(html_names::kMenuitemcheckboxTag) ||
+            ancestor_element->HasTagName(html_names::kMenuitemradioTag) ||
             ancestor_element->HasTagName(html_names::kLegendTag)) {
           return ElementAccessibilityIssueReason::kValidChild;
         }

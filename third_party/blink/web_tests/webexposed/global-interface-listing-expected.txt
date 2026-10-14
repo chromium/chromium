@@ -4340,7 +4340,6 @@ interface HTMLEmbedElement : HTMLElement
     setter width
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
-    getter checkable
     getter disabled
     getter elements
     getter form
@@ -4353,7 +4352,6 @@ interface HTMLFieldSetElement : HTMLElement
     method constructor
     method reportValidity
     method setCustomValidity
-    setter checkable
     setter disabled
     setter name
 interface HTMLFontElement : HTMLElement
@@ -4955,18 +4953,36 @@ interface HTMLMenuElement : HTMLElement
     getter compact
     method constructor
     setter compact
-interface HTMLMenuItemElement : HTMLElement
+interface HTMLMenuItemCheckboxElement : HTMLElement
     attribute @@toStringTag
     getter checked
-    getter command
-    getter commandForElement
     getter defaultChecked
     getter disabled
     getter interestForElement
     method constructor
     setter checked
+    setter defaultChecked
+    setter disabled
+    setter interestForElement
+interface HTMLMenuItemElement : HTMLElement
+    attribute @@toStringTag
+    getter command
+    getter commandForElement
+    getter disabled
+    getter interestForElement
+    method constructor
     setter command
     setter commandForElement
+    setter disabled
+    setter interestForElement
+interface HTMLMenuItemRadioElement : HTMLElement
+    attribute @@toStringTag
+    getter checked
+    getter defaultChecked
+    getter disabled
+    getter interestForElement
+    method constructor
+    setter checked
     setter defaultChecked
     setter disabled
     setter interestForElement

@@ -221,6 +221,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
@@ -5605,7 +5606,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                           child_recalc_context);
       UpdateColumnPseudoElements(child_change, child_recalc_context);
 
-      if (IsA<HTMLMenuItemElement>(this) || IsA<HTMLOptionElement>(this) ||
+      if (IsA<HTMLMenuItemCheckableElementBase>(this) ||
+          IsA<HTMLOptionElement>(this) ||
           (IsA<HTMLInputElement>(this) &&
            RuntimeEnabledFeatures::AppearanceBaseEnabled())) {
         UpdatePseudoElement(kPseudoIdCheckMark, child_change,
@@ -11816,8 +11818,8 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       }
       return false;
     };
-    const HTMLMenuItemElement* menu_item = DynamicTo<HTMLMenuItemElement>(this);
-    const bool checkable_menu_item = menu_item && menu_item->IsCheckable();
+    const auto* checkable_menu_item =
+        DynamicTo<HTMLMenuItemCheckableElementBase>(this);
     const HTMLInputElement* input = DynamicTo<HTMLInputElement>(this);
     const bool base_checkable_input =
         RuntimeEnabledFeatures::AppearanceBaseEnabled() && input &&

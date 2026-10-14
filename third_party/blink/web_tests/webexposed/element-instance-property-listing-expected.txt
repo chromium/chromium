@@ -668,7 +668,6 @@ html element embed
     property width
 html element fieldset
     property checkValidity
-    property checkable
     property disabled
     property elements
     property form
@@ -973,9 +972,17 @@ html element menu
     property compact
 html element menubar
 html element menuitem
-    property checked
     property command
     property commandForElement
+    property disabled
+    property interestForElement
+html element menuitemcheckbox
+    property checked
+    property defaultChecked
+    property disabled
+    property interestForElement
+html element menuitemradio
+    property checked
     property defaultChecked
     property disabled
     property interestForElement

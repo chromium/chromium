@@ -3395,7 +3395,8 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
                  ? ax::mojom::blink::CheckedState::kTrue
                  : ax::mojom::blink::CheckedState::kFalse;
     }
-  } else if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(node)) {
+  } else if (auto* menu_item =
+                 DynamicTo<HTMLMenuItemCheckableElementBase>(node)) {
     return menu_item->ShouldAppearChecked()
                ? ax::mojom::blink::CheckedState::kTrue
                : ax::mojom::blink::CheckedState::kFalse;

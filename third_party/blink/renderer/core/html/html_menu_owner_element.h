@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class HTMLMenuItemElement;
+class HTMLMenuItemElementBase;
 class MenuMutationObserver;
 class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
                                          public TypeAheadDataSource {
@@ -53,7 +53,7 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   TypeAhead type_ahead_;
 
  private:
-  Member<HTMLMenuItemElement> last_mouseup_menu_item_;
+  Member<HTMLMenuItemElementBase> last_mouseup_menu_item_;
   bool processing_click_ = false;
 
   Member<MenuMutationObserver> menu_mutation_observer_;

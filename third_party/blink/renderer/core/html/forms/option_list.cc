@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
 #include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
 namespace blink {
@@ -242,8 +242,8 @@ template class CORE_TEMPLATE_EXPORT
 template class CORE_TEMPLATE_EXPORT
     ElementList<HTMLSelectElement, HTMLOptionElement>;
 template class CORE_TEMPLATE_EXPORT
-    ElementListIterator<HTMLMenuOwnerElement, HTMLMenuItemElement>;
+    ElementListIterator<HTMLMenuOwnerElement, HTMLMenuItemElementBase>;
 template class CORE_TEMPLATE_EXPORT
-    ElementList<HTMLMenuOwnerElement, HTMLMenuItemElement>;
+    ElementList<HTMLMenuOwnerElement, HTMLMenuItemElementBase>;
 
 }  // namespace blink

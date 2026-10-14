@@ -30,7 +30,6 @@
 namespace blink {
 
 class HTMLCollection;
-class HTMLMenuItemElement;
 
 class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -47,11 +46,6 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
 
   bool IsDisabledFormControl() const override;
 
-  enum class Checkable : uint8_t { None, Multiple, Single };
-  Checkable CheckableState() const;
-
-  void UpdateMenuItemCheckableExclusivity(HTMLMenuItemElement*);
-
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -61,7 +55,6 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   void DidMoveToNewDocument(Document& old_document) override;
 
  private:
-  void ParseAttribute(const AttributeModificationParams&) override;
   bool IsEnumeratable() const override { return true; }
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
