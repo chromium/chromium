@@ -2150,6 +2150,48 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
           base::StrCat({kArbitraryPage, "#", data.new_tab_url}));
 }
 
+// TODO(b/565566308): Re-enable once failure on Android is resolved.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CantInspectRemoteNewTabPageAfterSearchEngineChange \
+  DISABLED_CantInspectRemoteNewTabPageAfterSearchEngineChange
+#else
+#define MAYBE_CantInspectRemoteNewTabPageAfterSearchEngineChange \
+  CantInspectRemoteNewTabPageAfterSearchEngineChange
+#endif
+IN_PROC_BROWSER_TEST_F(
+    DevToolsExtensionTest,
+    MAYBE_CantInspectRemoteNewTabPageAfterSearchEngineChange) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_test_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_test_server.Start());
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  LoadExtension("can_inspect_url");
+  OpenDevToolsWindow(kArbitraryPage, false);
+
+  TemplateURLData data;
+  data.SetShortName(u"example.com");
+  data.SetURL("https://example.com/url?bar={searchTerms}");
+  data.new_tab_url =
+      https_test_server.GetURL("localhost", "/devtools/empty.html").spec();
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  ASSERT_TRUE(content::ExecJs(
+      GetInspectedTab(),
+      content::JsReplace("location.hash = $1;", data.new_tab_url)));
+  RunTestFunction(window_, "waitForTestResultsAsMessage");
+  CloseDevToolsWindow();
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        CantInspectViewSourceComponentExtension) {
   std::string extension_id = BuildComponentExtension();
