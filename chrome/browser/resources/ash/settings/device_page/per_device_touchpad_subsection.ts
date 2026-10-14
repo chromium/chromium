@@ -200,15 +200,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         reflectToAttribute: true,
       },
 
-      isAltClickAndSixPackCustomizationEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableAltClickAndSixPackCustomization');
-        },
-        readOnly: true,
-      },
-
       mice: {
         type: Array,
       },
@@ -269,7 +260,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       getInputDeviceSettingsProvider();
   declare protected touchpadIndex: number;
   declare protected isLastDevice: boolean;
-  declare protected isAltClickAndSixPackCustomizationEnabled: boolean;
   declare protected mice: Mouse[];
   private mouseSettingsObserverReceiver_ =
       new MouseSettingsObserverReceiver(this);

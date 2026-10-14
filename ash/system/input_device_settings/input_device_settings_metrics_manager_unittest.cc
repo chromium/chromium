@@ -101,11 +101,6 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kAltClickAndSixPackCustomization,
-        },
-        /*disabled_features=*/{});
     AshTestBase::SetUp();
     manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
   }
@@ -113,7 +108,6 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
   void TearDown() override {
     manager_.reset();
     AshTestBase::TearDown();
-    scoped_feature_list_.Reset();
   }
 
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to

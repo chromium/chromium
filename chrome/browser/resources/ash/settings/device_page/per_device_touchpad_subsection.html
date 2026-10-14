@@ -42,22 +42,19 @@
             aria-describedby="touchpadName"
             deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
         </settings-toggle-button>
-        <template is="dom-if"
-            if="[[isAltClickAndSixPackCustomizationEnabled]]">
-          <div id="simulateRightClickContainer" class="settings-box">
-            <div id="simulateRightClickLabel" aria-hidden="true"
-                class="start settings-box-text">
-            $i18n{touchpadSimulateRightClickLabel}
-            </div>
-            <settings-dropdown-menu id="simulateRightClickDropdown"
-                label="$i18n{touchpadSimulateRightClickLabel}"
-                pref="{{simulateRightClickPref}}"
-                aria-describedby="touchpadName"
-                menu-options="[[simulateRightClickOptions_]]"
-                deep-link-focus-id$="[[Setting.kTouchpadSimulateRightClick]]">
-            </settings-dropdown-menu>
+        <div id="simulateRightClickContainer" class="settings-box">
+          <div id="simulateRightClickLabel" aria-hidden="true"
+              class="start settings-box-text">
+          $i18n{touchpadSimulateRightClickLabel}
           </div>
-        </template>
+          <settings-dropdown-menu id="simulateRightClickDropdown"
+              label="$i18n{touchpadSimulateRightClickLabel}"
+              pref="{{simulateRightClickPref}}"
+              aria-describedby="touchpadName"
+              menu-options="[[simulateRightClickOptions_]]"
+              deep-link-focus-id$="[[Setting.kTouchpadSimulateRightClick]]">
+          </settings-dropdown-menu>
+        </div>
         <settings-toggle-button id="enableTapDragging"
             class="hr"
             pref="{{enableTapDraggingPref}}"

@@ -25,7 +25,6 @@ import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -393,11 +392,9 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private async onKeyboardRemappingsChanged(): Promise<void> {
-    let numRemappedKeys =
-        Object.keys(this.keyboard.settings.modifierRemappings).length;
-    if (loadTimeData.getBoolean('enableAltClickAndSixPackCustomization')) {
-      numRemappedKeys += this.getNumRemappedSixPackKeys();
-    }
+    const numRemappedKeys =
+        Object.keys(this.keyboard.settings.modifierRemappings).length +
+        this.getNumRemappedSixPackKeys();
     this.remapKeyboardKeysSublabel =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'remapKeyboardKeysRowSubLabel', numRemappedKeys);

@@ -9,7 +9,6 @@ import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js';
 import type {CrToggleElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {CrSettingsPrefs, FakeInputDeviceSettingsProvider, fakeMice, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -24,9 +23,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
   let prefElement: SettingsPrefsElement;
 
   setup(async () => {
-    loadTimeData.overrideValues({
-      enableAltClickAndSixPackCustomization: true,
-    });
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeTouchpads(fakeTouchpads);
     setInputDeviceSettingsProviderForTesting(provider);

@@ -120,39 +120,14 @@ class OSSettingsMochaTestAppParentalControlsEnabled
 
 using OSSettingsDeviceTestPeripheralAndSplitEnabled = OSSettingsMochaTest;
 
-class OSSettingsDeviceTestSplitAndAltAndFKeyEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsDeviceTestSplitAndAltAndFKeyEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {ash::features::kAltClickAndSixPackCustomization},
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using OSSettingsDeviceTestSplitAndAltAndFKeyEnabled = OSSettingsMochaTest;
 
 class OSSettingsDeviceTestBacklightEnabled : public OSSettingsMochaTest {
  protected:
   OSSettingsDeviceTestBacklightEnabled() = default;
 };
 
-class OSSettingsDeviceTestAltAndBacklightEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsDeviceTestAltAndBacklightEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kAltClickAndSixPackCustomization,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using OSSettingsDeviceTestAltAndBacklightEnabled = OSSettingsMochaTest;
 
 using OSSettingsNearbyShareTestSharingEnabled = OSSettingsMochaTest;
 

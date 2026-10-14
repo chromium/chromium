@@ -479,23 +479,14 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals('Built-in Keyboard', getPageDescription());
   });
 
-  test(
-      'Keys grouped under Modifier/Other sections when alt flag enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          enableAltClickAndSixPackCustomization: true,
-        });
-        await initializePerDeviceKeyboardRemapKeys(0);
-        assertTrue(
-            isVisible(page.shadowRoot!.querySelector('#modifierKeysHeader')));
-        assertTrue(
-            isVisible(page.shadowRoot!.querySelector('#otherKeysHeader')));
-      });
+  test('Keys grouped under Modifier/Other sections', async () => {
+    await initializePerDeviceKeyboardRemapKeys(0);
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#modifierKeysHeader')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#otherKeysHeader')));
+  });
 
-  test('Six pack keys displayed when alt flag enabled', async () => {
-    loadTimeData.overrideValues({
-      enableAltClickAndSixPackCustomization: true,
-    });
+  test('Six pack keys displayed', async () => {
     await initializePerDeviceKeyboardRemapKeys(0);
     const sixPackKeyRows =
         page.shadowRoot!.querySelectorAll('keyboard-six-pack-key-row');

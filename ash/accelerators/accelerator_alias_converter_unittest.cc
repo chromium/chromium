@@ -1046,8 +1046,6 @@ class SixPackAliasAltTest
     : public AcceleratorAliasConverterTest,
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1056,7 +1054,6 @@ class SixPackAliasAltTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
   std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1145,8 +1142,6 @@ class SixPackAliasSearchTest
     : public AcceleratorAliasConverterTest,
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1155,7 +1150,6 @@ class SixPackAliasSearchTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
   std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1286,8 +1280,6 @@ class ExtendedFKeysAliasAltTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1295,7 +1287,6 @@ class ExtendedFKeysAliasAltTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
   std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1371,8 +1362,6 @@ class ExtendedFKeysAliasShiftTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1380,7 +1369,6 @@ class ExtendedFKeysAliasShiftTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
   std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1451,8 +1439,6 @@ class ExtendedFKeysAliasCtrlShiftTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1460,7 +1446,6 @@ class ExtendedFKeysAliasCtrlShiftTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
   std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1542,13 +1527,10 @@ TEST_P(ExtendedFKeysAliasCtrlShiftTest, CheckExtendedFKeysAliasCtrlShift) {
 class ExtendedFKeysAliasTest : public AcceleratorAliasConverterTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 

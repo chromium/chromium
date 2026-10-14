@@ -39,9 +39,6 @@ BASE_FEATURE(kAlwaysReinstallSystemWebApps,
              "ReinstallSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAltClickAndSixPackCustomization,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This feature changes the default setting of Ambient EQ to off. This feature
 // has no effect if `kAllowAmbientEQ` is not also enabled.
 BASE_FEATURE(kAmbientEQDefaultOff, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1953,10 +1950,6 @@ bool IsOnDeviceAppControlsEnabled() {
 
 bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
-}
-
-bool IsAltClickAndSixPackCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
 }
 
 bool IsAmbientEQDefaultOff() {

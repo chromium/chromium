@@ -977,46 +977,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kMouseDeviceImpostersListPref);
   }
 
-
-  // If the flag is disabled, clear the new touchpad and keyboard settings from
-  // all settings dictionaries and reset the notification prefs.
-  if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
-    base::DictValue updated_touchpad_dict =
-        pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
-    for (auto [key, dict] : updated_touchpad_dict) {
-      CHECK(dict.is_dict());
-      dict.GetDict().Remove(prefs::kTouchpadSettingSimulateRightClick);
-    }
-
-    base::DictValue updated_keyboard_dict =
-        pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
-
-    for (auto [key, dict] : updated_keyboard_dict) {
-      CHECK(dict.is_dict());
-      dict.GetDict().Remove(prefs::kKeyboardSettingSixPackKeyRemappings);
-    }
-    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
-                          std::move(updated_touchpad_dict));
-    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
-                          std::move(updated_keyboard_dict));
-
-    // Remove six pack remappings from internal keyboard as well.
-    base::DictValue updated_internal_keyboard_dict =
-        pref_service->GetDict(prefs::kKeyboardInternalSettings).Clone();
-    updated_internal_keyboard_dict.Remove(
-        prefs::kKeyboardSettingSixPackKeyRemappings);
-    pref_service->SetDict(prefs::kKeyboardInternalSettings,
-                          std::move(updated_internal_keyboard_dict));
-
-    pref_service->ClearPref(prefs::kRemapToRightClickNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyDeleteNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyHomeNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyEndNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyPageUpNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyPageDownNotificationsRemaining);
-    pref_service->ClearPref(prefs::kSixPackKeyInsertNotificationsRemaining);
-  }
-
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   auto* cache = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(

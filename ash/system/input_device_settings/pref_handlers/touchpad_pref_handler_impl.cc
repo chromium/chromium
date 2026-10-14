@@ -156,10 +156,8 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
                                  : kDefaultHapticFeedbackEnabled;
   force_persistence.haptic_enabled = haptic_enabled_preference != nullptr;
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    settings->simulate_right_click =
-        GetSimulateRightClickModifierFromPrefs(prefs);
-  }
+  settings->simulate_right_click =
+      GetSimulateRightClickModifierFromPrefs(prefs);
   return settings;
 }
 
@@ -205,13 +203,11 @@ mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
     settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    settings->simulate_right_click =
-        static_cast<ui::mojom::SimulateRightClickModifier>(
-            settings_dict.FindInt(prefs::kTouchpadSettingSimulateRightClick)
-                .value_or(static_cast<int>(
-                    GetSimulateRightClickModifierFromPrefs(pref_service))));
-  }
+  settings->simulate_right_click =
+      static_cast<ui::mojom::SimulateRightClickModifier>(
+          settings_dict.FindInt(prefs::kTouchpadSettingSimulateRightClick)
+              .value_or(static_cast<int>(
+                  GetSimulateRightClickModifierFromPrefs(pref_service))));
 
   return settings;
 }
@@ -321,11 +317,8 @@ base::DictValue ConvertSettingsToDict(
                       touchpad.settings->haptic_enabled);
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    settings_dict.Set(
-        prefs::kTouchpadSettingSimulateRightClick,
-        static_cast<int>(touchpad.settings->simulate_right_click));
-  }
+  settings_dict.Set(prefs::kTouchpadSettingSimulateRightClick,
+                    static_cast<int>(touchpad.settings->simulate_right_click));
   return settings_dict;
 }
 
@@ -515,9 +508,7 @@ void TouchpadPrefHandlerImpl::InitializeLoginScreenTouchpadSettings(
         local_state, account_id, *touchpad);
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    touchpad->settings->simulate_right_click = kDefaultSimulateRightClick;
-  }
+  touchpad->settings->simulate_right_click = kDefaultSimulateRightClick;
 }
 
 void TouchpadPrefHandlerImpl::UpdateLoginScreenTouchpadSettings(

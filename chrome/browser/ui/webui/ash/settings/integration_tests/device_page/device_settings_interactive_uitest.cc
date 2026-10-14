@@ -105,9 +105,6 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
   DeviceSettingsInteractiveUiTest() {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
     webcontents_id_ = kOsSettingsWebContentsId;
-
-    feature_list_.InitWithFeatures({features::kAltClickAndSixPackCustomization},
-                                   {});
   }
 
   DeviceSettingsInteractiveUiTest(const DeviceSettingsInteractiveUiTest&) =

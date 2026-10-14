@@ -303,11 +303,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "alt-click-and-six-pack-customization",
-    "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "always-draw-composited-toolbar-hairline",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 180

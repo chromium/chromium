@@ -84,8 +84,6 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAltClickAndSixPackCustomization}, {});
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<TouchpadPrefHandlerImpl>();
@@ -268,10 +266,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     EXPECT_EQ(kTouchpadSettingsDefault.haptic_sensitivity,
               settings.haptic_sensitivity);
     EXPECT_EQ(kTouchpadSettingsDefault.haptic_enabled, settings.haptic_enabled);
-    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-      EXPECT_EQ(kTouchpadSettingsDefault.simulate_right_click,
-                settings.simulate_right_click);
-    }
+    EXPECT_EQ(kTouchpadSettingsDefault.simulate_right_click,
+              settings.simulate_right_click);
   }
 
   void CallUpdateTouchpadSettings(const std::string& device_key,
@@ -723,16 +719,6 @@ TEST_F(TouchpadPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
                                        *settings_dict);
 }
 
-TEST_F(TouchpadPrefHandlerTest, SimulateRightClickSettingFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAltClickAndSixPackCustomization);
-  CallInitializeTouchpadSettings(kTouchpadKey1);
-  const auto* settings_dict = GetSettingsDict(kTouchpadKey1);
-  EXPECT_FALSE(
-      settings_dict->contains(prefs::kTouchpadSettingSimulateRightClick));
-}
-
 TEST_F(TouchpadPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
   mojom::TouchpadSettingsPtr settings =
       CallInitializeTouchpadSettings(kTouchpadKey1);
@@ -889,13 +875,6 @@ INSTANTIATE_TEST_SUITE_P(
             {0, 5, ui::mojom::SimulateRightClickModifier::kSearch}}));
 
 TEST_P(TouchpadSettingsSimulateRightClickTest, SimulateRightClickSetting) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kAltClickAndSixPackCustomization);
-    CallInitializeTouchpadSettings(kTouchpadKey1);
-  }
-
   SetSimulateRightClickPrefs(alt_count, search_count);
   const auto settings = CallInitializeTouchpadSettings(kTouchpadKey1);
   EXPECT_EQ(expected, settings->simulate_right_click);
@@ -903,13 +882,6 @@ TEST_P(TouchpadSettingsSimulateRightClickTest, SimulateRightClickSetting) {
 
 TEST_P(TouchpadSettingsSimulateRightClickTest,
        SimulateRightClickSettingInternal) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kAltClickAndSixPackCustomization);
-    CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);
-  }
-
   SetSimulateRightClickPrefs(alt_count, search_count);
   const auto settings =
       CallInitializeTouchpadSettings(kTouchpadKey1, /*is_external=*/false);

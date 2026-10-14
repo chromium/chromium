@@ -92,10 +92,6 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAltClickAndSixPackCustomization},
-        /*disabled_features=*/{});
-
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<KeyboardPrefHandlerImpl>();
@@ -1047,21 +1043,7 @@ TEST_F(KeyboardPrefHandlerTest,
       settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
 }
 
-TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAltClickAndSixPackCustomization);
-  CallInitializeKeyboardSettings(kKeyboardKey1, /*is_external=*/true);
-  const auto* settings_dict =
-      GetSettingsDictForDeviceKey(kKeyboardKey1, /*is_external=*/true);
-  EXPECT_FALSE(
-      settings_dict->contains(prefs::kKeyboardSettingSixPackKeyRemappings));
-}
-
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Default) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
-
   auto settings = CallInitializeKeyboardSettings(kKeyboardKey1);
   EXPECT_EQ(ui::mojom::SixPackShortcutModifier::kSearch,
             settings->six_pack_key_remappings->page_up);
@@ -1078,13 +1060,6 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Default) {
 }
 
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Group) {
-  {
-    base::test::ScopedFeatureList disable_feature_list;
-    disable_feature_list.InitAndDisableFeature(
-        features::kAltClickAndSixPackCustomization);
-    CallInitializeKeyboardSettings(kKeyboardKey1);
-  }
-
   pref_service_->SetUserPref(prefs::kKeyEventRemappedToSixPackPageUp,
                              base::Value(15));
   pref_service_->SetUserPref(prefs::kKeyEventRemappedToSixPackPageDown,
@@ -1098,13 +1073,6 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Group) {
 }
 
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_RetrieveSettings) {
-  {
-    base::test::ScopedFeatureList disable_feature_list;
-    disable_feature_list.InitAndDisableFeature(
-        features::kAltClickAndSixPackCustomization);
-    CallInitializeKeyboardSettings(kKeyboardKey1, /*is_external=*/true);
-  }
-
   pref_service_->SetUserPref(prefs::kKeyEventRemappedToSixPackPageUp,
                              base::Value(15));
   auto settings =

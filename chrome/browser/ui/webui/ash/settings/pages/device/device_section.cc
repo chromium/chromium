@@ -904,11 +904,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isDemoSession",
                           ash::demo_mode::IsDeviceInDemoMode());
 
-
-  html_source->AddBoolean(
-      "enableAltClickAndSixPackCustomization",
-      ash::features::IsAltClickAndSixPackCustomizationEnabled());
-
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
   AddCustomizeButtonsPageStrings(html_source);
@@ -1004,10 +999,8 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPointers, kPointersSettings,
                             generator);
-  if (ash::features::IsAltClickAndSixPackCustomizationEnabled()) {
-    generator->RegisterNestedSetting(
-        mojom::Setting::kTouchpadSimulateRightClick, mojom::Subpage::kPointers);
-  }
+  generator->RegisterNestedSetting(mojom::Setting::kTouchpadSimulateRightClick,
+                                   mojom::Subpage::kPointers);
 
   const int kKeyboardTitleStringID = IDS_OS_SETTINGS_KEYBOARD_AND_INPUTS_TITLE;
   // Per-device Keyboard.

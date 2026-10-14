@@ -7456,13 +7456,6 @@ inline constexpr char kAllowCrossDeviceFeatureSuiteDescription[] =
     "ChromeOS Flex). If disabled, this removes all Cross-Device features and "
     "their entries in the Settings app.";
 
-inline constexpr char kAltClickAndSixPackCustomizationName[] =
-    "Allow users to customize Alt-Click and 6-pack key remapping.";
-
-inline constexpr char kAltClickAndSixPackCustomizationDescription[] =
-    "Shows settings to customize Alt-Click and 6-pack key remapping in the "
-    "keyboard settings page.";
-
 inline constexpr char kAlwaysEnableHdcpName[] =
     "Always enable HDCP for external displays";
 inline constexpr char kAlwaysEnableHdcpDescription[] =

@@ -292,8 +292,7 @@ bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
 }
 
 bool ShouldRecordSixPackKeyMetrics(const mojom::Keyboard& keyboard) {
-  return features::IsAltClickAndSixPackCustomizationEnabled() &&
-         !std::ranges::contains(keyboard.modifier_keys,
+  return !std::ranges::contains(keyboard.modifier_keys,
                                 ui::mojom::ModifierKey::kFunction);
 }
 
@@ -1036,11 +1035,9 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
         haptic_sensitivity);
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
-    base::UmaHistogramEnumeration(
-        touchpad_metrics_prefix + "SimulateRightClick.Initial",
-        touchpad.settings->simulate_right_click);
-  }
+  base::UmaHistogramEnumeration(
+      touchpad_metrics_prefix + "SimulateRightClick.Initial",
+      touchpad.settings->simulate_right_click);
 }
 
 void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
@@ -1106,9 +1103,8 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
           static_cast<PointerSensitivity>(abs(speed_difference)));
     }
   }
-  if (features::IsAltClickAndSixPackCustomizationEnabled() &&
-      touchpad.settings->simulate_right_click !=
-          old_settings.simulate_right_click) {
+  if (touchpad.settings->simulate_right_click !=
+      old_settings.simulate_right_click) {
     base::UmaHistogramEnumeration(
         touchpad_metrics_prefix + "SimulateRightClick.Changed",
         touchpad.settings->simulate_right_click);

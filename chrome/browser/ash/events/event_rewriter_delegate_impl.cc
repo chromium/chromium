@@ -297,8 +297,6 @@ void EventRewriterDelegateImpl::SuppressModifierKeyRewrites(
 void EventRewriterDelegateImpl::NotifyRightClickRewriteBlockedBySetting(
     ui::mojom::SimulateRightClickModifier blocked_modifier,
     ui::mojom::SimulateRightClickModifier active_modifier) {
-  CHECK(features::IsAltClickAndSixPackCustomizationEnabled(),
-        base::NotFatalUntil::M161);
   input_device_settings_notification_controller_
       ->NotifyRightClickRewriteBlockedBySetting(blocked_modifier,
                                                 active_modifier);
@@ -309,8 +307,6 @@ void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedBySetting(
     ui::mojom::SixPackShortcutModifier blocked_modifier,
     ui::mojom::SixPackShortcutModifier active_modifier,
     int device_id) {
-  CHECK(ash::features::IsAltClickAndSixPackCustomizationEnabled(),
-        base::NotFatalUntil::M161);
   input_device_settings_notification_controller_
       ->NotifySixPackRewriteBlockedBySetting(key_code, blocked_modifier,
                                              active_modifier, device_id);
