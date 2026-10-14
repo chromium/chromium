@@ -8593,17 +8593,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.MixedContent.Mode"
-    enum="WebViewMixedContentMode" expires_after="2024-08-25">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the mixed content mode set when an app uses the
-    WebSettings.setMixedContentMode API.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.Navigation.DidDownloadFavicon" enum="Boolean"
     expires_after="2026-09-30">
   <owner>isaacmadgwick@chromium.org</owner>

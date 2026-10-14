@@ -3084,12 +3084,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwDataDirLock.java:WebViewLockOutcome)-->
 
-<enum name="WebViewMixedContentMode">
-  <int value="0" label="Always allow"/>
-  <int value="1" label="Never allow"/>
-  <int value="2" label="Compatibility Mode"/>
-</enum>
-
 <!-- LINT.IfChange(WebViewRendererKeepAliveEvent) -->
 
 <enum name="WebViewRendererKeepAliveEvent">
