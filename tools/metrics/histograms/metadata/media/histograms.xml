@@ -2124,7 +2124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MixedPlaybackStatus"
-    enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2026-10-04">
+    enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2027-10-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2337,7 +2337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceStartTime2" units="ms"
-    expires_after="2026-08-23">
+    expires_after="2027-10-01">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -2345,6 +2345,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time delta from an AudioOutputDevice sending its first PlayStream
     message to it getting its first data callback.
+
+    Warning: this histogram was expired from 2026-08-23 to 2026-10-13; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2360,7 +2363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputStreamDuration2" units="ms"
-    expires_after="2026-09-13">
+    expires_after="2027-10-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2368,6 +2371,9 @@ chromium-metrics-reviews@google.com.
     This histogram measures the duration of every output stream, as seen from
     the renderer. It counts from when it has been successfully started, until it
     is stopped. Streams that fail to start are not logged.
+
+    Warning: this histogram was expired from 2026-09-13 to 2026-10-13; data may
+    be missing.
   </summary>
 </histogram>
 
