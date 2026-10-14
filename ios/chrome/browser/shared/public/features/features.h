@@ -1022,4 +1022,10 @@ BASE_DECLARE_FEATURE(kVoiceSearchEvolutionPhase1);
 // Returns true if the `kVoiceSearchEvolutionPhase1` feature is enabled.
 bool IsVoiceSearchEvolutionPhase1Enabled();
 
+// Enables the FiveButtonAppBarLayout feature.
+BASE_DECLARE_FEATURE(kFiveButtonAppBarLayout);
+
+// Returns true if the FiveButtonAppBarLayout feature is enabled.
+bool IsFiveButtonAppBarLayoutEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

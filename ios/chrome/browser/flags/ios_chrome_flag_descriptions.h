@@ -880,6 +880,12 @@ inline constexpr char kFetchDeviceAuthorizationKeysName[] =
 inline constexpr char kFetchDeviceAuthorizationKeysDescription[] =
     "Enables fetching device authorization keys for password manager passkeys.";
 
+inline constexpr char kFiveButtonAppBarLayoutName[] =
+    "Five Button App Bar Layout";
+inline constexpr char kFiveButtonAppBarLayoutDescription[] =
+    "Enables a five-button layout for the App Bar, incorporating the forward "
+    "and back navigation buttons.";
+
 inline constexpr char kForceStartupSigninPromoName[] =
     "Display the startup sign-in promo";
 inline constexpr char kForceStartupSigninPromoDescription[] =
