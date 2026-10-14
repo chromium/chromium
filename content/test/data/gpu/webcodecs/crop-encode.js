@@ -134,9 +134,6 @@ async function main(arg) {
   source.close();
 
 
-  // TODO(crbug.com/349062462): Enable pixel validation once we sort it out
-  // on all platforms.
-  /*
   if (arg.source_type == 'camera' && !arg.validate_camera_frames) {
     TEST.log('Can\'t validate camera frames, skipping');
   } else {
@@ -144,7 +141,6 @@ async function main(arg) {
     // so we can still check the center cropped frame.
     checkFourColorsFrame(ctx, encoder_width, encoder_height, 15);
   }
-  */
 
   TEST.assert(
       errors == 0, 'Decoding or encoding errors occurred during the test');

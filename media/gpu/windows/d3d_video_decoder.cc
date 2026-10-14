@@ -169,21 +169,21 @@ bool D3DVideoDecoder::InitializeAcceleratedDecoder(
     const VideoDecoderConfig& config) {
   TRACE_EVENT0("gpu", "D3DVideoDecoder::InitializeAcceleratedDecoder");
 
-  profile_ = config.profile();
+  const VideoCodecProfile profile = config.profile();
   if (config.codec() == VideoCodec::kVP9) {
     accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<D3DVP9Accelerator>(this, media_log_.get()), profile_,
+        std::make_unique<D3DVP9Accelerator>(this, media_log_.get()), profile,
         config.color_space_info());
   } else if (config.codec() == VideoCodec::kH264) {
     accelerated_video_decoder_ = std::make_unique<H264Decoder>(
-        std::make_unique<D3DH264Accelerator>(this, media_log_.get()), profile_,
+        std::make_unique<D3DH264Accelerator>(this, media_log_.get()), profile,
         config.color_space_info());
   } else if (config.codec() == VideoCodec::kAV1) {
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
         std::make_unique<D3DAV1Accelerator>(
             this, media_log_.get(),
             gpu_workarounds_.use_first_valid_ref_for_av1_invalid_ref),
-        profile_, config.color_space_info());
+        profile, config.color_space_info());
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (config.codec() == VideoCodec::kHEVC) {
     DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
@@ -192,13 +192,14 @@ bool D3DVideoDecoder::InitializeAcceleratedDecoder(
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
         std::make_unique<D3DH265Accelerator>(this, media_log_.get(),
                                              use_dxva_device_for_hevc_rext),
-        profile_, config.color_space_info());
+        profile, config.color_space_info());
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
     NotifyError(D3DStatus::Codes::kDecoderUnsupportedCodec);
     return false;
   }
 
+  is_first_config_change_ = true;
   return true;
 }
 
@@ -303,12 +304,6 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb);
 
-  state_ = State::kInitializing;
-
-  config_ = config;
-  init_cb_ = std::move(init_cb);
-  output_cb_ = output_cb;
-
   // Verify that |config| matches one of the supported configurations.  This
   // helps us skip configs that are supported by the VDA but not us, since
   // GpuMojoMediaClient merges them.  This is not hacky, even in the tiniest
@@ -320,6 +315,15 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
       break;
     }
   }
+
+  const bool already_initialized =
+      state_ == State::kRunning && is_supported && d3d_video_decoder_wrapper_ &&
+      config_.IsValidConfig() && config_.codec() == config.codec();
+
+  state_ = State::kInitializing;
+
+  init_cb_ = std::move(init_cb);
+  output_cb_ = output_cb;
 
   // If we don't have support support for a given codec, try to initialize
   // anyways -- otherwise we're certain to fail playback.
@@ -354,12 +358,27 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return NotifyError(std::move(result).AddHere());
   }
 
-  if (!InitializeAcceleratedDecoder(config_)) {
-    return;
-  }
-
-  if (!RecreateDecoderWrapper()) {
-    return;
+  if (already_initialized) {
+    if (!InitializeAcceleratedDecoder(config)) {
+      return;
+    }
+    config_.set_aspect_ratio(config.aspect_ratio());
+    config_.set_hdr_metadata(config.hdr_metadata());
+    d3d_video_decoder_wrapper_->Reset();
+  } else {
+    d3d_video_decoder_wrapper_.reset();
+    accelerated_video_decoder_.reset();
+    picture_buffers_.clear();
+    if (!InitializeAcceleratedDecoder(config)) {
+      return;
+    }
+    profile_ = config.profile();
+    config_ = config;
+    color_space_ = config.color_space_info();
+    chroma_sampling_ = VideoChromaSampling::k420;
+    if (!RecreateDecoderWrapper()) {
+      return;
+    }
   }
 
   backend_->LogDecoderAdapterInfo(media_log_.get());
@@ -594,6 +613,8 @@ void D3DVideoDecoder::DoDecode() {
       // don't, so that init can fail rather than decoding if there's a problem
       // creating it.  We could also unconditionally re-allocate the decoder,
       // but we keep it if it's ready to go.
+      const bool is_first_config_change =
+          std::exchange(is_first_config_change_, false);
       const auto new_bit_depth = accelerated_video_decoder_->GetBitDepth();
       const auto new_profile = accelerated_video_decoder_->GetProfile();
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
@@ -603,14 +624,18 @@ void D3DVideoDecoder::DoDecode() {
           accelerated_video_decoder_->GetVideoColorSpace();
       const auto new_visible_rect =
           accelerated_video_decoder_->GetVisibleRect();
+      const size_t pic_buffers_required =
+          accelerated_video_decoder_->GetRequiredNumOfPictures() + 1;
       DCHECK(gfx::Rect(new_coded_size).Contains(new_visible_rect));
       DCHECK(!new_visible_rect.IsEmpty());
-      if (new_profile == config_.profile() &&
+      if (is_first_config_change && new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
           new_visible_rect == config_.visible_rect() &&
-          new_bit_depth == bit_depth_ && !picture_buffers_.size() &&
+          new_bit_depth == bit_depth_ &&
           new_chroma_sampling == chroma_sampling_ &&
-          new_color_space == color_space_) {
+          new_color_space == color_space_ &&
+          (picture_buffers_.empty() ||
+           picture_buffers_.size() >= pic_buffers_required)) {
         continue;
       }
 
@@ -627,6 +652,7 @@ void D3DVideoDecoder::DoDecode() {
       config_.set_profile(profile_);
       config_.set_coded_size(new_coded_size);
       config_.set_visible_rect(new_visible_rect);
+      config_.set_color_space_info(new_color_space);
       chroma_sampling_ = new_chroma_sampling;
       color_space_ = new_color_space;
 
