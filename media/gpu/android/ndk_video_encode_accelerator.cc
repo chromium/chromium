@@ -23,6 +23,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1036,8 +1037,10 @@ bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
   // unfortunately, see https://crbug.com/1084702 for details. It seems they
   // only work when stride/y_plane_height information is provided.
   const auto aligned_size = gfx::Size(
-      base::bits::AlignDownDeprecatedDoNotUse(configured_size.width(), 16),
-      base::bits::AlignDownDeprecatedDoNotUse(configured_size.height(), 16));
+      base::bits::AlignDown(
+          base::checked_cast<uint32_t>(configured_size.width()), 16u),
+      base::bits::AlignDown(
+          base::checked_cast<uint32_t>(configured_size.height()), 16u));
 
   bool require_aligned_resolution = false;
   if (!AMediaFormat_getInt32(input_format.get(), AMEDIAFORMAT_KEY_STRIDE,

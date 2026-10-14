@@ -62,9 +62,10 @@ void Detile4(uint8_t* linear_dest,
       kTile4TileWidthBytes * kTile4TileHeightBytes;
   constexpr int kTile4ZWidth = 4;
 
-  width = base::bits::AlignDownDeprecatedDoNotUse(width, kTile4TileWidthBytes);
-  height =
-      base::bits::AlignDownDeprecatedDoNotUse(height, kTile4TileHeightBytes);
+  width = base::bits::AlignDown(base::checked_cast<uint32_t>(width),
+                                uint32_t{kTile4TileWidthBytes});
+  height = base::bits::AlignDown(base::checked_cast<uint32_t>(height),
+                                 uint32_t{kTile4TileHeightBytes});
 
   for (int y = 0; y < height; y += kTile4TileHeight * kTile4SubtileHeight) {
     for (int tile_y = 0; tile_y < kTile4TileHeight; tile_y++) {

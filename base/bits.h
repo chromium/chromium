@@ -47,18 +47,6 @@ template <typename T>
   return size & ~(alignment - 1);
 }
 
-// Round down |size| to a multiple of alignment, which must be a power of two.
-// DEPRECATED; use the UnsignedInteger version.
-//
-// TODO(crbug.com/40256225): Switch uses and remove.
-template <typename T>
-[[nodiscard]] inline constexpr auto AlignDownDeprecatedDoNotUse(T size,
-                                                                T alignment) {
-  using U = std::make_unsigned_t<T>;
-  DCHECK(std::has_single_bit(static_cast<U>(alignment)));
-  return static_cast<U>(size) & ~static_cast<U>(alignment - 1);
-}
-
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
 template <typename T>
