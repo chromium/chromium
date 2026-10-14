@@ -217,15 +217,17 @@ class Tile4Mapping : public NativePixmapMapping {
 
     int aligned_width = base::bits::AlignUp(
         handle.planes[0].stride, static_cast<uint32_t>(kTile4TileWidthBytes));
-    int aligned_height = base::bits::AlignUpDeprecatedDoNotUse(
-        size.height(), kTile4TileHeightBytes);
+    int aligned_height =
+        base::bits::AlignUp(base::checked_cast<uint32_t>(size.height()),
+                            uint32_t{kTile4TileHeightBytes});
     plane_strides[0] = aligned_width;
     plane_sizes[0] = aligned_height * aligned_width;
 
     aligned_width = base::bits::AlignUp(
         handle.planes[1].stride, static_cast<uint32_t>(kTile4TileWidthBytes));
-    aligned_height = base::bits::AlignUpDeprecatedDoNotUse(
-        size.height() / 2, kTile4TileHeightBytes);
+    aligned_height =
+        base::bits::AlignUp(base::checked_cast<uint32_t>(size.height() / 2),
+                            uint32_t{kTile4TileHeightBytes});
     plane_strides[1] = aligned_width;
     plane_sizes[1] = aligned_height * aligned_width;
 

@@ -12,6 +12,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -288,7 +289,7 @@ std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
 
   size_t u_plane_padded_width, v_plane_padded_width;
   u_plane_padded_width = v_plane_padded_width =
-      base::bits::AlignUpDeprecatedDoNotUse(size.width(), 2) / 2;
+      base::bits::AlignUp(base::checked_cast<uint32_t>(size.width()), 2u) / 2;
 
   if (bit_depth == BitDepth::Depth8) {
     // Note that we use J420ToARGB instead of I420ToARGB so that the

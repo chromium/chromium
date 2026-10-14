@@ -219,9 +219,11 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
   }
 
   visible_size_ = config.input_visible_size;
-  coded_size_ = gfx::Size(
-      base::bits::AlignUpDeprecatedDoNotUse(visible_size_.width(), 16),
-      base::bits::AlignUpDeprecatedDoNotUse(visible_size_.height(), 16));
+  coded_size_ =
+      gfx::Size(base::bits::AlignUp(
+                    base::checked_cast<uint32_t>(visible_size_.width()), 16u),
+                base::bits::AlignUp(
+                    base::checked_cast<uint32_t>(visible_size_.height()), 16u));
   current_params_ = EncodeParams();
   if (config.content_type ==
       VideoEncodeAccelerator::Config::ContentType::kDisplay) {

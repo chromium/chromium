@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -396,11 +397,11 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
   constexpr int kH264MacroblockSizeInPixels = 16;
-  coded_size_ =
-      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
-                    visible_size_.width(), kH264MacroblockSizeInPixels),
-                base::bits::AlignUpDeprecatedDoNotUse(
-                    visible_size_.height(), kH264MacroblockSizeInPixels));
+  coded_size_ = gfx::Size(
+      base::bits::AlignUp(base::checked_cast<uint32_t>(visible_size_.width()),
+                          uint32_t{kH264MacroblockSizeInPixels}),
+      base::bits::AlignUp(base::checked_cast<uint32_t>(visible_size_.height()),
+                          uint32_t{kH264MacroblockSizeInPixels}));
   mb_width_ = coded_size_.width() / kH264MacroblockSizeInPixels;
   mb_height_ = coded_size_.height() / kH264MacroblockSizeInPixels;
 

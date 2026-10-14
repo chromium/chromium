@@ -2227,12 +2227,14 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   constexpr int kH264MacroblockSizeInPixels = 16;
   const uint32_t framerate = config.framerate;
   const uint32_t mb_width =
-      base::bits::AlignUpDeprecatedDoNotUse(config.input_visible_size.width(),
-                                            kH264MacroblockSizeInPixels) /
+      base::bits::AlignUp(
+          base::checked_cast<uint32_t>(config.input_visible_size.width()),
+          uint32_t{kH264MacroblockSizeInPixels}) /
       kH264MacroblockSizeInPixels;
   const uint32_t mb_height =
-      base::bits::AlignUpDeprecatedDoNotUse(config.input_visible_size.height(),
-                                            kH264MacroblockSizeInPixels) /
+      base::bits::AlignUp(
+          base::checked_cast<uint32_t>(config.input_visible_size.height()),
+          uint32_t{kH264MacroblockSizeInPixels}) /
       kH264MacroblockSizeInPixels;
   const uint32_t framesize_in_mbs = mb_width * mb_height;
 

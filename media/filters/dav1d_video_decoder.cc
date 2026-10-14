@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -551,8 +552,8 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
     // UV planes are half the size of the Y plane.
-    uv_plane_stride =
-        base::bits::AlignUpDeprecatedDoNotUse(pic->stride[0] / 2, ptrdiff_t{2});
+    uv_plane_stride = base::bits::AlignUp(
+        base::checked_cast<size_t>(pic->stride[0] / 2), size_t{2});
     const size_t size_needed = uv_plane_stride * uv_plane_height;
 
     if (!fake_uv_data_ || fake_uv_data_->size() != size_needed) {

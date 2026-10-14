@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/svc_layers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -412,11 +413,11 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
   }
 
   visible_size_ = config.input_visible_size;
-  coded_size_ =
-      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
-                    visible_size_.width(), kAV1AlignmentSize.width()),
-                base::bits::AlignUpDeprecatedDoNotUse(
-                    visible_size_.height(), kAV1AlignmentSize.height()));
+  coded_size_ = gfx::Size(
+      base::bits::AlignUp(base::checked_cast<uint32_t>(visible_size_.width()),
+                          uint32_t{kAV1AlignmentSize.width()}),
+      base::bits::AlignUp(base::checked_cast<uint32_t>(visible_size_.height()),
+                          uint32_t{kAV1AlignmentSize.height()}));
 
   current_params_.framerate = config.framerate;
   current_params_.drop_frame_thresh = config.drop_frame_thresh_percentage;

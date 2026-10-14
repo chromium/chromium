@@ -25,6 +25,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/launch.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -923,11 +924,9 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
       EXPECT_GE(layer.pitch[0], base::checked_cast<uint32_t>(
                                     scoped_va_surface->size().width()));
     } else {
-      const auto expected_rounded_up_pitch =
-          base::bits::AlignUpDeprecatedDoNotUse(
-              scoped_va_surface->size().width(), 2);
-      EXPECT_GE(layer.pitch[0],
-                base::checked_cast<uint32_t>(expected_rounded_up_pitch));
+      const auto expected_rounded_up_pitch = base::bits::AlignUp(
+          base::checked_cast<uint32_t>(scoped_va_surface->size().width()), 2u);
+      EXPECT_GE(layer.pitch[0], expected_rounded_up_pitch);
     }
     ++i;
   }
