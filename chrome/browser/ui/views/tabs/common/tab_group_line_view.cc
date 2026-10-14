@@ -40,6 +40,7 @@ TabGroupLineView::TabGroupLineView(TabGroupView& tab_group_view)
     : tab_group_view_(tab_group_view) {
   SetProperty(kTabZOrderKey,
               TabCollectionZOrderManager::ZOrderLevel::kGroupUnderline);
+  SetProperty(kIgnoredByAnimatingBoundsCalculationsKey, true);
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }

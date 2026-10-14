@@ -328,4 +328,10 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
 
 extern const ui::ClassProperty<bool>* const kHasAnimatingLayoutManagerKey;
 
+// Denotes that a view is not part of the sequential order of views in the
+// animation axis, so that it will be ignored by `CalculateAddingViewsStartX()`
+// and `CalculateClosingViewsTargetX()`.
+extern const ui::ClassProperty<bool>* const
+    kIgnoredByAnimatingBoundsCalculationsKey;
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_

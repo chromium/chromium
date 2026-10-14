@@ -26,6 +26,10 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHasAnimatingLayoutManagerKey, false)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool,
+                             kIgnoredByAnimatingBoundsCalculationsKey,
+                             false)
+
 namespace {
 
 // Views of removed TabCollectionNodes may temporarily remain in the View tree
@@ -862,6 +866,9 @@ void TabCollectionAnimatingLayoutManager::CalculateAddingViewsStartX() const {
   };
   for (auto target_layout : target_layout_.child_layouts) {
     views::View* curr_view = target_layout.child_view;
+    if (curr_view->GetProperty(kIgnoredByAnimatingBoundsCalculationsKey)) {
+      continue;
+    }
     if (start_view_layout_map_.contains(curr_view)) {
       const int curr_start_bounds_x =
           start_view_layout_map_.at(curr_view).bounds.x();
@@ -907,6 +914,9 @@ void TabCollectionAnimatingLayoutManager::CalculateClosingViewsTargetX() const {
   };
   for (auto start_layout : starting_layout_.child_layouts) {
     views::View* curr_view = start_layout.child_view;
+    if (curr_view->GetProperty(kIgnoredByAnimatingBoundsCalculationsKey)) {
+      continue;
+    }
     if (target_view_layout_map_.contains(curr_view)) {
       const int curr_target_bounds_x =
           target_view_layout_map_.at(curr_view).bounds.x();
