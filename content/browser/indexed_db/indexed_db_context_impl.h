@@ -192,7 +192,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator) const;
   const base::FilePath GetLegacyDataPath() const;
 
-  void NotifyOfBucketModification(const storage::BucketLocator& bucket_locator);
+  void NotifyObserversBucketSizeChanged(
+      const storage::BucketLocator& bucket_locator);
   base::Time GetBucketLastModified(
       const storage::BucketLocator& bucket_locator);
 

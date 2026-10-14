@@ -2831,11 +2831,13 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
 
   int64_t storage_key1_size = QuotaGetBucketUsage(bucket_locator1_);
   EXPECT_LT(0, storage_key1_size);
+  int notify_bucket_modified_count =
+      quota_manager_proxy_->notify_bucket_modified_count();
 
   EXPECT_TRUE(QuotaDeleteBucketData(bucket_locator1_));
 
-  EXPECT_EQ(-1 * storage_key1_size,
-            quota_manager_proxy_->last_notified_bucket_delta());
+  EXPECT_EQ(notify_bucket_modified_count,
+            quota_manager_proxy_->notify_bucket_modified_count());
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
   EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
   EXPECT_FALSE(Has(bucket_locator1_, u"bar"));

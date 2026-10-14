@@ -463,6 +463,8 @@ void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
     DestroyBucketContext(bucket_locator);
   }
 
+  NotifyObserversBucketSizeChanged(bucket_locator);
+
   if (in_memory()) {
     bucket_set_.erase(bucket_locator);
     bucket_size_map_.erase(bucket_locator);
@@ -470,7 +472,6 @@ void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
     return;
   }
 
-  NotifyOfBucketModification(bucket_locator);
   bool success =
       !std::ranges::any_of(GetStoragePaths(bucket_locator), &base::PathExists);
   if (success) {
@@ -865,7 +866,19 @@ const base::FilePath IndexedDBContextImpl::GetFirstPartyDataPathForTesting()
 
 void IndexedDBContextImpl::OnFilesWritten(const BucketLocator& bucket_locator,
                                           bool flushed) {
-  NotifyOfBucketModification(bucket_locator);
+  NotifyObserversBucketSizeChanged(bucket_locator);
+
+  // This method is called very frequently, for example after every transaction
+  // commits. Recalculating disk usage is expensive and often unnecessary (e.g.
+  // when many transactions commit in a row). Therefore, use a null delta to
+  // notify the quota system to invalidate its cache but defer updates to
+  // `bucket_size_map_`.
+  bucket_size_map_.erase(bucket_locator);
+  quota_manager_proxy_->NotifyBucketModified(
+      storage::QuotaClientType::kIndexedDatabase, bucket_locator,
+      /*delta=*/std::nullopt, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+
   if (!flushed) {
     // A negative value indicates "not cached, and LevelDB file write is
     // potentially in progress". See `bucket_size_map_` docs.
@@ -972,18 +985,8 @@ void IndexedDBContextImpl::Shutdown(
                                     std::move(context))));
 }
 
-void IndexedDBContextImpl::NotifyOfBucketModification(
+void IndexedDBContextImpl::NotifyObserversBucketSizeChanged(
     const BucketLocator& bucket_locator) {
-  // This method is called very frequently, for example after every transaction
-  // commits. Recalculating disk usage is expensive and often unnecessary (e.g.
-  // when many transactions commit in a row). Therefore, use a null delta to
-  // notify the quota system to invalidate its cache but defer updates to
-  // `bucket_size_map_`.
-  bucket_size_map_.erase(bucket_locator);
-  quota_manager_proxy_->NotifyBucketModified(
-      storage::QuotaClientType::kIndexedDatabase, bucket_locator,
-      /*delta=*/std::nullopt, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   for (auto& observer : observers_) {
     observer->OnIndexedDBListChanged(bucket_locator);
   }

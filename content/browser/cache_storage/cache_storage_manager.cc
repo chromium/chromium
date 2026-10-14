@@ -695,11 +695,6 @@ void CacheStorageManager::DeleteBucketDidClose(
   // CacheStorage operations posted after GetSizeThenCloseAllCaches is called.
   cache_storage.reset();
 
-  quota_manager_proxy_->NotifyBucketModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner), bucket_locator,
-      -bucket_size, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
-
   if (owner == storage::mojom::CacheStorageOwner::kCacheAPI) {
     NotifyCacheListChanged(bucket_locator);
   }
