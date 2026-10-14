@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/custom_links_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

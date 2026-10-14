@@ -25,11 +25,11 @@
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/features.h"
-#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -56,16 +56,20 @@ const char kSampleUserEmail[] = "user@gmail.com";
 // TODO(b:514161985): Enable on Android once enterprise shortcuts are
 // implemented there. Only used by the enterprise shortcuts tests below.
 #if !BUILDFLAG(IS_ANDROID)
-// Returns the enterprise shortcuts policy pref value in the format that
-// NTPShortcutsPolicyHandler stores it.
-base::ListValue CreatePolicyList(const std::string& title,
-                                 const std::string& url) {
-  base::DictValue shortcut_item;
-  shortcut_item.Set("title", title);
-  shortcut_item.Set("url", url);
-  base::ListValue policy_list;
-  policy_list.Append(std::move(shortcut_item));
-  return policy_list;
+// Sets the NTPShortcuts policy to a single shortcut.
+void SetNtpShortcutsPolicy(policy::MockConfigurationPolicyProvider& provider,
+                           const std::string& name,
+                           const std::string& url) {
+  base::DictValue shortcut;
+  shortcut.Set("name", name);
+  shortcut.Set("url", url);
+  base::ListValue shortcuts;
+  shortcuts.Append(std::move(shortcut));
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kNTPShortcuts, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+               base::Value(std::move(shortcuts)), nullptr);
+  provider.UpdateChromePolicy(policies);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -363,9 +367,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilTileTypesEnterpriseShortcutsBrowserTest,
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 
   // Set enterprise shortcuts policy.
-  GetProfile()->GetPrefs()->SetList(
-      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
-      CreatePolicyList("work name", "https://work.com/"));
+  SetNtpShortcutsPolicy(policy_provider(), "work name", "https://work.com/");
 
   // If enterprise shortcuts are also visible, both should be enabled.
   GetProfile()->GetPrefs()->SetBoolean(
@@ -384,8 +386,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilTileTypesEnterpriseShortcutsBrowserTest,
                 {ntp_tiles::TileType::kEnterpriseShortcuts}));
 
   // Remove enterprise shortcuts policy, personal shortcuts should be visible.
-  GetProfile()->GetPrefs()->SetList(
-      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::ListValue());
+  policy_provider().UpdateChromePolicy(policy::PolicyMap());
   EXPECT_EQ(GetEnabledTileTypes(GetProfile()),
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 }
@@ -902,9 +903,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   InitMockShortcutsPrefs();
   const bool is_managed_preference = GetParam();
   if (is_managed_preference) {
-    GetProfile()->GetPrefs()->SetList(
-        ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
-        CreatePolicyList("work name", "https://work.com/"));
+    SetNtpShortcutsPolicy(policy_provider(), "work name", "https://work.com/");
     GetProfile()->GetPrefs()->SetBoolean(
         ntp_prefs::kNtpEnterpriseShortcutsVisible, true);
   }

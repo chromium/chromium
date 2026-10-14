@@ -184,7 +184,7 @@ if (is_mac || is_win) {
       "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/views",
-      "//components/ntp_tiles:pref_names",
+      "//components/ntp_tiles:test_support",
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/display:test_support",

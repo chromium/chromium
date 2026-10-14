@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"

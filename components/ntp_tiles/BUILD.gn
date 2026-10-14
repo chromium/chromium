@@ -14,6 +14,37 @@ source_set("pref_names") {
   sources = [ "pref_names.h" ]
 }
 
+# The custom links and enterprise shortcuts pref names are an implementation
+# detail of //components/ntp_tiles. Code outside of this component should use
+# the ntp_tiles::MostVisitedSites API instead of reading or observing these
+# prefs directly. //components/sync_preferences needs the custom links pref
+# names to list them in the syncable prefs database.
+source_set("custom_links_pref_names") {
+  visibility = [
+    ":*",
+    "//components/sync_preferences:*",
+  ]
+  sources = [ "custom_links_pref_names.h" ]
+}
+
+source_set("enterprise_shortcuts_pref_names") {
+  visibility = [ ":*" ]
+  sources = [ "enterprise/enterprise_shortcuts_pref_names.h" ]
+}
+
+# Lets tests outside of //components/ntp_tiles set up custom links and
+# enterprise shortcuts state (e.g. simulate the enterprise shortcuts policy) by
+# writing the prefs directly.
+# TODO(b/570754939): Replace the raw pref names with test helpers that own the
+# pref format once CustomLinksStore and EnterpriseShortcutsStore are private.
+group("test_support") {
+  testonly = true
+  public_deps = [
+    ":custom_links_pref_names",
+    ":enterprise_shortcuts_pref_names",
+  ]
+}
+
 static_library("ntp_tiles") {
   sources = [
     "constants.cc",
@@ -62,6 +93,8 @@ static_library("ntp_tiles") {
     "//components/ntp_tiles/webui/resources",
   ]
   deps = [
+    ":custom_links_pref_names",
+    ":enterprise_shortcuts_pref_names",
     ":mojo_bindings",
     ":pref_names",
     "//build:branding_buildflags",
@@ -131,6 +164,8 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":custom_links_pref_names",
+    ":enterprise_shortcuts_pref_names",
     ":ntp_tiles",
     ":pref_names",
     "//base/test:test_support",

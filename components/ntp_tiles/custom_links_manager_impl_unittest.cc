@@ -17,7 +17,7 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/ntp_tiles/constants.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/custom_links_pref_names.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
