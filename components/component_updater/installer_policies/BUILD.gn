@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/tflite/tf_version.gni")
+
 group("installer_policies") {
   public_deps = [
     ":installer_policies_no_content_deps",
@@ -67,6 +69,7 @@ static_library("installer_policies_with_content_deps") {
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/update_client",
     "//third_party/zlib/google:zip",
   ]
@@ -114,5 +117,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/zlib/google:zip",
     "//url",
+  ]
+
+  defines = [
+    "TFLITE_VERSION_MAJOR=$tf_version_major",
+    "TFLITE_VERSION_MINOR=$tf_version_minor",
   ]
 }

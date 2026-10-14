@@ -220,6 +220,21 @@ TEST_F(PredictionModelComponentInstallerTest, GetHashAndName) {
   EXPECT_EQ(policy_->GetName(), "Test Component");
 }
 
+TEST_F(PredictionModelComponentInstallerTest, GetInstallerAttributes) {
+  update_client::InstallerAttributes attributes =
+      policy_->GetInstallerAttributes();
+  ASSERT_EQ(attributes.size(), 1u);
+  auto it = attributes.find("tflite_engine_version");
+  ASSERT_NE(it, attributes.end());
+  base::Version version(it->second);
+  ASSERT_TRUE(version.IsValid());
+  ASSERT_EQ(version.components().size(), 3u);
+  EXPECT_EQ(version.components()[0],
+            static_cast<uint32_t>(TFLITE_VERSION_MAJOR));
+  EXPECT_EQ(version.components()[1],
+            static_cast<uint32_t>(TFLITE_VERSION_MINOR));
+}
+
 TEST_F(PredictionModelComponentInstallerTest,
        DoesNotRegisterComponentWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;

@@ -291,11 +291,40 @@ enum OptimizationTarget {
 
 // The model engine versions that can be used to do model inference.
 //
-// Please only update these enums when a new major version of TFLite rolls.
+// ModelEngineVersion multiplexes two distinct runtime capability signals into
+// a single monotonic 3-component version sequence
+// (MODEL_ENGINE_VERSION_TFLITE_<major>_<minor>_<patch>) used to gate model
+// delivery:
+//   - <major> and <minor> track the upstream //third_party/tflite library
+//     version (tf_version_major and tf_version_minor in
+//     //third_party/tflite/tf_version.gni).
+//   - <patch> is a Chromium-specific revision counter for TFLiteOpResolver's
+//     built-in operator allowlist within a given <major>.<minor> TFLite
+//     version (not upstream TFLite's tf_version_patch).
 //
-// For example: v1.2.3
-//                 ^
-//                 Change when this number increments.
+// How new ModelEngineVersion entries are added:
+// 1. Rolling //third_party/tflite across a major or minor version:
+//    Handled automatically by //third_party/tflite/generate_tf_version_gni.py,
+//    which appends MODEL_ENGINE_VERSION_TFLITE_<major>_<minor>_0 (with <patch>
+//    reset to 0) when run during a TFLite roll.
+// 2. Registering new built-in operators or increasing the maximum supported
+//    version of existing built-in operators in TFLiteOpResolver
+//    (//components/optimization_guide/core/tflite_op_resolver.cc):
+//    Manually append a new MODEL_ENGINE_VERSION_TFLITE_<major>_<minor>_<patch>
+//    entry keeping the <major> and <minor> numbers from the latest entry and
+//    incrementing <patch> by 1 (e.g., 2_23_0 -> 2_23_1).
+//
+// Every new enum entry must use the 3-component naming format
+// MODEL_ENGINE_VERSION_TFLITE_<major>_<minor>_<patch> so that users can
+// depend on the enum name format to parse and extract the version number.
+//
+// New enum entries must also be kept in sync with the server-side
+// ModelEngineVersion enum in optimizationguide.proto and tflite_versions.md in
+// google3. Adding a new ModelEngineVersion value also requires regenerating
+// //components/optimization_guide/internal/testing/proto/components/optimization_guide/proto/models_pb2.py
+// in src-internal per
+// //components/optimization_guide/internal/testing/proto/README.md.
+// LINT.IfChange(TfliteEngineVersion)
 enum ModelEngineVersion {
   reserved 1;
 
@@ -357,7 +386,10 @@ enum ModelEngineVersion {
   // This adds CUMSUM, CALL_ONCE, VAR_HANDLE, READ_VARIABLE, and
   // ASSIGN_VARIABLE to the supported operations.
   MODEL_ENGINE_VERSION_TFLITE_2_22_1 = 23;
+  // A model using only operations that are supported by 2.23.0.
+  MODEL_ENGINE_VERSION_TFLITE_2_23_0 = 24;
 }
+// LINT.ThenChange()
 
 // The set of parameters that the server can use to vary the served model for
 // a given install. It can also vary by OS or Finch seed but those are global

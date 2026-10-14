@@ -16,6 +16,14 @@
 namespace optimization_guide {
 
 TFLiteOpResolver::TFLiteOpResolver() {
+  // When registering a new built-in operator or increasing the maximum
+  // supported version (max_version in AddBuiltin) of an existing built-in
+  // operator below, append a new
+  // MODEL_ENGINE_VERSION_TFLITE_<major>_<minor>_<patch> entry to
+  // ModelEngineVersion in //components/optimization_guide/proto/models.proto
+  // with <patch> incremented by 1 (see the comment on ModelEngineVersion for
+  // full instructions).
+  // LINT.IfChange
   AddBuiltin(tflite::BuiltinOperator_ABS, tflite::ops::builtin::Register_ABS());
   AddBuiltin(tflite::BuiltinOperator_HARD_SWISH,
              tflite::ops::builtin::Register_HARD_SWISH());
@@ -399,6 +407,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
              tflite::ops::builtin::Register_READ_VARIABLE());
   AddBuiltin(tflite::BuiltinOperator_ASSIGN_VARIABLE,
              tflite::ops::builtin::Register_ASSIGN_VARIABLE());
+  // LINT.ThenChange(//components/optimization_guide/proto/models.proto:TfliteEngineVersion)
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   delegate_creators_.push_back([](TfLiteContext* context) {
