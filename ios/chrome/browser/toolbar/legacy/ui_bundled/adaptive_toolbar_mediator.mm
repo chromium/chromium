@@ -41,7 +41,6 @@
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -459,20 +458,10 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   if (!self.webState) {
     return;
   }
-  const GURL& URL = webState->GetLastCommittedURL();
 
-  // Enable sharing when the current page url is valid and the url is not app
-  // specific (the url's scheme is `chrome`) except when:
-  // 1. The page url represents a chrome's download path `chrome://downloads`.
-  // 2. The page url is a reference to an external file
-  //    `chrome://external-file`.
-  BOOL shareMenuEnabled =
-      URL.is_valid() &&
-      (UrlIsDownloadedFile(URL) || UrlIsExternalFileReference(URL) ||
-       !web::GetWebClient()->IsAppSpecificURL(URL));
   // Page sharing requires JavaScript execution, which is paused while overlays
   // are displayed over the web content area.
-  [self.consumer setShareMenuEnabled:shareMenuEnabled &&
+  [self.consumer setShareMenuEnabled:IsUrlShareable(webState) &&
                                      !self.webContentAreaShowingOverlay];
 }
 

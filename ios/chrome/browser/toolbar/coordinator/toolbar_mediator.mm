@@ -197,8 +197,7 @@
                       self.navigationBrowserAgent->CanGoForward(webState);
   [self.consumer setCanGoForward:canGoForward animated:animated];
 
-  const GURL visibleURL = webState->GetVisibleURL();
-  [self.consumer setShareEnabled:!visibleURL.is_empty() && !isNtp];
+  [self.consumer setShareEnabled:IsUrlShareable(webState)];
 
   BOOL isStartSurface = NO;
   if (isNtp) {

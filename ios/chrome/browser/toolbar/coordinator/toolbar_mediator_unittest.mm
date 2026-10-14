@@ -343,6 +343,28 @@ TEST_P(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that `setShareEnabled:` is disabled on internal `chrome://` URLs except
+// for downloaded and external files.
+TEST_P(ToolbarMediatorTest, TestShareEnabledForChromeURLs) {
+  std::unique_ptr<web::FakeWebState> version_web_state = CreateWebState();
+  version_web_state->SetVisibleURL(GURL("chrome://version"));
+
+  OCMExpect([consumer_ setShareEnabled:NO]);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(version_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  std::unique_ptr<web::FakeWebState> downloads_web_state = CreateWebState();
+  downloads_web_state->SetVisibleURL(GURL("chrome://downloads/fileName"));
+
+  OCMExpect([consumer_ setShareEnabled:YES]);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(downloads_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 // Tests that selecting a NTP web state updates the consumer with NTP visible
 // and isStartSurface status.
 TEST_P(ToolbarMediatorTest, TestWebStateSelectionNTPUpdatesConsumer) {
