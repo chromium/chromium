@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -31,7 +32,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -53,6 +57,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -61,6 +66,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -241,7 +247,9 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    testing_profile_ = TestingProfile::Builder().Build();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    testing_profile_ =
+        TestingProfile::Builder().SetPath(temp_dir_.GetPath()).Build();
     contents_ = CreateTestWebContents();
 
     // Set up content verification.
@@ -260,9 +268,11 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
   void TearDown() override {
+    contents_.reset();
     loader_factory_.reset();
     content_verifier_->Shutdown();
     content_verifier_.reset();
+    testing_profile_.reset();
     // Shut down the PowerMonitor if initialized.
     base::PowerMonitor::GetInstance()->ShutdownForTesting();
   }
@@ -272,16 +282,33 @@ class ExtensionProtocolsTestBase : public testing::Test {
     return LoadURL(url, destination);
   }
 
+  GetResult RequestOrLoad(network::ResourceRequest request) {
+    return LoadURLFromFactory(loader_factory_.get(), std::move(request));
+  }
+
+  GetResult RequestOrLoadFromSubresourceFactory(
+      network::ResourceRequest request,
+      content::WebContents* web_contents = nullptr) {
+    content::WebContents* target_contents =
+        web_contents ? web_contents : contents_.get();
+    CHECK(target_contents);
+    mojo::Remote<network::mojom::URLLoaderFactory> subresource_factory;
+    subresource_factory.Bind(CreateExtensionURLLoaderFactory(
+        target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        target_contents->GetPrimaryMainFrame()->GetRoutingID()));
+    return LoadURLFromFactory(subresource_factory.get(), std::move(request));
+  }
+
   GetResult RequestOrLoadFromSubresourceFactory(
       const GURL& url,
       network::mojom::RequestDestination destination,
       const std::optional<url::Origin>& request_initiator = std::nullopt) {
-    mojo::Remote<network::mojom::URLLoaderFactory> subresource_factory;
-    subresource_factory.Bind(CreateExtensionURLLoaderFactory(
-        contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
-        contents_->GetPrimaryMainFrame()->GetRoutingID()));
-    return LoadURLFromFactory(subresource_factory.get(), url, destination,
-                              request_initiator);
+    network::ResourceRequest request =
+        CreateResourceRequest("GET", destination, url);
+    if (request_initiator.has_value()) {
+      request.request_initiator = request_initiator;
+    }
+    return RequestOrLoadFromSubresourceFactory(std::move(request));
   }
 
   void AddExtension(const scoped_refptr<const Extension>& extension,
@@ -330,7 +357,14 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<content::WebContents> CreateTestWebContents() {
+    auto site_instance = content::SiteInstance::Create(browser_context());
+    return content::WebContentsTester::CreateTestWebContents(
+        browser_context(), std::move(site_instance));
+  }
+
   scoped_refptr<ContentVerifier> content_verifier_;
+  std::unique_ptr<content::WebContents> contents_;
 
  private:
   GetResult LoadURL(const GURL& url,
@@ -338,20 +372,12 @@ class ExtensionProtocolsTestBase : public testing::Test {
     return LoadURLFromFactory(loader_factory_.get(), url, destination);
   }
 
-  GetResult LoadURLFromFactory(
-      network::mojom::URLLoaderFactory* factory,
-      const GURL& url,
-      network::mojom::RequestDestination destination,
-      const std::optional<url::Origin>& request_initiator = std::nullopt) {
+  GetResult LoadURLFromFactory(network::mojom::URLLoaderFactory* factory,
+                               network::ResourceRequest request) {
     constexpr int32_t kRequestId = 28;
 
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     network::TestURLLoaderClient client;
-    network::ResourceRequest request =
-        CreateResourceRequest("GET", destination, url);
-    if (request_initiator.has_value()) {
-      request.request_initiator = request_initiator;
-    }
     factory->CreateLoaderAndStart(
         loader.InitWithNewPipeAndPassReceiver(), kRequestId,
         network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
@@ -374,19 +400,26 @@ class ExtensionProtocolsTestBase : public testing::Test {
                      client.completion_status().error_code, std::move(body));
   }
 
-  std::unique_ptr<content::WebContents> CreateTestWebContents() {
-    auto site_instance = content::SiteInstance::Create(browser_context());
-    return content::WebContentsTester::CreateTestWebContents(
-        browser_context(), std::move(site_instance));
+  GetResult LoadURLFromFactory(
+      network::mojom::URLLoaderFactory* factory,
+      const GURL& url,
+      network::mojom::RequestDestination destination,
+      const std::optional<url::Origin>& request_initiator = std::nullopt) {
+    network::ResourceRequest request =
+        CreateResourceRequest("GET", destination, url);
+    if (request_initiator.has_value()) {
+      request.request_initiator = request_initiator;
+    }
+    return LoadURLFromFactory(factory, std::move(request));
   }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
+  // Must outlive `testing_profile_`, whose files live in this directory.
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  std::unique_ptr<content::WebContents> contents_;
   const bool force_incognito_;
-
   std::optional<base::test::ScopedPowerMonitorTestSource> power_monitor_source_;
 };
 
@@ -844,6 +877,124 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
         RequestOrLoad(extension->GetResourceURL("test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
+  }
+}
+
+// A renderer hosting an ordinary web page must not be able to fetch resources
+// from an extension that declares a `devtools_page`, regardless of what
+// `request_initiator` it supplies. The exemption that lets DevTools load such
+// resources should only apply to processes that actually host a DevTools page.
+TEST_F(ExtensionProtocolsTest,
+       DevToolsExtensionResourcesBlockedForWebRenderer) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DevTools Extension")
+          .SetManifestVersion(3)
+          .SetManifestKey("devtools_page", "devtools.html")
+          .SetPath(GetTestPath("response_headers"))
+          .Build();
+  AddExtension(extension, /*incognito_enabled=*/false,
+               /*notifications_disabled=*/false);
+
+  // Commit a web page so the test renderer process is associated with a web
+  // origin rather than a DevTools origin.
+  content::WebContentsTester::For(contents_.get())
+      ->NavigateAndCommit(GURL("http://example.com/"));
+
+  const GURL target = extension->GetResourceURL("test.dat");
+  const struct {
+    std::string_view description;
+    std::optional<url::Origin> initiator;
+  } cases[] = {
+      {"no initiator", std::nullopt},
+      {"devtools initiator", url::Origin::Create(GURL("devtools://devtools"))},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.description);
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = target;
+    request.request_initiator = test_case.initiator;
+    request.destination = network::mojom::RequestDestination::kImage;
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+              RequestOrLoadFromSubresourceFactory(std::move(request)).result());
+  }
+
+  // A renderer process that actually hosts a DevTools page must be allowed to
+  // load the resource.
+  std::unique_ptr<content::WebContents> devtools_contents =
+      CreateTestWebContents();
+  content::WebContentsTester::For(devtools_contents.get())
+      ->NavigateAndCommit(
+          GURL("devtools://devtools/bundled/devtools_app.html"));
+  {
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = target;
+    request.request_initiator =
+        url::Origin::Create(GURL("devtools://devtools"));
+    request.destination = network::mojom::RequestDestination::kImage;
+    EXPECT_EQ(net::OK, RequestOrLoadFromSubresourceFactory(
+                           std::move(request), devtools_contents.get())
+                           .result());
+  }
+
+  // Browser-initiated requests (null child_id) with no initiator or with a
+  // devtools initiator must continue to be allowed.
+  {
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = target;
+    request.request_initiator = std::nullopt;
+    request.destination = network::mojom::RequestDestination::kImage;
+    EXPECT_EQ(net::OK, RequestOrLoad(std::move(request)).result());
+  }
+  {
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = target;
+    request.request_initiator =
+        url::Origin::Create(GURL("devtools://devtools"));
+    request.destination = network::mojom::RequestDestination::kImage;
+    EXPECT_EQ(net::OK, RequestOrLoad(std::move(request)).result());
+  }
+}
+
+// A renderer hosting an ordinary web page must not be able to bypass
+// web-accessible resource checks by spoofing an opaque initiator whose
+// precursor is the extension's origin. The allowed renderer path (a sandboxed
+// extension page) is covered by SandboxedPagesTest.WebAccessibleResourcesTest.
+TEST_F(ExtensionProtocolsTest, OpaqueInitiatorPrecursorBlockedForWebRenderer) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestVersion(3)
+          .SetPath(GetTestPath("response_headers"))
+          .Build();
+  AddExtension(extension, /*incognito_enabled=*/false,
+               /*notifications_disabled=*/false);
+
+  content::WebContentsTester::For(contents_.get())
+      ->NavigateAndCommit(GURL("http://example.com/"));
+
+  const GURL target = extension->GetResourceURL("test.dat");
+  network::ResourceRequest request;
+  request.method = "GET";
+  request.url = target;
+  request.request_initiator = extension->origin().DeriveNewOpaqueOrigin();
+  request.destination = network::mojom::RequestDestination::kImage;
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            RequestOrLoadFromSubresourceFactory(std::move(request)).result());
+
+  // Browser-initiated requests (null child_id) with an opaque precursor
+  // matching the extension remain allowed.
+  {
+    network::ResourceRequest browser_request;
+    browser_request.method = "GET";
+    browser_request.url = target;
+    browser_request.request_initiator =
+        extension->origin().DeriveNewOpaqueOrigin();
+    browser_request.destination = network::mojom::RequestDestination::kImage;
+    EXPECT_EQ(net::OK, RequestOrLoad(std::move(browser_request)).result());
   }
 }
 

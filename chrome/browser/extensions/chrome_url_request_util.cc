@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -293,11 +294,26 @@ bool AllowCrossRendererResourceLoad(
 
   if (extension &&
       !chrome_manifest_urls::GetDevToolsPage(extension).is_empty()) {
-    // Allow the load if the initiator is either a devtools origin, or if
-    // there is no initiator (in which case it was likely a browser-initiated
-    // request).
-    if (!request.request_initiator ||
-        request.request_initiator->scheme() == content::kChromeDevToolsScheme) {
+    // Allow the load only if it actually comes from the browser process or
+    // from a renderer hosting the DevTools front-end. `request_initiator` is
+    // renderer-supplied and not validated on this path, so cross-check it
+    // against the browser-trusted `child_id` that the factory was bound to.
+    // TODO(crbug.com/512142568): Validate request_initiator centrally in
+    // ExtensionURLLoader (e.g. require HostsOrigin when render_process_id is
+    // non-null) rather than checking individual call sites.
+    const bool is_devtools_scheme =
+        request.request_initiator &&
+        request.request_initiator->scheme() == content::kChromeDevToolsScheme;
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+    const bool is_devtools_allowed =
+        is_devtools_scheme &&
+        (child_id.is_null() ||
+         content::ChildProcessSecurityPolicy::GetInstance()->HostsOrigin(
+             child_id.GetUnsafeValue(), *request.request_initiator));
+    const bool is_browser_without_initiator =
+        child_id.is_null() && !request.request_initiator;
+
+    if (is_devtools_allowed || is_browser_without_initiator) {
       *allowed = true;
       return true;
     }
