@@ -7729,21 +7729,6 @@
             ]
         }
     ],
-    "FirstRunDesktopChoiceScreenRefresh": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FirstRunDesktopChoiceScreenRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "FirstRunDesktopRevamp": [
         {
             "platforms": [
