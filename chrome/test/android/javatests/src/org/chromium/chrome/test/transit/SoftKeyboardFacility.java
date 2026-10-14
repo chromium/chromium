@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.test.transit;
 
-import androidx.test.espresso.Espresso;
+import android.app.Activity;
+import android.view.View;
+import android.view.inspector.WindowInspector;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.ui.test.transit.SoftKeyboardElement;
+
+import java.util.List;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the Facility. */
 public class SoftKeyboardFacility extends Facility<Station<?>> {
@@ -39,7 +44,7 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
             // If this fails, the keyboard was closed before, but not by this facility.
             recheckActiveConditions();
 
-            TripBuilder tripBuilder = runTo(Espresso::closeSoftKeyboard).withRetry();
+            TripBuilder tripBuilder = runOnUiThreadTo(this::dismissKeyboard).withRetry();
 
             if (viewElementsToSettle.length > 0) {
                 Facility<?> viewsSettledFacility = new Facility<>("ViewsSettled");
@@ -55,6 +60,25 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
         } else {
             // Keyboard was not expected to be shown
             noopTo().exitFacility();
+        }
+    }
+
+    private void dismissKeyboard() {
+        Activity activity = mHostStation.getActivity();
+        View currentFocus = activity.getCurrentFocus();
+        if (currentFocus != null) {
+            KeyboardUtils.hideAndroidSoftKeyboard(currentFocus);
+        }
+        KeyboardUtils.hideAndroidSoftKeyboard(activity.getWindow().getDecorView());
+
+        List<View> globalWindowViews = WindowInspector.getGlobalWindowViews();
+        for (int i = globalWindowViews.size() - 1; i >= 0; i--) {
+            View view = globalWindowViews.get(i);
+            View focused = view.findFocus();
+            if (focused != null) {
+                KeyboardUtils.hideAndroidSoftKeyboard(focused);
+            }
+            KeyboardUtils.hideAndroidSoftKeyboard(view);
         }
     }
 }
