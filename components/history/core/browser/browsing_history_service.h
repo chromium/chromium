@@ -146,9 +146,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     bool sync_timed_out = false;
   };
 
-  // Used to group sync IDs of clients that share a name.
+  // Represents a physical device by grouping sync IDs of clients that share a
+  // name and is_local status.
   struct ClientGroup {
     std::string name;
+    bool is_local_device = false;
     std::vector<std::string> client_ids;
   };
 
@@ -187,9 +189,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // the actual implementation.
   void RemoveVisits(const std::vector<HistoryEntry>& items);
 
-  // Returns synced clients deduplicated by name (mapping each name to its list
-  // of sync IDs).
-  virtual std::vector<ClientGroup> GetAllSyncedClientsGroupedByName() const;
+  // Returns synced clients deduplicated by a combination of the name and
+  // is_local status.
+  virtual std::vector<ClientGroup> GetSyncedDevicesForFiltering() const;
 
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

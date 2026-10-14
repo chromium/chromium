@@ -1088,7 +1088,7 @@ void BrowsingHistoryService::OnWebHistoryDeleted() {
 }
 
 std::vector<BrowsingHistoryService::ClientGroup>
-BrowsingHistoryService::GetAllSyncedClientsGroupedByName() const {
+BrowsingHistoryService::GetSyncedDevicesForFiltering() const {
   if (!base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByDevice)) {
     return {};
   }
@@ -1106,15 +1106,19 @@ BrowsingHistoryService::GetAllSyncedClientsGroupedByName() const {
   std::vector<const syncer::DeviceInfo*> synced_devices =
       device_info_tracker_->GetAllChromeDeviceInfo();
 
-  base::flat_map<std::string, std::vector<std::string>> uniquely_named_groups;
+  base::flat_map<std::pair<std::string, bool>, std::vector<std::string>>
+      deduplicated_devices;
 
   for (const syncer::DeviceInfo* device_info : synced_devices) {
-    uniquely_named_groups[syncer::GetDeviceDisplayName(device_info)].push_back(
-        device_info->guid());
+    deduplicated_devices[{syncer::GetDeviceDisplayName(device_info),
+                          device_info_tracker_->IsRecentLocalCacheGuid(
+                              device_info->guid())}]
+        .push_back(device_info->guid());
   }
 
-  return base::ToVector(uniquely_named_groups, [](auto& pair) {
-    return ClientGroup{.name = std::move(pair.first),
+  return base::ToVector(deduplicated_devices, [](auto& pair) {
+    return ClientGroup{.name = std::move(pair.first.first),
+                       .is_local_device = pair.first.second,
                        .client_ids = std::move(pair.second)};
   });
 }

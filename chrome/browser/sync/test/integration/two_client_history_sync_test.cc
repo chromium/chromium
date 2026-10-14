@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
       WebHistoryServiceFactory::GetForProfile(GetProfile(0));
   TestBrowsingHistoryDriver driver(web_history_service);
   // No device tracker is needed as the service is not used to call
-  // `GetAllSyncedClientsGroupedByName`.
+  // `GetSyncedDevicesForFiltering`.
   history::BrowsingHistoryService browsing_history_service(
       &driver, history_service, GetSyncService(0),
       /*device_info_tracker=*/nullptr);

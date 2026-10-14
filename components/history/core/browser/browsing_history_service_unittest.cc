@@ -1245,7 +1245,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryDurationHistogram) {
   histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 2);
 }
 
-TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenFeatureDisabled) {
+TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kBrowsingHistoryFilterByDevice);
 
@@ -1262,10 +1262,10 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenFeatureDisabled) {
                                  .WithClientName("Device B")
                                  .Build());
 
-  EXPECT_THAT(service()->GetAllSyncedClientsGroupedByName(), IsEmpty());
+  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
 }
 
-TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenHistorySyncIsOff) {
+TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenHistorySyncIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
 
@@ -1281,10 +1281,10 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenHistorySyncIsOff) {
                                  .WithClientName("Device B")
                                  .Build());
 
-  EXPECT_THAT(service()->GetAllSyncedClientsGroupedByName(), IsEmpty());
+  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
 }
 
-TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenTrackerIsNull) {
+TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenTrackerIsNull) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
 
@@ -1295,10 +1295,11 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedClientsWhenTrackerIsNull) {
   ResetService(driver(), local_history(), sync(),
                /*device_info_tracker=*/nullptr);
 
-  EXPECT_THAT(service()->GetAllSyncedClientsGroupedByName(), IsEmpty());
+  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
 }
 
-TEST_F(BrowsingHistoryServiceTest, SyncedClientsAreDeduplicatedByName) {
+TEST_F(BrowsingHistoryServiceTest,
+       SyncedDevicesAreDeduplicatedByNameAndIsLocalStatus) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
 
@@ -1318,14 +1319,25 @@ TEST_F(BrowsingHistoryServiceTest, SyncedClientsAreDeduplicatedByName) {
                                  .WithGuid("guid3")
                                  .WithClientName("Device B")
                                  .Build());
+  device_info_tracker()->Add(syncer::TestDeviceInfoBuilder()
+                                 .WithGuid("guid4")
+                                 .WithClientName("Device B")
+                                 .Build());
 
-  EXPECT_THAT(
-      service()->GetAllSyncedClientsGroupedByName(),
-      UnorderedElementsAre(
-          AllOf(Field(&ClientGroup::name, "Device A"),
-                Field(&ClientGroup::client_ids, ElementsAre("guid1", "guid2"))),
-          AllOf(Field(&ClientGroup::name, "Device B"),
-                Field(&ClientGroup::client_ids, ElementsAre("guid3")))));
+  device_info_tracker()->SetLocalCacheGuid("guid1");
+
+  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(),
+              UnorderedElementsAre(
+                  AllOf(Field(&ClientGroup::name, "Device A"),
+                        Field(&ClientGroup::is_local_device, true),
+                        Field(&ClientGroup::client_ids, ElementsAre("guid1"))),
+                  AllOf(Field(&ClientGroup::name, "Device A"),
+                        Field(&ClientGroup::is_local_device, false),
+                        Field(&ClientGroup::client_ids, ElementsAre("guid2"))),
+                  AllOf(Field(&ClientGroup::name, "Device B"),
+                        Field(&ClientGroup::is_local_device, false),
+                        Field(&ClientGroup::client_ids,
+                              ElementsAre("guid3", "guid4")))));
 }
 
 }  // namespace
