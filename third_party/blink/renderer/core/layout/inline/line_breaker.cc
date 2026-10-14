@@ -3780,7 +3780,7 @@ void LineBreaker::HandleFloat(const InlineItem& item,
 
   // If we are currently computing our min/max-content size, simply append the
   // unpositioned floats to |LineInfo| and abort.
-  if (mode_ != LineBreakerMode::kContent) {
+  if (IsComputingContentSize() || mode_ != LineBreakerMode::kContent) {
     return;
   }
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+.outer {
+  width: 160px;
+}
+
+.float-left {
+  max-content-sizing: shrink-to-fit;
+  font: 20px/1 Ahem;
+  float: left;
+  clear: both;
+}
+
+.float-right {
+  max-content-sizing: shrink-to-fit;
+  font: 20px/1 Ahem;
+  float: right;
+  clear: both;
+}
+
+#outer2 {
+  max-content-sizing: shrink-to-fit;
+  width: fit-content;
+  font: 20px/1 Ahem;
+}
+#outer2 > div {
+  width: fit-content;
+  max-width: 100px;
+}
+</style>
+
+<!-- BFC -->
+<div class="outer">
+  <div>block</div>
+  <!-- Fit to the line "defgh". -->
+  <div class="float-left"
+       title="BFC float:left: The target width should be shrunk"
+       data-expected-width="100">abc defgh</div>
+  <div class="float-right"
+       title="BFC float:right: The target width should be shrunk"
+       data-expected-width="100">abc defgh</div>
+
+  <div class="float-left"
+       title="BFC float:left: The margin should reduce the constrained inline-size"
+       style="margin-right: 20px;"
+       data-expected-width="80">abc defg</div>
+  <div class="float-right"
+       title="BFC float:right: The margin should reduce the constrained inline-size"
+       style="margin-left: 20px;"
+       data-expected-width="80">abc defg</div>
+
+  <div class="float-left"
+       title="BFC float:left: The target width should not be smaller than min-width"
+       style="min-width: 120px;"
+       data-expected-width="120">abc defgh</div>
+  <div class="float-right"
+       title="BFC float:right: The target width should not be smaller than min-width"
+       style="min-width: 120px;"
+       data-expected-width="120">abc defgh</div>
+
+  <div class="float-left"
+       title="BFC float:left: The target width should not be larger than max-width"
+       style="max-width: 80px;"
+       data-expected-width="80">abc defgh</div>
+  <div class="float-right"
+       title="BFC float:right: The target width should not be larger than max-width"
+       style="max-width: 80px;"
+       data-expected-width="80">abc defgh</div>
+</div>
+
+<!-- IFC -->
+<div class="outer">
+  inline
+  <!-- Fit to the line "defgh". -->
+  <div class="float-left"
+       title="IFC float:left: The target width should be shrunk"
+       data-expected-width="100">abc defgh</div>
+  <div class="float-right"
+       title="IFC float:right: The target width should be shrunk"
+       data-expected-width="100">abc defgh</div>
+
+  <div class="float-left"
+       title="IFC float:left: The margin should reduce the constrained inline-size"
+       style="margin-right: 20px;"
+       data-expected-width="80">abc defg</div>
+  <div class="float-right"
+       title="IFC float:right: The margin should reduce the constrained inline-size"
+       style="margin-left: 20px;"
+       data-expected-width="80">abc defg</div>
+
+  <div class="float-left"
+       title="IFC float:left: The target width should not be smaller than min-width"
+       style="min-width: 120px;"
+       data-expected-width="120">abc defgh</div>
+  <div class="float-right"
+       title="IFC float:right: The target width should not be smaller than min-width"
+       style="min-width: 120px;"
+       data-expected-width="120">abc defgh</div>
+
+  <div class="float-left"
+       title="IFC float:left: The target width should not be larger than max-width"
+       style="max-width: 80px;"
+       data-expected-width="80">abc defgh</div>
+  <div class="float-right"
+       title="IFC float:right: The target width should not be larger than max-width"
+       style="max-width: 80px;"
+       data-expected-width="80">abc defgh</div>
+</div>
+
+<div id="outer2">
+  <!-- BFC -->
+  <div>
+    <div></div>
+    <div class="float-left"
+         title="Nested BFC float:left: The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </div>
+  <div>
+    <div></div>
+    <div class="float-right"
+         title="Nested BFC float:right: The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </div>
+
+  <!-- IFC -->
+  <div>
+    <span></span>
+    <div class="float-left"
+         title="Nested IFC float:left: The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </div>
+  <div>
+    <span></span>
+    <div class="float-right"
+         title="Nested IFC float:right: The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </div>
+</div>
+
+<script>
+document.fonts.ready.then(() => checkLayout('[data-expected-width]'));
+</script>

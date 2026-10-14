@@ -2243,7 +2243,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       const MinMaxSizesResult child_result =
           ComputeMinAndMaxContentContribution(
               style, float_node, float_space,
-              MinMaxSizesInput::UnconstrainedUntriaged());
+              MinMaxSizesInput::Constrained(input.constrained_inline_size));
       LayoutUnit child_inline_margins =
           ComputeMarginsFor(float_space, float_node.Style(), space).InlineSum();
 
