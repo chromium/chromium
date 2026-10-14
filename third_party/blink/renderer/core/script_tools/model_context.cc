@@ -496,7 +496,14 @@ void ModelContext::UnregisterTool(const base::UnguessableToken& tool_id) {
     if (it->value->Id() == tool_id) {
       probe::WebMCPToolRemoved(document_, *it->value);
       tool_map_.erase(it);
-      model_context_host_remote_->UnregisterScriptTool(tool_id);
+      // An inactive document (e.g., one whose frame was removed) has no
+      // browser host to notify: its `model_context_host_remote_` is reset when
+      // its execution context is destroyed. This is reachable from script,
+      // e.g., by aborting a tool's `AbortSignal` after the registering
+      // document's iframe is removed.
+      if (document_->IsActive()) {
+        model_context_host_remote_->UnregisterScriptTool(tool_id);
+      }
       return;
     }
   }
