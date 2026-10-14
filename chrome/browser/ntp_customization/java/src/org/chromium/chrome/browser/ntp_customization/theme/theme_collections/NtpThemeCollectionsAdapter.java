@@ -76,7 +76,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
             @ThemeCollectionsItemType int themeCollectionsItemType,
             View.@Nullable OnClickListener onClickListener,
             ImageFetcher imageFetcher) {
-        mItems = new ArrayList<>(items);
+        mItems = new ArrayList<Object>(items);
         mThemeCollectionsItemType = themeCollectionsItemType;
         mOnClickListener = onClickListener;
         mImageFetcher = imageFetcher;

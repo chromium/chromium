@@ -165,8 +165,8 @@ public class ShareHelper {
         private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
                 new UnownedUserDataKey<>(TargetChosenReceiver::onDetachedFromHost);
         private @Nullable TargetChosenCallback mCallback;
-        private WeakReference<Context> mAttachedContext;
-        private WeakReference<WindowAndroid> mAttachedWindow;
+        private WeakReference<@Nullable Context> mAttachedContext;
+        private WeakReference<@Nullable WindowAndroid> mAttachedWindow;
         private @Nullable String mReceiverAction;
 
         protected TargetChosenReceiver(@Nullable TargetChosenCallback callback) {

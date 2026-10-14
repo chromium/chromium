@@ -1233,7 +1233,7 @@ public final class Fido2Api {
         return response;
     }
 
-    private static Pair<Integer, String> parseErrorResponse(Parcel parcel)
+    private static Pair<Integer, @Nullable String> parseErrorResponse(Parcel parcel)
             throws IllegalArgumentException {
         Pair<Integer, Integer> header = readHeader(parcel);
         if (header.first != OBJECT_MAGIC) {
@@ -1274,7 +1274,7 @@ public final class Fido2Api {
         public boolean didCreateDiscoverableCredential;
         // prf contains an "enabled" flag and a bytestring that contains either
         // one or two 32-byte strings.
-        public @Nullable Pair<Boolean, byte[]> prf;
+        public @Nullable Pair<Boolean, byte @Nullable []> prf;
 
         @Nullable PrfValues getPrfResults() {
             if (prf == null || prf.second == null) {
@@ -1425,7 +1425,7 @@ public final class Fido2Api {
         return ret;
     }
 
-    private static Pair<Boolean, byte[]> parsePrfResponse(Parcel parcel)
+    private static Pair<Boolean, byte @Nullable []> parsePrfResponse(Parcel parcel)
             throws IllegalArgumentException {
         Pair<Integer, Integer> header = readHeader(parcel);
         if (header.first != OBJECT_MAGIC) {

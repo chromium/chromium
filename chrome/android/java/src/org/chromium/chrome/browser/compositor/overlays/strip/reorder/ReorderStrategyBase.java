@@ -339,7 +339,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     protected void handleStopReorderMode(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
-            List<StripLayoutView> interactingViews,
+            List<? extends @Nullable StripLayoutView> interactingViews,
             @Nullable StripLayoutTab tabToReattach,
             List<Animator> animationList,
             Runnable onAnimationEnd) {

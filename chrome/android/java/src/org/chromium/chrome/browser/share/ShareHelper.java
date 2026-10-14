@@ -173,7 +173,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     }
 
     /** Convenience method to retrieve the most recent app that support sharing text. */
-    public static Pair<Drawable, CharSequence> getShareableIconAndNameForText() {
+    public static Pair<@Nullable Drawable, @Nullable CharSequence>
+            getShareableIconAndNameForText() {
         return getShareableIconAndName(getShareTextAppCompatibilityIntent());
     }
 
@@ -181,17 +182,19 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Convenience method to retrieve the most recent app that support sharing {@code
      * fileContentType}.
      */
-    public static Pair<Drawable, CharSequence> getShareableIconAndNameForFileContentType(
-            String fileContentType) {
+    public static Pair<@Nullable Drawable, @Nullable CharSequence>
+            getShareableIconAndNameForFileContentType(String fileContentType) {
         return getShareableIconAndName(getShareFileAppCompatibilityIntent(fileContentType));
     }
 
     /**
      * Get the icon and name of the most recently shared app by certain app.
+     *
      * @param shareIntent Intent used to get list of apps support sharing.
      * @return The Image and the String of the recently shared Icon.
      */
-    private static Pair<Drawable, CharSequence> getShareableIconAndName(Intent shareIntent) {
+    private static Pair<@Nullable Drawable, @Nullable CharSequence> getShareableIconAndName(
+            Intent shareIntent) {
         Drawable directShareIcon = null;
         CharSequence directShareTitle = null;
 

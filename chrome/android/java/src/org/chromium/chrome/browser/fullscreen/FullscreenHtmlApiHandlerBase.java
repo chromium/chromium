@@ -423,7 +423,8 @@ public abstract class FullscreenHtmlApiHandlerBase
             currentWindowBounds =
                     mActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
         }
-        Pair<Long, Rect> startPosition = new Pair<>(getCurrentDisplayId(), currentWindowBounds);
+        Pair<Long, @Nullable Rect> startPosition =
+                new Pair<>(getCurrentDisplayId(), currentWindowBounds);
         TabAttributes attrs = TabAttributes.from(tab);
         attrs.set(TabAttributeKeys.FULLSCREEN_START_POSITION, startPosition);
         attrs.set(TabAttributeKeys.FULLSCREEN_OPTIONS, options);
@@ -643,7 +644,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             return;
         }
 
-        Pair<Long, Rect> homeAttrs =
+        Pair<Long, @Nullable Rect> homeAttrs =
                 TabAttributes.from(mTabInFullscreen)
                         .get(TabAttributeKeys.FULLSCREEN_START_POSITION);
         clearFullscreenStartingPositionAndOptions(mTabInFullscreen);

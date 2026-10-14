@@ -60,7 +60,7 @@ public class LocaleManagerDelegate {
 
     // LocaleManager is a singleton and it should not have strong reference to UI objects.
     // SnackbarManager is owned by ChromeActivity and is not null as long as the activity is alive.
-    private WeakReference<SnackbarManager> mSnackbarManager = new WeakReference<>(null);
+    private WeakReference<@Nullable SnackbarManager> mSnackbarManager = new WeakReference<>(null);
 
     /**
      * Stores the prepopulate ID of a search engine for which we need to show a snackbar notifying
@@ -301,7 +301,7 @@ public class LocaleManagerDelegate {
      * @see LocaleManager#setSnackbarManager
      */
     public void setSnackbarManager(@Nullable SnackbarManager manager) {
-        mSnackbarManager = new WeakReference<SnackbarManager>(manager);
+        mSnackbarManager = new WeakReference<>(manager);
         if (mIsSnackbarQueuedForDeviceSearchEngineType != SearchEngineType.SEARCH_ENGINE_UNKNOWN) {
             showSnackbarForDeviceSearchEngineUpdate();
         }

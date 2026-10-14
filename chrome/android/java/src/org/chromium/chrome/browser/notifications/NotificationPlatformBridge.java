@@ -80,7 +80,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -187,20 +186,21 @@ public class NotificationPlatformBridge {
                     /* origin= */ assumeNonNull(
                             intent.getStringExtra(
                                     NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)),
-                    /* scopeUrl= */ Objects.requireNonNullElse(
-                            intent.getStringExtra(
-                                    NotificationConstants.EXTRA_NOTIFICATION_INFO_SCOPE),
-                            ""),
+                    /* scopeUrl= */ getStringExtraOrEmpty(
+                            intent, NotificationConstants.EXTRA_NOTIFICATION_INFO_SCOPE),
                     /* profileId= */ intent.getStringExtra(
                             NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_ID),
                     /* incognito= */ intent.getBooleanExtra(
                             NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_INCOGNITO, false),
-                    /* webApkPackage= */ Objects.requireNonNullElse(
-                            intent.getStringExtra(
-                                    NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE),
-                            ""),
+                    /* webApkPackage= */ getStringExtraOrEmpty(
+                            intent, NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE),
                     /* channelId= */ intent.getStringExtra(
                             NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID));
+        }
+
+        private static String getStringExtraOrEmpty(Intent intent, String key) {
+            String value = intent.getStringExtra(key);
+            return value == null ? "" : value;
         }
     }
 

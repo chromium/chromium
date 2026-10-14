@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.preferences;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.KnownPreferenceKeyRegistries;
@@ -23,7 +25,8 @@ public class AllPreferenceKeyRegistries {
     static final @Nullable Set<PreferenceKeyRegistry> KNOWN_REGISTRIES =
             BuildConfig.ENABLE_ASSERTS
                     ? Set.of(
-                            ChromeSharedPreferences.REGISTRY, CachedFlagsSharedPreferences.REGISTRY)
+                            assertNonNull(ChromeSharedPreferences.REGISTRY),
+                            assertNonNull(CachedFlagsSharedPreferences.REGISTRY))
                     : null;
 
     public static void initializeKnownRegistries() {

@@ -18,8 +18,8 @@ import java.lang.ref.WeakReference;
  */
 @NullMarked
 public class SessionHelper {
-    private static @Nullable WeakReference<CustomTabsSession> sCurrentSession;
-    private static @Nullable WeakReference<AuthTabSession> sCurrentAuthTabSession;
+    private static @Nullable WeakReference<@Nullable CustomTabsSession> sCurrentSession;
+    private static @Nullable WeakReference<@Nullable AuthTabSession> sCurrentAuthTabSession;
 
     /**
      * @return The current {@link CustomTabsSession} object.

@@ -35,7 +35,7 @@ public abstract class TabObjectLabeller<KeyT> extends TabObjectNotificationUpdat
 
     @Override
     public void showAll() {
-        Map<KeyT, TabCardLabelData> cardLabels = new HashMap<>();
+        Map<KeyT, @Nullable TabCardLabelData> cardLabels = new HashMap<>();
         for (PersistentMessage message : getAllMessages()) {
             if (shouldApply(message)) {
                 cardLabels.put(getKey(message), buildLabelData(message));
@@ -50,7 +50,7 @@ public abstract class TabObjectLabeller<KeyT> extends TabObjectNotificationUpdat
     protected void incrementalShow(PersistentMessage message) {
         if (shouldApply(message)) {
             KeyT key = getKey(message);
-            Map<KeyT, TabCardLabelData> cardLabels =
+            Map<KeyT, @Nullable TabCardLabelData> cardLabels =
                     Collections.singletonMap(key, buildLabelData(message));
             applyLabels(cardLabels);
         }
@@ -60,7 +60,7 @@ public abstract class TabObjectLabeller<KeyT> extends TabObjectNotificationUpdat
     protected void incrementalHide(PersistentMessage message) {
         if (shouldApply(message)) {
             KeyT key = getKey(message);
-            Map<KeyT, TabCardLabelData> cardLabels = Collections.singletonMap(key, null);
+            Map<KeyT, @Nullable TabCardLabelData> cardLabels = Collections.singletonMap(key, null);
             applyLabels(cardLabels);
         }
     }
@@ -87,7 +87,7 @@ public abstract class TabObjectLabeller<KeyT> extends TabObjectNotificationUpdat
      *
      * @param cardLabels Map of identifier keys to {@link TabCardLabelData} to apply.
      */
-    protected abstract void applyLabels(Map<KeyT, TabCardLabelData> cardLabels);
+    protected abstract void applyLabels(Map<KeyT, @Nullable TabCardLabelData> cardLabels);
 
     /** Returns a fetcher for the avatar image if there is one, otherwise null. */
     protected AsyncImageView.@Nullable Factory getAsyncImageFactory(PersistentMessage message) {

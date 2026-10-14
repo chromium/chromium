@@ -96,7 +96,7 @@ public class TabLabeller extends TabObjectLabeller<Integer> {
     }
 
     @Override
-    protected void applyLabels(Map<Integer, TabCardLabelData> cardLabels) {
+    protected void applyLabels(Map<Integer, @Nullable TabCardLabelData> cardLabels) {
         mTabListNotificationHandler.updateTabCardLabels(cardLabels);
     }
 

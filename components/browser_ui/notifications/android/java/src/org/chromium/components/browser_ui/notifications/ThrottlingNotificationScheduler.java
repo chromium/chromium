@@ -74,12 +74,13 @@ public class ThrottlingNotificationScheduler {
     }
 
     /**
-     * Convenient method, use this if nothing else needs to be handled when notification
-     * is actually posted.
+     * Convenient method, use this if nothing else needs to be handled when notification is actually
+     * posted.
+     *
      * @param notificationWrapper Weapper containing the notification to be posted.
      */
     public void addPendingNotification(NotificationWrapper notificationWrapper) {
-        Pair<String, Integer> taskId =
+        Pair<@Nullable String, Integer> taskId =
                 Pair.create(
                         notificationWrapper.getMetadata().tag,
                         Integer.valueOf(notificationWrapper.getMetadata().id));
@@ -104,11 +105,12 @@ public class ThrottlingNotificationScheduler {
 
     /**
      * Convenient method, removes a pending task from the throttler and cancels the notification.
+     *
      * @param tag Tag of the notification.
      * @param id ID of the notification.
      */
     public void cancelPendingNotification(String tag, int id) {
-        Pair<String, Integer> taskId = Pair.create(tag, Integer.valueOf(id));
+        Pair<@Nullable String, Integer> taskId = Pair.create(tag, Integer.valueOf(id));
         removePendingNotificationTask(taskId);
         BaseNotificationManagerProxyFactory.create().cancel(tag, id);
     }

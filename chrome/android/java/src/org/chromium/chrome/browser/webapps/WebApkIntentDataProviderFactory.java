@@ -377,7 +377,7 @@ public class WebApkIntentDataProviderFactory {
             }
         }
 
-        Pair<String, WebApkShareTarget> shareTargetActivityNameAndData =
+        Pair<@Nullable String, @Nullable WebApkShareTarget> shareTargetActivityNameAndData =
                 extractFirstShareTarget(webApkPackageName);
         WebApkShareTarget shareTarget = shareTargetActivityNameAndData.second;
         if (shareDataActivityClassName != null
@@ -717,7 +717,7 @@ public class WebApkIntentDataProviderFactory {
      * Returns the name of activity or activity alias in WebAPK which handles share intents, and the
      * data about the handler.
      */
-    private static Pair<String, WebApkShareTarget> extractFirstShareTarget(
+    private static Pair<@Nullable String, @Nullable WebApkShareTarget> extractFirstShareTarget(
             String webApkPackageName) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);

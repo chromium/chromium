@@ -93,7 +93,7 @@ class BitmapUtils {
      * @param intervalMs The interval between frames (in milliseconds).
      * @return A list of extracted frames.
      */
-    public static Pair<List<Bitmap>, Float> decodeVideoFromFileDescriptor(
+    public static Pair<List<Bitmap>, @Nullable Float> decodeVideoFromFileDescriptor(
             MediaMetadataRetriever retriever,
             FileDescriptor descriptor,
             int width,

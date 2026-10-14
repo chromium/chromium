@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
@@ -76,7 +77,6 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /** Creates a new Tab or retrieves an existing Tab for the CustomTabActivity, and initializes it. */
@@ -142,7 +142,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mCipherFactory = cipherFactory;
 
         mSession = mIntentDataProvider.getSession();
-        mIntent = Objects.requireNonNull(mIntentDataProvider.getIntent());
+        mIntent = assertNonNull(mIntentDataProvider.getIntent());
         mResumeManager = resumeManager;
 
         lifecycleDispatcher.register(this);

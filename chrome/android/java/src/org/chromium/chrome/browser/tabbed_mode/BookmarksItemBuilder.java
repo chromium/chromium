@@ -215,7 +215,7 @@ public class BookmarksItemBuilder implements Destroyable {
     }
 
     private ListItem buildBookmarkFolderParentItem(
-            @StringRes int titleRes, List<BookmarkId> folderIds) {
+            @StringRes int titleRes, List<@Nullable BookmarkId> folderIds) {
         Supplier<List<ListItem>> submenuItemsSupplier =
                 () -> {
                     List<ListItem> items = new ArrayList<>();

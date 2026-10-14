@@ -82,7 +82,7 @@ public class SendTabToSelfTabLabeller implements SendTabToSelfAndroidBridge.Labe
         if (tabs == null) {
             tabs = getTabsFromTabModel();
         }
-        Map<Integer, TabCardLabelData> cardLabels = new HashMap<>();
+        Map<Integer, @Nullable TabCardLabelData> cardLabels = new HashMap<>();
         for (Tab tab : tabs) {
             if (tab == null || tab.isDestroyed() || tab.getUserDataHost() == null) continue;
             // First check the in-memory UserDataHost synchronously. This avoids posting tasks to

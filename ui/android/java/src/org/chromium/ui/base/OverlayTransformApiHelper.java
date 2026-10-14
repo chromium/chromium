@@ -32,7 +32,7 @@ final class OverlayTransformApiHelper
     private static final String TAG = "OverlayTransformAH";
 
     private final WindowAndroid mWindowAndroid;
-    private final WeakReference<Window> mWindow;
+    private final WeakReference<@Nullable Window> mWindow;
     private boolean mBufferTransformListenerAdded;
     private boolean mFrameMetricsListenerAdded;
 

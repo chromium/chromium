@@ -29,7 +29,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         implements View.OnLayoutChangeListener {
     private final Callback<Integer> mOnKeyboardInsetChanged = this::onKeyboardInsetChanged;
 
-    private final WeakReference<Activity> mActivity;
+    private final WeakReference<@Nullable Activity> mActivity;
     private @Nullable LazyOneshotSupplier<MonotonicObservableSupplier<Integer>>
             mLazyKeyboardInsetSupplier;
     private boolean mIsKeyboardShowing;
@@ -41,7 +41,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
      *
      * @param activity A {@link WeakReference} to an {@link Activity}.
      */
-    public ActivityKeyboardVisibilityDelegate(WeakReference<Activity> activity) {
+    public ActivityKeyboardVisibilityDelegate(WeakReference<@Nullable Activity> activity) {
         mActivity = activity;
     }
 

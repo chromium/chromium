@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference;
 /** Mediator class for the no passkeys bottom sheet. */
 @NullMarked
 class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Delegate {
-    private final WeakReference<BottomSheetController> mBottomSheetController;
+    private final WeakReference<@Nullable BottomSheetController> mBottomSheetController;
 
     private @Nullable BottomSheetContent mBottomSheetContent;
     private NoPasskeysBottomSheetCoordinator.@Nullable NativeDelegate mNativeDelegate;
@@ -28,7 +28,7 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
      * @param nativeDelegate A NoPasskeysBottomSheetBridge to interact with the native side.
      */
     NoPasskeysBottomSheetMediator(
-            WeakReference<BottomSheetController> bottomSheetController,
+            WeakReference<@Nullable BottomSheetController> bottomSheetController,
             NoPasskeysBottomSheetCoordinator.NativeDelegate nativeDelegate) {
         mBottomSheetController = bottomSheetController;
         mNativeDelegate = nativeDelegate;

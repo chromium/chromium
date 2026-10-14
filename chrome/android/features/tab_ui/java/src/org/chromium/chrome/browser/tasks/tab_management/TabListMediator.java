@@ -2669,7 +2669,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     @Override
-    public void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData) {
+    public void updateTabCardLabels(Map<Integer, @Nullable TabCardLabelData> labelData) {
         assert mTabListConfig.tabUiType == UiType.TAB
                 : "Tab card labels are only supported for tab card UI type.";
 
@@ -2682,7 +2682,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     @Override
-    public void updateTabGroupCardLabels(Map<Token, TabCardLabelData> labelData) {
+    public void updateTabGroupCardLabels(Map<Token, @Nullable TabCardLabelData> labelData) {
         assert mTabListConfig.tabUiType == UiType.TAB
                 : "Tab card labels are only supported for tab card UI type.";
 

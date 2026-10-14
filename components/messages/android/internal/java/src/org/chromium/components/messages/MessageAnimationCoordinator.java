@@ -32,7 +32,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
      */
     private @Nullable MessageState mCurrentDisplayedMessage;
 
-    private List<MessageState> mCurrentDisplayedMessages = Arrays.asList(null, null);
+    private List<@Nullable MessageState> mCurrentDisplayedMessages = Arrays.asList(null, null);
     private MessageQueueDelegate mMessageQueueDelegate;
     private AnimatorSet mAnimatorSet = new AnimatorSet();
     private @Nullable Animator mFrontAnimator;
@@ -73,7 +73,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
      * @param onFinished Runnable triggered after animation is finished.
      */
     public void updateWithStacking(
-            List<MessageState> candidates, boolean isSuspended, Runnable onFinished) {
+            List<@Nullable MessageState> candidates, boolean isSuspended, Runnable onFinished) {
         if (mMessageQueueDelegate.isDestroyed()) return;
         // Wait until the current animation is done, unless we need to hide them immediately.
         if (mAnimatorSet.isStarted()) {
@@ -202,7 +202,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     }
 
     private void triggerStackingAnimation(
-            List<MessageState> candidates,
+            List<@Nullable MessageState> candidates,
             Runnable onFinished,
             @Nullable Animator frontAnimator,
             @Nullable Animator backAnimator) {
@@ -274,7 +274,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
 
     // Return a list of two messages which should be displayed when stacking animation is enabled.
 
-    List<MessageState> getCurrentDisplayedMessages() {
+    List<@Nullable MessageState> getCurrentDisplayedMessages() {
         return mCurrentDisplayedMessages;
     }
 

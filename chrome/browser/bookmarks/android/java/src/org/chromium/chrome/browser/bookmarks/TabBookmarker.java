@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -115,7 +116,7 @@ public class TabBookmarker {
                 assumeNonNull(mBookmarkModelSupplier.get()).getUserBookmarkIdForTab(currentTab);
         if (bookmarkId == null) {
             addOrEditBookmark(
-                    Collections.singletonList(currentTab),
+                    Collections.singletonList(assertNonNull(currentTab)),
                     BookmarkType.NORMAL,
                     /* fromExplicitTrackUi= */ true);
         } else {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
@@ -25,7 +26,7 @@ public class TabGroupRowViewBinder {
     /** Propagates one key from the model to the view. */
     public static void bind(PropertyModel model, TabGroupRowView view, PropertyKey propertyKey) {
         if (propertyKey == CLUSTER_DATA) {
-            view.updateCornersForClusterData(model.get(CLUSTER_DATA));
+            view.updateCornersForClusterData(assertNonNull(model.get(CLUSTER_DATA)));
         } else if (propertyKey == DISPLAY_AS_SHARED) {
             view.setDisplayAsShared(model.get(DISPLAY_AS_SHARED));
         } else if (propertyKey == COLOR_INDEX) {

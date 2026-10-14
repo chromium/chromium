@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
 /** Delegate for {@link DownloadMessageUiController} to provide chrome layer dependencies. */
 @NullMarked
 public class DownloadMessageUiDelegate implements DownloadMessageUiController.Delegate {
-    private WeakReference<ChromeActivity> mActivity = new WeakReference<>(null);
+    private WeakReference<@Nullable ChromeActivity> mActivity = new WeakReference<>(null);
 
     /** Constructor. */
     public DownloadMessageUiDelegate() {

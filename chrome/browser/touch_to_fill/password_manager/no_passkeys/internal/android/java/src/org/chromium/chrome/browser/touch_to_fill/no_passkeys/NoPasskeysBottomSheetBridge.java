@@ -13,6 +13,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -39,7 +40,7 @@ class NoPasskeysBottomSheetBridge implements NoPasskeysBottomSheetCoordinator.Na
     NoPasskeysBottomSheetBridge(
             long nativeNoPasskeysBottomSheetBridge,
             WeakReference<Context> context,
-            WeakReference<BottomSheetController> bottomSheetController) {
+            WeakReference<@Nullable BottomSheetController> bottomSheetController) {
         mNativeBridge = nativeNoPasskeysBottomSheetBridge;
         mNoPasskeysSheet =
                 new NoPasskeysBottomSheetCoordinator(context, bottomSheetController, this);

@@ -1764,7 +1764,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
         final boolean isLink = (item == Item.SHARE_LINK || item == Item.SHARE_PAGE);
-        final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
+        final Pair<@Nullable Drawable, @Nullable CharSequence> shareInfo =
+                createRecentShareAppInfo(isLink);
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
@@ -1795,7 +1796,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      *
      * @param isLink Whether the item is SHARE_LINK.
      */
-    private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {
+    private static Pair<@Nullable Drawable, @Nullable CharSequence> createRecentShareAppInfo(
+            boolean isLink) {
         return isLink
                 ? ShareHelper.getShareableIconAndNameForText()
                 // Use jpeg as a generic image type to be shared. Most apps accepting jpeg

@@ -145,7 +145,9 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
             SettableNullableObservableSupplier<ChildT> createDerivedNullable(
                     Function<FuncT, @Nullable ChildT> unwrapFunction) {
         return new UnwrapObservableSupplier<>(
-                (NullableObservableSupplier) this, unwrapFunction, /* allowSetToNull= */ true);
+                (NullableObservableSupplier) this,
+                (Function) unwrapFunction,
+                /* allowSetToNull= */ true);
     }
 
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */

@@ -43,7 +43,7 @@ class TransitiveObservableSupplier<
     TransitiveObservableSupplier(
             NullableObservableSupplier<ParentT> parentSupplier,
             Function<ParentT, FuncT> unwrapFunction,
-            ChildT defaultValue,
+            @Nullable ChildT defaultValue,
             boolean allowSetToNull) {
         super(defaultValue, allowSetToNull);
         mParentSupplier = parentSupplier;

@@ -1170,7 +1170,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return The share list item.
      */
     protected ListItem buildShareListItem(boolean showIcon) {
-        Pair<Drawable, CharSequence> directShare = ShareHelper.getShareableIconAndNameForText();
+        Pair<@Nullable Drawable, @Nullable CharSequence> directShare =
+                ShareHelper.getShareableIconAndNameForText();
         if (directShare.first != null) {
             CharSequence directShareTitle = directShare.second;
             if (directShareTitle != null) {

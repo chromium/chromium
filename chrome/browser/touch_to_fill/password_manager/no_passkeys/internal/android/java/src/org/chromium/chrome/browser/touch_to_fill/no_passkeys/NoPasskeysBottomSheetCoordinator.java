@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
@@ -39,7 +40,7 @@ public class NoPasskeysBottomSheetCoordinator {
      */
     public NoPasskeysBottomSheetCoordinator(
             WeakReference<Context> context,
-            WeakReference<BottomSheetController> bottomSheetController,
+            WeakReference<@Nullable BottomSheetController> bottomSheetController,
             NoPasskeysBottomSheetCoordinator.NativeDelegate nativeDelegate) {
         mContext = context;
         mMediator = new NoPasskeysBottomSheetMediator(bottomSheetController, nativeDelegate);

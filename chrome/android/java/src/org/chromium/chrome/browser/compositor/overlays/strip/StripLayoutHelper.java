@@ -5269,12 +5269,12 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData) {
+    public void updateTabCardLabels(Map<Integer, @Nullable TabCardLabelData> labelData) {
         // Not implemented for tablet tab strip.
     }
 
     @Override
-    public void updateTabGroupCardLabels(Map<Token, TabCardLabelData> labelData) {
+    public void updateTabGroupCardLabels(Map<Token, @Nullable TabCardLabelData> labelData) {
         // Not implemented for tablet tab strip.
     }
 

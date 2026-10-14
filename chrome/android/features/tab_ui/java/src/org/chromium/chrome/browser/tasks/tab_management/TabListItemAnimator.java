@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -281,7 +282,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
             endAnimation(newHolder);
         }
 
-        Pair<Animator, Animator> animators =
+        Pair<Animator, @Nullable Animator> animators =
                 buildChangeAnimators(
                         oldHolder,
                         newHolder,
@@ -301,7 +302,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private Pair<Animator, Animator> buildChangeAnimators(
+    private Pair<Animator, @Nullable Animator> buildChangeAnimators(
             ViewHolder oldHolder,
             ViewHolder newHolder,
             float previousTranslationX,

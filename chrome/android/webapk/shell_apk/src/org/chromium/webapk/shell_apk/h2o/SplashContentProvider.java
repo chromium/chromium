@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** ContentProvider for screenshot of splash screen. */
 @NullMarked
 public class SplashContentProvider extends ContentProvider
-        implements ContentProvider.PipeDataWriter<Void> {
+        implements ContentProvider.PipeDataWriter<@Nullable Void> {
     /** Holds value which gets cleared after {@link ExpiringData#CLEAR_DATA_INTERVAL_MS}. */
     private static class ExpiringData {
         /** Time in milliseconds after constructing the object to clear the cached data. */

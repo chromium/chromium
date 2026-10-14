@@ -298,6 +298,11 @@ def main():
         errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
         # Check nullness of wildcard type arguments (e.g. "? extends @Nullable T").
         errorprone_flags += ['-XepOpt:NullAway:HandleWildcardGenerics=true']
+        # Warn when a type variable cannot be inferred (e.g. a @Nullable value
+        # is passed where a non-null type argument was inferred).
+        errorprone_flags += [
+            '-XepOpt:NullAway:WarnOnGenericInferenceFailure=true'
+        ]
         # Treat these the same as constructors.
         # These are in addition to the default list in "DEFAULT_KNOWN_INITIALIZERS":
         # https://github.com/uber/NullAway/blob/d5cb4f1190a96045d85b92c6d119e4595840cc8a/nullaway/src/main/java/com/uber/nullaway/ErrorProneCLIFlagsConfig.java#L128

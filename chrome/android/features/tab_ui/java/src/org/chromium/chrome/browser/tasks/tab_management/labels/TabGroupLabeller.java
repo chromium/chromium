@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
@@ -60,7 +61,7 @@ public class TabGroupLabeller extends TabObjectLabeller<Token> {
     }
 
     @Override
-    protected void applyLabels(Map<Token, TabCardLabelData> cardLabels) {
+    protected void applyLabels(Map<Token, @Nullable TabCardLabelData> cardLabels) {
         mTabListNotificationHandler.updateTabGroupCardLabels(cardLabels);
     }
 }

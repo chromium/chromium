@@ -207,7 +207,9 @@ public class ChromeOriginVerifier extends OriginVerifier {
                 || resultStore.isRelationshipSaved(
                         new Relationship(
                                 packageName,
-                                Arrays.asList(signatureFingerprint),
+                                signatureFingerprint == null
+                                        ? null
+                                        : Arrays.asList(signatureFingerprint),
                                 origin,
                                 relation));
     }

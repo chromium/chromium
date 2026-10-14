@@ -47,7 +47,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * The controller of the SecurePaymentConfirmation UI, which owns the component overall, i.e.,
@@ -143,7 +142,7 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
         if (payeeName == null || payeeName.isEmpty()) {
             storePrimaryText =
                     UrlFormatter.formatOriginForSecurityDisplay(
-                            Objects.requireNonNull(payeeOrigin), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                            assertNonNull(payeeOrigin), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         } else {
             storePrimaryText = payeeName;
             if (payeeOrigin != null) {

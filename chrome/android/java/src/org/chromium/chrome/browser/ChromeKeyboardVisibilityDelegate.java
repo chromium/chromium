@@ -34,7 +34,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
      * @param activity A {@link WeakReference} to an {@link Activity}.
      */
     public ChromeKeyboardVisibilityDelegate(
-            WeakReference<Activity> activity,
+            WeakReference<@Nullable Activity> activity,
             Supplier<@Nullable ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;

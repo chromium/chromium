@@ -147,7 +147,7 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
                 }
                 duration = formatDuration(durationMs);
             }
-            Pair<List<Bitmap>, Float> bitmaps =
+            Pair<List<Bitmap>, @Nullable Float> bitmaps =
                     BitmapUtils.decodeVideoFromFileDescriptor(
                             retriever,
                             afd.getFileDescriptor(),

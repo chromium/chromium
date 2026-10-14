@@ -46,7 +46,7 @@ class StartupDelegateImpl implements StartupController.Delegate {
     // This is only accessed during WebViewChromiumFactoryProvider.initialize() which is guarded by
     // the WebViewFactory lock in the framework, and on the UI thread during startChromium
     // which cannot be called before initialize() has completed.
-    private @Nullable FutureTask<Void> mSetUpResourcesTask;
+    private @Nullable FutureTask<@Nullable Void> mSetUpResourcesTask;
     private @Nullable FactoryStartupTimings mStartupTimings;
 
     StartupDelegateImpl(WebViewDelegate webViewDelegate, Runnable onStartupComplete) {

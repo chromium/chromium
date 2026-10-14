@@ -93,7 +93,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
 
         MessagesMetrics.recordMessageEnqueued(message.getMessageIdentifier());
         // The candidate which will be fully visible. Null if no message will be displayed.
-        List<MessageState> candidates = updateCurrentDisplayed();
+        List<@Nullable MessageState> candidates = updateCurrentDisplayed();
         assert candidates.size() == 2 : "There must be 2 candidates when stacking is enabled.";
         MessageState primaryCandidate = candidates.get(0);
 
@@ -194,7 +194,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      *
      * @return The candidates supposed to be displayed.
      */
-    private List<MessageState> updateCurrentDisplayed() {
+    private List<@Nullable MessageState> updateCurrentDisplayed() {
         var candidates = getNextMessages();
         mAnimationCoordinator.updateWithStacking(
                 candidates, isQueueSuspended(), this::updateCurrentDisplayed);
@@ -238,7 +238,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * be displayed at that position.
      */
     @VisibleForTesting
-    List<MessageState> getNextMessages() {
+    List<@Nullable MessageState> getNextMessages() {
         if (isQueueSuspended()) {
             return Arrays.asList(null, null);
         }

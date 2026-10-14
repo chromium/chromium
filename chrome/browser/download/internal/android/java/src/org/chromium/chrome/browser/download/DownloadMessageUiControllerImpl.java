@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -1208,7 +1209,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             // item.
             mDelegate.openDownloadsPage(
                     getOtrProfileIdFromItems(
-                            itemId == null ? mTrackedItems.values() : List.of(offlineItem)),
+                            itemId == null
+                                    ? mTrackedItems.values()
+                                    : List.of(assertNonNull(offlineItem))),
                     DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
         }
         recordLinkClicked(shouldOpenItem);

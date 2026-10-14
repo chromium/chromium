@@ -56,7 +56,7 @@ public class FileAccessPermissionHelper {
     }
 
     static void requestFileAccessPermissionHelper(
-            WindowAndroid windowAndroid, final Callback<Pair<Boolean, String>> callback) {
+            WindowAndroid windowAndroid, final Callback<Pair<Boolean, @Nullable String>> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 || windowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             callback.onResult(Pair.create(true, null));

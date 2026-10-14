@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelData;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public interface TabListNotificationHandler {
      * @param labelData A map of tab IDs to {@link TabCardLabelData} to update. Can use a null value
      *     to reset.
      */
-    void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData);
+    void updateTabCardLabels(Map<Integer, @Nullable TabCardLabelData> labelData);
 
     /**
      * Update the {@link TabCardLabelData} for tab groups in the tab list.
@@ -36,5 +37,5 @@ public interface TabListNotificationHandler {
      * @param labelData A map of tab group IDs to {@link TabCardLabelData} to update. Can use a null
      *     value to reset.
      */
-    void updateTabGroupCardLabels(Map<Token, TabCardLabelData> labelData);
+    void updateTabGroupCardLabels(Map<Token, @Nullable TabCardLabelData> labelData);
 }

@@ -239,7 +239,8 @@ public class WebsitePermissionsFetcher {
     private class WebsitePermissionFetcherInternal {
         // This map looks up Websites by their origin and embedder and content setting (e.g. allow,
         // block).
-        private final Map<Pair<OriginAndEmbedder, Integer>, Website> mSites = new HashMap<>();
+        private final Map<Pair<OriginAndEmbedder, @Nullable Integer>, Website> mSites =
+                new HashMap<>();
 
         /**
          * Fetches preferences for all sites that have them. TODO(mvanouwerkerk): Add an argument
@@ -420,7 +421,7 @@ public class WebsitePermissionsFetcher {
             WebsiteAddress permissionOrigin = assumeNonNull(WebsiteAddress.create(origin));
             WebsiteAddress permissionEmbedder = WebsiteAddress.create(embedder);
 
-            Pair<OriginAndEmbedder, Integer> key =
+            Pair<OriginAndEmbedder, @Nullable Integer> key =
                     new Pair<>(
                             OriginAndEmbedder.create(permissionOrigin, permissionEmbedder),
                             contentSetting);
