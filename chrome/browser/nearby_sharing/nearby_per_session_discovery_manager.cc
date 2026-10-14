@@ -294,7 +294,9 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
     const base::UnguessableToken& share_target_id,
     SelectShareTargetCallback callback) {
   CHECK(share_target_listener_.is_bound(), base::NotFatalUntil::M160);
-  CHECK(!transfer_update_listener_.is_bound(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/571859094): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!transfer_update_listener_.is_bound());
 
   auto iter = discovered_share_targets_.find(share_target_id);
   bool look_up_share_target_success = iter != discovered_share_targets_.end();
