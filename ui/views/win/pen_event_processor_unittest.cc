@@ -43,8 +43,8 @@ class PenProcessorTest : public ::testing::Test {
 
  private:
   base::win::ScopedWinrtInitializer scoped_winrt_initializer_;
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   views::PenIdHandler::ScopedPenIdStaticsForTesting pen_id_statics_scoper_{
       &GetNullPenDeviceStatics};
 };

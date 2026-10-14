@@ -254,9 +254,9 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
 
   std::vector<KeyboardDevice> keyboards_;
   std::vector<InputDevice> mice_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
   InputControllerEvdev input_controller_{nullptr, nullptr, nullptr};
   base::HistogramTester histogram_tester_;

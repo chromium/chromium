@@ -113,6 +113,7 @@ class WaylandTestBase {
       gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget,
       bool inactive = false);
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;
@@ -136,7 +137,6 @@ class WaylandTestBase {
  private:
   bool initialized_ = false;
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Version of WaylandTestBase that uses parametrised tests (TEST_P).
