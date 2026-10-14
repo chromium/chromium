@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -48,8 +49,10 @@ using MockExecuteModelCallback = base::OnceCallback<void(
 // because heuristic_type() returns the post-processed prediction, after
 // potentially falling back to regex.
 MATCHER(MlTypeEq, "") {
-  return std::get<0>(arg)->local_type_predictions()[static_cast<size_t>(
-             HeuristicSource::kAutofillMachineLearning)] == std::get<1>(arg);
+  return test_api(*std::get<0>(arg))
+             .local_type_predictions()[static_cast<size_t>(
+                 HeuristicSource::kAutofillMachineLearning)] ==
+         std::get<1>(arg);
 }
 
 FieldClassificationModelEncoder::ModelOutput

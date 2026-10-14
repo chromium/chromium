@@ -499,14 +499,6 @@ class AutofillField : public FormFieldData {
     UpdateFieldData(field_data);
   }
 
-#if defined(UNIT_TEST)
-  const std::array<FieldType,
-                   static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
-  local_type_predictions() const {
-    return local_type_predictions_;
-  }
-#endif
-
  private:
   friend class AutofillFieldTestApi;
 

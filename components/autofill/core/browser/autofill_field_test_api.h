@@ -30,6 +30,12 @@ class AutofillFieldTestApi {
     autofill_field_->field_modifiers_ = std::move(modifiers);
   }
 
+  const std::array<FieldType,
+                   static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
+  local_type_predictions() const {
+    return autofill_field_->local_type_predictions_;
+  }
+
  private:
   const raw_ref<AutofillField> autofill_field_;
 };

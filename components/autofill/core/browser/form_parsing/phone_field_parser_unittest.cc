@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -137,7 +138,7 @@ void PhoneFieldParserTest::RunParsingTest(
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 
   if (expect_success) {
-    field_->AddClassificationsForTesting(field_candidates_map_);
+    test_api(*field_).AddClassifications(field_candidates_map_);
     for (size_t i = 0; i < fields.size(); ++i) {
       CheckField(global_ids[i], fields[i].expected_type);
     }
