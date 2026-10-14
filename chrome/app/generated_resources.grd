@@ -10751,6 +10751,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_RECENTLY_VISITED" desc="The label on the organizer panel list section corresponding to recently visited tabs.">
         Recently visited
       </message>
+      <message name="IDS_ORGANIZER_PANEL_CURRENTLY_PLAYING" desc="The description text shown in the organizer panel for a tab or split view that is currently playing audio.">
+        Currently playing
+      </message>
       <message name="IDS_TAB_STRIP_BUTTON_TOOLTIP" desc="The tooltip for the tab strip button.">
         Tab strip
       </message>

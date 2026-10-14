@@ -32,6 +32,7 @@ suite('OrganizerPanelAppTest', () => {
       closeTabSearch: isMac ? 'Close Tab Search' : 'Close tab search',
       collapseAll: isMac ? 'Collapse All' : 'Collapse all',
       createTabGroup: 'Create tab group',
+      currentlyPlaying: 'Currently playing',
       expandAll: isMac ? 'Expand All' : 'Expand all',
       foreignTabsEnabled: false,
       isIncognitoMode: false,

@@ -112,6 +112,7 @@ suite('OpenTabsDelegateTest', () => {
     title: 'Music',
     url: 'https://music.youtube.com',
     lastActiveTimeTicks: {internalValue: 50n},
+    lastActiveElapsedText: '15m ago',
     alertStates: [TabAlertState.kAudioPlaying],
   });
 
@@ -120,6 +121,7 @@ suite('OpenTabsDelegateTest', () => {
     title: 'Muted video',
     url: 'https://www.netflix.com',
     lastActiveTimeTicks: {internalValue: 75n},
+    lastActiveElapsedText: '12m ago',
     alertStates: [TabAlertState.kAudioMuting],
   });
 
@@ -158,6 +160,7 @@ suite('OpenTabsDelegateTest', () => {
     loadTimeData.resetForTesting({
       recentlyVisited: 'Recently visited',
       closeTab: 'Close tab',
+      currentlyPlaying: 'Currently playing',
       oneTab: '1 tab',
       splitView: 'Split view',
       tabCount: '$1 tabs',
@@ -231,8 +234,12 @@ suite('OpenTabsDelegateTest', () => {
     // Audio tabs come first, ordered by MRU within the audio group.
     assertDeepEquals([mutedTab.title], items[0]!.title);
     assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+    assertDeepEquals(
+        [{text: 'Currently playing', matchable: false}], items[0]!.description);
     assertDeepEquals([musicTab.title], items[1]!.title);
     assertEquals(AUDIO_ICON, items[1]!.trailingIcon);
+    assertDeepEquals(
+        [{text: 'Currently playing', matchable: false}], items[1]!.description);
 
     // Remaining tabs keep their MRU order and have no trailing icon.
     assertDeepEquals([youtubeTab.title], items[2]!.title);
@@ -249,6 +256,7 @@ suite('OpenTabsDelegateTest', () => {
       split: true,
       splitId: SPLIT_TOKEN,
       lastActiveTimeTicks: {internalValue: 10n},
+      lastActiveElapsedText: '7m ago',
     });
     const splitTab2 = createTab({
       tabId: SPLIT_TAB_2_ID,
@@ -257,6 +265,7 @@ suite('OpenTabsDelegateTest', () => {
       split: true,
       splitId: SPLIT_TOKEN,
       lastActiveTimeTicks: {internalValue: 20n},
+      lastActiveElapsedText: '3m ago',
       alertStates: [TabAlertState.kAudioPlaying],
     });
 
@@ -269,6 +278,13 @@ suite('OpenTabsDelegateTest', () => {
 
     assertTrue(isSplitTab(items[0]!.data!));
     assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+    assertDeepEquals(
+        [
+          {text: 'Currently playing', matchable: false},
+          {text: SPLIT_TAB_1_TITLE},
+          {text: SPLIT_TAB_2_TITLE},
+        ],
+        items[0]!.description);
     assertDeepEquals([googleTab.title], items[1]!.title);
     assertEquals(undefined, items[1]!.trailingIcon);
   });

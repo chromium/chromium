@@ -278,9 +278,11 @@ export class OpenTabsDelegate implements
     }
 
     const description: OrganizerListSectionItemDescriptionPart[] = [];
-    const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
-    if (elapsedText) {
-      description.push({text: elapsedText, matchable: false});
+    const statusText = hasAudioAlert(item) ?
+        loadTimeData.getString('currentlyPlaying') :
+        getMostRecentTab(item).lastActiveElapsedText;
+    if (statusText) {
+      description.push({text: statusText, matchable: false});
     }
 
     const tabGroup = this.getTabGroupFromItem_(item);
