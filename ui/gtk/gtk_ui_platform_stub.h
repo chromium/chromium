@@ -5,11 +5,12 @@
 #ifndef UI_GTK_GTK_UI_PLATFORM_STUB_H_
 #define UI_GTK_GTK_UI_PLATFORM_STUB_H_
 
+#include "base/component_export.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
 namespace gtk {
 
-class GtkUiPlatformStub : public GtkUiPlatform {
+class COMPONENT_EXPORT(GTK) GtkUiPlatformStub : public GtkUiPlatform {
  public:
   GtkUiPlatformStub();
   GtkUiPlatformStub(const GtkUiPlatformStub&) = delete;

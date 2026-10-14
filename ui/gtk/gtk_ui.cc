@@ -343,6 +343,7 @@ bool GtkUi::Initialize() {
   }
 
   os_settings_provider_ = std::make_unique<OsSettingsProviderGtk>();
+  SelectFileDialogLinuxGtk::EnsureActivationKeyTracking();
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&GtkUi::AddGtkNativeColorMixer,
                           base::Unretained(this)));

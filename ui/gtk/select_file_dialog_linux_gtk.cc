@@ -18,11 +18,14 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -33,9 +36,13 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -51,13 +58,113 @@ namespace gtk {
 
 namespace {
 
-// GTK's internal response IDs use negative integers (eg. GTK_RESPONSE_CANCEL),
-// leaving zero and positive integers for application-defined response IDs. Use
-// zero for the accept response type since GTK will preselect
-// GTK_RESPONSE_ACCEPT as the default button, which should be avoided to prevent
-// an exploit where the user is instructed to hold Enter before the dialog
-// appears.
-constexpr GtkResponseType kResponseTypeAccept = static_cast<GtkResponseType>(0);
+// Accept responses are ignored until the dialog has been shown for at least
+// this long.
+constexpr base::TimeDelta kMinDisplayDuration = base::Milliseconds(500);
+
+class ActivationKeyTracker : public ui::EventHandler, public aura::EnvObserver {
+ public:
+  static ActivationKeyTracker* GetInstance() {
+    static base::NoDestructor<ActivationKeyTracker> instance;
+    return instance.get();
+  }
+
+  ActivationKeyTracker() { EnsureObserving(); }
+
+  // Only ever stored in a NoDestructor, so this never runs. It can't be
+  // `= delete`d because it overrides the base classes' virtual destructors.
+  ~ActivationKeyTracker() override { NOTREACHED(); }
+
+  void EnsureObserving() {
+    if (!observing_ && aura::Env::HasInstance()) {
+      aura::Env::GetInstance()->AddPreTargetHandler(this);
+      aura::Env::GetInstance()->AddObserver(this);
+      observing_ = true;
+    }
+  }
+
+  bool IsActivationKeyDown() const {
+    return is_down_for_testing_.value_or(!pressed_keys_.empty());
+  }
+
+  void WaitForKeyRelease(base::OnceClosure callback) {
+    if (!IsActivationKeyDown()) {
+      std::move(callback).Run();
+      return;
+    }
+    release_callbacks_.push_back(std::move(callback));
+  }
+
+  void SetActivationKeyDownForTesting(bool is_down) {
+    is_down_for_testing_ = is_down;
+    if (!is_down) {
+      NotifyCallbacks();
+    }
+  }
+
+  void ResetForTesting() {
+    is_down_for_testing_.reset();
+    pressed_keys_.clear();
+    release_callbacks_.clear();
+  }
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    if (is_down_for_testing_.has_value()) {
+      return;
+    }
+    if (!IsActivationKey(event->key_code())) {
+      return;
+    }
+    if (event->type() == ui::EventType::kKeyPressed) {
+      pressed_keys_.insert(event->key_code());
+    } else if (event->type() == ui::EventType::kKeyReleased) {
+      pressed_keys_.erase(event->key_code());
+      if (pressed_keys_.empty()) {
+        NotifyCallbacks();
+      }
+    }
+  }
+
+  void OnCancelMode(ui::CancelModeEvent* event) override {
+    if (is_down_for_testing_.has_value()) {
+      return;
+    }
+    pressed_keys_.clear();
+    NotifyCallbacks();
+  }
+
+  // aura::EnvObserver:
+  void OnWillDestroyEnv() override {
+    if (observing_ && aura::Env::HasInstance()) {
+      aura::Env::GetInstance()->RemovePreTargetHandler(this);
+      aura::Env::GetInstance()->RemoveObserver(this);
+    }
+    observing_ = false;
+    pressed_keys_.clear();
+    NotifyCallbacks();
+  }
+
+ private:
+  static bool IsActivationKey(ui::KeyboardCode key_code) {
+    return key_code == ui::VKEY_RETURN || key_code == ui::VKEY_SPACE;
+  }
+
+  void NotifyCallbacks() {
+    auto callbacks = std::move(release_callbacks_);
+    release_callbacks_.clear();
+    for (auto& cb : callbacks) {
+      if (cb) {
+        std::move(cb).Run();
+      }
+    }
+  }
+
+  bool observing_ = false;
+  base::flat_set<ui::KeyboardCode> pressed_keys_;
+  std::vector<base::OnceClosure> release_callbacks_;
+  std::optional<bool> is_down_for_testing_;
+};
 
 // TODO(crbug.com/41469294): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
@@ -227,9 +334,16 @@ SelectFileDialogLinuxGtk::SelectFileDialogLinuxGtk(
     Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy,
     GtkUiPlatform* platform)
-    : SelectFileDialogLinux(listener, std::move(policy)), platform_(platform) {}
+    : SelectFileDialogLinux(listener, std::move(policy)), platform_(platform) {
+  EnsureActivationKeyTracking();
+}
 
 SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
+  if (pending_dialog_ && pending_dialog_->owning_window) {
+    pending_dialog_->owning_window->RemoveObserver(this);
+    pending_dialog_.reset();
+  }
+
   // `OnFileChooserDestroy()` mutates `dialogs_`, so make a copy to avoid
   // modifying it during iteration.
   std::vector<GtkWidget*> dialogs;
@@ -251,8 +365,36 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
   CHECK(dialogs_.empty());
 }
 
+// static
+void SelectFileDialogLinuxGtk::EnsureActivationKeyTracking() {
+  ActivationKeyTracker::GetInstance()->EnsureObserving();
+}
+
+// static
+void SelectFileDialogLinuxGtk::SetActivationKeyDownForTesting(bool is_down) {
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(is_down);
+}
+
+// static
+void SelectFileDialogLinuxGtk::ResetForTesting() {
+  ActivationKeyTracker::GetInstance()->ResetForTesting();
+}
+
+// static
+void SelectFileDialogLinuxGtk::DispatchKeyEventForTesting(ui::KeyEvent* event) {
+  ActivationKeyTracker::GetInstance()->OnKeyEvent(event);
+}
+
+// static
+void SelectFileDialogLinuxGtk::DispatchCancelModeForTesting() {
+  ActivationKeyTracker::GetInstance()->OnCancelMode(nullptr);
+}
+
 bool SelectFileDialogLinuxGtk::IsRunning(
     gfx::NativeWindow parent_window) const {
+  if (pending_dialog_ && pending_dialog_->owning_window == parent_window) {
+    return true;
+  }
   return std::any_of(dialogs_.begin(), dialogs_.end(),
                      [=](const std::pair<GtkWidget*, DialogState>& pair) {
                        return pair.second.parent == parent_window;
@@ -264,6 +406,15 @@ bool SelectFileDialogLinuxGtk::HasMultipleFileTypeChoicesImpl() {
 }
 
 void SelectFileDialogLinuxGtk::OnWindowDestroying(aura::Window* window) {
+  if (pending_dialog_ && pending_dialog_->owning_window == window) {
+    window->RemoveObserver(this);
+    pending_dialog_.reset();
+    if (listener_) {
+      listener_->FileSelectionCanceled();
+    }
+    return;
+  }
+
   // Remove the |parent| property associated with the |dialog|.
   for (auto& pair : dialogs_) {
     GtkWidget* dialog = pair.first;
@@ -277,6 +428,21 @@ void SelectFileDialogLinuxGtk::OnWindowDestroying(aura::Window* window) {
   }
 }
 
+void SelectFileDialogLinuxGtk::ShowPendingDialog() {
+  if (!pending_dialog_) {
+    return;
+  }
+  auto pending = std::move(*pending_dialog_);
+  pending_dialog_.reset();
+  if (pending.owning_window) {
+    pending.owning_window->RemoveObserver(this);
+  }
+  SelectFileImpl(pending.type, pending.title, pending.default_path,
+                 pending.file_types ? &pending.file_types.value() : nullptr,
+                 pending.file_type_index, pending.default_extension,
+                 pending.owning_window, nullptr);
+}
+
 // We ignore |default_extension|.
 void SelectFileDialogLinuxGtk::SelectFileImpl(
     Type type,
@@ -287,6 +453,8 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
     const GURL* caller) {
+  EnsureActivationKeyTracking();
+
   set_type(type);
 
   std::string title_string = base::UTF16ToUTF8(title);
@@ -294,6 +462,24 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
   set_file_type_index(file_type_index);
   if (file_types)
     set_file_types(*file_types);
+
+  if (ActivationKeyTracker::GetInstance()->IsActivationKeyDown()) {
+    if (owning_window) {
+      owning_window->AddObserver(this);
+    }
+    pending_dialog_ = PendingDialog{
+        type,
+        title,
+        default_path,
+        file_types ? std::make_optional(*file_types) : std::nullopt,
+        file_type_index,
+        default_extension,
+        owning_window};
+    ActivationKeyTracker::GetInstance()->WaitForKeyRelease(
+        base::BindOnce(&SelectFileDialogLinuxGtk::ShowPendingDialog,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
 
   GtkWidget* dialog = nullptr;
   std::vector<ScopedGSignal> signals;
@@ -358,6 +544,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
   DialogState state(std::move(signals), owning_window,
                     std::move(reenable_input_events));
   state.preview_widget = preview;
+  state.show_time = base::TimeTicks::Now();
   dialogs_[dialog] = std::move(state);
 
   if (!GtkCheckVersion(4))
@@ -463,8 +650,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenHelper(
     gfx::NativeWindow parent) {
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
-      GTK_RESPONSE_CANCEL, GetOpenLabel(), kResponseTypeAccept);
-  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_CANCEL);
+      GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent, platform_);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
@@ -504,8 +690,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
-      kResponseTypeAccept);
-  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_CANCEL);
+      GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent, platform_);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
   if (type == SELECT_UPLOAD_FOLDER || type == SELECT_EXISTING_FOLDER)
@@ -563,7 +748,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSaveAsDialog(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, GetSaveLabel(),
-      kResponseTypeAccept);
+      GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent, platform_);
 
   AddFilters(GTK_FILE_CHOOSER(dialog));
@@ -600,9 +785,23 @@ bool SelectFileDialogLinuxGtk::IsCancelResponse(gint response_id) {
   if (is_cancel)
     return true;
 
-  DCHECK(response_id == GTK_RESPONSE_ACCEPT ||
-         response_id == kResponseTypeAccept);
+  CHECK_EQ(response_id, GTK_RESPONSE_ACCEPT);
   return false;
+}
+
+bool SelectFileDialogLinuxGtk::IsAcceptResponseAllowed(GtkWidget* dialog,
+                                                       int response_id) {
+  if (IsCancelResponse(response_id)) {
+    return true;
+  }
+  auto it = dialogs_.find(dialog);
+  if (it == dialogs_.end()) {
+    return false;
+  }
+  if (base::TimeTicks::Now() - it->second.show_time < kMinDisplayDuration) {
+    return false;
+  }
+  return true;
 }
 
 void SelectFileDialogLinuxGtk::SelectSingleFileHelper(GtkWidget* dialog,
@@ -610,6 +809,10 @@ void SelectFileDialogLinuxGtk::SelectSingleFileHelper(GtkWidget* dialog,
                                                       bool allow_folder) {
   if (IsCancelResponse(response_id)) {
     FileNotSelected(dialog);
+    return;
+  }
+
+  if (!IsAcceptResponseAllowed(dialog, response_id)) {
     return;
   }
 
@@ -648,6 +851,10 @@ void SelectFileDialogLinuxGtk::OnSelectMultiFileDialogResponse(
     int response_id) {
   if (IsCancelResponse(response_id)) {
     FileNotSelected(dialog);
+    return;
+  }
+
+  if (!IsAcceptResponseAllowed(dialog, response_id)) {
     return;
   }
 
