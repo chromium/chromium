@@ -9577,7 +9577,7 @@
   {
     "name": "tab-storage-sqlite-prototype",
     "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "tab-strip-declutter",
