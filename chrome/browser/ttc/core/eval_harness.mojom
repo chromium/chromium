@@ -1,0 +1,70 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ttc.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Status of an interactive test turn.
+enum TurnStatus {
+  kComplete,
+  kError,
+  kTimeout,
+};
+
+// Represents a tool call executed during an interactive test turn.
+struct TurnToolCall {
+  string name;
+  mojo_base.mojom.Value arguments;
+};
+
+// Consolidated results of an interactive test turn.
+struct TurnResult {
+  TurnStatus status;
+  // Standard error code from components/ttc/app/public/error_codes.h (0 if success).
+  int32 error_code;
+  // Tool calls invoked during this turn.
+  array<TurnToolCall> tool_calls;
+  // Model output transcription.
+  string transcription;
+  // User input transcription.
+  string input_transcription;
+  // Error message if the turn failed or timed out.
+  string? error_message;
+};
+
+// Factory for creating a HarnessPageHandler.
+interface HarnessPageHandlerFactory {
+  // The WebUI calls this method when the eval harness page is first initialized.
+  CreatePageHandler(pending_receiver<HarnessPageHandler> handler,
+                    pending_remote<HarnessPage> page);
+};
+
+// Implemented by browser C++. Called by the WebUI evaluation harness.
+interface HarnessPageHandler {
+  // Starts a TTC session if one is not already active. Returns false if a
+  // session is already in progress or if the service is disabled.
+  StartSession() => (bool success);
+
+  // Closes the active session and tears down the harness.
+  CloseSession();
+
+  // Executes an automated text turn, observing the session lifecycle and
+  // returning the consolidated TurnResult.
+  SendText(string text) => (TurnResult result);
+
+  // Executes an automated audio turn with raw 16kHz 16-bit mono Little-Endian
+  // PCM audio samples, observing the session lifecycle and returning the
+  // consolidated TurnResult.
+  SendAudio(array<uint8> pcm16_bytes) => (TurnResult result);
+};
+
+// Implemented by the WebUI evaluation harness (TypeScript). Called by browser C++.
+interface HarnessPage {
+  // Signals that the model has started generating an interactive response turn.
+  OnModelTurnStarted();
+
+  // Signals that the model has completed generating an interactive response turn.
+  OnModelTurnEnded();
+};

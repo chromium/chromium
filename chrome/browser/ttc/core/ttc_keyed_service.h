@@ -13,8 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ttc/core/buildflags.h"
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+#include "chrome/browser/ttc/core/eval_harness.mojom-forward.h"
+#endif
 #include "chrome/browser/ttc/core/states.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;
 
@@ -27,6 +33,9 @@ namespace ttc {
 class Conversation;
 class SessionController;
 class SessionControllerImpl;
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+class HarnessPageHandler;
+#endif
 class TtcActorUiStateManager;
 
 // SupportsUserData lets platform-specific bridges (e.g. the Android JNI
@@ -56,11 +65,24 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
 
   ServiceState GetState() const;
 
+  // Starts a new session. Caller must ensure IsEnabled() is true and no session
+  // is currently active.
   void StartSession();
 
   // Ends the active session. After this call, session_controller() is nullptr.
   // This is a no-op if no session is currently in progress.
   void EndSession();
+
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+  // Binds the WebUI evaluation harness page Mojo interface.
+  void BindHarnessPage(
+      mojo::PendingReceiver<mojom::HarnessPageHandler> receiver,
+      mojo::PendingRemote<mojom::HarnessPage> page);
+
+  HarnessPageHandler* harness_page_handler() {
+    return harness_page_handler_.get();
+  }
+#endif
 
   base::CallbackListSubscription RegisterStateChangedCallback(
       base::RepeatingCallback<void(ServiceState)> callback);
@@ -89,6 +111,9 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // it, as do the actor tasks created during a session.
   std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;
   std::unique_ptr<SessionController> session_controller_;
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+  std::unique_ptr<HarnessPageHandler> harness_page_handler_;
+#endif
 
   base::RepeatingCallbackList<void(ServiceState)> state_changed_callbacks_;
 

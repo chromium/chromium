@@ -15,6 +15,8 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/buildflags.h"
+#include "chrome/browser/ttc/core/switches.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
@@ -43,6 +45,11 @@ AiOverlayDialogUntrustedUIConfig::AiOverlayDialogUntrustedUIConfig()
 
 bool AiOverlayDialogUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kAiOverlayDialogTestMode) ||
+      command_line->HasSwitch(ttc::switches::kEnableTtcTestApi)) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
          glic::GlicEnabling::IsProfileEligible(
              Profile::FromBrowserContext(browser_context));
@@ -80,10 +87,20 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->AddResourcePath(
       "notes", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_NOTES_NOTES_HTML);
 
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  const bool enable_test_api =
+      command_line->HasSwitch(::switches::kAiOverlayDialogTestMode) ||
+      command_line->HasSwitch(ttc::switches::kEnableTtcTestApi);
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+  if (enable_test_api) {
+    html_source->AddResourcePath(
+        "eval", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_EVAL_EVAL_HTML);
+    html_source->AddResourcePath(
+        "eval.html", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_EVAL_EVAL_HTML);
+  }
+#endif
   html_source->AddBoolean("isAndroidBackend", BUILDFLAG(IS_ANDROID));
-  html_source->AddBoolean("enableTtcTestApi",
-                          base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              switches::kAiOverlayDialogTestMode));
+  html_source->AddBoolean("enableTtcTestApi", enable_test_api);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->OverrideContentSecurityPolicy(
@@ -103,9 +120,8 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
       "connect-src 'self' wss://generativelanguage.googleapis.com;");
 #endif
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
   GURL ttc_bundle_url =
-      GURL(command_line->GetSwitchValueASCII(switches::kTtcBundleUrl));
+      GURL(command_line->GetSwitchValueASCII(::switches::kTtcBundleUrl));
   if (ttc_bundle_url.is_valid()) {
     // Sources that are needed however the bundle is served.
     static constexpr std::string_view kCommonMediaSrc =

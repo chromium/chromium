@@ -2,7 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/ozone.gni")
+import("//chrome/browser/ttc/core/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_TTC_WEBUI=$enable_ttc_webui" ]
+}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -19,6 +27,14 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+if (enable_ttc_webui) {
+  mojom("mojo_bindings") {
+    sources = [ "eval_harness.mojom" ]
+    public_deps = [ "//mojo/public/mojom/base" ]
+    webui_module_path = "/"
+  }
+}
+
 source_set("core") {
   public = [
     "entrypoint_controller.h",
@@ -28,12 +44,14 @@ source_set("core") {
     "session_view.h",
     "session_view_delegate.h",
     "states.h",
+    "switches.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
     "ttc_page_context_monitor.h",
     "voice_focused_contents_tracker.h",
   ]
   public_deps = [
+    ":buildflags",
     ":features",
     "//base",
     "//chrome/browser/optimization_guide",
@@ -53,6 +71,13 @@ source_set("core") {
     "//ui/base/unowned_user_data",
     "//url",
   ]
+  if (enable_ttc_webui) {
+    public += [
+      "harness_page_handler.h",
+      "ttc_eval_harness.h",
+    ]
+    public_deps += [ ":mojo_bindings" ]
+  }
 }
 
 source_set("impl") {
@@ -76,6 +101,14 @@ source_set("impl") {
     "ttc_page_context_monitor.cc",
     "voice_focused_contents_tracker.cc",
   ]
+  if (enable_ttc_webui) {
+    sources += [
+      "harness_page_handler.cc",
+      "harness_page_handler.h",
+      "ttc_eval_harness.cc",
+      "ttc_eval_harness.h",
+    ]
+  }
   public_deps = [
     ":core",
     "//chrome/browser/actor",
@@ -163,6 +196,9 @@ source_set("unit_tests") {
     "session_journal_unittest.cc",
     "ttc_keyed_service_unittest.cc",
   ]
+  if (enable_ttc_webui) {
+    sources += [ "harness_page_handler_unittest.cc" ]
+  }
   deps = [
     ":core",
     ":impl",

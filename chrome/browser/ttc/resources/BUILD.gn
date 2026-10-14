@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//chrome/browser/ttc/core/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
@@ -67,6 +68,19 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom-webui.ts",
     "$root_gen_dir/third_party/blink/public/mojom/dom/dom_node_id.mojom-webui.ts",
   ]
+
+  if (enable_ttc_webui) {
+    static_files += [ "eval/eval.html" ]
+    ts_files += [
+      "eval/eval_app.ts",
+      "eval/eval_proxy.ts",
+      "eval/ttc_eval_api.ts",
+    ]
+    mojo_files_deps +=
+        [ "//chrome/browser/ttc/core:mojo_bindings_ts__generator" ]
+    mojo_files +=
+        [ "$root_gen_dir/chrome/browser/ttc/core/eval_harness.mojom-webui.ts" ]
+  }
 
   ts_composite = true
 

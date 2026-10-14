@@ -920,7 +920,7 @@
     "includes": [5350],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/ttc/resources/resources.grd": {
-    "META": {"sizes": {"includes": [30]}},
+    "META": {"sizes": {"includes": [50]}},
     "includes": [5370],
   },
   # END chrome/ WebUI resources section
