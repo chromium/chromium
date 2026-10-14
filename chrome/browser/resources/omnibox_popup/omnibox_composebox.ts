@@ -107,7 +107,15 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       isLensSearchEligible_: {type: Boolean},
       askGComposeboxPlaceholderEnabled_: {type: Boolean},
       baseSearchboxLayoutMode_: {type: String},
+      energyEffectAnimationEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
       hasPermissionPrompt_: {
+        type: Boolean,
+        reflect: true,
+      },
+      webuiShadowEnabled: {
         type: Boolean,
         reflect: true,
       },
@@ -119,7 +127,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   accessor enableCarouselScrolling: boolean = false;
   override accessor animationState: GlowAnimationState =
       GlowAnimationState.NONE;
-  // Host-independent configuration; `closeOnEscape` is set by the host page.
+  // Host-independent configuration; `closeOnEscape` and `webuiShadowEnabled`
+  // are set by the host page.
   override accessor searchboxNextEnabled: boolean = true;
   override accessor composeboxNoFlickerSuggestionsFix: boolean = true;
   override accessor disableCaretColorAnimation: boolean =
@@ -154,8 +163,16 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       getLoadTimeBoolean('askGComposeboxPlaceholderEnabled', false);
   protected accessor baseSearchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
+  // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is
+  // intentional. This is to align the gating properties for energy effects
+  // across all surfaces (= Nextbox, Omnibox, and Realbox).
+  protected accessor energyEffectAnimationEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
   // Set while the voice search permission prompt is showing.
   protected accessor hasPermissionPrompt_: boolean = false;
+  // When true, this element paints the popup's background, rounded corners and
+  // drop shadow instead of the Views frame.
+  accessor webuiShadowEnabled: boolean = false;
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();

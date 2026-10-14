@@ -43,6 +43,7 @@ suite('AimAppTest', function() {
       contextButtonShapeIsOblong: false,
       webuiOmniboxSimplificationEnabled: false,
       webuiOmniboxFullPopupEnabled: false,
+      omniboxAimWebUIShadowEnabled: false,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       contextualMenuUsePecApi: false,
@@ -511,6 +512,7 @@ suite('AimAppTest', function() {
       webuiOmniboxSimplificationEnabled: true,
       webuiOmniboxFullPopupEnabled: true,
       voiceSearchCoherenceComposeboxesEnabled: true,
+      omniboxAimWebUIShadowEnabled: true,
     });
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
@@ -541,15 +543,25 @@ suite('AimAppTest', function() {
 
     // Passed down by the host, which knows which popup it is.
     assertTrue(composebox.closeOnEscape);
+    assertTrue(composebox.webuiShadowEnabled);
+    assertTrue(composebox.hasAttribute('webui-shadow-enabled'));
+    // The page root advertises it too, for
+    // omnibox_popup_document_style.css.
+    assertTrue(app.hasAttribute('webui-shadow-enabled_'));
   });
 
-  test('StandalonePopupDoesNotCloseOnEscape', async () => {
-    // Default setup: webuiOmniboxFullPopupEnabled is false.
+  test('StandalonePopupKeepsEscapeAndShadowWithTheHost', async () => {
+    // Default setup: webuiOmniboxFullPopupEnabled and
+    // omniboxAimWebUIShadowEnabled are false.
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
     await microtasksFinished();
 
-    assertFalse(app.$.composebox.closeOnEscape);
+    const composebox = app.$.composebox;
+    assertFalse(composebox.closeOnEscape);
+    assertFalse(composebox.webuiShadowEnabled);
+    assertFalse(composebox.hasAttribute('webui-shadow-enabled'));
+    assertFalse(app.hasAttribute('webui-shadow-enabled_'));
   });
 
   test('ResetsSubmittingOnClose', async function() {

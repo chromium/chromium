@@ -9,13 +9,12 @@ import type {OmniboxAimAppElement} from './aim_app.js';
 export function getHtml(this: OmniboxAimAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="content">
-  <cr-omnibox-composebox id="composebox"
-      .closeOnEscape="${this.webuiOmniboxFullPopupEnabled_}"
-      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-      @close-composebox="${this.onCloseComposebox_}">
-  </cr-omnibox-composebox>
-</div>
+<cr-omnibox-composebox id="composebox"
+    .closeOnEscape="${this.webuiOmniboxFullPopupEnabled_}"
+    .webuiShadowEnabled="${this.webuiShadowEnabled_}"
+    @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+    @close-composebox="${this.onCloseComposebox_}">
+</cr-omnibox-composebox>
 <!--_html_template_end_-->`;
   // clang-format on
 }
