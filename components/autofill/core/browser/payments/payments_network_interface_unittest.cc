@@ -503,13 +503,17 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
   StartGettingUnmaskDetails();
   IssueOAuthToken();
-  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
-                 "{ \"offer_fido_opt_in\": \"false\", "
-                 "\"authentication_method\": \"CVC\" }");
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"offer_fido_opt_in\": \"false\", "
+      "\"authentication_method\": \"CVC\", "
+      "\"verified_instrument_ids\": [\"12345\", \"9223372036854775807\"] }");
   EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
   EXPECT_FALSE(unmask_details()->server_denotes_fido_eligible_but_not_opted_in);
   EXPECT_EQ(unmask_details()->unmask_auth_method,
             PaymentsAutofillClient::UnmaskAuthMethod::kCvc);
+  EXPECT_THAT(unmask_details()->verified_instrument_ids,
+              testing::UnorderedElementsAre(12345, 9223372036854775807));
 }
 
 TEST_F(PaymentsNetworkInterfaceTest,

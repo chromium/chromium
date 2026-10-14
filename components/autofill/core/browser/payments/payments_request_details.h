@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -48,6 +49,9 @@ struct UnmaskDetails {
   base::DictValue fido_request_options;
   // Set of credit cards ids that are eligible for FIDO Authentication.
   std::set<std::string> fido_eligible_card_ids;
+  // Set of card instrument IDs that have already been CVC-verified on this
+  // device.
+  base::flat_set<int64_t> verified_instrument_ids;
 };
 
 // A collection of the information required to make a credit card unmask

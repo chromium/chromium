@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -85,6 +88,18 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::DictValue& response) {
   if (fido_eligible_card_ids) {
     for (const base::Value& result : *fido_eligible_card_ids) {
       unmask_details_.fido_eligible_card_ids.insert(result.GetString());
+    }
+  }
+
+  const auto* verified_instrument_ids =
+      response.FindList("verified_instrument_ids");
+  if (verified_instrument_ids) {
+    for (const base::Value& result : *verified_instrument_ids) {
+      int64_t instrument_id;
+      if (result.is_string() &&
+          base::StringToInt64(result.GetString(), &instrument_id)) {
+        unmask_details_.verified_instrument_ids.insert(instrument_id);
+      }
     }
   }
 }

@@ -24,6 +24,7 @@ UnmaskDetails& UnmaskDetails::operator=(const UnmaskDetails& other) {
     fido_request_options = other.fido_request_options.Clone();
   }
   fido_eligible_card_ids = other.fido_eligible_card_ids;
+  verified_instrument_ids = other.verified_instrument_ids;
   return *this;
 }
 
