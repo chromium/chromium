@@ -54,7 +54,10 @@ android_library_factory("factory_java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/ids.xml" ]
+  sources = [
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+  ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",
