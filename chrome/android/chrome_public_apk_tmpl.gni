@@ -114,9 +114,6 @@ template("split_manifest_template") {
 #     the final target (e.g. [ ":libchrome" ]).
 #   is_trichrome: Indicates this target relies on a trichrome static library
 #     target and can only run on Android P+.
-#   png_to_webp: Optional. If true, convert image resources to webp format.
-#     requires Android K+, since these were not supported by Android properly
-#     before 4.3.0.
 #
 #   Plus all other variables accepted by android_apk() or
 #   android_app_bundle_module(), depending on the target type.
@@ -319,12 +316,6 @@ template("chrome_common_apk_or_module_tmpl") {
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
 
     if (!is_java_debug) {
-      # TODO(crbug.com/41475795): Update test goldens with webp versions of
-      # images.
-      if (!_is_test) {
-        png_to_webp = true
-      }
-
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/proguard/main.flags" ]
       if (_is_test) {

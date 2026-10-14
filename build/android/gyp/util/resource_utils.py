@@ -14,7 +14,6 @@ import tempfile
 import zipfile
 
 from util import build_utils
-from util import parallel
 import action_helpers
 import zip_helpers
 
@@ -857,39 +856,6 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
     version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
     package_name = re.search(r'package.*?="(.*?)"', output).group(1)
     return version_code, version_name, package_name
-
-
-def _ExtractSingleDep(z, deps_dir):
-    subdirname = z.replace(os.path.sep, '_')
-    subdir = os.path.join(deps_dir, subdirname)
-    build_utils.ExtractAll(z, path=subdir)
-    return subdir
-
-
-def ExtractDeps(dep_zips, deps_dir):
-    """Extract a list of resource dependency zip files.
-
-    Args:
-       dep_zips: A list of zip file paths, each one will be extracted to
-         a subdirectory of |deps_dir|, named after the zip file's path (e.g.
-         '/some/path/foo.zip' -> '{deps_dir}/some_path_foo/').
-      deps_dir: Top-level extraction directory.
-    Returns:
-      The list of all sub-directory paths, relative to |deps_dir|.
-    Raises:
-      Exception: If a sub-directory already exists with the same name before
-        extraction.
-    """
-    seen_subdirs = set()
-    for z in dep_zips:
-        subdirname = z.replace(os.path.sep, '_')
-        subdir = os.path.join(deps_dir, subdirname)
-        if subdirname in seen_subdirs or os.path.exists(subdir):
-            raise Exception('Resource zip name conflict: ' + subdirname)
-        seen_subdirs.add(subdirname)
-
-    arg_tuples = [(z, deps_dir) for z in dep_zips]
-    return list(parallel.BulkForkAndCall(_ExtractSingleDep, arg_tuples))
 
 
 class _ResourceBuildContext:

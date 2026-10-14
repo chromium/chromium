@@ -12,17 +12,11 @@ import zipfile
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 )
-from util import build_utils
-from util import resources_parser
-
-# Required because the following import needs build/android/gyp in the
-# Python path to import util.build_utils.
-_BUILD_ANDROID_GYP_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir)
-)
-sys.path.insert(1, _BUILD_ANDROID_GYP_ROOT)
-
-import resource_utils  # noqa: E402
+import compile_resources  # noqa: E402
+import dist_aar  # noqa: E402
+from util import build_utils  # noqa: E402
+from util import resource_utils  # noqa: E402
+from util import resources_parser  # noqa: E402
 
 
 _TEST_XML_INPUT_1 = '''<?xml version="1.0" encoding="utf-8"?>
@@ -371,17 +365,6 @@ class ResourceUtilsTest(unittest.TestCase):
                 self.assertIn('org/chromium/test/R.java', names)
                 self.assertIn('org/chromium/extra/R.java', names)
 
-    def test_ExtractDeps_Conflict(self):
-        with build_utils.TempDir() as tmp_dir:
-            deps_dir = os.path.join(tmp_dir, 'deps')
-            os.mkdir(deps_dir)
-            with self.assertRaisesRegex(
-                Exception, 'Resource zip name conflict'
-            ):
-                resource_utils.ExtractDeps(
-                    ['foo/bar.zip', 'foo_bar.zip'], deps_dir
-                )
-
     def test_BuildContext_NoSrcjarDir(self):
         with resource_utils.BuildContext() as build:
             self.assertFalse(hasattr(build, 'srcjar_dir'))
@@ -427,6 +410,68 @@ class ResourceUtilsTest(unittest.TestCase):
                 ],
                 lines,
             )
+
+    def test_OrigPathFromFlatName(self):
+        self.assertEqual(
+            'values/strings.xml',
+            compile_resources._OrigPathFromFlatName('values_strings.arsc.flat'),
+        )
+        self.assertEqual(
+            'values-en-rUS/0_strings.xml',
+            compile_resources._OrigPathFromFlatName(
+                'values-en-rUS_0_strings.arsc.flat'
+            ),
+        )
+        self.assertEqual(
+            'drawable-hdpi/btn_close',
+            compile_resources._OrigPathFromFlatName(
+                'drawable-hdpi_btn_close.flat'
+            ),
+        )
+        self.assertEqual(
+            'drawable-hdpi/popup_bg.9.png',
+            compile_resources._OrigPathFromFlatName(
+                'drawable-hdpi_popup_bg.9.png.flat'
+            ),
+        )
+        self.assertEqual(
+            'raw/foo.arsc',
+            compile_resources._OrigPathFromFlatName('raw_foo.arsc.flat'),
+        )
+
+    def test_DistAarAddResources(self):
+        with build_utils.TempDir() as tmp_dir:
+            res1_values = os.path.join(tmp_dir, 'res1', 'values')
+            res1_drawable = os.path.join(tmp_dir, 'res1', 'drawable-hdpi')
+            res2_values = os.path.join(tmp_dir, 'res2', 'values')
+            os.makedirs(res1_values)
+            os.makedirs(res1_drawable)
+            os.makedirs(res2_values)
+            s1 = _CreateTestFile(res1_values, 'strings.xml', '<resources/>')
+            s2 = _CreateTestFile(res2_values, 'strings.xml', '<resources/>')
+            icon = _CreateTestFile(res1_drawable, 'icon.png', 'pngdata')
+            sources_file = _CreateTestFile(
+                tmp_dir,
+                'target.res.sources',
+                '\n'.join([s1, s2, icon]),
+            )
+            aar_path = os.path.join(tmp_dir, 'out.aar')
+            with zipfile.ZipFile(aar_path, 'w') as z:
+                extra_inputs = dist_aar._AddResources(
+                    z, [sources_file], None, None
+                )
+            self.assertEqual([s1, s2, icon], extra_inputs)
+            with zipfile.ZipFile(aar_path) as z:
+                self.assertEqual(
+                    sorted(
+                        [
+                            'res/drawable-hdpi/icon.png',
+                            'res/values/strings_0.xml',
+                            'res/values/strings_0_1.xml',
+                        ]
+                    ),
+                    sorted(z.namelist()),
+                )
 
 
 if __name__ == '__main__':

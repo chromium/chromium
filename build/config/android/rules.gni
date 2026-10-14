@@ -550,13 +550,17 @@ if (!is_robolectric && enable_java_templates) {
     forward_variables_from(invoker, [ "testonly" ])
     _build_config = "$target_gen_dir/${target_name}.build_config.json"
     _rtxt_out_path = "$target_gen_dir/${target_name}.R.txt"
+    _compiled_resources_zip =
+        get_path_info(invoker.generated_resources_zip, "dir") +
+        "/${target_name}.compiled.resources.zip"
 
     # Writes a .params.json via write_file(), but does not define a target.
     write_build_config("unused") {
       forward_variables_from(invoker, [ "resource_overlay" ])
 
       build_config = _build_config
-      resources_zip = invoker.generated_resources_zip
+      resources_zip = _compiled_resources_zip
+      uncompiled_resources_zip = invoker.generated_resources_zip
       type = "android_resources"
       if (defined(invoker.deps)) {
         possible_config_deps = invoker.deps
@@ -567,13 +571,23 @@ if (!is_robolectric && enable_java_templates) {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
       public_deps = [ invoker.generating_target ]
-      inputs = [ invoker.generated_resources_zip ]
-      outputs = [ _rtxt_out_path ]
-      script = "//build/android/gyp/create_r_txt.py"
+      inputs = [
+        android_sdk_tools_bundle_aapt2,
+        invoker.generated_resources_zip,
+      ]
+      outputs = [
+        _rtxt_out_path,
+        _compiled_resources_zip,
+      ]
+      script = "//build/android/gyp/prepare_resources.py"
       args = [
+        "--aapt2-path",
+        rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
         "--resources-zip-path",
         rebase_path(invoker.generated_resources_zip, root_build_dir),
-        "--rtxt-path",
+        "--resource-zip-out",
+        rebase_path(_compiled_resources_zip, root_build_dir),
+        "--r-text-out",
         rebase_path(_rtxt_out_path, root_build_dir),
       ]
     }
@@ -2119,8 +2133,6 @@ if (!is_robolectric && enable_java_templates) {
   #     not contain a <uses-sdk> element. Use [min|target|max]_sdk_version
   #     instead.
   #   android_manifest_dep: Target that generates AndroidManifest (if applicable)
-  #   png_to_webp: If true, pngs (with the exception of 9-patch) are
-  #     converted to webp during resource packaging.
   #   loadable_modules: List of paths to native libraries to include. Different
   #     from |shared_libraries| in that:
   #       * dependencies of this .so are not automatically included
@@ -2478,7 +2490,6 @@ if (!is_robolectric && enable_java_templates) {
             "max_sdk_version",
             "override_target_sdk",
             "package_id",
-            "png_to_webp",
             "r_java_root_package_name",
             "resource_exclusion_exceptions",
             "resource_exclusion_regex",
@@ -3295,7 +3306,6 @@ if (!is_robolectric && enable_java_templates) {
             "min_sdk_version",
             "native_lib_placeholders",
             "omit_dex",
-            "png_to_webp",
             "post_process_package_resources_script",
             "processor_args_javac",
             "proguard_configs",
@@ -3434,7 +3444,6 @@ if (!is_robolectric && enable_java_templates) {
             "native_lib_placeholders",
             "package_id",
             "parent_module_target",
-            "png_to_webp",
             "processor_args_javac",
             "proguard_configs",
             "proguard_enabled",

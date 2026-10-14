@@ -749,8 +749,10 @@ if (current_toolchain == host_toolchain) {
   }
 
   executable("cwebp") {
+    # Depending on the `cwebp` executable doesn't result in having `libwebp`
+    # linked into the browser binary.
     visibility = []
-    visibility = cwebp_exe_allowed_visibility
+    visibility = [ "*" ]
 
     sources = [
       "src/examples/cwebp.c",

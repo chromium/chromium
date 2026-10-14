@@ -34,5 +34,4 @@ create_app_bundle_apks.py
 util/__init__.py
 util/build_utils.py
 util/md5_check.py
-util/parallel.py
 util/resource_utils.py

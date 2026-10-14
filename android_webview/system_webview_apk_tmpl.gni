@@ -304,7 +304,6 @@ template("system_webview_apk_or_module_tmpl") {
 
       proguard_configs +=
           [ "//android_webview/nonembedded/java/proguard.flags" ]
-      png_to_webp = true
     }
 
     if (enable_silent_java_assert_reporting && !_omit_dex) {

@@ -12,17 +12,13 @@ This will crunch images with aapt2.
 """
 
 import argparse
-import collections
 import filecmp
-import hashlib
 import logging
 import os
 import pathlib
 import re
 import shutil
-import subprocess
 import sys
-import tempfile
 import textwrap
 from xml.etree import ElementTree
 import zipfile
@@ -35,18 +31,6 @@ from util import protoresources
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
-
-# Pngs that we shouldn't convert to webp. Please add rationale when updating.
-_PNG_WEBP_EXCLUSION_PATTERN = re.compile(
-    '|'.join(
-        [
-            # Android requires pngs for 9-patch images.
-            r'.*\.9\.png',
-            # Daydream requires pngs for icon files.
-            r'.*daydream_icon_.*\.png',
-        ]
-    )
-)
 
 
 def _ParseArgs(args):
@@ -177,18 +161,6 @@ def _ParseArgs(args):
         '--values-filter-rules',
         help='GN list of source_glob:regex for filtering resources after they '
         'are compiled. Use this to filter out entries within values/ files.',
-    )
-    input_opts.add_argument(
-        '--png-to-webp',
-        action='store_true',
-        help='Convert png files to webp format.',
-    )
-
-    input_opts.add_argument(
-        '--webp-binary', default='', help='Path to the cwebp binary.'
-    )
-    input_opts.add_argument(
-        '--webp-cache-dir', help='The directory to store webp image cache.'
     )
     input_opts.add_argument(
         '--is-bundle-module',
@@ -419,6 +391,14 @@ def _CreateKeepPredicate(
     )
 
 
+def _OrigPathFromFlatName(name):
+    """Maps an aapt2 .flat entry name back to its pre-compiled archive path."""
+    subdir, rest = name.split('_', 1)
+    if subdir.startswith('values') and rest.endswith('.arsc.flat'):
+        return f"{subdir}/{rest.removesuffix('.arsc.flat')}.xml"
+    return f"{subdir}/{rest.removesuffix('.flat')}"
+
+
 def _HasStrippedExtension(entry_name):
     # Image extensions (.png, .webp) are stripped in prepare_resources.py.
     # Only raw/ resources originally lack extensions on disk.
@@ -442,106 +422,10 @@ def _ShouldKeepResourceEntry(
     return keep_predicate(check_path)
 
 
-def _ConvertToWebPSingle(
-    dep_zip, entry_name, cwebp_binary, cwebp_version, webp_cache_dir, temp_dir
-):
-    with zipfile.ZipFile(dep_zip) as z:
-        data = z.read(entry_name)
-    sha1_hash = hashlib.sha1(data).hexdigest()
-
-    # The set of arguments that will appear in the cache key.
-    quality_args = ['-m', '6', '-q', '100', '-lossless']
-
-    webp_cache_path = os.path.join(
-        webp_cache_dir,
-        '{}-{}-{}'.format(sha1_hash, cwebp_version, ''.join(quality_args)),
-    )
-
-    cache_hit = os.path.exists(webp_cache_path)
-    if not cache_hit:
-        with (
-            tempfile.NamedTemporaryFile(dir=temp_dir, suffix='.png') as png_tmp,
-            tempfile.NamedTemporaryFile(
-                dir=temp_dir, suffix='.webp', delete=False
-            ) as webp_tmp,
-        ):
-            png_tmp.write(data)
-            png_tmp.flush()
-            webp_tmp_path = webp_tmp.name
-            args = [
-                cwebp_binary,
-                png_tmp.name,
-                '-o',
-                webp_tmp_path,
-                '-quiet',
-            ] + quality_args
-            subprocess.check_call(args)
-
-        try:
-            os.link(webp_tmp_path, webp_cache_path)
-        except OSError:
-            # Because of concurrent run, a webp image may already exist in
-            # webp_cache_path.
-            pass
-        os.remove(webp_tmp_path)
-
-    return dep_zip, entry_name, webp_cache_path, cache_hit
-
-
-def _ConvertToWebP(
-    cwebp_binary,
-    dep_zips,
-    keep_predicate,
-    wanted_locales,
-    webp_cache_dir,
-    temp_dir,
-):
-    shard_args = []
-    for dep_zip in dep_zips:
-        subdirname = dep_zip.replace(os.path.sep, '_')
-        with zipfile.ZipFile(dep_zip) as z:
-            for entry_name in z.namelist():
-                if not _HasStrippedExtension(entry_name):
-                    continue
-                if not _ShouldKeepResourceEntry(
-                    subdirname, entry_name, keep_predicate, wanted_locales
-                ):
-                    continue
-                if _PNG_WEBP_EXCLUSION_PATTERN.match(f'{entry_name}.png'):
-                    continue
-                with z.open(entry_name) as f:
-                    if f.read(8) == b'\x89PNG\r\n\x1a\n':
-                        shard_args.append((dep_zip, entry_name))
-
-    if not shard_args:
-        return {}
-
-    cwebp_version = subprocess.check_output([cwebp_binary, '-version']).rstrip()
-    build_utils.MakeDirectory(webp_cache_dir)
-    results = parallel.BulkForkAndCall(
-        _ConvertToWebPSingle,
-        shard_args,
-        cwebp_binary=cwebp_binary,
-        cwebp_version=cwebp_version,
-        webp_cache_dir=webp_cache_dir,
-        temp_dir=temp_dir,
-    )
-    webp_map = collections.defaultdict(dict)
-    total_cache_hits = 0
-    for dep_zip, entry_name, webp_cache_path, cache_hit in results:
-        webp_map[dep_zip][entry_name] = webp_cache_path
-        total_cache_hits += int(cache_hit)
-
-    logging.debug('png->webp cache: %d/%d', total_cache_hits, len(shard_args))
-    return webp_map
-
-
-def _CompileSingleDep(
+def _ProcessSingleDep(
     index,
     dep_zip,
     values_keep_predicate,
-    webp_entries,
-    aapt2_path,
     partials_dir,
     keep_predicate,
     wanted_locales,
@@ -552,53 +436,32 @@ def _CompileSingleDep(
 
     with zipfile.ZipFile(dep_zip) as z:
         all_names = z.namelist()
+        if not all_names:
+            return None
         kept_names = [
             name
             for name in all_names
             if _ShouldKeepResourceEntry(
-                subdirname, name, keep_predicate, wanted_locales
+                subdirname,
+                _OrigPathFromFlatName(name),
+                keep_predicate,
+                wanted_locales,
             )
         ]
         if not kept_names:
             return None
-        if len(kept_names) != len(all_names) or webp_entries:
-            input_zip_path = os.path.join(
-                partials_dir, f'{unique_name}.input.zip'
-            )
-            with zipfile.ZipFile(input_zip_path, 'w') as out_z:
-                for name in kept_names:
-                    webp_path = webp_entries.get(name) if webp_entries else None
-                    if webp_path:
-                        zip_helpers.add_to_zip_hermetic(
-                            out_z, name, src_path=webp_path
-                        )
-                    else:
-                        zip_helpers.add_to_zip_hermetic(
-                            out_z, name, data=z.read(name)
-                        )
+
+        needs_filtering = len(kept_names) != len(all_names)
+        if not needs_filtering:
+            if not values_keep_predicate:
+                return dep_zip
+            shutil.copyfile(dep_zip, partial_path)
         else:
-            input_zip_path = dep_zip
-
-    compile_command = [
-        aapt2_path,
-        'compile',
-        # TODO(wnwen): Turn this on once aapt2 forces 9-patch to be crunched.
-        # '--no-crunch',
-        '--zip',
-        input_zip_path,
-        '-o',
-        partial_path,
-    ]
-
-    # There are resources targeting API-versions lower than our minapi. For
-    # various reasons it's easier to let aapt2 ignore these than for us to
-    # remove them from our build (e.g. it's from a 3rd party library).
-    build_utils.CheckOutput(
-        compile_command,
-        stderr_filter=lambda output: build_utils.FilterLines(
-            output, r'ignoring configuration .* for (styleable|attribute)'
-        ),
-    )
+            with zipfile.ZipFile(partial_path, 'w') as out_z:
+                for name in kept_names:
+                    zip_helpers.add_to_zip_hermetic(
+                        out_z, name, data=z.read(name)
+                    )
 
     # Filtering these files is expensive, so only apply filters to the partials
     # that have been explicitly targeted.
@@ -626,14 +489,12 @@ def _CreateValuesKeepPredicate(exclusion_rules, dep_zip):
 
 
 def _CompileDeps(
-    aapt2_path,
     dep_zips,
     overlay_zips,
     temp_dir,
     exclusion_rules,
     keep_predicate,
     wanted_locales,
-    webp_map,
 ):
     partials_dir = os.path.join(temp_dir, 'partials')
     build_utils.MakeDirectory(partials_dir)
@@ -643,18 +504,20 @@ def _CompileDeps(
             i,
             dep_zip,
             _CreateValuesKeepPredicate(exclusion_rules, dep_zip),
-            webp_map.get(dep_zip),
         )
         for i, dep_zip in enumerate(dep_zips)
     ]
 
     # Filtering is slow, so ensure jobs with keep_predicate are started first.
     job_params.sort(key=lambda x: not x[2])
+    # Total single-threaded work across ~330 resource zips is ~600ms. Capping at
+    # 8 workers brings wall time down to ~95ms while avoiding the overhead of
+    # spawning 96+ worker processes (~150ms).
     partials = list(
         parallel.BulkForkAndCall(
-            _CompileSingleDep,
+            _ProcessSingleDep,
             job_params,
-            aapt2_path=aapt2_path,
+            max_procs=8,
             partials_dir=partials_dir,
             keep_predicate=keep_predicate,
             wanted_locales=wanted_locales,
@@ -713,29 +576,15 @@ def _PackageApk(options, build):
         else None
     )
 
-    webp_map = {}
-    if options.png_to_webp:
-        logging.debug('Converting png->webp')
-        webp_map = _ConvertToWebP(
-            options.webp_binary,
-            all_res_zips,
-            keep_predicate,
-            wanted_locales,
-            options.webp_cache_dir,
-            build.temp_dir,
-        )
-
-    logging.debug('Running aapt2 compile')
+    logging.debug('Filtering resource zips')
     exclusion_rules = [x.split(':', 1) for x in options.values_filter_rules]
     partials = _CompileDeps(
-        options.aapt2_path,
         all_res_zips,
         overlay_zips,
         build.temp_dir,
         exclusion_rules,
         keep_predicate,
         wanted_locales,
-        webp_map,
     )
 
     link_command = [

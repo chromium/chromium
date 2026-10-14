@@ -515,6 +515,10 @@ template("write_build_config") {
           resources_zip = rebase_path(invoker.resources_zip, root_build_dir)
         }
       }
+      if (defined(invoker.uncompiled_resources_zip)) {
+        uncompiled_resources_zip =
+            rebase_path(invoker.uncompiled_resources_zip, root_build_dir)
+      }
       if (defined(invoker.rtxt_path)) {
         rtxt_path = rebase_path(invoker.rtxt_path, root_build_dir)
       }
@@ -2002,8 +2006,7 @@ if (enable_java_templates) {
   #
   # Output variables:
   #   resources_zip:
-  #     Path to a .resources.zip that will simply contain all the
-  #     input resources, collected in a single archive.
+  #     Path to a .resources.zip containing the compiled .flat resources.
   #
   #   rtxt_out_path: Path for the generated R.txt file.
   #
@@ -2024,7 +2027,10 @@ if (enable_java_templates) {
         invoker.rtxt_out_path,
       ]
 
-      inputs = [ invoker.res_sources_path ]
+      inputs = [
+        android_sdk_tools_bundle_aapt2,
+        invoker.res_sources_path,
+      ]
 
       _rebased_res_sources_path =
           rebase_path(invoker.res_sources_path, root_build_dir)
@@ -2033,6 +2039,8 @@ if (enable_java_templates) {
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--res-sources-path=$_rebased_res_sources_path",
+        "--aapt2-path",
+        rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
         "--resource-zip-out",
         rebase_path(invoker.resources_zip, root_build_dir),
         "--r-text-out",
@@ -2054,6 +2062,20 @@ if (enable_java_templates) {
       if (defined(invoker.allow_missing_resources) &&
           invoker.allow_missing_resources) {
         args += [ "--allow-missing-resources" ]
+      }
+      if (png_to_webp) {
+        _webp_target = "//third_party/libwebp:cwebp($host_toolchain)"
+        _webp_binary = get_label_info(_webp_target, "root_out_dir") + "/cwebp"
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ _webp_target ]
+        inputs += [ _webp_binary ]
+        args += [
+          "--webp-binary",
+          rebase_path(_webp_binary, root_build_dir),
+          "--webp-cache-dir=obj/android-webp-cache",
+        ]
       }
     }
   }
@@ -2100,9 +2122,6 @@ if (enable_java_templates) {
   #   resource_exclusion_exceptions: (optional)
   #
   #   resource_values_filter_rules: (optional)
-  #
-  #   png_to_webp: (optional)
-  #     If true, convert all PNG resources (except 9-patch files) to WebP.
   #
   #   post_process_script: (optional)
   #
@@ -2234,7 +2253,6 @@ if (enable_java_templates) {
       "--extra-res-packages=@FileArg($_rebased_build_config:extra_package_names)",
       "--min-sdk-version=${invoker.min_sdk_version}",
       "--target-sdk-version=${_target_sdk_version}",
-      "--webp-cache-dir=obj/android-webp-cache",
     ]
 
     if (!defined(testonly) || !testonly ||
@@ -2366,17 +2384,6 @@ if (enable_java_templates) {
 
     if (defined(invoker.aapt_locale_allowlist)) {
       _args += [ "--locale-allowlist=${invoker.aapt_locale_allowlist}" ]
-    }
-    if (defined(invoker.png_to_webp) && invoker.png_to_webp) {
-      _webp_target = "//third_party/libwebp:cwebp($host_toolchain)"
-      _webp_binary = get_label_info(_webp_target, "root_out_dir") + "/cwebp"
-      _deps += [ _webp_target ]
-      _inputs += [ _webp_binary ]
-      _args += [
-        "--png-to-webp",
-        "--webp-binary",
-        rebase_path(_webp_binary, root_build_dir),
-      ]
     }
     if (defined(invoker.resource_exclusion_regex)) {
       _args +=

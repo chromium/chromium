@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -175,6 +176,8 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
+    // Required for WebP images.
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     public void testIntentData_closeButtonIcon() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

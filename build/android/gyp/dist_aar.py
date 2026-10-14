@@ -52,10 +52,11 @@ def _MergeProguardConfigs(proguard_configs, exclude_globs):
 
 
 def _AddResources(aar_zip, resource_zips, include_globs, exclude_globs):
-    """Adds all resource zips to the given aar_zip.
+    """Adds all resource zips or .res.sources files to the given aar_zip.
 
     Ensures all res/values/* files have unique names by prefixing them.
     """
+    extra_inputs = []
     for i, path in enumerate(resource_zips):
         if (
             include_globs
@@ -63,6 +64,24 @@ def _AddResources(aar_zip, resource_zips, include_globs, exclude_globs):
             or exclude_globs
             and build_utils.MatchesGlob(path, exclude_globs)
         ):
+            continue
+        if path.endswith('.res.sources'):
+            res_sources = build_utils.ReadSourcesList(path)
+            extra_inputs.extend(res_sources)
+            seen_values = set()
+            for j, src_path in enumerate(res_sources):
+                dirname = os.path.basename(os.path.dirname(src_path))
+                basename = os.path.basename(src_path)
+                if 'values' in dirname:
+                    root, ext = os.path.splitext(basename)
+                    basename = f'{root}_{i}{ext}'
+                    if (dirname, basename) in seen_values:
+                        basename = f'{root}_{i}_{j}{ext}'
+                    seen_values.add((dirname, basename))
+                archive_path = posixpath.join('res', dirname, basename)
+                zip_helpers.add_to_zip_hermetic(
+                    aar_zip, archive_path, src_path=src_path
+                )
             continue
         with zipfile.ZipFile(path) as res_zip:
             for info in res_zip.infolist():
@@ -74,6 +93,7 @@ def _AddResources(aar_zip, resource_zips, include_globs, exclude_globs):
                     info.filename = posixpath.join(dirname, basename)
                 info.filename = posixpath.join('res', info.filename)
                 aar_zip.writestr(info, data)
+    return extra_inputs
 
 
 def main(args):
@@ -203,7 +223,7 @@ def main(args):
                         ),
                     )
 
-                _AddResources(
+                extra_res_inputs = _AddResources(
                     z,
                     options.dependencies_res_zips,
                     options.resource_included_globs,
@@ -226,6 +246,7 @@ def main(args):
         all_inputs = (
             options.jars
             + options.dependencies_res_zips
+            + extra_res_inputs
             + options.r_text_files
             + options.proguard_configs
         )

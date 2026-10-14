@@ -28,5 +28,4 @@
 create_r_java.py
 util/__init__.py
 util/build_utils.py
-util/parallel.py
 util/resource_utils.py

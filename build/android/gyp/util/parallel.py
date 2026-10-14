@@ -162,13 +162,15 @@ def _CheckForException(value):
         sys.exit(1)
 
 
-def _MakeProcessPool(job_params, **job_kwargs):
+def _MakeProcessPool(job_params, max_procs=None, **job_kwargs):
     global _all_pools
     global _fork_params
     global _fork_kwargs
     assert _fork_params is None
     assert _fork_kwargs is None
     pool_size = min(len(job_params), multiprocessing.cpu_count())
+    if max_procs:
+        pool_size = min(pool_size, max_procs)
     _fork_params = job_params
     _fork_kwargs = job_kwargs
     ret = multiprocessing.Pool(pool_size)
@@ -197,10 +199,11 @@ def ForkAndCall(func, args):
     return _WrappedResult(result, pool=pool)
 
 
-def BulkForkAndCall(func, arg_tuples, **kwargs):
+def BulkForkAndCall(func, arg_tuples, max_procs=None, **kwargs):
     """Calls |func| in a fork'ed process for each set of args within |arg_tuples|.
 
     Args:
+      max_procs: Optional cap on the number of worker processes.
       kwargs: Common keyword arguments to be passed to |func|.
 
     Yields the return values in order.
@@ -214,7 +217,7 @@ def BulkForkAndCall(func, arg_tuples, **kwargs):
             yield func(*args, **kwargs)
         return
 
-    pool = _MakeProcessPool(arg_tuples, **kwargs)
+    pool = _MakeProcessPool(arg_tuples, max_procs=max_procs, **kwargs)
     wrapped_func = _FuncWrapper(func)
     try:
         for result in pool.imap(wrapped_func, range(len(arg_tuples))):
