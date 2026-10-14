@@ -4031,16 +4031,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageDatabase.WriteFileForBigData"
-    enum="Boolean" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records when the data being written to the CdmStorageDatabase
-    exceeds 15 KB. This UMA is recorded on every write over 15KB that succeeds.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
     enum="SqliteLoggedResultCode" expires_after="2027-09-22">
   <owner>vpasupathy@chromium.org</owner>
@@ -4049,69 +4039,6 @@ chromium-metrics-reviews@google.com.
     SQLite specific errors reported while using the Cdm Storage Database.
     Recorded on any error from a database operation.
   </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageDatabaseSQLiteError.{CdmDatabaseOperation}"
-    enum="SqliteLoggedResultCode" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when executing the
-    operation {CdmDatabaseOperation}. This UMA is recorded on every error for
-    this operation.
-  </summary>
-  <token key="CdmDatabaseOperation">
-    <variant name="AlterDatabaseForFileSize"/>
-    <variant name="AlterDatabaseForLastModified"/>
-    <variant name="ClearDatabase"/>
-    <variant name="DeleteFile"/>
-    <variant name="DeleteForStorageKey"/>
-    <variant name="DeleteForTimeFrame"/>
-    <variant name="DeleteIfEmptyDatabase"/>
-    <variant name="GetSizeForFile"/>
-    <variant name="GetSizeForStorageKey"/>
-    <variant name="GetSizeForTimeFrame"/>
-    <variant name="OpenDatabase"/>
-    <variant name="QueryPageCount"/>
-    <variant name="QueryPageSize"/>
-    <variant name="ReadFile"/>
-    <variant name="WriteFile"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageDatabaseSQLiteError.{CdmDatabaseOperation}.{SqliteError}.Errno"
-    units="errno" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records the errno that occur when executing the operation
-    {CdmDatabaseOperation} and getting a specific {SqliteError}. This UMA is
-    recorded every time this operation errors with the specific {SqliteError}.
-  </summary>
-  <token key="CdmDatabaseOperation">
-    <variant name="AlterDatabaseForFileSize"/>
-    <variant name="AlterDatabaseForLastModified"/>
-    <variant name="ClearDatabase"/>
-    <variant name="DeleteFile"/>
-    <variant name="DeleteForStorageKey"/>
-    <variant name="DeleteForTimeFrame"/>
-    <variant name="DeleteIfEmptyDatabase"/>
-    <variant name="GetSizeForFile"/>
-    <variant name="GetSizeForStorageKey"/>
-    <variant name="GetSizeForTimeFrame"/>
-    <variant name="OpenDatabase"/>
-    <variant name="ReadFile"/>
-    <variant name="WriteFile"/>
-  </token>
-  <token key="SqliteError">
-    <variant name="Busy"/>
-    <variant name="CantOpen"/>
-    <variant name="FullDisk"/>
-    <variant name="Generic"/>
-    <variant name="IoTruncate"/>
-  </token>
 </histogram>
 
 <histogram
@@ -4191,65 +4118,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA logs overall error rates from the DeleteForTimeFrame function.
     Recorded after every call of DeleteForTimeFrame on {ProfileType} profile.
-  </summary>
-  <token key="ProfileType">
-    <variant name="Incognito"/>
-    <variant name="NonIncognito"/>
-  </token>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.GetSizeForFileError.{ProfileType}"
-    enum="BooleanError" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the GetSizeForFile function. Recorded
-    after every call of GetSizeForFile on {ProfileType} profile.
-  </summary>
-  <token key="ProfileType">
-    <variant name="Incognito"/>
-    <variant name="NonIncognito"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.GetSizeForStorageKeyError.{ProfileType}"
-    enum="BooleanError" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the GetSizeForStorageKey function.
-    Recorded after every call of GetSizeForStorageKey on {ProfileType} profile.
-  </summary>
-  <token key="ProfileType">
-    <variant name="Incognito"/>
-    <variant name="NonIncognito"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.GetSizeForTimeFrameError.{ProfileType}"
-    enum="BooleanError" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the GetSizeForTimeFrame function.
-    Recorded after every call of GetSizeForTimeFrame on {ProfileType} profile.
-  </summary>
-  <token key="ProfileType">
-    <variant name="Incognito"/>
-    <variant name="NonIncognito"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.kDeleteForFilterError.{ProfileType}"
-    enum="BooleanError" expires_after="2027-09-22">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteForFilter function.
-    Recorded after every call of DeleteForFilter on {ProfileType} profile.
   </summary>
   <token key="ProfileType">
     <variant name="Incognito"/>

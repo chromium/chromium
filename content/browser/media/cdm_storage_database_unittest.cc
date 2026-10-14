@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
@@ -56,8 +55,6 @@ class CdmStorageDatabaseTest : public testing::Test {
   }
 
   base::ScopedTempDir profile_path_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 // This class is to test for when db_.Open() fails.
@@ -395,21 +392,6 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForTimeFrameWithNoData) {
       base::Time::Max()));
 }
 
-TEST_F(CdmStorageDatabaseInMemoryTest, WriteFileForBigData) {
-  std::vector<uint8_t> big_data;
-  big_data.resize(1000000);
-
-  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
-                                               kFileName, big_data));
-
-  histogram_tester_.ExpectTotalCount(
-      "Media.EME.CdmStorageDatabase.WriteFileForBigData", 1);
-
-  EXPECT_EQ(
-      cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
-      big_data);
-}
-
 TEST_F(CdmStorageDatabaseInMemoryTest, GetUsagePerAllStorageKeys) {
   EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
                                                kFileName, kPopulatedFileValue));
@@ -700,22 +682,6 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForTimeFrameWithNoData) {
   EXPECT_TRUE(cdm_storage_database_->DeleteData(
       base::NullCallback(), blink::StorageKey(), base::Time::Min(),
       base::Time::Max()));
-}
-
-TEST_F(CdmStorageDatabaseValidPathTest, WriteFileForBigData) {
-  std::vector<uint8_t> big_data;
-  big_data.resize(1000000);
-
-  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
-                                               kFileName, big_data));
-
-  const char uma_name[] = "Media.EME.CdmStorageDatabase.WriteFileForBigData";
-  histogram_tester_.ExpectTotalCount(uma_name, 1);
-  histogram_tester_.ExpectBucketCount(uma_name, true, 1);
-
-  EXPECT_EQ(
-      cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
-      big_data);
 }
 
 TEST_F(CdmStorageDatabaseValidPathTest, GetUsagePerAllStorageKeys) {

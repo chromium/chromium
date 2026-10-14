@@ -9,7 +9,6 @@
 
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/sequence_checker.h"
@@ -94,9 +93,6 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   // Empty if the database is in-memory.
   const base::FilePath path_;
-
-  // A descriptor of the last SQL statement that was executed, used for metrics.
-  std::optional<std::string> last_operation_;
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

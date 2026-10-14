@@ -4,15 +4,11 @@
 
 #include "content/browser/media/cdm_storage_database.h"
 
-#include <algorithm>
-
-#include "base/files/file.h"
-#include "base/files/file_util.h"
-#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "sql/meta_table.h"
 #include "sql/statement.h"
 
 namespace content {
@@ -31,11 +27,8 @@ namespace {
 // read.
 static const int kVersionNumber = 2;
 
-const char kUmaPrefix[] = "Media.EME.CdmStorageDatabaseSQLiteError.";
-
 const char kDeleteForTimeFrameError[] = "DeleteForTimeFrameError.";
 const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
-const char kDeleteForFilterError[] = "DeleteForFilterError.";
 const char kDeleteFileError[] = "DeleteFileError.";
 
 static bool DatabaseIsEmpty(sql::Database* db) {
@@ -89,8 +82,6 @@ std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
             "AND file_name = ? ";
   // clang-format on
 
-  last_operation_ = "ReadFile";
-
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindString(0, storage_key.Serialize());
   statement.BindBlob(1, cdm_type.AsBytes());
@@ -124,8 +115,6 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
          "VALUES(?,?,?,?,?,?) ";
   // clang-format on
 
-  last_operation_ = "WriteFile";
-
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, storage_key.Serialize());
   statement.BindBlob(1, cdm_type.AsBytes());
@@ -137,12 +126,6 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
   bool success = statement.Run();
 
   DVLOG_IF(1, !success) << "Error writing Cdm storage data.";
-
-  if (success) {
-    bool large_write = data.size() > (15 * 1024);
-    base::UmaHistogramBoolean(
-        "Media.EME.CdmStorageDatabase.WriteFileForBigData", large_write);
-  }
 
   return success;
 }
@@ -197,8 +180,6 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
          "AND cdm_type = ? "
          "AND file_name = ? ";
   // clang-format on
-
-  last_operation_ = "DeleteFile";
 
   bool success;
   {
@@ -267,10 +248,6 @@ bool CdmStorageDatabase::DeleteDataForFilter(
     }
   }
 
-  base::UmaHistogramBoolean(
-      GetCdmStorageManagerHistogramName(kDeleteForFilterError, in_memory()),
-      false);
-
   return DeleteIfEmptyDatabase(success);
 }
 
@@ -283,8 +260,6 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
   if (OpenDatabase() != CdmStorageOpenError::kOk) {
     return false;
   }
-
-  last_operation_ = "DeleteForStorageKey";
 
   // clang-format off
   static constexpr char kDeleteSql[] =
@@ -320,8 +295,6 @@ bool CdmStorageDatabase::DeleteDataForTimeFrame(const base::Time begin,
     return false;
   }
 
-  last_operation_ = "DeleteForTimeFrame";
-
   // clang-format off
   static constexpr char kDeleteSql[] =
       "DELETE FROM cdm_storage "
@@ -340,17 +313,15 @@ bool CdmStorageDatabase::DeleteDataForTimeFrame(const base::Time begin,
   DVLOG_IF(1, !success)
       << "Error deleting Cdm storage data for specified time frame.";
 
-  base::UmaHistogramBoolean(GetCdmStorageManagerHistogramName(
-                                kDeleteForTimeFrameError, path_.empty()),
-                            !success);
+  base::UmaHistogramBoolean(
+      GetCdmStorageManagerHistogramName(kDeleteForTimeFrameError, in_memory()),
+      !success);
 
   return DeleteIfEmptyDatabase(success);
 }
 
 bool CdmStorageDatabase::ClearDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  last_operation_ = "ClearDatabase";
 
   db_.Close();
 
@@ -367,9 +338,6 @@ uint64_t CdmStorageDatabase::GetDatabaseSize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static constexpr char kPageCountSql[] = "PRAGMA page_count";
-
-  last_operation_ = "QueryPageCount";
-
   sql::Statement statement_count(
       db_.GetCachedStatement(SQL_FROM_HERE, kPageCountSql));
   statement_count.Step();
@@ -377,16 +345,11 @@ uint64_t CdmStorageDatabase::GetDatabaseSize() {
   uint64_t page_count = statement_count.ColumnInt(0);
 
   static constexpr char kPageSizeSql[] = "PRAGMA page_size";
-
-  last_operation_ = "QueryPageSize";
-
   sql::Statement statement_size(
       db_.GetCachedStatement(SQL_FROM_HERE, kPageSizeSql));
   statement_size.Step();
 
   uint64_t page_size = statement_size.ColumnInt(0);
-
-  last_operation_.reset();
 
   return page_count * page_size;
 }
@@ -404,8 +367,6 @@ bool CdmStorageDatabase::DeleteIfEmptyDatabase(bool last_operation_success) {
     return false;
   }
 
-  last_operation_ = "DeleteIfEmptyDatabase";
-
   if (!DatabaseIsEmpty(&db_)) {
     return true;
   }
@@ -420,8 +381,6 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
   }
 
   bool success = false;
-
-  last_operation_ = "OpenDatabase";
 
   if (in_memory()) {
     success = db_.OpenInMemory();
@@ -510,8 +469,6 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
       "ALTER TABLE cdm_storage ADD COLUMN file_size INTEGER NOT NULL DEFAULT "
       "1";
 
-  last_operation_ = "AlterDatabaseForFileSize";
-
   sql::Statement file_size_statement(db_.GetUniqueStatement(kAlterFileSizeSql));
 
   if (!file_size_statement.Run()) {
@@ -527,8 +484,6 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   sql::Statement last_modified_statement(
       db_.GetUniqueStatement(alter_last_modified_string));
 
-  last_operation_ = "AlterDatabaseForLastModified";
-
   if (!last_modified_statement.Run()) {
     return false;
   }
@@ -542,44 +497,6 @@ void CdmStorageDatabase::OnDatabaseError(int error, sql::Statement* stmt) {
 
   sql::UmaHistogramSqliteResult("Media.EME.CdmStorageDatabaseSQLiteError",
                                 error);
-
-  if (last_operation_) {
-    sql::UmaHistogramSqliteResult(kUmaPrefix + *last_operation_, error);
-
-    switch (sql::ToSqliteLoggedResultCode(error)) {
-      case sql::SqliteLoggedResultCode::kCantOpen:
-        base::UmaHistogramSparse(
-            base::StrCat({kUmaPrefix, *last_operation_, ".CantOpen.Errno"}),
-            db_.GetLastErrno());
-        break;
-      case sql::SqliteLoggedResultCode::kFullDisk:
-        base::UmaHistogramSparse(
-            base::StrCat({kUmaPrefix, *last_operation_, ".FullDisk.Errno"}),
-            db_.GetLastErrno());
-        break;
-      case sql::SqliteLoggedResultCode::kGeneric:
-        base::UmaHistogramSparse(
-            base::StrCat({kUmaPrefix, *last_operation_, ".Generic.Errno"}),
-            db_.GetLastErrno());
-        break;
-      case sql::SqliteLoggedResultCode::kIoTruncate:
-        base::UmaHistogramSparse(
-            base::StrCat({kUmaPrefix, *last_operation_, ".IoTruncate.Errno"}),
-            db_.GetLastErrno());
-        break;
-      case sql::SqliteLoggedResultCode::kBusy:
-        base::UmaHistogramSparse(
-            base::StrCat({kUmaPrefix, *last_operation_, ".Busy.Errno"}),
-            db_.GetLastErrno());
-        break;
-      default:
-        // Currently, we don't care what happens with other SqliteErrors, so
-        // just break.
-        break;
-    }
-
-    last_operation_.reset();
-  }
 }
 
 }  // namespace content
