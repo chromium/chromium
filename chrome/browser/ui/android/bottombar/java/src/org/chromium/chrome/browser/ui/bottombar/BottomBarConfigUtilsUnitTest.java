@@ -390,9 +390,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/56")
-    public void testGetBottomBarHeightDp_ToolbarMatch56() {
-        assertEquals(56, BottomBarConfigUtils.getBottomBarHeightDp());
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/60")
+    public void testGetBottomBarHeightDp_ToolbarMatch60() {
+        assertEquals(60, BottomBarConfigUtils.getBottomBarHeightDp());
     }
 
     @Test
@@ -419,7 +419,7 @@ public class BottomBarConfigUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/0")
-    public void testGetBottomBarHeightDp_ZeroFallback_ReturnsDefault60() {
+    public void testGetBottomBarHeightDp_ZeroFallback_ReturnsDefault56() {
         assertEquals(
                 BottomBarConfigUtils.DEFAULT_BOTTOM_BAR_HEIGHT_DP,
                 BottomBarConfigUtils.getBottomBarHeightDp());

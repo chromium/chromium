@@ -4085,9 +4085,6 @@ const FeatureEntry::FeatureParam kAndroidBottomBar1AParam[] = {
 const FeatureEntry::FeatureParam kAndroidBottomBar1A48dpParam[] = {
     {"show_glic_setting_toggle", "true"},
     {"bottom_bar_height_dp", "48"}};
-const FeatureEntry::FeatureParam kAndroidBottomBar1A56dpParam[] = {
-    {"show_glic_setting_toggle", "true"},
-    {"bottom_bar_height_dp", "56"}};
 const FeatureEntry::FeatureParam kAndroidBottomBar1A60dpParam[] = {
     {"show_glic_setting_toggle", "true"},
     {"bottom_bar_height_dp", "60"}};
@@ -4100,7 +4097,6 @@ const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A", kAndroidBottomBar1AParam, nullptr},
     {"- 1A (48dp)", kAndroidBottomBar1A48dpParam, nullptr},
-    {"- 1A (56dp)", kAndroidBottomBar1A56dpParam, nullptr},
     {"- 1A (60dp)", kAndroidBottomBar1A60dpParam, nullptr},
     {"- 1A with show domain only", kAndroidBottomBarShowDomainOnlyParam,
      nullptr},

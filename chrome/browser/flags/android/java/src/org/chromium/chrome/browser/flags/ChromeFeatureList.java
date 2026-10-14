@@ -2020,7 +2020,7 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowUpdateBadge =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_update_badge", true);
     public static final IntCachedFeatureParam sAndroidBottomBarHeightDp =
-            newIntCachedFeatureParam(ANDROID_BOTTOM_BAR, "bottom_bar_height_dp", 60);
+            newIntCachedFeatureParam(ANDROID_BOTTOM_BAR, "bottom_bar_height_dp", 56);
     // go/keep-sorted end
 
     public static final BooleanCachedFeatureParam sAndroidVerticalTabsBlockDrawOnColdStart =

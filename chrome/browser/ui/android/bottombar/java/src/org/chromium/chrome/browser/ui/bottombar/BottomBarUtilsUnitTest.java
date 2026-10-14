@@ -63,11 +63,11 @@ public class BottomBarUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testDimensions_Default60dp() {
-        // Baseline 60dp. The new tab background stays at its declared 40dp, so the vertical
-        // padding is (60 - 40) / 2 = 10px.
-        assertEquals(60, BottomBarUtils.getBottomBarHeight(mContext));
-        assertEquals(10, BottomBarUtils.getButtonPaddingVertical(mContext));
+    public void testDimensions_Default56dp() {
+        // Baseline 56dp. The new tab background stays at its declared 40dp, so the vertical
+        // padding is (56 - 40) / 2 = 8px.
+        assertEquals(56, BottomBarUtils.getBottomBarHeight(mContext));
+        assertEquals(8, BottomBarUtils.getButtonPaddingVertical(mContext));
     }
 
     @Test

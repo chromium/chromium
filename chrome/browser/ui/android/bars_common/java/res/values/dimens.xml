@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <resources>
     <!-- Bottom bar dimensions -->
-    <dimen name="bottom_bar_height">60dp</dimen>
+    <dimen name="bottom_bar_height">56dp</dimen>
     <!-- Minimum gap between the top controls and the top of the app menu list
          when the menu is anchored to the bottom bar. -->
     <dimen name="bottom_bar_app_menu_top_margin">24dp</dimen>

@@ -21,7 +21,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Utility class for determining the configuration of the bottom bar. */
 @NullMarked
 public class BottomBarConfigUtils {
-    public static final int DEFAULT_BOTTOM_BAR_HEIGHT_DP = 60;
+    public static final int DEFAULT_BOTTOM_BAR_HEIGHT_DP = 56;
     public static final int MIN_BOTTOM_BAR_HEIGHT_DP = 48;
     public static final int MAX_BOTTOM_BAR_HEIGHT_DP = 60;
 
