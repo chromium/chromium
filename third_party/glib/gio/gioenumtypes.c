@@ -1567,13 +1567,13 @@ g_tls_database_lookup_flags_get_type (void)
 
   if (g_once_init_enter_pointer (&static_g_define_type_id))
     {
-      static const GEnumValue values[] = {
+      static const GFlagsValue values[] = {
         { G_TLS_DATABASE_LOOKUP_NONE, "G_TLS_DATABASE_LOOKUP_NONE", "none" },
         { G_TLS_DATABASE_LOOKUP_KEYPAIR, "G_TLS_DATABASE_LOOKUP_KEYPAIR", "keypair" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =
-        g_enum_register_static (g_intern_static_string ("GTlsDatabaseLookupFlags"), values);
+        g_flags_register_static (g_intern_static_string ("GTlsDatabaseLookupFlags"), values);
       g_once_init_leave_pointer (&static_g_define_type_id, g_define_type_id);
     }
 
@@ -1586,12 +1586,12 @@ g_tls_certificate_request_flags_get_type (void)
 
   if (g_once_init_enter_pointer (&static_g_define_type_id))
     {
-      static const GEnumValue values[] = {
+      static const GFlagsValue values[] = {
         { G_TLS_CERTIFICATE_REQUEST_NONE, "G_TLS_CERTIFICATE_REQUEST_NONE", "none" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =
-        g_enum_register_static (g_intern_static_string ("GTlsCertificateRequestFlags"), values);
+        g_flags_register_static (g_intern_static_string ("GTlsCertificateRequestFlags"), values);
       g_once_init_leave_pointer (&static_g_define_type_id, g_define_type_id);
     }
 
@@ -1629,13 +1629,13 @@ g_io_module_scope_flags_get_type (void)
 
   if (g_once_init_enter_pointer (&static_g_define_type_id))
     {
-      static const GEnumValue values[] = {
+      static const GFlagsValue values[] = {
         { G_IO_MODULE_SCOPE_NONE, "G_IO_MODULE_SCOPE_NONE", "none" },
         { G_IO_MODULE_SCOPE_BLOCK_DUPLICATES, "G_IO_MODULE_SCOPE_BLOCK_DUPLICATES", "block-duplicates" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =
-        g_enum_register_static (g_intern_static_string ("GIOModuleScopeFlags"), values);
+        g_flags_register_static (g_intern_static_string ("GIOModuleScopeFlags"), values);
       g_once_init_leave_pointer (&static_g_define_type_id, g_define_type_id);
     }
 
@@ -1810,6 +1810,27 @@ g_memory_monitor_warning_level_get_type (void)
       };
       GType g_define_type_id =
         g_enum_register_static (g_intern_static_string ("GMemoryMonitorWarningLevel"), values);
+      g_once_init_leave_pointer (&static_g_define_type_id, g_define_type_id);
+    }
+
+  return static_g_define_type_id;
+}
+GType
+g_ecn_code_point_get_type (void)
+{
+  static GType static_g_define_type_id = 0;
+
+  if (g_once_init_enter_pointer (&static_g_define_type_id))
+    {
+      static const GEnumValue values[] = {
+        { G_ECN_NO_ECN, "G_ECN_NO_ECN", "no-ecn" },
+        { G_ECN_ECT_1, "G_ECN_ECT_1", "ect-1" },
+        { G_ECN_ECT_0, "G_ECN_ECT_0", "ect-0" },
+        { G_ECN_ECT_CE, "G_ECN_ECT_CE", "ect-ce" },
+        { 0, NULL, NULL }
+      };
+      GType g_define_type_id =
+        g_enum_register_static (g_intern_static_string ("GEcnCodePoint"), values);
       g_once_init_leave_pointer (&static_g_define_type_id, g_define_type_id);
     }
 

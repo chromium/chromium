@@ -13,9 +13,9 @@
 
 #define GETTEXT_PACKAGE "glib20"
 
-#define GLIB_BINARY_AGE 8504
+#define GLIB_BINARY_AGE 9001
 
-#define GLIB_INTERFACE_AGE 0
+#define GLIB_INTERFACE_AGE 1
 
 #define GLIB_LOCALE_DIR "/usr/share/locale"
 
@@ -23,15 +23,17 @@
 
 #define GLIB_MAJOR_VERSION 2
 
-#define GLIB_MICRO_VERSION 4
+#define GLIB_MICRO_VERSION 1
 
-#define GLIB_MINOR_VERSION 85
+#define GLIB_MINOR_VERSION 90
 
 #define GLIB_RUNSTATEDIR "/run"
 
 #define G_VA_COPY_AS_ARRAY 1
 
 #define HAVE_ACCEPT4 1
+
+#define HAVE_ALIGNED_ALLOC 1
 
 #define HAVE_ALLOCA_H 1
 
@@ -42,6 +44,8 @@
 #define HAVE_C99_VSNPRINTF 1
 
 #define HAVE_CLOCK_GETTIME 1
+
+#define HAVE_CLOCK_NANOSLEEP 1
 
 #undef HAVE_CLOSE_RANGE
 
@@ -72,6 +76,10 @@
 #define HAVE_FCHOWN 1
 
 #define HAVE_FLOAT_H 1
+
+#undef HAVE_FREE_ALIGNED_SIZED
+
+#undef HAVE_FREE_SIZED
 
 #define HAVE_FSTAB_H 1
 
@@ -146,6 +154,8 @@
 #define HAVE_LCHOWN 1
 
 #define HAVE_LC_MESSAGES 1
+
+#undef HAVE_LIBELF
 
 #undef HAVE_LIBMOUNT
 
@@ -273,6 +283,8 @@
 
 #define HAVE_STDATOMIC_H 1
 
+#define HAVE_STDCKDINT_H 1
+
 #define HAVE_STDINT_H 1
 
 #define HAVE_STDINT_H_WITH_UINTMAX 1
@@ -375,6 +387,8 @@
 
 #define HAVE_UNSETENV 1
 
+#define HAVE_UNSHARE 1
+
 #define HAVE_USELOCALE 1
 
 #define HAVE_UTIMENSAT 1
@@ -409,13 +423,13 @@
 
 #define PACKAGE_NAME "glib"
 
-#define PACKAGE_STRING "glib 2.85.4"
+#define PACKAGE_STRING "glib 2.90.1"
 
 #define PACKAGE_TARNAME "glib"
 
 #define PACKAGE_URL ""
 
-#define PACKAGE_VERSION "2.85.4"
+#define PACKAGE_VERSION "2.90.1"
 
 #define SIZEOF_CHAR 1
 

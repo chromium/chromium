@@ -109,7 +109,7 @@ struct _GXdpDocumentsIface
 
 };
 
-GType gxdp_documents_get_type (void) G_GNUC_CONST;
+GType gxdp_documents_get_type (void);
 
 GDBusInterfaceInfo *gxdp_documents_interface_info (void);
 guint gxdp_documents_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -186,13 +186,13 @@ void gxdp_documents_call_get_mount_point (
 
 gboolean gxdp_documents_call_get_mount_point_finish (
     GXdpDocuments *proxy,
-    gchar **out_path,
+    gchar ** out_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean gxdp_documents_call_get_mount_point_sync (
     GXdpDocuments *proxy,
-    gchar **out_path,
+    gchar ** out_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -208,7 +208,7 @@ void gxdp_documents_call_add (
 
 gboolean gxdp_documents_call_add_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -219,7 +219,7 @@ gboolean gxdp_documents_call_add_sync (
     gboolean arg_reuse_existing,
     gboolean arg_persistent,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -237,7 +237,7 @@ void gxdp_documents_call_add_named (
 
 gboolean gxdp_documents_call_add_named_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -249,7 +249,7 @@ gboolean gxdp_documents_call_add_named_sync (
     gboolean arg_reuse_existing,
     gboolean arg_persistent,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -267,8 +267,8 @@ void gxdp_documents_call_add_full (
 
 gboolean gxdp_documents_call_add_full_finish (
     GXdpDocuments *proxy,
-    gchar ***out_doc_ids,
-    GVariant **out_extra_out,
+    gchar *** out_doc_ids,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -280,8 +280,8 @@ gboolean gxdp_documents_call_add_full_sync (
     const gchar *arg_app_id,
     const gchar *const *arg_permissions,
     GUnixFDList  *fd_list,
-    gchar ***out_doc_ids,
-    GVariant **out_extra_out,
+    gchar *** out_doc_ids,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -300,8 +300,8 @@ void gxdp_documents_call_add_named_full (
 
 gboolean gxdp_documents_call_add_named_full_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
-    GVariant **out_extra_out,
+    gchar ** out_doc_id,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -314,8 +314,8 @@ gboolean gxdp_documents_call_add_named_full_sync (
     const gchar *arg_app_id,
     const gchar *const *arg_permissions,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
-    GVariant **out_extra_out,
+    gchar ** out_doc_id,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -391,14 +391,14 @@ void gxdp_documents_call_lookup (
 
 gboolean gxdp_documents_call_lookup_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GAsyncResult *res,
     GError **error);
 
 gboolean gxdp_documents_call_lookup_sync (
     GXdpDocuments *proxy,
     const gchar *arg_filename,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GCancellable *cancellable,
     GError **error);
 
@@ -411,16 +411,16 @@ void gxdp_documents_call_info (
 
 gboolean gxdp_documents_call_info_finish (
     GXdpDocuments *proxy,
-    gchar **out_path,
-    GVariant **out_apps,
+    gchar ** out_path,
+    GVariant ** out_apps,
     GAsyncResult *res,
     GError **error);
 
 gboolean gxdp_documents_call_info_sync (
     GXdpDocuments *proxy,
     const gchar *arg_doc_id,
-    gchar **out_path,
-    GVariant **out_apps,
+    gchar ** out_path,
+    GVariant ** out_apps,
     GCancellable *cancellable,
     GError **error);
 
@@ -433,14 +433,14 @@ void gxdp_documents_call_list (
 
 gboolean gxdp_documents_call_list_finish (
     GXdpDocuments *proxy,
-    GVariant **out_docs,
+    GVariant ** out_docs,
     GAsyncResult *res,
     GError **error);
 
 gboolean gxdp_documents_call_list_sync (
     GXdpDocuments *proxy,
     const gchar *arg_app_id,
-    GVariant **out_docs,
+    GVariant ** out_docs,
     GCancellable *cancellable,
     GError **error);
 
@@ -476,7 +476,7 @@ struct _GXdpDocumentsProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType gxdp_documents_proxy_get_type (void) G_GNUC_CONST;
+GType gxdp_documents_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpDocumentsProxy, g_object_unref)
@@ -546,7 +546,7 @@ struct _GXdpDocumentsSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType gxdp_documents_skeleton_get_type (void) G_GNUC_CONST;
+GType gxdp_documents_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpDocumentsSkeleton, g_object_unref)
@@ -599,7 +599,7 @@ struct _GXdpOpenURIIface
 
 };
 
-GType gxdp_open_uri_get_type (void) G_GNUC_CONST;
+GType gxdp_open_uri_get_type (void);
 
 GDBusInterfaceInfo *gxdp_open_uri_interface_info (void);
 guint gxdp_open_uri_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -637,7 +637,7 @@ void gxdp_open_uri_call_open_uri (
 
 gboolean gxdp_open_uri_call_open_uri_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GAsyncResult *res,
     GError **error);
 
@@ -646,7 +646,7 @@ gboolean gxdp_open_uri_call_open_uri_sync (
     const gchar *arg_parent_window,
     const gchar *arg_uri,
     GVariant *arg_options,
-    gchar **out_handle,
+    gchar ** out_handle,
     GCancellable *cancellable,
     GError **error);
 
@@ -662,7 +662,7 @@ void gxdp_open_uri_call_open_file (
 
 gboolean gxdp_open_uri_call_open_file_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -673,7 +673,7 @@ gboolean gxdp_open_uri_call_open_file_sync (
     GVariant *arg_fd,
     GVariant *arg_options,
     GUnixFDList  *fd_list,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -690,7 +690,7 @@ void gxdp_open_uri_call_open_directory (
 
 gboolean gxdp_open_uri_call_open_directory_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -701,7 +701,7 @@ gboolean gxdp_open_uri_call_open_directory_sync (
     GVariant *arg_fd,
     GVariant *arg_options,
     GUnixFDList  *fd_list,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -738,7 +738,7 @@ struct _GXdpOpenURIProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType gxdp_open_uri_proxy_get_type (void) G_GNUC_CONST;
+GType gxdp_open_uri_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpOpenURIProxy, g_object_unref)
@@ -808,7 +808,7 @@ struct _GXdpOpenURISkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType gxdp_open_uri_skeleton_get_type (void) G_GNUC_CONST;
+GType gxdp_open_uri_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpOpenURISkeleton, g_object_unref)
@@ -843,7 +843,7 @@ struct _GXdpProxyResolverIface
 
 };
 
-GType gxdp_proxy_resolver_get_type (void) G_GNUC_CONST;
+GType gxdp_proxy_resolver_get_type (void);
 
 GDBusInterfaceInfo *gxdp_proxy_resolver_interface_info (void);
 guint gxdp_proxy_resolver_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -867,14 +867,14 @@ void gxdp_proxy_resolver_call_lookup (
 
 gboolean gxdp_proxy_resolver_call_lookup_finish (
     GXdpProxyResolver *proxy,
-    gchar ***out_proxies,
+    gchar *** out_proxies,
     GAsyncResult *res,
     GError **error);
 
 gboolean gxdp_proxy_resolver_call_lookup_sync (
     GXdpProxyResolver *proxy,
     const gchar *arg_uri,
-    gchar ***out_proxies,
+    gchar *** out_proxies,
     GCancellable *cancellable,
     GError **error);
 
@@ -910,7 +910,7 @@ struct _GXdpProxyResolverProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType gxdp_proxy_resolver_proxy_get_type (void) G_GNUC_CONST;
+GType gxdp_proxy_resolver_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpProxyResolverProxy, g_object_unref)
@@ -980,7 +980,7 @@ struct _GXdpProxyResolverSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType gxdp_proxy_resolver_skeleton_get_type (void) G_GNUC_CONST;
+GType gxdp_proxy_resolver_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpProxyResolverSkeleton, g_object_unref)
@@ -1016,7 +1016,7 @@ struct _GXdpTrashIface
 
 };
 
-GType gxdp_trash_get_type (void) G_GNUC_CONST;
+GType gxdp_trash_get_type (void);
 
 GDBusInterfaceInfo *gxdp_trash_interface_info (void);
 guint gxdp_trash_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -1042,7 +1042,7 @@ void gxdp_trash_call_trash_file (
 
 gboolean gxdp_trash_call_trash_file_finish (
     GXdpTrash *proxy,
-    guint *out_result,
+    guint* out_result,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -1051,7 +1051,7 @@ gboolean gxdp_trash_call_trash_file_sync (
     GXdpTrash *proxy,
     GVariant *arg_fd,
     GUnixFDList  *fd_list,
-    guint *out_result,
+    guint* out_result,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -1088,7 +1088,7 @@ struct _GXdpTrashProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType gxdp_trash_proxy_get_type (void) G_GNUC_CONST;
+GType gxdp_trash_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpTrashProxy, g_object_unref)
@@ -1158,7 +1158,7 @@ struct _GXdpTrashSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType gxdp_trash_skeleton_get_type (void) G_GNUC_CONST;
+GType gxdp_trash_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GXdpTrashSkeleton, g_object_unref)

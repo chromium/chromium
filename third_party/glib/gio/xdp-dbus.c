@@ -2003,7 +2003,7 @@ gxdp_documents_call_get_mount_point (
 gboolean
 gxdp_documents_call_get_mount_point_finish (
     GXdpDocuments *proxy,
-    gchar **out_path,
+    gchar ** out_path,
     GAsyncResult *res,
     GError **error)
 {
@@ -2035,7 +2035,7 @@ _out:
 gboolean
 gxdp_documents_call_get_mount_point_sync (
     GXdpDocuments *proxy,
-    gchar **out_path,
+    gchar ** out_path,
     GCancellable *cancellable,
     GError **error)
 {
@@ -2114,7 +2114,7 @@ gxdp_documents_call_add (
 gboolean
 gxdp_documents_call_add_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -2156,7 +2156,7 @@ gxdp_documents_call_add_sync (
     gboolean arg_reuse_existing,
     gboolean arg_persistent,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -2244,7 +2244,7 @@ gxdp_documents_call_add_named (
 gboolean
 gxdp_documents_call_add_named_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -2288,7 +2288,7 @@ gxdp_documents_call_add_named_sync (
     gboolean arg_reuse_existing,
     gboolean arg_persistent,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -2378,8 +2378,8 @@ gxdp_documents_call_add_full (
 gboolean
 gxdp_documents_call_add_full_finish (
     GXdpDocuments *proxy,
-    gchar ***out_doc_ids,
-    GVariant **out_extra_out,
+    gchar *** out_doc_ids,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -2425,8 +2425,8 @@ gxdp_documents_call_add_full_sync (
     const gchar *arg_app_id,
     const gchar *const *arg_permissions,
     GUnixFDList  *fd_list,
-    gchar ***out_doc_ids,
-    GVariant **out_extra_out,
+    gchar *** out_doc_ids,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -2520,8 +2520,8 @@ gxdp_documents_call_add_named_full (
 gboolean
 gxdp_documents_call_add_named_full_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
-    GVariant **out_extra_out,
+    gchar ** out_doc_id,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -2569,8 +2569,8 @@ gxdp_documents_call_add_named_full_sync (
     const gchar *arg_app_id,
     const gchar *const *arg_permissions,
     GUnixFDList  *fd_list,
-    gchar **out_doc_id,
-    GVariant **out_extra_out,
+    gchar ** out_doc_id,
+    GVariant ** out_extra_out,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -2966,7 +2966,7 @@ gxdp_documents_call_lookup (
 gboolean
 gxdp_documents_call_lookup_finish (
     GXdpDocuments *proxy,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GAsyncResult *res,
     GError **error)
 {
@@ -3000,7 +3000,7 @@ gboolean
 gxdp_documents_call_lookup_sync (
     GXdpDocuments *proxy,
     const gchar *arg_filename,
-    gchar **out_doc_id,
+    gchar ** out_doc_id,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3071,8 +3071,8 @@ gxdp_documents_call_info (
 gboolean
 gxdp_documents_call_info_finish (
     GXdpDocuments *proxy,
-    gchar **out_path,
-    GVariant **out_apps,
+    gchar ** out_path,
+    GVariant ** out_apps,
     GAsyncResult *res,
     GError **error)
 {
@@ -3108,8 +3108,8 @@ gboolean
 gxdp_documents_call_info_sync (
     GXdpDocuments *proxy,
     const gchar *arg_doc_id,
-    gchar **out_path,
-    GVariant **out_apps,
+    gchar ** out_path,
+    GVariant ** out_apps,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3180,7 +3180,7 @@ gxdp_documents_call_list (
 gboolean
 gxdp_documents_call_list_finish (
     GXdpDocuments *proxy,
-    GVariant **out_docs,
+    GVariant ** out_docs,
     GAsyncResult *res,
     GError **error)
 {
@@ -3214,7 +3214,7 @@ gboolean
 gxdp_documents_call_list_sync (
     GXdpDocuments *proxy,
     const gchar *arg_app_id,
-    GVariant **out_docs,
+    GVariant ** out_docs,
     GCancellable *cancellable,
     GError **error)
 {
@@ -4144,8 +4144,14 @@ gxdp_documents_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (gxdp_documents_skeleton_parent_class)->finalize (object);
@@ -4909,7 +4915,7 @@ gxdp_open_uri_call_open_uri (
 gboolean
 gxdp_open_uri_call_open_uri_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GAsyncResult *res,
     GError **error)
 {
@@ -4947,7 +4953,7 @@ gxdp_open_uri_call_open_uri_sync (
     const gchar *arg_parent_window,
     const gchar *arg_uri,
     GVariant *arg_options,
-    gchar **out_handle,
+    gchar ** out_handle,
     GCancellable *cancellable,
     GError **error)
 {
@@ -5029,7 +5035,7 @@ gxdp_open_uri_call_open_file (
 gboolean
 gxdp_open_uri_call_open_file_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -5071,7 +5077,7 @@ gxdp_open_uri_call_open_file_sync (
     GVariant *arg_fd,
     GVariant *arg_options,
     GUnixFDList  *fd_list,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -5156,7 +5162,7 @@ gxdp_open_uri_call_open_directory (
 gboolean
 gxdp_open_uri_call_open_directory_finish (
     GXdpOpenURI *proxy,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -5198,7 +5204,7 @@ gxdp_open_uri_call_open_directory_sync (
     GVariant *arg_fd,
     GVariant *arg_options,
     GUnixFDList  *fd_list,
-    gchar **out_handle,
+    gchar ** out_handle,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -5959,8 +5965,14 @@ gxdp_open_uri_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (gxdp_open_uri_skeleton_parent_class)->finalize (object);
@@ -6468,7 +6480,7 @@ gxdp_proxy_resolver_call_lookup (
 gboolean
 gxdp_proxy_resolver_call_lookup_finish (
     GXdpProxyResolver *proxy,
-    gchar ***out_proxies,
+    gchar *** out_proxies,
     GAsyncResult *res,
     GError **error)
 {
@@ -6502,7 +6514,7 @@ gboolean
 gxdp_proxy_resolver_call_lookup_sync (
     GXdpProxyResolver *proxy,
     const gchar *arg_uri,
-    gchar ***out_proxies,
+    gchar *** out_proxies,
     GCancellable *cancellable,
     GError **error)
 {
@@ -7210,8 +7222,14 @@ gxdp_proxy_resolver_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (gxdp_proxy_resolver_skeleton_parent_class)->finalize (object);
@@ -7724,7 +7742,7 @@ gxdp_trash_call_trash_file (
 gboolean
 gxdp_trash_call_trash_file_finish (
     GXdpTrash *proxy,
-    guint *out_result,
+    guint* out_result,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -7762,7 +7780,7 @@ gxdp_trash_call_trash_file_sync (
     GXdpTrash *proxy,
     GVariant *arg_fd,
     GUnixFDList  *fd_list,
-    guint *out_result,
+    guint* out_result,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -8476,8 +8494,14 @@ gxdp_trash_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (gxdp_trash_skeleton_parent_class)->finalize (object);

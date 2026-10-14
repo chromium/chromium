@@ -30,8 +30,10 @@ done | rsync -R --files-from=- "$TMP_DIR/" ../
 # options. This list may need to be revised if defines for new dependencies
 # that are not in sysroot are added when updating glib.
 sed -Ei \
-  's/#define (HAVE_STRLCPY|HAVE_CLOSE_RANGE|HAVE_STATX|HAVE_COPY_FILE_RANGE|HAVE_SELINUX).*/#undef \1/'\
+  's/#define (HAVE_STRLCPY|HAVE_CLOSE_RANGE|HAVE_STATX|HAVE_COPY_FILE_RANGE|HAVE_SELINUX|HAVE_FREE_SIZED|HAVE_FREE_ALIGNED_SIZED|HAVE_LIBELF)( .*)?$/#undef \1/'\
   ../include/config.h
+sed -Ei 's/#define (G_HAVE_FREE_SIZED)( .*)?$/#undef \1/' \
+  ../include/glib/glibconfig.h
 
 rm -rf "$TMP_DIR"
 

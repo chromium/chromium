@@ -111,6 +111,7 @@ g_unicode_break_type_get_type (void)
         { G_UNICODE_BREAK_AKSARA_START, "G_UNICODE_BREAK_AKSARA_START", "aksara-start" },
         { G_UNICODE_BREAK_VIRAMA_FINAL, "G_UNICODE_BREAK_VIRAMA_FINAL", "virama-final" },
         { G_UNICODE_BREAK_VIRAMA, "G_UNICODE_BREAK_VIRAMA", "virama" },
+        { G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN, "G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN", "unambiguous-hyphen" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =
@@ -301,6 +302,10 @@ g_unicode_script_get_type (void)
         { G_UNICODE_SCRIPT_GURUNG_KHEMA, "G_UNICODE_SCRIPT_GURUNG_KHEMA", "gurung-khema" },
         { G_UNICODE_SCRIPT_KIRAT_RAI, "G_UNICODE_SCRIPT_KIRAT_RAI", "kirat-rai" },
         { G_UNICODE_SCRIPT_OL_ONAL, "G_UNICODE_SCRIPT_OL_ONAL", "ol-onal" },
+        { G_UNICODE_SCRIPT_SIDETIC, "G_UNICODE_SCRIPT_SIDETIC", "sidetic" },
+        { G_UNICODE_SCRIPT_TOLONG_SIKI, "G_UNICODE_SCRIPT_TOLONG_SIKI", "tolong-siki" },
+        { G_UNICODE_SCRIPT_TAI_YO, "G_UNICODE_SCRIPT_TAI_YO", "tai-yo" },
+        { G_UNICODE_SCRIPT_BERIA_ERFE, "G_UNICODE_SCRIPT_BERIA_ERFE", "beria-erfe" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =

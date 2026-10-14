@@ -33,6 +33,19 @@
 
 /* Version boundaries checks */
 
+/**
+ * G_ENCODE_VERSION:
+ * @major: major version number
+ * @minor: minor version number
+ *
+ * Encode a major.minor version as a single integer.
+ *
+ * This is the encoding used by macros such as `GLIB_VERSION_2_84` and
+ * `GLIB_VERSION_CUR_STABLE`, and is intended to be used when (for example)
+ * setting the value of `GLIB_VERSION_MAX_ALLOWED`.
+ *
+ * Since: 2.32
+ */
 #define G_ENCODE_VERSION(major, minor) ((major) << 16 | (minor) << 8)
 
 /**
@@ -422,6 +435,24 @@
 * Since: 2.86
 */
 #define GLIB_VERSION_2_86       (G_ENCODE_VERSION (2, 86))
+/**
+* GLIB_VERSION_2_88:
+*
+* A macro that evaluates to the 2.88 version of GLib, in a format
+* that can be used by the C pre-processor.
+*
+* Since: 2.88
+*/
+#define GLIB_VERSION_2_88       (G_ENCODE_VERSION (2, 88))
+/**
+* GLIB_VERSION_2_90:
+*
+* A macro that evaluates to the 2.90 version of GLib, in a format
+* that can be used by the C pre-processor.
+*
+* Since: 2.90
+*/
+#define GLIB_VERSION_2_90       (G_ENCODE_VERSION (2, 90))
 
 /**
  * GLIB_VERSION_CUR_STABLE:

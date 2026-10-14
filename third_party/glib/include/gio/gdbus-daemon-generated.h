@@ -129,7 +129,7 @@ struct __GFreedesktopDBusIface
 
 };
 
-GType _g_freedesktop_dbus_get_type (void) G_GNUC_CONST;
+GType _g_freedesktop_dbus_get_type (void);
 
 GDBusInterfaceInfo *_g_freedesktop_dbus_interface_info (void);
 guint _g_freedesktop_dbus_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -245,13 +245,13 @@ void _g_freedesktop_dbus_call_hello (
 
 gboolean _g_freedesktop_dbus_call_hello_finish (
     _GFreedesktopDBus *proxy,
-    gchar **out_assigned_name,
+    gchar ** out_assigned_name,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_hello_sync (
     _GFreedesktopDBus *proxy,
-    gchar **out_assigned_name,
+    gchar ** out_assigned_name,
     GCancellable *cancellable,
     GError **error);
 
@@ -265,7 +265,7 @@ void _g_freedesktop_dbus_call_request_name (
 
 gboolean _g_freedesktop_dbus_call_request_name_finish (
     _GFreedesktopDBus *proxy,
-    guint *out_value,
+    guint* out_value,
     GAsyncResult *res,
     GError **error);
 
@@ -273,7 +273,7 @@ gboolean _g_freedesktop_dbus_call_request_name_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
     guint arg_flags,
-    guint *out_value,
+    guint* out_value,
     GCancellable *cancellable,
     GError **error);
 
@@ -286,14 +286,14 @@ void _g_freedesktop_dbus_call_release_name (
 
 gboolean _g_freedesktop_dbus_call_release_name_finish (
     _GFreedesktopDBus *proxy,
-    guint *out_value,
+    guint* out_value,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_release_name_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    guint *out_value,
+    guint* out_value,
     GCancellable *cancellable,
     GError **error);
 
@@ -307,7 +307,7 @@ void _g_freedesktop_dbus_call_start_service_by_name (
 
 gboolean _g_freedesktop_dbus_call_start_service_by_name_finish (
     _GFreedesktopDBus *proxy,
-    guint *out_value,
+    guint* out_value,
     GAsyncResult *res,
     GError **error);
 
@@ -315,7 +315,7 @@ gboolean _g_freedesktop_dbus_call_start_service_by_name_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
     guint arg_flags,
-    guint *out_value,
+    guint* out_value,
     GCancellable *cancellable,
     GError **error);
 
@@ -328,14 +328,14 @@ void _g_freedesktop_dbus_call_name_has_owner (
 
 gboolean _g_freedesktop_dbus_call_name_has_owner_finish (
     _GFreedesktopDBus *proxy,
-    gboolean *out_has_owner,
+    gboolean* out_has_owner,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_name_has_owner_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    gboolean *out_has_owner,
+    gboolean* out_has_owner,
     GCancellable *cancellable,
     GError **error);
 
@@ -347,13 +347,13 @@ void _g_freedesktop_dbus_call_list_names (
 
 gboolean _g_freedesktop_dbus_call_list_names_finish (
     _GFreedesktopDBus *proxy,
-    gchar ***out_names,
+    gchar *** out_names,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_list_names_sync (
     _GFreedesktopDBus *proxy,
-    gchar ***out_names,
+    gchar *** out_names,
     GCancellable *cancellable,
     GError **error);
 
@@ -365,13 +365,13 @@ void _g_freedesktop_dbus_call_list_activatable_names (
 
 gboolean _g_freedesktop_dbus_call_list_activatable_names_finish (
     _GFreedesktopDBus *proxy,
-    gchar ***out_activatable_names,
+    gchar *** out_activatable_names,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_list_activatable_names_sync (
     _GFreedesktopDBus *proxy,
-    gchar ***out_activatable_names,
+    gchar *** out_activatable_names,
     GCancellable *cancellable,
     GError **error);
 
@@ -420,14 +420,14 @@ void _g_freedesktop_dbus_call_get_name_owner (
 
 gboolean _g_freedesktop_dbus_call_get_name_owner_finish (
     _GFreedesktopDBus *proxy,
-    gchar **out_unique_name,
+    gchar ** out_unique_name,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_get_name_owner_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    gchar **out_unique_name,
+    gchar ** out_unique_name,
     GCancellable *cancellable,
     GError **error);
 
@@ -440,14 +440,14 @@ void _g_freedesktop_dbus_call_list_queued_owners (
 
 gboolean _g_freedesktop_dbus_call_list_queued_owners_finish (
     _GFreedesktopDBus *proxy,
-    gchar ***out_queued_owners,
+    gchar *** out_queued_owners,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_list_queued_owners_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    gchar ***out_queued_owners,
+    gchar *** out_queued_owners,
     GCancellable *cancellable,
     GError **error);
 
@@ -460,14 +460,14 @@ void _g_freedesktop_dbus_call_get_connection_unix_user (
 
 gboolean _g_freedesktop_dbus_call_get_connection_unix_user_finish (
     _GFreedesktopDBus *proxy,
-    guint *out_uid,
+    guint* out_uid,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_get_connection_unix_user_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    guint *out_uid,
+    guint* out_uid,
     GCancellable *cancellable,
     GError **error);
 
@@ -480,14 +480,14 @@ void _g_freedesktop_dbus_call_get_connection_unix_process_id (
 
 gboolean _g_freedesktop_dbus_call_get_connection_unix_process_id_finish (
     _GFreedesktopDBus *proxy,
-    guint *out_pid,
+    guint* out_pid,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_get_connection_unix_process_id_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    guint *out_pid,
+    guint* out_pid,
     GCancellable *cancellable,
     GError **error);
 
@@ -500,14 +500,14 @@ void _g_freedesktop_dbus_call_get_connection_selinux_security_context (
 
 gboolean _g_freedesktop_dbus_call_get_connection_selinux_security_context_finish (
     _GFreedesktopDBus *proxy,
-    gchar **out_security_context,
+    gchar ** out_security_context,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_get_connection_selinux_security_context_sync (
     _GFreedesktopDBus *proxy,
     const gchar *arg_name,
-    gchar **out_security_context,
+    gchar ** out_security_context,
     GCancellable *cancellable,
     GError **error);
 
@@ -553,13 +553,13 @@ void _g_freedesktop_dbus_call_get_id (
 
 gboolean _g_freedesktop_dbus_call_get_id_finish (
     _GFreedesktopDBus *proxy,
-    gchar **out_unique_id,
+    gchar ** out_unique_id,
     GAsyncResult *res,
     GError **error);
 
 gboolean _g_freedesktop_dbus_call_get_id_sync (
     _GFreedesktopDBus *proxy,
-    gchar **out_unique_id,
+    gchar ** out_unique_id,
     GCancellable *cancellable,
     GError **error);
 
@@ -590,7 +590,7 @@ struct __GFreedesktopDBusProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType _g_freedesktop_dbus_proxy_get_type (void) G_GNUC_CONST;
+GType _g_freedesktop_dbus_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (_GFreedesktopDBusProxy, g_object_unref)
@@ -660,7 +660,7 @@ struct __GFreedesktopDBusSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType _g_freedesktop_dbus_skeleton_get_type (void) G_GNUC_CONST;
+GType _g_freedesktop_dbus_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (_GFreedesktopDBusSkeleton, g_object_unref)
