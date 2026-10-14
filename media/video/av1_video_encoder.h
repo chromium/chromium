@@ -44,7 +44,7 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   VideoEncoderOutput GetEncoderOutput(int temporal_id,
                                       base::TimeDelta timestamp,
                                       gfx::ColorSpace color_space) const;
-  EncoderStatus::Or<int> AssignNextTemporalId(bool key_frame);
+  base::expected<int, EncoderStatus> AssignNextTemporalId(bool key_frame);
   void UpdateEncoderColorSpace();
 
   using aom_codec_unique_ptr =

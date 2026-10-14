@@ -39,9 +39,9 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   using GetCommandBufferHelperCB =
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>;
   // Create and initialize a VEA. Returns nullptr if either part fails.
-  using CreateAndInitializeVideoEncodeAcceleratorCallback =
-      base::OnceCallback<::media::EncoderStatus::Or<
-          std::unique_ptr<::media::VideoEncodeAccelerator>>(
+  using CreateAndInitializeVideoEncodeAcceleratorCallback = base::OnceCallback<
+      base::expected<std::unique_ptr<::media::VideoEncodeAccelerator>,
+                     ::media::EncoderStatus>(
           const ::media::VideoEncodeAccelerator::Config& config,
           Client* client,
           const gpu::GpuPreferences& gpu_preferences,

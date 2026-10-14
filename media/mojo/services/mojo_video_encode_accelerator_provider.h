@@ -32,16 +32,17 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
   using GetCommandBufferHelperCB =
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>;
   using CreateAndInitializeVideoEncodeAcceleratorCallback =
-      base::RepeatingCallback<::media::EncoderStatus::Or<
-          std::unique_ptr<::media::VideoEncodeAccelerator>>(
-          const ::media::VideoEncodeAccelerator::Config& config,
-          VideoEncodeAccelerator::Client* client,
-          const gpu::GpuPreferences& gpu_preferences,
-          const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-          const gpu::GPUInfo::GPUDevice& gpu_device,
-          std::unique_ptr<MediaLog> media_log,
-          GetCommandBufferHelperCB get_command_buffer_helper_cb,
-          scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)>;
+      base::RepeatingCallback<
+          base::expected<std::unique_ptr<::media::VideoEncodeAccelerator>,
+                         ::media::EncoderStatus>(
+              const ::media::VideoEncodeAccelerator::Config& config,
+              VideoEncodeAccelerator::Client* client,
+              const gpu::GpuPreferences& gpu_preferences,
+              const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+              const gpu::GPUInfo::GPUDevice& gpu_device,
+              std::unique_ptr<MediaLog> media_log,
+              GetCommandBufferHelperCB get_command_buffer_helper_cb,
+              scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,

@@ -39,7 +39,7 @@ MATCHER_P(ExpectEncoderStatusCode, expected_code, "encoder status code") {
   return arg.code() == expected_code;
 }
 
-extern EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+extern base::expected<std::unique_ptr<VideoEncodeAccelerator>, EncoderStatus>
 CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
@@ -60,7 +60,7 @@ CreateAndInitializeFakeVEA(
   if (result.is_ok()) {
     return base::WrapUnique<VideoEncodeAccelerator>(vea.release());
   } else {
-    return std::move(result);
+    return base::unexpected(std::move(result));
   }
 }
 

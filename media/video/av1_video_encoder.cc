@@ -739,7 +739,8 @@ VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
   return output;
 }
 
-EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
+base::expected<int, EncoderStatus> Av1VideoEncoder::AssignNextTemporalId(
+    bool key_frame) {
   if (svc_params_.number_temporal_layers <= 1) {
     return 0;
   }
@@ -774,7 +775,8 @@ EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
   if (error != AOM_CODEC_OK) {
     auto msg = LogAomErrorMessage(codec_.get(),
                                   "Set AV1E_SET_SVC_LAYER_ID error", error);
-    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    return base::unexpected(
+        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
   }
   return temporal_id;
 }

@@ -39,7 +39,7 @@ namespace media {
 
 static const gfx::Size kInputVisibleSize(64, 48);
 
-EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+base::expected<std::unique_ptr<VideoEncodeAccelerator>, EncoderStatus>
 CreateAndInitializeFakeVEA(
     bool will_initialization_succeed,
     const VideoEncodeAccelerator::Config& config,
@@ -61,7 +61,7 @@ CreateAndInitializeFakeVEA(
   if (result.is_ok()) {
     return base::WrapUnique<VideoEncodeAccelerator>(vea.release());
   } else {
-    return std::move(result);
+    return base::unexpected(std::move(result));
   }
 }
 

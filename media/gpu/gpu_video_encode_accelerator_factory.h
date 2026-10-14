@@ -33,7 +33,8 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
   // VideoEncodeAccelerator::Initialize() returns false.
   using GetCommandBufferHelperCB =
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>;
-  static EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>> CreateVEA(
+  static base::expected<std::unique_ptr<VideoEncodeAccelerator>, EncoderStatus>
+  CreateVEA(
       const VideoEncodeAccelerator::Config& config,
       VideoEncodeAccelerator::Client* client,
       const gpu::GpuPreferences& gpu_perferences,

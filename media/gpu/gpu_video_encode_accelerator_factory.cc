@@ -280,7 +280,8 @@ VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
 }  // anonymous namespace
 
 // static
-MEDIA_GPU_EXPORT EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+MEDIA_GPU_EXPORT
+base::expected<std::unique_ptr<VideoEncodeAccelerator>, EncoderStatus>
 GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
@@ -330,7 +331,7 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     }
     return vea;
   }
-  return std::move(initialization_err);
+  return base::unexpected(std::move(initialization_err));
 }
 
 // static
