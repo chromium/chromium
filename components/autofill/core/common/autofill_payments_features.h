@@ -148,11 +148,6 @@ BASE_DECLARE_FEATURE(kAutofillUpstreamEnforceStrikeDelay);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kAutofillUpstreamEnforceStrikeDelayDays;
 
-// Return whether a [No thanks] button and new messaging is shown in the save
-// card bubbles. This will be called only on desktop platforms.
-COMPONENT_EXPORT(AUTOFILL)
-bool ShouldShowImprovedUserConsentForCreditCardSave();
-
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PAYMENTS_FEATURES_H_

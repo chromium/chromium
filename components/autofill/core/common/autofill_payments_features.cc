@@ -398,14 +398,4 @@ const base::FeatureParam<int> kAutofillUpstreamEnforceStrikeDelayDays{
     &kAutofillUpstreamEnforceStrikeDelay,
     "autofill_upstream_enforce_strike_delay_days", 1};
 
-bool ShouldShowImprovedUserConsentForCreditCardSave() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
-  // The new user consent UI is fully launched on MacOS, Windows and Linux.
-  return true;
-#else
-  // Chrome OS does not have the new UI.
-  return false;
-#endif
-}
-
 }  // namespace autofill::features
