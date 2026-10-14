@@ -58,7 +58,7 @@ export class FilesToast extends PolymerElement {
 
   private action_: FilesToastAction|null = null;
   private queue_: FilesToastData[] = [];
-  visible: boolean = false;
+  declare visible: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
