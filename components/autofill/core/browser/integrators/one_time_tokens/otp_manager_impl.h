@@ -91,13 +91,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   static constexpr base::TimeDelta kGmailOtpTickleSubscriptionDuration =
       base::Minutes(5);
 
-  // Returns the most recent non-expired token from the token service's cache
-  // matching the optional `type`. If `type` is nullopt, tokens of any type
-  // are considered. Returns std::nullopt if the service is unavailable, the
-  // cache is empty, or all matching tokens are expired.
-  std::optional<one_time_tokens::OneTimeToken> SelectMostRecentToken(
-      std::optional<one_time_tokens::OneTimeTokenType> type =
-          std::nullopt) const;
+  // Returns `last_retrieved_gmail_otp_` if it is present and not expired, or
+  // `std::nullopt` otherwise.
+  std::optional<one_time_tokens::OneTimeToken> SelectMostRecentToken() const;
   // Fetches recent OTPs and creates or renewes a subscription. Any OTPs
   // discovered in this process are reported to `OnOneTimeTokenReceived`.
   // This calls OnOneTimeTokenReceived() at least one time.
@@ -107,16 +103,16 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   //
   // Verifies preconditions before initiating retrieval:
   // - The tickle source is Gmail.
-  // - An OTP field is detected on the page and currently has focus.
+  // - An eligible OTP field is detected on the page.
   // - No OTP field already contains user-typed input.
   // - The user has opted into Gmail OTP filling.
   // - No Gmail OTP retrieval is already in flight.
-  // - Both AffiliationService and GmailOtpBackend are available.
+  // - Both `AffiliationService` and `GmailOtpBackend` are available.
   //
   // If all preconditions are satisfied, starts an asynchronous retrieval via
-  // `GmailOtpRetriever` using the focused field's frame origin (falling back to
-  // the primary main frame origin if opaque) to fetch the token payload, which
-  // invokes `OnGmailOtpRetrieved` upon completion.
+  // `GmailOtpRetriever` using the target OTP field's frame origin (falling back
+  // to the primary main frame origin if opaque) to fetch the token payload,
+  // which invokes `OnGmailOtpRetrieved` upon completion.
   void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
 
   // Callback for `one_time_tokens::GmailOtpRetriever`.
@@ -141,12 +137,12 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
                                        LocalFrameToken frame_token,
                                        OneTimeTokensPhishGuardVerdict verdict);
 
-  // Returns the currently focused field if it exists and has `ONE_TIME_CODE`
-  // type, or nullptr otherwise.
-  // TODO(crbug.com/556170646): Rework this method to return a target
-  // `ONE_TIME_CODE` field even when no OTP field is currently focused, so
-  // proactive suggestions can be triggered without requiring field focus.
-  const AutofillField* GetFocusedOtpField() const;
+  // Returns the target OTP field:
+  // - If a form field is currently focused, returns it if it is an eligible OTP
+  //   field, or `nullptr` if another (non-OTP) field has focus.
+  // - If no form field is currently focused, returns the first eligible OTP
+  //   field in cached forms, or `nullptr` if none exists.
+  const AutofillField* GetTargetOtpField() const;
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
   // context, e.g., because the page called the WebOTP API.
@@ -192,6 +188,11 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Value of the last OTP that proactively triggered suggestions via the
   // renderer, used to avoid duplicate triggers.
   std::string last_triggered_otp_value_;
+
+  // The most recent domain-verified Gmail OTP retrieved via
+  // `gmail_otp_retriever_`, cached so that proactive renderer-triggered
+  // `GetOtpSuggestions()` requests can synchronously serve it.
+  std::optional<one_time_tokens::OneTimeToken> last_retrieved_gmail_otp_;
 
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
