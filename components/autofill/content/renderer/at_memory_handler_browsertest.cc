@@ -192,6 +192,17 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
     SendWebKeyboardEvent(event);
   }
 
+  std::u16string GetValue(const blink::WebElement& element) {
+    if (auto form_control = element.DynamicTo<blink::WebFormControlElement>()) {
+      return form_control.Value().Utf16();
+    }
+    std::u16string value = element.TextContent().Utf16();
+    // Blink inserts non-breaking spaces (\u00A0) for trailing spaces in
+    // contenteditable elements to prevent HTML whitespace collapsing.
+    std::ranges::replace(value, u'\xA0', u' ');
+    return value;
+  }
+
  private:
   std::optional<base::RunLoop> run_loop_;
   std::u16string fill_value_to_respond_ = u"result";
@@ -298,6 +309,147 @@ TEST_F(AtMemoryHandlerTest, FocusChangeCancelsDoubleCtrl) {
   task_environment_.RunUntilIdle();
 }
 
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory succeeds when
+// a contenteditable element sets contenteditable="false" on blur and restores
+// contenteditable="true" when window-level focus returns.
+TEST_F(AtMemoryHandlerTest, ContentEditableToggledOnBlurAndFocus) {
+  LoadHTML(R"(
+    <div id="f" contenteditable="true"
+         style="width:100px; height:100px;"></div>
+    <script>
+      const f = document.getElementById('f');
+      f.addEventListener('blur', () => { f.contentEditable = 'false'; });
+      window.addEventListener('focus', () => { f.contentEditable = 'true'; });
+    </script>
+  )");
+  WaitForFormsSeen();
+  Focus("f");
+  blink::WebElement f = GetWebElementById("f");
+  f.PasteText(blink::WebString::FromUtf16(u"hello "),
+              /*replace_all=*/true, /*smart_replace=*/false);
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  // Simulates the window losing the focus to the AtMemory popup, which
+  // triggers the 'blur' listener and sets contentEditable = 'false'.
+  GetWebFrameWidget()->SetFocus(false);
+  EXPECT_FALSE(f.IsContentEditable());
+  // Because the window is unfocused when ApplyFieldAction() runs,
+  // WaitForFocusAndReplaceSelectionForAtMemory() does not fill immediately,
+  // instead, it posts a retry task, delayed by `kDelayBeforeRetry` (20 ms)
+  // and returns.
+  WaitForApplyFieldAction();
+  EXPECT_FALSE(f.IsContentEditable());
+  EXPECT_EQ(GetValue(f), u"hello ");
+
+  // Restores the window focus, which dispatches 'focus' on the window and sets
+  // contentEditable = 'true'.
+  GetWebFrameWidget()->SetFocus(true);
+  // Advances time by 20 ms (`kDelayBeforeRetry`) so the pending retry
+  // task posted by WaitForFocusAndReplaceSelectionForAtMemory() executes and
+  // fills the value now that the window has focus again.
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+
+  EXPECT_TRUE(f.IsContentEditable());
+  EXPECT_EQ(GetValue(f), u"hello result");
+}
+
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory does not fill
+// into a *different* element if the AtMemory field stopped being editable and
+// the DOM focus moved elsewhere in the meantime.
+TEST_F(AtMemoryHandlerTest, DoesNotFillIntoADifferentElement) {
+  LoadHTML(R"(
+    <div id="f" contenteditable="true"
+         style="width:100px; height:50px;"></div>
+    <div id="other" contenteditable="true"
+         style="width:100px; height:50px;">world!</div>
+    <script>
+      // Becomes non-editable (and thus non-focusable) on blur, never restored.
+      const f = document.getElementById('f');
+      f.addEventListener('blur', () => { f.contentEditable = 'false'; });
+    </script>
+  )");
+  WaitForFormsSeen();
+  Focus("f");
+  blink::WebElement f = GetWebElementById("f");
+  blink::WebElement other = GetWebElementById("other");
+  f.PasteText(blink::WebString::FromUtf16(u"hello "),
+              /*replace_all=*/true, /*smart_replace=*/false);
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  // Moving the focus away dispatches 'blur', which makes `f` non-editable.
+  other.Focus();
+  EXPECT_FALSE(f.IsContentEditable());
+  EXPECT_EQ(other.GetDocument().FocusedElement(), other);
+  WaitForApplyFieldAction();
+
+  EXPECT_EQ(GetValue(other), u"world!");
+  EXPECT_EQ(GetValue(f), u"hello ");
+}
+
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory does not fill
+// a field that the page turned into a password field while the AtMemory popup
+// was open.
+//
+// This pins the IsSupportedField() check: the field is still focused, editable,
+// selected and unchanged, so no other check refuses the fill.
+TEST_F(AtMemoryHandlerTest, DoesNotFillIfFieldBecomesPassword) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+  blink::WebElement f = GetWebElementById("f");
+  f.PasteText(blink::WebString::FromUtf16(u"hello "),
+              /*replace_all=*/true, /*smart_replace=*/false);
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('f').type = 'password';)");
+  WaitForApplyFieldAction();
+
+  // Asserts that the other checks pass, i.e. that this test keeps isolating
+  // IsSupportedField().
+  EXPECT_EQ(f.GetDocument().FocusedElement(), f);
+  EXPECT_TRUE(f.ContainsFrameSelection());
+  EXPECT_EQ(GetValue(f), u"hello ");
+}
+
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory fills a
+// contenteditable that made itself non-editable on 'blur' after the DOM focus
+// moved to another element. Here field.Focus() (not the window regaining the
+// focus) restores contenteditable.
+//
+// `tabindex` is required: a non-editable `f` would otherwise not be focusable.
+TEST_F(AtMemoryHandlerTest, ContentEditableRestoredByRefocusAfterFocusMoved) {
+  LoadHTML(R"(
+    <div id="f" tabindex="0" contenteditable="true"
+         style="width:100px; height:50px;"></div>
+    <input id="other">
+    <script>
+      const f = document.getElementById('f');
+      f.addEventListener('blur', () => { f.contentEditable = 'false'; });
+      f.addEventListener('focus', () => { f.contentEditable = 'true'; });
+    </script>
+  )");
+  WaitForFormsSeen();
+  Focus("f");
+  blink::WebElement f = GetWebElementById("f");
+  blink::WebElement other = GetWebElementById("other");
+  f.PasteText(blink::WebString::FromUtf16(u"hello "),
+              /*replace_all=*/true, /*smart_replace=*/false);
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  other.Focus();
+  EXPECT_FALSE(f.IsContentEditable());
+  WaitForApplyFieldAction();
+
+  EXPECT_TRUE(f.IsContentEditable());
+  EXPECT_EQ(f.GetDocument().FocusedElement(), f);
+  EXPECT_EQ(GetValue(f), u"hello result");
+}
+
 class AtMemoryHandlerTest_SingleField
     : public AtMemoryHandlerTest,
       public WithParamInterface<FormControlType> {
@@ -336,16 +488,7 @@ class AtMemoryHandlerTest_SingleField
 
   FieldRendererId field_id() { return form_util::GetFieldRendererId(field()); }
 
-  std::u16string GetValue() {
-    if (auto form_control = field().DynamicTo<blink::WebFormControlElement>()) {
-      return form_control.Value().Utf16();
-    }
-    std::u16string value = field().TextContent().Utf16();
-    // Blink inserts non-breaking spaces (\u00A0) for trailing spaces in
-    // contenteditable elements to prevent HTML whitespace collapsing.
-    std::ranges::replace(value, u'\xA0', u' ');
-    return value;
-  }
+  std::u16string GetValue() { return AtMemoryHandlerTest::GetValue(field()); }
 
   void SetValue(std::u16string_view value) {
     field().PasteText(blink::WebString::FromUtf16(value),

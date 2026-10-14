@@ -72,9 +72,13 @@ class AtMemoryHandler {
 
   void DidReceiveLeftMouseDownOrGestureTapInNode(const blink::WebNode& node);
 
-  // Tries to fill `value` into `field` at the location where AtMemory was
-  // last triggered on `field`.
-  void ReplaceSelectionForAtMemory(blink::WebElement field,
+  // Tries to fill `value` into the field identified by `field_id`, at the
+  // location where AtMemory was last triggered on that field.
+  //
+  // Checks whether the field is fillable only after window-level focus has
+  // returned and the field has been re-focused, because some pages make the
+  // field non-editable while the AtMemory popup holds the focus.
+  void ReplaceSelectionForAtMemory(FieldRendererId field_id,
                                    const std::u16string& value);
 
   // Stores metadata for an AskForValuesToFill() on `field` if `trigger_source`
@@ -104,9 +108,9 @@ class AtMemoryHandler {
                                                   int num_try);
 
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
-  // `field` and removes the entry, if one was found.
+  // `field_id` and removes the entry, if one was found.
   std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
-      const blink::WebElement& field);
+      FieldRendererId field_id);
 
   // Returns true if a completed double Ctrl sequence actually triggers
   // AtMemory, i.e. both features and the user's preference are enabled.

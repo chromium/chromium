@@ -262,10 +262,10 @@ void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
   ctrl_state_ = {};
 }
 
-void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement field,
+void AtMemoryHandler::ReplaceSelectionForAtMemory(FieldRendererId field_id,
                                                   const std::u16string& value) {
   const std::optional<AskForValuesToFillInfo> info =
-      ExtractAskForValuesToFill(field);
+      ExtractAskForValuesToFill(field_id);
   if (!info) {
     return;
   }
@@ -323,6 +323,14 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   // the focus if no fill happens.
   field.Focus();
 
+  // IsSupportedField() is checked only after window-level focus has returned
+  // and `field.Focus()` has been called because some pages disable
+  // `contenteditable` on blur and restore it from a `focus` listener (e.g., on
+  // the window, or on the element itself if it has `tabindex`).
+  if (!IsSupportedField(field)) {
+    return;
+  }
+
   if (!info.selection_range.IsNull()) {
     if (WebLocalFrame* frame = GetFrame(field)) {
       // Restores the text selection at the time of AskForValuesToFill() so that
@@ -337,13 +345,8 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
-AtMemoryHandler::ExtractAskForValuesToFill(const WebElement& field) {
-  // This function is intended only for WebFormControlElements and for
-  // contenteditables that aren't WebFormElement. See
-  // form_util::GetFieldRendererId().
-  CHECK(!field.DynamicTo<WebFormElement>());
-  auto it = std::ranges::find(last_at_memory_ask_for_values_to_fills_,
-                              form_util::GetFieldRendererId(field),
+AtMemoryHandler::ExtractAskForValuesToFill(FieldRendererId field_id) {
+  auto it = std::ranges::find(last_at_memory_ask_for_values_to_fills_, field_id,
                               &AskForValuesToFillInfo::field_id);
   if (it == last_at_memory_ask_for_values_to_fills_.end()) {
     return std::nullopt;
@@ -364,7 +367,8 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     return;
   }
 
-  ExtractAskForValuesToFill(field);
+  const FieldRendererId field_id = form_util::GetFieldRendererId(field);
+  ExtractAskForValuesToFill(field_id);
 
   constexpr size_t kMaxSize = 10;
   while (last_at_memory_ask_for_values_to_fills_.size() >= kMaxSize) {
@@ -374,7 +378,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
   WebLocalFrame* frame = GetFrame(field);
 
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
-      .field_id = form_util::GetFieldRendererId(field),
+      .field_id = field_id,
       .value_hash = HashFieldValue(field),
       .selection_range =
           frame ? frame->GetInputMethodController()->GetSelectionOffsets()

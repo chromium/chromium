@@ -1372,7 +1372,7 @@ void AutofillAgent::ApplyFieldAction(
             break;
           }
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            at_memory_handler_.ReplaceSelectionForAtMemory(form_control, value);
+            at_memory_handler_.ReplaceSelectionForAtMemory(field_id, value);
             break;
           }
           case mojom::FieldActionType::kSelectAll:
@@ -1400,36 +1400,44 @@ void AutofillAgent::ApplyFieldAction(
     return;
   }
 
-  if (WebElement content_editable =
-          form_util::GetContentEditableByRendererId(field_id)) {
-    switch (action_persistence) {
-      case mojom::ActionPersistence::kPreview:
+  switch (action_persistence) {
+    case mojom::ActionPersistence::kPreview:
+      if (WebElement content_editable =
+              form_util::GetContentEditableByRendererId(field_id)) {
         // TODO(crbug.com/488311191): Implement for contenteditable.
         NOTIMPLEMENTED() << "Previewing on contenteditables is not implemented";
-        break;
-      case mojom::ActionPersistence::kFill:
-        switch (action_type) {
-          case mojom::FieldActionType::kReplaceAll:
+      }
+      break;
+    case mojom::ActionPersistence::kFill:
+      switch (action_type) {
+        case mojom::FieldActionType::kReplaceAll:
+          if (WebElement content_editable =
+                  form_util::GetContentEditableByRendererId(field_id)) {
             content_editable.PasteText(WebString::FromUtf16(value),
                                        /*replace_all=*/true,
                                        /*smart_replace=*/true);
-            break;
-          case mojom::FieldActionType::kReplaceSelection:
+          }
+          break;
+        case mojom::FieldActionType::kReplaceSelection:
+          if (WebElement content_editable =
+                  form_util::GetContentEditableByRendererId(field_id)) {
             content_editable.PasteText(WebString::FromUtf16(value),
                                        /*replace_all=*/false,
                                        /*smart_replace=*/true);
-            break;
-          case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            at_memory_handler_.ReplaceSelectionForAtMemory(content_editable,
-                                                           value);
-            break;
           }
-          case mojom::FieldActionType::kSelectAll:
-            DCHECK(value.empty());
+          break;
+        case mojom::FieldActionType::kReplaceSelectionForAtMemory:
+          at_memory_handler_.ReplaceSelectionForAtMemory(field_id, value);
+          break;
+        case mojom::FieldActionType::kSelectAll:
+          DCHECK(value.empty());
+          if (WebElement content_editable =
+                  form_util::GetContentEditableByRendererId(field_id)) {
             content_editable.SelectText(/*select_all=*/true);
-            break;
-        }
-    }
+          }
+          break;
+      }
+      break;
   }
 }
 
