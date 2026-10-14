@@ -207,7 +207,7 @@ const CGFloat kReducedModuleSpacingControl = 14.0;
 const CGFloat kLogoTopPaddingRegularXRegular = 88.0;
 const CGFloat kDoodleTopPaddingRegularXRegular = 107.0;
 const CGFloat kLogoToFakeboxPaddingRegularXRegular = 43.0;
-const CGFloat kQuickActionsTopPaddingRegularXRegular = 9.0;
+const CGFloat kQuickActionsTopPaddingRegularXRegular = 11.0;
 
 // Shared spacing constants.
 const CGFloat kQuickActionsTopPadding = 12.0;

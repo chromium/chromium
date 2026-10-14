@@ -910,8 +910,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.alpha = std::max(1 - progress, 0.01);
 
   widthConstraint.constant = searchFieldNormalWidth;
+  CGFloat fakeLocationBarHeightMargin =
+      IsNewTabPageUICleanupEnabled() ? 0 : kFakeLocationBarHeightMargin;
   self.fakeLocationBarHeightConstraint.constant =
-      fakeOmniboxHeight - kFakeLocationBarHeightMargin;
+      fakeOmniboxHeight - fakeLocationBarHeightMargin;
+
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
