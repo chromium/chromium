@@ -1,7 +1,7 @@
 Name: libinput
 URL: https://gitlab.freedesktop.org/libinput/libinput
-Version: 1.31.0
-Revision: 39491253b27715d8c81a6a0f3a96d767e0defc7b
+Version: 1.32.0
+Revision: 5cf833b572f5a33663888da321dce0ba1abd82a2
 Update Mechanism: Manual (https://crbug.com/503546519)
 License: MIT
 License File: LICENSE
