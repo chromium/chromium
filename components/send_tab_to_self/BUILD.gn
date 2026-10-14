@@ -51,12 +51,9 @@ static_library("send_tab_to_self") {
     "//components/shared_highlighting/core/common",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//components/strings",
     "//components/sync",
     "//components/sync_sessions",
     "//components/version_info",
-    "//google_apis",
-    "//ui/base",
     "//url",
   ]
   public_deps = [
@@ -146,10 +143,8 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/prefs:test_support",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
-    "//components/strings",
     "//components/sync:test_support",
     "//components/sync_device_info:test_support",
-    "//components/sync_preferences:test_support",
     "//components/sync_sessions:test_support",
     "//testing/gtest",
     "//url",

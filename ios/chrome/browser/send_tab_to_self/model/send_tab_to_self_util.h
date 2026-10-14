@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_TO_SELF_UTIL_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_TO_SELF_UTIL_H_
 
-#include "base/supports_user_data.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "url/origin.h"
 

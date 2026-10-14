@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "build/build_config.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "url/gurl.h"
@@ -21,8 +20,6 @@ class WebContents;
 namespace url {
 class Origin;
 }  // namespace url
-
-class Profile;
 
 namespace send_tab_to_self {
 

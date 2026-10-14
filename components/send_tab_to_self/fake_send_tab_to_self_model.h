@@ -62,7 +62,6 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   void SetTargetDeviceInfoSortedList(
       const std::vector<syncer::RemoteDeviceInfo>& devices);
   void AddTargetDevice(const syncer::RemoteDeviceInfo& device);
-  void SetLocalDeviceName(std::string_view device_name);
   void SetLocalCacheGuid(std::string_view cache_guid);
   void SetSendResult(SendTabToSelfResult result);
 
@@ -119,7 +118,6 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
  private:
   bool is_ready_ = true;
   bool has_valid_target_device_ = false;
-  std::string local_device_name_ = "device";
   std::string local_cache_guid_ = "";
   std::map<std::string, std::unique_ptr<SendTabToSelfEntry>, std::less<>>
       entries_;

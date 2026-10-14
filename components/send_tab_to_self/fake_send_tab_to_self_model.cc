@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
@@ -97,7 +96,7 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::SendEntry(
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::unique_ptr<SendTabToSelfEntry> entry =
       std::make_unique<SendTabToSelfEntry>(
-          guid, url, title, base::Time::Now(), local_device_name_,
+          guid, url, title, base::Time::Now(), "device",
           target_device_cache_guid, context, std::move(navigation_history));
 
   const SendTabToSelfEntry* result = entry.get();
@@ -199,10 +198,6 @@ void FakeSendTabToSelfModel::SetTargetDeviceInfoSortedList(
 void FakeSendTabToSelfModel::AddTargetDevice(
     const syncer::RemoteDeviceInfo& device) {
   devices_.push_back(device);
-}
-
-void FakeSendTabToSelfModel::SetLocalDeviceName(std::string_view device_name) {
-  local_device_name_ = std::string(device_name);
 }
 
 void FakeSendTabToSelfModel::SetLocalCacheGuid(std::string_view cache_guid) {

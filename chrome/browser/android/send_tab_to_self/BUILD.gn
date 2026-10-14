@@ -22,12 +22,10 @@ source_set("send_tab_to_self") {
     "//chrome/browser/tab:jni_headers",
     "//chrome/browser/ui/navigator",
     "//components/send_tab_to_self",
-    "//components/shared_highlighting/core/common",
     "//components/sync/protocol",
     "//components/sync_sessions",
     "//content/public/browser",
     "//ui/base",
-    "//ui/gfx",
     "//url",
   ]
 }

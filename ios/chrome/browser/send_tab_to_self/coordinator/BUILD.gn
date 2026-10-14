@@ -15,8 +15,6 @@ source_set("coordinator") {
     "//base",
     "//components/send_tab_to_self",
     "//components/signin/public/identity_manager/objc",
-    "//components/strings",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
@@ -29,17 +27,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/snackbar",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
-    "//ios/web/public",
-    "//ios/web/public/thread",
   ]
 }
 

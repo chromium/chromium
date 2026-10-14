@@ -19,7 +19,6 @@ class BrowserWindowInterface;
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
-class SendTabToSelfBubbleView;
 
 class SendTabToSelfToolbarBubbleController : public views::WidgetObserver {
  public:

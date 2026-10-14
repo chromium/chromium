@@ -15,7 +15,6 @@ class WebContents;
 
 namespace send_tab_to_self {
 
-class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleDeviceButton;
 
 // A bubble dialog that allows users to select a target device to send a tab to.

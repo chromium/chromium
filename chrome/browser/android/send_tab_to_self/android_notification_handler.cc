@@ -28,7 +28,6 @@
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
