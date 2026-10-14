@@ -189,6 +189,7 @@ BASE_DECLARE_FEATURE(kOmniboxFuseboxAsyncInflation);
 
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdate);
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdateV2);
+BASE_DECLARE_FEATURE(kOmniboxXGeoFailClosedOnPreciseLeak);
 BASE_DECLARE_FEATURE(kExactMatchFavicons);
 BASE_DECLARE_FEATURE(kOmniboxAimImageDownscaling);
 

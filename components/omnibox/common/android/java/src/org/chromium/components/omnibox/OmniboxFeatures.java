@@ -135,6 +135,11 @@ public class OmniboxFeatures {
     public static final CachedFlag sUrlBarWithoutLigatures =
             newFlag(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES, FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sXGeoFailClosedOnPreciseLeak =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_X_GEO_FAIL_CLOSED_ON_PRECISE_LEAK,
+                    FeatureState.ENABLED_IN_PROD);
+
     public static final CachedFlag sPlatformAgnosticXGeo =
             newFlag(OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO, FeatureState.ENABLED_IN_TEST);
 

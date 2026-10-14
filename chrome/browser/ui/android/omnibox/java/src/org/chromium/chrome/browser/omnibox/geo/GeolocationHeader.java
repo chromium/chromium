@@ -103,6 +103,8 @@ public class GeolocationHeader {
 
     private static final String DUMMY_URL_QUERY = "some_query";
 
+    @VisibleForTesting static final float COARSE_LOCATION_ACCURACY_THRESHOLD_METERS = 2000f;
+
     private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpdate;
     private static boolean sGeolocationPrimed;
     private static boolean sCurrentLocationRequested;
@@ -367,16 +369,25 @@ public class GeolocationHeader {
 
     @VisibleForTesting
     static @Nullable Location getLastKnownLocation(boolean hasFineSitePermission) {
-        if (sFusedLocation != null) {
-            return sFusedLocation;
+        boolean hasFineAppPermission =
+                hasAppGeolocationPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        Location location =
+                sFusedLocation != null
+                        ? sFusedLocation
+                        : GeolocationTracker.getLastKnownLocation(
+                                ContextUtils.getApplicationContext(),
+                                hasFineSitePermission && hasFineAppPermission);
+        if (location != null
+                && !hasFineSitePermission
+                && hasFineAppPermission
+                && (!location.hasAccuracy()
+                        || location.getAccuracy() < COARSE_LOCATION_ACCURACY_THRESHOLD_METERS)
+                && OmniboxFeatures.sXGeoFailClosedOnPreciseLeak.isEnabled()) {
+            // LocationManager and cached GMSCore fixes ignore site-level granularity when the app
+            // holds fine permission, and safe coarsening requires OS-level sticky offsets.
+            return null;
         }
-
-        boolean useFine =
-                hasFineSitePermission
-                        && hasAppGeolocationPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-
-        return GeolocationTracker.getLastKnownLocation(
-                ContextUtils.getApplicationContext(), useFine);
+        return location;
     }
 
     /** Encodes location into proto encoding. */

@@ -465,6 +465,11 @@ BASE_FEATURE(kOmniboxMobileParityUpdate, ENABLED);
 // Android and iOS, V2.
 BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 
+// Kill switch. If enabled, the Android X-Geo header is dropped when the device
+// hands back a precise fix for a site that only holds approximate location
+// permission, rather than sending the precise coordinates tagged as coarse.
+BASE_FEATURE(kOmniboxXGeoFailClosedOnPreciseLeak, ENABLED);
+
 // When the first suggestion is a url, the favicon is shown in the status view.
 BASE_FEATURE(kExactMatchFavicons, ENABLED);
 
@@ -671,6 +676,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kJumpStartOmnibox,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
+      &kOmniboxXGeoFailClosedOnPreciseLeak,
       &kPlatformAgnosticXGeo,
       &kInlineLocationSignaling,
       &kOmniboxSiteSearch,
