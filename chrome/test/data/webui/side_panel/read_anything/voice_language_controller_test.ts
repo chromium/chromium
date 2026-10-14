@@ -702,6 +702,58 @@ suite('VoiceLanguageController', () => {
     assertEquals(voice1, voiceLanguageController.getCurrentVoice());
   });
 
+
+  test('kInstalled restores stored voice with improved UI enabled', () => {
+    visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+    const lang = 'en-us';
+    const systemVoice =
+        createSpeechSynthesisVoice({lang, name: 'Google US English'});
+    const naturalVoice = createSpeechSynthesisVoice(
+        {lang, name: 'Google US English 1 (Natural)'});
+    const storedVoice = createSpeechSynthesisVoice(
+        {lang, name: 'Google US English 5 (Natural)'});
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.storedVoice = storedVoice.name;
+
+    // On startup, only system voices are available, so a fallback voice is
+    // selected.
+    speech.setVoices([systemVoice]);
+    voiceLanguageController.restoreFromPrefs();
+    assertEquals(systemVoice, voiceLanguageController.getCurrentVoice());
+
+    // Natural voices load and a natural voice is auto-selected.
+    speech.setVoices([systemVoice, naturalVoice, storedVoice]);
+    voiceLanguageController.onVoicesChanged();
+    assertEquals(naturalVoice, voiceLanguageController.getCurrentVoice());
+
+    // The engine reports the language as installed, so the stored voice is
+    // restored.
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalled');
+
+    assertEquals(storedVoice, voiceLanguageController.getCurrentVoice());
+  });
+
+  test('kInstalled keeps a language selected by the user', () => {
+    visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+    const storedVoice = createSpeechSynthesisVoice(
+        {lang: 'en-us', name: 'Google US English 5 (Natural)'});
+    const spanishVoice = createSpeechSynthesisVoice(
+        {lang: 'es-es', name: 'Google Spanish 1 (Natural)'});
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.storedVoice = storedVoice.name;
+    speech.setVoices([storedVoice, spanishVoice]);
+    voiceLanguageController.restoreFromPrefs();
+
+    // The user selects a language that doesn't match the page, so the stored
+    // voice for the page language shouldn't replace it.
+    voiceLanguageController.onLanguageSelected('es-es');
+    assertEquals(spanishVoice, voiceLanguageController.getCurrentVoice());
+
+    voiceLanguageController.updateLanguageStatus('en-us', 'kInstalled');
+
+    assertEquals(spanishVoice, voiceLanguageController.getCurrentVoice());
+  });
+
   test('stopWaitingForSpeechExtension stops waiting for engine timeout', () => {
     const lang = 'fi';
     voiceLanguageController.setServerStatus(

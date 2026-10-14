@@ -744,6 +744,13 @@ export class VoiceLanguageController {
                 (pendingLang === lang ||
                  getVoicePackConvertedLangIfExists(pendingLang) === lang)) {
               this.activatePendingLanguageIfAvailable_(pendingLang);
+            } else if (
+                this.getCurrentLanguage() ===
+                    this.audioBrowserProxy_.getBaseLanguageForSpeech() &&
+                !this.currentVoiceIsUserChosen_()) {
+              // Ensure a previously selected user preferred voice is used
+              // over the default, if available.
+              this.setUserPreferredVoiceFromPrefs_();
             }
           } else {
             this.autoSwitchVoice_(lang);
