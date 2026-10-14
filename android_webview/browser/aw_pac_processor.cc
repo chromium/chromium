@@ -303,6 +303,10 @@ class Job {
   }
 
   void Exec() {
+    if (processor_->jobs_cancelled_) {
+      event_.Signal();
+      return;
+    }
     processor_->jobs_.insert(this);
     std::move(task_).Run();
   }
@@ -374,27 +378,30 @@ AwPacProcessor::AwPacProcessor() {
 }
 
 AwPacProcessor::~AwPacProcessor() {
-  base::WaitableEvent event;
   // |proxy_resolver_| must be destroyed on the same thread it is created.
-  GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AwPacProcessor::Destroy, base::Unretained(this),
-                     base::Unretained(&event)));
-  event.Wait();
-}
-
-void AwPacProcessor::Destroy(base::WaitableEvent* event) {
-  // Cancel all unfinished jobs to unblock calling thread.
-  for (Job* job : jobs_) {
-    job->Cancel();
-  }
-
-  proxy_resolver_.reset();
-  event->Signal();
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  CancelJobsOnPacThread();
 }
 
 void AwPacProcessor::DestroyNative() {
-  delete this;
+  // Delete on the PAC thread, after the tasks already posted there, without
+  // making the caller wait.
+  GetTaskRunner()->DeleteSoon(FROM_HERE, this);
+}
+
+void AwPacProcessor::CancelJobs() {
+  GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&AwPacProcessor::CancelJobsOnPacThread,
+                                base::Unretained(this)));
+}
+
+void AwPacProcessor::CancelJobsOnPacThread() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  jobs_cancelled_ = true;
+  // Job::Cancel() removes the job from |jobs_|.
+  while (!jobs_.empty()) {
+    (*jobs_.begin())->Cancel();
+  }
 }
 
 void AwPacProcessor::SetProxyScriptNative(

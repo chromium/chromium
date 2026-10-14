@@ -34,7 +34,9 @@ const std::string kRequestUrl = "http://testurl.test";
 
 class AwPacProcessorTest : public testing::Test {
  public:
-  void TearDown() override { delete pac_processor_; }
+  void TearDown() override {
+    pac_processor_.ExtractAsDangling()->DestroyNative();
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -76,7 +78,7 @@ TEST_F(AwPacProcessorTest, MultipleProxyRequest) {
 
   EXPECT_TRUE(other_pac_processor_->MakeProxyRequest(kRequestUrl, &result));
   EXPECT_EQ("PROXY 127.0.0.1:80", result);
-  delete other_pac_processor_;
+  other_pac_processor_->DestroyNative();
 }
 
 TEST_F(AwPacProcessorTest, UnparseableScript) {

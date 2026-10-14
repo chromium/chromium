@@ -33,6 +33,10 @@ class AwPacProcessor {
   ~AwPacProcessor();
   void DestroyNative();
 
+  // Fails all unfinished and future jobs, unblocking the threads waiting for
+  // them.
+  void CancelJobs();
+
   bool SetProxyScript(const std::string& script);
   std::optional<std::string> MakeProxyRequest(const std::string& url);
   bool MakeProxyRequest(std::string url, std::string* result);
@@ -41,7 +45,7 @@ class AwPacProcessor {
       const std::vector<std::string>& string_link_addresses);
 
  private:
-  void Destroy(base::WaitableEvent* event);
+  void CancelJobsOnPacThread();
   void SetProxyScriptNative(
       std::unique_ptr<net::ProxyResolverFactory::Request>* request,
       const std::string& script,
@@ -60,6 +64,7 @@ class AwPacProcessor {
   std::unique_ptr<HostResolver> host_resolver_;
 
   std::set<raw_ptr<Job, SetExperimental>> jobs_;
+  bool jobs_cancelled_ = false;
 };
 }  // namespace android_webview
 

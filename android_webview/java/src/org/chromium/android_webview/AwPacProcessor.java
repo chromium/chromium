@@ -21,6 +21,10 @@ import org.chromium.build.annotations.UsedByReflection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Class to evaluate PAC scripts. Its lifecycle is independent of any Renderer, Profile, or WebView
@@ -30,9 +34,23 @@ import java.util.List;
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
+    // Guards all the fields below. PAC evaluations, which can be slow, hold the read lock so that
+    // they can run concurrently. destroy() and network changes hold the write lock. It's fair so
+    // that new evaluations can't keep a writer waiting.
+    private final ReentrantReadWriteLock mLock = new ReentrantReadWriteLock(/* fair= */ true);
+
+    // Lock with these instead of mLock directly, so that Error Prone can check @GuardedBy.
+    private final Lock mReadLock = mLock.readLock();
+    private final Lock mWriteLock = mLock.writeLock();
+
     // 0 if it's already been destroyed.
+    @GuardedBy("mLock")
     private long mNativePacProcessor;
+
+    @GuardedBy("mLock")
     private Network mNetwork;
+
+    @GuardedBy("mWriteLock")
     private ConnectivityManager.NetworkCallback mNetworkCallback;
 
     public static final long NETWORK_UNSPECIFIED = 0;
@@ -46,7 +64,13 @@ public class AwPacProcessor {
     }
 
     public AwPacProcessor() {
-        mNativePacProcessor = AwPacProcessorJni.get().createNativePacProcessor();
+        // Makes mNativePacProcessor visible to other threads, which read it under mLock.
+        mWriteLock.lock();
+        try {
+            mNativePacProcessor = AwPacProcessorJni.get().createNativePacProcessor();
+        } finally {
+            mWriteLock.unlock();
+        }
     }
 
     private static ConnectivityManager getConnectivityManager() {
@@ -54,7 +78,8 @@ public class AwPacProcessor {
         return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    private void updateNetworkLinkAddress(Network network, LinkProperties linkProperties) {
+    @GuardedBy("mWriteLock")
+    private void updateNetworkLinkAddressLocked(Network network, LinkProperties linkProperties) {
         long networkHandle = NETWORK_UNSPECIFIED;
         ArrayList<String> addresses = new ArrayList<>();
         if (network != null
@@ -65,16 +90,29 @@ public class AwPacProcessor {
                 addresses.add(addr.getAddress().getHostAddress());
             }
         }
-        setNetworkAndLinkAddresses(networkHandle, addresses);
+        setNetworkAndLinkAddressesLocked(networkHandle, addresses);
     }
 
+    // TODO(ziadyoussef): Rename to setNetworkAndLinkAddressesForTesting(). Only tests call it,
+    // and it isn't @UsedByReflection, so the framework can't call it either.
     public void setNetworkAndLinkAddresses(long networkHandle, List<String> addresses) {
+        mWriteLock.lock();
+        try {
+            setNetworkAndLinkAddressesLocked(networkHandle, addresses);
+        } finally {
+            mWriteLock.unlock();
+        }
+    }
+
+    @GuardedBy("mWriteLock")
+    private void setNetworkAndLinkAddressesLocked(long networkHandle, List<String> addresses) {
         if (mNativePacProcessor == 0) return;
         AwPacProcessorJni.get()
                 .setNetworkAndLinkAddresses(mNativePacProcessor, networkHandle, addresses);
     }
 
-    private void registerNetworkCallback() {
+    @GuardedBy("mWriteLock")
+    private void registerNetworkCallbackLocked() {
         if (mNetworkCallback != null) return;
 
         mNetworkCallback =
@@ -82,8 +120,12 @@ public class AwPacProcessor {
                     @Override
                     public void onLinkPropertiesChanged(
                             Network network, LinkProperties linkProperties) {
-                        if (network.equals(mNetwork)) {
-                            updateNetworkLinkAddress(network, linkProperties);
+                        mWriteLock.lock();
+                        try {
+                            if (!network.equals(mNetwork)) return;
+                            updateNetworkLinkAddressLocked(network, linkProperties);
+                        } finally {
+                            mWriteLock.unlock();
                         }
                     }
                 };
@@ -92,7 +134,8 @@ public class AwPacProcessor {
         getConnectivityManager().registerNetworkCallback(builder.build(), mNetworkCallback);
     }
 
-    private void unregisterNetworkCallback() {
+    @GuardedBy("mWriteLock")
+    private void unregisterNetworkCallbackLocked() {
         if (mNetworkCallback == null) return;
 
         getConnectivityManager().unregisterNetworkCallback(mNetworkCallback);
@@ -102,39 +145,78 @@ public class AwPacProcessor {
     // The calling code must not call any methods after it called destroy().
     @UsedByReflection("Android")
     public void destroy() {
-        if (mNativePacProcessor == 0) return;
-        long nativePacProcessor = mNativePacProcessor;
-        mNativePacProcessor = 0;
-        unregisterNetworkCallback();
-        AwPacProcessorJni.get().destroyNative(nativePacProcessor);
+        // Fail in-flight and new PAC evaluations to minimize the wait for the write lock below.
+        mReadLock.lock();
+        try {
+            if (mNativePacProcessor == 0) return;
+            AwPacProcessorJni.get().cancelJobs(mNativePacProcessor);
+        } finally {
+            mReadLock.unlock();
+        }
+
+        mWriteLock.lock();
+        try {
+            if (mNativePacProcessor == 0) return;
+            long nativePacProcessor = mNativePacProcessor;
+            mNativePacProcessor = 0;
+            unregisterNetworkCallbackLocked();
+            // This deletes the native object on the PAC thread, after the tasks already posted
+            // there, and doesn't wait for it.
+            AwPacProcessorJni.get().destroyNative(nativePacProcessor);
+        } finally {
+            mWriteLock.unlock();
+        }
     }
 
     @UsedByReflection("Android")
     public boolean setProxyScript(String script) {
-        if (mNativePacProcessor == 0) return false;
-        return AwPacProcessorJni.get().setProxyScript(mNativePacProcessor, script);
+        mReadLock.lock();
+        try {
+            if (mNativePacProcessor == 0) return false;
+            return AwPacProcessorJni.get().setProxyScript(mNativePacProcessor, script);
+        } finally {
+            mReadLock.unlock();
+        }
     }
 
     @UsedByReflection("Android")
     public String makeProxyRequest(String url) {
-        if (mNativePacProcessor == 0) return null;
-        return AwPacProcessorJni.get().makeProxyRequest(mNativePacProcessor, url);
+        mReadLock.lock();
+        try {
+            if (mNativePacProcessor == 0) return null;
+            return AwPacProcessorJni.get().makeProxyRequest(mNativePacProcessor, url);
+        } finally {
+            mReadLock.unlock();
+        }
     }
 
     @UsedByReflection("Android")
     public void setNetwork(Network network) {
-        mNetwork = network;
-        if (mNetwork != null) {
-            registerNetworkCallback();
-        } else {
-            unregisterNetworkCallback();
+        mWriteLock.lock();
+        try {
+            // Don't register a network callback which would never be unregistered.
+            if (mNativePacProcessor == 0) return;
+            mNetwork = network;
+            if (mNetwork != null) {
+                registerNetworkCallbackLocked();
+            } else {
+                unregisterNetworkCallbackLocked();
+            }
+            updateNetworkLinkAddressLocked(
+                    network, getConnectivityManager().getLinkProperties(network));
+        } finally {
+            mWriteLock.unlock();
         }
-        updateNetworkLinkAddress(network, getConnectivityManager().getLinkProperties(network));
     }
 
     @UsedByReflection("Android")
     public Network getNetwork() {
-        return mNetwork;
+        mReadLock.lock();
+        try {
+            return mNetwork;
+        } finally {
+            mReadLock.unlock();
+        }
     }
 
     public static void initializeEnvironment() {
@@ -154,6 +236,8 @@ public class AwPacProcessor {
                 long nativeAwPacProcessor, @JniType("std::string") String url);
 
         void destroyNative(long nativeAwPacProcessor);
+
+        void cancelJobs(long nativeAwPacProcessor);
 
         void setNetworkAndLinkAddresses(
                 long nativeAwPacProcessor,
