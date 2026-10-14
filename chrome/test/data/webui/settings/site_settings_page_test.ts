@@ -7,12 +7,13 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, Route, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
@@ -37,50 +38,57 @@ const redesignedPages: Route[] = [
 
 // clang-format on
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'generated.notification',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SettingsState.LOUD,
+    },
+    {
+      key: 'generated.cookie_default_content_setting',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: ContentSetting.ALLOW,
+    },
+    {
+      key: 'generated.geolocation',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SettingsState.LOUD,
+    },
+    {
+      key: 'profile.cookie_controls_mode',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: CookieControlsMode.OFF,
+    },
+    {
+      key: 'generated.third_party_cookie_blocking_setting',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: CookieControlsMode.OFF,
+    },
+    {
+      key: 'safety_hub.unused_site_permissions_revocation.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'compose.proactive_nudge_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+}
+
 suite('SiteSettingsPage', function() {
   let page: SettingsSiteSettingsPageElement;
 
-  function setupPage() {
+  async function setupPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefService.resetInstanceForTesting();
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    await PrefService.getInstance().whenInitialized();
+
     page = document.createElement('settings-site-settings-page');
-    page.prefs = {
-      generated: {
-        notification: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SettingsState.LOUD,
-        },
-        cookie_default_content_setting: {
-          type: chrome.settingsPrivate.PrefType.STRING,
-          value: ContentSetting.ALLOW,
-        },
-        geolocation: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SettingsState.LOUD,
-        },
-      },
-      profile: {
-        cookie_controls_mode: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: CookieControlsMode.OFF,
-        },
-      },
-      safety_hub: {
-        unused_site_permissions_revocation: {
-          enabled: {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          },
-        },
-      },
-      compose: {
-        proactive_nudge_enabled: {
-          enabled: {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          },
-        },
-      },
-    };
     document.body.appendChild(page);
     flush();
   }
@@ -118,27 +126,24 @@ suite('SiteSettingsPage', function() {
   });
 
   test('CookiesLinkRowSublabel', async function() {
-    setupPage();
     const cookiesLinkRow = getCookiesLinkRow();
 
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
+    await PrefService.getInstance().setPrefValue(
+        'profile.cookie_controls_mode', CookieControlsMode.BLOCK_THIRD_PARTY);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
         cookiesLinkRow.subLabel);
 
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
+    await PrefService.getInstance().setPrefValue(
+        'profile.cookie_controls_mode', CookieControlsMode.INCOGNITO_ONLY);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
         cookiesLinkRow.subLabel);
 
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    await PrefService.getInstance().setPrefValue(
+        'profile.cookie_controls_mode', CookieControlsMode.OFF);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
@@ -154,19 +159,22 @@ suite('SiteSettingsPage', function() {
             '#notifications')!;
     assertTrue(!!notificationsLinkRow);
 
-    page.set('prefs.generated.notification.value', SettingsState.CPSS);
+    await PrefService.getInstance().setPrefValue(
+        'generated.notification', SettingsState.CPSS);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsAskCPSS'),
         notificationsLinkRow.subLabel);
 
-    page.set('prefs.generated.notification.value', SettingsState.QUIET);
+    await PrefService.getInstance().setPrefValue(
+        'generated.notification', SettingsState.QUIET);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsAskQuiet'),
         notificationsLinkRow.subLabel);
 
-    page.set('prefs.generated.notification.value', SettingsState.LOUD);
+    await PrefService.getInstance().setPrefValue(
+        'generated.notification', SettingsState.LOUD);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsAskLoud'),
@@ -174,7 +182,6 @@ suite('SiteSettingsPage', function() {
   });
 
   test('ProtectedContentRow', async function() {
-    setupPage();
     const expandButton =
         page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
     assertTrue(!!expandButton);
@@ -187,7 +194,6 @@ suite('SiteSettingsPage', function() {
   });
 
   test('SiteDataLinkRowSublabel', async function() {
-    setupPage();
     const expandContent =
         page.shadowRoot!.querySelector<HTMLElement>('#expandContent');
     assertTrue(!!expandContent);
@@ -202,25 +208,23 @@ suite('SiteSettingsPage', function() {
             '#site-data');
     assertTrue(!!siteDataLinkRow);
 
-    page.set(
-        'prefs.generated.cookie_default_content_setting.value',
-        ContentSetting.BLOCK);
+    await PrefService.getInstance().setPrefValue(
+        'generated.cookie_default_content_setting', ContentSetting.BLOCK);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsSiteDataBlockedSubLabel'),
         siteDataLinkRow.subLabel);
 
-    page.set(
-        'prefs.generated.cookie_default_content_setting.value',
+    await PrefService.getInstance().setPrefValue(
+        'generated.cookie_default_content_setting',
         ContentSetting.SESSION_ONLY);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsSiteDataDeleteOnExitSubLabel'),
         siteDataLinkRow.subLabel);
 
-    page.set(
-        'prefs.generated.cookie_default_content_setting.value',
-        ContentSetting.ALLOW);
+    await PrefService.getInstance().setPrefValue(
+        'generated.cookie_default_content_setting', ContentSetting.ALLOW);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsSiteDataAllowedSubLabel'),
@@ -252,13 +256,17 @@ suite('SiteSettingsPage', function() {
 
     unusedSitePermissionsRevocationToggle.click();
     flush();
-    assertFalse(Boolean(page.get(
-        'prefs.safety_hub.unused_site_permissions_revocation.enabled.value')));
+    assertFalse(PrefService.getInstance()
+                    .getPref<boolean>(
+                        'safety_hub.unused_site_permissions_revocation.enabled')
+                    .value);
 
     unusedSitePermissionsRevocationToggle.click();
     flush();
-    assertTrue(Boolean(page.get(
-        'prefs.safety_hub.unused_site_permissions_revocation.enabled.value')));
+    assertTrue(PrefService.getInstance()
+                   .getPref<boolean>(
+                       'safety_hub.unused_site_permissions_revocation.enabled')
+                   .value);
   });
 });
 
@@ -344,18 +352,15 @@ suite('UnusedSitePermissionsReview', function() {
 // sub-tests.
 suite('ContentSettingsVisibility', function() {
   let page: SettingsSiteSettingsPageElement;
-  let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PrefService.resetInstanceForTesting();
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    await PrefService.getInstance().whenInitialized();
 
     page = document.createElement('settings-site-settings-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
