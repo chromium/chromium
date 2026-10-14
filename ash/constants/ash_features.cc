@@ -345,23 +345,6 @@ const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
     BorealisZinkGlDriverParam::kZinkEnableRecommended,
     &borealis_zink_gl_driver_options};
 
-// Enables the nudges/tutorials that inform users of the screen capture keyboard
-// shortcut and feature tile.
-BASE_FEATURE(kCaptureModeEducation, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(hewer): Remove the unused paths after at least one milestone after
-// Capture Mode Education has been enabled by default.
-// Determines how we educate the user to the screen capture entry points.
-constexpr base::FeatureParam<CaptureModeEducationParam>::Option
-    capture_mode_education_type_options[] = {
-        {CaptureModeEducationParam::kShortcutNudge, "ShortcutNudge"},
-        {CaptureModeEducationParam::kShortcutTutorial, "ShortcutTutorial"},
-        {CaptureModeEducationParam::kQuickSettingsNudge, "QuickSettingsNudge"}};
-const base::FeatureParam<CaptureModeEducationParam> kCaptureModeEducationParam{
-    &kCaptureModeEducation, "CaptureModeEducationParam",
-    CaptureModeEducationParam::kShortcutNudge,
-    &capture_mode_education_type_options};
-
 // Enables on-device OCR functionality in capture mode, used as part of the
 // Scanner and Sunfish features.
 BASE_FEATURE(kCaptureModeOnDeviceOcr, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2142,10 +2125,6 @@ bool IsBocaScreenSharingStudentEnabled() {
 
 bool IsOnTaskStatusCheckEnabled() {
   return base::FeatureList::IsEnabled(kOnTaskStatusCheck);
-}
-
-bool IsCaptureModeEducationEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeEducation);
 }
 
 bool IsCaptureModeOnDeviceOcrEnabled() {

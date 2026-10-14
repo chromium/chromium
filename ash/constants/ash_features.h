@@ -151,15 +151,6 @@ enum BorealisZinkGlDriverParam { kZinkEnableRecommended, kZinkEnableAll };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<BorealisZinkGlDriverParam>
     kBorealisZinkGlDriverParam;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeEducation);
-enum class CaptureModeEducationParam {
-  kShortcutNudge,
-  kShortcutTutorial,
-  kQuickSettingsNudge
-};
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<CaptureModeEducationParam>
-    kCaptureModeEducationParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeOnDeviceOcr);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
@@ -932,7 +923,6 @@ bool IsBocaConfigureMaxStudentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCourseWorkMaterialApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingTeacherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingStudentEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeOnDeviceOcrEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

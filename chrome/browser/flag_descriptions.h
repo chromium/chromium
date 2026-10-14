@@ -7586,13 +7586,6 @@ inline constexpr char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
 
-inline constexpr char kCaptureModeEducationName[] =
-    "Enable Capture Mode Education";
-inline constexpr char kCaptureModeEducationDescription[] =
-    "Enables the Capture Mode Education nudges and tutorials that inform users "
-    "of the screenshot keyboard shortcut and the screen capture tool in the "
-    "quick settings menu.";
-
 inline constexpr char kCrosContentAdjustedRefreshRateName[] =
     "Content Adjusted Refresh Rate";
 inline constexpr char kCrosContentAdjustedRefreshRateDescription[] =

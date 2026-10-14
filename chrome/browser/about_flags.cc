@@ -3059,18 +3059,6 @@ const FeatureEntry::FeatureVariation
         {"threshold 0.8", kLauncherLocalImageSearchRelevance_80, nullptr},
         {"threshold 0.9", kLauncherLocalImageSearchRelevance_90, nullptr}};
 
-const FeatureEntry::FeatureParam kCaptureModeEducationShortcutNudge[] = {
-    {"CaptureModeEducationParam", "ShortcutNudge"}};
-const FeatureEntry::FeatureParam kCaptureModeEducationShortcutTutorial[] = {
-    {"CaptureModeEducationParam", "ShortcutTutorial"}};
-const FeatureEntry::FeatureParam kCaptureModeEducationQuickSettingsNudge[] = {
-    {"CaptureModeEducationParam", "QuickSettingsNudge"}};
-
-const FeatureEntry::FeatureVariation kCaptureModeEducationVariations[] = {
-    {"Shortcut Nudge", kCaptureModeEducationShortcutNudge, nullptr},
-    {"Shortcut Tutorial", kCaptureModeEducationShortcutTutorial, nullptr},
-    {"Quick Settings Nudge", kCaptureModeEducationQuickSettingsNudge, nullptr}};
-
 const FeatureEntry::FeatureParam
     kSystemShortcutBehaviorIgnoreCommonVdiShortcuts[] = {
         {"behavior_type", "ignore_common_vdi_shortcuts"}};
@@ -5511,11 +5499,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExternalDisplayHdr10Name,
      flag_descriptions::kEnableExternalDisplayHdr10Description, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kEnableExternalDisplayHDR10Mode)},
-    {"ash-capture-mode-education", flag_descriptions::kCaptureModeEducationName,
-     flag_descriptions::kCaptureModeEducationDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kCaptureModeEducation,
-                                    kCaptureModeEducationVariations,
-                                    "CaptureModeEducation")},
     {"ash-limit-shelf-items-to-active-desk",
      flag_descriptions::kLimitShelfItemsToActiveDeskName,
      flag_descriptions::kLimitShelfItemsToActiveDeskDescription, kOsCrOS,
