@@ -83,16 +83,15 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
-    return gin::Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(
-               isolate)
-        .SetMethod("get", &LocalStorageArea::Get)
-        .SetMethod("getKeys", &LocalStorageArea::GetKeys)
-        .SetMethod("set", &LocalStorageArea::Set)
-        .SetMethod("remove", &LocalStorageArea::Remove)
-        .SetMethod("clear", &LocalStorageArea::Clear)
-        .SetMethod("getBytesInUse", &LocalStorageArea::GetBytesInUse)
-        .SetMethod("setAccessLevel", &LocalStorageArea::SetAccessLevel)
-        .SetProperty("onChanged", &LocalStorageArea::GetOnChangedEvent)
+    return gin::Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(isolate)
+        .SetMethod<&LocalStorageArea::Get>("get")
+        .SetMethod<&LocalStorageArea::GetKeys>("getKeys")
+        .SetMethod<&LocalStorageArea::Set>("set")
+        .SetMethod<&LocalStorageArea::Remove>("remove")
+        .SetMethod<&LocalStorageArea::Clear>("clear")
+        .SetMethod<&LocalStorageArea::GetBytesInUse>("getBytesInUse")
+        .SetMethod<&LocalStorageArea::SetAccessLevel>("setAccessLevel")
+        .SetProperty<&LocalStorageArea::GetOnChangedEvent>("onChanged")
         .SetValue("QUOTA_BYTES", api::storage::local::QUOTA_BYTES);
   }
 
@@ -130,16 +129,15 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
-    return gin::Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(
-               isolate)
-        .SetMethod("get", &SyncStorageArea::Get)
-        .SetMethod("getKeys", &SyncStorageArea::GetKeys)
-        .SetMethod("set", &SyncStorageArea::Set)
-        .SetMethod("remove", &SyncStorageArea::Remove)
-        .SetMethod("clear", &SyncStorageArea::Clear)
-        .SetMethod("getBytesInUse", &SyncStorageArea::GetBytesInUse)
-        .SetMethod("setAccessLevel", &SyncStorageArea::SetAccessLevel)
-        .SetProperty("onChanged", &SyncStorageArea::GetOnChangedEvent)
+    return gin::Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(isolate)
+        .SetMethod<&SyncStorageArea::Get>("get")
+        .SetMethod<&SyncStorageArea::GetKeys>("getKeys")
+        .SetMethod<&SyncStorageArea::Set>("set")
+        .SetMethod<&SyncStorageArea::Remove>("remove")
+        .SetMethod<&SyncStorageArea::Clear>("clear")
+        .SetMethod<&SyncStorageArea::GetBytesInUse>("getBytesInUse")
+        .SetMethod<&SyncStorageArea::SetAccessLevel>("setAccessLevel")
+        .SetProperty<&SyncStorageArea::GetOnChangedEvent>("onChanged")
         .SetValue("QUOTA_BYTES", api::storage::sync::QUOTA_BYTES)
         .SetValue("QUOTA_BYTES_PER_ITEM",
                   api::storage::sync::QUOTA_BYTES_PER_ITEM)
@@ -187,16 +185,15 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
-    return gin::Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(
-               isolate)
-        .SetMethod("get", &ManagedStorageArea::Get)
-        .SetMethod("getKeys", &ManagedStorageArea::GetKeys)
-        .SetMethod("set", &ManagedStorageArea::Set)
-        .SetMethod("remove", &ManagedStorageArea::Remove)
-        .SetMethod("clear", &ManagedStorageArea::Clear)
-        .SetMethod("getBytesInUse", &ManagedStorageArea::GetBytesInUse)
-        .SetMethod("setAccessLevel", &ManagedStorageArea::SetAccessLevel)
-        .SetProperty("onChanged", &ManagedStorageArea::GetOnChangedEvent);
+    return gin::Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(isolate)
+        .SetMethod<&ManagedStorageArea::Get>("get")
+        .SetMethod<&ManagedStorageArea::GetKeys>("getKeys")
+        .SetMethod<&ManagedStorageArea::Set>("set")
+        .SetMethod<&ManagedStorageArea::Remove>("remove")
+        .SetMethod<&ManagedStorageArea::Clear>("clear")
+        .SetMethod<&ManagedStorageArea::GetBytesInUse>("getBytesInUse")
+        .SetMethod<&ManagedStorageArea::SetAccessLevel>("setAccessLevel")
+        .SetProperty<&ManagedStorageArea::GetOnChangedEvent>("onChanged");
   }
 
  private:
@@ -233,18 +230,17 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
-    return gin::Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(
-               isolate)
-        .SetMethod("get", &SessionStorageArea::Get)
-        .SetMethod("getKeys", &SessionStorageArea::GetKeys)
-        .SetMethod("set", &SessionStorageArea::Set)
-        .SetMethod("remove", &SessionStorageArea::Remove)
-        .SetMethod("clear", &SessionStorageArea::Clear)
-        .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
+    return gin::Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(isolate)
+        .SetMethod<&SessionStorageArea::Get>("get")
+        .SetMethod<&SessionStorageArea::GetKeys>("getKeys")
+        .SetMethod<&SessionStorageArea::Set>("set")
+        .SetMethod<&SessionStorageArea::Remove>("remove")
+        .SetMethod<&SessionStorageArea::Clear>("clear")
+        .SetMethod<&SessionStorageArea::GetBytesInUse>("getBytesInUse")
         // TODO(crbug.com/40189208): Only expose `setAccessLevel` in privileged
         // contexts.
-        .SetMethod("setAccessLevel", &SessionStorageArea::SetAccessLevel)
-        .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)
+        .SetMethod<&SessionStorageArea::SetAccessLevel>("setAccessLevel")
+        .SetProperty<&SessionStorageArea::GetOnChangedEvent>("onChanged")
         .SetValue("QUOTA_BYTES", api::storage::session::QUOTA_BYTES);
   }
 

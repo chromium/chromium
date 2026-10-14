@@ -53,7 +53,7 @@ APIBindingBridge::~APIBindingBridge() = default;
 gin::ObjectTemplateBuilder APIBindingBridge::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<APIBindingBridge>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("registerCustomHook", &APIBindingBridge::RegisterCustomHook);
+      .SetMethod<&APIBindingBridge::RegisterCustomHook>("registerCustomHook");
 }
 
 void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,

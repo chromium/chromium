@@ -140,9 +140,9 @@ DeclarativeEvent::~DeclarativeEvent() = default;
 gin::ObjectTemplateBuilder DeclarativeEvent::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<DeclarativeEvent>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("addRules", &DeclarativeEvent::AddRules)
-      .SetMethod("removeRules", &DeclarativeEvent::RemoveRules)
-      .SetMethod("getRules", &DeclarativeEvent::GetRules);
+      .SetMethod<&DeclarativeEvent::AddRules>("addRules")
+      .SetMethod<&DeclarativeEvent::RemoveRules>("removeRules")
+      .SetMethod<&DeclarativeEvent::GetRules>("getRules");
 }
 
 const char* DeclarativeEvent::GetHumanReadableName() const {

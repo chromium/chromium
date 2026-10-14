@@ -65,12 +65,12 @@ void GinPort::Dispose() {
 gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<GinPort>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("disconnect", &GinPort::DisconnectHandler)
-      .SetMethod("postMessage", &GinPort::PostMessageHandler)
-      .SetLazyDataProperty("name", &GinPort::GetName)
-      .SetLazyDataProperty("onDisconnect", &GinPort::GetOnDisconnectEvent)
-      .SetLazyDataProperty("onMessage", &GinPort::GetOnMessageEvent)
-      .SetLazyDataProperty("sender", &GinPort::GetSender);
+      .SetMethod<&GinPort::DisconnectHandler>("disconnect")
+      .SetMethod<&GinPort::PostMessageHandler>("postMessage")
+      .SetLazyDataProperty<&GinPort::GetName>("name")
+      .SetLazyDataProperty<&GinPort::GetOnDisconnectEvent>("onDisconnect")
+      .SetLazyDataProperty<&GinPort::GetOnMessageEvent>("onMessage")
+      .SetLazyDataProperty<&GinPort::GetSender>("sender");
 }
 
 const gin::WrapperInfo* GinPort::wrapper_info() const {

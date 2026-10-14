@@ -116,11 +116,11 @@ ContentSetting::~ContentSetting() = default;
 gin::ObjectTemplateBuilder ContentSetting::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return Wrappable<ContentSetting>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("get", &ContentSetting::Get)
-      .SetMethod("set", &ContentSetting::Set)
-      .SetMethod("clear", &ContentSetting::Clear)
-      .SetMethod("getResourceIdentifiers",
-                 &ContentSetting::GetResourceIdentifiers);
+      .SetMethod<&ContentSetting::Get>("get")
+      .SetMethod<&ContentSetting::Set>("set")
+      .SetMethod<&ContentSetting::Clear>("clear")
+      .SetMethod<&ContentSetting::GetResourceIdentifiers>(
+          "getResourceIdentifiers");
 }
 
 const char* ContentSetting::GetHumanReadableName() const {

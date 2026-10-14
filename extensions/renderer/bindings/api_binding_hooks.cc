@@ -46,14 +46,13 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
-    return gin::Wrappable<JSHookInterface>::GetObjectTemplateBuilder(
-               isolate)
-        .SetMethod("setHandleRequest", &JSHookInterface::SetHandleRequest)
-        .SetMethod("setUpdateArgumentsPreValidate",
-                   &JSHookInterface::SetUpdateArgumentsPreValidate)
-        .SetMethod("setUpdateArgumentsPostValidate",
-                   &JSHookInterface::SetUpdateArgumentsPostValidate)
-        .SetMethod("setCustomCallback", &JSHookInterface::SetCustomCallback);
+    return gin::Wrappable<JSHookInterface>::GetObjectTemplateBuilder(isolate)
+        .SetMethod<&JSHookInterface::SetHandleRequest>("setHandleRequest")
+        .SetMethod<&JSHookInterface::SetUpdateArgumentsPreValidate>(
+            "setUpdateArgumentsPreValidate")
+        .SetMethod<&JSHookInterface::SetUpdateArgumentsPostValidate>(
+            "setUpdateArgumentsPostValidate")
+        .SetMethod<&JSHookInterface::SetCustomCallback>("setCustomCallback");
   }
 
   void ClearHooks() {

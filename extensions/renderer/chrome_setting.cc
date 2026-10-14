@@ -71,10 +71,10 @@ ChromeSetting::~ChromeSetting() = default;
 gin::ObjectTemplateBuilder ChromeSetting::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return Wrappable<ChromeSetting>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("get", &ChromeSetting::Get)
-      .SetMethod("set", &ChromeSetting::Set)
-      .SetMethod("clear", &ChromeSetting::Clear)
-      .SetProperty("onChange", &ChromeSetting::GetOnChangeEvent);
+      .SetMethod<&ChromeSetting::Get>("get")
+      .SetMethod<&ChromeSetting::Set>("set")
+      .SetMethod<&ChromeSetting::Clear>("clear")
+      .SetProperty<&ChromeSetting::GetOnChangeEvent>("onChange");
 }
 
 const char* ChromeSetting::GetHumanReadableName() const {

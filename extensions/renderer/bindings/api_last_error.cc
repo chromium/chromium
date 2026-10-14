@@ -43,9 +43,8 @@ class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
     DCHECK(isolate);
-    return gin::Wrappable<LastErrorObject>::GetObjectTemplateBuilder(
-               isolate)
-        .SetProperty("message", &LastErrorObject::error);
+    return gin::Wrappable<LastErrorObject>::GetObjectTemplateBuilder(isolate)
+        .SetProperty<&LastErrorObject::error>("message");
   }
 
   void Reset(const std::string& error) {
