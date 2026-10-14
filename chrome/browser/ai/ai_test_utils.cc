@@ -99,16 +99,12 @@ AITestUtils::AITestBase::~AITestBase() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 void AITestUtils::AITestBase::SetupBroker() {
+  // Use Android's built-in configs by default. Loading a fake adaptation here
+  // would race with availability checks and session creation.
   fake_broker_ = std::make_unique<optimization_guide::FakeModelBrokerAndroid>(
       optimization_guide::FakeModelBrokerAndroid::Options{});
   fake_broker_->java_helper().settings().SetDefaultStatusCheckResult(
       on_device_model::ModelDownloaderAndroid::ModelStatus::kDownloadable);
-  auto asset = std::make_unique<optimization_guide::FakeAdaptationAsset>(
-      optimization_guide::FakeAdaptationAsset::Content{
-          .config = CreateSolution().feature(),
-      });
-  fake_broker_->UpdateModelAdaptation(*asset);
-  fake_assets_.push_back(std::move(asset));
 }
 
 void AITestUtils::AITestBase::SetSolutionConfig(

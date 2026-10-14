@@ -16,11 +16,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/model_execution/configs/substitution_builder.h"
+#include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -41,6 +43,16 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
+
+// Keep test expectations aligned with each platform's production default. The
+// tests verify behavior relative to this limit, not its specific numeric value.
+#if BUILDFLAG(IS_ANDROID)
+constexpr uint32_t kDefaultInputContextLimit =
+    optimization_guide::kAndroidMaxExecuteTokens;
+#else
+constexpr uint32_t kDefaultInputContextLimit =
+    blink::mojom::kWritingAssistanceMaxInputTokenSize;
+#endif
 
 namespace proto = ::optimization_guide::proto;
 
@@ -162,8 +174,7 @@ class AISummarizerTest : public AITestUtils::AITestBase {
 
     auto& input_config = *config.mutable_input_config();
     input_config.set_request_base_name(SummarizeRequest().GetTypeName());
-    input_config.set_max_execute_tokens(
-        blink::mojom::kWritingAssistanceMaxInputTokenSize);
+    input_config.set_max_execute_tokens(kDefaultInputContextLimit);
 
     *input_config.add_execute_substitutions() = FieldSubstitution(
         "%s", ProtoField({SummarizeRequest::kArticleFieldNumber}));
@@ -365,7 +376,10 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 
 #if BUILDFLAG(IS_ANDROID)
 // Android doesn't support text safety yet. crbug.com/442914748
-TEST_F(AISummarizerTest, CreateSummarizerWithTextSafetyCheck) {
+// TODO(crbug.com/571742381): Re-enable once this test can wait for its
+// safety-required config to take effect before creating a session. Currently,
+// creation can succeed using the built-in config before the adaptation loads.
+TEST_F(AISummarizerTest, DISABLED_CreateSummarizerWithTextSafetyCheck) {
   SetSolutionConfig([&]() {
     auto solution_config = CreateSolution();
     solution_config.mutable_feature()->set_can_skip_text_safety(false);
@@ -384,6 +398,9 @@ TEST_F(AISummarizerTest, CreateSummarizerWithTextSafetyCheck) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/571742381): Enable these tests on Android once an adaptation
+// can replace the active built-in solution.
 TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
   // Incorrect `request_base_name` cause session to fail constructing input
   // string and checking token size.
@@ -408,9 +425,10 @@ TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
       result.error().error,
       blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
-  SetSizeInTokens(blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  SetSizeInTokens(kDefaultInputContextLimit + 1);
 
   TestCreateSummarizerClient create_summarizer_client;
   auto options = GetDefaultOptions();
@@ -424,9 +442,8 @@ TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
   EXPECT_EQ(result.error().quota_error_info->requested,
-            blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-  EXPECT_EQ(result.error().quota_error_info->quota,
-            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+            kDefaultInputContextLimit + 1);
+  EXPECT_EQ(result.error().quota_error_info->quota, kDefaultInputContextLimit);
 }
 
 TEST_F(AISummarizerTest, SummarizeDefault) {
@@ -465,7 +482,7 @@ TEST_F(AISummarizerTest, SummarizeWithOptions) {
 TEST_F(AISummarizerTest, InputLimitExceededError) {
   auto summarizer_remote = GetAISummarizerRemote();
 
-  SetSizeInTokens(blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  SetSizeInTokens(kDefaultInputContextLimit + 1);
 
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
@@ -474,9 +491,8 @@ TEST_F(AISummarizerTest, InputLimitExceededError) {
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
   ASSERT_EQ(responder.quota_error_info().requested,
-            blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-  ASSERT_EQ(responder.quota_error_info().quota,
-            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+            kDefaultInputContextLimit + 1);
+  ASSERT_EQ(responder.quota_error_info().quota, kDefaultInputContextLimit);
 }
 
 TEST_F(AISummarizerTest, ContextWindowUsesContextLimit) {
@@ -486,10 +502,12 @@ TEST_F(AISummarizerTest, ContextWindowUsesContextLimit) {
                                          /*monitor=*/mojo::NullRemote());
   CreateSummarizerResult result = client.result().Take();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(client.context_window(),
-            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+  EXPECT_EQ(client.context_window(), kDefaultInputContextLimit);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/571742381): Enable on Android once an adaptation can replace
+// the active built-in solution.
 TEST_F(AISummarizerTest, CustomInputContextLimit) {
   constexpr uint32_t kCustomMaxTokens = 5000;
   SetModelInputContextLimit(kCustomMaxTokens);
@@ -529,6 +547,7 @@ TEST_F(AISummarizerTest, CustomInputContextLimit) {
   ASSERT_EQ(responder.quota_error_info().requested, kCustomMaxTokens + 1);
   ASSERT_EQ(responder.quota_error_info().quota, kCustomMaxTokens);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
   auto summarizer_remote = GetAISummarizerRemote();
@@ -553,6 +572,9 @@ TEST_F(AISummarizerTest, MultipleSummarize) {
               ElementsAreArray(result2));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/571742381): Enable on Android once an adaptation can replace
+// the active built-in solution.
 TEST_F(AISummarizerTest, MeasureUsage) {
   auto options = GetDefaultOptions();
   options->shared_context = kSharedContextString;
@@ -566,6 +588,7 @@ TEST_F(AISummarizerTest, MeasureUsage) {
                                       std::string(kContextString).size() +
                                       std::string(kSharedContextString).size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AISummarizerTest, Priority) {
