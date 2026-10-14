@@ -5,6 +5,15 @@
      finalized. -->
 <grit-part>
   <!-- Appearance section. -->
+  <message name="IDS_SETTINGS_TAG_APPEARANCE_ALT1" meaning="Settings search keyword for 'Appearance'" desc="Search keyword for the Appearance settings page (browser themes, dark mode, toolbar customization, bookmarks bar, tab position, and page zoom). Alternate keyword for: 'Appearance'" translateable="false">
+    palette
+  </message>
+  <message name="IDS_SETTINGS_TAG_APPEARANCE_ALT2" meaning="Settings search keyword for 'Appearance'" desc="Search keyword for the Appearance settings page (browser themes, dark mode, toolbar customization, bookmarks bar, tab position, and page zoom). Alternate keyword for: 'Appearance'" translateable="false">
+    design
+  </message>
+  <message name="IDS_SETTINGS_TAG_APPEARANCE_ALT3" meaning="Settings search keyword for 'Appearance'" desc="Search keyword for the Appearance settings page (browser themes, dark mode, toolbar customization, bookmarks bar, tab position, and page zoom). Alternate keyword for: 'Appearance'" translateable="false">
+    customizations
+  </message>
   <message name="IDS_SETTINGS_TAG_THEME_ALT1" meaning="Settings search keyword for 'Theme'" desc="Search keyword for the setting for choosing a browser theme. Alternate keyword for: 'Theme'" translateable="false">
     backgrounds
   </message>
@@ -76,5 +85,79 @@
   </message>
   <message name="IDS_SETTINGS_TAG_PAGE_ZOOM_ALT3" meaning="Settings search keyword for 'Page zoom'" desc="Search keyword for the setting for the default zoom level of web pages. Alternate keyword for: 'Page zoom'" translateable="false">
     size
+  </message>
+
+  <!-- Security section. -->
+  <message name="IDS_SETTINGS_TAG_SECURITY_ALT1" meaning="Settings search keyword for 'Security'" desc="Search keyword for the Security settings subpage (Safe Browsing, HTTPS upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Security'" translateable="false">
+    advanced
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_ALT2" meaning="Settings search keyword for 'Security'" desc="Search keyword for the Security settings subpage (Safe Browsing, HTTPS upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Security'" translateable="false">
+    browsing
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_ALT3" meaning="Settings search keyword for 'Security'" desc="Search keyword for the Security settings subpage (Safe Browsing, HTTPS upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Security'" translateable="false">
+    certificates
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFE_BROWSING_ALT1" meaning="Settings search keyword for 'Safe Browsing'" desc="Search keyword for the setting for choosing the level of Safe Browsing protection against dangerous websites, downloads, and extensions. Alternate keyword for: 'Safe Browsing'" translateable="false">
+    phishing
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFE_BROWSING_ALT2" meaning="Settings search keyword for 'Safe Browsing'" desc="Search keyword for the setting for choosing the level of Safe Browsing protection against dangerous websites, downloads, and extensions. Alternate keyword for: 'Safe Browsing'" translateable="false">
+    malware
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFE_BROWSING_ALT3" meaning="Settings search keyword for 'Safe Browsing'" desc="Search keyword for the setting for choosing the level of Safe Browsing protection against dangerous websites, downloads, and extensions. Alternate keyword for: 'Safe Browsing'" translateable="false">
+    dangerous
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_LEAK_DETECTION_ALT1" meaning="Settings search keyword for 'Warn you if a password was compromised in a data breach'" desc="Search keyword for the toggle that warns the user if a saved password was compromised in a data breach. Alternate keyword for: 'Warn you if a password was compromised in a data breach'" translateable="false">
+    breach
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_LEAK_DETECTION_ALT2" meaning="Settings search keyword for 'Warn you if a password was compromised in a data breach'" desc="Search keyword for the toggle that warns the user if a saved password was compromised in a data breach. Alternate keyword for: 'Warn you if a password was compromised in a data breach'" translateable="false">
+    leak
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_LEAK_DETECTION_ALT3" meaning="Settings search keyword for 'Warn you if a password was compromised in a data breach'" desc="Search keyword for the toggle that warns the user if a saved password was compromised in a data breach. Alternate keyword for: 'Warn you if a password was compromised in a data breach'" translateable="false">
+    exposed
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_CONNECTIONS_ALT1" meaning="Settings search keyword for 'Secure connections'" desc="Search keyword for the Secure connections section in Security settings (HTTPS connection upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Secure connections'" translateable="false">
+    https
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_CONNECTIONS_ALT2" meaning="Settings search keyword for 'Secure connections'" desc="Search keyword for the Secure connections section in Security settings (HTTPS connection upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Secure connections'" translateable="false">
+    ssl
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_CONNECTIONS_ALT3" meaning="Settings search keyword for 'Secure connections'" desc="Search keyword for the Secure connections section in Security settings (HTTPS connection upgrades, secure DNS, security keys, and certificates). Alternate keyword for: 'Secure connections'" translateable="false">
+    tls
+  </message>
+  <message name="IDS_SETTINGS_TAG_HTTPS_ONLY_MODE_ALT1" meaning="Settings search keyword for 'Always use secure connections'" desc="Search keyword for the setting that upgrades navigations to HTTPS and warns before loading sites that do not support secure connections. Alternate keyword for: 'Always use secure connections'" translateable="false">
+    https
+  </message>
+  <message name="IDS_SETTINGS_TAG_HTTPS_ONLY_MODE_ALT2" meaning="Settings search keyword for 'Always use secure connections'" desc="Search keyword for the setting that upgrades navigations to HTTPS and warns before loading sites that do not support secure connections. Alternate keyword for: 'Always use secure connections'" translateable="false">
+    ssl
+  </message>
+  <message name="IDS_SETTINGS_TAG_HTTPS_ONLY_MODE_ALT3" meaning="Settings search keyword for 'Always use secure connections'" desc="Search keyword for the setting that upgrades navigations to HTTPS and warns before loading sites that do not support secure connections. Alternate keyword for: 'Always use secure connections'" translateable="false">
+    tls
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_DNS_ALT1" meaning="Settings search keyword for 'Use secure DNS'" desc="Search keyword for the setting for encrypting domain name lookups using DNS-over-HTTPS (DoH). Alternate keyword for: 'Use secure DNS'" translateable="false">
+    doh
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_DNS_ALT2" meaning="Settings search keyword for 'Use secure DNS'" desc="Search keyword for the setting for encrypting domain name lookups using DNS-over-HTTPS (DoH). Alternate keyword for: 'Use secure DNS'" translateable="false">
+    domain
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_DNS_ALT3" meaning="Settings search keyword for 'Use secure DNS'" desc="Search keyword for the setting for encrypting domain name lookups using DNS-over-HTTPS (DoH). Alternate keyword for: 'Use secure DNS'" translateable="false">
+    lookup
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_KEYS_ALT1" meaning="Settings search keyword for 'Manage security keys'" desc="Search keyword for the subpage for managing PINs, fingerprints, and resetting physical FIDO2 security keys. Alternate keyword for: 'Manage security keys'" translateable="false">
+    yubikey
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_KEYS_ALT2" meaning="Settings search keyword for 'Manage security keys'" desc="Search keyword for the subpage for managing PINs, fingerprints, and resetting physical FIDO2 security keys. Alternate keyword for: 'Manage security keys'" translateable="false">
+    titan
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_KEYS_ALT3" meaning="Settings search keyword for 'Manage security keys'" desc="Search keyword for the subpage for managing PINs, fingerprints, and resetting physical FIDO2 security keys. Alternate keyword for: 'Manage security keys'" translateable="false">
+    fido
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_CERTIFICATES_ALT1" meaning="Settings search keyword for 'Manage certificates'" desc="Search keyword for the setting for viewing and managing SSL/TLS client certificates and trusted certificate authorities. Alternate keyword for: 'Manage certificates'" translateable="false">
+    ssl
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_CERTIFICATES_ALT2" meaning="Settings search keyword for 'Manage certificates'" desc="Search keyword for the setting for viewing and managing SSL/TLS client certificates and trusted certificate authorities. Alternate keyword for: 'Manage certificates'" translateable="false">
+    tls
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_CERTIFICATES_ALT3" meaning="Settings search keyword for 'Manage certificates'" desc="Search keyword for the setting for viewing and managing SSL/TLS client certificates and trusted certificate authorities. Alternate keyword for: 'Manage certificates'" translateable="false">
+    ca
   </message>
 </grit-part>
