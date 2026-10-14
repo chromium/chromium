@@ -100,8 +100,6 @@ BASE_FEATURE_PARAM(bool,
                    "fishfood_feedback",
                    false);
 
-// TODO(crbug.com/568424538): Update the default URL once the fishfood feedback
-// Google Form is created.
 BASE_FEATURE_PARAM(std::string,
                    kTopicsFeedbackFormUrl,
                    &browser::context_hub::mojom::kTopics,
