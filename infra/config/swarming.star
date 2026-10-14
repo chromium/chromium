@@ -152,6 +152,10 @@ swarming.pool_realm(
         "project-dawn-ci-task-accounts",
         "project-dawn-try-task-accounts",
 
+        # ... and Open Screen.
+        "project-openscreen-ci-task-accounts",
+        "project-openscreen-try-task-accounts",
+
         # Used by Pinpoint to trigger bisect jobs on machines in the Chrome-GPU pool.
         "service-account-chromeperf",
     ],
