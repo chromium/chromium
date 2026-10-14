@@ -45,6 +45,7 @@ pkg.resources([
     "autoshard_exceptions.json",
     "dev/chromium-header.textpb",
     "lib/linux-default.json",
+    "lib/windows-default.json",
     "luci-analysis-dev.cfg",
     "luci-analysis.cfg",
     "luci-bisection-dev.cfg",

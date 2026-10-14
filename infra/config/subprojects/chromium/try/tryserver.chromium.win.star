@@ -277,7 +277,7 @@ try_.builder(
     ),
     builderless = False,
     cores = 16,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     ssd = True,
     cq_settings = try_.cq_settings(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
@@ -446,7 +446,7 @@ try_.builder(
     ),
     builderless = False,
     cores = None,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     contact_team_email = "chrome-desktop-engprod@google.com",
     cq_settings = try_.cq_settings(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
@@ -475,7 +475,7 @@ try_.builder(
     ),
     builderless = True,
     cores = 16,
-    os = os.WINDOWS_10,
+    os = os.WINDOWS_DEFAULT,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
     # The size of the testing pool is limited.
