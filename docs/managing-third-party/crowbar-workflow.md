@@ -233,11 +233,9 @@ upstream {
 }
 stages {
   input {
-    patch { copybara: {} }
+    patch { copybara {} }
   }
-  output {
-    update { git {} }
-  }
+  publish { git {} }
 }
 ```
 
@@ -259,20 +257,19 @@ upstream {
 stages {
   input {
     unpack { default { strip_components: 1 } }
-    patch { copybara: {} }
+    patch { copybara {} }
   }
-  output {
-    update { git {} }
-  }
+  publish { git {} }
 }
 ```
 
 The `name` field is **REQUIRED** for HTTP artifacts and specifies the file name
 for the downloaded URL file.
 
-Crowbar's built-in unpacker (`unpack { default {} }`) automatically extracts
-files based on the extension name. Common archive formats are supported: `.zip`,
-`.jar`, `.tar.gz`, `.tar.xz`, and `.tar.bz2`.
+Crowbar's built-in unpacker (`unpack {}` or `unpack { default {} }`)
+automatically extracts files based on the extension name. Common archive formats
+are supported: `.zip`, `.jar`, `.tar`, `.tar.gz`, `.tar.xz`, `.tar.bz2`, and
+`.deb`.
 
 The `digest` field is **REQUIRED**. "sha256" is the preferred hashing algorithm.
 Crowbar verifies the downloaded file against this digest value, and will reject
@@ -327,7 +324,7 @@ steps.
 If everything works, you should see the following in the output:
 
 ```
-Package third_party/foo needs update, new git tree: <abcdef>
+Package third_party/foo needs publish, new git tree: <abcdef>
 ```
 
 Then, you can inspect the workflow result by diffing this git tree against the
