@@ -228,7 +228,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   friend class UrlIndex;
 
   void OnEmpty();
-  void MergeFrom(const scoped_refptr<UrlData>& other);
+  bool MergeFrom(const scoped_refptr<UrlData>& other);
 
   // Url we represent, note that there may be multiple UrlData for
   // the same url.

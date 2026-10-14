@@ -278,6 +278,28 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     redirects_to_ = KURL();
   }
 
+  // Get the response URL since it can differ from the request URL when a
+  // service worker provided the response. Normally we would just use
+  // ResponseUrl(), but ResourceMultiBufferDataProvider disallows mixing
+  // constructed responses (new Response()) and native server responses, even if
+  // they have the same response URL.
+  KURL response_url;
+  if (!response.WasFetchedViaServiceWorker() ||
+      response.HasUrlListViaServiceWorker()) {
+    response_url = response.ResponseUrl();
+  }
+
+  // This test is vital for security! Ensure that both the original UrlData and
+  // any redirect destination UrlData are compatible with the response's origin
+  // before mutating metadata on `destination_url_data`, inserting into
+  // `UrlIndex`, or merging data across a redirect.
+  if (!old_url_data->ValidateDataOrigin(response_url) ||
+      !destination_url_data->ValidateDataOrigin(response_url)) {
+    active_loader_.reset();
+    url_data_->Fail();
+    return;  // "this" may be deleted now.
+  }
+
   base::Time last_modified;
   if (base::Time::FromString(
           response.HttpHeaderField("Last-Modified").Utf8().data(),
@@ -360,6 +382,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   if (!do_fail) {
     destination_url_data =
         url_data_->url_index()->TryInsert(destination_url_data);
+    CHECK(destination_url_data->ValidateDataOrigin(response_url));
   }
 
   // This is vital for security!
@@ -402,28 +425,11 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     if (!weak_this) {
       return;  // "this" may be deleted now.
     }
+    CHECK(destination_url_data->ValidateDataOrigin(response_url));
   }
 
   if (do_fail) {
     destination_url_data->Fail();
-    return;  // "this" may be deleted now.
-  }
-
-  // Get the response URL since it can differ from the request URL when a
-  // service worker provided the response. Normally we would just use
-  // ResponseUrl(), but ResourceMultiBufferDataProvider disallows mixing
-  // constructed responses (new Response()) and native server responses, even if
-  // they have the same response URL.
-  KURL response_url;
-  if (!response.WasFetchedViaServiceWorker() ||
-      response.HasUrlListViaServiceWorker()) {
-    response_url = response.ResponseUrl();
-  }
-
-  // This test is vital for security!
-  if (!url_data_->ValidateDataOrigin(response_url)) {
-    active_loader_.reset();
-    url_data_->Fail();
     return;  // "this" may be deleted now.
   }
 

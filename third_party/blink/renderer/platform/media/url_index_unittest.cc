@@ -120,6 +120,10 @@ TEST_F(UrlIndexTest, TryInsert) {
   KURL url("http://foo.bar.com");
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   scoped_refptr<UrlData> c = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> invalid_entry =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> mismatched_origin =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_NE(a, c);
   EXPECT_FALSE(a->Valid());
   base::Time now = base::Time::Now();
@@ -151,6 +155,7 @@ TEST_F(UrlIndexTest, TryInsert) {
   b->set_range_supported();
   b->set_valid_until(valid_until);
   b->set_last_modified(last_modified);
+  EXPECT_TRUE(b->ValidateDataOrigin(url));
   EXPECT_TRUE(b->Valid());
 
   EXPECT_EQ(b, url_index_->TryInsert(b));
@@ -159,11 +164,27 @@ TEST_F(UrlIndexTest, TryInsert) {
   c->set_range_supported();
   c->set_valid_until(valid_until);
   c->set_last_modified(last_modified);
+  EXPECT_TRUE(c->ValidateDataOrigin(url));
   EXPECT_TRUE(c->Valid());
 
   // B is still valid, so it should be preferred over C.
   EXPECT_EQ(b, url_index_->TryInsert(c));
   EXPECT_EQ(b, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
+
+  // If a new entry is not valid, TryInsert should return it rather than the
+  // existing indexed entry.
+  EXPECT_FALSE(invalid_entry->Valid());
+  EXPECT_EQ(invalid_entry, url_index_->TryInsert(invalid_entry));
+
+  // If a new valid entry has a mismatched data origin, MergeFrom fails and
+  // TryInsert should return the new entry rather than the incompatible indexed
+  // entry.
+  mismatched_origin->set_range_supported();
+  mismatched_origin->set_valid_until(valid_until);
+  mismatched_origin->set_last_modified(last_modified);
+  EXPECT_TRUE(mismatched_origin->ValidateDataOrigin(KURL()));
+  EXPECT_TRUE(mismatched_origin->Valid());
+  EXPECT_EQ(mismatched_origin, url_index_->TryInsert(mismatched_origin));
 }
 
 TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {

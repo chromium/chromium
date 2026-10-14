@@ -532,6 +532,125 @@ TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
   StopWhenLoad();
 }
 
+// Verifies that a same-origin redirect cannot be used to mix responses with
+// different data origins (e.g., via a Service Worker responding to the
+// redirected URL with a cross-origin response).
+TEST_F(ResourceMultiBufferDataProviderTest,
+       SameOriginRedirectRejectsMismatchedDataOrigin) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+
+  constexpr char kOriginA1[] = "http://localhost:18080/v1";
+  constexpr char kOriginA2[] = "http://localhost:18080/v2";
+  constexpr char kOriginB[] = "http://127.0.0.1:18081/secret";
+  constexpr int kBlockSize = 1 << 15;
+
+  Initialize(kOriginA1, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  loader_->Start();
+
+  // 1. Receive initial partial response from Origin A.
+  WebURL url_a1{KURL(kOriginA1)};
+  WebURLResponse response_a1{url_a1};
+  response_a1.SetHttpStatusCode(kHttpPartialContent);
+  response_a1.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                 WebString::FromUtf8("bytes 0-32767/100000"));
+  response_a1.SetExpectedContentLength(kBlockSize);
+  response_a1.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(response_a1);
+  ASSERT_TRUE(loader_);
+
+  std::string data_str(kBlockSize, 'a');
+  loader_->DidReceiveData(data_str);
+
+  // 2. Simulate retry/next range on the same loader redirecting same-origin to
+  // kOriginA2, which WillFollowRedirect allows because A1 and A2 are
+  // same-origin.
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_a1));
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+
+  WebURL url_a2{KURL(kOriginA2)};
+  WebURLResponse redirect_response{url_a1};
+  ASSERT_TRUE(loader_->WillFollowRedirect(url_a2, redirect_response));
+
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+
+  // 3. Service Worker responds to A2 with a response from Origin B.
+  WebURL url_b{KURL(kOriginB)};
+  WebURLResponse response_b{url_b};
+  response_b.SetHttpStatusCode(kHttpPartialContent);
+  response_b.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-65535/100000"));
+  response_b.SetExpectedContentLength(kBlockSize);
+  response_b.SetType(network::mojom::FetchResponseType::kBasic);
+  response_b.SetWasFetchedViaServiceWorker(true);
+  response_b.SetUrlListViaServiceWorker(std::vector<WebURL>{url_b});
+
+  loader_->DidReceiveResponse(response_b);
+  StopWhenLoad();
+}
+
+// Verifies that a response rejected by ValidateDataOrigin() does not overwrite
+// metadata (such as `length()`) on the shared `UrlData` in `UrlIndex`.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       MismatchedDataOriginDoesNotMutateUrlData) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+
+  constexpr char kOriginA[] = "http://localhost:18080/v1";
+  constexpr char kOriginB[] = "http://127.0.0.1:18081/secret";
+  constexpr int kBlockSize = 1 << 15;
+  constexpr int64_t kInitialLength = 100000;
+  constexpr int64_t kSecretLength = 424242;
+
+  Initialize(kOriginA, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  loader_->Start();
+
+  // 1. Receive initial partial response from Origin A, pinning `data_origin_`
+  // and `length()` on `url_data_` in `url_index_`.
+  WebURL url_a{KURL(kOriginA)};
+  WebURLResponse response_a{url_a};
+  response_a.SetHttpStatusCode(kHttpPartialContent);
+  response_a.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                WebString::FromUtf8("bytes 0-32767/100000"));
+  response_a.SetExpectedContentLength(kBlockSize);
+  response_a.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(response_a);
+  ASSERT_TRUE(loader_);
+  EXPECT_EQ(url_data_->length(), kInitialLength);
+
+  std::string data_str(kBlockSize, 'a');
+  loader_->DidReceiveData(data_str);
+
+  // 2. Simulate retry/next range on the same `url_data_` where a Service Worker
+  // responds with a 200 OK response from Origin B carrying a different
+  // Content-Length.
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_a));
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+
+  WebURL url_b{KURL(kOriginB)};
+  WebURLResponse response_b{url_b};
+  response_b.SetHttpStatusCode(kHttpOK);
+  response_b.SetExpectedContentLength(kSecretLength);
+  response_b.SetType(network::mojom::FetchResponseType::kOpaque);
+  response_b.SetWasFetchedViaServiceWorker(true);
+  response_b.SetUrlListViaServiceWorker(std::vector<WebURL>{url_b});
+
+  loader_->DidReceiveResponse(response_b);
+  EXPECT_EQ(url_data_->length(), kInitialLength);
+  StopWhenLoad();
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, AllowGzip) {
   Initialize(kHttpUrl, 0, media::DataSource::EncodingMode::kAllowGzip);
 
