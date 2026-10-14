@@ -1218,4 +1218,58 @@ TEST(CTAPResponseTest, MldsaPublicKey) {
   }
 }
 
+// Made-up COSE identifiers that Chrome will never support. COSE reserves
+// values below -65536 for private use, so these will never be assigned:
+// https://www.iana.org/assignments/cose/cose.xhtml
+constexpr int64_t kUnknownCoseCurve = -65537;
+constexpr int32_t kUnknownCoseAlgorithm = -65537;
+
+// An EC2 key on a curve that Chrome doesn't support should not fail parsing.
+// Instead, it should produce a PublicKey without DER bytes.
+TEST(CTAPResponseTest, Ec2PublicKeyWithUnknownCurve) {
+  cbor::Value::MapValue map;
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kKty),
+              static_cast<int64_t>(CoseKeyTypes::kEC2));
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kAlg), kUnknownCoseAlgorithm);
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticCurve),
+              kUnknownCoseCurve);
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticX),
+              std::vector<uint8_t>{1, 2, 3, 4});
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticY),
+              std::vector<uint8_t>{5, 6, 7, 8});
+  const std::optional<std::vector<uint8_t>> cbor_bytes =
+      cbor::Writer::Write(cbor::Value(map));
+  ASSERT_TRUE(cbor_bytes);
+
+  std::unique_ptr<PublicKey> pubkey =
+      PublicKey::FromCOSEKey(kUnknownCoseAlgorithm, *cbor_bytes, map);
+  ASSERT_TRUE(pubkey);
+  EXPECT_EQ(pubkey->algorithm, kUnknownCoseAlgorithm);
+  EXPECT_EQ(pubkey->cose_key_bytes, *cbor_bytes);
+  EXPECT_FALSE(pubkey->der_bytes.has_value());
+}
+
+// An OKP key on a curve that Chrome doesn't support should not fail parsing.
+// Instead, it should produce a PublicKey without DER bytes.
+TEST(CTAPResponseTest, OkpPublicKeyWithUnknownCurve) {
+  cbor::Value::MapValue map;
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kKty),
+              static_cast<int64_t>(CoseKeyTypes::kOKP));
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kAlg), kUnknownCoseAlgorithm);
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticCurve),
+              kUnknownCoseCurve);
+  map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticX),
+              std::vector<uint8_t>{1, 2, 3, 4});
+  const std::optional<std::vector<uint8_t>> cbor_bytes =
+      cbor::Writer::Write(cbor::Value(map));
+  ASSERT_TRUE(cbor_bytes);
+
+  std::unique_ptr<PublicKey> pubkey =
+      PublicKey::FromCOSEKey(kUnknownCoseAlgorithm, *cbor_bytes, map);
+  ASSERT_TRUE(pubkey);
+  EXPECT_EQ(pubkey->algorithm, kUnknownCoseAlgorithm);
+  EXPECT_EQ(pubkey->cose_key_bytes, *cbor_bytes);
+  EXPECT_FALSE(pubkey->der_bytes.has_value());
+}
+
 }  // namespace device

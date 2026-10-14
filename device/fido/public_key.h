@@ -20,8 +20,8 @@ namespace device {
 // https://www.w3.org/TR/webauthn/#credentialpublickey
 struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   // FromCOSEKey parses a public key from a COSE_Key CBOR map. Returns nullptr
-  // if the key is invalid or corrupted. If the key type is unknown/unsupported,
-  // returns a PublicKey with nullopt der_bytes.
+  // if the key is invalid or corrupted. If the key type, curve, or algorithm is
+  // unknown/unsupported, returns a PublicKey with nullopt der_bytes.
   static std::unique_ptr<PublicKey> FromCOSEKey(
       int32_t algorithm,
       base::span<const uint8_t> cbor_bytes,

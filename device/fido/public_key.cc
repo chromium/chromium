@@ -21,15 +21,18 @@ namespace device {
 
 namespace {
 
-std::unique_ptr<PublicKey> ParseEcP256CoseKey(
-    int32_t algorithm,
-    base::span<const uint8_t> cbor_bytes,
-    const cbor::Value::MapValue& map) {
+std::unique_ptr<PublicKey> ParseEc2CoseKey(int32_t algorithm,
+                                           base::span<const uint8_t> cbor_bytes,
+                                           const cbor::Value::MapValue& map) {
   const auto crv_it =
       map.find(cbor::Value(static_cast<int64_t>(CoseKeyKey::kEllipticCurve)));
-  if (crv_it == map.end() || !crv_it->second.is_integer() ||
-      crv_it->second.GetInteger() != static_cast<int64_t>(CoseCurves::kP256)) {
+  if (crv_it == map.end() || !crv_it->second.is_integer()) {
     return nullptr;
+  }
+  if (crv_it->second.GetInteger() != static_cast<int64_t>(CoseCurves::kP256)) {
+    // Unknown or unsupported curve.
+    FIDO_LOG(EVENT) << "Unsupported EC2 curve " << crv_it->second.GetInteger();
+    return std::make_unique<PublicKey>(algorithm, cbor_bytes, std::nullopt);
   }
 
   const auto x_it =
@@ -64,16 +67,19 @@ std::unique_ptr<PublicKey> ParseEcP256CoseKey(
                                      key->ToSubjectPublicKeyInfo());
 }
 
-std::unique_ptr<PublicKey> ParseEd25519CoseKey(
-    int32_t algorithm,
-    base::span<const uint8_t> cbor_bytes,
-    const cbor::Value::MapValue& map) {
+std::unique_ptr<PublicKey> ParseOkpCoseKey(int32_t algorithm,
+                                           base::span<const uint8_t> cbor_bytes,
+                                           const cbor::Value::MapValue& map) {
   const auto crv_it =
       map.find(cbor::Value(static_cast<int64_t>(CoseKeyKey::kEllipticCurve)));
-  if (crv_it == map.end() || !crv_it->second.is_integer() ||
-      crv_it->second.GetInteger() !=
-          static_cast<int64_t>(CoseCurves::kEd25519)) {
+  if (crv_it == map.end() || !crv_it->second.is_integer()) {
     return nullptr;
+  }
+  if (crv_it->second.GetInteger() !=
+      static_cast<int64_t>(CoseCurves::kEd25519)) {
+    // Unknown or unsupported curve.
+    FIDO_LOG(EVENT) << "Unsupported OKP curve " << crv_it->second.GetInteger();
+    return std::make_unique<PublicKey>(algorithm, cbor_bytes, std::nullopt);
   }
 
   const auto x_it =
@@ -164,10 +170,10 @@ std::unique_ptr<PublicKey> PublicKey::FromCOSEKey(
 
   const int64_t kty = kty_it->second.GetInteger();
   if (kty == static_cast<int64_t>(CoseKeyTypes::kEC2)) {
-    return ParseEcP256CoseKey(algorithm, cbor_bytes, map);
+    return ParseEc2CoseKey(algorithm, cbor_bytes, map);
   }
   if (kty == static_cast<int64_t>(CoseKeyTypes::kOKP)) {
-    return ParseEd25519CoseKey(algorithm, cbor_bytes, map);
+    return ParseOkpCoseKey(algorithm, cbor_bytes, map);
   }
   if (kty == static_cast<int64_t>(CoseKeyTypes::kRSA)) {
     return ParseRsaCoseKey(algorithm, cbor_bytes, map);
