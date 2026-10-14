@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/reverb.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -158,6 +159,57 @@ TEST(ReverbConvolverTest, DelayedImpulseResponse) {
       EXPECT_NEAR(all_outputs[i], all_inputs[i - delay_frames], 1e-4f);
     }
   }
+}
+
+TEST(ReverbTest, ChannelMatrixing) {
+  base::test::TaskEnvironment task_environment;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  const size_t impulse_response_length = 512;
+  const unsigned render_slice_size = 128;
+  const unsigned max_fft_size = 512;
+
+  // 1. Test 1-channel impulse response (mono).
+  scoped_refptr<AudioBus> mono_response =
+      AudioBus::Create(1, impulse_response_length);
+  mono_response->Zero();
+  mono_response->Channel(0)->MutableSpan()[0] = 1.0f;  // Dirac impulse
+
+  std::unique_ptr<Reverb> reverb_mono = Reverb::TryCreate(
+      mono_response.get(), render_slice_size, max_fft_size, false);
+  ASSERT_NE(reverb_mono, nullptr);
+
+  // Case 1: 1 -> 1 -> 1
+  scoped_refptr<AudioBus> mono_source = AudioBus::Create(1, render_slice_size);
+  scoped_refptr<AudioBus> mono_dest = AudioBus::Create(1, render_slice_size);
+  mono_source->Zero();
+  mono_source->Channel(0)->MutableSpan()[0] = 0.5f;
+  reverb_mono->Process(mono_source.get(), mono_dest.get(), render_slice_size);
+  EXPECT_NEAR(mono_dest->Channel(0)->Span()[0], 0.5f, 1e-4f);
+
+  // 2. Test 2-channel impulse response (stereo).
+  scoped_refptr<AudioBus> stereo_response =
+      AudioBus::Create(2, impulse_response_length);
+  stereo_response->Zero();
+  stereo_response->Channel(0)->MutableSpan()[0] = 1.0f;
+  stereo_response->Channel(1)->MutableSpan()[0] = 1.0f;
+
+  std::unique_ptr<Reverb> reverb_stereo = Reverb::TryCreate(
+      stereo_response.get(), render_slice_size, max_fft_size, false);
+  ASSERT_NE(reverb_stereo, nullptr);
+
+  // Case 5: 2 -> 2 -> 2 (stereo in, stereo response, stereo out)
+  scoped_refptr<AudioBus> stereo_source =
+      AudioBus::Create(2, render_slice_size);
+  scoped_refptr<AudioBus> stereo_dest = AudioBus::Create(2, render_slice_size);
+  stereo_source->Zero();
+  stereo_source->Channel(0)->MutableSpan()[0] = 0.5f;
+  stereo_source->Channel(1)->MutableSpan()[0] = 0.25f;
+  stereo_dest->Zero();
+  reverb_stereo->Process(stereo_source.get(), stereo_dest.get(),
+                         render_slice_size);
+  EXPECT_NEAR(stereo_dest->Channel(0)->Span()[0], 0.5f, 1e-4f);
+  EXPECT_NEAR(stereo_dest->Channel(1)->Span()[0], 0.25f, 1e-4f);
 }
 
 }  // namespace blink

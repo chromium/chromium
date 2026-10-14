@@ -71,6 +71,18 @@ class ConvolverHandlerTest : public testing::Test {
             CrossThreadUnretained(GetHandler()), number_of_channels));
   }
 
+  void HandleDeferredTasksOnAudioThread() {
+    audio_thread_.RunOnAudioThreadWithContext(
+        context_.Get(),
+        CrossThreadBindOnce(
+            [](OfflineAudioContext* context) {
+              DeferredTaskHandler::GraphAutoLocker locker(
+                  context->GetDeferredTaskHandler());
+              context->GetDeferredTaskHandler().HandleDeferredTasks();
+            },
+            WrapCrossThreadPersistent(context_.Get())));
+  }
+
   void RunProcessOnAudioThread() {
     audio_thread_.RunOnAudioThreadWithContext(
         context_.Get(),
@@ -127,6 +139,47 @@ TEST_F(ConvolverHandlerTest, CheckNumberOfChannelsForInputWithLockContention) {
   EXPECT_EQ(GetHandler()->Output(0).NumberOfChannels(), 2u);
 
   // 7. Run Process() on the audio thread.
+  RunProcessOnAudioThread();
+}
+
+TEST_F(ConvolverHandlerTest,
+       ChannelCountUpdatesAcrossBufferAndModeTransitions) {
+  AudioBuffer* mono_buffer = AudioBuffer::Create(1, 128, 48000);
+  AudioBuffer* stereo_buffer = AudioBuffer::Create(2, 128, 48000);
+
+  convolver_->setChannelCount(1, ASSERT_NO_EXCEPTION);
+  convolver_->setChannelCountMode(
+      V8ChannelCountMode(V8ChannelCountMode::Enum::kExplicit),
+      ASSERT_NO_EXCEPTION);
+  HandleDeferredTasksOnAudioThread();
+
+  // 1. Set a mono buffer while the main thread sees a 2-channel explicit input
+  // (queuing desired_number_of_channels_ = 2 on Output(0) while
+  // Output(0).NumberOfChannels() is still 1), then switch back to 1-channel
+  // input before HandleDeferredTasks() runs on the audio thread.
+  convolver_->setChannelCount(2, ASSERT_NO_EXCEPTION);
+  convolver_->setBuffer(mono_buffer, ASSERT_NO_EXCEPTION);
+  convolver_->setChannelCount(1, ASSERT_NO_EXCEPTION);
+
+  HandleDeferredTasksOnAudioThread();
+
+  // Input is 1 channel and buffer is 1 channel, so output must be 1 channel
+  // (stale desired_number_of_channels_ = 2 from setBuffer must not win).
+  EXPECT_EQ(GetHandler()->Input(0).NumberOfChannels(), 1u);
+  EXPECT_EQ(GetHandler()->Output(0).NumberOfChannels(), 1u);
+  RunProcessOnAudioThread();
+
+  // 2. Switch to a stereo buffer with 1-channel input -> output becomes 2ch.
+  convolver_->setBuffer(stereo_buffer, ASSERT_NO_EXCEPTION);
+  HandleDeferredTasksOnAudioThread();
+  EXPECT_EQ(GetHandler()->Output(0).NumberOfChannels(), 2u);
+  RunProcessOnAudioThread();
+
+  // 3. Clear buffer (setBuffer(nullptr)) with 1-channel input -> output resets
+  // to 1ch.
+  convolver_->setBuffer(nullptr, ASSERT_NO_EXCEPTION);
+  HandleDeferredTasksOnAudioThread();
+  EXPECT_EQ(GetHandler()->Output(0).NumberOfChannels(), 1u);
   RunProcessOnAudioThread();
 }
 

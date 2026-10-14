@@ -228,9 +228,9 @@ void Reverb::Process(const AudioBus* source_bus,
       convolvers_[i]->Process(source_channel_l, destination_channel,
                               frames_to_process);
     }
-  } else if (num_input_channels == 1 && number_of_response_channels == 1) {
+  } else if (num_input_channels == 1 && number_of_response_channels == 1 &&
+             num_output_channels == 1) {
     // Case 1: 1 -> 1 -> 1
-    DCHECK_EQ(num_output_channels, 1ul);
     convolvers_[0]->Process(source_channel_l, destination_channel_l,
                             frames_to_process);
   } else if (num_input_channels == 2 && number_of_response_channels == 4 &&
@@ -279,7 +279,10 @@ void Reverb::Process(const AudioBus* source_bus,
 
     destination_bus->SumFrom(*temp_buffer_);
   } else {
-    DUMP_WILL_BE_NOTREACHED();
+    // All valid (input, response, output) channel combinations are handled
+    // above. Assert in debug builds to catch channel synchronization bugs,
+    // and output silence in production rather than crashing the audio thread.
+    DCHECK(false);
     destination_bus->Zero();
   }
 }

@@ -49,6 +49,10 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   double LatencyTime() const override;
   bool RequiresTailProcessing() const final;
 
+  // Clears the active impulse response buffer and reverb engine, and resets
+  // the output channel count to match a 1-channel response.
+  void ClearBuffer();
+
   // Determine how many output channels to use from the number of
   // input channels and the number of channels in the impulse response
   // buffer.
