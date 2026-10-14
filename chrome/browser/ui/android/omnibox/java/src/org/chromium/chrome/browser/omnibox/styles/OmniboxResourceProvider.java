@@ -778,12 +778,10 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * @param useLarge Whether to use thick headline2 text (carousel) or medium header text.
      */
     public @StyleRes int getPopupAttachmentsHeaderTextRes(boolean useLarge) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(getBrandedColorScheme());
         if (!useLarge) {
-            return IncognitoColors.getTextMediumThickSecondary(isIncognito);
+            return IncognitoColors.getTextMediumThickSecondary(isIncognito());
         }
-        return IncognitoColors.getHeadline2ThickPrimary(isIncognito);
+        return IncognitoColors.getHeadline2ThickPrimary(isIncognito());
     }
 
     /** Returns the drawable that normally goes behind the plus button. */
@@ -794,11 +792,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Get popover navigate button background. */
     public Drawable getPopoverNavigateButtonBackground() {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(getBrandedColorScheme());
         @DrawableRes
         int resId =
-                isIncognito
+                isIncognito()
                         ? R.drawable.fusebox_popover_navigate_button_background_incognito
                         : R.drawable.fusebox_popover_navigate_button_background;
         return getDrawable(resId);
@@ -806,11 +802,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Get popover plus button background. */
     public Drawable getPopoverPlusButtonBackground() {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(getBrandedColorScheme());
         @DrawableRes
         int resId =
-                isIncognito
+                isIncognito()
                         ? R.drawable.fusebox_popover_plus_button_background_incognito
                         : R.drawable.fusebox_popover_plus_button_background;
         return getDrawable(resId);
@@ -818,15 +812,13 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Get popup background drawable. */
     public Drawable getPopupBackgroundDrawable() {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(getBrandedColorScheme());
         @DrawableRes
         int resId =
                 OmniboxFeatures.shouldShowBottomSheetPopup()
-                        ? isIncognito
+                        ? isIncognito()
                                 ? R.drawable.fusebox_popup_bg_tinted_on_dark_bg
                                 : R.drawable.fusebox_popup_bg_tinted
-                        : isIncognito
+                        : isIncognito()
                                 ? R.drawable.menu_bg_tinted_on_dark_bg
                                 : R.drawable.menu_bg_tinted;
         return getDrawable(resId);
@@ -1071,7 +1063,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     /** Returns the background color for suggestions in the given color scheme and context. */
     public static @ColorInt int getStandardSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
-        return convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(colorScheme)
+        return colorScheme == BrandedColorScheme.INCOGNITO
                 ? context.getColor(R.color.search_suggestion_bg_color_incognito)
                 : ContextCompat.getColor(context, R.color.search_suggestion_bg_color);
     }
@@ -1082,7 +1074,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      */
     public static @ColorInt int getPopoverSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
-        return convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(colorScheme)
+        return colorScheme == BrandedColorScheme.INCOGNITO
                 ? context.getColor(R.color.gm3_baseline_surface_container_dark)
                 : ContextCompat.getColor(context, R.color.omnibox_popover_suggestion_bg_color);
     }
@@ -1187,33 +1179,17 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return sTabFaviconFactory.apply(tab);
     }
 
-    /**
-     * Converts a branded color scheme to a boolean, whether to use incognito colors or day night
-     * adaptive colors.
-     *
-     * @param brandedColorScheme The theme to check.
-     * @return A boolean, true for incognito, false for day night adaptive.
-     */
-    public static boolean convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(
-            @BrandedColorScheme int brandedColorScheme) {
-        // It is assumed that anywhere that calls this method doesn't actually need to support
-        // real branded colors schemes. Instead we just need to determine if it is incognito or not.
-        return brandedColorScheme == BrandedColorScheme.INCOGNITO;
-    }
-
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public static ColorStateList getPrimaryIconTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         return ChromeColors.getPrimaryIconTint(context, isIncognito);
     }
 
     /** Resolves the secondary icon tint color. */
     public static ColorStateList getSecondaryIconTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         return ChromeColors.getSecondaryIconTint(context, isIncognito);
     }
 
@@ -1241,15 +1217,13 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      */
     public static ColorStateList getPrimaryIconBackgroundTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         return IncognitoColors.getColorSurfaceContainerTintList(context, isIncognito);
     }
 
     /** Resolves the text appearance for menu items in the popup. */
     public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
                 ? IncognitoColors.getTextLargePrimary(isIncognito)
                 : IncognitoColors.getTextMediumPrimary(isIncognito);
@@ -1261,8 +1235,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      */
     public static @StyleRes int getAttachmentButtonTextRes(
             @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         return IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
