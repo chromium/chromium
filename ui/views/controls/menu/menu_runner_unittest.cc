@@ -47,6 +47,7 @@
 #include "ui/views/widget/widget_utils.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_closure_animation_mac.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #endif
 
@@ -217,7 +218,10 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
     return;
   }
 
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
@@ -242,7 +246,10 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
     return;
   }
 
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
@@ -304,7 +311,10 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
   // It progressively prefix searches for "One " (note the space) and ensures
   // that the right item is found.
 
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
   InitMenuRunner(0);
   menu_item_view()->AppendMenuItem(3, u"One Two");
 
@@ -349,7 +359,10 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
     return;
   }
 
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
   InitMenuRunner(0);
 
   MenuRunner* runner = menu_runner();
@@ -398,7 +411,10 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
 // over the desired item. Releasing the mouse activates the item.
 TEST_F(MenuRunnerTest, RightClickAndDragSelectsMenuItem) {
   // Just makes the test run a little faster.
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
 
   InitMenuRunner(0);
 
@@ -463,7 +479,10 @@ class MenuRunnerFalseTriggerTest
 // not select the closest item.
 TEST_P(MenuRunnerFalseTriggerTest, DetectsRightClickAndDragFalseTrigger) {
   // Just makes the test run a little faster.
-  views::test::DisableMenuClosureAnimations();
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
 
   const gfx::Rect screen_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();

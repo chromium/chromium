@@ -12,7 +12,6 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
-#include "ui/views/test/menu_test_utils.h"
 
 namespace ash {
 namespace {
@@ -56,7 +55,6 @@ class AppMenuModelAdapterTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    views::test::DisableMenuClosureAnimations();
 
     auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
     submenu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);

@@ -44,6 +44,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_closure_animation_mac.h"
+#endif
+
 #if BUILDFLAG(IS_OZONE)
 #include "ui/events/ozone/layout/keyboard_layout_engine_test_utils.h"
 #endif
@@ -86,7 +90,7 @@ class EditableComboboxTest : public ViewsTestBase {
   static constexpr gfx::Rect kWidgetBounds = gfx::Rect(0, 0, 1000, 1000);
   static constexpr gfx::Rect kComboboxBounds = gfx::Rect(0, 0, 500, 40);
 
-  EditableComboboxTest() { views::test::DisableMenuClosureAnimations(); }
+  EditableComboboxTest() = default;
 
   EditableComboboxTest(const EditableComboboxTest&) = delete;
   EditableComboboxTest& operator=(const EditableComboboxTest&) = delete;
@@ -167,6 +171,11 @@ class EditableComboboxTest : public ViewsTestBase {
   int change_count_ = 0;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+#if BUILDFLAG(IS_MAC)
+  MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations_;
+#endif
 };
 
 void EditableComboboxTest::SetUp() {

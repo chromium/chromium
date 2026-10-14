@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,6 +26,10 @@
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_closure_animation_mac.h"
+#endif
 
 namespace {
 
@@ -199,7 +204,6 @@ class MenuModelAdapterTest : public ViewEventTestBase {
 
   // Open the submenu.
   void Step1() {
-    views::test::DisableMenuClosureAnimations();
     views::SubmenuView* topmenu = menu_->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_TRUE(topmenu->IsShowing());
@@ -268,6 +272,10 @@ class MenuModelAdapterTest : public ViewEventTestBase {
   views::MenuModelAdapter menu_model_adapter_{&top_menu_model_};
   std::unique_ptr<views::MenuRunner> menu_runner_;
   raw_ptr<views::MenuItemView> menu_ = nullptr;
+#if BUILDFLAG(IS_MAC)
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations_;
+#endif
 };
 
 // If this flakes, disable and log details in http://crbug.com/40432443.

@@ -10,11 +10,16 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_closure_animation_mac.h"
+#endif
 
 namespace views {
 class MenuItemView;
@@ -99,6 +104,11 @@ class MenuTestBase : public ViewEventTestBase,
   static constexpr int kNumEvents =
       static_cast<size_t>(ax::mojom::Event::kMaxValue) + 1;
   std::array<int, kNumEvents> ax_event_counts_;
+
+#if BUILDFLAG(IS_MAC)
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MENU_TEST_BASE_H_

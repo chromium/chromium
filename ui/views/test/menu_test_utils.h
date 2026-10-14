@@ -111,13 +111,9 @@ class TestMenuDelegate : public MenuDelegate {
   base::flat_set<int> checked_commands_;
 };
 
-// On platforms which have menu closure animations, these functions are
-// necessary to:
-//   1) Disable those animations (make them take zero time) to avoid slowing
-//      down tests;
-//   2) Wait for maybe-asynchronous menu closure to finish.
+// On platforms which have menu closure animations, this function is necessary
+// to wait for maybe-asynchronous menu closure to finish.
 // On platforms without menu closure animations, these do nothing.
-void DisableMenuClosureAnimations();
 void WaitForMenuClosureAnimation();
 
 // An implementation of TestViewsDelegate which overrides ReleaseRef in order to

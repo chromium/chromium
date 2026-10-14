@@ -17,7 +17,8 @@
 #include "ui/views/test/views_test_base.h"
 
 TEST(MenuClosureAnimationMacTest, DestructCancelsCleanly) {
-  views::test::DisableMenuClosureAnimations();
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_animations;
   base::test::TaskEnvironment environment;
 
   bool called = false;

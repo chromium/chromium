@@ -83,11 +83,6 @@ void MenuClosureAnimationMac::AdvanceAnimation() {
   }
 }
 
-// static
-void MenuClosureAnimationMac::DisableAnimationsForTesting() {
-  g_disable_animations_for_testing = true;
-}
-
 MenuClosureAnimationMac::ScopedDisableAnimationsForTesting::
     ScopedDisableAnimationsForTesting(bool disable)
     : previous_value_(g_disable_animations_for_testing) {

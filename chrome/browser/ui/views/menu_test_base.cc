@@ -55,7 +55,6 @@ int MenuTestBase::GetMenuRunnerFlags() {
 void MenuTestBase::SetUp() {
   ViewEventTestBase::SetUp();
 
-  views::test::DisableMenuClosureAnimations();
 
   auto menu_owning = std::make_unique<views::MenuItemView>(/*delegate=*/this);
   menu_ = menu_owning.get();

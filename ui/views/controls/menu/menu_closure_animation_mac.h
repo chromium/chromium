@@ -74,11 +74,6 @@ class VIEWS_EXPORT MenuClosureAnimationMac final
   // destroyed.
   SubmenuView* menu();
 
-  // Causes animations to take no time for testing purposes. Note that this
-  // still causes the completion callback to be run asynchronously, so test
-  // situations have the same control flow as non-test situations.
-  static void DisableAnimationsForTesting();
-
  private:
   enum class AnimationStep {
     kStart,

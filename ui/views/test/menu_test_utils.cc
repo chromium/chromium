@@ -94,12 +94,6 @@ void TestMenuDelegate::PerformDrop(
   output_drag_op = ui::mojom::DragOperation::kCopy;
 }
 
-void DisableMenuClosureAnimations() {
-#if BUILDFLAG(IS_MAC)
-  MenuClosureAnimationMac::DisableAnimationsForTesting();
-#endif
-}
-
 void WaitForMenuClosureAnimation() {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/41470127): Replace this with Quit+Run.
