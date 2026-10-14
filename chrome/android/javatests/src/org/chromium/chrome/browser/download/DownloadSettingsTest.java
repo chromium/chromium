@@ -14,13 +14,16 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -129,5 +132,41 @@ public class DownloadSettingsTest {
         mSettingsActivityTestRule.startSettingsActivity();
         verifyLocationPromptPolicy(false);
         mSettingsActivityTestRule.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_SYSTEM_FILE_DIALOG})
+    public void testLocationPromptSystemFileDialog() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(true);
+        try {
+            mSettingsActivityTestRule.startSettingsActivity();
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        DownloadSettings downloadSettings = mSettingsActivityTestRule.getFragment();
+                        ChromeSwitchPreference locationPromptPreference =
+                                downloadSettings.findPreference(
+                                        DownloadSettings.PREF_LOCATION_PROMPT_ENABLED);
+                        Assert.assertNotNull(locationPromptPreference);
+                        Assert.assertTrue(locationPromptPreference.isVisible());
+                        Assert.assertTrue(locationPromptPreference.isEnabled());
+                        Assert.assertFalse(locationPromptPreference.isChecked());
+                        Assert.assertFalse(getPrefService().getBoolean(Pref.PROMPT_FOR_DOWNLOAD));
+
+                        locationPromptPreference.performClick();
+                        Assert.assertTrue(locationPromptPreference.isChecked());
+                        Assert.assertTrue(getPrefService().getBoolean(Pref.PROMPT_FOR_DOWNLOAD));
+
+                        locationPromptPreference.performClick();
+                        Assert.assertFalse(locationPromptPreference.isChecked());
+                        Assert.assertFalse(getPrefService().getBoolean(Pref.PROMPT_FOR_DOWNLOAD));
+                    });
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> getPrefService().clearPref(Pref.PROMPT_FOR_DOWNLOAD));
+            DeviceInfo.resetIsDesktopForTesting();
+            mSettingsActivityTestRule.getActivity().finish();
+        }
     }
 }

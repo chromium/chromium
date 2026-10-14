@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -61,7 +63,7 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                     }
                 };
         mLocationPromptEnabledPref.setManagedPreferenceDelegate(mLocationPromptEnabledPrefDelegate);
-        if (shouldEnableLocationPromptPref(getProfile())) {
+        if (shouldHideLocationPromptPref(getProfile())) {
             mLocationPromptEnabledPref.setVisible(false);
         } else {
             mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
@@ -87,9 +89,18 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
         }
     }
 
-    private static boolean shouldEnableLocationPromptPref(Profile profile) {
+    private static boolean shouldHideLocationPromptPref(Profile profile) {
+        if (isSystemFileDialogEnabled()) {
+            return false;
+        }
         return PdfUtils.shouldOpenPdfInline(profile.isOffTheRecord())
                 && DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().isEmpty();
+    }
+
+    private static boolean isSystemFileDialogEnabled() {
+        return DeviceInfo.isDesktop()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_SYSTEM_FILE_DIALOG);
     }
 
     private static boolean shouldEnableAutoOpenPdf(Profile profile) {
@@ -123,10 +134,16 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
     private void updateDownloadSettings() {
         mLocationChangePref.updateSummary();
 
-        if (DownloadDialogBridge.isLocationDialogManaged(getProfile())) {
-            // Location prompt can be controlled by the enterprise policy.
+        boolean isLocationDialogManaged =
+                DownloadDialogBridge.isLocationDialogManaged(getProfile());
+        if (isLocationDialogManaged || isSystemFileDialogEnabled()) {
+            // Location prompt can be controlled by enterprise policy or synced pref when OS file
+            // picker is enabled.
             mLocationPromptEnabledPref.setChecked(
-                    DownloadDialogBridge.getPromptForDownloadPolicy(getProfile()));
+                    DownloadDialogBridge.getPromptForDownload(getProfile()));
+            if (!isLocationDialogManaged) {
+                mLocationPromptEnabledPref.setEnabled(true);
+            }
         } else {
             // Location prompt is marked enabled if the prompt status is not DONT_SHOW.
             boolean isLocationPromptEnabled =
@@ -146,7 +163,9 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (PREF_LOCATION_PROMPT_ENABLED.equals(preference.getKey())) {
-            if ((boolean) newValue) {
+            if (isSystemFileDialogEnabled()) {
+                DownloadDialogBridge.setPromptForDownload(getProfile(), (boolean) newValue);
+            } else if ((boolean) newValue) {
                 // Only update if the download location dialog has been shown before.
                 if (DownloadDialogBridge.getPromptForDownloadAndroid(getProfile())
                         != DownloadPromptStatus.SHOW_INITIAL) {
@@ -184,7 +203,7 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
-                    if (shouldEnableLocationPromptPref(profile)) {
+                    if (shouldHideLocationPromptPref(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_LOCATION_PROMPT_ENABLED));
                     }
                     if (shouldEnableAutoOpenPdf(profile)) {
