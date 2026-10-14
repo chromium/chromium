@@ -38,14 +38,6 @@ chromium-metrics-reviews@google.com.
       summary="time predictionFromFeatures took when calling dispatch()."/>
 </variants>
 
-<variants name="WebNNDMLActions">
-  <variant name="Compilation" summary="time to compile the DirectML graph."/>
-  <variant name="RecordGraphExecutionOnBackgroundThread"
-      summary="time to record graph execution on background thread."/>
-  <variant name="RecordGraphExecutionOnMainThread"
-      summary="time to record graph execution on the main thread."/>
-</variants>
-
 <variants name="WebNNOrtActions">
   <variant name="Compilation" summary="time to compile the graph."/>
   <variant name="CreateEnvironment"
@@ -126,26 +118,6 @@ chromium-metrics-reviews@google.com.
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>Records what device type WebNN is running on.</summary>
-</histogram>
-
-<histogram name="WebNN.DML.TimingMs.{WebNNDMLActions}" units="ms"
-    expires_after="2027-06-27">
-  <owner>reillyg@chromium.org</owner>
-  <owner>src/services/webnn/OWNERS</owner>
-  <summary>
-    The time taken to perform a WebNN DML action. This includes
-    {WebNNDMLActions}
-  </summary>
-  <token key="WebNNDMLActions" variants="WebNNDMLActions"/>
-</histogram>
-
-<histogram name="WebNN.DMLCreateDevice.Error" enum="Hresult"
-    expires_after="2027-06-27">
-  <owner>reillyg@chromium.org</owner>
-  <owner>src/services/webnn/OWNERS</owner>
-  <summary>
-    The HRESULT returned when an attempt to create a dml device fails.
-  </summary>
 </histogram>
 
 <histogram name="WebNN.MLTensor.TimingMs.Read" units="ms"
