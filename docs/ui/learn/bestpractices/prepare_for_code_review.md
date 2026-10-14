@@ -18,7 +18,7 @@
   [LayoutProvider](/ui/views/layout/layout_provider.h).
 * Use a screen reader to navigate through the UI to make sure it's accessible.
   Make sure all items are correctly labeled / read out by the screenreader.
-  *TODO([crbug.com/1238153](crbug.com/1238153)): Follow up with detailed
+  *TODO([crbug.com/1238153](https://crbug.com/1238153)): Follow up with detailed
   instructions for getting started as part off a11y documentation and link those
   here.*
 * Make sure your UI looks OK in OS dark mode and Incognito (including color

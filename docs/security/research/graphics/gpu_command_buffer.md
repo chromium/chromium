@@ -269,8 +269,8 @@ complexity during future work in the graphics subsystem. Modest changes to
 existing fuzzers can yield new bugs.
 
 Layering Dawn on top of an independent communication mechanism has been a source
-of security bugs (e.g. [1](crbug.com/1314754), [2](crbug.com/1393177),
-[3](crbug.com/1373314), [4](crbug.com/1340654)) because operations at the lower
+of security bugs (e.g. [1](https://crbug.com/1314754), [2](https://crbug.com/1393177),
+[3](https://crbug.com/1373314), [4](https://crbug.com/1340654)) because operations at the lower
 CommandBuffer level can violate assumptions made at the higher level.
 
 ### Prior Work
