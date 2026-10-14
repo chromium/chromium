@@ -1957,6 +1957,38 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.KeyMetrics.FillingAcceptance{EntityGranularity}{EntityRecordType}{SuggestionMix}{Profile}"
+    enum="Boolean" expires_after="2027-02-14">
+  <owner>taminob@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Offers additional variants to
+    Autofill.Ai.KeyMetrics.FillingAcceptance[.EntityType][.RecordType] which
+    split depending on the record types of the shown suggestions. Emitted only
+    for users who have AutofillAi enabled in settings.
+
+    {SuggestionMix}
+
+    {EntityGranularity}
+
+    {EntityRecordType}
+
+    {Profile}
+  </summary>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for any kind of entities."/>
+  </token>
+  <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
+  <token key="SuggestionMix">
+    <variant name=".Mixed"
+        summary="Suggestions of multiple record types were shown."/>
+    <variant name=".Only"
+        summary="Only suggestions of this record type were shown."/>
+  </token>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
+<histogram
     name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}{EntityRecordType}{Profile}"
     enum="Boolean" expires_after="2027-02-14">
   <owner>jihadghanna@google.com</owner>

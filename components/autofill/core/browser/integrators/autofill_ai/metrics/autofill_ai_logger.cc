@@ -78,9 +78,10 @@ void LogKeyMetric(std::string_view key_metric_name,
                   std::optional<EntityType> entity_type,
                   std::optional<EntityInstance::RecordType> record_type,
                   bool metric_value,
-                  metrics::ProfileMetricsService& profile_metrics_service) {
+                  metrics::ProfileMetricsService& profile_metrics_service,
+                  std::string_view suffix = "") {
   static constexpr std::string_view kKeyMetricsHistogramMask =
-      "Autofill.Ai.KeyMetrics.%s%s%s";
+      "Autofill.Ai.KeyMetrics.%s%s%s%s";
 
   const std::string entity_type_str =
       entity_type ? base::StrCat({".", EntityTypeToMetricsString(*entity_type)})
@@ -92,7 +93,7 @@ void LogKeyMetric(std::string_view key_metric_name,
 
   profile_metrics_service.UmaHistogramBoolean(
       base::StringPrintf(kKeyMetricsHistogramMask, key_metric_name,
-                         entity_type_str, record_type_str),
+                         entity_type_str, record_type_str, suffix),
       metric_value);
 }
 
@@ -321,6 +322,8 @@ void AutofillAiLogger::RecordKeyMetrics(
   FunnelState combined_state = CombineStates(record_type_agnostic_states);
   RecordKeyMetricsForState(combined_state, /*entity_type=*/std::nullopt,
                            /*record_type=*/std::nullopt);
+  RecordFillingAcceptanceBySuggestionMix(/*entity_type=*/std::nullopt,
+                                         entity_type_agnostic_states);
   for (const auto& [record_type, state] : entity_type_agnostic_states) {
     RecordKeyMetricsForState(state, /*entity_type=*/std::nullopt, record_type);
   }
@@ -330,6 +333,25 @@ void AutofillAiLogger::RecordKeyMetrics(
   for (const auto& [entity_type, states] : funnel_states) {
     for (const auto& [record_type, state] : states) {
       RecordKeyMetricsForState(state, entity_type, record_type);
+    }
+    RecordFillingAcceptanceBySuggestionMix(entity_type, states);
+  }
+}
+
+void AutofillAiLogger::RecordFillingAcceptanceBySuggestionMix(
+    std::optional<EntityType> entity_type,
+    const std::map<EntityInstance::RecordType, FunnelState>& funnel_states)
+    const {
+  const auto shown_record_types_count = std::ranges::count_if(
+      funnel_states, &FunnelState::suggestions_shown,
+      &std::pair<const EntityInstance::RecordType, FunnelState>::second);
+  const std::string_view suggestion_mix_suffix =
+      shown_record_types_count > 1 ? ".Mixed" : ".Only";
+  for (const auto& [record_type, state] : funnel_states) {
+    if (state.suggestions_shown) {
+      LogKeyMetric("FillingAcceptance", entity_type, record_type,
+                   state.did_fill_suggestions, *profile_metrics_service_,
+                   suggestion_mix_suffix);
     }
   }
 }

@@ -98,8 +98,13 @@ class AutofillAiLogger {
   using FormFunnelStateMap =
       std::map<EntityType, std::map<EntityInstance::RecordType, FunnelState>>;
 
+  // Records the Autofill.Ai.Funnel.* metrics of a form, divided into multiple
+  // variants: aggregated over all entity types, per entity type, and per entity
+  // type and record type. `submission_state` denotes whether the form was
+  // submitted or abandoned.
   void RecordFunnelMetrics(const FormFunnelStateMap& funnel_states,
                            bool submission_state) const;
+
   // Records the funnel metrics for a single `funnel_state`. `entity_type` and
   // `record_type` can be `std::nullopt`, denoting that the metrics to be
   // emitted should not be split by this information. Is is assumed that
@@ -109,7 +114,12 @@ class AutofillAiLogger {
       std::optional<EntityType> entity_type,
       std::optional<EntityInstance::RecordType> record_type,
       bool submission_state) const;
+
+  // Records the Autofill.Ai.KeyMetrics.* metrics of a submitted form with the
+  // following variants: aggregated over all entity types and record types, per
+  // record type, per entity type, and per entity type and record type.
   void RecordKeyMetrics(const FormFunnelStateMap& funnel_states) const;
+
   // Records the key metrics for a single `funnel_state`. `entity_type` and
   // `record_type` can be `std::nullopt`, denoting that the metrics to be
   // emitted should not be split by this information.
@@ -117,6 +127,21 @@ class AutofillAiLogger {
       FunnelState funnel_state,
       std::optional<EntityType> entity_type,
       std::optional<EntityInstance::RecordType> record_type) const;
+
+  // Records FillingAcceptance for each record type in `funnel_states` whose
+  // suggestions were shown, split by whether suggestions of only that record
+  // type (".Only") or of multiple record types (".Mixed") were shown.
+  // `entity_type` can be `std::nullopt`, denoting that the metrics to be
+  // emitted should not be split by this information.
+  void RecordFillingAcceptanceBySuggestionMix(
+      std::optional<EntityType> entity_type,
+      const std::map<EntityInstance::RecordType, FunnelState>& funnel_states)
+      const;
+
+  // Records the Autofill.Ai.NumberOfFilledFields.* metrics of `form`. These
+  // metrics track the number of fields filled by any Autofill product and by
+  // Autofill AI, split by `opt_in_status` and by whether there was Autofill AI
+  // data to fill.
   void RecordNumberOfFieldsFilled(const FormStructure& form,
                                   const FormFunnelStateMap& funnel_states,
                                   bool opt_in_status) const;
