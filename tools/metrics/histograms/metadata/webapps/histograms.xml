@@ -1773,7 +1773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.NonAllowlistedAppInstallationRejected"
-    enum="ManagedSessionType" expires_after="2026-11-22">
+    enum="ManagedSessionType" expires_after="2027-11-22">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
