@@ -36,6 +36,10 @@ public class NtpThemeDailyRefreshManager {
     }
 
     private boolean mIsDailyUpdateApplied;
+    // Whether a due daily refresh of a theme collection should be skipped because the next image
+    // hasn't been completely prefetched, e.g., the fetch failed or the process was killed before it
+    // completed.
+    private boolean mShouldSkipDailyRefreshForThemeCollection;
     private @Nullable Long mLastDailyUpdateTimestamp;
     private @Nullable @NtpThemeColorId Integer mNtpThemeColorId;
 
@@ -131,13 +135,26 @@ public class NtpThemeDailyRefreshManager {
 
     /**
      * Checks if daily refresh for a theme collection should be applied and updates the status if
-     * needed.
+     * needed. The refresh is only applied if the next image has been prefetched. The daily refresh
+     * info is only saved after the image file has been completely written. Otherwise, it is skipped
+     * and the next image is fetched again in {@link #maybeSaveDailyRefreshAndReset}.
      */
     @VisibleForTesting
     public void maybeApplyDailyRefreshForThemeCollection() {
-        if (isDailyRefreshEnabled(THEME_COLLECTION)) {
-            setDailyUpdateStatusForThemeCollection(TimeUtils.currentTimeMillis());
+        if (!isDailyRefreshEnabled(THEME_COLLECTION)) {
+            return;
         }
+
+        // The refresh is skipped if the next image hasn't been prefetched, e.g., the fetch failed,
+        // or the process was killed or the write failed before the image file was completely
+        // written, since the daily refresh info is only saved after the image file. The current
+        // image is kept. The timestamp is still updated so that the daily refresh isn't applied
+        // later in this process, after the activity theme and the NTP background have been loaded
+        // from the current image.
+        boolean isPrefetched =
+                NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference()
+                        != null;
+        setDailyUpdateStatusForThemeCollection(TimeUtils.currentTimeMillis(), isPrefetched);
     }
 
     @VisibleForTesting
@@ -196,21 +213,31 @@ public class NtpThemeDailyRefreshManager {
     }
 
     /**
-     * Sets the internal state to indicate that a daily refresh for a Theme Collection has been
-     * applied.
+     * Sets the internal state to indicate that a due daily refresh for a Theme Collection has been
+     * applied or skipped.
      *
      * @param timestamp The timestamp of the refresh.
+     * @param shouldApply Whether the refresh should be applied, i.e., the next image has been
+     *     prefetched. If so, the getters return the prefetched daily refresh data until it's
+     *     committed in {@link #maybeSaveDailyRefreshAndReset}. Otherwise, the refresh is skipped.
      */
     @VisibleForTesting
-    void setDailyUpdateStatusForThemeCollection(long timestamp) {
+    void setDailyUpdateStatusForThemeCollection(long timestamp, boolean shouldApply) {
         mLastDailyUpdateTimestamp = timestamp;
-        mIsDailyUpdateApplied = true;
+        mIsDailyUpdateApplied = shouldApply;
+        mShouldSkipDailyRefreshForThemeCollection = !shouldApply;
         mNtpThemeColorId = null;
     }
 
-    /** Saves the existing daily refresh settings to the SharedPreference and resets. */
+    /**
+     * Saves the existing daily refresh settings to the SharedPreference and resets.
+     *
+     * @param onDailyRefreshThemeCollectionApplied Run if the background is a theme collection and a
+     *     daily refresh was applied or skipped, to fetch the image for the next daily refresh.
+     */
     public void maybeSaveDailyRefreshAndReset(Runnable onDailyRefreshThemeCollectionApplied) {
-        if (!mIsDailyUpdateApplied || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if ((!mIsDailyUpdateApplied && !mShouldSkipDailyRefreshForThemeCollection)
+                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             return;
         }
 
@@ -220,7 +247,11 @@ public class NtpThemeDailyRefreshManager {
         }
 
         if (NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference() == THEME_COLLECTION) {
-            NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+            // A skipped daily refresh has no prefetched image to commit. A stale daily refresh
+            // image file may exist, which mustn't replace the current image.
+            if (mIsDailyUpdateApplied) {
+                NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+            }
             onDailyRefreshThemeCollectionApplied.run();
         }
 
@@ -231,6 +262,7 @@ public class NtpThemeDailyRefreshManager {
         }
 
         mIsDailyUpdateApplied = false;
+        mShouldSkipDailyRefreshForThemeCollection = false;
     }
 
     public static NtpThemeDailyRefreshManager createInstanceForTesting() {
@@ -246,6 +278,10 @@ public class NtpThemeDailyRefreshManager {
 
     public boolean getIsDailyUpdateAppliedForTesting() {
         return mIsDailyUpdateApplied;
+    }
+
+    public boolean getShouldSkipDailyRefreshForThemeCollectionForTesting() {
+        return mShouldSkipDailyRefreshForThemeCollection;
     }
 
     public @Nullable Long getLastDailyUpdateTimestampForTesting() {

@@ -164,30 +164,42 @@ public class NtpCustomizationConfigManager {
                     EXECUTOR,
                     filePath);
         } else if (mBackgroundType == NtpBackgroundType.THEME_COLLECTION) {
-            mIsInitialized = true;
             NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
                     NtpThemeDailyRefreshManager.getInstance();
-            BackgroundImageInfo imageInfo =
-                    ntpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection();
-            @Nullable
-            @ColorInt
-            Integer primaryColor = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
-            ntpThemeDailyRefreshManager.readNtpBackgroundImageForThemeCollection(
-                    (bitmap) -> {
-                        onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
-                    },
-                    EXECUTOR,
-                    filePath);
-            mCustomBackgroundInfo =
+            CustomBackgroundInfo customBackgroundInfo =
                     ntpThemeDailyRefreshManager.getNtpCustomBackgroundInfoForThemeCollection();
-            mNtpBackgroundData =
-                    new NtpBackgroundDataThemeCollection(
-                            PlatformType.ANDROID,
-                            assumeNonNull(mCustomBackgroundInfo),
-                            imageInfo,
-                            /* bitmap= */ null,
-                            primaryColor,
-                            fileIdHash);
+            if (customBackgroundInfo == null) {
+                // The theme collection can't be restored if its info is missing or invalid. Clears
+                // the persisted background data and falls back to the default background. Unlike
+                // onBackgroundInitializationFailed(), doesn't notify any listener since this is
+                // called from the constructor, and doesn't delete the image files to avoid disk I/O
+                // on the UI thread.
+                mBackgroundType = NtpBackgroundType.DEFAULT;
+                NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
+            } else {
+                mIsInitialized = true;
+                BackgroundImageInfo imageInfo =
+                        ntpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection();
+                @Nullable
+                @ColorInt
+                Integer primaryColor =
+                        ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
+                ntpThemeDailyRefreshManager.readNtpBackgroundImageForThemeCollection(
+                        (bitmap) -> {
+                            onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
+                        },
+                        EXECUTOR,
+                        filePath);
+                mCustomBackgroundInfo = customBackgroundInfo;
+                mNtpBackgroundData =
+                        new NtpBackgroundDataThemeCollection(
+                                PlatformType.ANDROID,
+                                customBackgroundInfo,
+                                imageInfo,
+                                /* bitmap= */ null,
+                                primaryColor,
+                                fileIdHash);
+            }
         }
 
         mIsMvtToggleOn =

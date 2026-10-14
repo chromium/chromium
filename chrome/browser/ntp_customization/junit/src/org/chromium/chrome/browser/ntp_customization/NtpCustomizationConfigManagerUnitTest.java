@@ -979,6 +979,29 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(customBackgroundInfo, configManager.getCustomBackgroundInfo());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testInitialization_withThemeCollection_noCustomBackgroundInfo() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.THEME_COLLECTION);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        // mNtpThemeDailyRefreshManager returns a null CustomBackgroundInfo by default, e.g., when
+        // the persisted info is missing or invalid.
+
+        NtpCustomizationConfigManager configManager =
+                ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
+
+        // Verify that it falls back to the default background instead of crashing.
+        assertEquals(NtpBackgroundType.DEFAULT, configManager.getBackgroundType());
+        assertNull(configManager.getNtpBackgroundData());
+        assertNull(configManager.getCustomBackgroundInfo());
+        verify(mNtpThemeDailyRefreshManager, never())
+                .readNtpBackgroundImageForThemeCollection(any(), any(), any());
+        assertPrefsRemoved(NTP_CUSTOMIZATION_BACKGROUND_TYPE, NTP_CUSTOMIZATION_PRIMARY_COLOR);
+        assertPersistedBackgroundType(NtpBackgroundType.DEFAULT);
+        verify(mNtpThemeStateProvider, never()).notifyCustomBackgroundChanged();
+    }
+
     private void testOnBackgroundImageLoadedFromDiskImpl(
             @Nullable Bitmap bitmap,
             @Nullable BackgroundImageInfo imageInfo,

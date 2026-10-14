@@ -60,15 +60,11 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
             @Nullable String fileIdHash) {
         super(platformType, backgroundImageInfo, bitmap, primaryColor, fileIdHash);
         mCustomBackgroundInfo = customBackgroundInfo;
-        // TODO(crbug.com/570015549): Remove the null check once the CustomBackgroundInfo of a
-        // theme collection can't be null.
         // Set even when empty, which clears a stale description from a recycled view.
         setContentDescription(
-                customBackgroundInfo != null
-                        ? joinAttributionLines(
-                                customBackgroundInfo.attributionLine1,
-                                customBackgroundInfo.attributionLine2)
-                        : "");
+                joinAttributionLines(
+                        customBackgroundInfo.attributionLine1,
+                        customBackgroundInfo.attributionLine2));
     }
 
     /**

@@ -122,6 +122,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /** Utility class of the NTP customization. */
@@ -526,17 +527,6 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Saves the daily refresh background image.
-     *
-     * @param backgroundImageBitmap The bitmap of the daily refresh background image.
-     */
-    @VisibleForTesting
-    static void saveDailyRefreshBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
-        File file = createDailyRefreshBackgroundImageFile();
-        saveBitmapImageToFile(backgroundImageBitmap, file);
-    }
-
-    /**
      * Saves the background image if it isn't null, otherwise removes the file.
      *
      * @param backgroundImageBitmap The bitmap of the background image.
@@ -632,12 +622,14 @@ public class NtpCustomizationUtils {
      *
      * @param backgroundImageBitmap The bitmap to save.
      * @param file The file to save the image to.
+     * @return Whether the image is saved.
      */
-    private static void saveBitmapImageToFileImpl(Bitmap backgroundImageBitmap, File file) {
+    private static boolean saveBitmapImageToFileImpl(Bitmap backgroundImageBitmap, File file) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            backgroundImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            return backgroundImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
         } catch (IOException e) {
             Log.i(TAG, "Failed to save background image to: " + file.getAbsolutePath());
+            return false;
         }
     }
 
@@ -937,27 +929,6 @@ public class NtpCustomizationUtils {
             removeCustomizedPrimaryColorFromSharedPreference();
         }
         return primaryColor;
-    }
-
-    /**
-     * Picks the primary color for the daily refresh bitmap and saves it to SharedPreferences.
-     *
-     * @param bitmap The bitmap from which to extract and save the primary color.
-     */
-    static void pickAndSaveDailyRefreshPrimaryColor(Bitmap bitmap) {
-        new BackgroundOnlyAsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
-                if (primaryColor != null) {
-                    setDailyRefreshCustomizedPrimaryColorToSharedPreference(
-                            primaryColor.intValue());
-                } else {
-                    removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -1576,29 +1547,65 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Updates the necessary preferences and files for daily refresh of theme collection image.
+     * Updates the necessary preferences and files for daily refresh of theme collection image. The
+     * daily refresh info is saved only after the image file has been written, so that the daily
+     * refresh is only applied with a complete image.
      *
      * @param customBackgroundInfo The {@link CustomBackgroundInfo} containing the theme collection
-     *     info if passed in a theme collection image.
+     *     info.
      * @param bitmap The bitmap of the theme collection or uploaded image.
      * @param backgroundImageInfo The {@link BackgroundImageInfo} containing the portrait and
      *     landscape transformation matrices of the image.
      */
     public static void saveDailyRefreshBackgroundInfo(
-            @Nullable CustomBackgroundInfo customBackgroundInfo,
+            CustomBackgroundInfo customBackgroundInfo,
             Bitmap bitmap,
             BackgroundImageInfo backgroundImageInfo) {
-        saveDailyRefreshBackgroundImageFile(bitmap);
+        new AsyncTask<@Nullable Integer>() {
+            private boolean mIsImageSaved;
 
-        if (customBackgroundInfo != null) {
-            setDailyRefreshCustomBackgroundInfoToSharedPreference(customBackgroundInfo);
-        } else {
-            removeDailyRefreshCustomBackgroundInfoFromSharedPreference();
-        }
+            @Override
+            protected @Nullable Integer doInBackground() {
+                mIsImageSaved =
+                        saveBitmapImageToFileImpl(bitmap, createDailyRefreshBackgroundImageFile());
+                return mIsImageSaved ? getContentBasedSeedColor(bitmap) : null;
+            }
 
-        pickAndSaveDailyRefreshPrimaryColor(bitmap);
+            @Override
+            protected void onPostExecute(@Nullable Integer primaryColor) {
+                // Drops the image if it wasn't saved, or if the background has been changed while
+                // it was being saved. The image file isn't deleted, since it's only used after the
+                // daily refresh info below is saved, and the next prefetch overwrites the same
+                // file. Deleting it here might also delete the image of a newer prefetch.
+                if (!mIsImageSaved
+                        || !isActiveDailyRefreshThemeCollection(
+                                customBackgroundInfo.collectionId)) {
+                    return;
+                }
 
-        updateDailyRefreshBackgroundImageInfo(backgroundImageInfo);
+                updateDailyRefreshBackgroundImageInfo(backgroundImageInfo);
+                if (primaryColor != null) {
+                    setDailyRefreshCustomizedPrimaryColorToSharedPreference(primaryColor);
+                } else {
+                    removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
+                }
+                // Saved last, since the daily refresh is only applied if the info exists.
+                setDailyRefreshCustomBackgroundInfoToSharedPreference(customBackgroundInfo);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Returns whether the background is the theme collection with the given ID with daily refresh
+     * enabled.
+     *
+     * @param collectionId The ID of the theme collection.
+     */
+    public static boolean isActiveDailyRefreshThemeCollection(@Nullable String collectionId) {
+        CustomBackgroundInfo current = getCustomBackgroundInfoFromSharedPreference();
+        return current != null
+                && current.isDailyRefreshEnabled
+                && Objects.equals(current.collectionId, collectionId);
     }
 
     /**
