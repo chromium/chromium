@@ -422,16 +422,6 @@ ASH_PUBLIC_EXPORT inline constexpr auto
              AcceleratorAction::kDesksToggleAssignToAllDesks},
         });
 
-// Accelerators that are enabled with same app window cycling experiment.
-ASH_PUBLIC_EXPORT inline constexpr auto
-    kEnableWithSameAppWindowCycleAcceleratorData =
-        std::to_array<AcceleratorData>({
-            {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN,
-             AcceleratorAction::kCycleSameAppWindowsForward},
-            {true, ui::VKEY_OEM_3, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-             AcceleratorAction::kCycleSameAppWindowsBackward},
-        });
-
 ASH_PUBLIC_EXPORT inline constexpr auto kTilingWindowResizeAcceleratorData =
     std::to_array<AcceleratorData>({
         {true, ui::VKEY_OEM_COMMA, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,

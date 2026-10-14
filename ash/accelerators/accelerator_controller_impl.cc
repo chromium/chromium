@@ -777,7 +777,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanCycleMru();
     case AcceleratorAction::kCycleSameAppWindowsBackward:
     case AcceleratorAction::kCycleSameAppWindowsForward:
-      return accelerators::CanCycleSameAppWindows();
+      return false;
     case AcceleratorAction::kDesksActivateDeskLeft:
     case AcceleratorAction::kDesksActivateDeskRight:
     case AcceleratorAction::kDesksMoveActiveItemLeft:
@@ -1051,17 +1051,14 @@ void AcceleratorControllerImpl::PerformAction(
     }
     case AcceleratorAction::kCycleBackwardMru:
       RecordCycleBackwardMru(accelerator);
-      accelerators::CycleBackwardMru(/*same_app_only=*/false);
+      accelerators::CycleBackwardMru();
       break;
     case AcceleratorAction::kCycleForwardMru:
       RecordCycleForwardMru(accelerator);
-      accelerators::CycleForwardMru(/*same_app_only=*/false);
+      accelerators::CycleForwardMru();
       break;
     case AcceleratorAction::kCycleSameAppWindowsBackward:
-      accelerators::CycleBackwardMru(/*same_app_only=*/true);
-      break;
     case AcceleratorAction::kCycleSameAppWindowsForward:
-      accelerators::CycleForwardMru(/*same_app_only=*/true);
       break;
     case AcceleratorAction::kDesksActivateDeskLeft:
       // UMA metrics are recorded in the function.

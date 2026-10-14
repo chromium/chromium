@@ -46,10 +46,10 @@ bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
       ash::accelerators::NewWindow();
       return true;
     case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_FORWARD:
-      ash::accelerators::CycleForwardMru(/*same_app_only=*/false);
+      ash::accelerators::CycleForwardMru();
       return true;
     case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_BACKWARD:
-      ash::accelerators::CycleBackwardMru(/*same_app_only=*/false);
+      ash::accelerators::CycleBackwardMru();
       return true;
     case TroubleshootingAcceleratorAction::SHOW_TASK_MANAGER:
       ash::accelerators::ShowTaskManager();

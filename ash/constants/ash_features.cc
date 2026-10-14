@@ -928,9 +928,6 @@ BASE_FEATURE(kHideShelfControlsInTabletMode, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, add Hindi Inscript keyboard layout.
 BASE_FEATURE(kHindiInscriptLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, allows the user to cycle between windows of an app using Alt + `.
-BASE_FEATURE(kSameAppWindowCycle, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Make Sanitize available. This feature provides a "soft reset" option in CrOS
 // settings. This soft reset will disable extensions and reset some of the
 // settings to default.
@@ -2712,10 +2709,6 @@ bool IsRecoveryFlowReorderEnabled() {
 
 bool IsResetShortcutCustomizationsEnabled() {
   return base::FeatureList::IsEnabled(kResetShortcutCustomizations);
-}
-
-bool IsSameAppWindowCycleEnabled() {
-  return base::FeatureList::IsEnabled(kSameAppWindowCycle);
 }
 
 bool IsScalableShelfPodsEnabled() {

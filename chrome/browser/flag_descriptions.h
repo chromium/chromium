@@ -4508,11 +4508,6 @@ inline constexpr char kSafetyHubWeakAndReusedPasswordsDescription[] =
     "Enables showing weak and reused passwords in the password module of "
     "Safety Hub.";
 
-inline constexpr char kSameAppWindowCycleName[] =
-    "Cros Labs: Same App Window Cycling";
-inline constexpr char kSameAppWindowCycleDescription[] =
-    "Use Alt+` to cycle through the windows of the active application.";
-
 inline constexpr char kTestRootStoreName[] =
     "Enable Test-only MTC Root Store (UNSAFE)";
 inline constexpr char kTestRootStoreDescription[] =

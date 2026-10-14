@@ -134,10 +134,6 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
     AppendAcceleratorData(accelerators,
                           ash::kDisableWithNewMappingAcceleratorData);
   }
-  if (ash::features::IsSameAppWindowCycleEnabled()) {
-    AppendAcceleratorData(accelerators,
-                          ash::kEnableWithSameAppWindowCycleAcceleratorData);
-  }
 
   if (ash::features::IsTilingWindowResizeEnabled()) {
     AppendAcceleratorData(accelerators,

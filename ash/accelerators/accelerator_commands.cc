@@ -589,10 +589,6 @@ bool CanCycleMru() {
   return !keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
 }
 
-bool CanCycleSameAppWindows() {
-  return features::IsSameAppWindowCycleEnabled() && CanCycleMru();
-}
-
 bool CanCycleUser() {
   return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
 }
@@ -825,14 +821,14 @@ void BrightnessUp() {
     delegate->HandleBrightnessUp();
 }
 
-void CycleBackwardMru(bool same_app_only) {
+void CycleBackwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kBackward, same_app_only);
+      WindowCycleController::WindowCyclingDirection::kBackward);
 }
 
-void CycleForwardMru(bool same_app_only) {
+void CycleForwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward, same_app_only);
+      WindowCycleController::WindowCyclingDirection::kForward);
 }
 
 void CycleUser(CycleUserDirection direction) {

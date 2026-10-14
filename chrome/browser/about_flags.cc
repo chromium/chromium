@@ -9866,10 +9866,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kSyncWalletVehicleRegistrations)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"cros-labs-window-cycle-shortcut",
-     flag_descriptions::kSameAppWindowCycleName,
-     flag_descriptions::kSameAppWindowCycleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSameAppWindowCycle)},
     {"printing-ppd-channel", flag_descriptions::kPrintingPpdChannelName,
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},

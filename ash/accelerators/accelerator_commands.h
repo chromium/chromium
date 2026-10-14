@@ -57,8 +57,6 @@ ASH_EXPORT bool CanCycleInputMethod();
 
 ASH_EXPORT bool CanCycleMru();
 
-ASH_EXPORT bool CanCycleSameAppWindows();
-
 ASH_EXPORT bool CanCycleUser();
 
 ASH_EXPORT bool CanFindPipWidget();
@@ -134,11 +132,11 @@ ASH_EXPORT void BrightnessDown();
 // Brightness up.
 ASH_EXPORT void BrightnessUp();
 
-// Cycles windows of the same app/all windows backwards in the MRU window list.
-ASH_EXPORT void CycleBackwardMru(bool same_app_only);
+// Cycles windows backwards in the MRU window list.
+ASH_EXPORT void CycleBackwardMru();
 
-// Cycles windows of the same app/all windows forwards in the MRU window list.
-ASH_EXPORT void CycleForwardMru(bool same_app_only);
+// Cycles windows forwards in the MRU window list.
+ASH_EXPORT void CycleForwardMru();
 
 // Switches to next/previous user.
 ASH_EXPORT void CycleUser(CycleUserDirection direction);

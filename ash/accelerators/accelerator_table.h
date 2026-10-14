@@ -259,10 +259,8 @@ ASH_EXPORT inline constexpr auto kDeveloperAcceleratorData = std::to_array<
 // window is full-screen.
 ASH_EXPORT inline constexpr std::array kPreferredActions = {
     // Window cycling accelerators.
-    AcceleratorAction::kCycleBackwardMru,             // Shift+Alt+Tab
-    AcceleratorAction::kCycleForwardMru,              // Alt+Tab
-    AcceleratorAction::kCycleSameAppWindowsBackward,  // Shift+Alt+Backtick
-    AcceleratorAction::kCycleSameAppWindowsForward,   // Alt+Backtick
+    AcceleratorAction::kCycleBackwardMru,  // Shift+Alt+Tab
+    AcceleratorAction::kCycleForwardMru,   // Alt+Tab
     // Pass through debug shortcuts so that these works on Fullscreen Chrome
     // Remote Desktop.
     AcceleratorAction::kDebugPrintLayerHierarchy,
