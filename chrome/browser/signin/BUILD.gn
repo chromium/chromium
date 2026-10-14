@@ -579,6 +579,7 @@ source_set("identity_test_support") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile",
+    "//chrome/test/base:testing_profile_impl",
     "//components/signin/public/base:test_support",
   ]
 }

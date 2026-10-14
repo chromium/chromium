@@ -161,13 +161,6 @@ static_library("test_support") {
     "//chrome/browser:global_features",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
-
-    # testing_profile_impl (still in public_deps) calls TestingBrowserProcess
-    # methods defined in testing_browser_process_impl. Keep this until
-    # testing_profile_impl is migrated out of public_deps.
-    # TODO(crbug.com/353332589): remove once testing_profile_impl is migrated
-    # out.
-    "//chrome/test/base:testing_browser_process_impl",
   ]
 
   if (is_android || is_mac || is_win || is_chromeos) {
@@ -190,12 +183,6 @@ static_library("test_support") {
     "//chrome/browser/safe_browsing:test_database_helper",
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/signin:identity_test_support",
-
-    # TODO(crbug.com/353332589): c/b/signin:identity_test_support needs
-    # TestingProfile::TestingFactory but can't dep on testing_profile_impl
-    # directly due to cycle: testing_profile_impl -> extensions:test_support ->
-    # identity_test_support. Remove once that cycle is fixed.
-    "//chrome/test/base:testing_profile_impl",
   ]
 
   sources = []

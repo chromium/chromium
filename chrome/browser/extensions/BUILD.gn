@@ -1582,6 +1582,34 @@ source_set("extensions") {
   }
 }
 
+source_set("test_extension_system") {
+  testonly = true
+  sources = [
+    "test_extension_system.cc",
+    "test_extension_system.h",
+  ]
+  public_deps = [
+    "//base",
+    "//extensions/browser",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
+  deps = [
+    "//chrome/browser/extensions",
+    "//chrome/common",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/content",
+    "//components/value_store:test_support",
+    "//content/public/browser",
+    "//extensions/buildflags",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+    ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -1643,8 +1671,6 @@ static_library("test_support") {
     "test_extension_menu_icon_loader.h",
     "test_extension_service.cc",
     "test_extension_service.h",
-    "test_extension_system.cc",
-    "test_extension_system.h",
     "test_standalone_window_controller.cc",
     "test_standalone_window_controller.h",
     "user_scripts_test_util.cc",
@@ -1698,7 +1724,7 @@ static_library("test_support") {
     "//url",
   ]
 
-  public_deps = []
+  public_deps = [ "//chrome/browser/extensions:test_extension_system" ]
 
   if (is_android) {
     sources += [

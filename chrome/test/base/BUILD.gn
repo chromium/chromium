@@ -369,7 +369,7 @@ source_set("testing_profile_impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions",
-      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions:test_extension_system",
     ]
   }
   if (enable_extensions) {
