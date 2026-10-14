@@ -616,13 +616,16 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
 - (web::WebState*)webStateForLocationBarModelDelegate:
     (const LocationBarModelDelegateIOS*)locationBarModelDelegate {
-  return self.webStateList->GetActiveWebState();
+  return self.webState;
 }
 
 #pragma mark - WebLocationBarDelegate
 
 - (web::WebState*)webState {
-  return self.webStateList->GetActiveWebState();
+  if (WebStateList* webStateList = self.webStateList) {
+    return webStateList->GetActiveWebState();
+  }
+  return nullptr;
 }
 
 - (LocationBarModel*)locationBarModel {
@@ -644,7 +647,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 }
 
 - (void)locationBarCopyTapped {
-  StoreURLInPasteboard(self.webState->GetVisibleURL());
+  if (web::WebState* webState = self.webState) {
+    StoreURLInPasteboard(webState->GetVisibleURL());
+  }
 }
 
 - (void)locationBarRequestScribbleTargetFocus {
@@ -890,12 +895,15 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   if ([self isOmniboxFirstResponder]) {
     return nil;
   }
-  if (!self.webState->GetVisibleURL().is_valid()) {
-    return nil;
+  if (web::WebState* webState = self.webState) {
+    const GURL& visibleURL = webState->GetVisibleURL();
+    if (visibleURL.is_valid()) {
+      return [[URLInfo alloc]
+          initWithURL:visibleURL
+                title:base::SysUTF16ToNSString(webState->GetTitle())];
+    }
   }
-  return [[URLInfo alloc]
-      initWithURL:self.webState->GetVisibleURL()
-            title:base::SysUTF16ToNSString(self.webState->GetTitle())];
+  return nil;
 }
 
 - (UIBezierPath*)visiblePathForView:(UIView*)view {

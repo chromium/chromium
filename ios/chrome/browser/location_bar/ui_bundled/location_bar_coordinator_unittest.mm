@@ -20,6 +20,8 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -59,6 +61,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -90,7 +93,7 @@ using variations::VariationsIdsProvider;
 
 @end
 
-@interface LocationBarCoordinator (Testing)
+@interface LocationBarCoordinator (Testing) <URLDragDataSource>
 - (BOOL)shouldShowAIHubNewFeatureBadge;
 - (void)locationBarDidTapAIHubNewBadge;
 - (web::WebState*)webState;
@@ -471,6 +474,31 @@ TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
   // `self` is needed by OCMVerifyAll macro in C++ tests.
   id self = nil;
   OCMVerifyAll(mock_send_tab_to_self_handler_);
+}
+
+// Tests that URLInfoForView returns nil when there is no active WebState and
+// returns a valid URLInfo when there is an active WebState.
+TEST_F(LocationBarCoordinatorTest, URLInfoForView) {
+  [coordinator_ start];
+
+  EXPECT_EQ(nil,
+            [coordinator_
+                URLInfoForView:coordinator_.locationBarViewController.view]);
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetCurrentURL(GURL("http://test/"));
+  fake_web_state->SetTitle(u"Test Title");
+
+  id partial_mock_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
+
+  URLInfo* url_info = [partial_mock_coordinator
+      URLInfoForView:coordinator_.locationBarViewController.view];
+  ASSERT_TRUE(url_info);
+  EXPECT_EQ(GURL("http://test/"), url_info.URL);
+  EXPECT_NSEQ(@"Test Title", url_info.title);
+
+  [coordinator_ stop];
 }
 
 }  // namespace
