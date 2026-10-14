@@ -11,7 +11,7 @@
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
-#include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, SetupResponseSendsToolSet) {
                        "session_1");
 
   ASSERT_TRUE(tool_set_frame.IsReady());
-  EXPECT_TRUE(tool_set_frame.Get().has_tool_set_update());
+  EXPECT_TRUE(tool_set_frame.Get().has_toolset_update());
 }
 
 IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, RejectedSessionSetup) {

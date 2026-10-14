@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
-#include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -6,12 +6,11 @@ edition = "2023";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/features/common_quality_data.proto";
+import "components/optimization_guide/proto/common_types.proto";
 
-option optimize_for = LITE_RUNTIME;
-option java_multiple_files = true;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
+option optimize_for = LITE_RUNTIME;
 option objc_class_prefix = "TTC";
 
 // Audio codec format specification.
@@ -27,16 +26,20 @@ message TtcClientFrame {
   oneof frame {
     SessionSetupRequest setup_request = 1;
     AudioChunk audio_input = 2;
+
     TextInput text_input = 3;
+
     ContextUpdate context_update = 4;
-    ToolSetUpdate tool_set_update = 5;
+    ToolsetUpdate toolset_update = 5;
     ToolResponse tool_response = 6;
     PlaybackStatus playback_status = 7;
     CloseSessionRequest close_request = 8;
   }
+
   // Client timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
   // Represents the client-side clock time (Unix epoch, Jan 1, 1970 UTC) when
   // this frame was prepared and dispatched to the network stack.
+  // TODO(bokan): Update this to Timestamp
   int64 client_timestamp_ms = 9;
 }
 
@@ -45,6 +48,7 @@ message TtcServerFrame {
   oneof frame {
     SessionStatusResponse session_status = 1;
     ServerContent server_content = 2;
+
     ToolCall tool_call = 3;
     GoAway go_away = 4;
     ServerErrorNotification server_error = 5;
@@ -52,15 +56,20 @@ message TtcServerFrame {
     TurnComplete turn_complete = 7;
     JournalEvent journal_event = 9;
   }
+
   // Server timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
   // Represents the server-side clock time (Unix epoch, Jan 1, 1970 UTC) when
   // this frame was generated and dispatched to the network stream.
+  // TODO(bokan): Update this to Timestamp
   int64 server_timestamp_ms = 8;
 }
 
 // Establishes authenticated session capabilities and initial setup.
 message SessionSetupRequest {
+  // Optional system persona or instructions to customize assistant behavior.
   string persona = 1;
+
+  // Audio codec format for input and output audio streams.
   AudioCodec audio_codec = 2;
 
   // Whether to enable turn metrics.
@@ -76,8 +85,14 @@ message SessionStatusResponse {
     STATE_REJECTED_POLICY_DISABLED = 3;
     STATE_TERMINATED_ERROR = 4;
   }
+
+  // Current connection state of the session.
   SessionState state = 1;
+
+  // Unique server-assigned session identifier for logging and tracing.
   string server_session_id = 2;
+
+  // Optional diagnostic details or error explanation if state is not CONNECTED.
   string diagnostic_error_detail = 3;
 }
 
@@ -87,14 +102,20 @@ message AudioChunk {
   // Binary audio payload. The encoding format and sample rate are determined
   // during session establishment via SessionSetupRequest.audio_codec.
   bytes audio_data = 1;
+
+  // Monotonically increasing chunk sequence number for ordering and
+  // interruption tracking.
   int64 sequence_number = 2;
+
   // Capture timestamp on client, or synthesis timestamp on server in
   // milliseconds since the Unix epoch (Jan 1, 1970 UTC).
+  // TODO(bokan): Update this to Timestamp
   int64 timestamp_ms = 3;
 }
 
 // Direct text query submission (e.g. prompt chips or keyboard input).
 message TextInput {
+  // User text input query string.
   string text_query = 1;
 }
 
@@ -126,14 +147,19 @@ message InterruptionNotice {}
 message TurnComplete {
   // Resource usage metrics for the completed turn.
   message TurnMetrics {
+    // Number of input tokens consumed in this turn.
     int32 input_tokens_used = 1;
+
+    // Number of output tokens generated in this turn.
     int32 output_tokens_used = 2;
   }
+
   TurnMetrics turn_metrics = 1;
 }
 
 // Mid-stream tab switch / page navigation context update.
 message ContextUpdate {
+  // Navigation context for the active browser tab.
   TabContext active_tab = 1;
 
   // Optional on-demand or proactive page DOM tree representation.
@@ -142,19 +168,28 @@ message ContextUpdate {
 
 // Context for active browser tab navigation.
 message TabContext {
+  // URL of the active browser tab.
   string url = 1;
+
+  // Page title of the active browser tab.
   string title = 2;
 }
 
 // Dynamic browser tool manifest update.
-message ToolSetUpdate {
+message ToolsetUpdate {
+  // List of tools currently available for the model to invoke.
   repeated ToolDefinition active_tools = 1;
 }
 
 // Single tool definition.
 message ToolDefinition {
+  // Unique name identifying the tool (e.g. "open_tab", "get_pointer").
   string name = 1;
+
+  // Natural language description of the tool's purpose and functionality.
   string description = 2;
+
+  // JSON Schema specifying the arguments accepted by the tool.
   string parameters_json_schema = 3;
 
   enum ExecutionBehavior {
@@ -162,6 +197,8 @@ message ToolDefinition {
     BEHAVIOR_BLOCKING = 1;
     BEHAVIOR_NON_BLOCKING = 2;
   }
+
+  // Execution behavior indicating whether the tool blocks model generation.
   ExecutionBehavior behavior = 4;
 
   enum VerbalizationBehavior {
@@ -169,19 +206,30 @@ message ToolDefinition {
     VERBALIZATION_STANDARD = 1;
     VERBALIZATION_SILENT_ACTION = 2;
   }
+
+  // Verbalization behavior indicating whether action should be spoken aloud.
   VerbalizationBehavior verbalization = 5;
 }
 
 // Tool call request dispatched from server to client.
 message ToolCall {
+  // Name of the function or tool to execute.
   string name = 1;
+
+  // Unique call ID correlating this request with a subsequent ToolResponse.
   string call_id = 2;
+
+  // JSON-encoded arguments matching the tool's parameter schema.
   string arguments_json = 3;
 }
 
 // Visual content returned by tools.
 message VisualContent {
+  // Encoded image bytes.
   bytes image_data = 1;
+
+  // MIME type of the visual content (e.g. "image/png", "image/jpeg",
+  // "image/webp").
   string mime_type = 2;
 }
 
@@ -190,8 +238,14 @@ message ToolResponse {
   // Name of the function/tool that was executed (e.g. "getpointer",
   // "open_tab").
   string name = 1;
+
+  // Correlation ID matching the ToolCall that initiated this execution.
   string call_id = 2;
+
+  // JSON-encoded result of the tool execution.
   string response_json = 3;
+
+  // Optional visual content (e.g. screenshot) produced by tool execution.
   VisualContent visual_content = 4;
 }
 
@@ -203,6 +257,7 @@ message GoAway {
 
 // Signals that the client requests clean closure of the streaming session.
 message CloseSessionRequest {
+  // Client reason for closing the session.
   string reason = 1;
 }
 
@@ -215,7 +270,11 @@ message ServerErrorNotification {
     ERROR_CODE_INTERNAL_BACKEND_ERROR = 3;
     ERROR_CODE_SESSION_EXPIRED = 4;
   }
+
+  // Categorized error code.
   ErrorCode error_code = 1;
+
+  // Human-readable error description for debugging and logging.
   string error_message = 2;
 }
 
@@ -224,9 +283,20 @@ message JournalEvent {
   // Type of the journal event.
   enum JournalEventType {
     JOURNAL_EVENT_TYPE_UNSPECIFIED = 0;
+
+    // A journal event that's a single instant in time and has no duration.
     JOURNAL_EVENT_TYPE_INSTANT = 1;
+
+    // The start and end points of an asynchronous event that has a duration.
+    // Must specify an `async_event_id` to correlate the start and end events.
+    // Note, that the end event may provide different details from the begin,
+    // however, the `name` on the end event is ignored. Clients are encourated
+    // to provide the name anyways as it can help identify stray events.
     JOURNAL_EVENT_TYPE_ASYNC_BEGIN = 2;
     JOURNAL_EVENT_TYPE_ASYNC_END = 3;
+
+    // A special journal event used to compute the delta between client and
+    // server clocks in order to align all events to one clock.
     JOURNAL_EVENT_TYPE_CLOCK_SYNC = 4;
   }
 
@@ -236,7 +306,7 @@ message JournalEvent {
     string value = 2;
   }
 
-  // Timestamp of the event (UTC, since the Unix epoch).
+  // Timestamp when the event was recorded.
   Timestamp timestamp = 1;
 
   // Type of the journal event.
@@ -253,10 +323,9 @@ message JournalEvent {
   // `JOURNAL_EVENT_TYPE_ASYNC_BEGIN` or `JOURNAL_EVENT_TYPE_ASYNC_END`.
   int32 async_event_id = 5;
 
-  // Timestamp (UTC, since the Unix epoch) when the message was sent from the
-  // client *as recorded by the client's clock*. This value is sent back to the
-  // client along with the server clock received timestamp and is used to
-  // estimate the delta between clocks on client and server. Set only for
-  // `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
+  // Timestamp when the message was sent from the client *as recorded by the
+  // client's clock*. This value is sent back to the client along with the
+  // server clock received timestamp and is used to estimate the delta between
+  // clocks on client and server. Set only for `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
   Timestamp sync_timestamp = 6;
 }

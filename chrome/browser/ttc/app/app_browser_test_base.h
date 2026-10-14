@@ -16,7 +16,7 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/ttc_mes_client.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

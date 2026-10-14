@@ -279,7 +279,7 @@ void TtcMesClient::SendToolSetUpdate(const std::vector<ToolDefinition>& tools) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
-  auto* update = frame.mutable_tool_set_update();
+  auto* update = frame.mutable_toolset_update();
   for (const ToolDefinition& tool_def : tools) {
     auto* proto_tool = update->add_active_tools();
     proto_tool->set_name(tool_def.name);

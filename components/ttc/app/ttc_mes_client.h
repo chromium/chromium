@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "url/gurl.h"
