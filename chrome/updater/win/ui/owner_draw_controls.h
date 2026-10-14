@@ -346,6 +346,7 @@ class CustomProgressBarCtrl : public SubclassedWindow {
 
   static constexpr int kMinPosition = 0;
   static constexpr int kMaxPosition = 100;
+  static_assert(kMaxPosition > kMinPosition);
   static constexpr int kMarqueeWidth = 20;
   static constexpr UINT_PTR kMarqueeTimerId = 111;
 

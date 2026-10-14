@@ -930,42 +930,39 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
               corner_size);
 
   // Calculate Progress Width.
-  const int kBarWidth = kMaxPosition - kMinPosition;
-  if (kBarWidth > 0) {
-    const LONG bar_rect_right =
-        high_res_rect.left +
-        Width(high_res_rect) * (current_position_ - kMinPosition) / kBarWidth;
+  constexpr int kBarWidth = kMaxPosition - kMinPosition;
+  const LONG bar_rect_right =
+      high_res_rect.left +
+      Width(high_res_rect) * (current_position_ - kMinPosition) / kBarWidth;
 
-    RECT progress_rect = high_res_rect;
-    progress_rect.right = std::min(bar_rect_right, high_res_rect.right);
+  RECT progress_rect = high_res_rect;
+  progress_rect.right = std::min(bar_rect_right, high_res_rect.right);
 
-    // Handle Marquee Style animation.
-    if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
-      const LONG bar_rect_left =
-          bar_rect_right - (Width(high_res_rect) * kMarqueeWidth / kBarWidth);
-      progress_rect.left = std::max(bar_rect_left, high_res_rect.left);
+  // Handle Marquee Style animation.
+  if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
+    const LONG bar_rect_left =
+        bar_rect_right - (Width(high_res_rect) * kMarqueeWidth / kBarWidth);
+    progress_rect.left = std::max(bar_rect_left, high_res_rect.left);
+  }
+
+  // Draw the fill.
+  if (!IsRectEmpty(progress_rect) && Width(progress_rect) > (corner_size / 2)) {
+    COLORREF fill_color = bar_color_;
+    if (is_high_contrast) {
+      fill_color = ::GetSysColor(COLOR_HIGHLIGHT);
+    } else if (is_dark_mode) {
+      fill_color = kProgressBarFillColorDark;
     }
-
-    // Draw the fill.
-    if (!IsRectEmpty(progress_rect) &&
-        Width(progress_rect) > (corner_size / 2)) {
-      COLORREF fill_color = bar_color_;
-      if (is_high_contrast) {
-        fill_color = ::GetSysColor(COLOR_HIGHLIGHT);
-      } else if (is_dark_mode) {
-        fill_color = kProgressBarFillColorDark;
-      }
-      base::win::ScopedGDIObject<HBRUSH> fill_brush(
-          ::CreateSolidBrush(fill_color));
-      {
-        // `select_brush` must be scoped inside or declared after `fill_brush`
-        // so that it is deselected from `dc_hi_res` before `fill_brush` is
-        // destroyed.
-        base::win::ScopedSelectObject select_brush(dc_hi_res, fill_brush.get());
-        ::RoundRect(dc_hi_res, progress_rect.left, progress_rect.top,
-                    progress_rect.right, progress_rect.bottom, corner_size,
-                    corner_size);
-      }
+    base::win::ScopedGDIObject<HBRUSH> fill_brush(
+        ::CreateSolidBrush(fill_color));
+    {
+      // `select_brush` must be scoped inside or declared after `fill_brush`
+      // so that it is deselected from `dc_hi_res` before `fill_brush` is
+      // destroyed.
+      base::win::ScopedSelectObject select_brush(dc_hi_res, fill_brush.get());
+      ::RoundRect(dc_hi_res, progress_rect.left, progress_rect.top,
+                  progress_rect.right, progress_rect.bottom, corner_size,
+                  corner_size);
     }
   }
 
