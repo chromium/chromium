@@ -46,9 +46,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -217,6 +219,16 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertEquals(
                 0, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
         assertNotNull(mPropertyModel.get(NtpThemeSyncHistoryProperties.RECYCLER_VIEW_ADAPTER));
+    }
+
+    @Test
+    public void testPrepareToShow_RecordsImpression() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.BottomSheet.Shown",
+                        BottomSheetType.THEME_HISTORY_SCROLLABLE_LIST);
+        mCoordinator.prepareToShow();
+        histogramWatcher.assertExpected();
     }
 
     @Test

@@ -92,7 +92,8 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.SINGLE_THEME_COLLECTION,
         BottomSheetType.UPLOAD_IMAGE,
         BottomSheetType.CHROME_DEFAULT,
-        BottomSheetType.THEME_TIP
+        BottomSheetType.THEME_TIP,
+        BottomSheetType.THEME_HISTORY_SCROLLABLE_LIST
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
@@ -107,7 +108,8 @@ public class NtpCustomizationCoordinator {
         int UPLOAD_IMAGE = 8; // No dedicated bottom sheet for upload image.
         int CHROME_DEFAULT = 9; // No bottom sheet is shown.
         int THEME_TIP = 10;
-        int NUM_ENTRIES = 11;
+        int THEME_HISTORY_SCROLLABLE_LIST = 11; // Shown within the main bottom sheet.
+        int NUM_ENTRIES = 12;
     }
 
     /**

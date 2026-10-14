@@ -325,6 +325,37 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_V2, NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
+    public void testThemeSyncHistoryPreparedEachTimeMainBottomSheetIsShown() {
+        // Uses the real mediator so that back navigation to the main bottom sheet goes through
+        // the coordinator's showMainBottomSheet().
+        NtpCustomizationCoordinator coordinator =
+                new NtpCustomizationCoordinator(
+                        mContext,
+                        mBottomSheetController,
+                        mProfileSupplier,
+                        MAIN,
+                        mWindowAndroid,
+                        mModuleRegistry,
+                        mSnackbarManager);
+        coordinator.setViewFlipperForTesting(mViewFlipper);
+        NtpThemeSyncHistoryCoordinator ntpThemeSyncHistoryCoordinator =
+                mock(NtpThemeSyncHistoryCoordinator.class);
+        coordinator.setNtpThemeSyncHistoryCoordinatorForTesting(ntpThemeSyncHistoryCoordinator);
+
+        // Opens the main bottom sheet.
+        coordinator.showBottomSheet();
+        verify(ntpThemeSyncHistoryCoordinator).prepareToShow();
+
+        // Navigates to a sub bottom sheet and back to the main bottom sheet.
+        BottomSheetDelegate delegate = coordinator.getBottomSheetDelegateForTesting();
+        delegate.registerBottomSheetLayout(FEED, mContentView);
+        delegate.showBottomSheet(FEED);
+        delegate.backPressOnCurrentBottomSheet();
+        verify(ntpThemeSyncHistoryCoordinator, times(2)).prepareToShow();
+    }
+
+    @Test
     @DisableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testShowBottomSheet_SyncDisabled() {
         mNtpCustomizationCoordinator.showBottomSheet();
