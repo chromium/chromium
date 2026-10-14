@@ -2895,6 +2895,37 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(CheckWebUIInputSelection(0, 5)));
 }
 
+// Verifies that pressing Ctrl+L / Cmd+L when the omnibox is focused on an
+// elided steady-state URL unelides it to the full URL (including scheme) and
+// selects it.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusLocationShortcutUnelidesAndSelectsFullUrl) {
+  embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string full_url = url.spec();
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = full_url.substr(strlen("https://"));
+
+  RunTestSequence(
+      // 1. Open tab at an HTTPS URL and click on the omnibox: the URL should
+      // remain elided (`display_url`).
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitForPopupReady(),
+      WaitForWebUIInputValue(display_url),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+
+      // 2. Press Ctrl+L / Cmd+L while the omnibox is focused: should unelide
+      // to `full_url` and select all of `full_url`.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR)),
+      WaitForWebUIInputValue(full_url),
+      InAnyContext(CheckWebUIInputSelection(0, full_url.length())),
+      WaitForOmniboxFocus(true));
+}
+
 // Verifies that input entered into the native Omnibox during startup
 // before popup readiness is seamlessly transferred to WebUI upon readiness.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
