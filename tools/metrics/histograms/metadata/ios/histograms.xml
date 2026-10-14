@@ -6107,7 +6107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordBottomSheet.Details.ValidCredential"
-    enum="Boolean" expires_after="2026-10-31">
+    enum="Boolean" expires_after="2027-04-11">
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
