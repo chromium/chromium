@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -17,17 +16,13 @@
 
 #include "android_webview/js_sandbox/service/js_sandbox_array_buffer_allocator.h"
 #include "android_webview/js_sandbox/service/js_sandbox_isolate_callback.h"
-#include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_alloc_support.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
@@ -35,8 +30,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/message_loop/message_pump_type.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
@@ -44,7 +37,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -79,11 +71,6 @@ namespace {
 constexpr std::string_view resource_name = "<expression>";
 constexpr int64_t kUnknownAssetFileDescriptorLength = -1;
 constexpr int64_t kDefaultChunkSize = 1 << 16;
-// This is defined in content/public/common/content_switches.h, which
-// js_sandbox does not depend on. They must be kept in sync.
-constexpr char kProcessTypeSwitch[] = "type";
-// Value of kProcessTypeSwitch for this process.
-constexpr char kJsSandboxProcessType[] = "js-sandbox";
 
 size_t GetAllocatePageSize() {
   return gin::V8Platform::Get()->GetPageAllocator()->AllocatePageSize();
@@ -1131,40 +1118,7 @@ JsSandboxMemoryBudget* JsSandboxIsolate::GetMemoryBudget() {
   return memory_budget_.get();
 }
 
-// This method is called on the Android main looper once per process.
 static void JNI_JsSandboxIsolate_InitializeEnvironment() {
-  // This process does not initialize ContentMain, so PartitionAlloc has to be
-  // configured here. See crbug.com/570542820.
-  //
-  // PartitionAllocSupport CHECKs that the process type matches the --type
-  // switch, so give this process its own type.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kProcessTypeSwitch, kJsSandboxProcessType);
-  base::allocator::PartitionAllocSupport* partition_alloc_support =
-      base::allocator::PartitionAllocSupport::Get();
-  partition_alloc_support->ReconfigureEarlyish(kJsSandboxProcessType);
-
-  // FeatureList should be initialized before PartitionAlloc is reconfigured.
-  // All features keep their default state except for memory tagging.
-  // Memory tagging is kept OFF to maintain the same behavior as WebView.
-  base::FeatureList::InitInstance(
-      /*enable_features=*/"", /*disable_features=*/"",
-      {{std::cref(base::features::kPartitionAllocMemoryTagging),
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
-  // There is some special handling for known process types. Since this is not
-  // a process type known to the callee, it triggers the default configuration
-  // which is reasonable for this process. BackupRefPtr is enabled nevertheless.
-  partition_alloc_support->ReconfigureAfterFeatureListInit(
-      kJsSandboxProcessType);
-
-  // Bind a Chromium task runner to the service's main thread.
-  // ReconfigureAfterTaskRunnerInit() needs a task runner on the calling thread
-  // which in this case is the main thread.
-  static base::NoDestructor<base::SingleThreadTaskExecutor> main_task_executor(
-      base::MessagePumpType::JAVA);
-  partition_alloc_support->ReconfigureAfterTaskRunnerInit(
-      kJsSandboxProcessType);
-
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxIsolate");
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
   // Since we don't go through ContentMain, and we aren't a "browser" process,
