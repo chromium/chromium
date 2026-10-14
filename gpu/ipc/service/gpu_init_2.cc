@@ -121,9 +121,8 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
-bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
 #if BUILDFLAG(IS_LINUX)
+bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
   if (gpu_info.gpu.vendor_id != 0x10de ||  // NVIDIA
       gpu_info.gpu.driver_vendor != "NVIDIA")
     return true;
@@ -135,11 +134,8 @@ bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
     return false;
   }
   return true;
-#else
-  return true;
-#endif  // BUILDFLAG(IS_LINUX)
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool IsGpuWatchdogEnabled(const GpuPreferences& gpu_preferences,
                           const base::CommandLine& command_line) {
@@ -408,57 +404,9 @@ bool GpuInit2::InitializeAndStartSandbox(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-#if BUILDFLAG(IS_OZONE)
-  gpu_init_internal::MaybeDisableWebGPUOnVulkanViaGLInterop(gpu_feature_info_);
-#endif  // BUILDFLAG(IS_OZONE)
-
-  if (gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-      kGpuFeatureStatusEnabled) {
-    if (gpu_preferences_.use_vulkan == gpu::VulkanImplementationName::kNone) {
-      gpu_preferences_.use_vulkan = gpu::VulkanImplementationName::kNative;
-    }
-    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = true;
-  }
-#endif  // BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-
-  bool try_vulkan_init =
-      gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
-      gpu_feature_info_.IsFeatureEnabled(
-          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP) ||
-      (gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) &&
-       gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan);
-
-  if (!try_vulkan_init || !InitializeVulkan()) {
-    gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
-    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = false;
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
-        kGpuFeatureStatusDisabled;
-    gpu_feature_info_
-        .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
-        kGpuFeatureStatusDisabled;
-    if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
-      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
-          kGpuFeatureStatusDisabled;
-    }
-    if (gpu_preferences_.gr_context_type == GrContextType::kVulkan ||
-        gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
-#if BUILDFLAG(IS_FUCHSIA)
-      // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
-      // back to GL if Vulkan init fails.
-      LOG(FATAL) << "Vulkan initialization failed";
-#else
-      gpu_preferences_.gr_context_type = GrContextType::kGL;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-    }
-  } else {
-    // TODO(crbug.com/40700374): It would be better to cleanly tear
-    // down and recreate the VkDevice on VK_ERROR_DEVICE_LOST. Until that
-    // happens, we will exit_on_context_lost to ensure there are no leaks.
-    gpu_feature_info_.enabled_gpu_driver_bug_workarounds.push_back(
-        EXIT_ON_CONTEXT_LOST);
+  if (!InitializeVulkanIfNeeded()) {
+    VLOG(1) << "Vulkan initialization failed";
+    return false;
   }
 
   // Collect GPU process info
@@ -535,34 +483,7 @@ bool GpuInit2::InitializeAndStartSandbox(
     gpu_preferences_.disable_accelerated_video_encode = true;
   }
 
-  bool recreate_watchdog = false;
-  if (!gl_use_swiftshader_ && command_line->HasSwitch(switches::kUseGL)) {
-    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-    std::string use_angle =
-        command_line->GetSwitchValueASCII(switches::kUseANGLE);
-    if (use_gl == gl::kGLImplementationANGLEName &&
-        (use_angle == gl::kANGLEImplementationSwiftShaderName ||
-         use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName)) {
-      gl_use_swiftshader_ = true;
-      if (state.watchdog.get()) {
-        recreate_watchdog = true;
-      }
-    }
-  }
-  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
-  bool software_rendering = false;
-  if (gl_use_swiftshader_ ||
-      gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
-    software_rendering = true;
-  } else if (state.gl_disabled) {
-    DCHECK(!recreate_watchdog);
-    state.watchdog.Destroy();
-  } else if (state.watchdog.enabled() && kDelayGpuWatchdogStart) {
-    recreate_watchdog = true;
-  }
-  if (recreate_watchdog) {
-    state.watchdog.Create(software_rendering);
-  }
+  FinalizeWatchdog(state);
 
   if (!gpu_info_.sandboxed && !state.sandbox_start_attempted) {
     StartSandbox(state);
@@ -908,9 +829,11 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
     device_perf_info_ = device_perf_info;
   }
 
+#if BUILDFLAG(IS_LINUX)
   if (!CanAccessDeviceFile(gpu_info_)) {
     return false;
   }
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Compute blocklist and driver bug workaround decisions based on basic GPU
   // info.
@@ -1127,6 +1050,94 @@ bool GpuInit2::ResolveGrContextType(InitState& state) {
   }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
+}
+
+bool GpuInit2::InitializeVulkanIfNeeded() {
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+#if BUILDFLAG(IS_OZONE)
+  gpu_init_internal::MaybeDisableWebGPUOnVulkanViaGLInterop(gpu_feature_info_);
+#endif  // BUILDFLAG(IS_OZONE)
+
+  if (gpu_feature_info_
+          .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
+      kGpuFeatureStatusEnabled) {
+    if (gpu_preferences_.use_vulkan == gpu::VulkanImplementationName::kNone) {
+      gpu_preferences_.use_vulkan = gpu::VulkanImplementationName::kNative;
+    }
+    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = true;
+  }
+#endif  // BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+
+  bool try_vulkan_init =
+      gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
+      gpu_feature_info_.IsFeatureEnabled(
+          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP) ||
+      (gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) &&
+       gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan);
+
+  if (!try_vulkan_init || !InitializeVulkan()) {
+    gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
+    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = false;
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
+        kGpuFeatureStatusDisabled;
+    gpu_feature_info_
+        .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+        kGpuFeatureStatusDisabled;
+    if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
+      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+          kGpuFeatureStatusDisabled;
+    }
+    if (gpu_preferences_.gr_context_type == GrContextType::kVulkan ||
+        gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
+#if BUILDFLAG(IS_FUCHSIA)
+      // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
+      // back to GL if Vulkan init fails.
+      return false;
+#else
+      gpu_preferences_.gr_context_type = GrContextType::kGL;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+    }
+  } else {
+    // TODO(crbug.com/40700374): It would be better to cleanly tear
+    // down and recreate the VkDevice on VK_ERROR_DEVICE_LOST. Until that
+    // happens, we will exit_on_context_lost to ensure there are no leaks.
+    gpu_feature_info_.enabled_gpu_driver_bug_workarounds.push_back(
+        EXIT_ON_CONTEXT_LOST);
+  }
+  return true;
+}
+
+void GpuInit2::FinalizeWatchdog(InitState& state) {
+  bool recreate_watchdog = false;
+  if (!gl_use_swiftshader_ && state.command_line->HasSwitch(switches::kUseGL)) {
+    std::string use_gl =
+        state.command_line->GetSwitchValueASCII(switches::kUseGL);
+    std::string use_angle =
+        state.command_line->GetSwitchValueASCII(switches::kUseANGLE);
+    if (use_gl == gl::kGLImplementationANGLEName &&
+        (use_angle == gl::kANGLEImplementationSwiftShaderName ||
+         use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName)) {
+      gl_use_swiftshader_ = true;
+      if (state.watchdog.get()) {
+        recreate_watchdog = true;
+      }
+    }
+  }
+
+  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
+  bool software_rendering = false;
+  if (gl_use_swiftshader_ ||
+      gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
+    software_rendering = true;
+  } else if (state.gl_disabled) {
+    DCHECK(!recreate_watchdog);
+    state.watchdog.Destroy();
+  } else if (state.watchdog.enabled() && kDelayGpuWatchdogStart) {
+    recreate_watchdog = true;
+  }
+  if (recreate_watchdog) {
+    state.watchdog.Create(software_rendering);
+  }
 }
 
 void GpuInit2::SetSkiaBackendType() {
