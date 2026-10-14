@@ -1823,7 +1823,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
     EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
               syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
     EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
-              base::flat_set<std::string>{kGlicCapabilityStructuredYields});
+              (base::flat_set<std::string>{kGlicCapabilityStructuredYields,
+                                           kGlicCapabilityPaymentMetadata}));
   }
 
   {
@@ -1837,7 +1838,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
               syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
     EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
               (base::flat_set<std::string>{kGlicCapabilityScreenshot,
-                                           kGlicCapabilityStructuredYields}));
+                                           kGlicCapabilityStructuredYields,
+                                           kGlicCapabilityPaymentMetadata}));
   }
 }
 

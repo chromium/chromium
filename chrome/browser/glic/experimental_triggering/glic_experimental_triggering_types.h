@@ -22,6 +22,10 @@ inline constexpr char kGlicCapabilityScreenshot[] = "screenshot";
 // Supports structured yields, i.e. receiving `SubmitConfirmation` requests to
 // resolve pending confirmation dialogs.
 inline constexpr char kGlicCapabilityStructuredYields[] = "structured_yields";
+// Supports payment metadata, i.e. passing the opaque `payment_metadata` of a
+// `TriggerActuationRequest` through to the Glic web client in the invocation
+// payload.
+inline constexpr char kGlicCapabilityPaymentMetadata[] = "payment_metadata";
 
 // Outcome of a device opt-in request for experimental triggering.
 enum class DeviceOptInResult {

@@ -1635,7 +1635,8 @@ GlicExperimentalTriggeringCoordinator::GetCapabilities(
       syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {
     return {};
   }
-  base::flat_set<std::string> capabilities = {kGlicCapabilityStructuredYields};
+  base::flat_set<std::string> capabilities = {kGlicCapabilityStructuredYields,
+                                              kGlicCapabilityPaymentMetadata};
   if (base::FeatureList::IsEnabled(
           features::kGlicExperimentalTriggeringScreenshot)) {
     capabilities.insert(kGlicCapabilityScreenshot);

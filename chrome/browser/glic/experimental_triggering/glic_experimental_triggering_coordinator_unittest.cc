@@ -410,7 +410,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
         features::kGlicExperimentalTriggeringScreenshot);
 
     const base::flat_set<std::string> expected = {
-        kGlicCapabilityStructuredYields};
+        kGlicCapabilityStructuredYields, kGlicCapabilityPaymentMetadata};
     EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
                   syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
               expected);
@@ -427,7 +427,8 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
         features::kGlicExperimentalTriggeringScreenshot);
 
     const base::flat_set<std::string> expected = {
-        kGlicCapabilityScreenshot, kGlicCapabilityStructuredYields};
+        kGlicCapabilityScreenshot, kGlicCapabilityStructuredYields,
+        kGlicCapabilityPaymentMetadata};
     EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
                   syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
               expected);
