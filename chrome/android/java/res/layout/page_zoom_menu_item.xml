@@ -4,7 +4,9 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<org.chromium.chrome.browser.accessibility.PageZoomMenuItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/OverflowMenuItem"
@@ -84,4 +86,4 @@ found in the LICENSE file.
             android:paddingHorizontal="?attr/listItemIconPadding"
             app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout>
-</LinearLayout>
+</org.chromium.chrome.browser.accessibility.PageZoomMenuItemView>
