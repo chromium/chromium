@@ -23,7 +23,6 @@ GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
     kEnableGPUServiceLoggingGPU[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
     kEnableGPUDriverDebugLogging[];
-GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kDisableGpuProgramCache[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kEnforceGLMinimums[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
     kForceGpuMemDiscardableLimitMb[];

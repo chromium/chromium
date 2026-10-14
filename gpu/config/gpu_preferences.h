@@ -175,9 +175,6 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
   // Enable logging of GPU driver debug messages.
   bool enable_gpu_driver_debug_logging = false;
 
-  // Turn off gpu program caching
-  bool disable_gpu_program_cache = false;
-
   // Enforce GL minimums.
   bool enforce_gl_minimums = false;
 

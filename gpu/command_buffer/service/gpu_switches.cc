@@ -32,9 +32,6 @@ const char kEnableGPUServiceLoggingGPU[]    = "enable-gpu-service-logging";
 // Enable logging of GPU driver debug messages.
 const char kEnableGPUDriverDebugLogging[] = "enable-gpu-driver-debug-logging";
 
-// Turn off gpu program caching
-const char kDisableGpuProgramCache[]        = "disable-gpu-program-cache";
-
 // Enforce GL minimums.
 const char kEnforceGLMinimums[]             = "enforce-gl-minimums";
 

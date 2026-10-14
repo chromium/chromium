@@ -41,8 +41,7 @@ gles2::Outputter* CommandBufferTaskExecutor::outputter() {
 }
 
 gles2::ProgramCache* CommandBufferTaskExecutor::program_cache() {
-  if (gpu_preferences().disable_gpu_program_cache ||
-      gpu_feature_info_.IsWorkaroundEnabled(gpu::DISABLE_PROGRAM_CACHE)) {
+  if (gpu_feature_info_.IsWorkaroundEnabled(gpu::DISABLE_PROGRAM_CACHE)) {
     return nullptr;
   }
   if (!program_cache_ &&

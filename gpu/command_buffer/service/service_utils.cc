@@ -218,8 +218,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableGPUServiceLoggingGPU);
   gpu_preferences.enable_gpu_driver_debug_logging =
       command_line->HasSwitch(switches::kEnableGPUDriverDebugLogging);
-  gpu_preferences.disable_gpu_program_cache =
-      !features::IsShaderDiskCacheEnabled(command_line);
   gpu_preferences.enforce_gl_minimums =
       command_line->HasSwitch(switches::kEnforceGLMinimums);
   if (GetUintFromSwitch(
