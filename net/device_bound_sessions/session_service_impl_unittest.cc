@@ -31,6 +31,7 @@
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/keypair.h"
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -2287,8 +2288,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
   provider_session->set_unexportable_key_id(key);
 
   // Attempt a registration with a session provider
@@ -2296,6 +2300,54 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestUrl,
+          .provider_session_id = Session::Id(kSessionId)});
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+
+  // Validate the relying session exists.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
+  EXPECT_NE(relying_session, nullptr);
+}
+
+TEST_F(SessionServiceImplTestWithFederatedSessions,
+       FederatedRegistrationSuccessRsa) {
+  // Create the provider session
+  SchemefulSite site(kTestUrl);
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  Session* provider_session =
+      service().GetSession({site, Session::Id(kSessionId)});
+  ASSERT_NE(provider_session, nullptr);
+
+  // Create an RSA provider key and the correct thumbprint
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::sign::RSA_PKCS1_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(unexportable_keys::UnexportableSigningKeyId key,
+                       key_future.Take());
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_TRUE(public_key.IsRsa());
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
+  provider_session->set_unexportable_key_id(key);
+
+  // Attempt a registration with a session provider
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "RelyingSession", "https://rp.com/refresh", "https://rp.com");
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::sign::RSA_PKCS1_SHA256}, "challenge",
       /*authorization=*/std::nullopt,
       ProviderRegistrationParams{
           .provider_key = key_thumbprint,
@@ -2417,8 +2469,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
   provider_session->set_unexportable_key_id(key);
 
   // Attempt a registration with a session provider
@@ -2460,8 +2515,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
   provider_session->set_unexportable_key_id(key);
 
   // Attempt a registration with a session provider, specifying a
@@ -2567,8 +2625,11 @@ TEST_F(SessionServiceImplTestWithoutFederatedSessions,
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
   provider_session->set_unexportable_key_id(key);
 
   // Attempt a registration with a session provider
@@ -3662,8 +3723,11 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
 
   // Attempt a registration with a session provider
   base::HistogramTester histograms;
@@ -3753,8 +3817,11 @@ TEST_F(SessionServiceImplWithStoreTest,
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
-  std::string key_thumbprint = CreateJwkThumbprint(
-      crypto::sign::ECDSA_SHA256, *key_service()->GetSubjectPublicKeyInfo(key));
+  ASSERT_OK_AND_ASSIGN(crypto::keypair::PublicKey public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           *key_service()->GetSubjectPublicKeyInfo(key)));
+  ASSERT_OK_AND_ASSIGN(std::string key_thumbprint,
+                       CreateJwkThumbprint(public_key));
 
   // Attempt a registration with a session provider
   base::HistogramTester histograms;

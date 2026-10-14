@@ -4,24 +4,16 @@
 
 #include "net/device_bound_sessions/jwk_utils.h"
 
+#include <cstdint>
+#include <functional>
 #include <optional>
-#include <string>
-#include <vector>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/test_future.h"
-#include "components/unexportable_keys/background_task_origin.h"
-#include "components/unexportable_keys/background_task_priority.h"
-#include "components/unexportable_keys/service_error.h"
-#include "components/unexportable_keys/unexportable_key_id.h"
-#include "components/unexportable_keys/unexportable_key_service_impl.h"
-#include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/sign.h"
-#include "crypto/unexportable_key.h"
+#include "base/values.h"
+#include "crypto/keypair.h"
 #include "net/device_bound_sessions/test_support.h"
-#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,66 +31,43 @@ constexpr uint8_t kES256Spki[] = {
     0x31, 0x3B, 0xB9, 0xA4, 0x69, 0x82, 0xC8, 0x04, 0x24, 0x32, 0xE3, 0x82,
     0x46, 0x7F, 0x2F, 0xB4, 0x3B, 0x46, 0x7E};
 
-TEST(JWKUtilsTest, InvalidSpki) {
-  base::DictValue converted =
-      ConvertPkeySpkiToJwk(crypto::sign::ECDSA_SHA256, {});
-  EXPECT_TRUE(converted.empty());
-}
-
-TEST(JWKUtilsTest, UnsupportedAlgo) {
-  static constexpr uint8_t kSpki[] = {
-      0x30, 0x82, 0x01, 0x0A, 0x02, 0x82, 0x01, 0x01, 0x00, 0x9B, 0xED, 0x6F,
-      0x30, 0x89, 0xAA, 0x27, 0xD1, 0xEF, 0x09, 0x4B, 0x7A, 0xEF, 0xD0, 0x2C,
-      0x8F, 0xDA, 0x13, 0x48, 0x3A, 0x5E, 0x2B, 0xB5, 0xB8, 0x37, 0x06, 0xD4,
-      0x0E, 0x2B, 0xAD, 0x89, 0x21, 0xE6, 0x09, 0xCF, 0x09, 0x9E, 0x86, 0x60,
-      0x97, 0x59, 0x3E, 0x30, 0xC4, 0x78, 0x57, 0x7B, 0x5D, 0x1C, 0x0F, 0x18,
-      0xAF, 0x24, 0x11, 0x4E, 0x30, 0x46, 0x07, 0xF1, 0x4F, 0xFE, 0xE9, 0x0B,
-      0xE9, 0x0E, 0xE2, 0xA0, 0xB5, 0xB4, 0xF5, 0x7B, 0x1C, 0xBF, 0xC4, 0x4F,
-      0x6D, 0xDC, 0x39, 0x6C, 0x1A, 0xE7, 0x7A, 0xFF, 0xDC, 0x80, 0x4D, 0x49,
-      0x8C, 0x98, 0x1D, 0xBB, 0x74, 0x17, 0x17, 0x4C, 0xE9, 0x09, 0x4D, 0xEF,
-      0xD8, 0x05, 0x7C, 0x6C, 0x45, 0x73, 0xD0, 0x22, 0xC1, 0xA3, 0x41, 0x70,
-      0xFC, 0xC0, 0xB6, 0xC1, 0x81, 0xBA, 0x38, 0x1D, 0x95, 0x3D, 0x0E, 0xAA,
-      0x59, 0x8E, 0x93, 0xD2, 0x64, 0x98, 0xB9, 0x0C, 0x6B, 0x50, 0xC7, 0x6D,
-      0x42, 0xD5, 0xE1, 0xF3, 0x69, 0xBD, 0x44, 0x78, 0xF7, 0xE4, 0x9F, 0x87,
-      0x44, 0x02, 0x28, 0xBB, 0xE0, 0xAA, 0xD0, 0x99, 0x98, 0xBE, 0x5A, 0xD6,
-      0xF2, 0x17, 0x17, 0xFB, 0x74, 0xF3, 0xBE, 0xFA, 0xE8, 0x80, 0xA7, 0x33,
-      0xFF, 0x0B, 0xDE, 0xB0, 0x8F, 0xE5, 0xD2, 0x62, 0xCB, 0xD0, 0x01, 0xF6,
-      0x10, 0xBB, 0xA2, 0x34, 0x91, 0x55, 0xC2, 0x87, 0xA0, 0x6B, 0x25, 0x52,
-      0xD8, 0x70, 0x1A, 0x8A, 0x96, 0x63, 0xA8, 0x38, 0x22, 0x99, 0x41, 0xE2,
-      0x64, 0xE9, 0xE4, 0x63, 0xA1, 0xD3, 0x13, 0xB0, 0x01, 0xED, 0x9F, 0xA0,
-      0x05, 0x03, 0xB2, 0x5A, 0x16, 0x44, 0x1B, 0xC6, 0x6D, 0xF6, 0x79, 0xB4,
-      0xA1, 0x63, 0xA8, 0x2D, 0xDB, 0xEE, 0x54, 0xAA, 0x70, 0xEF, 0x2C, 0x45,
-      0xC8, 0x7F, 0x42, 0xEB, 0x9F, 0xCA, 0x98, 0xF9, 0xB8, 0x34, 0xDB, 0x83,
-      0x11, 0x02, 0x03, 0x01, 0x00, 0x01};
-
-  base::DictValue converted =
-      ConvertPkeySpkiToJwk(crypto::sign::RSA_PKCS1_SHA1, kSpki);
-  EXPECT_TRUE(converted.empty());
-}
-
-TEST(JWKUtilsTest, RS256) {
+TEST(JWKUtilsTest, CreateJwkRS256) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
-
-  base::Value expected =
-      base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS).value();
-  base::DictValue converted =
-      ConvertPkeySpkiToJwk(crypto::sign::RSA_PKCS1_SHA256, spki);
-  EXPECT_EQ(converted, expected);
+  ASSERT_OK_AND_ASSIGN(
+      crypto::keypair::PublicKey key,
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki));
+  ASSERT_OK_AND_ASSIGN(
+      base::DictValue expected,
+      base::JSONReader::ReadDict(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+  EXPECT_THAT(CreateJwk(key), testing::Optional(std::ref(expected)));
 }
 
-TEST(JWKUtilsTest, ES256) {
-  static constexpr char kJwk[] = R"json({
+TEST(JWKUtilsTest, CreateJwkES256) {
+  static constexpr std::string_view kJwk = R"json({
     "kty": "EC",
     "crv": "P-256",
     "x": "heUidIx0GC1lJWxEGSliA2J6NY4uUuZY5QYVvB5BQhU",
     "y": "AHdtNFoxemoUM20ldTE7uaRpgsgEJDLjgkZ_L7Q7Rn4"})json";
 
-  base::Value expected =
-      base::JSONReader::Read(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-          .value();
-  base::DictValue converted =
-      ConvertPkeySpkiToJwk(crypto::sign::ECDSA_SHA256, kES256Spki);
-  EXPECT_EQ(converted, expected);
+  ASSERT_OK_AND_ASSIGN(
+      crypto::keypair::PublicKey key,
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kES256Spki));
+  ASSERT_OK_AND_ASSIGN(
+      base::DictValue expected,
+      base::JSONReader::ReadDict(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+  EXPECT_THAT(CreateJwk(key), testing::Optional(std::ref(expected)));
+}
+
+TEST(JWKUtilsTest, CreateJwkUnsupportedKey) {
+  crypto::keypair::PublicKey ec_p384_key =
+      crypto::keypair::PublicKey::FromPrivateKey(
+          crypto::keypair::PrivateKey::GenerateEcP384());
+  EXPECT_EQ(CreateJwk(ec_p384_key), std::nullopt);
+
+  crypto::keypair::PublicKey ed25519_key =
+      crypto::keypair::PublicKey::FromPrivateKey(
+          crypto::keypair::PrivateKey::GenerateEd25519());
+  EXPECT_EQ(CreateJwk(ed25519_key), std::nullopt);
 }
 
 TEST(JWKUtilsTest, CreateJwkThumbprintRS256) {
@@ -129,85 +98,44 @@ TEST(JWKUtilsTest, CreateJwkThumbprintRS256) {
       0xd0, 0xbb, 0x35, 0x8c, 0x5e, 0x38, 0xf9, 0xcb, 0x05, 0x0a, 0xea, 0xfe,
       0x90, 0x48, 0x14, 0xf1, 0xac, 0x1a, 0xa4, 0x9c, 0xca, 0x9e, 0xa0, 0xca,
       0x83, 0x02, 0x03, 0x01, 0x00, 0x01};
-  static constexpr char kJwk[] = R"json({
+  static constexpr std::string_view kJwk = R"json({
       "kty": "RSA",
       "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
       "e": "AQAB"
   })json";
-  ASSERT_EQ(ConvertPkeySpkiToJwk(crypto::sign::RSA_PKCS1_SHA256, kSpki),
-            base::JSONReader::Read(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-                .value());
+  ASSERT_OK_AND_ASSIGN(
+      crypto::keypair::PublicKey key,
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kSpki));
+  ASSERT_OK_AND_ASSIGN(
+      base::DictValue expected_jwk,
+      base::JSONReader::ReadDict(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+  ASSERT_THAT(CreateJwk(key), testing::Optional(std::ref(expected_jwk)));
 
-  static constexpr char kExpectedThumbprint[] =
+  static constexpr std::string_view kExpectedThumbprint =
       "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
-
-  std::string thumbprint =
-      CreateJwkThumbprint(crypto::sign::RSA_PKCS1_SHA256, kSpki);
-  EXPECT_EQ(thumbprint, kExpectedThumbprint);
+  EXPECT_THAT(CreateJwkThumbprint(key), testing::Optional(kExpectedThumbprint));
 }
 
 TEST(JWKUtilsTest, CreateJwkThumbprintES256) {
-  static constexpr char kExpectedThumbprint[] =
+  ASSERT_OK_AND_ASSIGN(
+      crypto::keypair::PublicKey key,
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kES256Spki));
+
+  static constexpr std::string_view kExpectedThumbprint =
       "_ECzPdFweUQepHljFjcCo0Oy5mhyMgyP5_DqdNhevXk";
-
-  std::string thumbprint =
-      CreateJwkThumbprint(crypto::sign::ECDSA_SHA256, kES256Spki);
-  EXPECT_EQ(thumbprint, kExpectedThumbprint);
+  EXPECT_THAT(CreateJwkThumbprint(key), testing::Optional(kExpectedThumbprint));
 }
 
-TEST(JWKUtilsTest, CreateJwkThumbprintInvalidSpki) {
-  static constexpr uint8_t kBadSpki[] = {0x01, 0x02, 0x03, 0x04};
+TEST(JWKUtilsTest, CreateJwkThumbprintUnsupportedKey) {
+  crypto::keypair::PublicKey ec_p384_key =
+      crypto::keypair::PublicKey::FromPrivateKey(
+          crypto::keypair::PrivateKey::GenerateEcP384());
+  EXPECT_EQ(CreateJwkThumbprint(ec_p384_key), std::nullopt);
 
-  EXPECT_EQ(CreateJwkThumbprint(crypto::sign::ECDSA_SHA256, kBadSpki), "");
-}
-
-class JWKUtilsKeyServiceTest : public TestWithTaskEnvironment {
- protected:
-  unexportable_keys::UnexportableKeyService& key_service() {
-    return key_service_;
-  }
-
- private:
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager task_manager_;
-  unexportable_keys::UnexportableKeyServiceImpl key_service_{
-      task_manager_,
-      unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials,
-      crypto::UnexportableKeyProvider::Config()};
-};
-
-class JWKUtilsKeyServiceAlgorithmTest
-    : public JWKUtilsKeyServiceTest,
-      public testing::WithParamInterface<crypto::sign::SignatureKind> {};
-
-TEST_P(JWKUtilsKeyServiceAlgorithmTest, GetJwkThumbprintSuccess) {
-  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
-      unexportable_keys::UnexportableSigningKeyId>>
-      key_future;
-  key_service().GenerateSigningKeySlowlyAsync(
-      {GetParam()}, unexportable_keys::BackgroundTaskPriority::kBestEffort,
-      key_future.GetCallback());
-  ASSERT_OK_AND_ASSIGN(unexportable_keys::UnexportableSigningKeyId key_id,
-                       key_future.Take());
-
-  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> spki,
-                       key_service().GetSubjectPublicKeyInfo(key_id));
-  std::string expected_thumbprint = CreateJwkThumbprint(GetParam(), spki);
-  ASSERT_FALSE(expected_thumbprint.empty());
-
-  EXPECT_THAT(GetJwkThumbprint(key_service(), key_id),
-              testing::Optional(expected_thumbprint));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         JWKUtilsKeyServiceAlgorithmTest,
-                         testing::Values(crypto::sign::ECDSA_SHA256,
-                                         crypto::sign::RSA_PKCS1_SHA256));
-
-TEST_F(JWKUtilsKeyServiceTest, GetJwkThumbprintUnknownKeyId) {
-  EXPECT_EQ(GetJwkThumbprint(key_service(),
-                             unexportable_keys::UnexportableSigningKeyId()),
-            std::nullopt);
+  crypto::keypair::PublicKey ed25519_key =
+      crypto::keypair::PublicKey::FromPrivateKey(
+          crypto::keypair::PrivateKey::GenerateEd25519());
+  EXPECT_EQ(CreateJwkThumbprint(ed25519_key), std::nullopt);
 }
 
 }  // namespace

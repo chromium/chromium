@@ -14,6 +14,7 @@
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -23,11 +24,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -637,7 +640,12 @@ void SessionServiceImpl::CheckFederatedProviderKey(
   }
 
   std::optional<std::string> thumbprint =
-      GetJwkThumbprint(*key_service_, *provider_key);
+      base::OptionalFromExpected(
+          key_service_->GetSubjectPublicKeyInfo(*provider_key))
+          .and_then([](base::span<const uint8_t> spki) {
+            return crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
+          })
+          .and_then(CreateJwkThumbprint);
   if (!thumbprint) {
     std::move(callback).Run(
         base::unexpected(SessionError::kInvalidFederatedKey));

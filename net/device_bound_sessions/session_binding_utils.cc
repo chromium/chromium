@@ -115,6 +115,20 @@ base::DictValue CreateBindingStatement(
       .Set("sub_key", Base64UrlEncode(statement.subject_key));
 }
 
+// Returns the JWK for `spki`, or `std::nullopt` if `spki` is invalid or is
+// not a key that `algorithm` signs with. This keeps the JWK in the header
+// consistent with its `alg`.
+std::optional<base::DictValue> CreateJwkForAlgorithm(
+    crypto::sign::SignatureKind algorithm,
+    base::span<const uint8_t> spki) {
+  ASSIGN_OR_RETURN(crypto::keypair::PublicKey key,
+                   crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki));
+  const bool key_matches_algorithm =
+      (algorithm == crypto::sign::ECDSA_SHA256 && key.IsEcP256()) ||
+      (algorithm == crypto::sign::RSA_PKCS1_SHA256 && key.IsRsa());
+  return key_matches_algorithm ? CreateJwk(key) : std::nullopt;
+}
+
 }  // namespace
 
 // Source: JSON Web Signature and Encryption Algorithms
@@ -196,11 +210,8 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
     const GURL& destination_url,
     const crypto::AttestationStatement& attestation_stmt) {
   ASSIGN_OR_RETURN(std::string_view alg, ToJoseAlgorithm(aik_algorithm));
-  base::DictValue jwk = ConvertPkeySpkiToJwk(aik_algorithm, aik_pubkey_spki);
-  if (jwk.empty()) {
-    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(base::DictValue jwk,
+                   CreateJwkForAlgorithm(aik_algorithm, aik_pubkey_spki));
 
   auto header = base::DictValue()
                     .Set("alg", alg)
@@ -222,14 +233,12 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     base::span<const uint8_t> pubkey_spki,
     const GURL& destination_url,
     std::optional<std::string> authorization) {
-  base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
-  if (jwk.empty()) {
-    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
-    return std::nullopt;
-  }
-
-  return CreateHeaderAndPayload(challenge, algorithm, destination_url,
-                                std::move(jwk), std::move(authorization));
+  return CreateJwkForAlgorithm(algorithm, pubkey_spki)
+      .and_then([&](base::DictValue jwk) {
+        return CreateHeaderAndPayload(std::move(challenge), algorithm,
+                                      destination_url, std::move(jwk),
+                                      std::move(authorization));
+      });
 }
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(

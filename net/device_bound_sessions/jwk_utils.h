@@ -8,35 +8,26 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/span.h"
 #include "base/values.h"
-#include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/sign.h"
 #include "net/base/net_export.h"
 
-namespace unexportable_keys {
-class UnexportableKeyService;
+namespace crypto::keypair {
+class PublicKey;
 }
 
 namespace net::device_bound_sessions {
 
-// Converts a public key in SPKI format to a JWK (JSON Web Key). Only supports
-// ES256 and RS256 keys.
-NET_EXPORT base::DictValue ConvertPkeySpkiToJwk(
-    crypto::sign::SignatureKind algorithm,
-    base::span<const uint8_t> pkey_spki);
+// Creates a JWK (JSON Web Key, RFC 7517) from `key`. Only supports EC P-256
+// and RSA keys, and returns `std::nullopt` for any other key type. The JWK
+// depends only on the key, not on a signature algorithm, so callers are
+// responsible for ensuring that `key` matches the `alg` they advertise.
+NET_EXPORT std::optional<base::DictValue> CreateJwk(
+    const crypto::keypair::PublicKey& key);
 
-// Creates a JWK thumbprint as defined in RFC 7638. Returns an empty
-// string for failure to create a JWK from `pkey_spki`.
-NET_EXPORT std::string CreateJwkThumbprint(
-    crypto::sign::SignatureKind algorithm,
-    base::span<const uint8_t> pkey_spki);
-
-// Returns the RFC 7638 JWK thumbprint of the public key of `key_id`, or
-// `std::nullopt` if it can't be computed.
-NET_EXPORT std::optional<std::string> GetJwkThumbprint(
-    const unexportable_keys::UnexportableKeyService& key_service,
-    unexportable_keys::UnexportableSigningKeyId key_id);
+// Creates a JWK thumbprint (RFC 7638) from `key`. Only supports EC P-256 and
+// RSA keys, and returns `std::nullopt` for any other key type.
+NET_EXPORT std::optional<std::string> CreateJwkThumbprint(
+    const crypto::keypair::PublicKey& key);
 
 }  // namespace net::device_bound_sessions
 

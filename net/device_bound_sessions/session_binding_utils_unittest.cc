@@ -231,6 +231,29 @@ TEST_P(SessionBindingUtilsTest,
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayload_InvalidSpki) {
+  EXPECT_EQ(CreateKeyRegistrationHeaderAndPayload(
+                "test_challenge", RSA_PKCS1_SHA256,
+                /*pubkey_spki=*/std::vector<uint8_t>({1, 2, 3}),
+                GURL("https://example.com/register"), "authorization"),
+            std::nullopt);
+}
+
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayload_AlgorithmMismatch) {
+  auto [rsa_spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
+  EXPECT_EQ(CreateKeyRegistrationHeaderAndPayload(
+                "test_challenge", ECDSA_SHA256, rsa_spki,
+                GURL("https://example.com/register"), "authorization"),
+            std::nullopt);
+  EXPECT_EQ(CreateKeyRegistrationHeaderAndPayload(
+                "test_challenge", RSA_PKCS1_SHA256, kValidP256Spki,
+                GURL("https://example.com/register"), "authorization"),
+            std::nullopt);
+}
+
 TEST_P(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
   std::optional<std::string> result = CreateKeyRefreshHeaderAndPayload(
       "test_challenge", RSA_PKCS1_SHA256, GURL("https://example.com/refresh"));
@@ -506,6 +529,24 @@ TEST_P(SessionBindingUtilsTest,
                  .statement = {1, 2, 3},
                  .signature = {4, 5, 6},
                  .subject_key = {7, 8, 9}}),
+            std::nullopt);
+}
+
+TEST_P(SessionBindingUtilsTest,
+       CreateOuterRegistrationHeaderAndPayload_AlgorithmMismatch) {
+  auto [rsa_spki, jwk] = GetRS256SpkiAndJwkForTesting();
+  const crypto::AttestationStatement statement = {.format = kTpm,
+                                                  .statement = {1, 2, 3},
+                                                  .signature = {4, 5, 6},
+                                                  .subject_key = {7, 8, 9}};
+
+  EXPECT_EQ(CreateOuterRegistrationHeaderAndPayload(
+                "inner_jws", ECDSA_SHA256, rsa_spki,
+                GURL("https://example.com/register"), statement),
+            std::nullopt);
+  EXPECT_EQ(CreateOuterRegistrationHeaderAndPayload(
+                "inner_jws", RSA_PKCS1_SHA256, kValidP256Spki,
+                GURL("https://example.com/register"), statement),
             std::nullopt);
 }
 

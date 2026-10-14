@@ -4,22 +4,20 @@
 
 #include "net/device_bound_sessions/jwk_utils.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
-#include "base/notreached.h"
-#include "base/types/expected_macros.h"
-#include "base/types/optional_util.h"
-#include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/evp.h"
+#include "base/values.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/sha2.h"
-#include "crypto/sign.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace net::device_bound_sessions {
 
@@ -39,6 +37,13 @@ constexpr char kRsaKeyType[] = "RSA";
 constexpr char kRsaModulus[] = "n";
 constexpr char kRsaExponent[] = "e";
 
+// An X9.62 uncompressed P-256 point is 0x04 || x || y, with 32-byte
+// coordinates.
+constexpr uint8_t kX962UncompressedPrefix = 0x04;
+constexpr size_t kEcP256FieldElementLength = 32;
+constexpr size_t kEcP256UncompressedPointLength =
+    1 + 2 * kEcP256FieldElementLength;
+
 std::string Base64UrlEncode(base::span<const uint8_t> input) {
   std::string output;
   base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
@@ -46,124 +51,46 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
-base::DictValue ConvertES256PkeySpkiToJwk(base::span<const uint8_t> pkey_spki) {
-  bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(pkey_spki);
-  if (!pkey || EVP_PKEY_id(pkey.get()) != EVP_PKEY_EC) {
-    return base::DictValue();
-  }
-
-  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(pkey.get());
-  if (!ec_key) {
-    return base::DictValue();
-  }
-
-  const EC_GROUP* group = EC_KEY_get0_group(ec_key);
-  const EC_POINT* point = EC_KEY_get0_public_key(ec_key);
-  if (!group || !point) {
-    return base::DictValue();
-  }
-
-  bssl::UniquePtr<BIGNUM> x(BN_new());
-  bssl::UniquePtr<BIGNUM> y(BN_new());
-  if (!x || !y) {
-    return base::DictValue();
-  }
-
-  if (!EC_POINT_get_affine_coordinates_GFp(group, point, x.get(), y.get(),
-                                           nullptr)) {
-    return base::DictValue();
-  }
-
-  std::vector<uint8_t> x_bytes(32);
-  std::vector<uint8_t> y_bytes(32);
-  if (!BN_bn2bin_padded(x_bytes.data(), x_bytes.size(), x.get()) ||
-      !BN_bn2bin_padded(y_bytes.data(), y_bytes.size(), y.get())) {
-    return base::DictValue();
-  }
-
-  return base::DictValue()
-      .Set(kKeyTypeParam, kEcKeyType)
-      .Set(kEcCurve, kEcCurveP256)
-      .Set(kEcCoordinateX, Base64UrlEncode(x_bytes))
-      .Set(kEcCoordinateY, Base64UrlEncode(y_bytes));
-}
-
-base::DictValue ConvertRS256PkeySpkiToJwk(base::span<const uint8_t> pkey_spki) {
-  std::optional<crypto::keypair::PublicKey> key =
-      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pkey_spki);
-  if (!key || !key->IsRsa()) {
-    return base::DictValue();
-  }
-
-  return base::DictValue()
-      .Set(kKeyTypeParam, kRsaKeyType)
-      .Set(kRsaModulus, Base64UrlEncode(key->GetRsaModulus()))
-      .Set(kRsaExponent, Base64UrlEncode(key->GetRsaExponent()));
-}
 }  // namespace
 
-base::DictValue ConvertPkeySpkiToJwk(crypto::sign::SignatureKind algorithm,
-                                     base::span<const uint8_t> pkey_spki) {
-  switch (algorithm) {
-    case crypto::sign::RSA_PKCS1_SHA256:
-      return ConvertRS256PkeySpkiToJwk(pkey_spki);
-    case crypto::sign::ECDSA_SHA256:
-      return ConvertES256PkeySpkiToJwk(pkey_spki);
-    default:
-      return base::DictValue();
+std::optional<base::DictValue> CreateJwk(
+    const crypto::keypair::PublicKey& key) {
+  if (key.IsEcP256()) {
+    std::vector<uint8_t> uncompressed = key.ToUncompressedX962Point();
+    auto point = base::span(uncompressed)
+                     .to_fixed_extent<kEcP256UncompressedPointLength>();
+    CHECK(point);
+    CHECK_EQ(point->front(), kX962UncompressedPrefix);
+    auto [x, y] = point->subspan<1>().split_at<kEcP256FieldElementLength>();
+    return base::DictValue()
+        .Set(kKeyTypeParam, kEcKeyType)
+        .Set(kEcCurve, kEcCurveP256)
+        .Set(kEcCoordinateX, Base64UrlEncode(x))
+        .Set(kEcCoordinateY, Base64UrlEncode(y));
   }
+
+  if (key.IsRsa()) {
+    return base::DictValue()
+        .Set(kKeyTypeParam, kRsaKeyType)
+        .Set(kRsaModulus, Base64UrlEncode(key.GetRsaModulus()))
+        .Set(kRsaExponent, Base64UrlEncode(key.GetRsaExponent()));
+  }
+
+  return std::nullopt;
 }
 
-std::string CreateJwkThumbprint(crypto::sign::SignatureKind algorithm,
-                                base::span<const uint8_t> pkey_spki) {
-  base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pkey_spki);
-  if (jwk.empty()) {
-    return "";
-  }
-
-  // Move only the required fields from `jwk` to `canonical_jwk`.
-  base::DictValue canonical_jwk;
-  switch (algorithm) {
-    case crypto::sign::RSA_PKCS1_SHA256:
-      canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
-      canonical_jwk.Set(kRsaExponent, std::move(*jwk.Extract(kRsaExponent)));
-      canonical_jwk.Set(kRsaModulus, std::move(*jwk.Extract(kRsaModulus)));
-      break;
-    case crypto::sign::ECDSA_SHA256:
-      canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
-      canonical_jwk.Set(kEcCurve, std::move(*jwk.Extract(kEcCurve)));
-      canonical_jwk.Set(kEcCoordinateX,
-                        std::move(*jwk.Extract(kEcCoordinateX)));
-      canonical_jwk.Set(kEcCoordinateY,
-                        std::move(*jwk.Extract(kEcCoordinateY)));
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  // The canonical representation of the JWK requires the keys to be sorted
-  // alphabetically. `base::DictValue` is already sorted.
-  std::string canonical_jwk_string;
-  CHECK(base::JSONWriter::Write(canonical_jwk, &canonical_jwk_string));
-
-  std::string thumbprint_hash = crypto::SHA256HashString(canonical_jwk_string);
-  return Base64UrlEncode(base::as_bytes(base::span(thumbprint_hash)));
-}
-
-std::optional<std::string> GetJwkThumbprint(
-    const unexportable_keys::UnexportableKeyService& key_service,
-    unexportable_keys::UnexportableSigningKeyId key_id) {
-  ASSIGN_OR_RETURN(
-      crypto::sign::SignatureKind algorithm,
-      base::OptionalFromExpected(key_service.GetAlgorithm(key_id)));
-  ASSIGN_OR_RETURN(
-      std::vector<uint8_t> spki,
-      base::OptionalFromExpected(key_service.GetSubjectPublicKeyInfo(key_id)));
-  std::string thumbprint = CreateJwkThumbprint(algorithm, spki);
-  if (thumbprint.empty()) {
-    return std::nullopt;
-  }
-  return thumbprint;
+std::optional<std::string> CreateJwkThumbprint(
+    const crypto::keypair::PublicKey& key) {
+  // `CreateJwk()` only supports EC P-256 and RSA keys, and
+  // populates exclusively the required members from RFC 7638 Section 3.2.
+  // `base::DictValue` stores keys in lexicographical order and
+  // `base::WriteJson()` produces compact JSON with no whitespace, matching
+  // the canonical representation required by RFC 7638 Section 3.1.
+  return CreateJwk(key)
+      .and_then([](const base::DictValue& jwk) { return base::WriteJson(jwk); })
+      .transform([](std::string_view canonical_jwk) {
+        return Base64UrlEncode(crypto::hash::Sha256(canonical_jwk));
+      });
 }
 
 }  // namespace net::device_bound_sessions
