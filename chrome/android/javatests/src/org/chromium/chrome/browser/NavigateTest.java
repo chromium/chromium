@@ -11,17 +11,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.util.Base64;
 import android.view.KeyEvent;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +32,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,6 +56,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
@@ -64,7 +66,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -79,7 +81,12 @@ import java.util.concurrent.TimeUnit;
 /** Navigate in UrlBar tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class NavigateTest {
+    @ClassRule
+    public static EmbeddedTestServerRule sTestServerRule =
+            new EmbeddedTestServerRule().setServerUsesHttps(true);
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -95,9 +102,7 @@ public class NavigateTest {
     @Before
     public void setUp() {
         mStartingPage = mActivityTestRule.startOnBlankPage();
-        mTestServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
+        mTestServer = sTestServerRule.getServer();
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
@@ -189,16 +194,17 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     public void testNavigateLandscape() throws Exception {
-        mActivityTestRule
-                .getActivity()
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
-        String result = typeInOmniboxAndNavigate(url, "Simple");
-        Assert.assertEquals(expectedLocation(url), result);
-        // Reset device orientation.
-        mActivityTestRule
-                .getActivity()
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        try {
+            ActivityTestUtils.rotateActivityToOrientation(
+                    mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+            String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
+            String result = typeInOmniboxAndNavigate(url, "Simple");
+            Assert.assertEquals(expectedLocation(url), result);
+        } finally {
+            if (mActivityTestRule.getActivity() != null) {
+                ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+            }
+        }
     }
 
     /** Verify New Tab Open and Navigate. */
