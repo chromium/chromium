@@ -15306,10 +15306,12 @@
             ]
         }
     ],
-    "SaasUsageReportingChromeOS": [
+    "SaasUsageReporting": [
         {
             "platforms": [
-                "chromeos"
+                "android",
+                "chromeos",
+                "ios"
             ],
             "experiments": [
                 {
