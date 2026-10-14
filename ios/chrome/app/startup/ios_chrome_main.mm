@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
 #import <vector>
 
 #import "base/check.h"
@@ -69,9 +70,9 @@ base::ElapsedNoSleepTimer IOSChromeMain::StartTimer() {
 }
 
 // static
-base::TimeDelta IOSChromeMain::PreMainDuration() {
+std::optional<base::TimeDelta> IOSChromeMain::PreMainDuration() {
   if (g_pre_main_duration) {
     return *g_pre_main_duration;
   }
-  return base::TimeDelta();
+  return std::nullopt;
 }

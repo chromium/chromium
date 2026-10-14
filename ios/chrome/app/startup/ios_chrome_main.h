@@ -6,6 +6,7 @@
 #define IOS_CHROME_APP_STARTUP_IOS_CHROME_MAIN_H_
 
 #include <memory>
+#include <optional>
 
 #include "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
@@ -35,9 +36,9 @@ class IOSChromeMain {
   static base::ElapsedNoSleepTimer StartTimer();
 
   // Returns the duration between process creation and the call to main().
-  // Returns a zero TimeDelta if process creation time is unavailable or
+  // Returns std::nullopt if process creation time is unavailable or
   // invalid. InitStartTime() must have been called before.
-  static base::TimeDelta PreMainDuration();
+  static std::optional<base::TimeDelta> PreMainDuration();
 
  private:
   IOSChromeMainDelegate main_delegate_;

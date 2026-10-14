@@ -475,8 +475,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // determined.
   std::optional<IOSLaunchReason> _launchReason;
 
-  // Duration between process creation and the call to main().
-  base::TimeDelta _preMainDuration;
+  // Duration between process creation and the call to main(), or std::nullopt
+  // if unavailable or invalid.
+  std::optional<base::TimeDelta> _preMainDuration;
 
   // True if the launch metrics have already been recorded.
   BOOL _launchMetricsRecorded;

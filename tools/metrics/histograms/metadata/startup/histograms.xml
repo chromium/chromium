@@ -51,10 +51,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/app/application_delegate/metrics_mediator.mm:ColdStartType) -->
 
-<!-- IOSStartupTemperature captures whether the application process was launched
-     via iOS ActivePrewarm. This is distinct from the notion of
-     StartupTemperature on other OSes, which is based on OS memory hard fault
-     levels -->
+<!-- IOSStartupTemperature captures the startup temperature of the application
+     process: whether it was launched via iOS ActivePrewarm, launched in the
+     background, or directly into the foreground. This is distinct from the
+     notion of StartupTemperature on other OSes, which is based on OS memory
+     hard fault levels. -->
 
 <!-- LINT.IfChange(IOSStartupTemperature) -->
 
@@ -62,6 +63,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".ActivePrewarm"
       summary="app was pre-warmed: process initialized then suspended before
                entering main()."/>
+  <variant name=".LaunchedInBackground"
+      summary="app was launched in the background to handle a background task
+               and subsequently brought to the foreground."/>
   <variant name=".NotPrewarmed" summary="app was not pre-warmed"/>
 </variants>
 
@@ -1030,7 +1034,12 @@ chromium-metrics-reviews@google.com.
     of cold starts. The latter is only recorded when Chrome comes to the
     foreground on non-cold starts.
   </summary>
-  <token key="IOSStartupTemperature" variants="IOSStartupTemperature"/>
+  <token key="IOSStartupTemperature">
+    <variant name=".ActivePrewarm"
+        summary="app was pre-warmed: process initialized then suspended
+                 before entering main()."/>
+    <variant name=".NotPrewarmed" summary="app was not pre-warmed"/>
+  </token>
   <token key="IOSColdStartType" variants="IOSColdStartType"/>
 </histogram>
 
@@ -1118,6 +1127,98 @@ chromium-metrics-reviews@google.com.
     <variant name="TimedWaitSucceeded"/>
     <variant name="TimedWaitSucceededAtStartup"/>
   </token>
+</histogram>
+
+<histogram name="Startup.FirstPaintLatency" units="ms"
+    expires_after="2027-02-14">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration from the estimated time of the user's intent to open the app
+    (e.g. icon tap in SpringBoard) to the initial UI (splash screen) being
+    displayed and active. iOS specific.
+
+    For direct foreground cold starts (.NotPrewarmed), user intent is estimated
+    from kernel process creation time (base::Process::Current().CreationTime()).
+    For pre-warmed launches (.ActivePrewarm), user intent is estimated from
+    process resumption entering main(). For background-launched sessions
+    (.LaunchedInBackground), user intent is estimated from scene connection time
+    when UIKit initiates foregrounding. Omitted for suspicious launches where
+    user intent timing cannot be reliably determined, and for foreground cold
+    starts (.NotPrewarmed, .ActivePrewarm) where the system was suspended during
+    the measured interval. For .LaunchedInBackground, samples are still
+    collected even when the system is suspended during launch; however, the
+    suspension interval is excluded from the measurement.
+
+    Note on metric accuracy: The methodology used for estimating user intent
+    time is likely biased toward the future (reported latency &lt;= real
+    latency). See sub-metric descriptions (e.g.
+    Startup.FirstPaintLatency.NotPrewarmed) for an explanation of how the bias
+    can be estimated.
+
+    The usefulness of this less accurate metric (vs MetricKit's equivalent
+    metrics) lies in its ability to segregate measurements between the different
+    startup types. In particular to isolate measurements that come from first
+    launch after installation and first launch after update, which may be
+    critically impacted by various factors such as uncached dynamic linking
+    (dyld4::prepare).
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.FirstPaintLatency{IOSStartupTemperature}{IOSColdStartType}"
+    units="ms" expires_after="2027-02-14">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration from the estimated time of the user's intent to open the app
+    (e.g. icon tap in SpringBoard) to the initial UI (splash screen) being
+    displayed and active. iOS specific, {IOSStartupTemperature},
+    {IOSColdStartType}.
+
+    For direct foreground cold starts (.NotPrewarmed), user intent is estimated
+    from kernel process creation time (base::Process::Current().CreationTime()).
+    For pre-warmed launches (.ActivePrewarm), user intent is estimated from
+    process resumption entering main(). For background-launched sessions
+    (.LaunchedInBackground), user intent is estimated from scene connection time
+    when UIKit initiates foregrounding. Omitted for suspicious launches where
+    user intent timing cannot be reliably determined, and for foreground cold
+    starts (.NotPrewarmed, .ActivePrewarm) where the system was suspended during
+    the measured interval. For .LaunchedInBackground, samples are still
+    collected even when the system is suspended during launch; however, the
+    suspension interval is excluded from the measurement.
+
+    Note on metric accuracy: The methodology used for estimating user intent
+    time is likely biased toward the future (reported latency &lt;= real
+    latency).
+
+    The systematic biases for some startup types can be estimated by comparing
+    this metric's distributions to those of corresponding MetricKit metrics that
+    evaluate the same durations using authoritative OS-level landmarks.
+
+    Estimation of the bias correction for not prewarmed startups:
+    Average(IOS.MetricKit.TimeToFirstDraw) -
+    Average(Startup.FirstPaintLatency.NotPrewarmed)
+
+    Estimation of the bias correction for prewarmed startups:
+    Average(IOS.MetricKit.OptimizedTimeToFirstDraw) -
+    Average(Startup.FirstPaintLatency.ActivePrewarm)
+
+    For the .LaunchedInBackground case, the bias cannot be estimated because
+    MetricKit's ApplicationResumeTimeMetric does not differentiate between warm
+    and cold resumes (i.e. first vs subsequent times the app is foregrounded).
+
+    The usefulness of this less accurate metric (vs MetricKit's equivalent
+    metrics) lies in its ability to segregate measurements between the different
+    startup types. In particular to isolate measurements that come from first
+    launch after installation and first launch after update, which may be
+    critically impacted by various factors such as uncached dynamic linking
+    (dyld4::prepare).
+  </summary>
+  <token key="IOSStartupTemperature" variants="IOSStartupTemperature"/>
+  <token key="IOSColdStartType" variants="IOSColdStartType"/>
 </histogram>
 
 <histogram name="Startup.FirstWebContents.FinishReason"

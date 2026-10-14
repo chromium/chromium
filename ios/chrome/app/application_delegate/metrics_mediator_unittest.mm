@@ -440,6 +440,15 @@ TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationNotColdStart) {
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.ActivePrewarm",
                                     0);
+
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency", 0);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency.NotPrewarmed",
+                                    0);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency.ActivePrewarm",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Startup.FirstPaintLatency.LaunchedInBackground", 0);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency.Suspicious", 0);
 }
 
 // Tests that +logStartupDuration: sets `coldStartFromMainDuration` on
@@ -480,6 +489,7 @@ struct StartupTemperatureTestCase {
   std::string test_name;
   bool is_pre_warmed = false;
   std::optional<IOSLaunchReason> initial_launch_reason = std::nullopt;
+  base::TimeDelta background_duration = base::TimeDelta();
   base::TimeDelta app_launch_delay = base::Seconds(1);
   base::TimeDelta sleep_duration = base::TimeDelta();
   bool sleep_during_prewarm = false;
@@ -487,6 +497,12 @@ struct StartupTemperatureTestCase {
   std::string expected_temperature;
   int expected_cold_start_from_main_count = 1;
   int expected_cold_start_pre_main_count = 1;
+  int expected_first_paint_latency_count = 1;
+  std::optional<base::TimeDelta> expected_cold_start_from_main_duration =
+      std::nullopt;
+  std::optional<base::TimeDelta> expected_cold_start_pre_main_duration =
+      std::nullopt;
+  std::optional<base::TimeDelta> expected_first_paint_latency = std::nullopt;
 };
 
 // Test fixture for testing startup duration variants across different startup
@@ -515,6 +531,9 @@ TEST_P(MetricsMediatorStartupTemperatureTest, LogStartupDuration) {
     task_environment_.SuspendedAdvanceClock(test_case.sleep_duration);
   }
   startup_information.didFinishLaunchingTime = task_environment_.NowLiveTicks();
+  if (test_case.background_duration.is_positive()) {
+    task_environment_.AdvanceClock(test_case.background_duration);
+  }
   startup_information.firstSceneConnectionTime =
       task_environment_.NowLiveTicks();
   task_environment_.AdvanceClock(test_case.app_launch_delay);
@@ -541,6 +560,19 @@ TEST_P(MetricsMediatorStartupTemperatureTest, LogStartupDuration) {
       base::StrCat({"Startup.ColdStartFromMain.",
                     test_case.expected_temperature, ".Regular"}),
       test_case.expected_cold_start_from_main_count);
+  if (test_case.expected_cold_start_from_main_duration.has_value()) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Startup.ColdStartFromMain",
+        *test_case.expected_cold_start_from_main_duration, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat(
+            {"Startup.ColdStartFromMain.", test_case.expected_temperature}),
+        *test_case.expected_cold_start_from_main_duration, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({"Startup.ColdStartFromMain.",
+                      test_case.expected_temperature, ".Regular"}),
+        *test_case.expected_cold_start_from_main_duration, 1);
+  }
 
   histogram_tester.ExpectTotalCount(
       "Startup.TimeFromMainToDidFinishLaunchingCall",
@@ -554,15 +586,52 @@ TEST_P(MetricsMediatorStartupTemperatureTest, LogStartupDuration) {
   histogram_tester.ExpectTotalCount(
       "Startup.ColdStartPreMain.Regular",
       test_case.expected_cold_start_pre_main_count);
+  if (test_case.expected_cold_start_pre_main_duration.has_value()) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Startup.ColdStartPreMain",
+        *test_case.expected_cold_start_pre_main_duration, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Startup.ColdStartPreMain.Regular",
+        *test_case.expected_cold_start_pre_main_duration, 1);
+  }
 
-  // Verify other temperatures are not recorded for ColdStartFromMain, and no
-  // temperature variants are ever recorded for ColdStartPreMain.
-  for (const std::string& temp : {"NotPrewarmed", "ActivePrewarm"}) {
+  histogram_tester.ExpectTotalCount(
+      "Startup.FirstPaintLatency",
+      test_case.expected_first_paint_latency_count);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"Startup.FirstPaintLatency.", test_case.expected_temperature}),
+      test_case.expected_first_paint_latency_count);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Startup.FirstPaintLatency.",
+                    test_case.expected_temperature, ".Regular"}),
+      test_case.expected_first_paint_latency_count);
+  if (test_case.expected_first_paint_latency.has_value()) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Startup.FirstPaintLatency", *test_case.expected_first_paint_latency,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat(
+            {"Startup.FirstPaintLatency.", test_case.expected_temperature}),
+        *test_case.expected_first_paint_latency, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({"Startup.FirstPaintLatency.",
+                      test_case.expected_temperature, ".Regular"}),
+        *test_case.expected_first_paint_latency, 1);
+  }
+
+  // Verify other temperatures are not recorded for ColdStartFromMain and
+  // FirstPaintLatency, and no temperature variants are ever recorded for
+  // ColdStartPreMain.
+  for (const std::string& temp : {"NotPrewarmed", "ActivePrewarm",
+                                  "LaunchedInBackground", "Suspicious"}) {
     histogram_tester.ExpectTotalCount(
         base::StrCat({"Startup.ColdStartPreMain.", temp}), 0);
     if (temp != test_case.expected_temperature) {
       histogram_tester.ExpectTotalCount(
           base::StrCat({"Startup.ColdStartFromMain.", temp}), 0);
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Startup.FirstPaintLatency.", temp}), 0);
     }
   }
 }
@@ -579,6 +648,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_temperature = "NotPrewarmed",
             .expected_cold_start_from_main_count = 1,
             .expected_cold_start_pre_main_count = 1,
+            .expected_cold_start_from_main_duration = base::Seconds(1),
+            .expected_cold_start_pre_main_duration = base::Milliseconds(200),
+            .expected_first_paint_latency = base::Milliseconds(1200),
         },
         StartupTemperatureTestCase{
             .test_name = "ActivePrewarm",
@@ -588,24 +660,30 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_temperature = "ActivePrewarm",
             .expected_cold_start_from_main_count = 1,
             .expected_cold_start_pre_main_count = 0,
+            .expected_cold_start_from_main_duration = base::Seconds(1),
+            .expected_first_paint_latency = base::Seconds(1),
         },
         StartupTemperatureTestCase{
             .test_name = "LaunchedInBackground",
             .is_pre_warmed = false,
             .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .background_duration = base::Seconds(2),
             .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
-            .expected_temperature = "NotPrewarmed",
+            .expected_temperature = "LaunchedInBackground",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency = base::Seconds(1),
         },
         StartupTemperatureTestCase{
             .test_name = "LaunchedInBackgroundPrecedence",
             .is_pre_warmed = true,
             .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .background_duration = base::Seconds(2),
             .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
-            .expected_temperature = "ActivePrewarm",
+            .expected_temperature = "LaunchedInBackground",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency = base::Seconds(1),
         },
         StartupTemperatureTestCase{
             .test_name = "Suspicious",
@@ -613,9 +691,10 @@ INSTANTIATE_TEST_SUITE_P(
             .initial_launch_reason = std::nullopt,
             .app_launch_delay = base::Seconds(31),
             .expected_launch_reason = IOSLaunchReason::kSuspicious,
-            .expected_temperature = "NotPrewarmed",
+            .expected_temperature = "Suspicious",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency_count = 0,
         },
         StartupTemperatureTestCase{
             .test_name = "SuspiciousPrewarm",
@@ -623,9 +702,10 @@ INSTANTIATE_TEST_SUITE_P(
             .initial_launch_reason = std::nullopt,
             .app_launch_delay = base::Seconds(31),
             .expected_launch_reason = IOSLaunchReason::kSuspicious,
-            .expected_temperature = "ActivePrewarm",
+            .expected_temperature = "Suspicious",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency_count = 0,
         },
         StartupTemperatureTestCase{
             .test_name = "SuspendedDuringStartup",
@@ -639,6 +719,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_temperature = "NotPrewarmed",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency_count = 0,
         },
         StartupTemperatureTestCase{
             .test_name = "SuspendedAfterMainPrewarmed",
@@ -652,6 +733,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_temperature = "ActivePrewarm",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency_count = 0,
         },
         StartupTemperatureTestCase{
             .test_name = "SuspendedDuringPrewarm",
@@ -664,18 +746,22 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_temperature = "ActivePrewarm",
             .expected_cold_start_from_main_count = 1,
             .expected_cold_start_pre_main_count = 0,
+            .expected_cold_start_from_main_duration = base::Seconds(1),
+            .expected_first_paint_latency = base::Seconds(1),
         },
         StartupTemperatureTestCase{
             .test_name = "SuspendedDuringBackgroundLaunch",
             .is_pre_warmed = false,
             .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .background_duration = base::Seconds(2),
             .app_launch_delay = base::Seconds(1),
             .sleep_duration = base::Seconds(5),
             .sleep_during_prewarm = false,
             .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
-            .expected_temperature = "NotPrewarmed",
+            .expected_temperature = "LaunchedInBackground",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
+            .expected_first_paint_latency = base::Seconds(1),
         }),
     [](const ::testing::TestParamInfo<StartupTemperatureTestCase>& info) {
       return info.param.test_name;
@@ -721,6 +807,14 @@ TEST_P(MetricsMediatorColdStartTypeTest, LogStartupDuration) {
       base::StrCat({"Startup.ColdStartFromMain.NotPrewarmed.",
                     test_case.expected_cold_start_type}),
       1);
+  histogram_tester.ExpectUniqueTimeSample("Startup.ColdStartFromMain",
+                                          base::Seconds(1), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Startup.ColdStartFromMain.NotPrewarmed", base::Seconds(1), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat({"Startup.ColdStartFromMain.NotPrewarmed.",
+                    test_case.expected_cold_start_type}),
+      base::Seconds(1), 1);
 
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 1);
   histogram_tester.ExpectTotalCount(
@@ -728,6 +822,28 @@ TEST_P(MetricsMediatorColdStartTypeTest, LogStartupDuration) {
           {"Startup.ColdStartPreMain.", test_case.expected_cold_start_type}),
       1);
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
+  histogram_tester.ExpectUniqueTimeSample("Startup.ColdStartPreMain",
+                                          base::Milliseconds(200), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat(
+          {"Startup.ColdStartPreMain.", test_case.expected_cold_start_type}),
+      base::Milliseconds(200), 1);
+
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency", 1);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency.NotPrewarmed",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Startup.FirstPaintLatency.NotPrewarmed.",
+                    test_case.expected_cold_start_type}),
+      1);
+  histogram_tester.ExpectUniqueTimeSample("Startup.FirstPaintLatency",
+                                          base::Milliseconds(1200), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Startup.FirstPaintLatency.NotPrewarmed", base::Milliseconds(1200), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat({"Startup.FirstPaintLatency.NotPrewarmed.",
+                    test_case.expected_cold_start_type}),
+      base::Milliseconds(1200), 1);
 
   // Verify other cold start types are not recorded.
   for (const std::string& type :
@@ -739,6 +855,8 @@ TEST_P(MetricsMediatorColdStartTypeTest, LogStartupDuration) {
           base::StrCat({"Startup.ColdStartFromMain.NotPrewarmed.", type}), 0);
       histogram_tester.ExpectTotalCount(
           base::StrCat({"Startup.ColdStartPreMain.", type}), 0);
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Startup.FirstPaintLatency.NotPrewarmed.", type}), 0);
     }
   }
 }
@@ -801,13 +919,13 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // Tests that +logStartupDuration: does not record Startup.ColdStartPreMain
-// when preMainDuration is zero or not positive.
-TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationZeroPreMainDuration) {
+// or Startup.FirstPaintLatency when preMainDuration is std::nullopt.
+TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationNullPreMainDuration) {
   ScopedSetProcessPreWarmed scoped_pre_warmed(false);
   base::HistogramTester histogram_tester;
   FakeStartupInformation* startup_information =
       CreateDefaultStartupInformation();
-  startup_information.preMainDuration = base::TimeDelta();
+  startup_information.preMainDuration = std::nullopt;
 
   [MetricsMediator logStartupDuration:startup_information];
 
@@ -819,28 +937,17 @@ TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationZeroPreMainDuration) {
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.ActivePrewarm",
                                     0);
-}
 
-// Tests that +logStartupDuration: does not record Startup.ColdStartPreMain
-// when preMainDuration exceeds the 30s upper bound (e.g., due to a forward
-// wall-clock jump).
-TEST_F(MetricsMediatorNoFixtureTest,
-       LogStartupDurationExcessivePreMainDuration) {
-  ScopedSetProcessPreWarmed scoped_pre_warmed(false);
-  base::HistogramTester histogram_tester;
-  FakeStartupInformation* startup_information =
-      CreateDefaultStartupInformation();
-  startup_information.preMainDuration = base::Seconds(31);
-
-  [MetricsMediator logStartupDuration:startup_information];
-
-  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
-  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.Regular", 0);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency", 0);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency.NotPrewarmed",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Startup.FirstPaintLatency.NotPrewarmed.Regular", 0);
 }
 
 // Tests that a system sleep occurring between UIScene connection and first
-// paint causes Startup.ColdStartFromMain to be discarded for foreground
-// launches.
+// paint causes Startup.FirstPaintLatency and Startup.ColdStartFromMain to be
+// discarded for foreground launches.
 TEST_F(MetricsMediatorNoFixtureTest,
        LogStartupDurationSystemSleepBetweenSceneConnectionAndFirstPaint) {
   base::HistogramTester histogram_tester;
@@ -861,6 +968,7 @@ TEST_F(MetricsMediatorNoFixtureTest,
   ASSERT_TRUE(startup_information.launchReason.has_value());
   EXPECT_EQ(*startup_information.launchReason,
             IOSLaunchReason::kForegroundWithSystemSuspension);
+  histogram_tester.ExpectTotalCount("Startup.FirstPaintLatency", 0);
   histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain", 0);
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
 }

@@ -75,7 +75,8 @@ inline constexpr bool IsBackgroundLaunchReason(IOSLaunchReason reason) {
 // Start of the application, used for UMA.
 @property(nonatomic, assign) base::ElapsedNoSleepTimer appLaunchTimer;
 // The duration between process creation and the call to main, used for UMA.
-@property(nonatomic, readonly) base::TimeDelta preMainDuration;
+// std::nullopt if unavailable or invalid.
+@property(nonatomic, readonly) std::optional<base::TimeDelta> preMainDuration;
 // An object to record metrics related to the user's first action.
 @property(nonatomic, readonly) FirstUserActionRecorder* firstUserActionRecorder;
 // Tick of the call to didFinishLaunching, used for UMA.

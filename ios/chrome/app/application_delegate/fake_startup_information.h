@@ -17,7 +17,7 @@
 
 @property(nonatomic, assign) BOOL isTerminating;
 @property(nonatomic, assign) std::optional<IOSLaunchReason> launchReason;
-@property(nonatomic, assign) base::TimeDelta preMainDuration;
+@property(nonatomic, assign) std::optional<base::TimeDelta> preMainDuration;
 
 @end
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_FAKE_STARTUP_INFORMATION_H_

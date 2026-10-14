@@ -6,6 +6,8 @@
 
 #import <mach/mach.h>
 
+#import <optional>
+
 #import "base/process/process_metrics.h"
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
@@ -23,9 +25,9 @@
     return timings;
   }
 
-  const base::TimeDelta preMain = [startupInfo preMainDuration];
-  if (preMain.is_positive()) {
-    timings[@"Startup.ColdStartPreMain"] = @(preMain.InMillisecondsF());
+  const std::optional<base::TimeDelta> preMain = [startupInfo preMainDuration];
+  if (preMain.has_value()) {
+    timings[@"Startup.ColdStartPreMain"] = @(preMain->InMillisecondsF());
   }
 
   const base::TimeDelta fromMain = [startupInfo coldStartFromMainDuration];
