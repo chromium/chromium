@@ -6,6 +6,12 @@
 
 #include <windows.h>
 
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
+#include <thread>
+
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,16 +19,112 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
 
 namespace testing {
+
+namespace {
+
+using ::Microsoft::WRL::ClassicCom;
+using ::Microsoft::WRL::ComPtr;
+using ::Microsoft::WRL::Make;
+using ::Microsoft::WRL::RuntimeClass;
+using ::Microsoft::WRL::RuntimeClassFlags;
+
+class FakeUpdaterSystem
+    : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IUpdaterSystem> {
+ public:
+  using FetchPoliciesHandler =
+      base::RepeatingCallback<HRESULT(IUpdaterCallbackSystem*)>;
+
+  explicit FakeUpdaterSystem(FetchPoliciesHandler handler)
+      : handler_(std::move(handler)) {}
+  FakeUpdaterSystem(const FakeUpdaterSystem&) = delete;
+  FakeUpdaterSystem& operator=(const FakeUpdaterSystem&) = delete;
+
+  int fetch_policies_call_count() const { return fetch_policies_call_count_; }
+
+  // IUpdaterSystem overrides:
+  IFACEMETHODIMP FetchPolicies(IUpdaterCallbackSystem* callback) override {
+    ++fetch_policies_call_count_;
+    return handler_ ? handler_.Run(callback) : S_OK;
+  }
+
+  IFACEMETHODIMP GetVersion(BSTR* version) override { return E_NOTIMPL; }
+  IFACEMETHODIMP RegisterApp(const WCHAR* app_id,
+                             const WCHAR* brand_code,
+                             const WCHAR* brand_path,
+                             const WCHAR* tag,
+                             const WCHAR* version,
+                             const WCHAR* existence_checker_path,
+                             IUpdaterCallbackSystem* callback) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallbackSystem* callback) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP CheckForUpdate(const WCHAR* app_id,
+                                LONG priority,
+                                BOOL same_version_update_allowed,
+                                IUpdaterObserverSystem* observer) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP Update(const WCHAR* app_id,
+                        const WCHAR* install_data_index,
+                        LONG priority,
+                        BOOL same_version_update_allowed,
+                        IUpdaterObserverSystem* observer) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP UpdateAll(IUpdaterObserverSystem* observer) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP Install(const WCHAR* app_id,
+                         const WCHAR* brand_code,
+                         const WCHAR* brand_path,
+                         const WCHAR* tag,
+                         const WCHAR* version,
+                         const WCHAR* existence_checker_path,
+                         const WCHAR* client_install_data,
+                         const WCHAR* install_data_index,
+                         LONG priority,
+                         IUpdaterObserverSystem* observer) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP CancelInstalls(const WCHAR* app_id) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP RunInstaller(const WCHAR* app_id,
+                              const WCHAR* installer_path,
+                              const WCHAR* install_args,
+                              const WCHAR* install_data,
+                              const WCHAR* install_settings,
+                              IUpdaterObserverSystem* observer) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP GetAppStates(
+      IUpdaterAppStatesCallbackSystem* callback) override {
+    return E_NOTIMPL;
+  }
+
+ private:
+  ~FakeUpdaterSystem() override = default;
+
+  FetchPoliciesHandler handler_;
+  int fetch_policies_call_count_ = 0;
+};
+
+}  // namespace
 
 class GcpDevicePoliciesBaseTest : public GlsRunnerTestBase {
  protected:
@@ -363,6 +465,227 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),
         ::testing::Values(L"", L"acme.com", L"acme.com,acme.org"),
         ::testing::Values(L"", L"company.com", L"company.com,company.org")));
+
+class GcpDevicePoliciesDayZeroFetchTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    InitializeRegistryOverrideForTesting(&registry_override_);
+
+    base::win::RegKey key;
+    EXPECT_EQ(ERROR_SUCCESS,
+              key.Open(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_WRITE));
+    EXPECT_EQ(ERROR_SUCCESS, key.DeleteValue(kRegMdmUrl));
+
+    SetGlobalFlagForTesting(L"ed", L"");
+    SetGlobalFlagForTesting(L"domains_allowed_to_login", L"");
+
+    ASSERT_TRUE(scoped_temp_program_files_x86_dir_.CreateUniqueTempDir());
+    program_files_x86_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_PROGRAM_FILESX86,
+        scoped_temp_program_files_x86_dir_.GetPath());
+
+    DevicePoliciesManager::SetPolicyFetchTimeoutForTesting(base::Seconds(3));
+  }
+
+  void TearDown() override {
+    DevicePoliciesManager::SetUpdaterCreatorForTesting({});
+    DevicePoliciesManager::SetPolicyFetchTimeoutForTesting(base::Seconds(3));
+  }
+
+ private:
+  registry_util::RegistryOverrideManager registry_override_;
+  base::ScopedTempDir scoped_temp_program_files_x86_dir_;
+  std::unique_ptr<base::ScopedPathOverride> program_files_x86_override_;
+  FakeOSUserManager fake_os_user_manager_;
+};
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       SkipsUpdaterFetchWhenPolicyFileAlreadyExists) {
+  std::vector<std::wstring> existing_domains = {L"existing.com"};
+  ASSERT_TRUE(
+      DevicePoliciesManager::Get()->SetAllowedDomainsOmahaPolicyForTesting(
+          existing_domains));
+
+  int creator_call_count = 0;
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](int* call_count, IUpdaterSystem** updater) -> HRESULT {
+        ++(*call_count);
+        return S_OK;
+      },
+      &creator_call_count));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  EXPECT_EQ(0, creator_call_count);
+  EXPECT_EQ(existing_domains, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       EnforcesDomainsFromSynchronousDayZeroFetch) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+
+  std::vector<std::wstring> fetched_domains = {L"dayzero.com", L"corp.org"};
+  auto fake_updater = Make<FakeUpdaterSystem>(base::BindRepeating(
+      [](const std::vector<std::wstring>& domains,
+         IUpdaterCallbackSystem* callback) -> HRESULT {
+        EXPECT_TRUE(DevicePoliciesManager::Get()
+                        ->SetAllowedDomainsOmahaPolicyForTesting(domains));
+        callback->Run(0);
+        return S_OK;
+      },
+      fetched_domains));
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](ComPtr<FakeUpdaterSystem> fake, IUpdaterSystem** updater) -> HRESULT {
+        return fake.CopyTo(updater);
+      },
+      fake_updater));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  EXPECT_EQ(1, fake_updater->fetch_policies_call_count());
+  EXPECT_EQ(fetched_domains, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       WaitsForAsynchronousDayZeroFetchAcrossThreads) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+
+  std::vector<std::wstring> fetched_domains = {L"async-dayzero.com"};
+  std::thread background_worker;
+  auto fake_updater = Make<FakeUpdaterSystem>(base::BindRepeating(
+      [](std::thread* worker, const std::vector<std::wstring>& domains,
+         IUpdaterCallbackSystem* callback) -> HRESULT {
+        ComPtr<IUpdaterCallbackSystem> retained_callback(callback);
+        *worker = std::thread([domains, retained_callback]() {
+          base::PlatformThread::Sleep(base::Milliseconds(50));
+          EXPECT_TRUE(DevicePoliciesManager::Get()
+                          ->SetAllowedDomainsOmahaPolicyForTesting(domains));
+          retained_callback->Run(0);
+        });
+        return S_OK;
+      },
+      &background_worker, fetched_domains));
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](ComPtr<FakeUpdaterSystem> fake, IUpdaterSystem** updater) -> HRESULT {
+        return fake.CopyTo(updater);
+      },
+      fake_updater));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  if (background_worker.joinable()) {
+    background_worker.join();
+  }
+
+  EXPECT_EQ(1, fake_updater->fetch_policies_call_count());
+  EXPECT_EQ(fetched_domains, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       FallsBackToRegistryWhenUpdaterComCreationFails) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](IUpdaterSystem** updater) -> HRESULT { return REGDB_E_CLASSNOTREG; }));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  std::vector<std::wstring> expected = {L"registry-fallback.com"};
+  EXPECT_EQ(expected, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       FallsBackToRegistryWhenFetchPoliciesReturnsFailureHResult) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+
+  auto fake_updater = Make<FakeUpdaterSystem>(base::BindRepeating(
+      [](IUpdaterCallbackSystem* callback) -> HRESULT { return E_FAIL; }));
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](ComPtr<FakeUpdaterSystem> fake, IUpdaterSystem** updater) -> HRESULT {
+        return fake.CopyTo(updater);
+      },
+      fake_updater));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  EXPECT_EQ(1, fake_updater->fetch_policies_call_count());
+  std::vector<std::wstring> expected = {L"registry-fallback.com"};
+  EXPECT_EQ(expected, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       FallsBackToRegistryWhenFetchCallbackReportsError) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+
+  auto fake_updater = Make<FakeUpdaterSystem>(
+      base::BindRepeating([](IUpdaterCallbackSystem* callback) -> HRESULT {
+        callback->Run(-1);
+        return S_OK;
+      }));
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](ComPtr<FakeUpdaterSystem> fake, IUpdaterSystem** updater) -> HRESULT {
+        return fake.CopyTo(updater);
+      },
+      fake_updater));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  EXPECT_EQ(1, fake_updater->fetch_policies_call_count());
+  std::vector<std::wstring> expected = {L"registry-fallback.com"};
+  EXPECT_EQ(expected, device_policies.domains_allowed_to_login);
+}
+
+TEST_F(GcpDevicePoliciesDayZeroFetchTest,
+       TimesOutCleanlyAndDisconnectsLateCallback) {
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"registry-fallback.com");
+  DevicePoliciesManager::SetPolicyFetchTimeoutForTesting(
+      base::Milliseconds(50));
+
+  ComPtr<IUpdaterCallbackSystem> saved_callback;
+  auto fake_updater = Make<FakeUpdaterSystem>(base::BindRepeating(
+      [](ComPtr<IUpdaterCallbackSystem>* out_callback,
+         IUpdaterCallbackSystem* callback) -> HRESULT {
+        *out_callback = callback;
+        // Intentionally do not invoke callback->Run() so TimedWait expires.
+        return S_OK;
+      },
+      std::addressof(saved_callback)));
+
+  DevicePoliciesManager::SetUpdaterCreatorForTesting(base::BindRepeating(
+      [](ComPtr<FakeUpdaterSystem> fake, IUpdaterSystem** updater) -> HRESULT {
+        return fake.CopyTo(updater);
+      },
+      fake_updater));
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  EXPECT_EQ(1, fake_updater->fetch_policies_call_count());
+  std::vector<std::wstring> expected = {L"registry-fallback.com"};
+  EXPECT_EQ(expected, device_policies.domains_allowed_to_login);
+
+  // Verify that invoking the COM callback after TriggerUpdaterPolicyFetch() has
+  // timed out and destroyed its stack-allocated WaitableEvent is safely ignored
+  // via PolicyFetchCallback::Disconnect().
+  ASSERT_NE(nullptr, saved_callback.Get());
+  EXPECT_EQ(S_OK, saved_callback->Run(0));
+}
 
 }  // namespace testing
 }  // namespace credential_provider

@@ -4,18 +4,30 @@
 
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
 #include <limits>
+#include <memory>
 
 #include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -26,6 +38,7 @@
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -39,9 +52,17 @@ using ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto;
 namespace credential_provider {
 
 namespace {
+
+using ::Microsoft::WRL::ClassicCom;
+using ::Microsoft::WRL::ComPtr;
+using ::Microsoft::WRL::FtmBase;
+using ::Microsoft::WRL::Make;
+using ::Microsoft::WRL::RuntimeClass;
+using ::Microsoft::WRL::RuntimeClassFlags;
+
 // Character used to separate the update channel and version components in the
 // update tracks value.
-const wchar_t kChannelAndVersionSeparator[] = L"-";
+constexpr wchar_t kChannelAndVersionSeparator[] = L"-";
 
 // Name of the file used to store the policies on disk by Omaha that it receives
 // from the DMServer.
@@ -52,6 +73,132 @@ constexpr char kOmahaPoliciesDirName[] = "Policies";
 
 // The policy type for Omaha policy settings.
 constexpr char kOmahaPolicyType[] = "google/machine-level-omaha";
+
+class PolicyFetchCallback : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
+                                                IUpdaterCallbackSystem,
+                                                FtmBase> {
+ public:
+  explicit PolicyFetchCallback(base::OnceCallback<void(LONG)> callback)
+      : callback_(std::move(callback)) {}
+  PolicyFetchCallback(const PolicyFetchCallback&) = delete;
+  PolicyFetchCallback& operator=(const PolicyFetchCallback&) = delete;
+
+  IFACEMETHODIMP Run(LONG result) override {
+    base::AutoLock lock(lock_);
+    if (callback_) {
+      std::move(callback_).Run(result);
+    }
+    return S_OK;
+  }
+
+  void Disconnect() {
+    base::AutoLock lock(lock_);
+    callback_.Reset();
+  }
+
+ private:
+  ~PolicyFetchCallback() override = default;
+
+  base::Lock lock_;
+  base::OnceCallback<void(LONG)> callback_ GUARDED_BY(lock_);
+};
+
+// Returns a pointer to the function-local static callback used to override
+// COM object creation in unit tests. Initialized to null on first call.
+DevicePoliciesManager::UpdaterCreatorCallback* GetUpdaterCreatorStorage() {
+  static base::NoDestructor<DevicePoliciesManager::UpdaterCreatorCallback>
+      creator_for_testing;
+  return creator_for_testing.get();
+}
+
+// Returns a pointer to the function-local static timeout duration. Initialized
+// once to 3 seconds on the first call, and can be overwritten via pointer in
+// tests without re-running initialization on subsequent calls.
+base::TimeDelta* GetPolicyFetchTimeoutStorage() {
+  static base::TimeDelta timeout = base::Seconds(3);
+  return &timeout;
+}
+
+bool TriggerUpdaterPolicyFetch() {
+  base::WaitableEvent fetch_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  LONG fetch_result = -1;
+
+  auto callback = Make<PolicyFetchCallback>(base::BindOnce(
+      [](base::WaitableEvent* event, LONG* out_result, LONG result) {
+        if (result == 0) {
+          LOGFN(INFO) << "Omaha Cloud Policy fetch completed successfully.";
+        } else {
+          LOGFN(ERROR) << "Omaha Cloud Policy fetch failed: " << result;
+        }
+        *out_result = result;
+        event->Signal();
+      },
+      &fetch_event, &fetch_result));
+
+  ComPtr<IUpdaterSystem> updater;
+  base::Thread com_thread("gcpw_policy_fetch");
+  com_thread.init_com_with_mta(true);
+  if (!com_thread.Start()) {
+    LOGFN(ERROR) << "Failed to start COM MTA thread for policy fetch.";
+    return false;
+  }
+
+  com_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ComPtr<IUpdaterSystem>* out_updater,
+             ComPtr<PolicyFetchCallback> callback,
+             base::WaitableEvent* fetch_event) {
+            DevicePoliciesManager::UpdaterCreatorCallback* creator =
+                GetUpdaterCreatorStorage();
+            HRESULT hr = creator->is_null()
+                             ? ::CoCreateInstance(__uuidof(UpdaterSystemClass),
+                                                  nullptr, CLSCTX_LOCAL_SERVER,
+                                                  IID_PPV_ARGS(&(*out_updater)))
+                             : creator->Run(&(*out_updater));
+            if (FAILED(hr)) {
+              LOGFN(ERROR) << "Failed to create IUpdaterSystem COM object. hr="
+                           << putHR(hr);
+              callback->Disconnect();
+              fetch_event->Signal();
+              return;
+            }
+
+            hr = (*out_updater)->FetchPolicies(callback.Get());
+            if (FAILED(hr)) {
+              LOGFN(ERROR) << "FetchPolicies failed. hr=" << putHR(hr);
+              out_updater->Reset();
+              callback->Disconnect();
+              fetch_event->Signal();
+              return;
+            }
+            LOGFN(VERBOSE)
+                << "Omaha policy fetch triggered, waiting for completion...";
+          },
+          std::addressof(updater), callback, &fetch_event));
+
+  base::TimeDelta* timeout = GetPolicyFetchTimeoutStorage();
+  const bool timed_out = !fetch_event.TimedWait(*timeout);
+  if (timed_out) {
+    LOGFN(ERROR) << "Omaha policy fetch timed out.";
+    callback->Disconnect();
+  }
+
+  com_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ComPtr<IUpdaterSystem>* out_updater) { out_updater->Reset(); },
+          std::addressof(updater)));
+  com_thread.Stop();
+
+  if (timed_out || fetch_result != 0) {
+    return false;
+  }
+  LOGFN(VERBOSE) << "Omaha policy fetch finished synchronously.";
+  return true;
+}
 
 // Gets the file path where Omaha policies for the device are stored.
 base::FilePath GetOmahaPolicyFilePath() {
@@ -210,17 +357,26 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
     }
   }
 
+  // Trigger fetch ONLY if the policy file does not exist on disk.
+  if (!base::PathExists(GetOmahaPolicyFilePath())) {
+    LOGFN(VERBOSE) << "Cloud policy file not found. Triggering fetch.";
+    if (TriggerUpdaterPolicyFetch()) {
+      LOGFN(VERBOSE) << "Fetch complete.";
+    }
+  }
+
   // Read allowed domains cloud policy.
   std::vector<std::wstring> domains_from_policy;
-  if (GetAllowedDomainsToLoginFromCloudPolicy(&domains_from_policy)) {
-    if (!domains_from_policy.empty()) {
-      device_policies->domains_allowed_to_login = domains_from_policy;
-    } else {
-      LOGFN(VERBOSE) << "Allowed domains cloud policy is empty. Falling back "
-                        "to device registry settings.";
-    }
+  if (!GetAllowedDomainsToLoginFromCloudPolicy(&domains_from_policy)) {
+    LOGFN(VERBOSE) << "Allowed domains cloud policy not found or invalid";
+    return;
+  }
+
+  if (!domains_from_policy.empty()) {
+    device_policies->domains_allowed_to_login = domains_from_policy;
   } else {
-    LOGFN(VERBOSE) << "Allowed domains cloud policy not found";
+    LOGFN(VERBOSE) << "Allowed domains cloud policy is empty. Falling back "
+                      "to device registry settings.";
   }
 }
 
@@ -326,6 +482,24 @@ bool DevicePoliciesManager::SetAllowedDomainsOmahaPolicyForTesting(
   std::string policy_response_str = policy_fetch_response.SerializeAsString();
   base::CreateDirectory(policy_file_path.DirName());
   return base::WriteFile(policy_file_path, policy_response_str);
+}
+
+// static
+void DevicePoliciesManager::SetUpdaterCreatorForTesting(
+    UpdaterCreatorCallback creator) {
+  // Retrieve pointer to the function-local static storage, then overwrite the
+  // callback value in place.
+  UpdaterCreatorCallback* storage = GetUpdaterCreatorStorage();
+  *storage = std::move(creator);
+}
+
+// static
+void DevicePoliciesManager::SetPolicyFetchTimeoutForTesting(
+    base::TimeDelta timeout) {
+  // Retrieve pointer to the function-local static storage (initialized once to
+  // 3s on first call), then overwrite the stored value for testing.
+  base::TimeDelta* storage = GetPolicyFetchTimeoutStorage();
+  *storage = timeout;
 }
 
 }  // namespace credential_provider

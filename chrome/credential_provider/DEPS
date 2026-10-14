@@ -2,6 +2,7 @@ include_rules = [
   "+chrome/common",
   "+chrome/installer/launcher_support",
   "+chrome/installer/util",
+  "+chrome/updater/app/server/win",
   "+chrome/updater/protos",
   "+components/crash",
   "+components/policy/proto",

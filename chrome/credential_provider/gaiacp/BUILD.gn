@@ -143,6 +143,7 @@ component("policies") {
     ":util",
     "../extension:extension_lib",
     "//base",
+    "//chrome/updater/app/server/win:updater_idl",
     "//chrome/updater/protos:omaha_proto",
     "//components/policy/proto",
     "//url",
