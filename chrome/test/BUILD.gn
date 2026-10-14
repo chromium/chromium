@@ -4384,6 +4384,10 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/ui/views/autofill:interactive_ui_tests",
         "//chrome/browser/ui/webui/default_browser:pixel_tests",
+
+        # Required by ChromeTestLauncherDelegate::ScopedFirewallRules when
+        # running elevated as Administrator.
+        "//chrome/installer/util:strings",
       ]
 
       data_deps += [ "//chrome/elevation_service" ]
