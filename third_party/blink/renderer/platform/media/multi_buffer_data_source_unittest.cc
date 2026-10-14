@@ -1913,6 +1913,28 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaque) {
   FinishLoading();
 }
 
+TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueOnLaterRange) {
+  Initialize(kHttpUrl, true);
+  WebURLResponse response1 =
+      response_generator_->GeneratePartial206(0, kDataSize - 1);
+  response1.SetType(network::mojom::blink::FetchResponseType::kCors);
+  WebURLResponse response2 =
+      response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
+  response2.SetType(network::mojom::blink::FetchResponseType::kOpaque);
+  ExecuteMixedResponseFailureTest(response1, response2);
+}
+
+TEST_F(MultiBufferDataSourceTest, ResponseTypeNonOpaqueAfterOpaqueRange) {
+  Initialize(kHttpUrl, true);
+  WebURLResponse response1 =
+      response_generator_->GeneratePartial206(0, kDataSize - 1);
+  response1.SetType(network::mojom::blink::FetchResponseType::kOpaque);
+  WebURLResponse response2 =
+      response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
+  response2.SetType(network::mojom::blink::FetchResponseType::kCors);
+  ExecuteMixedResponseFailureTest(response1, response2);
+}
+
 TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueRedirect) {
   InitializeWithCors(kHttpUrl, true, UrlData::CORS_ANONYMOUS);
   set_preload(MultiBufferDataSource::NONE);

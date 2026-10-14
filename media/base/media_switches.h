@@ -182,6 +182,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D11VideoDecoderUseSharedHandle);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDedicatedMediaServiceThread);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDeferAudioFocusUntilAudible);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDirectOpusAudioDecoding);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kDisallowMixedOpaqueMediaResponses);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDocumentPictureInPictureAnimateResize);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDocumentPictureInPictureCapture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDocumentPictureInPictureNavigation);

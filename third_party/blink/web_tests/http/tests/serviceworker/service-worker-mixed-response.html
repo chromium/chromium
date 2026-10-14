@@ -124,10 +124,10 @@ promise_test(function(t) {
               audio_test(f, 'cross', 'same', 'gen', false),
               audio_test(f, 'cross', 'same', 'same', false),
               audio_test(f, 'cross', 'same', 'cross', false),
-              audio_test(f, 'cross', 'cross', '', true),
+              audio_test(f, 'cross', 'cross', '', false),
               audio_test(f, 'cross', 'cross', 'gen', false),
               audio_test(f, 'cross', 'cross', 'same', false),
-              audio_test(f, 'cross', 'cross', 'cross', true)]);
+              audio_test(f, 'cross', 'cross', 'cross', false)]);
         })
       .then(function() {
           frame.remove();

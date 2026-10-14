@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "media/base/media_switches.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
@@ -302,11 +304,15 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       network::cors::IsCorsCrossOriginResponseType(response.GetType());
   bytes_to_discard_ = 0;
 
-  // We make a strong assumption that when we reach here we have either
-  // received a response from HTTP/HTTPS protocol or the request was
-  // successful (in particular range request). So we only verify the partial
-  // response for HTTP and HTTPS protocol.
-  if (destination_url_data->url().ProtocolIsInHttpFamily()) {
+  // Mixing non-opaque and opaque responses on a resource that has already
+  // received a response is not allowed, as consumers may have already checked
+  // origin tainting based on the earlier response.
+  if (old_url_data->data_origin().has_value() &&
+      old_url_data->is_cors_cross_origin() != is_cors_cross_origin &&
+      base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
+    active_loader_.reset();
+    do_fail = true;
+  } else if (destination_url_data->url().ProtocolIsInHttpFamily()) {
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
