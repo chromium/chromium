@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -78,9 +79,6 @@ void LogKeyMetric(std::string_view key_metric_name,
                   std::optional<EntityInstance::RecordType> record_type,
                   bool metric_value,
                   metrics::ProfileMetricsService& profile_metrics_service) {
-  // Only entity-type-specific histograms are split by record type.
-  CHECK(!record_type || entity_type);
-
   static constexpr std::string_view kKeyMetricsHistogramMask =
       "Autofill.Ai.KeyMetrics.%s%s%s";
 
@@ -309,17 +307,27 @@ void AutofillAiLogger::RecordFunnelMetricsForState(
 void AutofillAiLogger::RecordKeyMetrics(
     const FormFunnelStateMap& funnel_states) const {
   std::map<EntityType, FunnelState> record_type_agnostic_states;
-  // `funnel_states` is a map of EntityType -> RecordType -> FunnelState.
-  // Compress the RecordType dimension into an EntityType -> FunnelState map.
+  std::map<EntityInstance::RecordType, FunnelState> entity_type_agnostic_states;
+  // `funnel_states` is a map of `EntityType` -> `RecordType` -> `FunnelState`.
+  // Compress the RecordType dimension into an `EntityType` -> `FunnelState` map
+  // and the EntityType dimension into a `RecordType` -> `FunnelState` map.
   for (const auto& [type, states] : funnel_states) {
     record_type_agnostic_states.insert({type, CombineStates(states)});
+    for (const auto& [record_type, state] : states) {
+      entity_type_agnostic_states[record_type] = CombineStates(
+          std::array{entity_type_agnostic_states[record_type], state});
+    }
   }
   FunnelState combined_state = CombineStates(record_type_agnostic_states);
   RecordKeyMetricsForState(combined_state, /*entity_type=*/std::nullopt,
                            /*record_type=*/std::nullopt);
+  for (const auto& [record_type, state] : entity_type_agnostic_states) {
+    RecordKeyMetricsForState(state, /*entity_type=*/std::nullopt, record_type);
+  }
+  for (const auto& [entity_type, state] : record_type_agnostic_states) {
+    RecordKeyMetricsForState(state, entity_type, /*record_type=*/std::nullopt);
+  }
   for (const auto& [entity_type, states] : funnel_states) {
-    RecordKeyMetricsForState(record_type_agnostic_states.at(entity_type),
-                             entity_type, /*record_type=*/std::nullopt);
     for (const auto& [record_type, state] : states) {
       RecordKeyMetricsForState(state, entity_type, record_type);
     }

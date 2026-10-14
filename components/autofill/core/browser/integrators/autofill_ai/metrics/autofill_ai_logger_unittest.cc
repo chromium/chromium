@@ -623,8 +623,6 @@ class AutofillAiKeyMetricsTest
                                         std::optional<
                                             EntityInstance::RecordType>
                                             record_type) {
-      EXPECT_FALSE(!entity_type && record_type)
-          << "Only entity-type-specific histograms are split by record type.";
       std::string histogram_name = base::StringPrintf(
           kKeyMetricsUmaMask, key_metric_name,
           entity_type
@@ -641,6 +639,7 @@ class AutofillAiKeyMetricsTest
     expect_correct_histogram(/*entity_type=*/std::nullopt,
                              /*record_type=*/std::nullopt);
     expect_correct_histogram(entity_type(), /*record_type=*/std::nullopt);
+    expect_correct_histogram(/*entity_type=*/std::nullopt, record_type());
     expect_correct_histogram(entity_type(), record_type());
   }
 };
@@ -816,6 +815,69 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_MixedForm) {
       "Autofill.Ai.KeyMetrics.FillingCorrectness.DriversLicense", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.KeyMetrics.FillingCorrectness", 0, 1);
+}
+
+// Tests that the entity-type-agnostic key metrics are split by record type and
+// aggregated across entity types: when a local driver's license and an ambient
+// (personal context) passport are stored and suggested on a form fillable by
+// both, and only the ambient suggestion is filled, assistance and acceptance
+// are recorded as true for PersonalContext and false for Local.
+TEST_F(BaseAutofillAiTest, KeyMetrics_PerRecordType) {
+  std::unique_ptr<FormStructure> drivers_license_form =
+      CreateDriversLicenseForm();
+  std::unique_ptr<FormStructure> passport_form = CreatePassportForm();
+  std::unique_ptr<FormStructure> form =
+      CreateMergedForm({drivers_license_form.get(), passport_form.get()});
+  EntityInstance local_entity = test::GetDriversLicenseEntityInstance(
+      {.guid = "00000000-0000-4000-8000-100000000001",
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance ambient_entity =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.guid = "00000000-0000-4000-8000-000000000002",
+           .record_type = EntityInstance::RecordType::kPersonalContext}));
+  AddOrUpdateEntityInstance(local_entity);
+  AddOrUpdateEntityInstance(ambient_entity);
+  manager().OnFormSeen(*form);
+  manager().OnAutofillAiSuggestionsShown(
+      *form, *form->field(0),
+      {GetSuggestion(local_entity), GetSuggestion(ambient_entity)},
+      /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
+  manager().OnDidFillSuggestion(ambient_entity, *form, *form->field(0),
+                                /*filled_fields=*/{form->field(0)},
+                                /*ukm_source_id=*/{});
+
+  base::HistogramTester histogram_tester;
+  manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingReadiness.PersonalContext", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingReadiness.Local", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingReadiness.ServerWallet", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAssistance.PersonalContext", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAssistance.Local", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.PersonalContext", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.Local", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingCorrectness.PersonalContext", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.KeyMetrics.FillingCorrectness.Local", 0);
+  // The entity-type-specific metrics only see a single record type each.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.Passport.PersonalContext", 1,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.Passport.Local", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense.Local", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense.PersonalContext",
+      0);
 }
 
 class AutofillAiPromptMetricsTest
