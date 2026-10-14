@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -432,6 +433,9 @@ public class CastWebContentsActivity extends ComponentActivity {
         Log.d(TAG, "onStop");
         mStartedState.reset();
 
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = powerManager != null && powerManager.isInteractive();
+
         // If this device is in "lock task mode," then leaving the Activity will not return to the
         // Home screen and there will be no affordance for the user to return to this Activity.
         // When in this mode, leaving the Activity should tear down the Cast app.
@@ -443,6 +447,10 @@ public class CastWebContentsActivity extends ComponentActivity {
             CastWebContentsComponent.onComponentClosed(
                     CastWebContentsIntentUtils.getSessionId(getIntent()));
             mIsFinishingState.set("User exit");
+        } else if (mIsInPictureInPictureMode && isScreenOn) {
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit from picture-in-picture mode");
         }
         super.onStop();
     }

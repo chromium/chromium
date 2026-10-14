@@ -33,6 +33,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.PatternMatcher;
+import android.os.PowerManager;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Window;
@@ -64,6 +65,7 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
+import org.robolectric.shadows.ShadowPowerManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -175,6 +177,7 @@ public class CastWebContentsActivityTest {
     private int mNextMediaId;
     private Application mApplication;
     private ShadowActivityManager mShadowActivityManager;
+    private ShadowPowerManager mShadowPowerManager;
     private ShadowPackageManager mShadowPackageManager;
     private ActivityController<CastWebContentsActivity> mActivityLifecycle;
     private CastWebContentsActivity mActivity;
@@ -199,6 +202,11 @@ public class CastWebContentsActivityTest {
                         (ActivityManager)
                                 RuntimeEnvironment.application.getSystemService(
                                         Context.ACTIVITY_SERVICE));
+        mShadowPowerManager =
+                Shadows.shadowOf(
+                        (PowerManager)
+                                RuntimeEnvironment.application.getSystemService(
+                                        Context.POWER_SERVICE));
         mShadowPackageManager =
                 Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         mActivityLifecycle =
@@ -505,6 +513,7 @@ public class CastWebContentsActivityTest {
     public void testStopWhileInPipModeDoesNotCloseActivity() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mShadowPowerManager.setIsInteractive(false);
         mActivityLifecycle.create().start().resume();
         updateMediaState(true, true);
         mActivity.onUserLeaveHint();
@@ -516,6 +525,25 @@ public class CastWebContentsActivityTest {
                     assertFalse(mActivity.isFinishing());
                 },
                 false);
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testStopWhileInPipModeWithScreenOnClosesActivity() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mShadowPowerManager.setIsInteractive(true);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(true, true);
+        mActivity.onUserLeaveHint();
+        mActivity.onPictureInPictureModeChanged(true, null);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivityLifecycle.pause().stop();
+                    assertTrue(mActivity.isFinishing());
+                },
+                true);
     }
 
     @Test
