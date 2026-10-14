@@ -1515,14 +1515,36 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionResponseCodeTest,
     SameDocument404Navigation) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   GURL initial_url(embedded_test_server()->GetURL("a.test", "/page404.html"));
-  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, initial_url,
-                                                      1);
+  if (IsPageSettledMonitorEnabled()) {
+    // `/page404.html` has no body content, so the legacy FCP-based path never
+    // extracts the initial cross-document load, whereas `PageSettledMonitor`
+    // settles after its minimum wait and extracts it. Wait for the initial
+    // cross-document extraction to finish before recording metrics for the
+    // subsequent same-document navigation.
+    base::HistogramTester initial_histogram_tester;
+    ukm::TestAutoSetUkmRecorder initial_ukm_recorder;
+    base::test::TestFuture<void> initial_future;
+    initial_ukm_recorder.SetOnAddEntryCallback(
+        ukm::builders::OptimizationGuide_AnnotatedPageContent::kEntryName,
+        initial_future.GetRepeatingCallback());
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
+                                                        initial_url, 1);
+    ASSERT_TRUE(initial_future.Wait());
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &initial_histogram_tester,
+        "OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency", 1);
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &initial_histogram_tester, "OptimizationGuide.InnerText.TotalSize2", 1);
+  } else {
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
+                                                        initial_url, 1);
+  }
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL same_doc_url(
       embedded_test_server()->GetURL("a.test", "/page404.html#fragment"));
   content::NavigationHandleCommitObserver handle_observer(web_contents,
