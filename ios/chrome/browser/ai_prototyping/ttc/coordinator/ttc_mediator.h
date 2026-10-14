@@ -12,8 +12,8 @@
 class TTCKeyedService;
 @protocol TTCConsumer;
 
-// Mediator driving the TTC UI by bridging TTCKeyedService and
-// active TTCSessionController events to the consumer.
+// Mediator driving the TTC UI by bridging `TTCKeyedService` and
+// active `TtcSessionController` events to the consumer.
 @interface TTCMediator : NSObject <TTCMutator>
 
 // Consumer receiving UI updates from the mediator.

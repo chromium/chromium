@@ -55,7 +55,8 @@ class TTCKeyedServiceTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
-// Test that `TTCKeyedService` is instantiated for regular profile when enabled.
+// Tests that `TTCKeyedService` is instantiated for regular profile when
+// enabled.
 TEST_F(TTCKeyedServiceTest, TestServiceCreatedForRegularProfileWhenEnabled) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -63,7 +64,7 @@ TEST_F(TTCKeyedServiceTest, TestServiceCreatedForRegularProfileWhenEnabled) {
   EXPECT_TRUE(service->IsEnabled());
 }
 
-// Test that `TTCKeyedService` returns nullptr when feature flag is disabled.
+// Tests that `TTCKeyedService` returns nullptr when feature flag is disabled.
 TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedWhenFeatureDisabled) {
   InitProfile(/*enable_ttc=*/false);
   TTCKeyedService* service =
@@ -71,7 +72,7 @@ TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedWhenFeatureDisabled) {
   EXPECT_EQ(service, nullptr);
 }
 
-// Test that `TTCKeyedService` is not created for off-the-record profiles.
+// Tests that `TTCKeyedService` is not created for off-the-record profiles.
 TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedForIncognitoProfile) {
   ProfileIOS* otr_profile =
       profile_->CreateOffTheRecordProfileWithTestingFactories();
@@ -80,18 +81,18 @@ TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedForIncognitoProfile) {
   EXPECT_EQ(service, nullptr);
 }
 
-// Test that initial service state is inactive and controller is null.
+// Tests that initial service state is inactive and controller is null.
 TEST_F(TTCKeyedServiceTest, TestInitialStateIsSessionInactive) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
   EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
 }
 
-// Test that starting and ending a session transitions service state and
+// Tests that starting and ending a session transitions service state and
 // lifecycle.
 TEST_F(TTCKeyedServiceTest, TestStartAndEndSessionTransitionsState) {
   TTCKeyedService* service =
@@ -100,31 +101,31 @@ TEST_F(TTCKeyedServiceTest, TestStartAndEndSessionTransitionsState) {
 
   service->StartSession();
   EXPECT_TRUE(service->is_session_active());
-  ASSERT_TRUE(service->session_controller() != nil);
+  ASSERT_TRUE(service->session_controller() != nullptr);
   EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kInitializing);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionActive);
 
   service->EndSession();
   EXPECT_FALSE(service->is_session_active());
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
   EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
 }
 
-// Test that ending a session when inactive is a safe no-op.
+// Tests that ending a session when inactive is a safe no-op.
 TEST_F(TTCKeyedServiceTest, TestEndSessionWhenInactiveIsNoOp) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
 
   service->EndSession();
   EXPECT_FALSE(service->is_session_active());
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
 }
 
-// Test that state change callbacks are invoked on start and end.
+// Tests that state change callbacks are invoked on start and end.
 TEST_F(TTCKeyedServiceTest, TestStateChangedCallbackNotification) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -146,7 +147,7 @@ TEST_F(TTCKeyedServiceTest, TestStateChangedCallbackNotification) {
   EXPECT_EQ(received_states[1], TTCServiceState::kSessionInactive);
 }
 
-// Test that Shutdown cleans up active sessions.
+// Tests that `Shutdown` cleans up active sessions.
 TEST_F(TTCKeyedServiceTest, TestShutdownEndsActiveSession) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -160,7 +161,7 @@ TEST_F(TTCKeyedServiceTest, TestShutdownEndsActiveSession) {
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
 }
 
-// Test that controller disconnect ends the session in TTCKeyedService.
+// Tests that controller `Disconnect` ends the session in `TTCKeyedService`.
 TEST_F(TTCKeyedServiceTest, TestControllerDisconnectEndsSessionInService) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -168,16 +169,16 @@ TEST_F(TTCKeyedServiceTest, TestControllerDisconnectEndsSessionInService) {
 
   service->StartSession();
   EXPECT_TRUE(service->is_session_active());
-  TTCSessionController* controller = service->session_controller();
-  ASSERT_NE(controller, nil);
+  TtcSessionController* controller = service->session_controller();
+  ASSERT_NE(controller, nullptr);
 
-  [controller disconnect];
+  controller->Disconnect();
   EXPECT_FALSE(service->is_session_active());
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
 }
 
-// Test that background notification ends the session in TTCKeyedService.
+// Tests that background notification ends the session in `TTCKeyedService`.
 TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -185,7 +186,7 @@ TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
 
   service->StartSession();
   EXPECT_TRUE(service->is_session_active());
-  EXPECT_NE(service->session_controller(), nil);
+  EXPECT_NE(service->session_controller(), nullptr);
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationDidEnterBackgroundNotification
@@ -193,10 +194,10 @@ TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
 
   EXPECT_FALSE(service->is_session_active());
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
-  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->session_controller(), nullptr);
 }
 
-// Test that starting an already active session asserts/crashes.
+// Tests that starting an already active session asserts/crashes.
 TEST_F(TTCKeyedServiceTest, TestStartSessionCrashesIfAlreadyStarted) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
@@ -206,7 +207,7 @@ TEST_F(TTCKeyedServiceTest, TestStartSessionCrashesIfAlreadyStarted) {
   EXPECT_DEATH_IF_SUPPORTED(service->StartSession(), "");
 }
 
-// Test that GetWeakPtr returns a valid weak pointer to the service.
+// Tests that `GetWeakPtr` returns a valid weak pointer to the service.
 TEST_F(TTCKeyedServiceTest, TestWeakPtrValidity) {
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());

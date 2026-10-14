@@ -4,18 +4,20 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
+#import <memory>
 #import <optional>
 
 #import "base/callback_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/to_string.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer_bridge.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 
@@ -90,8 +92,12 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   // human-readable lines. Defaults to NO.
   BOOL _journalDetailedMode;
 
+  // Bridge observing `TtcSessionController`.
+  std::unique_ptr<TtcSessionControllerObserverBridge>
+      _sessionControllerObserverBridge;
+
   // Weak reference to the currently observed session controller.
-  __weak TTCSessionController* _observedSessionController;
+  base::WeakPtr<TtcSessionController> _observedSessionController;
 }
 
 #pragma mark - Initialization
@@ -102,6 +108,8 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
     _currentState = TTCSessionUIState::kIdle;
     _ttcService = ttcService;
     _journalDetailedMode = NO;
+    _sessionControllerObserverBridge =
+        std::make_unique<TtcSessionControllerObserverBridge>(self);
     if (_ttcService) {
       __weak TTCMediator* weakSelf = self;
       _stateChangeSubscription = _ttcService->RegisterStateChangedCallback(
@@ -195,12 +203,12 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 
 #pragma mark - TTCSessionControllerObserver
 
-- (void)sessionController:(TTCSessionController*)controller
+- (void)sessionController:(TtcSessionController*)controller
        didChangeLifecycle:(TTCSessionLifecycle)lifecycle {
   [self updateConsumerForLifecycle:lifecycle];
 }
 
-- (void)sessionController:(TTCSessionController*)controller
+- (void)sessionController:(TtcSessionController*)controller
       didUpdateAudioLevel:(float)audioLevel {
   if (_currentState != TTCSessionUIState::kListening) {
     return;
@@ -208,7 +216,7 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   [self.consumer setMicEnergyLevel:audioLevel];
 }
 
-- (void)sessionController:(TTCSessionController*)controller
+- (void)sessionController:(TtcSessionController*)controller
          didFailWithError:(ttc::ErrorCode)error {
   _currentState = TTCSessionUIState::kError;
   [self.consumer setSessionState:_currentState];
@@ -222,6 +230,7 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 
 - (void)disconnect {
   [self stopObservingSessionControllerIfNeeded];
+  _sessionControllerObserverBridge.reset();
   _stateChangeSubscription = {};
   _journalEntryAddedSubscription = {};
   _journalEntryUpdatedSubscription = {};
@@ -235,21 +244,22 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 // Starts observing the active session controller if not already observing.
 - (void)startObservingSessionControllerIfNeeded {
   if (_observedSessionController || !_ttcService ||
-      !_ttcService->session_controller()) {
+      !_ttcService->session_controller() || !_sessionControllerObserverBridge) {
     return;
   }
-  _observedSessionController = _ttcService->session_controller();
-  [_observedSessionController addObserver:self];
-  [self updateConsumerForLifecycle:_observedSessionController.lifecycle];
+  _observedSessionController = _ttcService->session_controller()->GetWeakPtr();
+  _observedSessionController->AddObserver(
+      _sessionControllerObserverBridge.get());
+  [self updateConsumerForLifecycle:_observedSessionController->lifecycle()];
 }
 
 // Stops observing the active session controller if currently observing.
 - (void)stopObservingSessionControllerIfNeeded {
-  if (!_observedSessionController) {
-    return;
+  if (_observedSessionController && _sessionControllerObserverBridge) {
+    _observedSessionController->RemoveObserver(
+        _sessionControllerObserverBridge.get());
   }
-  [_observedSessionController removeObserver:self];
-  _observedSessionController = nil;
+  _observedSessionController.reset();
 }
 
 // Updates `_currentState` and notifies the consumer based on the session

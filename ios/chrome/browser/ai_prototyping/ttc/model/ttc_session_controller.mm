@@ -10,210 +10,173 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/sequence_checker.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 
-namespace {
+#pragma mark - TtcConversation::Delegate
 
-// Bridge forwarding C++ `TtcConversation::Delegate` callbacks to an Objective-C
-// `TTCSessionController`.
-class TtcConversationDelegateBridge : public TtcConversation::Delegate {
- public:
-  explicit TtcConversationDelegateBridge(TTCSessionController* controller)
-      : controller_(controller) {}
-  ~TtcConversationDelegateBridge() override = default;
-
-  // `TtcConversation::Delegate` implementation:
-  void OnConversationInitialized() override {
-    [controller_ onSessionInitialized];
-  }
-
-  void OnConversationClosed() override { [controller_ stopSession]; }
-
-  void OnAudioEnergyUpdated(float energy) override {
-    [controller_ userAudioLevelDidUpdate:energy];
-  }
-
-  void OnConversationError(ttc::ErrorCode error) override {
-    [controller_ failWithError:error];
-  }
-
- private:
-  __weak TTCSessionController* controller_ = nil;
-};
-
-}  // namespace
-
-@implementation TTCSessionController {
-  // Declared before `_conversation` so `_conversation` is destroyed first
-  // during deallocation while the delegate bridge is still alive.
-  std::unique_ptr<TtcConversationDelegateBridge> _conversationDelegateBridge;
-  std::unique_ptr<TtcConversation> _conversation;
-  NSHashTable<id<TTCSessionControllerObserver>>* _observers;
-  BOOL _fatalErrorReported;
+void TtcSessionController::OnConversationInitialized() {
+  OnSessionInitialized();
 }
 
-- (instancetype)initWithConversation:
-    (std::unique_ptr<TtcConversation>)conversation {
-  CHECK(conversation);
-  self = [super init];
-  if (self) {
-    _conversationDelegateBridge =
-        std::make_unique<TtcConversationDelegateBridge>(self);
-    _conversation = std::move(conversation);
-    _conversation->set_delegate(_conversationDelegateBridge.get());
-    _lifecycle = TTCSessionLifecycle::kInitializing;
-    _observers = [NSHashTable weakObjectsHashTable];
-    _fatalErrorReported = NO;
-    [self registerBackgroundObserver];
-  }
-  return self;
+void TtcSessionController::OnConversationClosed() {
+  StopSession();
 }
 
-- (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend {
-  return [self initWithConversation:std::make_unique<TtcConversation>(
-                                        [[TTCAudioSessionController alloc] init],
-                                        std::move(backend))];
+void TtcSessionController::OnAudioEnergyUpdated(float energy) {
+  UserAudioLevelDidUpdate(energy);
 }
 
-- (instancetype)init {
-  return [self initWithConversation:std::make_unique<TtcConversation>()];
+void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
+  FailWithError(error);
 }
 
-- (TtcConversation*)conversation {
-  return _conversation.get();
+#pragma mark - Initializers
+
+TtcSessionController::TtcSessionController(
+    std::unique_ptr<TtcConversation> conversation)
+    : conversation_(std::move(conversation)) {
+  CHECK(conversation_);
+  conversation_->set_delegate(this);
+  RegisterBackgroundObserver();
+}
+
+TtcSessionController::TtcSessionController(
+    std::unique_ptr<ttc::TtcBackend> backend)
+    : TtcSessionController(std::make_unique<TtcConversation>(
+          [[TTCAudioSessionController alloc] init],
+          std::move(backend))) {}
+
+TtcSessionController::TtcSessionController()
+    : TtcSessionController(std::make_unique<TtcConversation>()) {}
+
+TtcSessionController::~TtcSessionController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Disconnect();
 }
 
 #pragma mark - Session Lifecycle
 
-- (void)startSession {
-  if (_lifecycle == TTCSessionLifecycle::kFinished) {
+void TtcSessionController::StartSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
     return;
   }
-  _conversation->Start();
+  conversation_->Start();
 }
 
-- (void)onSessionInitialized {
-  if (_lifecycle != TTCSessionLifecycle::kInitializing) {
+void TtcSessionController::OnSessionInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ != TTCSessionLifecycle::kInitializing) {
     return;
   }
-  [self setLifecycle:TTCSessionLifecycle::kLive];
+  SetLifecycle(TTCSessionLifecycle::kLive);
 }
 
-- (void)stopSession {
-  _conversation->Stop();
-  [self setLifecycle:TTCSessionLifecycle::kFinished];
+void TtcSessionController::StopSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  conversation_->Stop();
+  SetLifecycle(TTCSessionLifecycle::kFinished);
 }
 
-- (void)disconnect {
-  [self stopSession];
-  _conversation->Disconnect();
-  [self removeBackgroundObserver];
-  [_observers removeAllObjects];
+void TtcSessionController::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopSession();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  conversation_->Disconnect();
+  RemoveBackgroundObserver();
+  observers_.Clear();
 }
 
-- (void)setLifecycle:(TTCSessionLifecycle)lifecycle {
-  if (_lifecycle == lifecycle || _lifecycle == TTCSessionLifecycle::kFinished) {
+void TtcSessionController::SetLifecycle(TTCSessionLifecycle lifecycle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == lifecycle || lifecycle_ == TTCSessionLifecycle::kFinished) {
     return;
   }
-  _lifecycle = lifecycle;
-  NSHashTable<id<TTCSessionControllerObserver>>* observers = [_observers copy];
-  for (id<TTCSessionControllerObserver> observer in observers) {
-    if ([observer
-            respondsToSelector:@selector(
-                                   sessionController:didChangeLifecycle:)]) {
-      [observer sessionController:self didChangeLifecycle:_lifecycle];
-    }
+  lifecycle_ = lifecycle;
+  for (TtcSessionControllerObserver& observer : observers_) {
+    observer.OnSessionLifecycleChanged(this, lifecycle_);
   }
 }
 
 #pragma mark - Audio & Errors
 
-- (void)userAudioLevelDidUpdate:(float)audioLevel {
-  if (![NSThread isMainThread]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self userAudioLevelDidUpdate:audioLevel];
-    });
+void TtcSessionController::UserAudioLevelDidUpdate(float audio_level) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished || observers_.empty()) {
     return;
   }
-  if (_lifecycle == TTCSessionLifecycle::kFinished || !_observers.count) {
-    return;
-  }
-  NSHashTable<id<TTCSessionControllerObserver>>* observers = [_observers copy];
-  for (id<TTCSessionControllerObserver> observer in observers) {
-    if ([observer
-            respondsToSelector:@selector(
-                                   sessionController:didUpdateAudioLevel:)]) {
-      [observer sessionController:self didUpdateAudioLevel:audioLevel];
-    }
+  for (TtcSessionControllerObserver& observer : observers_) {
+    observer.OnUserAudioLevelUpdated(this, audio_level);
   }
 }
 
-- (void)failWithError:(ttc::ErrorCode)error {
-  if (![NSThread isMainThread]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self failWithError:error];
-    });
+void TtcSessionController::FailWithError(ttc::ErrorCode error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished || fatal_error_reported_) {
     return;
   }
-  if (_lifecycle == TTCSessionLifecycle::kFinished || _fatalErrorReported) {
-    return;
+  const bool is_fatal = ttc::IsFatal(error);
+  if (is_fatal) {
+    fatal_error_reported_ = true;
   }
-  const bool isFatal = ttc::IsFatal(error);
-  if (isFatal) {
-    _fatalErrorReported = YES;
+  for (TtcSessionControllerObserver& observer : observers_) {
+    observer.OnSessionError(this, error);
   }
-  NSHashTable<id<TTCSessionControllerObserver>>* observers = [_observers copy];
-  for (id<TTCSessionControllerObserver> observer in observers) {
-    if ([observer
-            respondsToSelector:@selector(
-                                   sessionController:didFailWithError:)]) {
-      [observer sessionController:self didFailWithError:error];
-    }
-  }
-  if (isFatal) {
-    [self stopSession];
+  if (is_fatal) {
+    StopSession();
   }
 }
 
 #pragma mark - Observers
 
-- (void)addObserver:(id<TTCSessionControllerObserver>)observer {
+void TtcSessionController::AddObserver(TtcSessionControllerObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!observer) {
     return;
   }
-  [_observers addObject:observer];
+  observers_.AddObserver(observer);
 }
 
-- (void)removeObserver:(id<TTCSessionControllerObserver>)observer {
+void TtcSessionController::RemoveObserver(
+    TtcSessionControllerObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!observer) {
     return;
   }
-  [_observers removeObject:observer];
+  observers_.RemoveObserver(observer);
+}
+
+base::WeakPtr<TtcSessionController> TtcSessionController::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 #pragma mark - Private
 
-- (void)registerBackgroundObserver {
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(applicationDidEnterBackground)
-             name:UIApplicationDidEnterBackgroundNotification
-           object:nil];
+void TtcSessionController::RegisterBackgroundObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  background_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidEnterBackgroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(
+                             base::IgnoreArgs<NSNotification*>(
+                                 base::BindRepeating(
+                                     &TtcSessionController::StopSession,
+                                     weak_ptr_factory_.GetWeakPtr())))];
 }
 
-- (void)applicationDidEnterBackground {
-  [self stopSession];
+void TtcSessionController::RemoveBackgroundObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (background_observer_) {
+    [[NSNotificationCenter defaultCenter] removeObserver:background_observer_];
+    background_observer_ = nil;
+  }
 }
-
-- (void)removeBackgroundObserver {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIApplicationDidEnterBackgroundNotification
-              object:nil];
-}
-
-@end

@@ -17,6 +17,8 @@ source_set("model") {
     "ttc_session_controller.h",
     "ttc_session_controller.mm",
     "ttc_session_controller_observer.h",
+    "ttc_session_controller_observer_bridge.h",
+    "ttc_session_controller_observer_bridge.mm",
     "ttc_states.h",
     "ttc_websocket_backend.h",
     "ttc_websocket_backend.mm",

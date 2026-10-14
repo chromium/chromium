@@ -9,68 +9,115 @@
 
 #import <memory>
 
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/sequence_checker.h"
 #import "components/ttc/app/public/error_codes.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 namespace ttc {
 class TtcBackend;
 }  // namespace ttc
 
-class TtcConversation;
-@protocol TTCSessionControllerObserver;
-
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
 // for an active TTC session on iOS.
-@interface TTCSessionController : NSObject
+class TtcSessionController : public TtcConversation::Delegate {
+ public:
+  // Underlying conversation coordinator.
+  TtcConversation* conversation() const { return conversation_.get(); }
 
-// Underlying conversation coordinator.
-@property(nonatomic, readonly) TtcConversation* conversation;
+  // Current lifecycle state of this session.
+  TTCSessionLifecycle lifecycle() const { return lifecycle_; }
 
-// Current lifecycle state of this session.
-@property(nonatomic, readonly, assign) TTCSessionLifecycle lifecycle;
+  // Constructs a session controller injecting a custom conversation
+  // coordinator.
+  explicit TtcSessionController(std::unique_ptr<TtcConversation> conversation);
 
-// Designated initializer injecting a custom conversation coordinator.
-- (instancetype)initWithConversation:
-    (std::unique_ptr<TtcConversation>)conversation NS_DESIGNATED_INITIALIZER;
+  // Constructs a session controller creating a `TtcConversation` with
+  // `backend`.
+  explicit TtcSessionController(std::unique_ptr<ttc::TtcBackend> backend);
 
-// Convenience initializer creating a `TtcConversation` with `backend`.
-- (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend;
+  // Constructs a session controller using a default `TtcConversation`.
+  TtcSessionController();
 
-// Convenience initializer using a default `TtcConversation`.
-- (instancetype)init;
+  TtcSessionController(const TtcSessionController&) = delete;
+  TtcSessionController& operator=(const TtcSessionController&) = delete;
+  ~TtcSessionController() override;
 
 #pragma mark - Session Lifecycle
 
-// Starts the session.
-- (void)startSession;
+  // Starts the session.
+  void StartSession();
 
-// Marks the session as initialized and transitions lifecycle to `kLive`.
-- (void)onSessionInitialized;
+  // Marks the session as initialized and transitions lifecycle to `kLive`.
+  void OnSessionInitialized();
 
-// Transitions the session lifecycle to `kFinished`.
-- (void)stopSession;
+  // Transitions the session lifecycle to `kFinished`.
+  void StopSession();
 
-// Stops the session, unregisters background observers, and removes all
-// registered observers.
-- (void)disconnect;
+  // Stops the session, unregisters background observers, and removes all
+  // registered observers.
+  void Disconnect();
 
 #pragma mark - Audio & Errors
 
-// Notifies observers that the user's audio input level has updated.
-// `audioLevel` is normalized in the range [0.0, 1.0].
-- (void)userAudioLevelDidUpdate:(float)audioLevel;
+  // Notifies observers that the user's audio input level has updated.
+  // `audio_level` is normalized in the range [0.0, 1.0].
+  void UserAudioLevelDidUpdate(float audio_level);
 
-// Notifies observers that a session error occurred.
-- (void)failWithError:(ttc::ErrorCode)error;
+  // Notifies observers that a session error occurred.
+  void FailWithError(ttc::ErrorCode error);
 
 #pragma mark - Observers
 
-// Adds an observer to receive session events.
-- (void)addObserver:(id<TTCSessionControllerObserver>)observer;
+  // Adds an observer to receive session events.
+  void AddObserver(TtcSessionControllerObserver* observer);
 
-// Removes an observer from receiving session events.
-- (void)removeObserver:(id<TTCSessionControllerObserver>)observer;
+  // Removes an observer from receiving session events.
+  void RemoveObserver(TtcSessionControllerObserver* observer);
 
-@end
+  // Returns a weak pointer to this controller.
+  base::WeakPtr<TtcSessionController> GetWeakPtr();
+
+  // `TtcConversation::Delegate` implementation:
+  void OnConversationInitialized() override;
+  void OnConversationClosed() override;
+  void OnAudioEnergyUpdated(float energy) override;
+  void OnConversationError(ttc::ErrorCode error) override;
+
+ private:
+  // Updates `lifecycle_` and notifies registered observers if the state
+  // changed.
+  void SetLifecycle(TTCSessionLifecycle lifecycle);
+
+  // Registers for `UIApplicationDidEnterBackgroundNotification` to stop the
+  // session when the app enters the background.
+  void RegisterBackgroundObserver();
+
+  // Unregisters `background_observer_` from `NSNotificationCenter`.
+  void RemoveBackgroundObserver();
+
+  // Underlying conversation coordinator owned by this session controller.
+  std::unique_ptr<TtcConversation> conversation_;
+
+  // Current lifecycle state of the session.
+  TTCSessionLifecycle lifecycle_ = TTCSessionLifecycle::kInitializing;
+
+  // Registered observers receiving session lifecycle, audio level, and error
+  // updates.
+  base::ObserverList<TtcSessionControllerObserver> observers_;
+
+  // Whether a fatal error has already been reported during this session.
+  bool fatal_error_reported_ = false;
+
+  // Notification token for `UIApplicationDidEnterBackgroundNotification`.
+  id<NSObject> background_observer_ = nil;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<TtcSessionController> weak_ptr_factory_{this};
+};
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_SESSION_CONTROLLER_H_

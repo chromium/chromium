@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_H_
 
-#import <Foundation/Foundation.h>
+#import <memory>
 
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 class OptimizationGuideService;
-@class TTCSessionController;
+class TtcSessionController;
 
 // Profile-keyed service that manages the active TTC voice session
 // lifecycle, state transitions, and coordination for a Profile.
@@ -51,9 +51,9 @@ class TTCKeyedService : public KeyedService {
   // Returns true if a voice session is currently active.
   bool is_session_active() const;
 
-  // Returns the active `TTCSessionController`, or nil if no session is
+  // Returns the active `TtcSessionController`, or nullptr if no session is
   // active.
-  TTCSessionController* session_controller() const;
+  TtcSessionController* session_controller() const;
 
   // Returns the shared session journal for this service. Entries persist across
   // `EndSession()` and are cleared on the next `StartSession()`.
@@ -73,8 +73,8 @@ class TTCKeyedService : public KeyedService {
   // The OptimizationGuideService this service is using.
   raw_ptr<OptimizationGuideService> optimization_guide_ = nullptr;
 
-  // Active session coordinator, or nil when no session is in progress.
-  TTCSessionController* session_controller_ = nil;
+  // Active session coordinator, or nullptr when no session is in progress.
+  std::unique_ptr<TtcSessionController> session_controller_;
 
   // Shared session journal retaining entries for the current or most recent
   // session.
