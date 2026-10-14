@@ -93,11 +93,14 @@
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
+#include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
 #include "components/autofill/core/browser/ui/mock_autofill_tapjacking_protector.h"
+#include "ui/android/window_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -205,6 +208,7 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
       : ChromeAutofillClient(web_contents) {}
   ~TestChromeAutofillClient() override = default;
 
+  using ChromeAutofillClient::GetEmailVerificationController;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   using ChromeAutofillClient::at_memory_copy_paste_observer;
@@ -1319,6 +1323,41 @@ TEST_F(ChromeAutofillClientTest, ShowTapjackingProtector) {
   client()->ShowTapjackingProtector(
       AutofillTapjackingProtector::AuthorizationType::kPayments,
       callback.Get());
+}
+
+class MockEmailVerificationBottomSheetBridge
+    : public EmailVerificationBottomSheetBridge {
+ public:
+  explicit MockEmailVerificationBottomSheetBridge(
+      content::WebContents* web_contents)
+      : EmailVerificationBottomSheetBridge(web_contents) {}
+  ~MockEmailVerificationBottomSheetBridge() override = default;
+
+  MOCK_METHOD(void,
+              ShowJavaBottomSheet,
+              (const std::u16string& title, const std::u16string& description),
+              (override));
+  MOCK_METHOD(void, HideJavaBottomSheet, (), (override));
+};
+
+TEST_F(ChromeAutofillClientTest,
+       EmailVerification_DelegatesShowAndHidePopupToController) {
+  auto window = ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  auto mock_bridge =
+      std::make_unique<MockEmailVerificationBottomSheetBridge>(web_contents());
+  MockEmailVerificationBottomSheetBridge* bridge_ptr = mock_bridge.get();
+  test_api(*client()->GetEmailVerificationController())
+      .set_bottom_sheet_bridge(std::move(mock_bridge));
+
+  EXPECT_CALL(*bridge_ptr, ShowJavaBottomSheet);
+  client()->ShowEmailVerificationPopup(
+      gfx::RectF(0, 0, 10, 10), net::SchemefulSite(GURL("https://google.com")),
+      u"user@example.com", base::DoNothing());
+
+  EXPECT_CALL(*bridge_ptr, HideJavaBottomSheet);
+  client()->HideEmailVerificationPopup();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

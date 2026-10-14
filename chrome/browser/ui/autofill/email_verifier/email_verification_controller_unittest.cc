@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_desktop.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
@@ -55,7 +56,8 @@ class EmailVerificationControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    controller_ = std::make_unique<EmailVerificationController>(web_contents());
+    controller_ =
+        std::make_unique<EmailVerificationControllerDesktop>(web_contents());
   }
 
   void TearDown() override {
@@ -554,6 +556,7 @@ TEST_F(EmailVerificationControllerTest,
   const std::optional<base::TimeTicks> initial_loading_start_time =
       test_api(controller()).loading_start_time();
   ASSERT_TRUE(initial_loading_start_time.has_value());
+  const gfx::RectF initial_element_bounds = popup_controller().element_bounds();
 
   // Attempt an overlapping ShowPopup while the first request is still in
   // flight.
@@ -568,7 +571,7 @@ TEST_F(EmailVerificationControllerTest,
             EmailVerificationControllerTestApi::PromptState::kLoading);
   EXPECT_EQ(test_api(controller()).loading_start_time(),
             initial_loading_start_time);
-  EXPECT_EQ(popup_controller().element_bounds(), kDefaultBounds);
+  EXPECT_EQ(popup_controller().element_bounds(), initial_element_bounds);
   histogram_tester.ExpectBucketCount(
       "Blink.Evp.PermissionUi.Status",
       EmailVerificationPermissionUiStatus::kOverlappingPrompt, 1);

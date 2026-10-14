@@ -76,7 +76,8 @@ void EmailVerificationPopupController::Show(
     const net::SchemefulSite& issuer,
     const std::u16string& email,
     base::OnceCallback<
-        void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
+        void(AutofillClient::EmailVerificationPermissionUiStatus)> callback,
+    base::OnceClosure on_dismissed) {
   if (!web_contents()) {
     LogPermissionUiStatus(EmailVerificationPermissionUiStatus::kOther);
     std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
@@ -99,6 +100,7 @@ void EmailVerificationPopupController::Show(
 
   element_bounds_ = element_bounds;
   callback_ = std::move(callback);
+  on_dismissed_ = std::move(on_dismissed);
 
   auto on_view_decision = base::BindOnce(
       [](base::WeakPtr<EmailVerificationPopupController> self, bool confirmed) {
@@ -247,6 +249,7 @@ void EmailVerificationPopupController::HideImpl(
   is_loading_ = false;
   base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiStatus)>
       callback = std::move(callback_);
+  base::OnceClosure on_dismissed = std::move(on_dismissed_);
   popup_hide_helper_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (base::WeakPtr<EmailVerificationPopupView> view =
@@ -257,6 +260,10 @@ void EmailVerificationPopupController::HideImpl(
   if (callback) {
     LogPermissionUiStatus(status);
     std::move(callback).Run(status);
+  }
+
+  if (on_dismissed) {
+    std::move(on_dismissed).Run();
   }
 }
 

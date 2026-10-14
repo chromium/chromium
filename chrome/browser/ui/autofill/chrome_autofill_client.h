@@ -80,7 +80,6 @@ class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 class AutofillDialogController;
 class TouchToFillAutofillController;
-class EmailVerificationBottomSheetBridge;
 #endif
 
 class ActorAutofillManager;
@@ -415,6 +414,12 @@ class ChromeAutofillClient : public ContentAutofillClient {
   };
 
   AtMemoryCopyPasteObserver& at_memory_copy_paste_observer();
+
+  // The EmailVerificationController coordinates Email Verification Protocol
+  // (EVP) UI flows (first-run prompt, loading UI, and completion
+  // notifications).
+  EmailVerificationController* GetEmailVerificationController();
+
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 
  private:
@@ -477,14 +482,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
       autofill_snackbar_controller_impl_;
   std::unique_ptr<TouchToFillAutofillController>
       touch_to_fill_autofill_controller_;
-  std::unique_ptr<EmailVerificationBottomSheetBridge>
-      email_verification_bottom_sheet_bridge_;
   std::unique_ptr<AutofillTapjackingProtector>
       autofill_tapjacking_protector_impl_;
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;
-  std::unique_ptr<EmailVerificationController> email_verification_controller_;
 #endif  // BUILDFLAG(IS_ANDROID)
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
@@ -494,6 +496,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<GmailOtpOptInCoordinator> gmail_otp_opt_in_coordinator_;
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
+  std::unique_ptr<EmailVerificationController> email_verification_controller_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
 

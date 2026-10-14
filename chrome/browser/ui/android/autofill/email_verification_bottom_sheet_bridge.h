@@ -63,6 +63,9 @@ class EmailVerificationBottomSheetBridge {
   // tests to bypass JNI calls that require an attached BottomSheetController.
   virtual void ShowJavaBottomSheet(const std::u16string& title,
                                    const std::u16string& description);
+  // Requests the Java bridge to hide the bottom sheet. Overridden in unit
+  // tests to bypass JNI calls that require an attached BottomSheetController.
+  virtual void HideJavaBottomSheet();
 
  private:
   const raw_ref<content::WebContents> web_contents_;

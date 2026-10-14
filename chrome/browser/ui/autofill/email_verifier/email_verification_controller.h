@@ -14,14 +14,10 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
-
-class BrowserWindowInterface;
-class ToastController;
 
 namespace content {
 class WebContents;
@@ -47,12 +43,12 @@ class EmailVerificationController {
   virtual ~EmailVerificationController();
 
   // Shows the permission prompt popup anchored to the element bounds.
-  void ShowPopup(
-      const gfx::RectF& element_bounds_in_screen_space,
-      const net::SchemefulSite& issuer_site,
-      const std::u16string& email,
-      base::OnceCallback<
-          void(AutofillClient::EmailVerificationPermissionUiStatus)> callback);
+  void ShowPopup(const gfx::RectF& element_bounds,
+                 const net::SchemefulSite& issuer_site,
+                 const std::u16string& email,
+                 base::OnceCallback<
+                     void(AutofillClient::EmailVerificationPermissionUiStatus)>
+                     decision_callback);
 
   // Dismisses the permission popup, deferring closure if necessary to satisfy
   // the minimum loading display duration.
@@ -111,21 +107,36 @@ class EmailVerificationController {
 
   PromptState prompt_state() const { return prompt_state_; }
 
+  content::WebContents& web_contents() const { return *web_contents_; }
+  bool IsWebContentsVisible() const;
+
+  // Platform-specific UI hooks implemented by subclasses.
+  virtual void ShowPopupImpl(
+      const gfx::RectF& element_bounds,
+      const net::SchemefulSite& issuer_site,
+      const std::u16string& email,
+      base::OnceCallback<
+          void(AutofillClient::EmailVerificationPermissionUiStatus)>
+          decision_callback,
+      base::OnceClosure on_dismissed) = 0;
+  virtual void HidePopupImpl() = 0;
+  virtual void ShowLoadingToastImpl() = 0;
+  virtual void ShowErrorToastImpl() = 0;
+  virtual void ShowVerifiedToastImpl(const GURL& url) = 0;
+
+  // Subclasses override this to provide a weak-pointer to this class. This is
+  // not done in the parent class as the base::WeakPtrFactory member must be the
+  // last member in the object, which is not possible to ensure for
+  // superclasses.
+  virtual base::WeakPtr<EmailVerificationController> GetWeakPtr() = 0;
+
  private:
   friend class EmailVerificationControllerTestApi;
 
-  bool IsWebContentsVisible() const;
+  // Invoked when the first-run permission prompt is dismissed externally while
+  // in the loading state.
+  void OnPromptDismissed();
   bool IsFirstRunRequestInFlight() const;
-  BrowserWindowInterface* GetBrowserWindowInterface() const;
-  ToastController* GetToastController() const;
-
-  void ShowErrorToastImpl();
-  void ShowVerifiedToastImpl(const GURL& url);
-
-  // Dismisses `popup_controller_`, stops `hide_popup_timer_`, resets
-  // `loading_start_time_`, and restores focus to `web_contents_` if the popup
-  // was in the loading state.
-  void DismissPopup();
 
   // Records `loading_start_time_` so that subsequent transitions out of loading
   // (`HidePopup()`, `ShowVerifiedToast()`, or `ShowErrorToast()`) enforce
@@ -148,9 +159,6 @@ class EmailVerificationController {
 
   const raw_ref<content::WebContents> web_contents_;
 
-  // Controller for the first-run permission popup.
-  EmailVerificationPopupController popup_controller_;
-
   // Tracks the lifecycle state of the first-run permission prompt. Needed
   // alongside `loading_start_time_` because `loading_start_time_` is set for
   // both the first-run prompt (`kLoading`) and the subsequent-run loading
@@ -168,8 +176,6 @@ class EmailVerificationController {
   base::OneShotTimer toast_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<EmailVerificationController> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

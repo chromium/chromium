@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
@@ -50,7 +51,8 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
             const net::SchemefulSite& issuer,
             const std::u16string& email,
             base::OnceCallback<void(
-                AutofillClient::EmailVerificationPermissionUiStatus)> callback);
+                AutofillClient::EmailVerificationPermissionUiStatus)> callback,
+            base::OnceClosure on_dismissed = base::DoNothing());
 
   // AutofillPopupViewDelegate:
   void Hide(SuggestionHidingReason reason) override;
@@ -103,6 +105,9 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   // The callback to invoke with the user's decision.
   base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiStatus)>
       callback_;
+
+  // Callback to notify the caller when the popup is dismissed or closed.
+  base::OnceClosure on_dismissed_;
 
   // The view representing the popup.
   base::WeakPtr<EmailVerificationPopupView> view_;

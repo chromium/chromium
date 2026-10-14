@@ -5,24 +5,59 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFICATION_CONTROLLER_TEST_API_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFICATION_CONTROLLER_TEST_API_H_
 
+#include <memory>
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_android.h"
+#else
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_desktop.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
+#endif
 
 namespace autofill {
 
+// Exposes internal state of `EmailVerificationController` (and its platform
+// subclasses) for unit tests.
 class EmailVerificationControllerTestApi {
  public:
   explicit EmailVerificationControllerTestApi(
       EmailVerificationController& controller)
       : controller_(controller) {}
 
-  EmailVerificationPopupController& popup_controller() {
-    return controller_->popup_controller_;
+#if BUILDFLAG(IS_ANDROID)
+  EmailVerificationBottomSheetBridge* bottom_sheet_bridge() {
+    return static_cast<EmailVerificationControllerAndroid&>(*controller_)
+        .bottom_sheet_bridge_.get();
   }
+  void set_bottom_sheet_bridge(
+      std::unique_ptr<EmailVerificationBottomSheetBridge> bridge) {
+    CHECK(bridge);
+    static_cast<EmailVerificationControllerAndroid&>(*controller_)
+        .bottom_sheet_bridge_ = std::move(bridge);
+  }
+  void set_message_controller(AutofillMessageController* message_controller) {
+    static_cast<EmailVerificationControllerAndroid&>(*controller_)
+        .message_controller_for_testing_ = message_controller;
+  }
+  void set_open_settings_callback(base::RepeatingClosure callback) {
+    static_cast<EmailVerificationControllerAndroid&>(*controller_)
+        .open_settings_callback_ = std::move(callback);
+  }
+#else
+  EmailVerificationPopupController& popup_controller() {
+    return static_cast<EmailVerificationControllerDesktop&>(*controller_)
+        .popup_controller_;
+  }
+#endif
 
   using PromptState = EmailVerificationController::PromptState;
 

@@ -94,10 +94,14 @@ void EmailVerificationBottomSheetBridge::ShowJavaBottomSheet(
 
 void EmailVerificationBottomSheetBridge::Hide() {
   if (java_email_verification_bottom_sheet_bridge_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_EmailVerificationBottomSheetBridge_hide(
-        env, java_email_verification_bottom_sheet_bridge_);
+    HideJavaBottomSheet();
   }
+}
+
+void EmailVerificationBottomSheetBridge::HideJavaBottomSheet() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_EmailVerificationBottomSheetBridge_hide(
+      env, java_email_verification_bottom_sheet_bridge_);
 }
 
 void EmailVerificationBottomSheetBridge::OnUiShown(JNIEnv* env) {}

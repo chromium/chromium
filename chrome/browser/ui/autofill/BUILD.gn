@@ -200,6 +200,8 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/autofill/email_verifier",
+    "//chrome/browser/ui/autofill/email_verifier:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
@@ -291,8 +293,6 @@ source_set("impl") {
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/autofill/autofill_ai:impl",
-      "//chrome/browser/ui/autofill/email_verifier",
-      "//chrome/browser/ui/autofill/email_verifier:impl",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/page_action",
@@ -364,6 +364,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/autofill/email_verifier:unit_tests",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/tabs:tab_enums",
@@ -462,6 +463,8 @@ source_set("test_support") {
 
   public_deps = [
     ":autofill",
+    "//chrome/browser/ui/autofill/email_verifier",
+    "//chrome/browser/ui/autofill/email_verifier:test_support",
     "//testing/gmock",
   ]
 
@@ -477,12 +480,12 @@ source_set("test_support") {
       "mock_autofill_message_controller.cc",
       "mock_autofill_message_controller.h",
     ]
+    public_deps += [ "//chrome/browser/ui/android/autofill" ]
   } else {
     sources += [
       "autofill_ai/mock_autofill_ai_import_data_controller.cc",
       "autofill_ai/mock_autofill_ai_import_data_controller.h",
       "autofill_popup_controller_impl_test_api.h",
-      "email_verifier/email_verification_controller_test_api.h",
       "mock_autofill_popup_controller.cc",
       "mock_autofill_popup_controller.h",
       "mock_bubble_manager.cc",
@@ -493,7 +496,6 @@ source_set("test_support") {
     }
     public_deps += [
       "//chrome/browser/ui/autofill/autofill_ai",
-      "//chrome/browser/ui/autofill/email_verifier",
       "//ui/gfx:test_support",
     ]
   }

@@ -1,0 +1,384 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_android.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
+#include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "url/gurl.h"
+
+namespace autofill {
+namespace {
+
+class MockEmailVerificationBottomSheetBridge
+    : public EmailVerificationBottomSheetBridge {
+ public:
+  explicit MockEmailVerificationBottomSheetBridge(
+      content::WebContents* web_contents)
+      : EmailVerificationBottomSheetBridge(web_contents) {
+    ON_CALL(*this, HideJavaBottomSheet).WillByDefault([this]() {
+      OnUiDismissed(
+          /*env=*/nullptr,
+          static_cast<int>(
+              AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+    });
+  }
+  ~MockEmailVerificationBottomSheetBridge() override = default;
+
+  MOCK_METHOD(void,
+              ShowJavaBottomSheet,
+              (const std::u16string& title, const std::u16string& description),
+              (override));
+  MOCK_METHOD(void, HideJavaBottomSheet, (), (override));
+};
+
+class EmailVerificationControllerAndroidTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  EmailVerificationControllerAndroidTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
+    evp_controller_ =
+        std::make_unique<EmailVerificationControllerAndroid>(web_contents());
+    test_api(*evp_controller_)
+        .set_message_controller(&mock_message_controller_);
+    test_api(*evp_controller_)
+        .set_open_settings_callback(open_settings_callback_.Get());
+    auto mock_bridge = std::make_unique<MockEmailVerificationBottomSheetBridge>(
+        web_contents());
+    bridge_ = mock_bridge.get();
+    test_api(*evp_controller_).set_bottom_sheet_bridge(std::move(mock_bridge));
+  }
+
+  void TearDown() override {
+    bridge_ = nullptr;
+    test_api(*evp_controller_).set_message_controller(nullptr);
+    evp_controller_.reset();
+    window_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  void ShowPopup(base::OnceCallback<
+                     void(AutofillClient::EmailVerificationPermissionUiStatus)>
+                     ui_callback = base::DoNothing()) {
+    EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
+    evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                               net::SchemefulSite(GURL("https://google.com")),
+                               u"user@example.com", std::move(ui_callback));
+  }
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
+  MockAutofillMessageController mock_message_controller_;
+  base::MockCallback<base::RepeatingClosure> open_settings_callback_;
+  std::unique_ptr<EmailVerificationControllerAndroid> evp_controller_;
+  raw_ptr<MockEmailVerificationBottomSheetBridge> bridge_ = nullptr;
+};
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       BottomSheetMinimumLoadingDurationEnforced) {
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  EXPECT_CALL(
+      ui_callback,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // Calling HidePopup at 200ms (< 800ms) defers hiding.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  evp_controller_->HidePopup();
+  EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+
+  // After the remaining 600ms, the bottom sheet is hidden.
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  task_environment()->FastForwardBy(base::Milliseconds(600));
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       HidePopupWhileShowingDismissesImmediately) {
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  // Calling HidePopup before the user accepts the prompt immediately hides the
+  // bottom sheet without starting hide_popup_timer_.
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  EXPECT_CALL(ui_callback,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  evp_controller_->HidePopup();
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowLoadingToastWhileShowingDismissesPrompt) {
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  // Calling ShowLoadingToast while the first-run prompt is still awaiting a
+  // decision dismisses the open bottom sheet.
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  EXPECT_CALL(ui_callback,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  evp_controller_->ShowLoadingToast();
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       DeclinedPromptDoesNotStartLoadingTimer) {
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  EXPECT_CALL(
+      ui_callback,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // Subsequent HidePopup is a no-op since the prompt is already closed.
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  evp_controller_->HidePopup();
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       BottomSheetDismissedEarlyClearsLoadingTimer) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // User swipes away the bottom sheet at 100ms while loading.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // When the response arrives at 200ms, neither HidePopup nor ShowVerifiedToast
+  // waits for the remaining 600ms, and HideJavaBottomSheet() is not called
+  // again since the bottom sheet was already dismissed.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  evp_controller_->HidePopup();
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+
+  EXPECT_CALL(mock_message_controller_, Show);
+  evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+  EXPECT_FALSE(test_api(*evp_controller_).is_toast_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       BottomSheetDismissedAfterResponseFiresPendingToast) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // Response arrives at 200ms (< 800ms), scheduling both hide_popup_timer_ and
+  // toast_timer_ for the remaining 600ms.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  evp_controller_->HidePopup();
+  evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+  EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_TRUE(test_api(*evp_controller_).is_toast_timer_running());
+
+  // User swipes away the bottom sheet at 300ms. The pending verified message
+  // fires immediately instead of waiting another 500ms.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_CALL(mock_message_controller_, Show);
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_FALSE(test_api(*evp_controller_).is_toast_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       BottomSheetClosedUnexpectedlyClearsLoadingTimer) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // Bottom sheet closed unexpectedly (e.g. tab backgrounded/destroyed) while
+  // loading.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // When response arrives, hiding does not wait and does not call Hide() again.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  evp_controller_->HidePopup();
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowPopupFlushesPendingHidePopupTimer) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // First flow completes at 200ms (< 800ms), starting hide_popup_timer_.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  evp_controller_->HidePopup();
+  EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+
+  // A new ShowPopup call while hide_popup_timer_ is pending immediately hides
+  // the completed sheet and shows the new one.
+  testing::InSequence s;
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
+  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                             net::SchemefulSite(GURL("https://google.com")),
+                             u"other@example.com", base::DoNothing());
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       OverlappingShowPopupWhileInFlightPreservesLoadingTimer) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+
+  // While the first request is still in-flight at 100ms, an overlapping
+  // ShowPopup call is rejected with kOverlappingPrompt without hiding the
+  // active sheet.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  EXPECT_CALL(*bridge_, ShowJavaBottomSheet).Times(0);
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      second_callback;
+  EXPECT_CALL(second_callback,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                      kOverlappingPrompt));
+  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                             net::SchemefulSite(GURL("https://google.com")),
+                             u"other@example.com", second_callback.Get());
+
+  // The active first sheet's loading timer must still be preserved.
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
+  evp_controller_->HidePopup();
+  EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       VerifiedToastActionInvokesOpenSettingsCallback) {
+  std::unique_ptr<AutofillMessageModel> shown_model;
+  EXPECT_CALL(mock_message_controller_, Show)
+      .WillOnce([&shown_model](std::unique_ptr<AutofillMessageModel> model) {
+        shown_model = std::move(model);
+      });
+
+  evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+  ASSERT_TRUE(shown_model);
+
+  EXPECT_CALL(open_settings_callback_, Run);
+  shown_model->OnActionClicked();
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       OverlappingShowPopupWhileShowingReplacesSheet) {
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      first_ui_callback;
+  ShowPopup(first_ui_callback.Get());
+
+  // A second ShowPopup call while the first prompt is in kShowing dismisses
+  // the first sheet (calling HideJavaBottomSheet on bridge) and requests the
+  // new sheet.
+  testing::InSequence s;
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  EXPECT_CALL(first_ui_callback,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
+  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                             net::SchemefulSite(GURL("https://google.com")),
+                             u"other@example.com", base::DoNothing());
+  EXPECT_EQ(test_api(*evp_controller_).prompt_state(),
+            EmailVerificationControllerTestApi::PromptState::kShowing);
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowVerifiedToastDelaysDisplayForMinimumLoadingDuration) {
+  ShowPopup();
+
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // Verification response arrives at 200ms (< 800ms).
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  evp_controller_->HidePopup();
+  evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+  EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_TRUE(test_api(*evp_controller_).is_toast_timer_running());
+
+  // Message should NOT be shown before the 800ms minimum loading duration.
+  EXPECT_CALL(mock_message_controller_, Show).Times(0);
+  task_environment()->FastForwardBy(base::Milliseconds(599));
+
+  // Exactly at 800ms, the verified message is displayed and the sheet hidden.
+  EXPECT_CALL(*bridge_, HideJavaBottomSheet);
+  EXPECT_CALL(mock_message_controller_, Show);
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
+  EXPECT_FALSE(test_api(*evp_controller_).is_toast_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowVerifiedToastDoesNotShowWhenWebContentsHidden) {
+  web_contents()->WasHidden();
+  EXPECT_CALL(mock_message_controller_, Show).Times(0);
+  evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+}
+
+}  // namespace
+}  // namespace autofill
