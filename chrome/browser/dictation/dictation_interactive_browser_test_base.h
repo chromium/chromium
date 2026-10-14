@@ -17,6 +17,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -49,10 +50,16 @@ class DictationInteractiveBrowserTestBase
 
   // Starts a dictation session. If a stream is created this will also block
   // until the StreamStart event has been received in the extension.
+  // If the target frame is not specified, the target node is assumed to be in
+  // the primary main frame.
   // Prefer specifying a target in new tests.
   MultiStep StartSession();
   MultiStep StartSessionWithTarget(ui::ElementIdentifier web_contents_id,
                                    std::string_view query_selector);
+  MultiStep StartSessionWithTargetInFrame(
+      ui::ElementIdentifier web_contents_id,
+      base::RepeatingCallback<bool(content::RenderFrameHost*)> frame_predicate,
+      std::string_view query_selector);
 
   // If a StreamId isn't specified, then these operate on the last started
   // stream.

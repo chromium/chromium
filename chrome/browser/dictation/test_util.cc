@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/values.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
@@ -316,6 +317,24 @@ DictationContext ExtensionGetUpdatedContext(
   std::optional<DictationContext> context = ParseDictationContext(dict);
   CHECK(context.has_value());
   return std::move(*context);
+}
+
+std::string GetEditableExpectedText(content::RenderFrameHost* render_frame_host,
+                                    std::string_view selector,
+                                    std::string_view expected) {
+  std::string last_seen_string;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    last_seen_string =
+        content::EvalJs(render_frame_host,
+                        content::JsReplace(
+                            "const el = document.querySelector($1);"
+                            "el.isContentEditable ? el.innerText : el.value;",
+                            selector))
+            .ExtractString();
+    return last_seen_string == expected;
+  }));
+
+  return last_seen_string;
 }
 
 using ::testing::_;

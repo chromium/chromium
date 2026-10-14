@@ -25,8 +25,9 @@
 class Profile;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -105,6 +106,14 @@ std::optional<DictationContext> ExtensionGetStartStreamDetails(
 DictationContext ExtensionGetUpdatedContext(
     Profile* profile,
     DictationMultiplexer::StreamId stream_id);
+
+// There's no great way to wait on the dictation target to have fully
+// committed text (i.e. visible to the page) so this function will poll until
+// the editable shows the expected text. Return the string for ergonomics so
+// that a failure can show up as a failing EXPECT_EQ.
+std::string GetEditableExpectedText(content::RenderFrameHost* render_frame_host,
+                                    std::string_view selector,
+                                    std::string_view expected);
 
 class MockStreamProvider : public StreamProvider {
  public:

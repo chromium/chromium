@@ -99,23 +99,10 @@ class DictationKeyedServiceBrowserTest
                                   type, text);
   }
 
-  // There's no great way to wait on the dictation target to have fully
-  // committed text (i.e. visible to the page) so this method will poll until
-  // the editable shows the expected text. Return the string for ergonomics so
-  // that a failure can show up as a failing EXPECT_EQ.
   std::string GetEditableExpectedText(std::string_view selector,
                                       std::string_view expected) {
-    std::string last_seen_string;
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      last_seen_string =
-          content::EvalJs(
-              web_contents(),
-              content::JsReplace("document.querySelector($1).value;", selector))
-              .ExtractString();
-      return last_seen_string == expected;
-    }));
-
-    return last_seen_string;
+    return dictation::GetEditableExpectedText(
+        web_contents()->GetPrimaryMainFrame(), selector, expected);
   }
 };
 

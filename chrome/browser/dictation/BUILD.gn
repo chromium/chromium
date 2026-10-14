@@ -185,6 +185,7 @@ source_set("browser_tests") {
     "metrics_browsertest.cc",
     "policy_browsertest.cc",
     "session_ui_impl_browsertest.cc",
+    "target_browsertest.cc",
   ]
   deps = [
     ":impl",
