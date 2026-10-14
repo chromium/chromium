@@ -10,7 +10,10 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -34,6 +37,23 @@ namespace policy {
 
 namespace {
 
+// Histogram metric names, see
+// `UserCloudManagementStatusFetcher::GetHistogramName()`.
+constexpr char kResultMetric[] = "Result";
+constexpr char kDmServerStatusMetric[] = "DmServerStatus";
+constexpr char kLatencyMetric[] = "Latency";
+constexpr char kPolicyParseResultMetric[] = "PolicyParseResult";
+
+std::string_view CallerToHistogramInfix(
+    UserCloudManagementStatusFetcher::Caller caller) {
+  switch (caller) {
+    case UserCloudManagementStatusFetcher::Caller::kSigninInterceptor:
+      return "SigninInterceptor";
+    case UserCloudManagementStatusFetcher::Caller::kProfileManagementDisclaimer:
+      return "ProfileManagementDisclaimer";
+  }
+}
+
 const base::Value* GetMandatoryPolicyValue(const PolicyMap& policy_map,
                                            const char* policy_name,
                                            base::Value::Type value_type) {
@@ -44,7 +64,8 @@ const base::Value* GetMandatoryPolicyValue(const PolicyMap& policy_map,
   return entry->value(value_type);
 }
 
-std::optional<ProfileSeparationPolicies> ExtractProfileSeparationPolicies(
+base::expected<ProfileSeparationPolicies, UserCloudPolicyParseResult>
+ExtractProfileSeparationPolicies(
     const enterprise_management::PolicyFetchResponse& policy_fetch_response) {
   if ((policy_fetch_response.has_error_code() &&
        policy_fetch_response.error_code() != net::HTTP_OK) ||
@@ -53,16 +74,19 @@ std::optional<ProfileSeparationPolicies> ExtractProfileSeparationPolicies(
         << "UserManagementStatusAndPolicies policy_fetch_response contained "
         << "error code: " << policy_fetch_response.error_code()
         << ", message: " << policy_fetch_response.error_message();
-    return std::nullopt;
+    return base::unexpected(UserCloudPolicyParseResult::kResponseError);
   }
 
   enterprise_management::PolicyData policy_data;
-  if (!policy_data.ParseFromString(policy_fetch_response.policy_data()) ||
-      !policy_data.has_policy_value()) {
+  if (!policy_data.ParseFromString(policy_fetch_response.policy_data())) {
     LOG_POLICY(WARNING, POLICY_FETCHING)
-        << "Failed to parse PolicyData or missing policy_value in "
-        << "UserManagementStatusAndPolicies.";
-    return std::nullopt;
+        << "Failed to parse PolicyData in UserManagementStatusAndPolicies.";
+    return base::unexpected(UserCloudPolicyParseResult::kPolicyDataParseError);
+  }
+  if (!policy_data.has_policy_value()) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Missing policy_value in UserManagementStatusAndPolicies.";
+    return base::unexpected(UserCloudPolicyParseResult::kMissingPolicyValue);
   }
 
   // TODO(crbug.com/543381833): Use PolicyValidator to validate this policy.
@@ -70,7 +94,8 @@ std::optional<ProfileSeparationPolicies> ExtractProfileSeparationPolicies(
   if (!cloud_policy_settings.ParseFromString(policy_data.policy_value())) {
     LOG_POLICY(WARNING, POLICY_FETCHING)
         << "Failed to parse CloudPolicySettings from PolicyData.";
-    return std::nullopt;
+    return base::unexpected(
+        UserCloudPolicyParseResult::kCloudPolicySettingsParseError);
   }
 
   PolicyMap policy_map;
@@ -114,18 +139,20 @@ std::optional<ProfileSeparationPolicies> ExtractProfileSeparationPolicies(
 
 // static
 void UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
+    Caller caller,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     bool should_fetch_policies,
     FetchStatusAndPoliciesCallback callback) {
+  CHECK(callback);
   // Create a new fetcher instance and pass its ownership (`unique_ptr`) into
   // the completion callback closure. The fetcher remains alive for the duration
   // of the asynchronous request (or until timeout) and is automatically
   // deleted when the completion lambda finishes executing.
   auto fetcher = std::make_unique<UserCloudManagementStatusFetcher>(
-      service, std::move(url_loader_factory), should_fetch_policies);
+      caller, service, std::move(url_loader_factory), should_fetch_policies);
   auto* raw_fetcher = fetcher.get();
   auto on_status_received = base::BindOnce(
       [](std::unique_ptr<UserCloudManagementStatusFetcher> fetcher,
@@ -141,27 +168,44 @@ void UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
 }
 
 UserCloudManagementStatusFetcher::UserCloudManagementStatusFetcher(
+    Caller caller,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool should_fetch_policies)
-    : service_(CHECK_DEREF(service)),
+    : caller_(caller),
+      service_(CHECK_DEREF(service)),
       url_loader_factory_(std::move(url_loader_factory)),
       should_fetch_policies_(should_fetch_policies) {
   CHECK(features::IsMigrateSecureConnectApiToDmServerEnabled());
   CHECK(url_loader_factory_);
 }
 
-UserCloudManagementStatusFetcher::~UserCloudManagementStatusFetcher() = default;
+UserCloudManagementStatusFetcher::~UserCloudManagementStatusFetcher() {
+  // `callback_` is only set between `Start()` and `Finish()`.
+  if (callback_) {
+    base::UmaHistogramEnumeration(
+        GetHistogramName(kResultMetric),
+        UserCloudManagementStatusFetchResult::kCancelled);
+  }
+}
+
+std::string UserCloudManagementStatusFetcher::GetHistogramName(
+    std::string_view metric) const {
+  return base::StrCat({"Enterprise.UserCloudManagementStatusFetcher.",
+                       CallerToHistogramInfix(caller_), ".", metric});
+}
 
 void UserCloudManagementStatusFetcher::Start(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     FetchStatusAndPoliciesCallback callback) {
   CHECK(!callback_);
+  CHECK(callback);
   CHECK(!token_fetcher_);
   CHECK(identity_manager);
   CHECK(!account_id.empty());
   callback_ = std::move(callback);
+  start_time_ = base::TimeTicks::Now();
 
   // Start the fetch timeout timer.
   timeout_timer_.Start(
@@ -186,7 +230,8 @@ void UserCloudManagementStatusFetcher::OnAccessTokenFetchComplete(
     LOG_POLICY(WARNING, POLICY_FETCHING)
         << "Failed to fetch access token for management status check: "
         << error.ToString();
-    Finish(std::nullopt, ProfileSeparationPolicies());
+    Finish(UserCloudManagementStatusFetchResult::kAccessTokenError,
+           std::nullopt, ProfileSeparationPolicies());
     return;
   }
 
@@ -216,13 +261,24 @@ void UserCloudManagementStatusFetcher::SendDeviceManagementRequest(
 void UserCloudManagementStatusFetcher::OnJobDone(DMServerJobResult result) {
   fetch_job_.reset();
 
-  if (result.dm_status != DM_STATUS_SUCCESS ||
-      !result.response.has_user_management_status_and_policies_response()) {
+  if (result.dm_status != DM_STATUS_SUCCESS) {
     LOG_POLICY(WARNING, POLICY_FETCHING)
         << "UserManagementStatusAndPolicies failed with status: "
         << result.dm_status;
+    base::UmaHistogramSparse(GetHistogramName(kDmServerStatusMetric),
+                             result.dm_status);
     // Fail open on error.
-    Finish(std::nullopt, ProfileSeparationPolicies());
+    Finish(UserCloudManagementStatusFetchResult::kDmServerError, std::nullopt,
+           ProfileSeparationPolicies());
+    return;
+  }
+
+  if (!result.response.has_user_management_status_and_policies_response()) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "UserManagementStatusAndPolicies response is missing.";
+    // Fail open on error.
+    Finish(UserCloudManagementStatusFetchResult::kMissingResponse, std::nullopt,
+           ProfileSeparationPolicies());
     return;
   }
 
@@ -235,33 +291,59 @@ void UserCloudManagementStatusFetcher::OnJobDone(DMServerJobResult result) {
       status_response.is_chrome_profile_management_enabled();
 
   ProfileSeparationPolicies profile_separation_policies;
+  UserCloudPolicyParseResult parse_result =
+      UserCloudPolicyParseResult::kNoPolicyFetchResponse;
   if (status_response.has_policy_fetch_response()) {
-    profile_separation_policies = ExtractProfileSeparationPolicies(
-                                      status_response.policy_fetch_response())
-                                      .value_or(ProfileSeparationPolicies());
+    auto policies = ExtractProfileSeparationPolicies(
+        status_response.policy_fetch_response());
+    if (policies.has_value()) {
+      profile_separation_policies = std::move(policies).value();
+      parse_result = UserCloudPolicyParseResult::kSuccess;
+    } else {
+      parse_result = policies.error();
+    }
+  }
+  if (should_fetch_policies_) {
+    base::UmaHistogramEnumeration(GetHistogramName(kPolicyParseResultMetric),
+                                  parse_result);
   }
 
-  Finish(status, std::move(profile_separation_policies));
+  Finish(UserCloudManagementStatusFetchResult::kSuccess, status,
+         std::move(profile_separation_policies));
 }
 
 void UserCloudManagementStatusFetcher::OnTimeout() {
   LOG_POLICY(WARNING, POLICY_FETCHING)
       << "UserCloudManagementStatusFetcher timed out.";
   // Fail open on timeout.
-  Finish(std::nullopt, ProfileSeparationPolicies());
+  Finish(UserCloudManagementStatusFetchResult::kTimeout, std::nullopt,
+         ProfileSeparationPolicies());
 }
 
 void UserCloudManagementStatusFetcher::Finish(
+    UserCloudManagementStatusFetchResult result,
     std::optional<UserManagementStatus> status,
     ProfileSeparationPolicies profile_separation_policies) {
   timeout_timer_.Stop();
   token_fetcher_.reset();
   fetch_job_.reset();
 
-  if (callback_) {
-    std::move(callback_).Run(std::move(status),
-                             std::move(profile_separation_policies));
+  // Guard against re-entrancy: `callback_` is consumed when `Finish()` runs.
+  // If it is already empty, `Finish()` has already executed and recorded
+  // metrics for this fetch.
+  if (!callback_) {
+    return;
   }
+
+  base::UmaHistogramEnumeration(GetHistogramName(kResultMetric), result);
+  if (result == UserCloudManagementStatusFetchResult::kSuccess) {
+    base::UmaHistogramTimes(GetHistogramName(kLatencyMetric),
+                            base::TimeTicks::Now() - start_time_);
+  }
+
+  // `callback_` may destroy `this`.
+  std::move(callback_).Run(std::move(status),
+                           std::move(profile_separation_policies));
 }
 
 }  // namespace policy

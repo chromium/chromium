@@ -72,6 +72,30 @@ enum class SinginInterceptSupervisionState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SinginInterceptSupervisionState)
 
+// With `kMigrateSecureConnectApiToDmServer`, how the interceptor decided
+// whether enterprise policies apply to the intercepted account, once no more
+// asynchronous information is awaited. Recorded in
+// "Signin.Intercept.EnterprisePolicyDecisionSource".
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SigninInterceptEnterprisePolicyDecisionSource)
+enum class SigninInterceptEnterprisePolicyDecisionSource {
+  // The DM Server management status was available and used.
+  kDmServerStatus = 0,
+  // The account is not subject to enterprise features: no DM Server status is
+  // needed, the account is unmanaged.
+  kNotSubjectToEnterpriseFeatures = 1,
+  // The account is subject to enterprise features, but the DM Server status is
+  // unavailable (fetch failed, timed out or could not be started): fail open.
+  kFailOpenNoManagementStatus = 2,
+  // The enterprise capability of the account is unknown, so the DM Server
+  // status was not fetched: fail open.
+  kFailOpenCapabilityUnknown = 3,
+  kMaxValue = kFailOpenCapabilityUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninInterceptEnterprisePolicyDecisionSource)
+
 // Called after web signed in, after a successful token exchange through Dice.
 // The DiceWebSigninInterceptor may offer the user to create a new profile or
 // switch to another existing profile.

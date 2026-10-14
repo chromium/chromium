@@ -3460,6 +3460,14 @@ class DiceWebSigninInterceptorDmServerTest
         /*profile_separation_data_migration_settings=*/std::nullopt);
   }
 
+  void ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource source) {
+    histogram_tester_.ExpectUniqueSample(
+        "Signin.Intercept.EnterprisePolicyDecisionSource", source, 1);
+  }
+
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_{
       policy::features::kMigrateSecureConnectApiToDmServer};
@@ -3487,6 +3495,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
   EXPECT_FALSE(interceptor()
                    ->intercepted_account_profile_separation_policies()
                    .has_value());
+  ExpectDecisionSource(SigninInterceptEnterprisePolicyDecisionSource::
+                           kNotSubjectToEnterpriseFeatures);
 }
 
 // If the enterprise capability is still unknown at timeout, the DM Server
@@ -3513,6 +3523,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kInterceptMultiUser, 1);
+  ExpectDecisionSource(SigninInterceptEnterprisePolicyDecisionSource::
+                           kFailOpenCapabilityUnknown);
 }
 
 // When the enterprise capability arrives, the DM Server status is fetched and
@@ -3537,6 +3549,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   SetEnterpriseCapability(account_info,
                           /*is_subject_to_enterprise_features=*/true);
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 // If the DM Server fetch fails, the interception fails open: the account is
@@ -3557,6 +3571,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest, FetchFailure_FailsOpen) {
       WebSigninInterceptor::SigninInterceptionType::kMultiUser);
   MaybeIntercept(account_info.GetAccountId());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(SigninInterceptEnterprisePolicyDecisionSource::
+                           kFailOpenNoManagementStatus);
 }
 
 // The DM Server status is authoritative over the hosted domain.
@@ -3576,6 +3592,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   MaybeIntercept(account_info.GetAccountId());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 TEST_F(DiceWebSigninInterceptorDmServerTest,
@@ -3593,6 +3611,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   MaybeIntercept(account_info.GetAccountId());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 // Without separation policies, a managed account gets the (optional)
@@ -3611,6 +3631,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterprise);
   MaybeIntercept(account_info.GetAccountId());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 // A managed account without Chrome profile management is treated as a consumer
@@ -3630,6 +3652,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       WebSigninInterceptor::SigninInterceptionType::kMultiUser);
   MaybeIntercept(account_info.GetAccountId());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 // Reauth of a managed primary account is intercepted if the user has not
@@ -3653,6 +3677,8 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
       /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  ExpectDecisionSource(
+      SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus);
 }
 
 // Reauth of a managed primary account is not intercepted if the user already
@@ -3682,6 +3708,26 @@ TEST_F(DiceWebSigninInterceptorDmServerTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortAccountNotNew, 1);
+}
+
+// The decision source is only recorded with
+// `kMigrateSecureConnectApiToDmServer`.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       FeatureDisabled_DecisionSourceNotRecorded) {
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(
+      policy::features::kMigrateSecureConnectApiToDmServer);
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/false);
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Intercept.EnterprisePolicyDecisionSource", 0);
 }
 
 // Parameterized by whether `kMigrateSecureConnectApiToDmServer` is enabled.
@@ -3740,4 +3786,6 @@ TEST_P(DiceWebSigninInterceptorTabClosedTest,
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortTabClosed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.EnterprisePolicyDecisionSource", 0);
 }

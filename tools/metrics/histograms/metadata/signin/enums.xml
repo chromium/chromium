@@ -1375,6 +1375,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
+<!-- LINT.IfChange(SigninInterceptEnterprisePolicyDecisionSource) -->
+
+<enum name="SigninInterceptEnterprisePolicyDecisionSource">
+  <int value="0" label="DM Server management status"/>
+  <int value="1" label="Not subject to enterprise features"/>
+  <int value="2" label="Fail open: no DM Server management status">
+    The account is subject to enterprise features, but the DM Server management
+    status is unavailable (fetch failed, timed out or could not be started).
+  </int>
+  <int value="3" label="Fail open: enterprise capability unknown">
+    The enterprise capability of the account is unknown, so the DM Server
+    management status was not fetched.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_web_signin_interceptor.h:SigninInterceptEnterprisePolicyDecisionSource) -->
+
 <enum name="SigninInterceptFREDialogEvent">
   <int value="0" label="FRE started"/>
   <int value="1" label="Sync confirmation shown"/>

@@ -2689,6 +2689,22 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.Intercept.EnterprisePolicyDecisionSource"
+    enum="SigninInterceptEnterprisePolicyDecisionSource"
+    expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    How the signin interceptor decided whether enterprise policies apply to the
+    intercepted account, when MigrateSecureConnectApiToDmServer is enabled. In
+    that case, only the DM Server management status can make the account
+    managed; if it is unavailable, the interceptor fails open and treats the
+    account as unmanaged. Recorded once per interception, when the interception
+    decision is made (after the interception info is available or the 5 second
+    timeout expired).
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.FRE.Event"
     enum="SigninInterceptFREDialogEvent" expires_after="2027-03-14">
   <owner>alexilin@chromium.org</owner>

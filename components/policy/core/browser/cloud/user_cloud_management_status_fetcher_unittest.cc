@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -41,6 +42,22 @@ namespace {
 const char kTestEmail[] = "test@example.com";
 const char kTestAccessToken[] = "test_access_token";
 
+// Most tests use the signin interceptor caller. See
+// `RecordsHistogramsForProfileManagementDisclaimer` for the other caller.
+constexpr UserCloudManagementStatusFetcher::Caller kTestCaller =
+    UserCloudManagementStatusFetcher::Caller::kSigninInterceptor;
+
+constexpr char kResultHistogram[] =
+    "Enterprise.UserCloudManagementStatusFetcher.SigninInterceptor.Result";
+constexpr char kDmServerStatusHistogram[] =
+    "Enterprise.UserCloudManagementStatusFetcher.SigninInterceptor."
+    "DmServerStatus";
+constexpr char kLatencyHistogram[] =
+    "Enterprise.UserCloudManagementStatusFetcher.SigninInterceptor.Latency";
+constexpr char kPolicyParseResultHistogram[] =
+    "Enterprise.UserCloudManagementStatusFetcher.SigninInterceptor."
+    "PolicyParseResult";
+
 struct FetchTestResult {
   std::optional<UserManagementStatus> status;
   ProfileSeparationPolicies policies;
@@ -61,10 +78,12 @@ class UserCloudManagementStatusFetcherTestBase : public testing::Test {
     task_environment_.FastForwardBy(base::TimeDelta());
   }
 
-  FetchTestResult FetchSync(bool should_fetch_policies) {
+  FetchTestResult FetchSync(
+      bool should_fetch_policies,
+      UserCloudManagementStatusFetcher::Caller caller = kTestCaller) {
     FetchTestResult result;
     UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
-        &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        caller, &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
         identity_test_env_.identity_manager(), account_id_,
         should_fetch_policies,
         base::BindLambdaForTesting(
@@ -88,7 +107,17 @@ class UserCloudManagementStatusFetcherTestBase : public testing::Test {
         GoogleServiceAuthError::FromServiceError("auth error"));
   }
 
+  // Expects a successful fetch with the given policy parse result.
+  void ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult parse_result) {
+    histogram_tester_.ExpectUniqueSample(
+        kResultHistogram, UserCloudManagementStatusFetchResult::kSuccess, 1);
+    histogram_tester_.ExpectUniqueSample(kPolicyParseResultHistogram,
+                                         parse_result, 1);
+  }
+
  protected:
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -107,7 +136,7 @@ class UserCloudManagementStatusFetcherLifecycleTest
 
   void Fetch(base::OnceCallback<void(FetchTestResult)> callback) {
     UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
-        &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        kTestCaller, &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
         identity_test_env_.identity_manager(), account_id_, IncludePolicies(),
         base::BindOnce(
             [](base::OnceCallback<void(FetchTestResult)> callback,
@@ -122,7 +151,7 @@ class UserCloudManagementStatusFetcherLifecycleTest
   // Creates a caller-owned fetcher, to be started with `Start()`.
   std::unique_ptr<UserCloudManagementStatusFetcher> CreateFetcher() {
     return std::make_unique<UserCloudManagementStatusFetcher>(
-        &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        kTestCaller, &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
         IncludePolicies());
   }
 };
@@ -144,6 +173,9 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_Timeout) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(result_status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kTimeout, 1);
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 0);
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
@@ -164,6 +196,8 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
 
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(result_status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kTimeout, 1);
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_AuthError) {
@@ -178,6 +212,10 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_AuthError) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(result_status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kAccessTokenError,
+      1);
+  histogram_tester_.ExpectTotalCount(kDmServerStatusHistogram, 0);
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_DMServerError) {
@@ -196,6 +234,36 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_DMServerError) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(result_status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kDmServerError,
+      1);
+  histogram_tester_.ExpectUniqueSample(kDmServerStatusHistogram,
+                                       DM_STATUS_REQUEST_FAILED, 1);
+  histogram_tester_.ExpectTotalCount(kPolicyParseResultHistogram, 0);
+}
+
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_MissingResponse) {
+  // A successful DMServer response without a
+  // `user_management_status_and_policies_response`.
+  EXPECT_CALL(job_creation_handler_, OnJobCreation(testing::_))
+      .WillOnce(service_.SendJobOKAsync(
+          enterprise_management::DeviceManagementResponse()));
+
+  bool callback_called = false;
+  std::optional<UserManagementStatus> result_status;
+  Fetch(base::BindLambdaForTesting([&](FetchTestResult result) {
+    callback_called = true;
+    result_status = std::move(result.status);
+  }));
+
+  RespondWithAccessToken();
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(result_status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kMissingResponse,
+      1);
+  histogram_tester_.ExpectTotalCount(kDmServerStatusHistogram, 0);
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
@@ -213,6 +281,8 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
   task_environment_.FastForwardBy(base::Seconds(11));
 
   EXPECT_FALSE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kCancelled, 1);
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
@@ -235,6 +305,23 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
   task_environment_.FastForwardBy(base::Seconds(11));
 
   EXPECT_FALSE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kCancelled, 1);
+}
+
+// A fetcher that is created but never started records nothing.
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
+       DestroyedBeforeStart_RecordsNothing) {
+  CreateFetcher().reset();
+  histogram_tester_.ExpectTotalCount(kResultHistogram, 0);
+}
+
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
+       StartWithNullCallbackCrashes) {
+  auto fetcher = CreateFetcher();
+  EXPECT_CHECK_DEATH(fetcher->Start(
+      identity_test_env_.identity_manager(), account_id_,
+      UserCloudManagementStatusFetcher::FetchStatusAndPoliciesCallback()));
 }
 
 TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
@@ -259,6 +346,10 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
 
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(fetcher);
+  // The fetcher is destroyed after completion: no `kCancelled` sample.
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kDmServerError,
+      1);
 }
 
 using UserCloudManagementStatusFetcherParsingTest =
@@ -282,6 +373,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_TRUE(result.status->is_chrome_profile_management_enabled);
   EXPECT_TRUE(result.status->CanBeSubjectedToEnterprisePolicies());
   EXPECT_TRUE(result.policies.Empty());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  // Policies were not requested.
+  histogram_tester_.ExpectTotalCount(kPolicyParseResultHistogram, 0);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -302,6 +398,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_FALSE(result.status->is_chrome_profile_management_enabled);
   EXPECT_FALSE(result.status->CanBeSubjectedToEnterprisePolicies());
   EXPECT_TRUE(result.policies.Empty());
+  histogram_tester_.ExpectUniqueSample(
+      kResultHistogram, UserCloudManagementStatusFetchResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  // Policies were not requested.
+  histogram_tester_.ExpectTotalCount(kPolicyParseResultHistogram, 0);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -353,6 +454,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_EQ(result.policies.managed_accounts_signin_restrictions(),
             std::optional<std::string>("strict"));
 #endif
+  ExpectSuccessWithPolicyParseResult(UserCloudPolicyParseResult::kSuccess);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -399,6 +501,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(UserCloudPolicyParseResult::kSuccess);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -421,6 +524,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_EQ(result.policies, ProfileSeparationPolicies());
+  ExpectSuccessWithPolicyParseResult(UserCloudPolicyParseResult::kSuccess);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -441,6 +545,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kResponseError);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -461,6 +567,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kResponseError);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -484,6 +592,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kMissingPolicyValue);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -503,6 +613,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kMissingPolicyValue);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -523,6 +635,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kPolicyDataParseError);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -546,6 +660,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kCloudPolicySettingsParseError);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -564,6 +680,8 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.policies.Empty());
+  ExpectSuccessWithPolicyParseResult(
+      UserCloudPolicyParseResult::kNoPolicyFetchResponse);
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -573,9 +691,53 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
       policy::features::kMigrateSecureConnectApiToDmServer);
 
   EXPECT_CHECK_DEATH(UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
-      &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+      kTestCaller, &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
       identity_test_env_.identity_manager(), account_id_,
       /*should_fetch_policies=*/false, base::DoNothing()));
+}
+
+TEST_F(UserCloudManagementStatusFetcherParsingTest,
+       FetchStatusAndPoliciesWithNullCallbackCrashes) {
+  EXPECT_CHECK_DEATH(UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
+      kTestCaller, &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+      identity_test_env_.identity_manager(), account_id_,
+      /*should_fetch_policies=*/false,
+      UserCloudManagementStatusFetcher::FetchStatusAndPoliciesCallback()));
+}
+
+// Histograms are recorded per caller.
+TEST_F(UserCloudManagementStatusFetcherParsingTest,
+       RecordsHistogramsForProfileManagementDisclaimer) {
+  enterprise_management::DeviceManagementResponse response;
+  auto* status_response =
+      response.mutable_user_management_status_and_policies_response();
+  status_response->set_is_account_managed(true);
+  status_response->set_is_chrome_profile_management_enabled(true);
+
+  EXPECT_CALL(job_creation_handler_, OnJobCreation(testing::_))
+      .WillOnce(service_.SendJobOKAsync(response));
+
+  FetchTestResult result = FetchSync(
+      /*should_fetch_policies=*/true,
+      UserCloudManagementStatusFetcher::Caller::kProfileManagementDisclaimer);
+
+  ASSERT_TRUE(result.status.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.UserCloudManagementStatusFetcher."
+      "ProfileManagementDisclaimer.Result",
+      UserCloudManagementStatusFetchResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.UserCloudManagementStatusFetcher."
+      "ProfileManagementDisclaimer.Latency",
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.UserCloudManagementStatusFetcher."
+      "ProfileManagementDisclaimer.PolicyParseResult",
+      UserCloudPolicyParseResult::kNoPolicyFetchResponse, 1);
+  // Nothing is recorded for the other caller.
+  histogram_tester_.ExpectTotalCount(kResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kPolicyParseResultHistogram, 0);
 }
 
 }  // namespace

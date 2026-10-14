@@ -333,6 +333,8 @@ void ProfileManagementDisclaimerService::
       return;
     }
     policy::UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
+        policy::UserCloudManagementStatusFetcher::Caller::
+            kProfileManagementDisclaimer,
         g_browser_process->browser_policy_connector()
             ->device_management_service(),
         g_browser_process->system_network_context_manager()

@@ -431,6 +431,22 @@ chromium-metrics-reviews@google.com.
   <variant name="StateRequest" summary="state request"/>
 </variants>
 
+<!-- LINT.IfChange(UserCloudManagementStatusFetcherCaller) -->
+
+<variants name="UserCloudManagementStatusFetcherCaller">
+  <variant name="ProfileManagementDisclaimer"
+      summary="Fetches made by ProfileManagementDisclaimerService. It does
+               not cancel the fetch, so slow fetches are recorded as
+               &quot;Fetcher timeout&quot; (10 seconds by default)."/>
+  <variant name="SigninInterceptor"
+      summary="Fetches made by DiceWebSigninInterceptor. It cancels the fetch
+               after its own 5 second timeout, before the fetcher timeout (10
+               seconds by default), so slow fetches are recorded as
+               &quot;Cancelled&quot;."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/policy/core/browser/cloud/user_cloud_management_status_fetcher.h:UserCloudManagementStatusFetcherCaller) -->
+
 <variants name="WmiSystemSignal">
   <variant name="AntiVirus" summary="AntiVirus info"/>
   <variant name="Hotfixes" summary="Hotfix info"/>
@@ -5268,6 +5284,65 @@ chromium-metrics-reviews@google.com.
         summary="OOBE config created during remote deployment"/>
     <variant name="Unknown" summary="Unrecognized OOBE config source value"/>
   </token>
+</histogram>
+
+<histogram
+    name="Enterprise.UserCloudManagementStatusFetcher.{Caller}.DmServerStatus"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The DM Server status of a failed request made by
+    UserCloudManagementStatusFetcher to get the user cloud management status and
+    profile separation policies of an account. Recorded once per fetch, only
+    when the DM Server request fails (i.e. when
+    Enterprise.UserCloudManagementStatusFetcher.{Caller}.Result is &quot;DM
+    Server error&quot;). {Caller}
+  </summary>
+  <token key="Caller" variants="UserCloudManagementStatusFetcherCaller"/>
+</histogram>
+
+<histogram name="Enterprise.UserCloudManagementStatusFetcher.{Caller}.Latency"
+    units="ms" expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The time between the start of a UserCloudManagementStatusFetcher fetch and
+    its successful completion (access token fetch and DM Server request).
+    Recorded once per successful fetch. Fetches that time out or are cancelled
+    by the caller before completing are not recorded here; see
+    Enterprise.UserCloudManagementStatusFetcher.{Caller}.Result. {Caller}
+  </summary>
+  <token key="Caller" variants="UserCloudManagementStatusFetcherCaller"/>
+</histogram>
+
+<histogram
+    name="Enterprise.UserCloudManagementStatusFetcher.{Caller}.PolicyParseResult"
+    enum="UserCloudPolicyParseResult" expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The result of parsing the profile separation policies returned by the DM
+    Server to UserCloudManagementStatusFetcher. Recorded once per successful
+    fetch for which policies were requested. On any error, the fetcher returns
+    empty policies, so this distinguishes &quot;no policies set&quot; from a
+    parse failure. {Caller}
+  </summary>
+  <token key="Caller" variants="UserCloudManagementStatusFetcherCaller"/>
+</histogram>
+
+<histogram name="Enterprise.UserCloudManagementStatusFetcher.{Caller}.Result"
+    enum="UserCloudManagementStatusFetchResult" expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The result of a UserCloudManagementStatusFetcher fetch of the user cloud
+    management status and profile separation policies of an account from the DM
+    Server, when MigrateSecureConnectApiToDmServer is enabled. Recorded once per
+    started fetch, when it completes or when the fetcher is destroyed before
+    completion (&quot;Cancelled&quot;). {Caller}
+  </summary>
+  <token key="Caller" variants="UserCloudManagementStatusFetcherCaller"/>
 </histogram>
 
 <histogram name="Enterprise.UserInfoFetch.HttpErrorCode"

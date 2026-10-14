@@ -291,6 +291,29 @@ bool IsProfileSeparationEnforcedByPolicy(
          signin_util::IsProfileSeparationEnforcedByPolicies(*policies);
 }
 
+// With `kMigrateSecureConnectApiToDmServer`, returns how
+// `CanApplyEnterprisePoliciesToAccount()` decides whether enterprise policies
+// apply to `account_info` once no more asynchronous information is awaited.
+SigninInterceptEnterprisePolicyDecisionSource GetEnterprisePolicyDecisionSource(
+    const AccountInfo& account_info,
+    const std::optional<policy::UserManagementStatus>& management_status) {
+  if (management_status.has_value()) {
+    return SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus;
+  }
+  switch (account_info.GetAccountCapabilities()
+              .is_subject_to_enterprise_features()) {
+    case signin::Tribool::kFalse:
+      return SigninInterceptEnterprisePolicyDecisionSource::
+          kNotSubjectToEnterpriseFeatures;
+    case signin::Tribool::kTrue:
+      return SigninInterceptEnterprisePolicyDecisionSource::
+          kFailOpenNoManagementStatus;
+    case signin::Tribool::kUnknown:
+      return SigninInterceptEnterprisePolicyDecisionSource::
+          kFailOpenCapabilityUnknown;
+  }
+}
+
 // Returns whether enterprise policies can be applied to `account_info`.
 //
 // When `kMigrateSecureConnectApiToDmServer` is disabled, this relies on the
@@ -306,9 +329,14 @@ bool IsProfileSeparationEnforcedByPolicy(
 // - Otherwise (the account is not subject to enterprise features, the DM
 //   Server fetch failed, timed out or could not be started, or the capability
 //   is still unknown at timeout), fails open and returns `kFalse`.
+// See `GetEnterprisePolicyDecisionSource()`.
 //
-// Never returns `kUnknown` if `can_wait_for_async_info` is false and
-// `IsRequiredExtendedAccountInfoAvailable(account_info)` is true.
+// Returns `kUnknown` only if:
+// - `kMigrateSecureConnectApiToDmServer` is enabled and
+//   `can_wait_for_async_info` is true, or
+// - `kMigrateSecureConnectApiToDmServer` is disabled and the hosted domain is
+//   unknown, which implies that `IsRequiredExtendedAccountInfoAvailable()` is
+//   false.
 signin::Tribool CanApplyEnterprisePoliciesToAccount(
     const AccountInfo& account_info,
     const std::optional<policy::UserManagementStatus>& management_status,
@@ -317,19 +345,24 @@ signin::Tribool CanApplyEnterprisePoliciesToAccount(
     return account_info.CanApplyAccountLevelEnterprisePolicies();
   }
 
-  if (management_status.has_value()) {
-    return signin::TriboolFromBool(
-        management_status->CanBeSubjectedToEnterprisePolicies());
-  }
-
-  if (can_wait_for_async_info &&
+  if (!management_status.has_value() && can_wait_for_async_info &&
       account_info.GetAccountCapabilities()
               .is_subject_to_enterprise_features() != signin::Tribool::kFalse) {
     return signin::Tribool::kUnknown;
   }
 
-  // Fail open.
-  return signin::Tribool::kFalse;
+  switch (GetEnterprisePolicyDecisionSource(account_info, management_status)) {
+    case SigninInterceptEnterprisePolicyDecisionSource::kDmServerStatus:
+      return signin::TriboolFromBool(
+          management_status->CanBeSubjectedToEnterprisePolicies());
+    case SigninInterceptEnterprisePolicyDecisionSource::
+        kNotSubjectToEnterpriseFeatures:
+    case SigninInterceptEnterprisePolicyDecisionSource::
+        kFailOpenNoManagementStatus:
+    case SigninInterceptEnterprisePolicyDecisionSource::
+        kFailOpenCapabilityUnknown:
+      return signin::Tribool::kFalse;
+  }
 }
 
 // Returns true if enterprise separation is required.
@@ -1162,6 +1195,13 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     return;
   }
 
+  if (policy::features::IsMigrateSecureConnectApiToDmServerEnabled()) {
+    base::UmaHistogramEnumeration(
+        "Signin.Intercept.EnterprisePolicyDecisionSource",
+        GetEnterprisePolicyDecisionSource(
+            info, state_->intercepted_account_management_status_));
+  }
+
   std::optional<WebSigninInterceptor::SigninInterceptionType> interception_type;
 
   ProfileAttributesEntry* entry =
@@ -1956,6 +1996,7 @@ void DiceWebSigninInterceptor::FetchAccountLevelSigninRestrictionWithDmServer(
   }
   state_->account_level_management_status_fetcher_ =
       std::make_unique<policy::UserCloudManagementStatusFetcher>(
+          policy::UserCloudManagementStatusFetcher::Caller::kSigninInterceptor,
           g_browser_process->browser_policy_connector()
               ->device_management_service(),
           g_browser_process->system_network_context_manager()

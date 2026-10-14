@@ -3275,6 +3275,38 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Explore"/>
 </enum>
 
+<!-- LINT.IfChange(UserCloudManagementStatusFetchResult) -->
+
+<enum name="UserCloudManagementStatusFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Access token error"/>
+  <int value="2" label="DM Server error"/>
+  <int value="3" label="Missing response">
+    The DM Server request succeeded but the response has no
+    user_management_status_and_policies_response.
+  </int>
+  <int value="4" label="Fetcher timeout"/>
+  <int value="5" label="Cancelled">
+    The fetcher was destroyed before completion (e.g. the caller timed out, was
+    reset or shut down).
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/core/browser/cloud/user_cloud_management_status_fetcher.h:UserCloudManagementStatusFetchResult) -->
+
+<!-- LINT.IfChange(UserCloudPolicyParseResult) -->
+
+<enum name="UserCloudPolicyParseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No policy fetch response"/>
+  <int value="2" label="Policy fetch response error"/>
+  <int value="3" label="PolicyData parse error"/>
+  <int value="4" label="Missing policy value"/>
+  <int value="5" label="CloudPolicySettings parse error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/core/browser/cloud/user_cloud_management_status_fetcher.h:UserCloudPolicyParseResult) -->
+
 <enum name="WatermarkTimestampTimezoneType">
   <int value="0" label="Default">Default local wall-clock time.</int>
   <int value="1" label="UserDevice">
