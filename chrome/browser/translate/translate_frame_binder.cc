@@ -9,7 +9,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #endif
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -25,12 +24,6 @@ content::WebContents* GetTargetContents(
       ReadAnythingControllerGlue::FromWebContents(web_contents);
   if (glue && glue->controller() && glue->controller()->tab()) {
     return glue->controller()->tab()->GetContents();
-  }
-
-  ReadAnythingSidePanelControllerGlue* side_glue =
-      ReadAnythingSidePanelControllerGlue::FromWebContents(web_contents);
-  if (side_glue && side_glue->controller() && side_glue->controller()->tab()) {
-    return side_glue->controller()->tab()->GetContents();
   }
 
   return web_contents;

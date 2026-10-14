@@ -135,7 +135,6 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
@@ -6037,14 +6036,6 @@ content::WebContents* RenderViewContextMenu::GetWebContentsForDataControls()
     const {
   if (auto* glue =
           ReadAnythingControllerGlue::FromWebContents(source_web_contents_)) {
-    if (glue->controller() && glue->controller()->tab()) {
-      if (auto* contents = glue->controller()->tab()->GetContents()) {
-        return contents;
-      }
-    }
-  }
-  if (auto* glue = ReadAnythingSidePanelControllerGlue::FromWebContents(
-          source_web_contents_)) {
     if (glue->controller() && glue->controller()->tab()) {
       if (auto* contents = glue->controller()->tab()->GetContents()) {
         return contents;

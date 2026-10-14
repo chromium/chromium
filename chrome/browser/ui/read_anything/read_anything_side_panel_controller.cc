@@ -30,15 +30,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingSidePanelControllerGlue);
-
-ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
-    content::WebContents* contents,
-    ReadAnythingSidePanelController* controller)
-    : content::WebContentsUserData<ReadAnythingSidePanelControllerGlue>(
-          *contents),
-      controller_(controller) {}
-
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
@@ -61,12 +52,7 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
                           weak_factory_.GetWeakPtr())));
 }
 
-ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
-  if (web_view_ && web_view_->contents_wrapper()) {
-    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
-        ReadAnythingSidePanelControllerGlue::UserDataKey());
-  }
-}
+ReadAnythingSidePanelController::~ReadAnythingSidePanelController() = default;
 
 void ReadAnythingSidePanelController::RemoveReadAnythingControllerGlue() {
   if (web_view_ && web_view_->contents_wrapper()) {
@@ -156,8 +142,6 @@ void ReadAnythingSidePanelController::ReturnWebUIToController() {
   if (!web_view_ || !web_view_->contents_wrapper()) {
     return;
   }
-  web_view_->contents_wrapper()->web_contents()->RemoveUserData(
-      ReadAnythingSidePanelControllerGlue::UserDataKey());
   auto* controller = ReadAnythingController::From(tab_);
   CHECK(controller);
   controller->TransferWebUiOwnership(
@@ -168,12 +152,6 @@ void ReadAnythingSidePanelController::ReturnWebUIToController() {
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView(
     SidePanelEntryScope& scope) {
-  // If there was an old WebView, clear the reference.
-  if (web_view_ && web_view_->contents_wrapper()) {
-    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
-        ReadAnythingSidePanelControllerGlue::UserDataKey());
-  }
-
   std::unique_ptr<ReadAnythingSidePanelWebView> web_view =
       std::make_unique<ReadAnythingSidePanelWebView>(
           scope,
@@ -181,8 +159,6 @@ ReadAnythingSidePanelController::CreateContainerView(
               ->GetOrCreateWebUIWrapper(
                   ReadAnythingController::PresentationState::kInSidePanel)
               .release());
-  ReadAnythingSidePanelControllerGlue::CreateForWebContents(
-      web_view->contents_wrapper()->web_contents(), this);
   web_view_ = web_view->GetWeakPtr();
   return std::move(web_view);
 }

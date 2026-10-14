@@ -13,48 +13,17 @@
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace views {
 class View;
 }  // namespace views
 
-class ReadAnythingSidePanelController;
 class ReadAnythingSidePanelWebView;
-
-// Conceptually, if the side panel is open, then ReadAnythingSidePanelController
-// owns the WebContents (even though this is not the case in practice). The
-// WebUIController created for the WebContents needs to be able to reference the
-// ReadAnythingSidePanelController. This class allows this to happen.
-class ReadAnythingSidePanelControllerGlue
-    : public content::WebContentsUserData<ReadAnythingSidePanelControllerGlue> {
- public:
-  ~ReadAnythingSidePanelControllerGlue() override = default;
-
-  ReadAnythingSidePanelController* controller() { return controller_; }
-
- private:
-  friend class content::WebContentsUserData<
-      ReadAnythingSidePanelControllerGlue>;
-
-  ReadAnythingSidePanelControllerGlue(
-      content::WebContents* contents,
-      ReadAnythingSidePanelController* controller);
-
-  // Conceptually owns this class.
-  const raw_ptr<ReadAnythingSidePanelController> controller_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
 
 // A per-tab class that facilitates the showing of the Read Anything side panel.
 class ReadAnythingSidePanelController : public SidePanelEntryObserver {
@@ -75,8 +44,6 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
   void OnEntryHidden(SidePanelEntry* entry) override;
   void OnEntryWillHide(SidePanelEntry* entry,
                        SidePanelEntryHideReason reason) override;
-
-  tabs::TabInterface* tab() { return tab_.get(); }
 
  private:
   void ReturnWebUIToController();

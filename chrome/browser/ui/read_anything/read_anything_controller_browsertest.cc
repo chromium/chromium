@@ -3297,8 +3297,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_FALSE(wrapper->GetHost());
 
   // Return ownership to the controller and transition back to immersive mode.
-  wrapper->web_contents()->RemoveUserData(
-      ReadAnythingSidePanelControllerGlue::UserDataKey());
   controller->TransferWebUiOwnership(
       ReadAnythingContentsWrapper(std::move(wrapper)),
       ReadAnythingController::PresentationState::kInSidePanel);
