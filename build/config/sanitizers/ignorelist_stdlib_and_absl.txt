@@ -1,6 +1,9 @@
 # Skip coverage instrumentation of standard library code for performance reasons.
-fun:*std::__Cr*
-fun:*St4__Cr*
-# Also skip absl containers.
-fun:*absl::container_internal*
-fun:*4absl18container_internal*
+# Match Itanium mangled names of functions defined in std:: (including
+# std::__Cr::), without matching functions that merely take std:: parameters.
+fun:_ZSt*
+fun:_Z{,Z}N{,K,R,KR,O,KO,V,VK}St*
+fun:_ZT{h*,v*,c*}_N{,K}St*
+# Also skip absl functions and containers.
+fun:_Z{,Z}N{,K,R,KR,O,KO,V,VK}4absl*
+fun:_ZT{h*,v*,c*}_N{,K}4absl*
