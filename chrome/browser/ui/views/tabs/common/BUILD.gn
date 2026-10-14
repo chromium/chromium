@@ -107,7 +107,6 @@ source_set("impl") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/startup",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",
@@ -172,7 +171,6 @@ source_set("impl") {
     ":common",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/views/tabs/dragging",
-    "//components/sessions",
   ]
 }
 

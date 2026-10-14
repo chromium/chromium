@@ -77,7 +77,6 @@ class TabGroupView : public TabCollectionZOrderManager,
   std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
       const override;
   void OnAnimationEnded() override;
-  bool IsAnimationAllowed() override;
 
   bool IsCollapsed() const;
 

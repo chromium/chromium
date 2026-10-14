@@ -53,7 +53,6 @@ void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
   add_node_view_to_parent_.Run(Initialize());
-  GetController()->SetTabStripInitialized();
 }
 
 void RootTabCollectionNode::Reset() {

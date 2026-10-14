@@ -11,14 +11,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -852,19 +850,4 @@ void TabStripCollectionController::OnGlassFrameEligibilityChanged(
 
 int TabStripCollectionController::GetStrokeThickness() const {
   return browser_view_ && browser_view_->ShouldDrawTabStrokes() ? 1 : 0;
-}
-
-bool TabStripCollectionController::IsAnimationAllowed() const {
-  if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
-    return false;
-  }
-  Profile* profile = GetBrowserView()->browser()->GetProfile();
-  CHECK(profile);
-  if (SessionRestore::IsRestoring(profile)) {
-    return false;
-  }
-  if (!has_tab_strip_initialized_) {
-    return false;
-  }
-  return true;
 }

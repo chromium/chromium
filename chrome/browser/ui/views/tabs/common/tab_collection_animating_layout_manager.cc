@@ -71,10 +71,6 @@ std::optional<views::SizeBound> TabCollectionAnimatingLayoutManager::Delegate::
 
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
-bool TabCollectionAnimatingLayoutManager::Delegate::IsAnimationAllowed() {
-  return true;
-}
-
 TabCollectionAnimatingLayoutManager::AnimationCoordinator::AnimationCoordinator(
     views::View& view)
     : views::AnimationDelegateViews(&view) {
@@ -521,7 +517,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
       IsVerticalOrWrappingVertically()
           ? current_layout_.host_size.width() != new_target.host_size.width()
           : current_layout_.host_size.height() != new_target.host_size.height();
-  if (!delegate_->IsAnimationAllowed() || cross_axis_changed) {
+  if (!current_layout_.host_size.IsEmpty() && cross_axis_changed) {
     current_layout_ = new_target;
     SetStartingLayout(new_target);
     SetTargetLayout(new_target);

@@ -244,13 +244,6 @@ UnpinnedTabContainerView::GetAvailableMainAxisSpaceOverride() const {
   return std::nullopt;
 }
 
-bool UnpinnedTabContainerView::IsAnimationAllowed() {
-  if (!collection_node_) {
-    return true;
-  }
-  return collection_node_->GetController()->IsAnimationAllowed();
-}
-
 gfx::Size UnpinnedTabContainerView::GetTargetPreferredSize() const {
   return layout_manager_->GetTargetPreferredSize();
 }
