@@ -13,6 +13,8 @@ chromium::import! {
         as self_contained_target;
     "//build/rust/tests/test_rust_api_from_cpp:target_depending_on_another_rs_api"
         as target_depending_on_another;
+    "//build/rust/tests/test_rust_api_from_cpp:test_time_delta_rs_api"
+        as test_time_delta;
 }
 
 use rust_gtest_interop::prelude::*;
@@ -65,4 +67,17 @@ fn test_explicit_lifetimes() {
     let other = 456;
     let larger = x.GetLargerValue(&other);
     assert!(std::ptr::eq(::cref::CRef::as_ptr(larger), &other));
+}
+
+#[gtest(TestRustApiFromCpp, ExtraRustSources)]
+fn test_extra_rust_sources() {
+    use ::test_time_delta::test_base::TestTimeDelta;
+    use std::time::Duration;
+
+    // `TryFrom` impl comes from `extra_rust_sources`.
+    let delta = TestTimeDelta::FromMicroseconds(1_234_567);
+    assert_eq!(Duration::try_from(delta), Ok(Duration::from_micros(1_234_567)));
+
+    let negative_delta = TestTimeDelta::FromMicroseconds(-1);
+    assert!(Duration::try_from(negative_delta).is_err());
 }

@@ -50,7 +50,7 @@ _globally_enabled_crubit_features = [
 #     C++ thunks.
 #
 #   public_headers:
-#     The .h files to generate bindings for.
+#     A list of .h files to generate bindings for.
 #
 #     Implementation note: This doesn't just take *all* the headers of the
 #     `bindings_target`, because typically only a *subset* of headers provides
@@ -63,6 +63,19 @@ _globally_enabled_crubit_features = [
 #     examples, but basically, if public APIs from `public_headers` depend on
 #     types from other targets, then `deps` should list the `rust_api_from_cpp`
 #     targets that generate bindings for types from these other targets.
+#
+#   extra_rust_sources: (optional)
+#     A list of hand-written `.rs` files to merge into the generated bindings
+#     crate.  This can be used to implement traits for the types from the
+#     generated bindings (e.g. `impl TryFrom<CppType> for std::time::Duration`).
+#     Such trait impls can't be defined in other crates because of Rust's
+#     orphan rule (see
+#     https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule).
+#
+#     Each file becomes a private module at the root of the crate, and all its
+#     items are re-exported (via `pub use`) from the root of the crate.
+#
+#     See `//docs/rust/crubit/rust_api_from_cpp.md` for more info and examples.
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
   assert(enable_rust)
@@ -110,6 +123,12 @@ template("rust_api_from_cpp") {
   _deps = []
   if (defined(invoker.deps)) {
     _deps = invoker.deps
+  }
+
+  # Optional parameter: extra_rust_sources.
+  _extra_rust_sources = []
+  if (defined(invoker.extra_rust_sources)) {
+    _extra_rust_sources = invoker.extra_rust_sources
   }
 
   # Various names and paths that are shared across multiple targets defined
@@ -222,7 +241,7 @@ template("rust_api_from_cpp") {
     # to Crubit (via `c` in the metadata above).
     crate_name = _lib_target_crate_name
     crate_root = _rs_out_path
-    sources = [ crate_root ]
+    sources = [ crate_root ] + _extra_rust_sources
 
     # Crubit-generated crates are Chromium-agnostic, so they shouldn't use
     # Chromium-specific dependencies nor lints.
@@ -308,6 +327,24 @@ template("rust_api_from_cpp") {
         "--rustfmt_config_path=" +
             rebase_path(rustfmt_config_path, root_build_dir),
       ]
+    }
+
+    if (_extra_rust_sources != []) {
+      # Crubit emits each `--extra_rs_srcs` path into a `#[path = ...]`
+      # attribute at the root of the generated `.rs` file. Such paths are
+      # resolved [1] by `rustc` relative to the directory of the generated `.rs`
+      # file, and therefore the paths are rebased onto `target_gen_dir`.
+      #
+      # This strategy may need some tweaks if we ever need to expose Crubit
+      # support for placing the extra sources into a nested module (e.g. via
+      # `--extra_rs_srcs=path=foo::bar`).  This wouldn't work when passing the
+      # current relative paths below, because `rustc` would then resolve the
+      # path relative to a `foo/bar/` subdirectory (which doesn't exist).
+      #
+      # [1] https://doc.rust-lang.org/reference/items/modules.html#the-path-attribute:~:text=the%20file%20path%20is%20relative%20to%20the%20directory%20the%20source%20file%20is%20located
+      args +=
+          [ "--extra_rs_srcs=" +
+            string_join(",", rebase_path(_extra_rust_sources, target_gen_dir)) ]
     }
 
     # TODO(https://crbug.com/40226863): Use

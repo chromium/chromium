@@ -197,6 +197,85 @@ for more details and examples.
 See also https://crbug.com/572054453 and https://crbug.com/572056816 which track
 enabling additional lifetime-related warnings in Chromium's C++ targets.
 
+## Adding hand-written Rust code to the bindings
+
+The `extra_rust_sources` attribute of `rust_api_from_cpp` merges hand-written
+`.rs` files into the generated bindings crate.  This is mostly useful for
+implementing traits (e.g. `TryFrom`, `Display`, `Iterator`) for the types from
+the generated bindings.  Rust's
+[orphan rule](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule)
+prevents such trait impls in other crates (see also the "Troubleshooting"
+section below).
+
+Example:
+
+```cpp
+// build/rust/tests/test_rust_api_from_cpp/test_time_delta.h:
+
+namespace test_base {
+
+class TestTimeDelta {
+ public:
+  static constexpr TestTimeDelta FromMicroseconds(int64_t us);
+  constexpr int64_t InMicroseconds() const;
+  ...
+};
+
+}  // namespace test_base
+```
+
+```rust
+// build/rust/tests/test_rust_api_from_cpp/test_time_delta.rs:
+
+use crate::test_base::TestTimeDelta;
+use core::num::TryFromIntError;
+use core::time::Duration;
+
+impl TryFrom<TestTimeDelta> for Duration {
+    type Error = TryFromIntError;
+
+    fn try_from(delta: TestTimeDelta) -> Result<Self, Self::Error> {
+        let us = u64::try_from(delta.InMicroseconds())?;
+        Ok(Duration::from_micros(us))
+    }
+}
+```
+
+```gn
+# build/rust/tests/test_rust_api_from_cpp/BUILD.gn
+
+rust_api_from_cpp("test_time_delta_rs_api") {
+  bindings_target = ":test_time_delta"
+  public_headers = [ "test_time_delta.h" ]
+  extra_rust_sources = [ "test_time_delta.rs" ]
+}
+```
+
+```rust
+// build/rust/tests/test_rust_api_from_cpp/tests.rs:
+
+chromium::import! {
+    "//build/rust/tests/test_rust_api_from_cpp:test_time_delta_rs_api"
+        as test_time_delta;
+}
+
+fn foo() {
+    let delta = ::test_time_delta::test_base::TestTimeDelta::FromMicroseconds(123);
+    let duration = std::time::Duration::try_from(delta).unwrap();
+}
+```
+
+Notes:
+
+* Each file from `extra_rust_sources` becomes a private module at the root of
+  the crate.  All items of this module are re-exported (via `pub use`) from the
+  root of the crate.
+* Prefer to keep `extra_rust_sources` limited to Rust-specific glue (e.g. trait
+  impls or conversions to Rust standard library types).  If an API would also be
+  useful to C++ callers, then add it to the C++ header instead - Crubit will
+  generate Rust bindings for it, and both languages will share one
+  implementation.
+
 ## Troubleshooting
 
 The sections below should help diagnose and fix some issues you may encounter.
@@ -224,6 +303,29 @@ $ cat out/rel/gen/build/rust/tests/test_rust_api_from_cpp/target_depending_on_an
 ```
 
 Then you want to read the "Specifying binding dependencies" section above.
+
+### Can't implement a trait for a type from the generated bindings
+
+Rust's
+[orphan rule](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule)
+prevents implementing a foreign trait for foreign types.  For example, if
+`tests.rs` tries to implement `TryFrom` for a type from `rust_api_from_cpp`
+bindings, then the build fails with an error like:
+
+```
+error[E0117]: only traits defined in the current crate can be implemented for types defined outside of the crate
+  --> ../../build/rust/tests/test_rust_api_from_cpp/tests.rs:47:1
+   |
+47 | impl TryFrom<::test_time_delta::test_base::TestTimeDelta> for std::time::Duration {
+   | ^^^^^----------------------------------------------------^^^^^-------------------
+   |      |                                                        |
+   |      |                                                        `Duration` is not defined in the current crate
+   |      this is not defined in the current crate because this is a foreign trait
+```
+
+To fix this, move the trait impl into the generated bindings crate by using
+`extra_rust_sources` (see the "Adding hand-written Rust code to the bindings"
+section above).
 
 ### Different bindings on different target platforms
 
