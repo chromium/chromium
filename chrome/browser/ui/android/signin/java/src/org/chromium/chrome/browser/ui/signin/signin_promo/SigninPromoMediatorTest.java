@@ -140,7 +140,7 @@ public class SigninPromoMediatorTest {
                         TestAccounts.ACCOUNT2.getGaiaId(),
                         new int[0],
                         DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
-        when(mAccountPreviewDataService.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataService.getPreferredAccountForSignin()).thenReturn(preference);
         createSigninPromoMediator(mPromoDelegate);
 
         assertEquals(
@@ -160,7 +160,7 @@ public class SigninPromoMediatorTest {
         assertEquals(
                 TestAccounts.ACCOUNT1.getEmail(),
                 mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
-        verify(mAccountPreviewDataService, never()).getPreferredAccountForPromo();
+        verify(mAccountPreviewDataService, never()).getPreferredAccountForSignin();
     }
 
     @Test
@@ -177,7 +177,7 @@ public class SigninPromoMediatorTest {
         assertEquals(
                 TestAccounts.ACCOUNT1.getEmail(),
                 mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
-        verify(mAccountPreviewDataService, never()).getPreferredAccountForPromo();
+        verify(mAccountPreviewDataService, never()).getPreferredAccountForSignin();
     }
 
     @Test
@@ -191,7 +191,7 @@ public class SigninPromoMediatorTest {
                         new GaiaId("unknown-gaia-id"),
                         new int[0],
                         DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
-        when(mAccountPreviewDataService.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataService.getPreferredAccountForSignin()).thenReturn(preference);
         createSigninPromoMediator(mPromoDelegate);
 
         assertEquals(

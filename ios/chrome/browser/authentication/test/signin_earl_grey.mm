@@ -343,8 +343,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
-- (void)setPreferredAccountForPromo:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface setPreferredAccountForPromo:fakeIdentity];
+- (void)setPreferredAccountForSignin:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setPreferredAccountForSignin:fakeIdentity];
 }
 
 // Confirms "Switch and Delete" when the alert dialog that data will be cleared

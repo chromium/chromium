@@ -19,11 +19,12 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
-// Dictionary pref that contains the AccountPreviewPreference result.
+// Dictionary pref that contains the `AccountPreviewPreference` result when
+// offering signed-out users to sign in.
 const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 
-// Dictionary pref that contains the AccountPreviewPreference result for account
-// switching.
+// Dictionary pref that contains the `AccountPreviewPreference` result when
+// offering signed-in users to switch accounts.
 const char kAccountPreviewSwitchingPreference[] =
     "signin.account_preview_switching_preference";
 

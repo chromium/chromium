@@ -77,7 +77,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   ~AccountPreviewDataServiceImpl() override;
 
   // AccountPreviewDataService implementation:
-  std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
+  std::optional<AccountPreviewPreference> GetPreferredAccountForSignin()
       const override;
   std::optional<AccountPreviewPreference> GetPreferredAccountForSwitching()
       const override;

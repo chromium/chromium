@@ -428,7 +428,7 @@ class BookmarkMessageHandlerAccountAwarePromoTest
           {.data_type = syncer::PASSWORDS,
            .quartile = signin::SyncDataQuartile::kAboveQ3}};
     }
-    preview_service->SetPreferredAccountForPromo(pref);
+    preview_service->SetPreferredAccountForSignin(pref);
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     // Trigger `prefs::kAccountPreviewPreference` observers to mirror
     // `AccountPreviewDataServiceImpl`.

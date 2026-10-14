@@ -310,19 +310,19 @@
       profileSeparationDataMigrationSettings);
 }
 
-+ (void)setPreferredAccountForPromo:(FakeSystemIdentity*)fakeIdentity {
++ (void)setPreferredAccountForSignin:(FakeSystemIdentity*)fakeIdentity {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   signin::TestAccountPreviewDataService* accountPreviewDataService =
       static_cast<signin::TestAccountPreviewDataService*>(
           AccountPreviewDataServiceFactory::GetForProfile(profile));
   CHECK(accountPreviewDataService);
   if (!fakeIdentity) {
-    accountPreviewDataService->SetPreferredAccountForPromo(std::nullopt);
+    accountPreviewDataService->SetPreferredAccountForSignin(std::nullopt);
     return;
   }
   signin::AccountPreviewDataService::AccountPreviewPreference preference;
   preference.gaia_id = fakeIdentity.gaiaId;
-  accountPreviewDataService->SetPreferredAccountForPromo(preference);
+  accountPreviewDataService->SetPreferredAccountForSignin(preference);
 }
 
 @end

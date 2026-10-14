@@ -299,14 +299,14 @@ bool IsCandidatePreferredOverCurrentBest(
   return false;
 }
 
-struct PromoCandidateSelection {
+struct SigninCandidateSelection {
   raw_ptr<const AccountPreviewHeuristicContext> candidate = nullptr;
   AccountPreviewSelectionReason selection_reason =
       AccountPreviewSelectionReason::kNoSelection;
   base::flat_map<GaiaId, int> account_scores;
 };
 
-PromoCandidateSelection SelectPreferredCandidateForPromo(
+SigninCandidateSelection SelectPreferredCandidateForSignin(
     base::span<const AccountPreviewHeuristicContext> accounts) {
   if (accounts.empty() || !accounts[0].preview_data) {
     return {};
@@ -501,10 +501,10 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
   return preference;
 }
 
-AccountPreviewSelectionResult ComputePreferredAccountForPromo(
+AccountPreviewSelectionResult ComputePreferredAccountForSignin(
     base::span<const AccountPreviewHeuristicContext> accounts) {
-  PromoCandidateSelection selection =
-      SelectPreferredCandidateForPromo(accounts);
+  SigninCandidateSelection selection =
+      SelectPreferredCandidateForSignin(accounts);
   if (!selection.candidate) {
     return {.selection_reason = selection.selection_reason};
   }

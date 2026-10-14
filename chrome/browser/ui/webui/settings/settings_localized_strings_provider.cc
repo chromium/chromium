@@ -2445,7 +2445,7 @@ std::string GetPeopleSignInPromptSecondaryWithAccount(Profile* profile) {
               /*restrict_to_accounts_eligible_for_signin=*/true);
       std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
           preferred_account =
-              account_preview_data_service->GetPreferredAccountForPromo();
+              account_preview_data_service->GetPreferredAccountForSignin();
       if (!ordered_accounts.empty() && preferred_account.has_value() &&
           preferred_account->gaia_id == ordered_accounts[0].GetGaiaId()) {
         if (std::optional<std::string> custom_subtitle =

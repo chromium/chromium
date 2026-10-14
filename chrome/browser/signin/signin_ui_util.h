@@ -118,7 +118,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 // in the list. If `restrict_to_accounts_eligible_for_signin` is true, removes
 // accounts that are not suitable for signin promos. If
 // `account_preview_data_service` is provided and has a preferred account for
-// promo, that account is placed at the front of the list when the user is not
+// signin, that account is placed at the front of the list when the user is not
 // signed in.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
@@ -127,7 +127,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns single account to use in promos. If `account_preview_data_service` is
-// non-null and has a preferred account for promo, that account is returned.
+// non-null and has a preferred account for signin, that account is returned.
 // Otherwise, returns the default account for promo.
 AccountInfo GetSingleAccountForPromos(
     const signin::IdentityManager* identity_manager,

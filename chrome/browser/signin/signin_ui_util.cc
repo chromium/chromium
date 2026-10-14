@@ -418,7 +418,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
         preferred_preference =
-            account_preview_data_service->GetPreferredAccountForPromo();
+            account_preview_data_service->GetPreferredAccountForSignin();
     if (preferred_preference.has_value()) {
       auto it = std::ranges::find(accounts, preferred_preference->gaia_id,
                                   &AccountInfo::GetGaiaId);

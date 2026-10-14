@@ -24,7 +24,7 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   ~TestAccountPreviewDataService() override;
 
   // AccountPreviewDataService:
-  std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
+  std::optional<AccountPreviewPreference> GetPreferredAccountForSignin()
       const override;
   std::optional<AccountPreviewPreference> GetPreferredAccountForSwitching()
       const override;
@@ -46,9 +46,9 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
     preference_ = std::move(preference);
   }
 
-  void SetPreferredAccountForPromo(
+  void SetPreferredAccountForSignin(
       std::optional<AccountPreviewPreference> preference) {
-    preferred_account_for_promo_ = std::move(preference);
+    preferred_account_for_signin_ = std::move(preference);
   }
 
   void SetPreferredAccountForSwitching(
@@ -66,7 +66,7 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
  private:
   bool defer_callbacks_ = false;
   std::optional<AccountPreviewPreference> preference_;
-  std::optional<AccountPreviewPreference> preferred_account_for_promo_;
+  std::optional<AccountPreviewPreference> preferred_account_for_signin_;
   std::optional<AccountPreviewPreference> preferred_account_for_switching_;
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
       pending_callback_;

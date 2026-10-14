@@ -209,11 +209,11 @@ TEST_F(AccountPreviewHeuristicTest,
 }
 
 // =============================================================================
-// Multi-Account Heuristic Selection Tests (ComputePreferredAccountForPromo)
+// Multi-Account Heuristic Selection Tests (ComputePreferredAccountForSignin)
 // =============================================================================
 
 TEST_F(AccountPreviewHeuristicTest, EmptyListReturnsNullopt) {
-  EXPECT_EQ(ComputePreferredAccountForPromo({}).preference, std::nullopt);
+  EXPECT_EQ(ComputePreferredAccountForSignin({}).preference, std::nullopt);
 }
 
 TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
@@ -227,7 +227,7 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
       .preview_data = &data,
   };
 
-  auto pref = ComputePreferredAccountForPromo({account}).preference;
+  auto pref = ComputePreferredAccountForSignin({account}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("user1"));
   EXPECT_THAT(pref->preferred_data_types,
@@ -269,7 +269,7 @@ TEST_F(AccountPreviewHeuristicTest,
 }
 
 TEST_F(AccountPreviewHeuristicTest,
-       ComputePreferredAccountForPromoScoreIgnoredDataTypesNotUsedForScoring) {
+       ComputePreferredAccountForSigninScoreIgnoredDataTypesNotUsedForScoring) {
   // Account A only has reading list and extensions data.
   AccountPreviewData data_a = CreatePreviewData({
       .reading_list = 100,
@@ -293,7 +293,7 @@ TEST_F(AccountPreviewHeuristicTest,
 
   // Account B should win because new data types do not contribute to sync data
   // score. Account A score is 0.
-  auto result = ComputePreferredAccountForPromo({account_a, account_b});
+  auto result = ComputePreferredAccountForSignin({account_a, account_b});
   EXPECT_EQ(result.selected_account, GaiaId("user_b"));
   EXPECT_EQ(result.selection_reason,
             AccountPreviewSelectionReason::kSyncDataScore);
@@ -338,7 +338,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       .preview_data = &managed_data,
       .is_managed = true,
   };
-  auto pref = ComputePreferredAccountForPromo({default_acc, managed_candidate})
+  auto pref = ComputePreferredAccountForSignin({default_acc, managed_candidate})
                   .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
@@ -351,7 +351,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       .preview_data = &child_data,
       .is_child = true,
   };
-  pref = ComputePreferredAccountForPromo({default_acc, child_candidate})
+  pref = ComputePreferredAccountForSignin({default_acc, child_candidate})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
@@ -370,7 +370,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       .gaia_id = GaiaId("consumer"),
       .preview_data = &consumer_data,
   };
-  pref = ComputePreferredAccountForPromo({managed_default, consumer_candidate})
+  pref = ComputePreferredAccountForSignin({managed_default, consumer_candidate})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("managed_default"));
@@ -381,7 +381,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       .preview_data = &child_data,
       .is_child = true,
   };
-  pref = ComputePreferredAccountForPromo({child_default, consumer_candidate})
+  pref = ComputePreferredAccountForSignin({child_default, consumer_candidate})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("child_default"));
@@ -408,7 +408,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
   // AGA default account is Priority 2, so it is selected over secondary
   // candidates.
   auto pref =
-      ComputePreferredAccountForPromo({default_aga, candidate_cross_more})
+      ComputePreferredAccountForSignin({default_aga, candidate_cross_more})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_aga"));
@@ -419,7 +419,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
       .gaia_id = GaiaId("candidate_single_more"),
       .preview_data = &candidate_single_more_data,
   };
-  pref = ComputePreferredAccountForPromo({default_aga, candidate_single_more})
+  pref = ComputePreferredAccountForSignin({default_aga, candidate_single_more})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_aga"));
@@ -433,7 +433,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
       .gaia_id = GaiaId("candidate_cross_equal"),
       .preview_data = &candidate_cross_equal_data,
   };
-  pref = ComputePreferredAccountForPromo({default_aga, candidate_cross_equal})
+  pref = ComputePreferredAccountForSignin({default_aga, candidate_cross_equal})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_aga"));
@@ -458,7 +458,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
   };
   // Equal sync data -> Candidate wins.
   auto pref =
-      ComputePreferredAccountForPromo({default_single, candidate_cross_equal})
+      ComputePreferredAccountForSignin({default_single, candidate_cross_equal})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_equal"));
@@ -473,8 +473,9 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
       .preview_data = &candidate_cross_less_data,
   };
   // Less sync data -> Default remains preferred.
-  pref = ComputePreferredAccountForPromo({default_single, candidate_cross_less})
-             .preference;
+  pref =
+      ComputePreferredAccountForSignin({default_single, candidate_cross_less})
+          .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
 }
@@ -501,7 +502,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
   };
   // Equal sync data -> Default remains preferred (requires strictly more).
   auto pref =
-      ComputePreferredAccountForPromo({default_cross, candidate_cross_equal})
+      ComputePreferredAccountForSignin({default_cross, candidate_cross_equal})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
@@ -516,7 +517,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
       .preview_data = &candidate_cross_more_data,
   };
   // Strictly more sync data -> Candidate wins.
-  pref = ComputePreferredAccountForPromo({default_cross, candidate_cross_more})
+  pref = ComputePreferredAccountForSignin({default_cross, candidate_cross_more})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_more"));
@@ -538,7 +539,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
   };
   // Equal sync data -> Default remains preferred.
   auto pref =
-      ComputePreferredAccountForPromo({default_single, candidate_single_equal})
+      ComputePreferredAccountForSignin({default_single, candidate_single_equal})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
@@ -551,7 +552,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
   };
   // Strictly more sync data -> Candidate wins.
   pref =
-      ComputePreferredAccountForPromo({default_single, candidate_single_more})
+      ComputePreferredAccountForSignin({default_single, candidate_single_more})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_more"));
@@ -577,7 +578,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   };
   // AGA candidate (Priority 2) wins over non-managed default account.
   auto pref =
-      ComputePreferredAccountForPromo({default_cross_more, candidate_aga})
+      ComputePreferredAccountForSignin({default_cross_more, candidate_aga})
           .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_aga"));
@@ -588,7 +589,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       .gaia_id = GaiaId("default_single"),
       .preview_data = &default_single_more_data,
   };
-  pref = ComputePreferredAccountForPromo({default_single_more, candidate_aga})
+  pref = ComputePreferredAccountForSignin({default_single_more, candidate_aga})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_aga"));
@@ -602,7 +603,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       .gaia_id = GaiaId("default_cross_equal"),
       .preview_data = &default_cross_equal_data,
   };
-  pref = ComputePreferredAccountForPromo({default_cross_equal, candidate_aga})
+  pref = ComputePreferredAccountForSignin({default_cross_equal, candidate_aga})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_aga"));
@@ -615,7 +616,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       .preview_data = &managed_default_data,
       .is_managed = true,
   };
-  pref = ComputePreferredAccountForPromo({managed_default, candidate_aga})
+  pref = ComputePreferredAccountForSignin({managed_default, candidate_aga})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("managed_default"));
@@ -628,7 +629,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       .is_managed = true,
       .is_external_app_primary = true,
   };
-  pref = ComputePreferredAccountForPromo({default_cross_more, managed_aga})
+  pref = ComputePreferredAccountForSignin({default_cross_more, managed_aga})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_cross"));
@@ -641,7 +642,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       .is_child = true,
       .is_external_app_primary = true,
   };
-  pref = ComputePreferredAccountForPromo({default_cross_more, child_aga})
+  pref = ComputePreferredAccountForSignin({default_cross_more, child_aga})
              .preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_cross"));
@@ -672,7 +673,7 @@ TEST_F(AccountPreviewHeuristicTest,
   };
 
   // acc3 beats acc1 and acc2.
-  auto pref = ComputePreferredAccountForPromo({acc1, acc2, acc3}).preference;
+  auto pref = ComputePreferredAccountForSignin({acc1, acc2, acc3}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc3"));
   EXPECT_EQ(
@@ -682,7 +683,7 @@ TEST_F(AccountPreviewHeuristicTest,
               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET}));
 
   // Tie between acc1 and acc2 preserves the earlier account (acc1).
-  pref = ComputePreferredAccountForPromo({acc1, acc2}).preference;
+  pref = ComputePreferredAccountForSignin({acc1, acc2}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc1"));
 }
@@ -711,11 +712,11 @@ TEST_F(AccountPreviewHeuristicTest,
   };
 
   // acc_1q4 is preferred as it has higher data type score.
-  auto pref = ComputePreferredAccountForPromo({acc_1q4, acc_2q3}).preference;
+  auto pref = ComputePreferredAccountForSignin({acc_1q4, acc_2q3}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
 
-  pref = ComputePreferredAccountForPromo({acc_2q3, acc_1q4}).preference;
+  pref = ComputePreferredAccountForSignin({acc_2q3, acc_1q4}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
 }
@@ -747,11 +748,11 @@ TEST_F(AccountPreviewHeuristicTest,
 
   // acc_2q3_1q1 is preferred as it has higher data type score.
   auto pref =
-      ComputePreferredAccountForPromo({acc_1q4, acc_2q3_1q1}).preference;
+      ComputePreferredAccountForSignin({acc_1q4, acc_2q3_1q1}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc_2q3_1q1"));
 
-  pref = ComputePreferredAccountForPromo({acc_2q3_1q1, acc_1q4}).preference;
+  pref = ComputePreferredAccountForSignin({acc_2q3_1q1, acc_1q4}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc_2q3_1q1"));
 }
@@ -786,16 +787,16 @@ TEST_F(AccountPreviewHeuristicTest,
 
   // acc_1q4 is preferred as it has higher sync data score.
   auto pref =
-      ComputePreferredAccountForPromo({acc_1q4, acc_low_quartiles}).preference;
+      ComputePreferredAccountForSignin({acc_1q4, acc_low_quartiles}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
 
   pref =
-      ComputePreferredAccountForPromo({acc_low_quartiles, acc_1q4}).preference;
+      ComputePreferredAccountForSignin({acc_low_quartiles, acc_1q4}).preference;
   ASSERT_TRUE(pref.has_value());
 }
 
-TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
+TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForSigninResult) {
   AccountPreviewData data0 = CreatePreviewData({
       .passwords = switches::kPasswordsQ1Threshold.Get(),
   });
@@ -814,7 +815,7 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
 
   // Empty accounts
   AccountPreviewSelectionResult empty_result =
-      ComputePreferredAccountForPromo({});
+      ComputePreferredAccountForSignin({});
   EXPECT_EQ(empty_result.selected_account, std::nullopt);
   EXPECT_EQ(empty_result.selection_reason,
             AccountPreviewSelectionReason::kNoSelection);
@@ -825,7 +826,7 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
   acc0.is_managed = true;
   std::vector<AccountPreviewHeuristicContext> accounts1 = {acc0, acc1};
   AccountPreviewSelectionResult p1_result =
-      ComputePreferredAccountForPromo(accounts1);
+      ComputePreferredAccountForSignin(accounts1);
   EXPECT_EQ(p1_result.selected_account, GaiaId("acc0"));
   EXPECT_EQ(p1_result.selection_reason,
             AccountPreviewSelectionReason::kNonRegularDefault);
@@ -838,7 +839,7 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
   acc1.is_external_app_primary = true;
   std::vector<AccountPreviewHeuristicContext> accounts2 = {acc0, acc1};
   AccountPreviewSelectionResult p2_result =
-      ComputePreferredAccountForPromo(accounts2);
+      ComputePreferredAccountForSignin(accounts2);
   EXPECT_EQ(p2_result.selected_account, GaiaId("acc1"));
   EXPECT_EQ(p2_result.selection_reason,
             AccountPreviewSelectionReason::kExternalAppPrimary);
@@ -859,7 +860,7 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
   };
   std::vector<AccountPreviewHeuristicContext> accounts3 = {acc0, acc1, acc2};
   AccountPreviewSelectionResult p3_result =
-      ComputePreferredAccountForPromo(accounts3);
+      ComputePreferredAccountForSignin(accounts3);
   EXPECT_EQ(p3_result.selected_account, GaiaId("acc1"));
   EXPECT_EQ(p3_result.selection_reason,
             AccountPreviewSelectionReason::kSyncDataScore);
@@ -1291,7 +1292,7 @@ TEST_F(AccountPreviewHeuristicTest,
 }
 
 TEST_F(AccountPreviewHeuristicTest,
-       ComputePreferredAccountForPromoSignedInOnOtherProfile) {
+       ComputePreferredAccountForSigninSignedInOnOtherProfile) {
   std::vector<DevicePreview> devices = {CreateDevicePreview(
       "dev1", base::Time::Now(),
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
@@ -1316,7 +1317,7 @@ TEST_F(AccountPreviewHeuristicTest,
       .preview_data = &data_low,
   };
   AccountPreviewSelectionResult res =
-      ComputePreferredAccountForPromo({default_acc, secondary_acc});
+      ComputePreferredAccountForSignin({default_acc, secondary_acc});
   EXPECT_EQ(res.preference, std::nullopt);
   EXPECT_EQ(res.selected_account, std::nullopt);
   EXPECT_EQ(res.selection_reason,
@@ -1334,7 +1335,7 @@ TEST_F(AccountPreviewHeuristicTest,
       .gaia_id = GaiaId("secondary_high_eligible"),
       .preview_data = &data_high,
   };
-  res = ComputePreferredAccountForPromo(
+  res = ComputePreferredAccountForSignin(
       {default_low_other_profile, secondary_high_eligible});
   ASSERT_TRUE(res.preference.has_value());
   EXPECT_EQ(res.preference->gaia_id, GaiaId("secondary_high_eligible"));
@@ -1351,7 +1352,7 @@ TEST_F(AccountPreviewHeuristicTest,
       .is_managed = true,
       .is_signed_in_on_other_profile = true,
   };
-  res = ComputePreferredAccountForPromo({managed_default, secondary_acc});
+  res = ComputePreferredAccountForSignin({managed_default, secondary_acc});
   EXPECT_EQ(res.preference, std::nullopt);
   EXPECT_EQ(res.selected_account, std::nullopt);
   EXPECT_EQ(res.selection_reason,
@@ -1365,7 +1366,7 @@ TEST_F(AccountPreviewHeuristicTest,
       .is_external_app_primary = true,
       .is_signed_in_on_other_profile = true,
   };
-  res = ComputePreferredAccountForPromo({secondary_acc, aga_signed_in_other});
+  res = ComputePreferredAccountForSignin({secondary_acc, aga_signed_in_other});
   EXPECT_EQ(res.preference, std::nullopt);
   EXPECT_EQ(res.selected_account, std::nullopt);
   EXPECT_EQ(res.selection_reason,

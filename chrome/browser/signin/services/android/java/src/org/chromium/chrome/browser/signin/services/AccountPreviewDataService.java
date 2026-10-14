@@ -32,12 +32,15 @@ public class AccountPreviewDataService {
         mNativeAccountPreviewDataService = nativeAccountPreviewDataService;
     }
 
-    /** Returns the preferred account and preferred data types for promos. */
+    /**
+     * Returns the preferred account and preferred data types when offering signed-out users to sign
+     * in.
+     */
     @MainThread
-    public @Nullable AccountPreviewPreference getPreferredAccountForPromo() {
+    public @Nullable AccountPreviewPreference getPreferredAccountForSignin() {
         ThreadUtils.assertOnUiThread();
         return AccountPreviewDataServiceJni.get()
-                .getPreferredAccountForPromo(mNativeAccountPreviewDataService);
+                .getPreferredAccountForSignin(mNativeAccountPreviewDataService);
     }
 
     /** Updates the account currently used by the external app. */
@@ -51,7 +54,7 @@ public class AccountPreviewDataService {
     @NativeMethods
     interface Natives {
         @JniType("std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>")
-        @Nullable AccountPreviewPreference getPreferredAccountForPromo(
+        @Nullable AccountPreviewPreference getPreferredAccountForSignin(
                 @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService);
 
         void updateExternalAppAccount(

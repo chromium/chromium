@@ -1084,7 +1084,7 @@ public class FullscreenSigninMediator
             List<AccountInfo> accounts) {
         if (isPreferredAccountEnabled() && mAccountPreviewDataService != null) {
             AccountPreviewPreference preference =
-                    mAccountPreviewDataService.getPreferredAccountForPromo();
+                    mAccountPreviewDataService.getPreferredAccountForSignin();
             if (preference != null
                     && AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()) != null) {
                 return preference;

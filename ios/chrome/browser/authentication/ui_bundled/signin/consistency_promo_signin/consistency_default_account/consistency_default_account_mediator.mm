@@ -315,7 +315,7 @@ NSString* GetPromoLabelString(
   if (_accountPreviewDataService &&
       base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
-    preference = _accountPreviewDataService->GetPreferredAccountForPromo();
+    preference = _accountPreviewDataService->GetPreferredAccountForSignin();
     if (preference.has_value()) {
       identity =
           _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);

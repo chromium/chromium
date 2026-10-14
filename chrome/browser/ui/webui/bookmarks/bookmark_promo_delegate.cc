@@ -226,7 +226,7 @@ bool AccountAwareSignInPromoDelegate::CanShowPromo() const {
 
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preferred_account =
-          account_preview_data_service_->GetPreferredAccountForPromo();
+          account_preview_data_service_->GetPreferredAccountForSignin();
   if (!preferred_account.has_value() ||
       preferred_account->gaia_id != account_info.GetGaiaId()) {
     return false;
@@ -272,7 +272,7 @@ void AccountAwareSignInPromoDelegate::GetPromoData(
 
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preferred_account =
-          account_preview_data_service_->GetPreferredAccountForPromo();
+          account_preview_data_service_->GetPreferredAccountForSignin();
   CHECK(preferred_account.has_value());
 
   BookmarkPromoData promo_data;

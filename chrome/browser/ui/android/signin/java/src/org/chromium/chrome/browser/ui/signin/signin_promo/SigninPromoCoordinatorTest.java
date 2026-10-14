@@ -287,7 +287,7 @@ public class SigninPromoCoordinatorTest {
                         TestAccounts.ACCOUNT2.getGaiaId(),
                         new int[0],
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
         setUpSignInPromo(accessPoint);
 
         // Since the flag is enabled and Account2 is preferred, the promo should show Account2.
@@ -323,7 +323,7 @@ public class SigninPromoCoordinatorTest {
                                 .getString(
                                         R.string.sync_promo_continue_as,
                                         TestAccounts.ACCOUNT1.getGivenName())));
-        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForPromo();
+        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForSignin();
     }
 
     private void testPrimaryButtonClickHelper(@SigninAccessPoint int accessPoint) {
@@ -469,31 +469,17 @@ public class SigninPromoCoordinatorTest {
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
 
         // Verify bottom sheet strings.
+        var activity = mActivityTestRule.getActivity();
+        String title = activity.getString(R.string.signin_account_picker_bottom_sheet_title);
         AccountPickerBottomSheetStrings expectedStrings;
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            int subtitleId = R.string.signin_account_picker_bottom_sheet_benefits_subtitle;
             expectedStrings =
-                    new AccountPickerBottomSheetStrings.Builder(
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getString(
-                                                    R.string
-                                                            .signin_account_picker_bottom_sheet_title))
-                            .setSubtitleString(
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getString(
-                                                    R.string
-                                                            .signin_account_picker_bottom_sheet_benefits_subtitle))
+                    new AccountPickerBottomSheetStrings.Builder(title)
+                            .setSubtitleString(activity.getString(subtitleId))
                             .build();
         } else {
-            expectedStrings =
-                    new AccountPickerBottomSheetStrings.Builder(
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getString(
-                                                    R.string
-                                                            .signin_account_picker_bottom_sheet_title))
-                            .build();
+            expectedStrings = new AccountPickerBottomSheetStrings.Builder(title).build();
         }
         assertEquals(expectedStrings, config.bottomSheetStrings);
     }

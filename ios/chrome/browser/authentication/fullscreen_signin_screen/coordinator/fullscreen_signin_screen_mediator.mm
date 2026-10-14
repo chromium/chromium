@@ -400,7 +400,7 @@ enum class SigninScreenState {
     if (std::optional<
             signin::AccountPreviewDataService::AccountPreviewPreference>
             preference =
-                _accountPreviewDataService->GetPreferredAccountForPromo()) {
+                _accountPreviewDataService->GetPreferredAccountForSignin()) {
       id<SystemIdentity> identity =
           _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
       if (identity) {

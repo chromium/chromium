@@ -787,7 +787,7 @@ class ProfileMenuViewPixelTest
       auto* test_service = static_cast<signin::TestAccountPreviewDataService*>(
           AccountPreviewDataServiceFactory::GetForProfile(
               browser()->GetProfile()));
-      test_service->SetPreferredAccountForPromo(pref);
+      test_service->SetPreferredAccountForSignin(pref);
     }
   }
 

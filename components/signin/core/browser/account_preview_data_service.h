@@ -79,17 +79,17 @@ class AccountPreviewDataService : public KeyedService {
   // Registers the preferences used by this service.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // From the list of accounts with refresh tokens, get the account that has the
-  // most interesting preview data. If the preview data for accounts are not
-  // fetched yet, the first account is returned by default. Returns std::nullopt
-  // if no signed-in accounts exist.
-  virtual std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
+  // Returns the account with refresh tokens that has the most interesting
+  // preview data when offering signed-out users to sign in. If preview data
+  // for accounts is not fetched yet, the first account is returned by default.
+  // Returns `std::nullopt` if no accounts with refresh tokens exist.
+  virtual std::optional<AccountPreviewPreference> GetPreferredAccountForSignin()
       const = 0;
 
-  // From the list of secondary accounts with refresh tokens, get the account
-  // that has significantly more sync data than the primary account to promote
-  // for account switching. Returns std::nullopt if no account qualifies, if
-  // there is no primary account, or if preview data is not fetched yet.
+  // Returns the secondary account with refresh tokens that has significantly
+  // more sync data than the primary account when offering signed-in users to
+  // switch accounts. Returns `std::nullopt` if no account qualifies, if there
+  // is no primary account, or if preview data is not fetched yet.
   virtual std::optional<AccountPreviewPreference>
   GetPreferredAccountForSwitching() const = 0;
 

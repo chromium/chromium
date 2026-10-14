@@ -332,7 +332,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -390,7 +390,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -458,7 +458,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -527,7 +527,7 @@ TEST_F(
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -606,7 +606,7 @@ TEST_F(
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2,
                                                           ctx3};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -653,7 +653,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -708,7 +708,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",
@@ -757,14 +757,14 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   // 1st recording succeeds.
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
   histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
 
   // 2nd call immediately after is rate-limited.
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
   histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
@@ -772,7 +772,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
   // Fast forward 23 hours -> still rate-limited.
   task_environment_.FastForwardBy(base::Hours(23));
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
   histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
@@ -780,7 +780,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
   // Fast forward 2 more hours (total 25 hours) -> records again.
   task_environment_.FastForwardBy(base::Hours(2));
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
   histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 2);
   histogram_tester.ExpectTotalCount(
       "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 2);
@@ -860,7 +860,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0};
   recorder.RecordSelectionHeuristicResult(
-      accounts, ComputePreferredAccountForPromo(accounts));
+      accounts, ComputePreferredAccountForSignin(accounts));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SelectionHeuristic.Reason",

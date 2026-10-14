@@ -813,7 +813,7 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->AddIdentity(identity_);
   signin::AccountPreviewDataService::AccountPreviewPreference preference;
   preference.gaia_id = identity_.gaiaId;
-  account_preview_data_service_.SetPreferredAccountForPromo(preference);
+  account_preview_data_service_.SetPreferredAccountForSignin(preference);
 
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
   EXPECT_EQ(identity_, mediator_.displayedIdentity);

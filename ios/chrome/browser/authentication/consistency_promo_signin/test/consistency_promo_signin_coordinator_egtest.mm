@@ -40,7 +40,7 @@
   // Resets the number of dismissals for web sign-in.
   [ChromeEarlGrey setIntegerValue:0
                       forUserPref:prefs::kSigninWebSignDismissalCount];
-  [SigninEarlGrey setPreferredAccountForPromo:nil];
+  [SigninEarlGrey setPreferredAccountForSignin:nil];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -287,7 +287,7 @@
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
-  [SigninEarlGrey setPreferredAccountForPromo:fakeIdentity2];
+  [SigninEarlGrey setPreferredAccountForSignin:fakeIdentity2];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI

@@ -776,10 +776,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       account_info_for_signin_action =
           account_info_for_promos.GetCoreAccountInfo();
       if (account_preview_data_service) {
-        if (std::optional<
-                signin::AccountPreviewDataService::AccountPreviewPreference>
-                preferred_account =
-                    account_preview_data_service->GetPreferredAccountForPromo();
+        if (std::optional<signin::AccountPreviewDataService::
+                              AccountPreviewPreference> preferred_account =
+                account_preview_data_service->GetPreferredAccountForSignin();
             preferred_account.has_value() &&
             preferred_account->gaia_id == account_info_for_promos.GetGaiaId()) {
           if (std::optional<std::string> custom_subtitle =

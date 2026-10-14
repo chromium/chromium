@@ -334,8 +334,9 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether storing and exposing the preferred account is enabled.
-// This flag has no effect if `kEnableAccountPreviewData` is not enabled.
+// Controls whether storing and exposing the preferred account when offering
+// signed-out users to sign in is enabled. This flag has no effect if
+// `kEnableAccountPreviewData` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,

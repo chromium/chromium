@@ -13,8 +13,8 @@ TestAccountPreviewDataService::TestAccountPreviewDataService() = default;
 TestAccountPreviewDataService::~TestAccountPreviewDataService() = default;
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
-TestAccountPreviewDataService::GetPreferredAccountForPromo() const {
-  return preferred_account_for_promo_;
+TestAccountPreviewDataService::GetPreferredAccountForSignin() const {
+  return preferred_account_for_signin_;
 }
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>

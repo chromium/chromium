@@ -82,7 +82,7 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preferred_account =
           account_preview_data_service
-              ? account_preview_data_service->GetPreferredAccountForPromo()
+              ? account_preview_data_service->GetPreferredAccountForSignin()
               : std::nullopt;
   bool has_matching_preferred_account =
       preferred_account.has_value() &&

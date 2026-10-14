@@ -183,7 +183,7 @@ TEST_F(SigninUiUtilTest,
   // Set preferred account to account2.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.gaia_id = account2.GetGaiaId();
-  account_preview_data_service()->SetPreferredAccountForPromo(pref);
+  account_preview_data_service()->SetPreferredAccountForSignin(pref);
 
   // When preview service has preferred account, it is returned.
   EXPECT_EQ(GetSingleAccountForPromos(identity_manager(),
@@ -207,7 +207,7 @@ TEST_F(SigninUiUtilTest,
   // Set preferred account to an account not in identity manager.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.gaia_id = GaiaId("unknown_gaia_id");
-  account_preview_data_service()->SetPreferredAccountForPromo(pref);
+  account_preview_data_service()->SetPreferredAccountForSignin(pref);
 
   // Falls back to default account.
   EXPECT_EQ(GetSingleAccountForPromos(identity_manager(),
@@ -233,7 +233,7 @@ TEST_F(SigninUiUtilTest,
   // Set preferred account to account3.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.gaia_id = account3.GetGaiaId();
-  account_preview_data_service()->SetPreferredAccountForPromo(pref);
+  account_preview_data_service()->SetPreferredAccountForSignin(pref);
 
   std::vector<AccountInfo> ordered = GetOrderedAccountsForDisplay(
       identity_manager(), account_preview_data_service(),
@@ -263,16 +263,16 @@ TEST_F(
   identity_test_env()->SetPrimaryAccount(std::string(account1.GetEmail()),
                                          signin::ConsentLevel::kSignin);
 
-  // Set preferred promo account to account3.
+  // Set preferred signin account to account3.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.gaia_id = account3.GetGaiaId();
-  account_preview_data_service()->SetPreferredAccountForPromo(pref);
+  account_preview_data_service()->SetPreferredAccountForSignin(pref);
 
   std::vector<AccountInfo> ordered = GetOrderedAccountsForDisplay(
       identity_manager(), account_preview_data_service(),
       /*restrict_to_accounts_eligible_for_signin=*/true);
   ASSERT_EQ(ordered.size(), 3u);
-  // The primary account must remain first, ignoring the promo preferred
+  // The primary account must remain first, ignoring the signin preferred
   // account.
   EXPECT_EQ(ordered[0].GetGaiaId(), account1.GetGaiaId());
   EXPECT_EQ(ordered[1].GetGaiaId(), account2.GetGaiaId());

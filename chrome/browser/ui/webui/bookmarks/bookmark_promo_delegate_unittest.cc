@@ -163,7 +163,7 @@ class AccountAwareSignInPromoDelegateTest
           {.data_type = syncer::PASSWORDS,
            .quartile = signin::SyncDataQuartile::kAboveQ3}};
     }
-    preview_service_.SetPreferredAccountForPromo(pref);
+    preview_service_.SetPreferredAccountForSignin(pref);
     return account_info;
   }
 
@@ -199,13 +199,13 @@ TEST_F(AccountAwareSignInPromoDelegateTest,
 TEST_F(AccountAwareSignInPromoDelegateTest,
        GetPromoDataTitleWithOtherDeviceFormFactor) {
   SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
-  auto pref = *preview_service_.GetPreferredAccountForPromo();
+  auto pref = *preview_service_.GetPreferredAccountForSignin();
   pref.other_device_info = signin::PreferredDeviceInfo{
       .form_factor =
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
       .enabled_data_types = {syncer::BOOKMARKS},
   };
-  preview_service_.SetPreferredAccountForPromo(pref);
+  preview_service_.SetPreferredAccountForSignin(pref);
 
   auto delegate = CreateDelegate();
   base::test::TestFuture<BookmarkPromoData> future;

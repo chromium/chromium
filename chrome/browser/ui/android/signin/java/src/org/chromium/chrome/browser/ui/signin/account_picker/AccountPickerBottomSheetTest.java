@@ -202,7 +202,7 @@ public class AccountPickerBottomSheetTest {
                                 callback.onResult(PostSigninOperationResult.SUCCESS))
                 .when(mAccountPickerDelegateMock)
                 .runPostSigninAction(eq(TestAccounts.ACCOUNT1), any());
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(null);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(null);
     }
 
     @After
@@ -234,7 +234,7 @@ public class AccountPickerBottomSheetTest {
                         TestAccounts.ACCOUNT2.getGaiaId(),
                         new int[] {},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -258,7 +258,7 @@ public class AccountPickerBottomSheetTest {
                         TestAccounts.ACCOUNT2.getGaiaId(),
                         new int[] {},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -284,7 +284,7 @@ public class AccountPickerBottomSheetTest {
                         TestAccounts.ACCOUNT1.getGaiaId(),
                         new int[] {DataType.BOOKMARKS},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -317,7 +317,7 @@ public class AccountPickerBottomSheetTest {
                         TestAccounts.ACCOUNT1.getGaiaId(),
                         new int[] {DataType.BOOKMARKS},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -349,7 +349,7 @@ public class AccountPickerBottomSheetTest {
                         TestAccounts.ACCOUNT1.getGaiaId(),
                         new int[] {DataType.UNSPECIFIED},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -379,7 +379,7 @@ public class AccountPickerBottomSheetTest {
         // Since the flag is disabled, it should default to the first account (Account1).
         checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
         accountConsistencyHistogram.assertExpected();
-        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForPromo();
+        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForSignin();
     }
 
     @Test
@@ -995,16 +995,10 @@ public class AccountPickerBottomSheetTest {
 
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
-        onVisibleView(
-                        withText(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_send_tab_to_self))
-                .check(matches(isDisplayed()));
-        onVisibleView(
-                        withText(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self))
-                .check(matches(isDisplayed()));
+        int titleId = R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self;
+        int subtitleId = R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self;
+        onVisibleView(withText(titleId)).check(matches(isDisplayed()));
+        onVisibleView(withText(subtitleId)).check(matches(isDisplayed()));
         onVisibleView(withText(R.string.cancel)).check(matches(isDisplayed()));
     }
 
@@ -1015,16 +1009,10 @@ public class AccountPickerBottomSheetTest {
 
         buildAndShowCollapsedThenExpandedBottomSheet();
 
-        onVisibleView(
-                        withText(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_send_tab_to_self))
-                .check(matches(isDisplayed()));
-        onVisibleView(
-                        withText(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self))
-                .check(matches(isDisplayed()));
+        int titleId = R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self;
+        int subtitleId = R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self;
+        onVisibleView(withText(titleId)).check(matches(isDisplayed()));
+        onVisibleView(withText(subtitleId)).check(matches(isDisplayed()));
         checkVisibleViewDoesNotExist(withText(R.string.cancel));
     }
 

@@ -315,6 +315,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAccountPreviewDataMediumPriority);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewEntityPreviews);
 
+// Controls whether storing and exposing the preferred account when offering
+// signed-out users to sign in is enabled. This flag has no effect if
+// `kEnableAccountPreviewData` is not enabled.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccount);
 // Feature parameters for quartile classification thresholds of sync data
@@ -376,9 +379,9 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFRE);
 #endif
 
-// Controls whether storing and exposing the preferred account for switching is
-// enabled. This flag has no effect if `kEnableAccountPreviewData` is not
-// enabled.
+// Controls whether storing and exposing the preferred account when offering
+// signed-in users to switch accounts is enabled. This flag has no effect if
+// `kEnableAccountPreviewData` is not enabled.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewSwitchingAccount);
 

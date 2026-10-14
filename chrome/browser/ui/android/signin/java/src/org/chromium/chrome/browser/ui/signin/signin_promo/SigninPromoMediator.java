@@ -332,7 +332,7 @@ final class SigninPromoMediator
             return null;
         }
         AccountPreviewPreference preference =
-                mAccountPreviewDataService.getPreferredAccountForPromo();
+                mAccountPreviewDataService.getPreferredAccountForSignin();
         return preference != null ? preference.getGaiaId() : null;
     }
 

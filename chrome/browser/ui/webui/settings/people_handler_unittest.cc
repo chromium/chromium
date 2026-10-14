@@ -1272,7 +1272,7 @@ TEST(PeopleHandlerDiceTest, AccountPromoSubtitleWithAccountPreviewFollowup) {
   pref.preferred_data_types = {
       {.data_type = syncer::BOOKMARKS,
        .quartile = signin::SyncDataQuartile::kMedianToQ3}};
-  data_service->SetPreferredAccountForPromo(pref);
+  data_service->SetPreferredAccountForSignin(pref);
 
   std::optional<std::string> expected_subtitle =
       signin::GetAccountPreviewSettingsPromoSubtitle(pref);
@@ -1333,7 +1333,7 @@ TEST(PeopleHandlerDiceTest,
   pref.preferred_data_types = {
       {.data_type = syncer::BOOKMARKS,
        .quartile = signin::SyncDataQuartile::kMedianToQ3}};
-  data_service->SetPreferredAccountForPromo(pref);
+  data_service->SetPreferredAccountForSignin(pref);
 
   // But GetPeopleSignInPromptSecondaryWithAccountForTesting() should return the
   // default string because the followup flag is disabled.

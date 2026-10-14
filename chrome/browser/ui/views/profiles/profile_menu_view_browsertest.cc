@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, AccountPreferenceSubtitle) {
 
   auto* test_service = static_cast<signin::TestAccountPreviewDataService*>(
       AccountPreviewDataServiceFactory::GetForProfile(browser()->GetProfile()));
-  test_service->SetPreferredAccountForPromo(pref);
+  test_service->SetPreferredAccountForSignin(pref);
 
   OpenProfileMenu();
 

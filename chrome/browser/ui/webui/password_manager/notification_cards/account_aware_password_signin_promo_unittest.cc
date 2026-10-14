@@ -106,7 +106,7 @@ class NotificationCardAccountAwarePasswordSigninPromoTest
           {.data_type = syncer::BOOKMARKS,
            .quartile = signin::SyncDataQuartile::kAboveQ3}};
     }
-    preview_service_->SetPreferredAccountForPromo(pref);
+    preview_service_->SetPreferredAccountForSignin(pref);
     return account_info;
   }
 

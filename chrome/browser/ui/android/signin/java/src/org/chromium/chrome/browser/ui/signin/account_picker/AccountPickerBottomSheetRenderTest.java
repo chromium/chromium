@@ -183,7 +183,7 @@ public class AccountPickerBottomSheetRenderTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         when(mSigninManagerMock.extractDomainName(any()))
                 .thenReturn(TestAccounts.ACCOUNT1.getEmail());
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(null);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(null);
     }
 
     @AfterClass
@@ -270,7 +270,7 @@ public class AccountPickerBottomSheetRenderTest {
                         TestAccounts.ACCOUNT1.getGaiaId(),
                         new int[] {DataType.BOOKMARKS},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         buildAndShowCollapsedBottomSheet();
 
@@ -314,7 +314,7 @@ public class AccountPickerBottomSheetRenderTest {
                         TestAccounts.ACCOUNT1.getGaiaId(),
                         new int[] {DataType.BOOKMARKS},
                         SyncEnums.DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(preference);
 
         buildAndShowCollapsedBottomSheet();
 

@@ -86,7 +86,7 @@ struct AccountPreviewSelectionResult {
 };
 
 // Evaluates the heuristic across all candidate accounts in the profile to
-// select the preferred account for sign-in promo.
+// select the preferred account when offering signed-out users to sign in.
 // The first account in the list (`accounts[0]`) must be the default account
 // (i.e. the candidate account that would be promoted by default in the absence
 // of account previews, as determined by
@@ -106,7 +106,7 @@ struct AccountPreviewSelectionResult {
 // Returns a result with `preference = std::nullopt` and
 // `selected_account = std::nullopt` if no valid candidate is found or
 // `accounts` is empty.
-AccountPreviewSelectionResult ComputePreferredAccountForPromo(
+AccountPreviewSelectionResult ComputePreferredAccountForSignin(
     base::span<const AccountPreviewHeuristicContext> accounts);
 
 // Outcomes of evaluating the heuristic to select a secondary account for
@@ -176,7 +176,8 @@ struct AccountSwitchingSelectionResult {
 };
 
 // Evaluates the heuristic across all candidate accounts in the profile to
-// select a secondary account to promote for account switching.
+// select a secondary account with more interesting data when offering signed-in
+// users to switch accounts.
 // `accounts` should be ordered by display priority (as returned by
 // `signin::GetOrderedAccountsForDisplay()`), where `accounts[0]` is the
 // primary account if one exists.

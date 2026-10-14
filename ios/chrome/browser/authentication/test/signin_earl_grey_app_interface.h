@@ -135,9 +135,10 @@ enum class UserSelectableType;
 // `FakeSystemIdentityManager`.
 + (BOOL)wasMDMNotificationDisplayed;
 
-// Sets the preferred account in `TestAccountPreviewDataService` for sign-in
-// promos. If `fakeIdentity` is nil, clears the preferred account.
-+ (void)setPreferredAccountForPromo:(FakeSystemIdentity*)fakeIdentity;
+// Sets the preferred account in `TestAccountPreviewDataService` when offering
+// signed-out users to sign in. If `fakeIdentity` is nil, clears the preferred
+// account.
++ (void)setPreferredAccountForSignin:(FakeSystemIdentity*)fakeIdentity;
 
 @end
 

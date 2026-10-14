@@ -808,7 +808,7 @@ public class AccountPickerBottomSheetMediator
                 && SigninFeatureMap.isEnabled(
                         SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)) {
             AccountPreviewPreference preference =
-                    mAccountPreviewDataService.getPreferredAccountForPromo();
+                    mAccountPreviewDataService.getPreferredAccountForSignin();
             if (preference != null
                     && AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()) != null) {
                 return preference;

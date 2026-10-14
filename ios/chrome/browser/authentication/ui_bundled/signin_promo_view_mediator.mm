@@ -663,7 +663,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     if (std::optional<
             signin::AccountPreviewDataService::AccountPreviewPreference>
             preference =
-                accountPreviewDataService->GetPreferredAccountForPromo()) {
+                accountPreviewDataService->GetPreferredAccountForSignin()) {
       id<SystemIdentity> identity =
           accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
       if (identity) {

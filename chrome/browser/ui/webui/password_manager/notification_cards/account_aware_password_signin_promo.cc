@@ -108,7 +108,7 @@ bool AccountAwarePasswordSigninPromo::ShouldShowCard(
 
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preferred_account =
-          account_preview_data_service->GetPreferredAccountForPromo();
+          account_preview_data_service->GetPreferredAccountForSignin();
   if (!preferred_account.has_value() ||
       preferred_account->gaia_id != account_info.GetGaiaId()) {
     return false;
@@ -126,7 +126,7 @@ std::u16string AccountAwarePasswordSigninPromo::GetTitle() const {
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preferred_account =
           AccountPreviewDataServiceFactory::GetForProfile(profile_)
-              ->GetPreferredAccountForPromo();
+              ->GetPreferredAccountForSignin();
   CHECK(preferred_account.has_value());
   return signin::GetAccountPreviewPasswordManagerPromoTitle(*preferred_account);
 }
