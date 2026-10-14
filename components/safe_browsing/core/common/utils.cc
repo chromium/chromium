@@ -264,6 +264,7 @@ int GetClientSideDetectionTypeTier(ClientSideDetectionType type) {
     case ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
     case ClientSideDetectionType::POINTER_LOCK_REQUESTED:
     case ClientSideDetectionType::FULLSCREEN_API:
+    case ClientSideDetectionType::POLICY_ENGINE:
       NOTREACHED();
   }
 }

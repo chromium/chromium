@@ -64,6 +64,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NotificationPermissionPrompt"
       summary="Notification permission prompt"/>
   <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+  <variant name=".PolicyEngine" summary="Policy engine"/>
   <variant name=".TriggerModel" summary="Trigger model"/>
   <variant name=".UnfamiliarLoginPage" summary="Unfamiliar login page"/>
   <variant name=".Unknown" summary="Unknown"/>

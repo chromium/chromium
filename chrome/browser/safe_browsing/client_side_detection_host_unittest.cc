@@ -726,6 +726,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "UserReport";
       case safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
         return "UnfamiliarLoginPage";
+      case safe_browsing::ClientSideDetectionType::POLICY_ENGINE:
+        return "PolicyEngine";
     }
   }
 
@@ -3814,7 +3816,8 @@ class ClientSideDetectionHostSkipImageClassificationScoringTest
     for (int i = 0; ClientSideDetectionType_IsValid(i); i++) {
       ClientSideDetectionType type = static_cast<ClientSideDetectionType>(i);
       if (type !=
-          ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED) {
+              ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED &&
+          type != ClientSideDetectionType::POLICY_ENGINE) {
         values.push_back(type);
       }
     }

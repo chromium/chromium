@@ -173,6 +173,8 @@ std::string_view GetRequestTypeName(
       return "UserReport";
     case safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
       return "UnfamiliarLoginPage";
+    case safe_browsing::ClientSideDetectionType::POLICY_ENGINE:
+      return "PolicyEngine";
   }
 }
 

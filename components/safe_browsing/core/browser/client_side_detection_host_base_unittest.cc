@@ -262,6 +262,7 @@ TEST_F(ClientSideDetectionHostBaseTest, PriorityTier) {
       host_->GetTierValue(CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED), "");
   EXPECT_DEATH_IF_SUPPORTED(host_->GetTierValue(POINTER_LOCK_REQUESTED), "");
   EXPECT_DEATH_IF_SUPPORTED(host_->GetTierValue(FULLSCREEN_API), "");
+  EXPECT_DEATH_IF_SUPPORTED(host_->GetTierValue(POLICY_ENGINE), "");
 
   // Default last request type is unspecified, so any new request type is
   // higher.

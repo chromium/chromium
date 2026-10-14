@@ -1433,6 +1433,8 @@ enum ClientSideDetectionType {
   USER_REPORT = 11;
   // Unfamiliar login page triggered.
   UNFAMILIAR_LOGIN_PAGE = 12;
+  // Policy engine requests.
+  POLICY_ENGINE = 13;
 }
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideDetectionType,/tools/metrics/histograms/metadata/sb_client/histograms.xml:ClientSideDetectionRequestType)

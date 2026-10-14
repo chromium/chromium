@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="IMAGE_EMBEDDING_MATCH"/>
   <int value="11" label="USER_REPORT"/>
   <int value="12" label="UNFAMILIAR_LOGIN_PAGE"/>
+  <int value="13" label="POLICY_ENGINE"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSideDetectionType) -->
