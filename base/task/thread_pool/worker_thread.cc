@@ -11,12 +11,10 @@
 #include <optional>
 #include <utility>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -187,7 +185,10 @@ bool WorkerThread::Start(
   PlatformThread::CreateWithType(kDefaultStackSize, this, &thread_handle_,
                                  thread_type_hint_);
 
-  CHECK(!thread_handle_.is_null(), base::NotFatalUntil::M160);
+  if (thread_handle_.is_null()) {
+    self_ = nullptr;
+    return false;
+  }
 
   return true;
 }
