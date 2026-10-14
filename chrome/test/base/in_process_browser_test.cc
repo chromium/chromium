@@ -443,14 +443,12 @@ void InProcessBrowserTest::Initialize() {
   // Disable session restore infobar the experiment as it causes test failures.
   disabled_features.push_back(features::kSessionRestoreInfobar);
 #endif
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
   // Prewarming the default search engine background page spawns an extra
   // prerender renderer process and warms up a compositor during browser
-  // startup, causing significant overhead and shard timeouts in browser_tests
-  // on win-asan (crbug.com/563340729). Dedicated prewarm tests explicitly
-  // enable it via ScopedPrewarmFeatureList.
+  // startup, causing unnecessary overhead in browser_tests
+  // (crbug.com/563340729). Dedicated prewarm tests explicitly enable it via
+  // ScopedPrewarmFeatureList.
   disabled_features.push_back(features::kPrewarm);
-#endif
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
   block_all_iph_feature_list_.InitWithNoFeaturesAllowed();
