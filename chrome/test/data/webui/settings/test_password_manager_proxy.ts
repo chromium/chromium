@@ -18,11 +18,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'recordPasswordCheckReferrer',
+      'recordPasswordsPageAccessInSettings',
       'showPasswordManager',
     ]);
   }
 
-  recordPasswordsPageAccessInSettings() {}
+  recordPasswordsPageAccessInSettings() {
+    this.methodCalled('recordPasswordsPageAccessInSettings');
+  }
 
   recordPasswordCheckReferrer(referrer: PasswordCheckReferrer) {
     this.methodCalled('recordPasswordCheckReferrer', referrer);

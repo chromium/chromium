@@ -433,10 +433,6 @@ interface OnPasswordManagerActionableErrorChangedEvent : ExtensionEvent {
 // Use the <code>chrome.passwordsPrivate</code> API to add or remove password
 // data from the settings UI.
 interface PasswordsPrivate {
-  // Function that logs that the Passwords page was accessed from the Chrome
-  // Settings WebUI.
-  static undefined recordPasswordsPageAccessInSettings();
-
   // Changes the credential. Not all attributes can be updated.
   // Optional attributes that are not set will be unchanged.
   // Returns a promise that resolves if successful, and rejects otherwise.

@@ -191,7 +191,6 @@ declare global {
         entries: PasswordUiEntry[];
       }
 
-      export function recordPasswordsPageAccessInSettings(): void;
       export function changeCredential(credential: PasswordUiEntry):
           Promise<void>;
       export function removeCredential(

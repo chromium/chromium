@@ -9,14 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -56,15 +54,6 @@ bool IsPasswordManagerDisabledByPolicy(
 }
 
 }  // namespace
-
-// PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction
-ResponseAction
-PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction::Run() {
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ManagePasswordsReferrer",
-      password_manager::ManagePasswordsReferrer::kChromeSettings);
-  return RespondNow(NoArguments());
-}
 
 // PasswordsPrivateChangeCredentialFunction
 ResponseAction PasswordsPrivateChangeCredentialFunction::Run() {

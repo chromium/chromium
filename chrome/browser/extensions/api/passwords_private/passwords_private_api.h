@@ -13,21 +13,6 @@
 
 namespace extensions {
 
-class PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION(
-      "passwordsPrivate.recordPasswordsPageAccessInSettings",
-      PASSWORDSPRIVATE_RECORDPASSWORDSPAGEACCESSINSETTINGS)
-
- protected:
-  ~PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateChangeCredentialFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changeCredential",

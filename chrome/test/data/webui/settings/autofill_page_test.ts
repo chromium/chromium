@@ -150,6 +150,7 @@ suite('AutofillPage', function() {
     passwordsCard.shadowRoot!.querySelector<HTMLElement>(
                                  'cr-link-row')!.click();
 
+    await passwordManager.whenCalled('recordPasswordsPageAccessInSettings');
     const page = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, page);
     const [category] = await metricsBrowserProxy.whenCalled(
@@ -624,6 +625,7 @@ suite('RelatedServices', function() {
             '#passwordManagerButton');
     assertTrue(!!passwordManagerRow);
     passwordManagerRow.click();
+    await passwordManager.whenCalled('recordPasswordsPageAccessInSettings');
     const page = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, page);
     const [service] = await metricsBrowserProxy.whenCalled(

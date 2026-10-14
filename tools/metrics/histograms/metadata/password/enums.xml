@@ -663,6 +663,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager.h:LogInWithChangedPasswordOutcome) -->
 
+<!-- LINT.IfChange(ManagePasswordsReferrer) -->
+
 <enum name="ManagePasswordsReferrer">
   <int value="0" label="Chrome Settings"/>
   <int value="1" label="Manage Passwords Bubble"/>
@@ -698,6 +700,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Password change state information bubble"/>
   <int value="30" label="Autofill and passwords settings page"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/manage_passwords_referrer.h:ManagePasswordsReferrer, //chrome/browser/resources/settings/autofill_page/passwords/password_manager_proxy.ts:ManagePasswordsReferrer) -->
 
 <!-- LINT.IfChange(OnDeviceEncryptionStateHistogramBucket) -->
 
