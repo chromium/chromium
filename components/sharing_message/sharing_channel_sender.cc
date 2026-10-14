@@ -369,8 +369,7 @@ bool SharingChannelSender::CanSendSendTabPushMessage(
     const syncer::DeviceInfo& target_device_info) {
   bool custom_passphrase_enabled =
       sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
-  return target_device_info.send_tab_to_self_receiving_enabled() &&
-         target_device_info.send_tab_to_self_receiving_type() ==
+  return target_device_info.send_tab_to_self_receiving_type() ==
              syncer::DeviceInfo::SendTabReceivingType::
                  kChromeAndPushNotification &&
          !custom_passphrase_enabled;

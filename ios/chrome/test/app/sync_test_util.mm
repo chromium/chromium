@@ -612,8 +612,6 @@ void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
   device_info.set_signin_scoped_device_id("Id");
   int64_t mtime = syncer::TimeToProtoTime(last_updated_timestamp);
   device_info.set_last_updated_timestamp(mtime);
-  device_info.mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
-      true);
   device_info.mutable_feature_fields()->set_send_tab_to_self_receiving_type(
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);

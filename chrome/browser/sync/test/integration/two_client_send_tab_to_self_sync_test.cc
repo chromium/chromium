@@ -158,31 +158,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest, IsActive) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
-                       SendTabToSelfReceivingEnabled) {
-  ASSERT_TRUE(SetupSync());
-
-  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-      ->GetDeviceInfoTracker()
-      ->ForcePulseForTest();
-  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
-      ->GetDeviceInfoTracker()
-      ->ForcePulseForTest();
-
-  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfMultiDeviceActiveChecker(
-                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-                      ->GetDeviceInfoTracker())
-                  .Wait());
-
-  std::vector<const syncer::DeviceInfo*> device_infos =
-      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetDeviceInfoTracker()
-          ->GetAllDeviceInfo();
-  ASSERT_EQ(2u, device_infos.size());
-  EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
-  EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
-}
-
 // Verifies that each syncing client populates its target device list with the
 // other active client and reports a valid target device.
 IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
@@ -362,6 +337,8 @@ class TwoClientSendTabToSelfTransportModeSyncTest : public SyncTest {
   }
 };
 
+// Verifies that a Sync-the-feature client and a signed-in transport-mode
+// client discover each other as valid Send Tab to Self target devices.
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfTransportModeSyncTest,
                        SignedInClientCanReceive) {
   ASSERT_TRUE(SetupClients());
@@ -385,14 +362,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfTransportModeSyncTest,
                   DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
                       ->GetDeviceInfoTracker())
                   .Wait());
+  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfMultiDeviceActiveChecker(
+                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+                      ->GetDeviceInfoTracker())
+                  .Wait());
 
-  std::vector<const syncer::DeviceInfo*> device_infos =
-      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetDeviceInfoTracker()
-          ->GetAllDeviceInfo();
-  ASSERT_EQ(2u, device_infos.size());
-  EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
-  EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

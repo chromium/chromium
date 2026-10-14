@@ -248,7 +248,6 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),
       GetPulseIntervalFromSpecifics(specifics),
-      specifics.feature_fields().send_tab_to_self_receiving_enabled(),
       ToDeviceInfoSendTabReceivingType(
           specifics.feature_fields().send_tab_to_self_receiving_type()),
       SpecificsToSharingInfo(specifics),
@@ -327,8 +326,10 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_pulse_interval_in_minutes(info.pulse_interval().InMinutes());
 
   FeatureSpecificFields* feature_fields = specifics->mutable_feature_fields();
-  feature_fields->set_send_tab_to_self_receiving_enabled(
-      info.send_tab_to_self_receiving_enabled());
+  // TODO(crbug.com/573435919): Stop populating
+  // `send_tab_to_self_receiving_enabled` once M157 (which still reads it with a
+  // default of `false`) passes the Sync client support horizon.
+  feature_fields->set_send_tab_to_self_receiving_enabled(true);
   feature_fields->set_send_tab_to_self_receiving_type(
       ToSendTabReceivingTypeProto(info.send_tab_to_self_receiving_type()));
 
@@ -447,8 +448,6 @@ bool IsStoredLocalDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->manufacturer_name() == stored->manufacturer_name() &&
          current->model_name() == stored->model_name() &&
          current->full_hardware_class() == stored->full_hardware_class() &&
-         current->send_tab_to_self_receiving_enabled() ==
-             stored->send_tab_to_self_receiving_enabled() &&
          current->send_tab_to_self_receiving_type() ==
              stored->send_tab_to_self_receiving_type() &&
          current->desktop_to_ios_promo_receiving_enabled() ==

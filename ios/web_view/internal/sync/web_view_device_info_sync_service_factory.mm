@@ -46,9 +46,6 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  bool GetSendTabToSelfReceivingEnabled() const override { return false; }
-
-  // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
     return syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified;

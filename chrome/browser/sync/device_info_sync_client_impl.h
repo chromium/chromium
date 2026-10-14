@@ -27,9 +27,6 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   std::string GetSigninScopedDeviceId() const override;
 
   // syncer::DeviceInfoSyncClient:
-  bool GetSendTabToSelfReceivingEnabled() const override;
-
-  // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const override;
 

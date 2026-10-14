@@ -66,13 +66,6 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  bool GetSendTabToSelfReceivingEnabled() const override {
-    // Always true starting with M101, see crbug.com/1299833. Older clients and
-    // clients from other embedders might still return false.
-    return true;
-  }
-
-  // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
     GaiaId gaia_id =

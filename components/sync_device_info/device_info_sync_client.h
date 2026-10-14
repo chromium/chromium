@@ -27,7 +27,6 @@ class DeviceInfoSyncClient {
   virtual ~DeviceInfoSyncClient();
 
   virtual std::string GetSigninScopedDeviceId() const = 0;
-  virtual bool GetSendTabToSelfReceivingEnabled() const = 0;
   virtual DeviceInfo::SendTabReceivingType GetSendTabToSelfReceivingType()
       const = 0;
   virtual std::optional<DeviceInfo::SharingInfo> GetLocalSharingInfo()

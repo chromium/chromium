@@ -113,10 +113,10 @@ message DeviceInfoSpecifics {
 // Chrome browser. Adding to this proto is discouraged and should only be added
 // when the information can not be derived more generally.
 message FeatureSpecificFields {
-  // Tracks whether the SendTabToSelf feature is enabled on the device. For this
-  // to be true, two things must be true: (1) The receiving side of the feature
-  // must be enabled on the device (2) The user has enabled sync for this
-  // feature.
+  // Tracks whether the SendTabToSelf feature is enabled on the device.
+  // Deprecated in M158; unconditionally true on Chrome clients since M101.
+  // TODO(crbug.com/573435919): Reserve this field once M157 passes the Sync
+  // client support horizon.
   optional bool send_tab_to_self_receiving_enabled = 1;
 
   // Tracks which type of Send Tab To Self message(s) can be sent to the

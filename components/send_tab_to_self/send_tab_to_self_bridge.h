@@ -177,9 +177,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Returns the display name of the local device.
   std::string GetLocalDeviceName() const;
 
-  // Returns true if the device should be included in the target list.
-  bool ShouldIncludeDevice(const syncer::DeviceInfo& device) const;
-
   // Delete expired entries.
   void DoGarbageCollection();
 

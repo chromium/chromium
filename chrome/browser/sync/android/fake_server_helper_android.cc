@@ -289,9 +289,6 @@ static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
   specifics->set_client_name(client_name);
   specifics->set_last_updated_timestamp(syncer::TimeToProtoTime(
       base::Time::FromMillisecondsSinceUnixEpoch(last_updated_timestamp)));
-  // Every client supports send-tab-to-self these days.
-  specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
-      true);
   specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_type(
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);

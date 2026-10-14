@@ -40,8 +40,6 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   }
 
   // Pull new values for settings that aren't automatically updated.
-  local_device_info_->set_send_tab_to_self_receiving_enabled(
-      sync_client_->GetSendTabToSelfReceivingEnabled());
   local_device_info_->set_glic_experimental_triggering_state(
       sync_client_->GetGlicExperimentalTriggeringState());
   local_device_info_->set_glic_experimental_triggering_version(
@@ -172,7 +170,6 @@ void LocalDeviceInfoProviderImpl::Initialize(
       /*server_determined_model_name=*/std::nullopt, full_hardware_class,
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
-      sync_client_->GetSendTabToSelfReceivingEnabled(),
       sync_client_->GetSendTabToSelfReceivingType(),
       sync_client_->GetLocalSharingInfo(), paask_info,
       last_fcm_registration_token, last_interested_data_types,

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -15,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -766,8 +768,9 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
 
   // Pre-calculate last active timestamps for sorting and filtering.
   std::vector<DeviceWithTimestamp> devices_with_timestamps =
-      GetDevicesWithLastActiveTime(device_info_tracker_->GetAllDeviceInfo(),
-                                   GetSessionTimestamps(session_sync_service_));
+      GetDevicesWithLastActiveTime(
+          device_info_tracker_->GetAllChromeDeviceInfo(),
+          GetSessionTimestamps(session_sync_service_));
 
   // Sort the devices so the most recently active devices are first.
   std::stable_sort(
@@ -778,11 +781,12 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
 
   std::vector<DeviceWithTimestamp> devices;
   for (const auto& entry : devices_with_timestamps) {
-    // Filter out devices that are too old or don't support the feature.
     if (clock_->Now() - entry.last_active > kDeviceExpiration) {
       break;
     }
-    if (ShouldIncludeDevice(*entry.device)) {
+    if (!device_info_tracker_->IsRecentLocalCacheGuid(entry.device->guid())) {
+      CHECK_NE(entry.device->guid(), change_processor()->TrackedCacheGuid(),
+               base::NotFatalUntil::M162);
       devices.push_back(entry);
     }
   }
@@ -983,24 +987,6 @@ std::string SendTabToSelfBridge::GetLocalDeviceName() const {
   }
 
   return syncer::GetDeviceDisplayName(local_device);
-}
-
-bool SendTabToSelfBridge::ShouldIncludeDevice(
-    const syncer::DeviceInfo& device) const {
-  // Don't include this device if it is the local device.
-  if (device_info_tracker_->IsRecentLocalCacheGuid(device.guid())) {
-    return false;
-  }
-
-  DCHECK_NE(device.guid(), change_processor()->TrackedCacheGuid());
-
-  // Don't include devices that have disabled the send tab to self receiving
-  // feature.
-  if (!device.send_tab_to_self_receiving_enabled()) {
-    return false;
-  }
-
-  return true;
 }
 
 void SendTabToSelfBridge::DoGarbageCollection() {

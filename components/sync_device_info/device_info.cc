@@ -75,7 +75,6 @@ DeviceInfo::DeviceInfo(
     const std::string& full_hardware_class,
     base::Time last_updated_timestamp,
     base::TimeDelta pulse_interval,
-    bool send_tab_to_self_receiving_enabled,
     SendTabReceivingType send_tab_to_self_receiving_type,
     const std::optional<SharingInfo>& sharing_info,
     const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
@@ -106,7 +105,6 @@ DeviceInfo::DeviceInfo(
           std::move(android_os_build_fingerprint_prefix)),
       last_updated_timestamp_(last_updated_timestamp),
       pulse_interval_(pulse_interval),
-      send_tab_to_self_receiving_enabled_(send_tab_to_self_receiving_enabled),
       send_tab_to_self_receiving_type_(send_tab_to_self_receiving_type),
       sharing_info_(sharing_info),
       paask_info_(paask_info),
@@ -193,10 +191,6 @@ base::TimeDelta DeviceInfo::pulse_interval() const {
   return pulse_interval_;
 }
 
-bool DeviceInfo::send_tab_to_self_receiving_enabled() const {
-  return send_tab_to_self_receiving_enabled_;
-}
-
 DeviceInfo::SendTabReceivingType DeviceInfo::send_tab_to_self_receiving_type()
     const {
   return send_tab_to_self_receiving_type_;
@@ -264,10 +258,6 @@ void DeviceInfo::set_public_id(const std::string& id) {
 void DeviceInfo::set_full_hardware_class(
     const std::string& full_hardware_class) {
   full_hardware_class_ = full_hardware_class;
-}
-
-void DeviceInfo::set_send_tab_to_self_receiving_enabled(bool new_value) {
-  send_tab_to_self_receiving_enabled_ = new_value;
 }
 
 void DeviceInfo::set_send_tab_to_self_receiving_type(

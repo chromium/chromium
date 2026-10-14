@@ -104,17 +104,12 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
     const std::string& guid,
     const std::string& name,
     base::Time last_updated_timestamp,
-    const std::string& model = "model",
-    bool send_tab_to_self_receiving_enabled = true,
-    syncer::DeviceInfo::SendTabReceivingType send_tab_to_self_receiving_type =
-        syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified) {
+    const std::string& model = "model") {
   return syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
       .WithGuid(guid)
       .WithClientName(name)
       .WithModelName(model)
       .WithLastUpdatedTimestamp(last_updated_timestamp)
-      .WithSendTabToSelfReceivingEnabled(send_tab_to_self_receiving_enabled)
-      .WithSendTabToSelfReceivingType(send_tab_to_self_receiving_type)
       .Build();
 }
 
@@ -1631,25 +1626,30 @@ TEST_F(SendTabToSelfBridgeTest,
                           target_device_info3));
 }
 
-// Tests that only devices that have the send tab to self receiving feature
-// enabled are returned.
+// Verifies that non-Chrome `DeviceInfo` entries (such as Google Play Services
+// clients with an empty `chrome_version`) are excluded from
+// `GetTargetDeviceInfoSortedList()`.
 TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_OnlyReceivingEnabled) {
+       GetTargetDeviceInfoSortedList_ExcludesNonChromeDevices) {
   InitializeBridge();
 
-  std::unique_ptr<syncer::DeviceInfo> enabled_device =
-      CreateDevice("enabled_guid", "enabled_device_name", clock()->Now());
-  AddTestDevice(enabled_device.get());
+  std::unique_ptr<syncer::DeviceInfo> chrome_device =
+      CreateDevice("chrome_guid", "chrome_device_name", clock()->Now());
+  AddTestDevice(chrome_device.get());
 
-  std::unique_ptr<syncer::DeviceInfo> disabled_device =
-      CreateDevice("disabled_guid", "disabled_device_name", clock()->Now(),
-                   "model", /*send_tab_to_self_receiving_enabled=*/false);
-  AddTestDevice(disabled_device.get());
+  std::unique_ptr<syncer::DeviceInfo> non_chrome_device =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("non_chrome_guid")
+          .WithClientName("non_chrome_device_name")
+          .WithChromeVersion("")
+          .WithLastUpdatedTimestamp(clock()->Now())
+          .Build();
+  AddTestDevice(non_chrome_device.get());
 
   RemoteDeviceInfo target_device_info(
-      enabled_device->client_name(), enabled_device->guid(),
-      enabled_device->form_factor(), enabled_device->os_type(),
-      enabled_device->last_updated_timestamp(),
+      chrome_device->client_name(), chrome_device->guid(),
+      chrome_device->form_factor(), chrome_device->os_type(),
+      chrome_device->last_updated_timestamp(),
       /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
@@ -2153,7 +2153,6 @@ TEST_F(SendTabToSelfBridgeTest,
           .WithClientName("model1")
           .WithModelName("model1")
           .WithLastUpdatedTimestamp(clock()->Now())
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
   ASSERT_EQ("Manufacturer Phone", syncer::GetDeviceDisplayName(device1.get()));
   AddTestDevice(device1.get());
@@ -2164,7 +2163,6 @@ TEST_F(SendTabToSelfBridgeTest,
           .WithClientName("model2")
           .WithModelName("model2")
           .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
   ASSERT_EQ("Manufacturer Phone", syncer::GetDeviceDisplayName(device2.get()));
   AddTestDevice(device2.get());
@@ -2192,7 +2190,6 @@ TEST_F(SendTabToSelfBridgeTest,
           .WithModelName("Pixel 6")
           .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
           .WithLastUpdatedTimestamp(clock()->Now())
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
   AddTestDevice(device1.get());
 
@@ -2204,7 +2201,6 @@ TEST_F(SendTabToSelfBridgeTest,
           .WithModelName("Pixel 6")
           .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
           .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
   AddTestDevice(device2.get());
 
@@ -2249,38 +2245,15 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
 }
 
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_DeduplicationAfterFiltering) {
-  InitializeBridge();
-
-  // Create two devices with the same full name "A".
-  // The more recent one is disabled, the older one is enabled.
-  // If we deduplicate before filtering, we would pick the disabled one and then
-  // filter it out, leaving 0 devices.
-  // If we filter before deduplicating, we pick the enabled one.
-
-  std::unique_ptr<syncer::DeviceInfo> device_recent_disabled =
-      CreateDevice("guid_recent", "A", clock()->Now(), "model",
-                   /*send_tab_to_self_receiving_enabled=*/false);
-  std::unique_ptr<syncer::DeviceInfo> device_older_enabled =
-      CreateDevice("guid_older", "A", clock()->Now() - base::Days(1));
-
-  AddTestDevice(device_recent_disabled.get());
-  AddTestDevice(device_older_enabled.get());
-
-  std::vector<RemoteDeviceInfo> list =
-      bridge()->GetTargetDeviceInfoSortedList();
-  ASSERT_EQ(1ul, list.size());
-  EXPECT_EQ("guid_older", list[0].cache_guid);
-}
-
+// Verifies that `GetTargetDeviceInfoSortedList()` preserves the order from
+// `GetAllChromeDeviceInfo()` when two devices have identical timestamps.
 TEST_F(SendTabToSelfBridgeTest,
        GetTargetDeviceInfoSortedList_StableSortIdenticalTimestamps) {
   InitializeBridge();
 
   const base::Time now = clock()->Now();
-  // Device 1 and Device 2 have exactly the same timestamp.
-  // We add Device 1 first, then Device 2.
+  // Device 1 and Device 2 have the same timestamp. Add Device 1 first, then
+  // Device 2.
   std::unique_ptr<syncer::DeviceInfo> device1 =
       CreateDevice("guid1", "Device B", now);
   std::unique_ptr<syncer::DeviceInfo> device2 =
@@ -2291,9 +2264,9 @@ TEST_F(SendTabToSelfBridgeTest,
 
   std::vector<RemoteDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
-  // Stable sort should preserve the order from GetAllDeviceInfo if timestamps
-  // are equal. FakeDeviceInfoTracker::GetAllDeviceInfo usually returns in order
-  // of addition. This is a safety check for deterministic behavior.
+  // Stable sort should preserve the order from `GetAllChromeDeviceInfo()` if
+  // timestamps are equal. `FakeDeviceInfoTracker::GetAllChromeDeviceInfo()`
+  // returns devices in order of addition.
   EXPECT_THAT(list, ElementsAre(Field(&RemoteDeviceInfo::cache_guid, "guid1"),
                                 Field(&RemoteDeviceInfo::cache_guid, "guid2")));
 }
@@ -2306,7 +2279,6 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
           .WithGuid("desktop_guid")
           .WithClientName("desktop")
           .WithLastUpdatedTimestamp(clock()->Now())
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
 
   std::unique_ptr<syncer::DeviceInfo> phone =
@@ -2314,7 +2286,6 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
           .WithGuid("phone_guid")
           .WithClientName("phone")
           .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
 
   AddTestDevice(desktop.get());
@@ -2337,7 +2308,6 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
           .WithGuid("desktop_guid")
           .WithClientName("desktop")
           .WithLastUpdatedTimestamp(clock()->Now())
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
 
   AddTestDevice(desktop.get());
@@ -2450,7 +2420,6 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsDeviceFormFactorCombination) {
       syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
           .WithGuid("target_phone_guid")
           .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
-          .WithSendTabToSelfReceivingEnabled(true)
           .Build();
   AddTestDevice(target_device.get());
 

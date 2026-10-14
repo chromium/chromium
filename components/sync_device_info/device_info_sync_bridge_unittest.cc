@@ -154,9 +154,6 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
              arg.signin_scoped_device_id() &&
          expected_specifics.model() == arg.model_name() &&
          expected_specifics.manufacturer() == arg.manufacturer_name() &&
-         expected_specifics.feature_fields()
-                 .send_tab_to_self_receiving_enabled() ==
-             arg.send_tab_to_self_receiving_enabled() &&
          ToDeviceInfoSendTabReceivingType(
              expected_specifics.feature_fields()
                  .send_tab_to_self_receiving_type()) ==
@@ -479,8 +476,6 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         kLocalDeviceFormFactor, SigninScopedDeviceIdForSuffix(kLocalSuffix),
         manufacturer_name, model_name, server_determined_model_name,
         full_hardware_class, base::Time(), DeviceInfoUtil::GetPulseInterval(),
-        /*send_tab_to_self_receiving_enabled=*/
-        true,
         /*send_tab_to_self_receiving_type=*/
         DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
         DeviceInfo::SharingInfo(

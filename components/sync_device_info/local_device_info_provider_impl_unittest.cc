@@ -47,7 +47,6 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
   ~MockDeviceInfoSyncClient() override = default;
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
-  MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
   MOCK_METHOD(DeviceInfo::SendTabReceivingType,
               GetSendTabToSelfReceivingType,
               (),
@@ -199,24 +198,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, GetSigninScopedDeviceId) {
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_EQ(kSigninScopedDeviceId,
             provider_->GetLocalDeviceInfo()->signin_scoped_device_id());
-}
-
-TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingEnabled) {
-  ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingEnabled())
-      .WillByDefault(Return(true));
-
-  InitializeProvider();
-
-  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_TRUE(
-      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_enabled());
-
-  ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingEnabled())
-      .WillByDefault(Return(false));
-
-  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_FALSE(
-      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_enabled());
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingType) {
@@ -435,8 +416,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
       /*server_determined_model_name=*/std::nullopt, "full_hardware_class",
       base::Time(), base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/
-      true,
       /*send_tab_to_self_receiving_type=*/
       DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,

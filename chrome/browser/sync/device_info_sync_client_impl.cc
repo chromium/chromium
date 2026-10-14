@@ -53,11 +53,6 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 }
 
 // syncer::DeviceInfoSyncClient:
-bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  return true;
-}
-
-// syncer::DeviceInfoSyncClient:
 syncer::DeviceInfo::SendTabReceivingType
 DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingType() const {
   return syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified;
