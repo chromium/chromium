@@ -65,6 +65,8 @@ const char kTestOrigin[] = "https://example.com";
 const char kTestServiceWorkerUrl[] = "https://example.com/sw.js";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
+const char kBadMessageEmptyNotificationId[] =
+    "Received an empty notification ID.";
 
 class MockNonPersistentNotificationListener
     : public blink::mojom::NonPersistentNotificationListener {
@@ -922,6 +924,21 @@ TEST_F(BlinkNotificationServiceImplTest, RejectsTriggerTimestampOverAYear) {
 
   EXPECT_EQ(1u, bad_messages_.size());
   EXPECT_EQ(kBadMessageInvalidNotificationTriggerTimestamp, bad_messages_[0]);
+}
+
+TEST_F(BlinkNotificationServiceImplTest,
+       ClosePersistentNotificationRejectsEmptyId) {
+  ASSERT_TRUE(bad_messages_.empty());
+
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  base::RunLoop run_loop;
+  notification_service_remote_.set_disconnect_handler(run_loop.QuitClosure());
+  notification_service_remote_->ClosePersistentNotification("");
+  run_loop.Run();
+
+  EXPECT_EQ(1u, bad_messages_.size());
+  EXPECT_EQ(kBadMessageEmptyNotificationId, bad_messages_[0]);
 }
 
 }  // namespace content

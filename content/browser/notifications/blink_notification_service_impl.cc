@@ -44,6 +44,8 @@ const char kBadMessageNonPersistentNotificationFromServiceWorker[] =
     "Received a non-persistent notification from a service worker.";
 const char kBadMessageEmptyNotificationToken[] =
     "Received an empty notification token.";
+const char kBadMessageEmptyNotificationId[] =
+    "Received an empty notification ID.";
 
 bool FilterByTag(const std::string& filter_tag,
                  const NotificationDatabaseData& database_data) {
@@ -371,6 +373,12 @@ void BlinkNotificationServiceImpl::ClosePersistentNotification(
 
   if (CheckPermissionStatus() != blink::mojom::PermissionStatus::GRANTED)
     return;
+
+  if (notification_id.empty()) {
+    receiver_.ReportBadMessage(kBadMessageEmptyNotificationId);
+    OnConnectionError();
+    return;
+  }
 
   notification_context_->DeleteNotificationData(
       notification_id, storage_key_.origin().GetURL(),
