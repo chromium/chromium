@@ -9,8 +9,8 @@ import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/com
 import {BaseLayout} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -96,8 +96,8 @@ suite('ComposeboxMatch', () => {
         primaryText: 'test contents',
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
         image: {url: 'https://example.com/image.png', dominantColor: ''},
+        style: SuggestStyle.kRichImage,
       }),
-      suggestStyle: SuggestStyle.kRichImage,
     });
     await microtasksFinished();
 
@@ -154,8 +154,8 @@ suite('ComposeboxMatch', () => {
         matchElement.match = createAutocompleteMatch({
           suggestTemplate: createSuggestTemplateInfo({
             image: {url: 'https://example.com/image.png', dominantColor: ''},
+            style: SuggestStyle.kRichImage,
           }),
-          suggestStyle: SuggestStyle.kRichImage,
         });
         await microtasksFinished();
 
@@ -170,7 +170,8 @@ suite('ComposeboxMatch', () => {
         // Updating to a kRichImage match without an imageUrl transitions back
         // to the default text base-layout.
         matchElement.match = createAutocompleteMatch({
-          suggestStyle: SuggestStyle.kRichImage,
+          suggestTemplate:
+              createSuggestTemplateInfo({style: SuggestStyle.kRichImage}),
         });
         await microtasksFinished();
 
@@ -188,8 +189,8 @@ suite('ComposeboxMatch', () => {
         matchElement.match = createAutocompleteMatch({
           suggestTemplate: createSuggestTemplateInfo({
             image: {url: 'https://example.com/image.png', dominantColor: ''},
+            style: SuggestStyle.kDefault,
           }),
-          suggestStyle: SuggestStyle.kDefault,
         });
         await microtasksFinished();
 
@@ -206,8 +207,8 @@ suite('ComposeboxMatch', () => {
     matchElement.match = createAutocompleteMatch({
       suggestTemplate: createSuggestTemplateInfo({
         image: {url: 'https://example.com/image.png', dominantColor: ''},
+        style: SuggestStyle.kRichImage,
       }),
-      suggestStyle: SuggestStyle.kRichImage,
     });
     await microtasksFinished();
 
@@ -345,10 +346,10 @@ suite('ComposeboxMatch', () => {
     matchElement.richImageSuggestionsEnabled = true;
     matchElement.matchIndex = 1;
     matchElement.match = createAutocompleteMatch({
-      suggestStyle: SuggestStyle.kRichImage,
       suggestTemplate: createSuggestTemplateInfo({
         primaryText: 'test contents',
         image: {url: 'https://example.com/image.png', dominantColor: ''},
+        style: SuggestStyle.kRichImage,
       }),
     });
     matchElement.loading = true;

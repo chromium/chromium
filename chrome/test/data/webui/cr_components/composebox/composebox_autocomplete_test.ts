@@ -12,8 +12,9 @@ import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_component
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
@@ -786,11 +787,13 @@ suite('ComposeboxAutocomplete', () => {
             }),
             createSearchMatchForTesting({
               fillIntoEdit: 'caterpillar',
-              suggestStyle: SuggestStyle.kDefault,
+              suggestTemplate:
+                  createSuggestTemplateInfo({style: SuggestStyle.kDefault}),
             }),
             createSearchMatchForTesting({
               fillIntoEdit: 'cat image prompt',
-              suggestStyle: SuggestStyle.kRichImage,
+              suggestTemplate:
+                  createSuggestTemplateInfo({style: SuggestStyle.kRichImage}),
             }),
           ];
           searchboxCallbackRouterRemote.autocompleteResultChanged(

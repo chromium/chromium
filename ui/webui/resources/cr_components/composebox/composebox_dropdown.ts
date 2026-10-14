@@ -9,7 +9,8 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {RenderType, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {computeImageUrl} from './common.js';
@@ -360,7 +361,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
   protected isMatchLoading_(match: AutocompleteMatch): boolean {
     return this.richImageSuggestionsEnabled &&
-        match.suggestStyle === SuggestStyle.kRichImage &&
+        match.suggestTemplate.style === SuggestStyle.kRichImage &&
         Boolean(match.suggestTemplate.image?.url) && this.isImageBatchLoading_;
   }
 
@@ -391,7 +392,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
     const imageMatches = this.result.matches.filter(
         (m, index) => !this.isMatchHidden_(index) &&
-            m.suggestStyle === SuggestStyle.kRichImage &&
+            m.suggestTemplate.style === SuggestStyle.kRichImage &&
             Boolean(m.suggestTemplate.image?.url));
     if (imageMatches.length === 0 ||
         imageMatches.every(

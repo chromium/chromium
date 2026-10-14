@@ -125,6 +125,10 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
       CreateClassifications(secondary_text_class);
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
   suggest_template->image = GetImage(match);
+  if (match.suggest_template && match.suggest_template->has_style()) {
+    suggest_template->style =
+        static_cast<mojom::SuggestStyle>(match.suggest_template->style());
+  }
   return suggest_template;
 }
 

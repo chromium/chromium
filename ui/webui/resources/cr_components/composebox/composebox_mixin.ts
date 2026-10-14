@@ -16,7 +16,8 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {InputSource, QueryActionOverride, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, InputMethod, SuggestStyle, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, InputMethod, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -671,7 +672,8 @@ export const ComposeboxEmbedderMixin =
               changedProperties as Map<PropertyKey, unknown>;
           if (changedPrivateProperties.has('selectedMatchIndex')) {
             const isImageSuggestion = this.richImageSuggestionsEnabled &&
-                this.selectedMatch?.suggestStyle === SuggestStyle.kRichImage;
+                this.selectedMatch?.suggestTemplate.style ===
+                    SuggestStyle.kRichImage;
             if (this.selectedMatch && !isImageSuggestion) {
               // Update the input.
               if (this.input !== this.selectedMatch.fillIntoEdit) {
@@ -986,7 +988,8 @@ export const ComposeboxEmbedderMixin =
             // `onSelectedMatchIndexChanged_` is not called).
             this.selectedMatch = this.result.matches[this.selectedMatchIndex]!;
             const isImageSuggestion = this.richImageSuggestionsEnabled &&
-                this.selectedMatch.suggestStyle === SuggestStyle.kRichImage;
+                this.selectedMatch.suggestTemplate.style ===
+                    SuggestStyle.kRichImage;
             if (!isImageSuggestion) {
               this.input = this.selectedMatch.fillIntoEdit;
             }

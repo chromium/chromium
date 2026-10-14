@@ -56,6 +56,20 @@ struct FormattedString {
   mojo_base.mojom.String16? a11y_text;
 };
 
+// LINT.IfChange(SuggestStyle)
+// Style of the suggestion match as reported in SuggestTemplateInfo.
+// NOTE: Must match StandardSuggestStyle in
+// //third_party/omnibox_proto/suggest_template_info.proto exactly as values
+// are cast directly between them.
+enum SuggestStyle {
+  kUnspecified = 0,
+  kDefault = 1,
+  kEnriched = 2,
+  kAnnotated = 3,
+  kRichImage = 4,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:StandardSuggestStyle)
+
 // Where to display the secondary text relative to the primary text.
 // Maps to SuggestTemplateInfo.SecondaryTextPlacement in
 // //third_party/omnibox_proto/suggest_template_info.proto.
@@ -104,4 +118,6 @@ struct SuggestTemplateInfo {
       SecondaryTextPlacement.kUnspecified;
   // The image to display with the suggestion, if any.
   Image? image;
+  // The style of the suggestion, as provided by the server.
+  SuggestStyle style = SuggestStyle.kUnspecified;
 };

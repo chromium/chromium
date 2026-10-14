@@ -12,10 +12,9 @@
  * these Mojo-based searchbox types.
  */
 
-import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Action, AutocompleteMatch, AutocompleteResult, InputKeywordModel, MatchKeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import type {FormattedString, FormattedStringFragment, SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 export function createAutocompleteMatch(
@@ -41,7 +40,6 @@ export function createAutocompleteMatch(
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,
-    suggestStyle: SuggestStyle.kUnspecified,
     suggestTemplate: createSuggestTemplateInfo(),
     urlEmphasis: null,
   };
@@ -64,6 +62,7 @@ export function createSuggestTemplateInfo(
     secondaryTextClass: [{offset: 0, style: 0}],
     secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
     image: null,
+    style: SuggestStyle.kUnspecified,
   };
 
   return Object.assign(base, modifiers);
