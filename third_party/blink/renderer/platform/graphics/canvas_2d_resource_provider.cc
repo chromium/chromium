@@ -1040,6 +1040,13 @@ SkSurfaceProps Canvas2DResourceProvider::GetSkSurfaceProps() const {
 
 void Canvas2DResourceProvider::ClearAtCreation() {
   DCHECK(IsValid());
+  if (!is_accelerated_) {
+    GetSkSurface()->getCanvas()->clear(GetAlphaType() == kOpaque_SkAlphaType
+                                           ? SkColors::kBlack
+                                           : SkColors::kTransparent);
+    return;
+  }
+
   MemoryManagedPaintRecorder recorder(Size(), nullptr);
   if (GetAlphaType() == kOpaque_SkAlphaType) {
     recorder.getRecordingCanvas().clear(SkColors::kBlack);
