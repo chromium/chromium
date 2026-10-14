@@ -528,3 +528,46 @@ async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html, snap
             },
         },
     ) == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_evaluate_after_popup_load_wait_for_load(websocket, context_id, html):
+    """Verify that script.evaluate answers in a popup when waiting for load event."""
+    popup_url = html("<p>Popup</p>")
+    opener_url = html(f"<button onclick=\"window.open('{popup_url}')\">Open</button>")
+
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "context": context_id,
+            "url": opener_url,
+            "wait": "complete"
+        }
+    })
+
+    await subscribe(websocket, ["browsingContext.contextCreated", "browsingContext.load"])
+
+    await send_JSON_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "document.querySelector('button').click()",
+            "target": {"context": context_id},
+            "awaitPromise": False,
+            "userActivation": True
+        }
+    })
+
+    event = await wait_for_event(websocket, "browsingContext.contextCreated")
+    new_context = event["params"]["context"]
+
+    await wait_for_event(websocket, "browsingContext.load")
+
+    res = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "document.title",
+            "target": {"context": new_context},
+            "awaitPromise": False
+        }
+    })
+    assert res["result"] == {"type": "string", "value": ""}

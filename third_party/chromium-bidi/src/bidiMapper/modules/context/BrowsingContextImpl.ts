@@ -502,6 +502,20 @@ export class BrowsingContextImpl {
         params.type,
       );
 
+      // If the execution context was reused (e.g. navigating from initial about:blank
+      // to a same-site URL), no `Runtime.executionContextCreated` event is emitted.
+      // If we reset the default realm deferred in `Page.frameStartedNavigating`,
+      // we must resolve it here to prevent it from hanging forever.
+      if (!this.#defaultRealmDeferred.isFinished) {
+        const defaultRealms = this.#realmStorage.findRealms({
+          browsingContextId: this.id,
+          sandbox: null,
+        });
+        if (defaultRealms.length > 0) {
+          this.#defaultRealmDeferred.resolve(defaultRealms[0]!);
+        }
+      }
+
       // At the point the page is initialized, all the nested iframes from the
       // previous page are detached and realms are destroyed.
       // Delete children from context.
