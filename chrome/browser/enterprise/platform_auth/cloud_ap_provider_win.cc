@@ -20,10 +20,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -47,7 +45,6 @@
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
@@ -437,23 +434,6 @@ void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
 void CloudApProviderWin::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_auth::kCloudApAuthDataQueueing)) {
-    get_data_subscriptions_.push_back(
-        on_get_data_callback_list_.Add(std::move(callback)));
-    if (!base::ThreadPool::CreateCOMSTATaskRunner(
-             {base::TaskPriority::USER_BLOCKING,
-              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-              base::MayBlock()})
-             ->PostTaskAndReplyWithResult(
-                 FROM_HERE, base::BindOnce(&GetAuthData, url),
-                 base::BindOnce(&CloudApProviderWin::OnGetDataCallback,
-                                base::Unretained(this)))) {
-      OnGetDataCallback(net::HttpRequestHeaders());
-    }
-    return;
-  }
-
   if (total_enqueued_requests_ >= kMaxQueueSize) {
     VLOG_POLICY(1, EXTENSIBLE_SSO)
         << "[CloudAPAuthEnabled] Enqueued requests limit (" << kMaxQueueSize
@@ -475,11 +455,6 @@ void CloudApProviderWin::GetData(
   if (is_first_request) {
     StartFetch(url);
   }
-}
-
-void CloudApProviderWin::OnGetDataCallback(
-    net::HttpRequestHeaders auth_headers) {
-  on_get_data_callback_list_.Notify(std::move(auth_headers));
 }
 
 // static

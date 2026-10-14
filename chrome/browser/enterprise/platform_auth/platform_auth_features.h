@@ -13,10 +13,6 @@ BASE_DECLARE_FEATURE(kEnableExtensibleEnterpriseSSO);
 
 BASE_DECLARE_FEATURE(kAndroidEntraSSO);
 
-// Kill switch for the new data queuing and concurrent request handling in
-// CloudApProviderWin. Enabled by default. See http://crbug.com/520389619.
-BASE_DECLARE_FEATURE(kCloudApAuthDataQueueing);
-
 // Enables extensible enterprise SSO support for the Ping Identity IdP.
 BASE_DECLARE_FEATURE(kPingSso);
 
