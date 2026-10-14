@@ -909,17 +909,19 @@ bool KeyframeEffect::AffectsImportantProperty() const {
 ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
   // If the associated animation has been removed, it needs to be temporarily
   // reintroduced to the effect stack in order to be including in the
-  // interpolations map.
-  bool removed = owner_->ReplaceStateRemoved();
-  if (removed)
+  // interpolations map. We also check to see if progress is available, as we
+  // cannot commit styles if the animation was canceled after being removed.
+  bool reapply_effects = owner_->ReplaceStateRemoved() && !!Progress();
+  if (reapply_effects) {
     ApplyEffects();
+  }
 
   ActiveInterpolationsMap results = EffectStack::ActiveInterpolations(
       &target()->GetElementAnimations()->GetEffectStack(),
       /*new_animations=*/nullptr,
       /*suppressed_animations=*/nullptr, kDefaultPriority, this);
 
-  if (removed) {
+  if (reapply_effects) {
     ClearEffects();
   }
 
