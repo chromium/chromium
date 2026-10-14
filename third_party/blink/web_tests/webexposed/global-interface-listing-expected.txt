@@ -6836,9 +6836,14 @@ interface ModelContext : EventTarget
     method executeTool
     method getTools
     method registerTool
+    method resumeTool
     setter ontoolactivated
     setter ontoolcancel
     setter ontoolchange
+interface ModelContextToolInvocation
+    attribute @@toStringTag
+    method constructor
+    method requestToken
 interface Mojo
     static method bindInterface
     static method createDataPipe

@@ -26,6 +26,7 @@ dictionary ToolAnnotations {
 
 dictionary ToolExecuteCallbackOptions {
   required AbortSignal signal;
+  [RuntimeEnabled=WebMCPContinuations] ModelContextToolInvocation invocation;
 };
 
 // The structure of `inputObject` is expected to match the structure described in

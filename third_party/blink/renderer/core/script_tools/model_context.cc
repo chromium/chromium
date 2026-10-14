@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
+#include "third_party/blink/renderer/core/script_tools/model_context_tool_invocation.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -795,9 +796,25 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
     task_scope = tracker->SetTaskStateVariable(
         MakeGarbageCollected<ScriptToolContext>(invocation_id));
   }
+
+  // Insert into `pending_executions_` before invoking `tool_function` so that
+  // synchronous calls to `options.invocation.requestToken()` inside the
+  // callback can find the active execution.
+  pending_executions_.insert(invocation_id,
+                             PendingExecution{
+                                 .tool_name = name,
+                                 .callback = std::move(tool_executed_cb),
+                                 .abort_controller = abort_controller,
+                             });
+
   ToolExecuteCallbackOptions* execute_options =
       ToolExecuteCallbackOptions::Create();
   execute_options->setSignal(abort_controller->signal());
+  if (RuntimeEnabledFeatures::WebMCPContinuationsEnabled(
+          GetExecutionContext())) {
+    execute_options->setInvocation(
+        MakeGarbageCollected<ModelContextToolInvocation>(this, invocation_id));
+  }
   v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
       tool_function->Invoke(nullptr, std::move(script_object), execute_options);
 
@@ -811,13 +828,6 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   } else {
     result = maybe_result.FromJust();
   }
-
-  pending_executions_.insert(invocation_id,
-                             PendingExecution{
-                                 .tool_name = name,
-                                 .callback = std::move(tool_executed_cb),
-                                 .abort_controller = abort_controller,
-                             });
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
@@ -1212,6 +1222,77 @@ void ModelContext::OnExecuteScriptToolCompleted(
     // reasons.
     resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError, result);
   }
+}
+
+ScriptPromise<IDLString> ModelContext::RequestContinuationToken(
+    base::PassKey<ModelContextToolInvocation>,
+    ScriptState* script_state,
+    const base::UnguessableToken& invocation_id,
+    bool& did_request_token) {
+  if (!document_->IsActive()) {
+    return ScriptPromise<IDLString>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           kInactiveDocumentError));
+  }
+
+  // The `kTools` permission has already been checked for the execution context
+  // associated with `script_state`.
+  CHECK(
+      ExecutionContext::From(script_state)
+          ->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kTools));
+
+  auto it = pending_executions_.find(invocation_id);
+  if (it == pending_executions_.end() || did_request_token) {
+    return ScriptPromise<IDLString>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "Cannot request a continuation token for a tool that isn't running "
+            "or more than once per invocation."));
+  }
+
+  did_request_token = true;
+
+  return ScriptPromise<IDLString>::RejectWithDOMException(
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kNotSupportedError,
+                        "Continuation tokens are not yet implemented."));
+}
+
+ScriptPromise<IDLUndefined> ModelContext::resumeTool(
+    ScriptState* script_state,
+    const String& token_str,
+    V8ToolExecuteCallback* callback) {
+  if (!document_->IsActive()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           kInactiveDocumentError));
+  }
+
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kTools)) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
+                                           kPermissionPolicyNotEnabledError));
+  }
+
+  std::optional<base::UnguessableToken> token =
+      base::UnguessableToken::DeserializeFromString(token_str.Utf8());
+  if (!token.has_value()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidAccessError,
+                          "Invalid or already redeemed continuation token."));
+  }
+
+  return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kInvalidAccessError,
+                        "Continuation token could not be redeemed."));
 }
 
 void ModelContext::PendingExecution::Trace(Visitor* visitor) const {

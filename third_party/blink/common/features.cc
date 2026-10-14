@@ -2421,6 +2421,12 @@ BASE_FEATURE(kWebFontsCacheAwareTimeoutAdaption,
 #endif
 );
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kWebMCPContinuationTimeout,
+                   &kWebMCPContinuations,
+                   "continuation_timeout",
+                   base::Seconds(30));
+
 // Causes WebRTC to replace host ICE candidate IP addresses with generated
 // names ending in ".local" and resolve them using mDNS.
 // http://crbug.com/878465

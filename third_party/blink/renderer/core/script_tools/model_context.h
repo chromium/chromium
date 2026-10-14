@@ -34,6 +34,7 @@ class SourceLocation;
 class ModelContextGetToolOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
+class ModelContextToolInvocation;
 class RegisteredTool;
 class V8ToolExecuteCallback;
 
@@ -173,6 +174,14 @@ class CORE_EXPORT ModelContext : public EventTarget,
       RegisteredTool* tool,
       ScriptObject input_object,
       const ExecuteToolOptions* options = nullptr);
+  ScriptPromise<IDLUndefined> resumeTool(ScriptState* script_state,
+                                         const String& token,
+                                         V8ToolExecuteCallback* callback);
+  ScriptPromise<IDLString> RequestContinuationToken(
+      base::PassKey<ModelContextToolInvocation>,
+      ScriptState* script_state,
+      const base::UnguessableToken& invocation_id,
+      bool& did_request_token);
   // Unregisters the tool identified by `tool_id`, if it is still registered.
   // This is the single unregistration entry point for both imperative and
   // declarative tools. Unlike a name-keyed lookup, this cannot accidentally
@@ -199,7 +208,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
   void PauseExecution();
 
-  // mojom::blink::ScriptToolReceiver implementation:
+  // mojom::blink::ModelContext implementation:
   void NotifyToolChange() override;
   void ExecuteScriptTool(const base::UnguessableToken& invocation_id,
                          const String& name,

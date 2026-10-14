@@ -74,6 +74,10 @@ dictionary ModelContextGetToolOptions {
       optional object inputObject,
       optional ExecuteToolOptions options = {}
   );
+  [CallWith=ScriptState, RuntimeEnabled=WebMCPContinuations] Promise<undefined> resumeTool(
+      DOMString token,
+      ToolExecuteCallback callback
+  );
   attribute EventHandler ontoolchange;
   attribute EventHandler ontoolactivated;
   attribute EventHandler ontoolcancel;
