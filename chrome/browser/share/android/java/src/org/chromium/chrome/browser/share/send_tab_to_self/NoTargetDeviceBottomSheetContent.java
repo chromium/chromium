@@ -17,10 +17,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
 @NullMarked
 class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final ViewGroup mContentView;
 
     public NoTargetDeviceBottomSheetContent(Context context, Profile profile) {
@@ -51,6 +55,11 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
