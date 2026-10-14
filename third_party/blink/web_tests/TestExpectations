@@ -2090,7 +2090,6 @@ crbug.com/530645748 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/co
 # `wdspec` tests
 external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Failure ]  # Flaky output
 crbug.com/1502331 external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py [ Failure Pass ]
-external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Failure Pass ]
 crbug.com/1507773 external/wpt/webdriver/tests/bidi/script/call_function/remote_values.py [ Failure Pass ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Failure Pass ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_elements/find.py [ Failure Pass ]
@@ -6673,9 +6672,6 @@ crbug.com/1511492 [ Debug Linux ] external/wpt/pointerevents/pointerevent_contex
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 
-# Gardener 2023-12-19
-crbug.com/1512897 external/wpt/webdriver/tests/bidi/network/combined/network_events.py [ Failure ] # Flaky
-
 # Gardener 2023-12-21
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
 
@@ -8814,7 +8810,6 @@ crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-c
 # Gardener 2026-09-24
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass Timeout ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic/simulate_characteristic.py [ Failure Pass ]
-crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_drag.py [ Failure Pass ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure Pass ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Crash Failure Pass Timeout ]
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
