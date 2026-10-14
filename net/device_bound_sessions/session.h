@@ -143,6 +143,9 @@ class NET_EXPORT Session {
   // Whether the URL is in-scope for the session.
   bool IncludesUrl(const GURL& url) const;
 
+  // Whether `origin` has any URL that is in-scope for the session.
+  bool IsVisibleToOrigin(const url::Origin& origin) const;
+
   // Whether a request initiated by `initiator` is allowed to trigger a
   // refresh for this session.
   bool AllowedToInitiateRefresh(

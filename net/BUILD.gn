@@ -2459,6 +2459,13 @@ static_library("test_support") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [
+      "device_bound_sessions/mock_session_service.cc",
+      "device_bound_sessions/mock_session_service.h",
+    ]
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
@@ -3774,8 +3781,6 @@ target(_test_target_type, "net_unittests") {
       "device_bound_sessions/generate_key_param_unittest.cc",
       "device_bound_sessions/host_patterns_unittest.cc",
       "device_bound_sessions/jwk_utils_unittest.cc",
-      "device_bound_sessions/mock_session_service.cc",
-      "device_bound_sessions/mock_session_service.h",
       "device_bound_sessions/mock_session_store.cc",
       "device_bound_sessions/mock_session_store.h",
       "device_bound_sessions/registration_fetcher_param_unittest.cc",

@@ -67,6 +67,10 @@ class NET_EXPORT SessionInclusionRules final {
   // conditions are met).
   InclusionResult EvaluateRequestUrl(const GURL& url) const;
 
+  // Returns true if at least one URL on `origin` evaluates to kInclude under
+  // EvaluateRequestUrl().
+  bool MayIncludeOrigin(const url::Origin& origin) const;
+
   // Returns whether a request with initiator `initiator` is allowed to trigger
   // a refresh by default.
   bool AllowsRefreshForInitiator(const url::Origin& initiator) const;

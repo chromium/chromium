@@ -738,4 +738,195 @@ TEST_F(SessionInclusionRulesTest, ToDisplay) {
   }
 }
 
+// A site-scoped session that excludes a whole host is not visible there, but
+// stays visible on the rest of the site.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginIncludeSiteExcludedHost) {
+  url::Origin site_origin = url::Origin::Create(GURL("https://example.com"));
+  AssertDomainAndRegistry(site_origin, "example.com");
+  SessionParams::Scope params{
+      .include_site = true,
+      .specifications = {{RuleType::kExclude, "untrusted.example.com", "/"}},
+  };
+  ASSERT_OK_AND_ASSIGN(
+      auto rules, SessionInclusionRules::Create(site_origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://untrusted.example.com"))));
+  EXPECT_TRUE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://other.example.com"))));
+}
+
+// A newer include rule wins over an older exclude of the whole host.
+TEST_F(SessionInclusionRulesTest,
+       MayIncludeOriginNewerIncludeOverridesExclude) {
+  url::Origin origin = url::Origin::Create(GURL("https://trusted.example.com"));
+  SessionParams::Scope params{
+      .specifications = {{RuleType::kExclude, "trusted.example.com", "/"},
+                         {RuleType::kInclude, "trusted.example.com",
+                          "/only_trusted_path"}},
+  };
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_TRUE(rules.MayIncludeOrigin(origin));
+}
+
+// An include rule is not effective when a newer exclude covers its whole path,
+// and an older exclude of "/" hides every other path.
+TEST_F(SessionInclusionRulesTest,
+       MayIncludeOriginNewerExcludeCoversOlderInclude) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SessionParams::Scope params{
+      .specifications = {{RuleType::kExclude, "example.com", "/"},
+                         {RuleType::kInclude, "example.com", "/app/x"},
+                         {RuleType::kExclude, "example.com", "/app"}},
+  };
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(origin));
+}
+
+// Rules are read newest first for a site-scoped session.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginSiteScopeOrdering) {
+  url::Origin site_origin = url::Origin::Create(GURL("https://example.com"));
+  AssertDomainAndRegistry(site_origin, "example.com");
+  SessionParams::Scope params{
+      .include_site = true,
+      .specifications = {{RuleType::kInclude, "b.example.com", "/app"},
+                         {RuleType::kExclude, "b.example.com", "/"}},
+  };
+  ASSERT_OK_AND_ASSIGN(
+      auto rules, SessionInclusionRules::Create(site_origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://b.example.com"))));
+}
+
+// Rules are read newest first for an origin-scoped session.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginOriginScopeOrdering) {
+  url::Origin origin = url::Origin::Create(GURL("https://b.example.com"));
+  SessionParams::Scope params{
+      .specifications = {{RuleType::kInclude, "b.example.com", "/app"},
+                         {RuleType::kExclude, "b.example.com", "/"}},
+  };
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(origin));
+}
+
+// A wildcard include rule does not widen an origin-scoped session to sibling
+// origins.
+TEST_F(SessionInclusionRulesTest,
+       MayIncludeOriginOriginScopedWildcardStaysOnOrigin) {
+  url::Origin origin = url::Origin::Create(GURL("https://a.example.com"));
+  SessionParams::Scope params{
+      .specifications = {{RuleType::kInclude, "*.example.com", "/"}},
+  };
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://b.example.com"))));
+  EXPECT_TRUE(rules.MayIncludeOrigin(origin));
+}
+
+// A site-scoped session with no rules is visible on every origin of the site.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginSiteScopeNoRules) {
+  url::Origin site_origin = url::Origin::Create(GURL("https://example.com"));
+  AssertDomainAndRegistry(site_origin, "example.com");
+  SessionParams::Scope params{
+      .include_site = true,
+  };
+  ASSERT_OK_AND_ASSIGN(
+      auto rules, SessionInclusionRules::Create(site_origin, params, GURL()));
+
+  EXPECT_TRUE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://b.example.com"))));
+}
+
+// "/foo" does not cover "/foobar". The oldest exclude of "/" makes the result
+// depend on that boundary check alone.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginPathBoundary) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SessionParams::Scope params{
+      .specifications = {{RuleType::kExclude, "example.com", "/"},
+                         {RuleType::kInclude, "example.com", "/foobar"},
+                         {RuleType::kExclude, "example.com", "/foo"}},
+  };
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_TRUE(rules.MayIncludeOrigin(origin));
+}
+
+// A different scheme on the same host is out of scope.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginSchemeMismatch) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SessionParams::Scope params;
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(
+      rules.MayIncludeOrigin(url::Origin::Create(GURL("http://example.com"))));
+}
+
+// An opaque origin, e.g. a sandboxed frame's, is out of scope.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginOpaque) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SessionParams::Scope params;
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(origin.DeriveNewOpaqueOrigin()));
+}
+
+// A different port on the same host is out of scope for an origin-scoped
+// session.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginPortMismatch) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SessionParams::Scope params;
+  ASSERT_OK_AND_ASSIGN(auto rules,
+                       SessionInclusionRules::Create(origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://example.com:8443"))));
+}
+
+// A rule path that no URL path can match, such as one with '?', doesn't make
+// an excluded host visible.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginUnmatchableRulePath) {
+  url::Origin site_origin = url::Origin::Create(GURL("https://example.com"));
+  AssertDomainAndRegistry(site_origin, "example.com");
+  SessionParams::Scope params{
+      .include_site = true,
+      .specifications = {{RuleType::kExclude, "untrusted.example.com", "/"},
+                         {RuleType::kInclude, "untrusted.example.com", "/x?y"}},
+  };
+  ASSERT_OK_AND_ASSIGN(
+      auto rules, SessionInclusionRules::Create(site_origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://untrusted.example.com"))));
+}
+
+// A rule path that starts with "//" doesn't move the probe URL to another
+// host, so it can't make an excluded host visible.
+TEST_F(SessionInclusionRulesTest, MayIncludeOriginRulePathWithHost) {
+  url::Origin site_origin = url::Origin::Create(GURL("https://example.com"));
+  AssertDomainAndRegistry(site_origin, "example.com");
+  SessionParams::Scope params{
+      .include_site = true,
+      .specifications = {{RuleType::kExclude, "untrusted.example.com", "/"},
+                         {RuleType::kInclude, "other.example.com",
+                          "//www.example.com/"}},
+  };
+  ASSERT_OK_AND_ASSIGN(
+      auto rules, SessionInclusionRules::Create(site_origin, params, GURL()));
+
+  EXPECT_FALSE(rules.MayIncludeOrigin(
+      url::Origin::Create(GURL("https://untrusted.example.com"))));
+}
+
 }  // namespace net::device_bound_sessions

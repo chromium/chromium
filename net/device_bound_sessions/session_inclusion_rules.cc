@@ -4,15 +4,17 @@
 
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 
+#include <algorithm>
 #include <ranges>
 #include <string_view>
+#include <vector>
 
-#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
@@ -238,31 +240,32 @@ bool SessionInclusionRules::AllowsRefreshForInitiator(
   return false;
 }
 
+bool SessionInclusionRules::MayIncludeOrigin(const url::Origin& origin) const {
+  // An origin is in scope if at least one URL on it is included. Checking "/"
+  // and the path of each include rule finds such a URL whenever one exists.
+  const GURL origin_url = origin.GetURL();
+  if (EvaluateRequestUrl(origin_url) == InclusionResult::kInclude) {
+    return true;
+  }
+  return std::ranges::any_of(url_rules_, [&](const UrlRule& rule) {
+    if (rule.rule_type != InclusionResult::kInclude) {
+      return false;
+    }
+    GURL::Replacements replacements;
+    replacements.SetPathStr(rule.path_prefix);
+    return EvaluateRequestUrl(origin_url.ReplaceComponents(replacements)) ==
+           InclusionResult::kInclude;
+  });
+}
+
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
   if (!MatchesHostPattern(host_pattern, url.GetHost())) {
     return false;
   }
 
-  std::string_view url_path = url.path();
-  if (!url_path.starts_with(path_prefix)) {
-    return false;
-  }
-  // We must check the following to prevent a path prefix like "/foo" from
-  // erroneously matching a URL path like "/foobar/baz". There are 2 possible
-  // cases: `url_path` may be the same length as `path_prefix`, or `url_path`
-  // may be longer than `path_prefix`. In the first case, the two paths are
-  // equal and a match has been found. In the second case, we want to know
-  // whether the end of the `path_prefix` represents a full label in the path.
-  // Either the path_prefix string ends in '/' and is explicitly the end of a
-  // label, or the next character of `url_path` beyond the identical portion is
-  // '/'. Otherwise, reject the path as a false (incomplete label) prefix match.
-  CHECK(url_path.length() >= path_prefix.length());
-  if (url_path.length() > path_prefix.length() && path_prefix.back() != '/' &&
-      url_path[path_prefix.length()] != '/') {
-    return false;
-  }
-
-  return true;
+  // Rule paths match like cookie paths (RFC 6265 section 5.1.4), so "/foo"
+  // covers "/foo" and "/foo/bar" but not "/foobar".
+  return cookie_util::IsOnPath(path_prefix, url.path());
 }
 
 UrlRuleDisplay SessionInclusionRules::UrlRule::ToDisplay() const {
