@@ -57,10 +57,10 @@ size_t MemoryAllocationSize(size_t size) {
 gin::ObjectTemplateBuilder JsSandboxMessagePort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<JsSandboxMessagePort>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("postMessage", &JsSandboxMessagePort::PostMessage)
-      .SetMethod("close", &JsSandboxMessagePort::Close)
-      .SetProperty("onmessage", &JsSandboxMessagePort::GetOnMessage,
-                   &JsSandboxMessagePort::SetOnMessage);
+      .SetMethod<&JsSandboxMessagePort::PostMessage>("postMessage")
+      .SetMethod<&JsSandboxMessagePort::Close>("close")
+      .SetProperty<&JsSandboxMessagePort::GetOnMessage,
+                   &JsSandboxMessagePort::SetOnMessage>("onmessage");
 }
 
 const gin::WrapperInfo* JsSandboxMessagePort::wrapper_info() const {

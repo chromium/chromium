@@ -19,7 +19,7 @@ namespace android_webview {
 gin::ObjectTemplateBuilder MessageEvent::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<MessageEvent>::GetObjectTemplateBuilder(isolate)
-      .SetProperty("data", &MessageEvent::GetData);
+      .SetProperty<&MessageEvent::GetData>("data");
 }
 
 const gin::WrapperInfo* MessageEvent::wrapper_info() const {
