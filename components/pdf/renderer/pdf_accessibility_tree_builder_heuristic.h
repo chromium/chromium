@@ -178,6 +178,9 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const chrome_pdf::AccessibilityFormGraphicInfo* graphic,
       HeadingClassifier* out_heading_classifier);
 
+  ui::AXNodeData* CreateLineBreakingNode(ax::mojom::Role role,
+                                         const std::string& language);
+
   ui::AXNodeData* AddTextRunToNode(size_t text_run_index,
                                    ui::AXNodeData* parent_node,
                                    StaticTextState* static_text_state);

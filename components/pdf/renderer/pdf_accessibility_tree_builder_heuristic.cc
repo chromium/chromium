@@ -1748,38 +1748,44 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   }
 }
 
+ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateLineBreakingNode(
+    ax::mojom::Role role,
+    const std::string& language) {
+  ui::AXNodeData* node =
+      builder_->CreateAndAppendNode(role, ax::mojom::Restriction::kReadOnly);
+  node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  current_block_node_ = node;
+  current_block_static_text_nodes_.clear();
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      !language.empty()) {
+    node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, language);
+  }
+  return node;
+}
+
 ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties,
     const chrome_pdf::AccessibilityFormGraphicInfo* graphic,
     HeadingClassifier* out_heading_classifier) {
-  ui::AXNodeData* block_node = builder_->CreateAndAppendNode(
-      ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly);
-  block_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                               true);
-  current_block_node_ = block_node;
-  current_block_static_text_nodes_.clear();
-  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-      !run_context.run->language.empty()) {
-    block_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                   run_context.run->language);
-  }
   *out_heading_classifier = HeadingClassifier::kNone;
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() && graphic) {
-    block_node->role = ax::mojom::Role::kFigure;
+    ui::AXNodeData* block_node = CreateLineBreakingNode(
+        ax::mojom::Role::kFigure, run_context.run->language);
     block_node->relative_bounds.bounds = graphic->bounds;
     return block_node;
   }
 
   if (!builder_->mark_headings_using_heuristic()) {
-    return block_node;
+    return CreateLineBreakingNode(ax::mojom::Role::kParagraph,
+                                  run_context.run->language);
   }
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
       IsInSideMargin(*run_context.run, page_properties)) {
-    block_node->role = ax::mojom::Role::kSectionFooter;
-    return block_node;
+    return CreateLineBreakingNode(ax::mojom::Role::kSectionFooter,
+                                  run_context.run->language);
   }
 
   // Resolving the header and footer role up front also reports whether the run
@@ -1790,6 +1796,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     header_footer_ax_role = GetAXRoleForHeaderFooterRole(
         GetHeaderFooterRole(run_context, page_properties, &page_number_kind));
   }
+
+  ui::AXNodeData* block_node = CreateLineBreakingNode(
+      ax::mojom::Role::kParagraph, run_context.run->language);
 
   // A bare digit in a margin is normally a page number, so skip heading
   // classification to keep a bold or prominent page number from being promoted
