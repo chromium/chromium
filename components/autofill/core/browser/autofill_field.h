@@ -230,23 +230,6 @@ class AutofillField : public FormFieldData {
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 
-  // This is deprecated. Please use `AutofillField::AddFieldModifier()` instead.
-  void set_previously_autofilled_deprecated(
-      bool previously_autofilled_deprecated) {
-    previously_autofilled_deprecated_ = previously_autofilled_deprecated;
-  }
-  // This is deprecated. Please use `AutofillField::all_modifiers()` instead.
-  bool previously_autofilled_deprecated() const {
-    return previously_autofilled_deprecated_;
-  }
-
-  // This is deprecated. Please use `AutofillField::AddFieldModifier()` instead.
-  void set_is_user_edited_deprecated(bool is_user_edited_deprecated) {
-    is_user_edited_deprecated_ = is_user_edited_deprecated;
-  }
-  // This is deprecated. Please use `AutofillField::all_modifiers()` instead.
-  bool is_user_edited_deprecated() const { return is_user_edited_deprecated_; }
-
   // Returns all the modifiers to have acted on the field, in no particular
   // order.
   DenseSet<FieldModifier> all_modifiers() const;
@@ -628,17 +611,6 @@ class AutofillField : public FormFieldData {
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
   size_t credit_card_number_offset_ = 0;
-
-  // Whether the field was autofilled then later edited.
-  // TODO(crbug.com/393114125): Remove after fully launching
-  // `AutofillField::field_modifiers_`.
-  bool previously_autofilled_deprecated_ = false;
-
-  // This is deprecated, please use `field_modifiers_` instead.
-  // Whether or not the user edited the field. It corresponds to whether the
-  // field is seen by `AutofillManager` in an `OnTextFieldValueChanged()`
-  // signal.
-  bool is_user_edited_deprecated_ = false;
 
   // Tracks the relative order of all the modifiers of the field. Each
   // `FieldModifier` value is present at most once in the list, and the order of
