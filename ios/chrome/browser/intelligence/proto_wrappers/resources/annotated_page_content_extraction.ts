@@ -547,6 +547,7 @@ const ATTR_VALUE_ROLE_REGION = 'region';
 const ATTR_VALUE_ROLE_COMPLEMENTARY = 'complementary';
 const ATTR_VALUE_ROLE_CONTENT_INFO = 'contentinfo';
 const ATTR_VALUE_ROLE_NONE = 'none';
+const ATTR_VALUE_ROLE_PRESENTATION = 'presentation';
 
 // Style values.
 const ATTR_POSITION_ABSOLUTE = 'absolute';
@@ -761,6 +762,7 @@ function getAXRoleForAriaRole(roleString: string): AxRole {
       case ATTR_VALUE_ROLE_CONTENT_INFO:
         return AxRole.AX_ROLE_CONTENT_INFO;
       case ATTR_VALUE_ROLE_NONE:
+      case ATTR_VALUE_ROLE_PRESENTATION:
         return AxRole.AX_ROLE_NONE;
       default:
         continue;
@@ -3100,8 +3102,13 @@ function populateCommonAttributes(
   }
   if (actionableMode) {
     const roleStr = safeGetAttribute(element, ATTR_KEY_ROLE);
-    attributes.ariaRole =
+    const ariaRole =
         roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
+    // Match Blink: omit missing, empty, or invalid roles, but preserve explicit
+    // presentational roles as AX_ROLE_NONE.
+    if (ariaRole !== AxRole.AX_ROLE_UNKNOWN) {
+      attributes.ariaRole = ariaRole;
+    }
   }
 
   const ariaLabel = getAriaLabel(element, styleCache);

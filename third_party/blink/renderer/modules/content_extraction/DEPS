@@ -2,5 +2,8 @@ specific_include_rules = {
     "ai_page_content_agent.cc": [
       "+services/metrics/public/cpp/ukm_builders.h",
       "+ui/accessibility",
-    ]
+    ],
+    "ai_page_content_agent.h": [
+      "+ui/accessibility/ax_enums.mojom-blink-forward.h",
+    ],
 }

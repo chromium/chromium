@@ -980,6 +980,7 @@ void AddClickabilityReasons(
 // rejection.
 bool AddInteractionDisabledReasons(
     const Element& element,
+    ax::mojom::blink::Role aria_role,
     bool is_aria_disabled,
     bool is_aria_hidden,
     mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
@@ -1003,8 +1004,7 @@ bool AddInteractionDisabledReasons(
 
   // ARIA treats role=presentation and role=none as the same role. Blink's raw
   // ARIA role resolver reports both as kNone.
-  if (AXObject::DetermineRawAriaRole(element) ==
-      ax::mojom::blink::Role::kNone) {
+  if (aria_role == ax::mojom::blink::Role::kNone) {
     // A presentational role hides the node's role from assistive technology,
     // but it does not require click rejection. Record the reason without
     // setting `is_disabled`.
@@ -1705,16 +1705,10 @@ uint32_t ComputeDefaultLineHeightPx(const LocalFrame& frame) {
 // Populates form control data for ARIA-based controls (e.g. role=checkbox).
 // Returns true if ARIA form control data should be emitted for this element.
 bool ProcessAriaFormControlNode(
-    const LayoutObject& object,
     const Element& element,
+    ax::mojom::blink::Role aria_role,
     mojom::blink::AIPageContentAttributes& attributes) {
-  // Use AXObject's raw role resolver so we only honor explicit ARIA roles and
-  // ignore implicit/native roles for ARIA-only control semantics.
-  ax::mojom::blink::Role aria_role = AXObject::DetermineRawAriaRole(element);
-  if (aria_role == ax::mojom::blink::Role::kUnknown) {
-    return false;
-  }
-
+  // Unknown and non-control roles are rejected by the mapping below.
   mojom::blink::FormControlType form_control_type;
   if (!FormControlTypeForAriaRole(aria_role, &form_control_type)) {
     return false;
@@ -1774,7 +1768,8 @@ bool ProcessAriaFormControlNode(
 
 // Returns a modal/modeless dialog attribute type if relevant.
 std::optional<mojom::blink::AIPageContentAttributeType> GetDialogAttributeType(
-    const Element* element) {
+    const Element* element,
+    ax::mojom::blink::Role aria_role) {
   using AttributeType = mojom::blink::AIPageContentAttributeType;
 
   // Layout objects without DOM elements cannot be dialogs.
@@ -1793,8 +1788,6 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetDialogAttributeType(
   }
 
   // Map ARIA dialogs.
-  const ax::mojom::blink::Role aria_role =
-      AXObject::DetermineRawAriaRole(*element);
   if (!ui::IsDialog(aria_role)) {
     return std::nullopt;
   }
@@ -2910,14 +2903,21 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   attributes.redaction_decision = GetRedactionDecision(object);
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
-  AddAnnotatedRoles(object, attributes.annotated_roles);
+  const auto* element = DynamicTo<Element>(object.GetNode());
+  // Resolve the explicit role once for all node metadata, in both modes.
+  // Native or implicit roles must not supply ARIA-only semantics.
+  const ax::mojom::blink::Role aria_role =
+      element ? AXObject::DetermineRawAriaRole(*element)
+              : ax::mojom::blink::Role::kUnknown;
+  AddAnnotatedRoles(object, aria_role, attributes.annotated_roles);
   PopulateLabelForDomNodeId(object, attributes);
 
-  auto* element = DynamicTo<Element>(object.GetNode());
-  if (actionable_mode() && element) {
-    attributes.aria_role = AXObject::DetermineRawAriaRole(*element);
+  if (actionable_mode() && aria_role != ax::mojom::blink::Role::kUnknown) {
+    // Missing, empty, and invalid roles have no role metadata to serialize.
+    attributes.aria_role = aria_role;
   }
-  AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled,
+  AddNodeInteractionInfo(object, aria_role, attributes,
+                         recursion_data.is_aria_disabled,
                          recursion_data.is_aria_hidden);
 
   // Set the attribute type and add any special attributes if the attribute type
@@ -2989,10 +2989,11 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
       attributes.form_control_data->form_control_type =
           mojom::blink::FormControlType::kButtonButton;
     }
-  } else if (auto dialog_attribute_type = GetDialogAttributeType(element)) {
+  } else if (auto dialog_attribute_type =
+                 GetDialogAttributeType(element, aria_role)) {
     attributes.attribute_type = *dialog_attribute_type;
   } else if (element &&
-             ProcessAriaFormControlNode(object, *element, attributes)) {
+             ProcessAriaFormControlNode(*element, aria_role, attributes)) {
     // ProcessAriaFormControlNode sets the attribute type and data.
   } else if (element && IsHeadingTag(*element)) {
     attributes.attribute_type =
@@ -3164,6 +3165,7 @@ void AIPageContentAgent::ContentBuilder::PopulateLabelForDomNodeId(
 
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
     const LayoutObject& object,
+    ax::mojom::blink::Role aria_role,
     Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) const {
   const auto& style = object.Style();
   if (style.ContentVisibility() == EContentVisibility::kHidden) {
@@ -3176,10 +3178,6 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
   if (!element) {
     return;
   }
-  // Use the ARIA role parser so role checks are case-insensitive and avoid
-  // re-implementing token parsing in APC.
-  const ax::mojom::blink::Role aria_role =
-      AXObject::DetermineRawAriaRole(*element);
   if (element->HasTagName(html_names::kHeaderTag) ||
       aria_role == ax::mojom::blink::Role::kBanner) {
     annotated_roles.push_back(
@@ -3609,6 +3607,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
 
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
+    ax::mojom::blink::Role aria_role,
     mojom::blink::AIPageContentAttributes& attributes,
     bool is_aria_disabled,
     bool is_aria_hidden) {
@@ -3636,8 +3635,9 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   auto* element = DynamicTo<Element>(object.GetNode());
   bool is_disabled = false;
   if (element) {
-    is_disabled = AddInteractionDisabledReasons(
-        *element, is_aria_disabled, is_aria_hidden, *node_interaction_info);
+    is_disabled =
+        AddInteractionDisabledReasons(*element, aria_role, is_aria_disabled,
+                                      is_aria_hidden, *node_interaction_info);
   }
 
   // Strongly disabled nodes are not valid action targets, so do not populate
@@ -3666,8 +3666,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   }
 
   if (element) {
-    AddClickabilityReasons(*element, *attributes.aria_role,
-                           *node_interaction_info);
+    AddClickabilityReasons(*element, aria_role, *node_interaction_info);
     const bool element_is_focusable =
         element->IsFocusable(Element::UpdateBehavior::kAssertNoLayoutUpdates);
     node_interaction_info->is_focusable = element_is_focusable;

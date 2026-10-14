@@ -6782,16 +6782,17 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_AriaRole_ActionableMode) {
   ASSERT_EQ(root_node.children_nodes_size(), 3);
 
   // Button -> AX_ROLE_BUTTON.
+  EXPECT_TRUE(root_node.children_nodes(0).content_attributes().has_aria_role());
   EXPECT_EQ(root_node.children_nodes(0).content_attributes().aria_role(),
             optimization_guide::proto::AX_ROLE_BUTTON);
 
-  // Unknown Role -> AX_ROLE_UNKNOWN. Node is preserved due to tabindex.
-  EXPECT_EQ(root_node.children_nodes(1).content_attributes().aria_role(),
-            optimization_guide::proto::AX_ROLE_UNKNOWN);
-
-  // No Role -> AX_ROLE_UNKNOWN. Node is preserved due to tabindex.
-  EXPECT_EQ(root_node.children_nodes(2).content_attributes().aria_role(),
-            optimization_guide::proto::AX_ROLE_UNKNOWN);
+  // Unknown and missing roles leave the field unset. Check presence because
+  // the proto getter returns AX_ROLE_NONE for an unset field. Both nodes are
+  // preserved due to tabindex.
+  EXPECT_FALSE(
+      root_node.children_nodes(1).content_attributes().has_aria_role());
+  EXPECT_FALSE(
+      root_node.children_nodes(2).content_attributes().has_aria_role());
 }
 
 // Tests extraction of geometry for fragmented elements (e.g. multi-line text).

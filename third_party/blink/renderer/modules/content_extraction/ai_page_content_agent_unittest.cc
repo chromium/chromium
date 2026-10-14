@@ -6667,6 +6667,8 @@ TEST_F(AIPageContentAgentTest, AriaPresentationalRoleInteractionReason) {
 
   for (const auto& button : root.children_nodes) {
     // role=presentation and role=none are synonymous ARIA roles.
+    EXPECT_EQ(button->content_attributes->aria_role,
+              ax::mojom::blink::Role::kNone);
     CheckHitTestableAndInteractive(*button,
                                    {ClickabilityReason::kClickableControl,
                                     ClickabilityReason::kHoverPseudoClass});
@@ -6821,6 +6823,49 @@ TEST_F(AIPageContentAgentTest, AriaRole) {
   CheckHitTestableAndInteractive(button, {ClickabilityReason::kAriaRole});
   EXPECT_EQ(button.content_attributes->aria_role,
             ax::mojom::blink::Role::kButton);
+}
+
+TEST_F(AIPageContentAgentTest, UnknownAriaRoleIsOmitted) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <button id="missing">Missing role</button>
+        <button id="empty" role="">Empty role</button>
+        <button id="invalid" role="invalid-role">Invalid role</button>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  // Native buttons remain actionable, but their implicit role must not be
+  // serialized as an explicit ARIA role, including when parsing fails.
+  for (const char* selector : {"#missing", "#empty", "#invalid"}) {
+    SCOPED_TRACE(selector);
+    const auto* node = FindNodeBySelector(selector);
+    ASSERT_TRUE(node);
+    EXPECT_FALSE(node->content_attributes->aria_role.has_value());
+    ASSERT_TRUE(node->content_attributes->node_interaction_info);
+    EXPECT_THAT(
+        node->content_attributes->node_interaction_info->clickability_reasons,
+        testing::Not(testing::Contains(ClickabilityReason::kAriaRole)));
+  }
+}
+
+TEST_F(AIPageContentAgentTest, AriaRoleUsesFirstValidToken) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(<div id="button" role="invalid-role BUTTON link">Hello</div>)HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  // Skip invalid tokens and preserve the first recognized role regardless of
+  // case. Later valid tokens must not override it.
+  const auto* button = FindNodeBySelector("#button");
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->content_attributes->aria_role,
+            ax::mojom::blink::Role::kButton);
+  CheckHitTestableAndInteractive(*button, {ClickabilityReason::kAriaRole});
 }
 
 TEST_F(AIPageContentAgentTest,

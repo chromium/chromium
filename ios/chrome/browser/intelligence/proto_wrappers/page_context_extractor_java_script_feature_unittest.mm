@@ -1403,6 +1403,10 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
       "  <div role=\"button\">Button</div>"
       "  <div role=\"random_unknown_role\" tabindex=\"0\">Unknown</div>"
       "  <div tabindex=\"0\">No Role</div>"
+      "  <div role=\"\" tabindex=\"0\">Empty Role</div>"
+      "  <div role=\"none\" tabindex=\"0\">None</div>"
+      "  <div role=\"presentation\" tabindex=\"0\">Presentation</div>"
+      "  <div role=\"invalid BUTTON link\">Fallback Button</div>"
       "</body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(html),
                       test_server_.GetURL(kMainPagePath), web_state());
@@ -1422,7 +1426,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   const base::ListValue* children = root_node->FindList("childrenNodes");
   ASSERT_TRUE(children);
 
-  ASSERT_EQ(children->size(), 3u);
+  ASSERT_EQ(children->size(), 7u);
 
   // Check the button node structure.
   const base::DictValue& button_node = (*children)[0].GetDict();
@@ -1442,12 +1446,11 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(button_text);
   EXPECT_EQ(*button_text, "Button");
 
-  // Check the unknown role node structure.
+  // Keep the focusable node, but omit unrecognized explicit role metadata.
   const base::DictValue& unknown_node = (*children)[1].GetDict();
   std::optional<double> unknown_role =
       unknown_node.FindDoubleByDottedPath("contentAttributes.ariaRole");
-  ASSERT_TRUE(unknown_role.has_value());
-  EXPECT_EQ(static_cast<int>(unknown_role.value()), 181);  // AX_ROLE_UNKNOWN
+  EXPECT_FALSE(unknown_role.has_value());
 
   const base::ListValue* unknown_content_children =
       unknown_node.FindList("childrenNodes");
@@ -1460,12 +1463,29 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(unknown_text);
   EXPECT_EQ(*unknown_text, "Unknown");
 
-  // Check the node with NO role (Preserved due to tabindex)
+  // Missing and empty roles also leave the field unset.
   const base::DictValue& no_role_node = (*children)[2].GetDict();
   std::optional<double> missing_role =
       no_role_node.FindDoubleByDottedPath("contentAttributes.ariaRole");
-  ASSERT_TRUE(missing_role.has_value());
-  EXPECT_EQ(static_cast<int>(missing_role.value()), 181);  // AX_ROLE_UNKNOWN
+  EXPECT_FALSE(missing_role.has_value());
+  EXPECT_FALSE(
+      (*children)[3].GetDict().FindByDottedPath("contentAttributes.ariaRole"));
+
+  // Presentational roles are recognized and both serialize as AX_ROLE_NONE.
+  for (size_t i : {4u, 5u}) {
+    SCOPED_TRACE(i);
+    const auto role = (*children)[i].GetDict().FindDoubleByDottedPath(
+        "contentAttributes.ariaRole");
+    ASSERT_TRUE(role.has_value());
+    EXPECT_EQ(static_cast<int>(*role), optimization_guide::proto::AX_ROLE_NONE);
+  }
+
+  // Skip invalid tokens and use the first recognized role, ignoring case.
+  const auto fallback_role = (*children)[6].GetDict().FindDoubleByDottedPath(
+      "contentAttributes.ariaRole");
+  ASSERT_TRUE(fallback_role.has_value());
+  EXPECT_EQ(static_cast<int>(*fallback_role),
+            optimization_guide::proto::AX_ROLE_BUTTON);
 }
 
 // Test the extraction of label elements and their associated control IDs.

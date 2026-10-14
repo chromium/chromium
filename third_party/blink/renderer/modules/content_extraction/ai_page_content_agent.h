@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 
 namespace blink {
 class Document;
@@ -163,6 +164,7 @@ class MODULES_EXPORT AIPageContentAgent final
         mojom::blink::AIPageContentNode& root_node) const;
     void AddNodeInteractionInfo(
         const LayoutObject& object,
+        ax::mojom::blink::Role aria_role,
         mojom::blink::AIPageContentAttributes& attributes,
         bool is_aria_disabled,
         bool is_aria_hidden);
@@ -176,6 +178,7 @@ class MODULES_EXPORT AIPageContentAgent final
                          mojom::blink::AIPageContentAttributes& attributes,
                          DOMNodeId accessibility_focused_node_id);
     void AddAnnotatedRoles(const LayoutObject& object,
+                           ax::mojom::blink::Role aria_role,
                            Vector<mojom::blink::AIPageContentAnnotatedRole>&
                                annotated_roles) const;
     void AddLabel(const LayoutObject& object,
