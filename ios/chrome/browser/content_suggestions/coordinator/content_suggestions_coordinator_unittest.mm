@@ -9,11 +9,15 @@
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -51,6 +55,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }  // namespace
 
 @interface ContentSuggestionsCoordinator (Testing) <
+    ContentSuggestionsViewControllerAudience,
     MagicStackModuleContainerDelegate>
 - (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card;
 - (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)moduleType;
@@ -125,4 +130,29 @@ TEST_F(ContentSuggestionsCoordinatorTest, TestLogEphemeralCardVisibility) {
   histogram_tester.ExpectUniqueSample(
       "IOS.MagicStack.Module.TopImpression",
       ContentSuggestionsModuleType::kPriceTrackingPromo, 1);
+}
+
+// Tests that calling `-didSelectTip:` logs the tap metrics and marks the card
+// as interacted immediately, without waiting for the module removal completion
+// block.
+TEST_F(ContentSuggestionsCoordinatorTest,
+       TestDidSelectTipLogsMetricsImmediately) {
+  base::HistogramTester histogram_tester;
+  id tips_mediator_mock = OCMClassMock([TipsMagicStackMediator class]);
+  [coordinator_ setValue:tips_mediator_mock forKey:@"_tipsMediator"];
+
+  OCMExpect([tips_mediator_mock removeModuleWithCompletion:[OCMArg any]]);
+  OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);
+
+  [coordinator_
+      didSelectTip:segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing];
+
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing, 1);
+  EXPECT_TRUE(profile_->GetTestingPrefService()->GetBoolean(
+      "ephemeral_pref_interacted."
+      "enhanced_safe_browsing_ephemeral_module_interacted"));
+  EXPECT_OCMOCK_VERIFY(tips_mediator_mock);
+  EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
 }

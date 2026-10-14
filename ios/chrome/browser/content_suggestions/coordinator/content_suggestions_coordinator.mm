@@ -724,6 +724,21 @@ using segmentation_platform::TipIdentifier;
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
   CHECK(_tipsMediator);
 
+  // Log the Tips (Magic Stack) Module tap immediately before starting the
+  // removal animation so click metrics are not dropped if the animation is
+  // interrupted.
+  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
+  [self.NTPActionsDelegate tipsOpened];
+
+  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
+  if (name.has_value()) {
+    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetHomeCardRegistryForProfile(self.profile);
+    CHECK(registry);
+    registry->NotifyCardInteracted(std::string(name.value()).c_str());
+  }
+
   __weak __typeof(self) weakSelf = self;
 
   ProceduralBlock completion = ^{
@@ -763,8 +778,6 @@ using segmentation_platform::TipIdentifier;
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
   CHECK(_tipsMediator);
   [self.customizationDelegate dismissCustomizationMenu];
-  // Log the Tips (Magic Stack) Module that the user tapped on.
-  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
   switch (tip) {
     case TipIdentifier::kUnknown:
       NOTREACHED();
@@ -849,20 +862,6 @@ using segmentation_platform::TipIdentifier;
                                                        scrollToBottom:YES];
       break;
     }
-  }
-
-  [self.NTPActionsDelegate tipsOpened];
-
-  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
-
-  if (name.has_value()) {
-    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetHomeCardRegistryForProfile(self.profile);
-
-    CHECK(registry);
-
-    registry->NotifyCardInteracted(std::string(name.value()).c_str());
   }
 }
 
