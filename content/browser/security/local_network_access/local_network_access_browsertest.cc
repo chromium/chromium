@@ -19,6 +19,8 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/initiator_navigation_state.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -33,6 +35,7 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
@@ -3088,6 +3091,100 @@ IN_PROC_BROWSER_TEST_F(
   // The origin is opaque though, a symptom of the failed navigation.
   EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+// ===========================
+// NO-STATE PREFETCH LOAD TESTS
+// ===========================
+//
+// These tests exercise `ContentBrowserClient::IsNoStatePrefetch()`, which
+// embedders use to identify `WebContents` that load documents never displayed
+// to the user. Such loads must not fetch from an address space more private
+// than the initiator's, since there is no surface on which to prompt the user.
+
+namespace {
+
+class NoStatePrefetchTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit NoStatePrefetchTestContentBrowserClient(WebContents* web_contents)
+      : no_state_prefetch_web_contents_(web_contents) {}
+
+  bool IsNoStatePrefetch(WebContents* web_contents) override {
+    return web_contents == no_state_prefetch_web_contents_;
+  }
+
+ private:
+  raw_ptr<WebContents> no_state_prefetch_web_contents_;
+};
+
+// Starts a load of `url` in `shell` marked as a no-state prefetch, on behalf
+// of the given initiator state, and waits for it to finish. Returns the net
+// error code of the navigation.
+int LoadAsNoStatePrefetch(
+    Shell* shell,
+    const GURL& url,
+    scoped_refptr<InitiatorNavigationState> initiator_navigation_state) {
+  NoStatePrefetchTestContentBrowserClient client(shell->web_contents());
+  TestNavigationObserver observer(shell->web_contents());
+  NavigationController::LoadURLParams params(url);
+  params.initiator_navigation_state = std::move(initiator_navigation_state);
+  shell->web_contents()->GetController().LoadURLWithParams(params);
+  observer.Wait();
+  return observer.last_net_error_code();
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       NoStatePrefetchLoadFromPublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadAsNoStatePrefetch(
+                shell(), SecureLoopbackURL(kDefaultPath),
+                root_frame_host()->GetCurrentInitiatorNavigationState()));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       NoStatePrefetchLoadFromPublicToLocalIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadAsNoStatePrefetch(
+                shell(), SecureLocalURL(kDefaultPath),
+                root_frame_host()->GetCurrentInitiatorNavigationState()));
+}
+
+// A load marked as a no-state prefetch with no initiator state at all is
+// treated as coming from the most public address space, and may only fetch
+// from the public address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       NoStatePrefetchLoadWithoutInitiatorStateIsBlocked) {
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadAsNoStatePrefetch(shell(), SecureLoopbackURL(kDefaultPath),
+                                  /*initiator_navigation_state=*/nullptr));
+}
+
+// A no-state prefetch load is allowed when the target is not in a more
+// private address space than the initiator. The committed document then uses
+// the blocking policy for its own subresource fetches.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       NoStatePrefetchLoadFromLoopbackToLoopbackIsAllowed) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  EXPECT_EQ(net::OK,
+            LoadAsNoStatePrefetch(
+                shell(), OtherSecureLoopbackURL(kDefaultPath),
+                root_frame_host()->GetCurrentInitiatorNavigationState()));
+  EXPECT_EQ(OtherSecureLoopbackURL(kDefaultPath),
+            root_frame_host()->GetLastCommittedURL());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_EQ(security_state->local_network_access_request_policy,
+            network::mojom::LocalNetworkAccessRequestPolicy::kBlock);
 }
 
 }  // namespace content

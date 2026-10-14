@@ -33,8 +33,11 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
       int launcher_render_view_id,
       int launcher_render_frame_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      const url::Origin& initiator_origin) override {
+      const url::Origin& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state) override {
     DCHECK(!is_start_called_);
+    DCHECK(initiator_navigation_state);
     is_start_called_ = true;
     return link_trigger_id_;
   }

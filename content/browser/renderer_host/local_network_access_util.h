@@ -23,6 +23,7 @@ enum class LocalNetworkAccessRequestContext {
   kMainFrameNavigation,    // Main frame navigation fetches.
   kSubframeNavigation,     // Subframe navigation fetches (e.g., iframe).
   kFencedFrameNavigation,  // Navigation of a fenced frame.
+  kNoStatePrefetch,        // Fetches on behalf of a no-state prefetch.
 };
 
 // Returns the policy to use for local network access requests fetched by a

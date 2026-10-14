@@ -197,7 +197,8 @@ class NoStatePrefetchTest : public testing::Test {
     std::optional<int> link_trigger_id =
         no_state_prefetch_link_manager()->OnStartLinkTrigger(
             render_process_id, render_view_id, render_frame_id,
-            std::move(attributes), url::Origin::Create(initiator_url));
+            std::move(attributes), url::Origin::Create(initiator_url),
+            /*initiator_navigation_state=*/nullptr);
 
     // Check if the new prefetch request was added and running.
     return link_trigger_id && LastTriggerIsRunning();
@@ -531,7 +532,8 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
       /*process_id=*/-1, /*route_id=*/-1, kUrl,
       blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-      content::Referrer(), kOrigin, gfx::Size()));
+      content::Referrer(), kOrigin, /*initiator_navigation_state=*/nullptr,
+      gfx::Size()));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
@@ -545,7 +547,8 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
       no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
           /*process_id=*/-1, /*route_id=*/-1, kUrl,
           blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-          content::Referrer(), kOrigin, gfx::Size()));
+          content::Referrer(), kOrigin, /*initiator_navigation_state=*/nullptr,
+          gfx::Size()));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
@@ -554,7 +557,8 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
       /*process_id=*/-1, /*route_id=*/-1, kUrl,
       blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-      content::Referrer(), kOrigin, gfx::Size()));
+      content::Referrer(), kOrigin, /*initiator_navigation_state=*/nullptr,
+      gfx::Size()));
 }
 
 // Make sure that if we prerender more requests than we support, that we launch

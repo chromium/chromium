@@ -14,9 +14,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,14 +45,18 @@ class NoStatePrefetchLinkManager : public KeyedService,
   ~NoStatePrefetchLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
-  // document. Returns the link trigger id that is used for canceling or
-  // abandoning prefetch. Returns std::nullopt if the prefetch was not started.
+  // document. |initiator_navigation_state| records the state of the document
+  // containing the link element, for use by the prefetch navigation. Returns
+  // the link trigger id that is used for canceling or abandoning prefetch.
+  // Returns std::nullopt if the prefetch was not started.
   virtual std::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
       int launcher_render_frame_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      const url::Origin& initiator_origin);
+      const url::Origin& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state);
 
   // Called when a <link rel=prerender ...> element has been explicitly removed
   // from a document.
@@ -75,6 +81,8 @@ class NoStatePrefetchLinkManager : public KeyedService,
                 int launcher_render_view_id,
                 blink::mojom::PrerenderAttributesPtr attributes,
                 const url::Origin& initiator_origin,
+                scoped_refptr<content::InitiatorNavigationState>
+                    initiator_navigation_state,
                 base::TimeTicks creation_time,
                 NoStatePrefetchContents* deferred_launcher);
     ~LinkTrigger();
@@ -89,6 +97,8 @@ class NoStatePrefetchLinkManager : public KeyedService,
     const blink::mojom::PrerenderTriggerType trigger_type;
     const content::Referrer referrer;
     const url::Origin initiator_origin;
+    const scoped_refptr<content::InitiatorNavigationState>
+        initiator_navigation_state;
     const gfx::Size size;
 
     // The time at which this trigger was added to NoStatePrefetchLinkManager.

@@ -89,10 +89,13 @@
 #include "net/base/request_priority.h"
 #include "net/cookies/cookie_store.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -1169,6 +1172,125 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   }
 }
 
+// Tests for the interaction between NoStatePrefetch and Local Network
+// Access. The trigger page is served from a server whose endpoint is
+// overridden to the `public` address space, while prefetch targets on
+// `embedded_test_server()` remain in the `loopback` address space.
+class NoStatePrefetchLocalNetworkAccessBrowserTest
+    : public NoStatePrefetchBrowserTest {
+ public:
+  NoStatePrefetchLocalNetworkAccessBrowserTest() {
+    // Some builders run with the field trial disabled, so enable the checks
+    // in blocking mode explicitly.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kLocalNetworkAccessChecks,
+          {{"LocalNetworkAccessChecksWarn", "false"}}}},
+        {});
+    public_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    net::test_server::RegisterDefaultHandlers(&public_server_);
+    CHECK(public_server_.Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NoStatePrefetchBrowserTest::SetUpCommandLine(command_line);
+    network::AddPublicIpAddressSpaceOverrideToCommandLine(public_server_,
+                                                          *command_line);
+  }
+
+  // Serves a loader page from `public_server_` that inserts a
+  // <link rel=prerender> pointing at `url_to_prerender`.
+  GURL ServePublicLoaderURL(const GURL& url_to_prerender) {
+    base::StringPairs replacement_text;
+    replacement_text.push_back(
+        std::make_pair("REPLACE_WITH_PREFETCH_URL", url_to_prerender.spec()));
+    std::string replacement_path =
+        net::test_server::GetFilePathWithReplacements(kPrefetchLoaderPath,
+                                                      replacement_text);
+    return public_server_.GetURL(replacement_path);
+  }
+
+  net::EmbeddedTestServer& public_server() { return public_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer public_server_;
+};
+
+// Checks that a page in the public address space cannot trigger a prefetch of
+// a target in the loopback address space: the prefetch navigation is blocked
+// before any request reaches the target.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchLocalNetworkAccessBrowserTest,
+                       LoopbackTargetNotPrefetchedFromPublicPage) {
+  GURL target_url = embedded_test_server()->GetURL(kPrefetchPage);
+  GURL loader_url = ServePublicLoaderURL(target_url);
+
+  std::vector<FinalStatus> expected_final_status_queue(
+      1, FINAL_STATUS_UNSUPPORTED_SCHEME);
+  std::vector<std::unique_ptr<TestPrerender>> prerenders =
+      NavigateWithPrerenders(loader_url, expected_final_status_queue);
+  prerenders[0]->WaitForStop();
+  EXPECT_FALSE(prerenders[0]->contents());
+
+  EXPECT_EQ(0u, GetRequestCount(target_url));
+  EXPECT_EQ(0u,
+            GetRequestCount(embedded_test_server()->GetURL(kPrefetchScript)));
+}
+
+// Checks that a prefetch that redirects to a target in the loopback address
+// space is blocked at the redirect hop.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchLocalNetworkAccessBrowserTest,
+                       LoopbackRedirectTargetNotPrefetchedFromPublicPage) {
+  GURL target_url = embedded_test_server()->GetURL(kPrefetchPage);
+  GURL redirect_url =
+      public_server().GetURL(CreateServerRedirect(target_url.spec()));
+  GURL loader_url = ServePublicLoaderURL(redirect_url);
+
+  std::vector<FinalStatus> expected_final_status_queue(
+      1, FINAL_STATUS_UNSUPPORTED_SCHEME);
+  std::vector<std::unique_ptr<TestPrerender>> prerenders =
+      NavigateWithPrerenders(loader_url, expected_final_status_queue);
+  prerenders[0]->WaitForStop();
+  EXPECT_FALSE(prerenders[0]->contents());
+
+  EXPECT_EQ(0u, GetRequestCount(target_url));
+}
+
+// Checks that a document loaded by a prefetch does not fetch subresources
+// from a more-private address space.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchLocalNetworkAccessBrowserTest,
+                       LoopbackSubresourceNotFetchedFromPrefetchedPublicPage) {
+  GURL image_url = embedded_test_server()->GetURL(kPrefetchJpeg);
+  base::StringPairs replacement_text;
+  replacement_text.push_back(
+      std::make_pair("REPLACE_WITH_IMAGE_URL", image_url.spec()));
+  std::string target_path = net::test_server::GetFilePathWithReplacements(
+      kPrefetchImagePage, replacement_text);
+  GURL target_url = public_server().GetURL(target_path);
+  GURL loader_url = ServePublicLoaderURL(target_url);
+
+  std::vector<FinalStatus> expected_final_status_queue(
+      1, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  std::vector<std::unique_ptr<TestPrerender>> prerenders =
+      NavigateWithPrerenders(loader_url, expected_final_status_queue);
+  prerenders[0]->WaitForStop();
+
+  EXPECT_EQ(0u, GetRequestCount(image_url));
+}
+
+// Checks that prefetching still works when the trigger page and the target
+// are in the same address space.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchLocalNetworkAccessBrowserTest,
+                       SameAddressSpaceTargetPrefetched) {
+  GURL target_url = public_server().GetURL(kPrefetchPage2);
+  GURL loader_url = ServePublicLoaderURL(target_url);
+
+  std::vector<FinalStatus> expected_final_status_queue(
+      1, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  std::vector<std::unique_ptr<TestPrerender>> prerenders =
+      NavigateWithPrerenders(loader_url, expected_final_status_queue);
+  prerenders[0]->WaitForStop();
+}
+
 // Checks the prefetch of an img tag.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchImage) {
   GURL main_page_url = GetURLWithReplacement(
@@ -1528,7 +1650,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_RendererCrash) {
       GetNoStatePrefetchManager()->StartPrefetchingFromLinkRelPrerender(
           /*process_id=*/-1, /*route_id=*/-1, url,
           blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-          content::Referrer(), url::Origin::Create(url), kSize);
+          content::Referrer(), url::Origin::Create(url),
+          GetActiveWebContents()
+              ->GetPrimaryMainFrame()
+              ->GetCurrentInitiatorNavigationState(),
+          kSize);
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
   test_prerender->WaitForStop();
 }

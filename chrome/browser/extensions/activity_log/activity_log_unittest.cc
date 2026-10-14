@@ -355,7 +355,8 @@ TEST_F(ActivityLogTest, LogPrerender) {
       no_state_prefetch_manager->StartPrefetchingFromLinkRelPrerender(
           /*process_id=*/-1, /*route_id=*/-1, url,
           blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-          content::Referrer(), url::Origin::Create(url), kSize);
+          content::Referrer(), url::Origin::Create(url),
+          /*initiator_navigation_state=*/nullptr, kSize);
 
   const std::vector<content::WebContents*> contentses =
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();

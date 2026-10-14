@@ -1269,6 +1269,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsExemptFromWindowSizeCheck(const GURL& url) override;
 
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

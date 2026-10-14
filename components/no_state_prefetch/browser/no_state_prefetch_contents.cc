@@ -260,6 +260,7 @@ void NoStatePrefetchContents::SetPreloadingFailureReason(FinalStatus status) {
 void NoStatePrefetchContents::StartPrerendering(
     const gfx::Rect& bounds,
     SessionStorageNamespaceHandle* session_storage_namespace,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     base::WeakPtr<content::PreloadingAttempt> attempt) {
   DCHECK(browser_context_);
   DCHECK(!bounds.IsEmpty());
@@ -303,6 +304,8 @@ void NoStatePrefetchContents::StartPrerendering(
   content::NavigationController::LoadURLParams load_url_params(prefetch_url_);
   load_url_params.referrer = referrer_;
   load_url_params.initiator_origin = initiator_origin_;
+  load_url_params.initiator_navigation_state =
+      std::move(initiator_navigation_state);
   load_url_params.transition_type = ui::PAGE_TRANSITION_LINK;
   if (origin_ == ORIGIN_NAVIGATION_PREDICTOR) {
     load_url_params.transition_type =

@@ -3442,6 +3442,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // WebUI, DevTools, or an embedder-specific extension scheme) that should be
   // exempt from top-level window size checks in `WebContentsBasedCanceller`.
   virtual bool IsExemptFromWindowSizeCheck(const GURL& url);
+
+  // Returns true if `web_contents` is used for NoStatePrefetch and will not be
+  // rendered.
+  virtual bool IsNoStatePrefetch(WebContents* web_contents);
 };
 
 }  // namespace content

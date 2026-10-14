@@ -109,7 +109,8 @@ void NoStatePrefetchProcessorImpl::Start(
   link_trigger_id_ = link_manager->OnStartLinkTrigger(
       render_process_id_,
       render_frame_host->GetRenderViewHost()->GetRoutingID(), render_frame_id_,
-      std::move(attributes), initiator_origin_);
+      std::move(attributes), initiator_origin_,
+      render_frame_host->GetCurrentInitiatorNavigationState());
 }
 
 void NoStatePrefetchProcessorImpl::Cancel() {

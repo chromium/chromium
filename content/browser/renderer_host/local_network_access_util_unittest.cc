@@ -56,6 +56,8 @@ std::string_view RequestContextToStringPiece(RequestContext request_context) {
       return "subframe-navigation";
     case RequestContext::kFencedFrameNavigation:
       return "fenced-frame-navigation";
+    case RequestContext::kNoStatePrefetch:
+      return "no-state-prefetch";
   }
 }
 
@@ -188,6 +190,43 @@ std::vector<std::pair<DerivePolicyInput, Policy>> DefaultPolicyMap() {
       {
           {kSecure, AddressSpace::kLoopback,
            RequestContext::kMainFrameNavigation},
+          Policy::kAllow,
+      },
+      //
+      // `RequestContext::kNoStatePrefetch`
+      //
+      {
+          {kNonSecure, AddressSpace::kUnknown,
+           RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kNonSecure, AddressSpace::kPublic, RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kNonSecure, AddressSpace::kLocal, RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kNonSecure, AddressSpace::kLoopback,
+           RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kSecure, AddressSpace::kUnknown, RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kSecure, AddressSpace::kPublic, RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kSecure, AddressSpace::kLocal, RequestContext::kNoStatePrefetch},
+          Policy::kAllow,
+      },
+      {
+          {kSecure, AddressSpace::kLoopback, RequestContext::kNoStatePrefetch},
           Policy::kAllow,
       },
   };
@@ -392,6 +431,46 @@ std::vector<std::pair<DerivePolicyInput, Policy>> LNAPolicyMap() {
            RequestContext::kFencedFrameNavigation},
           Policy::kPermissionBlock,
       },
+      //
+      // `RequestContext::kNoStatePrefetch`
+      //
+      // Requests made on behalf of a no-state prefetch have no visible
+      // document, so there is no surface for a permission prompt; they are
+      // blocked outright, regardless of the secure context bit.
+      {
+          {kNonSecure, AddressSpace::kUnknown,
+           RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kNonSecure, AddressSpace::kPublic, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kNonSecure, AddressSpace::kLocal, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kNonSecure, AddressSpace::kLoopback,
+           RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kSecure, AddressSpace::kUnknown, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kSecure, AddressSpace::kPublic, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kSecure, AddressSpace::kLocal, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
+      {
+          {kSecure, AddressSpace::kLoopback, RequestContext::kNoStatePrefetch},
+          Policy::kBlock,
+      },
   };
 }
 
@@ -472,9 +551,13 @@ TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessWarn) {
       network::features::kLocalNetworkAccessChecks, params);
 
   // Warning-only LNA should just be the LNA policy map but k*Block
-  // is downgraded to kPermissionWarn.
+  // is downgraded to kPermissionWarn. No-state prefetch requests have no
+  // surface on which to show a warning or a prompt, so they stay blocked.
   std::vector<std::pair<DerivePolicyInput, Policy>> expected = LNAPolicyMap();
   for (auto& entry : expected) {
+    if (entry.first.request_context == RequestContext::kNoStatePrefetch) {
+      continue;
+    }
     if (entry.second == Policy::kPermissionBlock) {
       entry.second = Policy::kPermissionWarn;
     } else if (entry.second == Policy::kBlock) {

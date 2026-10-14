@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -25,6 +26,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -97,8 +99,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Entry points for adding prerenders.
 
   // Starts a prefetch for |url| if valid. |process_id| and |route_id| identify
-  // the RenderView that the prefetch request came from. If |size| is empty, a
-  // default from the NoStatePrefetchConfig is used. Returns a
+  // the RenderView that the prefetch request came from.
+  // |initiator_navigation_state| records the state of the document that
+  // requested the prefetch, for use by the prefetch navigation. If |size| is
+  // empty, a default from the NoStatePrefetchConfig is used. Returns a
   // NoStatePrefetchHandle if the URL was added, NULL if it was not. If the
   // launching RenderView is itself prefetching, the prefetch is added as a
   // pending prefetch.
@@ -109,6 +113,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       blink::mojom::PrerenderTriggerType trigger_type,
       const content::Referrer& referrer,
       const url::Origin& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state,
       const gfx::Size& size);
 
   // Cancels all active prerenders.
@@ -327,6 +333,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const GURL& url,
       const content::Referrer& referrer,
       const std::optional<url::Origin>& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state,
       const gfx::Rect& bounds,
       content::SessionStorageNamespaceHandle* session_storage_namespace,
       base::WeakPtr<content::PreloadingAttempt> attempt = nullptr);

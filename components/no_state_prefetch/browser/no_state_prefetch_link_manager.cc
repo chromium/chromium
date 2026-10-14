@@ -52,6 +52,7 @@ NoStatePrefetchLinkManager::LinkTrigger::LinkTrigger(
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     base::TimeTicks creation_time,
     NoStatePrefetchContents* deferred_launcher)
     : launcher_render_process_id(launcher_render_process_id),
@@ -60,6 +61,7 @@ NoStatePrefetchLinkManager::LinkTrigger::LinkTrigger(
       trigger_type(attributes->trigger_type),
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(initiator_origin),
+      initiator_navigation_state(std::move(initiator_navigation_state)),
       size(attributes->view_size),
       creation_time(creation_time),
       deferred_launcher(deferred_launcher),
@@ -91,7 +93,9 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_view_id,
     int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
-    const url::Origin& initiator_origin) {
+    const url::Origin& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState>
+        initiator_navigation_state) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       launcher_render_process_id, launcher_render_frame_id);
@@ -116,7 +120,8 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
 
   auto trigger = std::make_unique<LinkTrigger>(
       launcher_render_process_id, launcher_render_view_id,
-      std::move(attributes), initiator_origin, manager_->GetCurrentTimeTicks(),
+      std::move(attributes), initiator_origin,
+      std::move(initiator_navigation_state), manager_->GetCurrentTimeTicks(),
       no_state_prefetch_contents);
 
   // Stash pointer used only for comparison later.
@@ -271,7 +276,8 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
             pending_trigger->launcher_render_process_id,
             pending_trigger->launcher_render_view_id, pending_trigger->url,
             pending_trigger->trigger_type, pending_trigger->referrer,
-            pending_trigger->initiator_origin, pending_trigger->size);
+            pending_trigger->initiator_origin,
+            pending_trigger->initiator_navigation_state, pending_trigger->size);
     if (!handle) {
       // This trigger couldn't be launched, it's gone.
       triggers_.erase(it);

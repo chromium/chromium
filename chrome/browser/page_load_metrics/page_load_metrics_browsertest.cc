@@ -89,6 +89,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -315,7 +316,13 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         no_state_prefetch_manager->StartPrefetchingFromLinkRelPrerender(
             /*process_id=*/-1, /*route_id=*/-1, url,
             blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
-            content::Referrer(), url::Origin::Create(url), gfx::Size(640, 480));
+            content::Referrer(), url::Origin::Create(url),
+            browser()
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetCurrentInitiatorNavigationState(),
+            gfx::Size(640, 480));
     ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or

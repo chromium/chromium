@@ -203,6 +203,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     blink::mojom::PrerenderTriggerType trigger_type,
     const content::Referrer& referrer,
     const url::Origin& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     const gfx::Size& size) {
   Origin origin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
   switch (trigger_type) {
@@ -258,7 +259,8 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
         triggered_primary_page_source_id);
   }
   return StartPrefetchingWithPreconnectFallback(
-      origin, url, referrer, initiator_origin, gfx::Rect(size),
+      origin, url, referrer, initiator_origin,
+      std::move(initiator_navigation_state), gfx::Rect(size),
       session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
 }
 
@@ -498,6 +500,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     const GURL& url_arg,
     const content::Referrer& referrer,
     const std::optional<url::Origin>& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     const gfx::Rect& bounds,
     SessionStorageNamespaceHandle* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> attempt) {
@@ -658,7 +661,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
       bounds.IsEmpty() ? config_.default_tab_bounds : bounds;
 
   no_state_prefetch_contents_ptr->StartPrerendering(
-      contents_bounds, session_storage_namespace, attempt);
+      contents_bounds, session_storage_namespace,
+      std::move(initiator_navigation_state), attempt);
 
   DCHECK(no_state_prefetch_contents_ptr->prefetching_has_started());
 
@@ -1007,7 +1011,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallbackForTesting(
     const GURL& url,
     const std::optional<url::Origin>& initiator_origin) {
   return StartPrefetchingWithPreconnectFallback(
-      origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
+      origin, url, content::Referrer(), initiator_origin,
+      /*initiator_navigation_state=*/nullptr, gfx::Rect(), nullptr);
 }
 
 void NoStatePrefetchManager::SetNoStatePrefetchContentsFactoryForTest(

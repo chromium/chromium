@@ -9783,7 +9783,9 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
       policy_container_builder_->FinalPolicies();
 
   local_network_access_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
-      policies, LocalNetworkAccessRequestContext::kSubresource);
+      policies, client->IsNoStatePrefetch(GetWebContents())
+                    ? LocalNetworkAccessRequestContext::kNoStatePrefetch
+                    : LocalNetworkAccessRequestContext::kSubresource);
 
   if (policy_override ==
       ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
@@ -11429,6 +11431,27 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     // TODO(crbug.com/40258826): Determine how to treat guest views.
     case FrameType::kPrimaryMainFrame:
     case FrameType::kGuestMainFrame: {
+      // No-state prefetch navigations load documents that are never displayed
+      // to the user, so they are not user-mediated the way regular main frame
+      // navigations are. Enforce local network access checks against the
+      // initiator, falling back to the most restrictive client (public,
+      // non-secure) when no initiator state was provided.
+      if (GetContentClient()->browser()->IsNoStatePrefetch(GetWebContents())) {
+        if (GetInitiatorPolicyContainerPolicies()) {
+          return DeriveClientSecurityStateForRendererInitiatedNavigation(
+              *GetInitiatorPolicyContainerPolicies(),
+              LocalNetworkAccessRequestContext::kNoStatePrefetch);
+        }
+
+        network::mojom::ClientSecurityStatePtr state =
+            network::mojom::ClientSecurityState::New();
+        state->local_network_access_request_policy =
+            DeriveLocalNetworkAccessRequestPolicy(
+                state->ip_address_space, state->is_web_secure_context,
+                LocalNetworkAccessRequestContext::kNoStatePrefetch);
+        return state;
+      }
+
       if (!GetInitiatorPolicyContainerPolicies()) {
         return nullptr;
       }

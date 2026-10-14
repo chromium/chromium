@@ -141,6 +141,11 @@ IN_PROC_BROWSER_TEST_F(SadTabHelperBrowserTest,
           /*process_id=*/-1, /*route_id=*/-1, prefetch_url,
           blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
           content::Referrer(), url::Origin::Create(prefetch_url),
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame()
+              ->GetCurrentInitiatorNavigationState(),
           gfx::Size(640, 480));
 
   content::WebContents* prefetch_web_contents =

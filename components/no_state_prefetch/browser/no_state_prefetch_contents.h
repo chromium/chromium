@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_canceler.mojom.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -114,11 +116,15 @@ class NoStatePrefetchContents
   // |bounds| indicates the rectangle that the prerendered page should be in.
   // |session_storage_namespace| indicates the namespace of the launching tab
   // and is recorded for use in Matches(); the hidden WebContents is given its
-  // own independent namespace. |preloading_attempt| allows to log metrics for
-  // this NoStatePrefetch attempt.
+  // own independent namespace. |initiator_navigation_state| records the state
+  // of the document that requested the prefetch, and is used by the prefetch
+  // navigation. |preloading_attempt| allows to log metrics for this
+  // NoStatePrefetch attempt.
   virtual void StartPrerendering(
       const gfx::Rect& bounds,
       content::SessionStorageNamespaceHandle* session_storage_namespace,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state,
       base::WeakPtr<content::PreloadingAttempt> preloading_attempt);
 
   // Verifies that the prerendering is not using too many resources, and kills
