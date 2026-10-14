@@ -241,6 +241,7 @@ public class TabGridDialogMediatorUnitTest {
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Captor private ArgumentCaptor<List<TabListEditorAction>> mTabListEditorActionListCaptor;
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
@@ -933,7 +934,8 @@ public class TabGridDialogMediatorUnitTest {
                 .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(tabs));
+        verify(mSnackbarManager)
+                .dismissSnackbars(eq(mMediator), eq(Arrays.asList(TAB1_ID, TAB2_ID)));
     }
 
     @Test
@@ -963,7 +965,8 @@ public class TabGridDialogMediatorUnitTest {
                 .getValue()
                 .onTabClosePending(Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
 
-        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(Arrays.asList(TAB1_ID, TAB2_ID), mSnackbarCaptor.getValue().getActionData());
     }
 
     @Test
@@ -974,7 +977,8 @@ public class TabGridDialogMediatorUnitTest {
                 .getValue()
                 .onTabClosePending(Arrays.asList(mTab1), false, TabClosingSource.UNKNOWN);
 
-        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(TAB1_ID, mSnackbarCaptor.getValue().getActionData());
     }
 
     @Test
@@ -1744,7 +1748,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testSnackbarController_onAction_multipleTabs() {
-        mMediator.onAction(Arrays.asList(mTab1, mTab2));
+        mMediator.onAction(Arrays.asList(TAB1_ID, TAB2_ID));
 
         verify(mTabModel).cancelTabClosure(eq(TAB1_ID));
         verify(mTabModel).cancelTabClosure(eq(TAB2_ID));
@@ -1759,7 +1763,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testSnackbarController_onDismissNoAction_multipleTabs() {
-        mMediator.onDismissNoAction(Arrays.asList(mTab1, mTab2));
+        mMediator.onDismissNoAction(Arrays.asList(TAB1_ID, TAB2_ID));
 
         verify(mTabModel).commitTabClosure(eq(TAB1_ID));
         verify(mTabModel).commitTabClosure(eq(TAB2_ID));

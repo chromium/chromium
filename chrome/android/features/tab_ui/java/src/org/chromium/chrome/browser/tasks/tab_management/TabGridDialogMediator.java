@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallba
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -452,7 +453,9 @@ public class TabGridDialogMediator
                                         .setTemplateText(
                                                 mActivity.getString(
                                                         R.string.undo_bar_close_all_message))
-                                        .setAction(mActivity.getString(R.string.undo), closedTabs));
+                                        .setAction(
+                                                mActivity.getString(R.string.undo),
+                                                TabModelUtils.getTabIds(closedTabs)));
                     }
 
                     @Override
@@ -468,7 +471,7 @@ public class TabGridDialogMediator
                             dismissSingleTabSnackbar(tabs.get(0).getId());
                             return;
                         }
-                        dismissMultipleTabSnackbar(tabs);
+                        dismissMultipleTabSnackbar(TabModelUtils.getTabIds(tabs));
                     }
 
                     @Override
@@ -492,13 +495,19 @@ public class TabGridDialogMediator
                                                 mActivity.getString(R.string.undo), tab.getId()));
                     }
 
-                    private void dismissMultipleTabSnackbar(List<Tab> tabs) {
+                    /**
+                     * Dismisses the multi-tab closure snackbar whose action data is {@code tabIds}.
+                     *
+                     * @param tabIds The ids of the closed tabs, in the same order as the action
+                     *     data passed to {@link Snackbar#setAction}.
+                     */
+                    private void dismissMultipleTabSnackbar(List<Integer> tabIds) {
                         if (mSnackbarManager == null) return;
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () ->
                                         mSnackbarManager.dismissSnackbars(
-                                                TabGridDialogMediator.this, tabs));
+                                                TabGridDialogMediator.this, tabIds));
                     }
 
                     private void dismissSingleTabSnackbar(int tabId) {
@@ -1329,13 +1338,13 @@ public class TabGridDialogMediator
         if (actionData instanceof Integer tabId) {
             model.cancelTabClosure(tabId);
         } else {
-            // actionData is List<Tab> in else branch.
+            // actionData is List<Integer> of tab ids in else branch.
             @SuppressWarnings("unchecked")
-            List<Tab> tabs = (List<Tab>) actionData;
-            if (tabs.isEmpty()) return;
+            List<Integer> tabIds = (List<Integer>) actionData;
+            if (tabIds.isEmpty()) return;
 
-            for (Tab tab : tabs) {
-                model.cancelTabClosure(tab.getId());
+            for (int tabId : tabIds) {
+                model.cancelTabClosure(tabId);
             }
         }
     }
@@ -1347,13 +1356,13 @@ public class TabGridDialogMediator
         if (actionData instanceof Integer tabId) {
             model.commitTabClosure(tabId);
         } else {
-            // actionData is List<Tab> in else branch.
+            // actionData is List<Integer> of tab ids in else branch.
             @SuppressWarnings("unchecked")
-            List<Tab> tabs = (List<Tab>) actionData;
-            if (tabs.isEmpty()) return;
+            List<Integer> tabIds = (List<Integer>) actionData;
+            if (tabIds.isEmpty()) return;
 
-            for (Tab tab : tabs) {
-                model.commitTabClosure(tab.getId());
+            for (int tabId : tabIds) {
+                model.commitTabClosure(tabId);
             }
         }
     }
