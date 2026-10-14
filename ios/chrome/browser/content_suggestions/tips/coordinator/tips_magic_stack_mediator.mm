@@ -21,7 +21,9 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/ntp_theme_actionable_tip_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
@@ -102,8 +104,22 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {
+  // Always update `_config` so `_config.identifier` reflects the current tip
+  // for impression and interaction logging in `ContentSuggestionsCoordinator`,
+  // even when an actionable config is displayed.
   _config = [[TipsModuleConfig alloc] initWithTipIdentifier:identifier];
   _config.audience = self;
+
+  // Reset `_actionableConfig` so `activeConfig` falls back to `_config` when
+  // reconfigured with an informational tip.
+  _actionableConfig = nil;
+
+  if (identifier == TipIdentifier::kNTPTheme &&
+      segmentation_platform::features::
+          IsMagicStackTipsV2IosActionableEnabled()) {
+    _actionableConfig = [[NTPThemeActionableTipConfig alloc] init];
+    _actionableConfig.audience = self;
+  }
 
   if (_config.identifier == TipIdentifier::kLensShop) {
     [self fetchImage];
@@ -112,6 +128,10 @@ using segmentation_platform::TipIdentifier;
 
 - (void)removeModuleWithCompletion:(ProceduralBlock)completion {
   [self.delegate removeTipsModuleWithCompletion:completion];
+}
+
+- (MagicStackModule*)activeConfig {
+  return _actionableConfig ? _actionableConfig : _config;
 }
 
 #pragma mark - PrefObserverDelegate

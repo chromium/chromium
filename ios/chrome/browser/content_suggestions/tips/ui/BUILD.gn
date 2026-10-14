@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "ntp_theme_actionable_tip_config.h",
+    "ntp_theme_actionable_tip_config.mm",
     "save_passwords_instructional_view_controller.h",
     "save_passwords_instructional_view_controller.mm",
     "tips_module_audience.h",
@@ -24,6 +26,7 @@ source_set("ui") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/tips/ui/resources",
     "//ios/chrome/browser/instructions_bottom_sheet/ui",

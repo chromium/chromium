@@ -15,6 +15,8 @@
 class PrefService;
 @protocol TipsMagicStackMediatorDelegate;
 @class TipsModuleConfig;
+@class MagicStackModule;
+@class NTPThemeActionableTipConfig;
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
@@ -33,6 +35,13 @@ enum class TipIdentifier;
 
 // Used by the Tips module for the current module configuration.
 @property(nonatomic, strong, readonly) TipsModuleConfig* config;
+
+// Used by the Tips module for the current actionable module configuration.
+@property(nonatomic, strong, readonly)
+    NTPThemeActionableTipConfig* actionableConfig;
+
+// Returns the currently active module config (`actionableConfig` or `config`).
+@property(nonatomic, strong, readonly) MagicStackModule* activeConfig;
 
 // Delegate.
 @property(nonatomic, weak) id<TipsMagicStackMediatorDelegate> delegate;

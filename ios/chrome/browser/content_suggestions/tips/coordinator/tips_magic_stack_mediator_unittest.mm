@@ -8,14 +8,17 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/ntp_theme_actionable_tip_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
@@ -109,4 +112,23 @@ TEST_F(TipsMagicStackMediatorTest, ForwardsDidSelectNTPThemePhotoPicker) {
   OCMExpect([audience didSelectNTPThemePhotoPicker]);
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemePhotoPicker];
   EXPECT_OCMOCK_VERIFY(audience);
+}
+
+// Tests that the mediator creates an `NTPThemeActionableTipConfig` when
+// reconfigured with `kNTPTheme` and the actionable variation is enabled, and
+// resets it when reconfigured with an informational tip.
+TEST_F(TipsMagicStackMediatorTest,
+       ReconfiguresActionableConfigForNTPThemeWhenActionableEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      segmentation_platform::features::kMagicStackTipsV2Ios,
+      {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+        "true"}});
+  [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
+  EXPECT_EQ(TipIdentifier::kNTPTheme, mediator_.config.identifier);
+  EXPECT_NE(nil, mediator_.actionableConfig);
+  EXPECT_EQ(mediator_.actionableConfig, mediator_.activeConfig);
+  [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kLensShop];
+  EXPECT_EQ(nil, mediator_.actionableConfig);
+  EXPECT_EQ(mediator_.config, mediator_.activeConfig);
 }
