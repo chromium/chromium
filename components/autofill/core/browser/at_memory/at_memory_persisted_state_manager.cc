@@ -97,6 +97,7 @@ AtMemoryStateRestored GetStateRestored(const AtMemorySearchState& state) {
     case AtMemorySearchStatus::kQueryModified:
       return AtMemoryStateRestored::kRestoredWithExistingQuery;
     case AtMemorySearchStatus::kSearching:
+    case AtMemorySearchStatus::kPartialResponseReceived:
       return AtMemoryStateRestored::kRestoredWhileSearching;
     case AtMemorySearchStatus::kResponseReceived:
       return AtMemoryStateRestored::kRestoredWithResponse;
@@ -276,6 +277,10 @@ void AtMemoryPersistedStateManager::OnSuggestionsChanged(
   if (search_state_.status == AtMemorySearchStatus::kZeroState) {
     return;
   }
+  if (search_state_.status == AtMemorySearchStatus::kSearching &&
+      !suggestions.empty()) {
+    search_state_.status = AtMemorySearchStatus::kPartialResponseReceived;
+  }
   search_state_.suggestions = std::move(suggestions);
   RestartSearchStateTimer();
 }
@@ -336,7 +341,8 @@ AtMemoryPersistedStateManager::TakeMetricsRecorder() {
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
-  return search_state_.status == AtMemorySearchStatus::kSearching;
+  return search_state_.status == AtMemorySearchStatus::kSearching ||
+         search_state_.status == AtMemorySearchStatus::kPartialResponseReceived;
 }
 
 void AtMemoryPersistedStateManager::StopSearching(
@@ -366,6 +372,11 @@ void AtMemoryPersistedStateManager::PruneSuggestions(
                   return should_prune_suggestion(es.suggestion);
                 });
   std::erase_if(search_state_.suggestions, should_prune_suggestion);
+  // If all partial results were pruned, the search awaits results again.
+  if (search_state_.status == AtMemorySearchStatus::kPartialResponseReceived &&
+      search_state_.suggestions.empty()) {
+    search_state_.status = AtMemorySearchStatus::kSearching;
+  }
 }
 
 void AtMemoryPersistedStateManager::OnAddressDataChanged() {

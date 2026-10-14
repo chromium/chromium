@@ -103,6 +103,9 @@ class AtMemoryPersistedStateManager
 
   void OnFilterChanged(std::u16string_view filter);
   void OnFilterSubmitted(const std::u16string& filter);
+  // Persists `suggestions`. While a search is in progress, they are its partial
+  // results, so the status becomes
+  // `AtMemorySearchStatus::kPartialResponseReceived`.
   void OnSuggestionsChanged(std::vector<Suggestion> suggestions);
   void OnSuggestionAccepted(const Suggestion& suggestion);
 
@@ -120,6 +123,11 @@ class AtMemoryPersistedStateManager
   // `FieldGlobalId` if there is none (e.g. after a reset).
   const FieldGlobalId& field_id() const { return field_id_; }
 
+  // Returns the status of the persisted search for `field_id()`.
+  AtMemorySearchStatus status() const { return search_state_.status; }
+
+  // Returns whether a search is in progress, i.e. whether the status is
+  // `AtMemorySearchStatus::kSearching` or `kPartialResponseReceived`.
   bool IsSearching() const;
   // Stops an ongoing search, if any. `query_completed` indicates that the
   // search stopped because its final response was received, in which case the

@@ -26,8 +26,12 @@ enum class AtMemorySearchStatus {
   // The user entered or modified the filter but has not submitted it, or the
   // search for the submitted filter was cancelled.
   kQueryModified,
-  // The filter was submitted and the search is in progress.
+  // The filter was submitted and the search is in progress, but none of its
+  // results were received yet.
   kSearching,
+  // The filter was submitted and partial results of the search were received,
+  // but the search is still in progress.
+  kPartialResponseReceived,
   // The filter was submitted and the final response of the search (with
   // results or an error) was received.
   kResponseReceived,

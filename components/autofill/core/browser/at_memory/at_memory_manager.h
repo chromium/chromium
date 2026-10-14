@@ -239,6 +239,10 @@ class AtMemoryManager : public AutofillManager::Observer {
   // Advances to the next fetching suggestion message and updates the UI.
   void AdvanceFetchingSuggestion();
 
+  // Starts rotating the fetching suggestion messages, beginning with the first
+  // one. Requires `popup_state_`.
+  void StartFetchingTimer();
+
   // Stops rotating the fetching suggestion messages, if any, without
   // cancelling the pending query.
   void StopFetchingTimer();

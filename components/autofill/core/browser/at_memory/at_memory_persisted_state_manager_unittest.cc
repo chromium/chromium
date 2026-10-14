@@ -445,6 +445,27 @@ TEST_F(AtMemoryPersistedStateManagerTest, StopSearchingWithoutSearchIsNoOp) {
             AtMemorySearchStatus::kQueryModified);
 }
 
+// Tests that receiving suggestions while searching sets the status to
+// `kPartialResponseReceived`, which still counts as searching.
+TEST_F(AtMemoryPersistedStateManagerTest, PartialResultsSetStatus) {
+  const std::vector<Suggestion> results = {
+      Suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult)};
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  EXPECT_EQ(state_manager().status(), AtMemorySearchStatus::kSearching);
+
+  state_manager().OnSuggestionsChanged(results);
+  EXPECT_EQ(state_manager().status(),
+            AtMemorySearchStatus::kPartialResponseReceived);
+  EXPECT_TRUE(state_manager().IsSearching());
+
+  // The final response was received.
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  state_manager().OnSuggestionsChanged(results);
+  EXPECT_EQ(state_manager().status(), AtMemorySearchStatus::kResponseReceived);
+  EXPECT_FALSE(state_manager().IsSearching());
+}
+
 // Tests that `OnSuggestionAccepted` stores accepted suggestions in
 // `previously_filled_suggestions` when `kAutofillAtMemoryPreviouslyFilled`
 // is enabled.
@@ -1074,6 +1095,30 @@ TEST_F(AtMemoryPersistedStateManagerTest,
                   .GetStateForField(field_id(), FieldOrigin())
                   .suggestions.empty());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that pruning all partial results of an ongoing search sets the status
+// back to `kSearching`.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       PruningAllPartialResultsSetsStatusToSearching) {
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({CreateAddressSuggestion(profile)});
+  ASSERT_EQ(state_manager().status(),
+            AtMemorySearchStatus::kPartialResponseReceived);
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile.guid());
+
+  EXPECT_EQ(state_manager().status(), AtMemorySearchStatus::kSearching);
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
 }
 
 // Tests that suggestions without a known GUID/identifier (e.g. CMS contact info

@@ -474,13 +474,10 @@ AtMemorySearchState AtMemoryManager::GetStateForField(
       result_state.suggestions = GetQueryTypingSuggestions(result_state.filter);
       break;
     case AtMemorySearchStatus::kSearching:
-      // Restore partial results if some were received already. Otherwise,
-      // show the fetching state.
-      result_state.suggestions =
-          result_state.suggestions.empty()
-              ? GetFetchingStateSuggestions()
-              : GetResultsRetrievedSuggestions(result_state.suggestions);
+      // `OnPopupShown()` resumes rotating the fetching messages.
+      result_state.suggestions = GetFetchingStateSuggestions();
       break;
+    case AtMemorySearchStatus::kPartialResponseReceived:
     case AtMemorySearchStatus::kResponseReceived:
       result_state.suggestions =
           GetResultsRetrievedSuggestions(result_state.suggestions);
@@ -541,8 +538,13 @@ void AtMemoryManager::OnPopupShown(
               client_->GetPageTitle(), field_id, form_signature,
               field_signature));
     }
-    // TODO(crbug.com/535486238): Restart `fetching_timer` if search is still
-    // in progress when reopening the popup.
+    // With search statefulness, a search may outlive the popup that started
+    // it. Resume rotating the fetching messages when the popup is reopened
+    // while no (partial) results were received yet. Without search
+    // statefulness, the persisted state is never searching.
+    if (state_manager_.status() == AtMemorySearchStatus::kSearching) {
+      StartFetchingTimer();
+    }
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillAtMemorySearchStatefulness)) {
@@ -936,12 +938,8 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
   } else {
     popup_state_->is_searching = true;
   }
-  popup_state_->fetching_string_index = 0;
+  StartFetchingTimer();
   ShowFetchingStateSuggestions();
-  popup_state_->fetching_timer.Start(
-      FROM_HERE, kFetchingMessageInterval,
-      base::BindRepeating(&AtMemoryManager::AdvanceFetchingSuggestion,
-                          query_weak_ptr_factory_.GetWeakPtr()));
   query_service->Query(
       filter, client_->GetLastCommittedPrimaryMainFrameURL(),
       client_->GetPageTitle(),
@@ -1060,6 +1058,15 @@ void AtMemoryManager::AdvanceFetchingSuggestion() {
   CHECK(popup_state_);
   popup_state_->fetching_string_index++;
   ShowFetchingStateSuggestions();
+}
+
+void AtMemoryManager::StartFetchingTimer() {
+  CHECK(popup_state_);
+  popup_state_->fetching_string_index = 0;
+  popup_state_->fetching_timer.Start(
+      FROM_HERE, kFetchingMessageInterval,
+      base::BindRepeating(&AtMemoryManager::AdvanceFetchingSuggestion,
+                          query_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AtMemoryManager::StopFetchingTimer() {

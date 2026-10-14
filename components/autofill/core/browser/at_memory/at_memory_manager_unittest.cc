@@ -3213,6 +3213,100 @@ TEST_F(AtMemoryManagerTestBase,
 }
 
 // Tests that when search statefulness is enabled and the popup is reopened
+// while a search is still in progress, the fetching messages restart from the
+// first one and keep rotating.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_FetchingTimerRestartsOnPopupReopen) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().GetStateForField(field_id, form_origin());
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+  manager().OnFilterChanged(u"john");
+
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"john"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  {
+    InSequence seq;
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI))),
+            AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+            AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  }
+  manager().OnSearchSubmitted(u"john");
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
+  ASSERT_TRUE(saved_query_callback);
+
+  // Close the popup while the search continues in the background. The
+  // fetching messages stop rotating.
+  manager().OnPopupHidden(SuggestionHidingReason::kUserAborted);
+  EXPECT_CALL(update_callback_, Run).Times(0);
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 2);
+  testing::Mock::VerifyAndClearExpectations(&update_callback_);
+  ASSERT_TRUE(manager().IsSearching());
+
+  // Reopening the popup restarts from the first fetching message, which
+  // re-announces the loading state.
+  AtMemorySearchState restored_state =
+      manager().GetStateForField(field_id, form_origin());
+  EXPECT_EQ(restored_state.status, AtMemorySearchStatus::kSearching);
+  EXPECT_EQ(restored_state.filter, u"john");
+  EXPECT_THAT(
+      restored_state.suggestions,
+      ElementsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kAtMemoryFetching,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI)),
+          HasA11yAnnouncement(
+              IDS_AUTOFILL_AT_MEMORY_LOADING_A11Y_ANNOUNCEMENT))));
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // The fetching messages rotate again.
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(EqualsSuggestion(
+              SuggestionType::kAtMemoryFetching,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+          AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
+  testing::Mock::VerifyAndClearExpectations(&update_callback_);
+
+  // Once the final response arrives, the fetching messages stop rotating.
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
+                                    SuggestionType::kAtMemorySearchResult)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  saved_query_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                          {MemorySearchResult(MemoryDataType::kAddressFull,
+                                              u"Address", u"123 Main St")}));
+  EXPECT_FALSE(manager().IsSearching());
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
+}
+
+// Tests that when search statefulness is enabled and the popup is reopened
 // while a search is in progress but partial results were already received,
 // the partial results are restored and not replaced by fetching messages.
 TEST_F(AtMemoryManagerTestBase,
@@ -3244,7 +3338,8 @@ TEST_F(AtMemoryManagerTestBase,
   // The partial results are restored as is.
   AtMemorySearchState restored_state =
       manager().GetStateForField(field_id, form_origin());
-  EXPECT_EQ(restored_state.status, AtMemorySearchStatus::kSearching);
+  EXPECT_EQ(restored_state.status,
+            AtMemorySearchStatus::kPartialResponseReceived);
   EXPECT_THAT(restored_state.suggestions,
               ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
                           Field(&Suggestion::type,
