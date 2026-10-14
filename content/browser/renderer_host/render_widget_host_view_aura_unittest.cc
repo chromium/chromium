@@ -335,6 +335,12 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
 
   bool ShouldSkipCursorUpdate() const override { return false; }
 
+  bool CanSynchronizeVisualProperties() override {
+    ++can_synchronize_visual_properties_count_;
+    return RenderWidgetHostViewAura::CanSynchronizeVisualProperties();
+  }
+
+  size_t can_synchronize_visual_properties_count_ = 0;
   gfx::Size last_frame_size_;
   raw_ptr<FakeWindowEventDispatcher> dispatcher_;
 };
@@ -5710,6 +5716,56 @@ TEST_F(RenderWidgetHostViewAuraTest,
   EXPECT_EQ(3, new_event_target.handle_pointer_count_);
 }
 #endif
+
+// Verify that SetBounds/SetSize does not re-entrantly invoke InternalSetBounds
+// a second time via OnBoundsChanged when kPreventReentrantInternalSetBounds is
+// enabled, while still syncing direct window()->SetBounds() calls.
+TEST_F(RenderWidgetHostViewAuraTest, SetBoundsDoesNotReenterInternalSetBounds) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  // Force CanSynchronizeVisualProperties() to return false so
+  // visual_properties_ack_pending_ does not short-circuit a second call.
+  view_->needs_to_update_display_metrics_ = true;
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kPreventReentrantInternalSetBounds);
+    view_->can_synchronize_visual_properties_count_ = 0;
+
+    view_->SetBounds(gfx::Rect(0, 0, 150, 150));
+    EXPECT_EQ(2u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(150, 150), view_->GetViewBounds().size());
+
+    view_->SetSize(gfx::Size(250, 250));
+    EXPECT_EQ(4u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(250, 250), view_->GetViewBounds().size());
+
+    view_->window()->SetBounds(gfx::Rect(0, 0, 350, 350));
+    EXPECT_EQ(5u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(350, 350), view_->GetViewBounds().size());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kPreventReentrantInternalSetBounds);
+    view_->can_synchronize_visual_properties_count_ = 0;
+
+    view_->SetBounds(gfx::Rect(0, 0, 200, 200));
+    EXPECT_EQ(1u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(200, 200), view_->GetViewBounds().size());
+
+    view_->SetSize(gfx::Size(300, 300));
+    EXPECT_EQ(2u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(300, 300), view_->GetViewBounds().size());
+
+    // Direct window()->SetBounds() must still sync visual properties once.
+    view_->window()->SetBounds(gfx::Rect(0, 0, 400, 400));
+    EXPECT_EQ(3u, view_->can_synchronize_visual_properties_count_);
+    EXPECT_EQ(gfx::Size(400, 400), view_->GetViewBounds().size());
+  }
+}
 
 // Test that we elide touchpad pinch gesture steams consisting of only begin
 // and end events.

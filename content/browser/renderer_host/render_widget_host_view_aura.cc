@@ -172,6 +172,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(InputScope,
 
 namespace content {
 
+BASE_FEATURE(kPreventReentrantInternalSetBounds,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // Guards CHECKing that the UI compositor LSI is only ever invalid when
 // `RenderWidgetHost` is hidden.
@@ -355,7 +358,6 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
     : RenderWidgetHostViewBase(widget_host),
       window_(nullptr),
       in_shutdown_(false),
-      in_bounds_changed_(false),
       popup_parent_host_view_(nullptr),
       popup_child_host_view_(nullptr),
       is_loading_(false),
@@ -2393,13 +2395,16 @@ void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
   // before `delete this`, `this` cannot be deleted while `OnBoundsChanged()` is
   // on the stack.
   window_->AssertDeleteBlocked();
-  base::AutoReset<bool> in_bounds_changed(&in_bounds_changed_, true);
+  const bool was_setting_bounds = is_setting_bounds_;
+  base::AutoReset<bool> is_setting_bounds(&is_setting_bounds_, true);
   // We care about this whenever RenderWidgetHostViewAura is not owned by a
   // WebContentsViewAura since changes to the Window's bounds need to be
-  // messaged to the renderer.  WebContentsViewAura invokes SetSize() or
-  // SetBounds() itself.  No matter how we got here, any redundant calls are
-  // harmless.
-  SetSize(new_bounds.size());
+  // messaged to the renderer. WebContentsViewAura invokes SetSize() or
+  // SetBounds() itself.
+  if (!was_setting_bounds ||
+      !base::FeatureList::IsEnabled(kPreventReentrantInternalSetBounds)) {
+    SetSize(new_bounds.size());
+  }
 
   if (GetInputMethod()) {
     GetInputMethod()->OnCaretBoundsChanged(this);
@@ -3368,8 +3373,23 @@ void RenderWidgetHostViewAura::SetSelectionControllerClientForTest(
 void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
   // Don't recursively call SetBounds if this bounds update is the result of
   // a Window::SetBoundsInternal call.
-  if (!in_bounds_changed_)
-    window_->SetBounds(rect);
+  if (!is_setting_bounds_) {
+    if (base::FeatureList::IsEnabled(kPreventReentrantInternalSetBounds)) {
+      // `aura::Window::NotifyBoundsChanged()` already instantiates a
+      // `ScopedDeleteBlocker` on `window_`; instantiate one at the outer scope
+      // as well to make it explicit that `this` (which deletes `window_` in
+      // `DestroyImpl()`) cannot be deleted while `is_setting_bounds` is on the
+      // stack, making `base::AutoReset` safe.
+      aura::Window::ScopedDeleteBlocker delete_blocker(window_);
+      base::AutoReset<bool> is_setting_bounds(&is_setting_bounds_, true);
+      window_->SetBounds(rect);
+    } else {
+      window_->SetBounds(rect);
+    }
+  }
+  if (destroy_pending()) {
+    return;
+  }
 
   if (!display_feature_bounds_.IsEmpty()) {
     // The view bounds have changed so if we have viewport segments from the

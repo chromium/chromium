@@ -15,6 +15,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -103,6 +104,8 @@ inline constexpr char16_t kArabicIndicZero = u'\u0660';
 #if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT void ResetArabicIndicDigitInputStateForTesting();
 #endif  // BUILDFLAG(IS_WIN)
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreventReentrantInternalSetBounds);
 
 // RenderWidgetHostView class hierarchy described in render_widget_host_view.h.
 class CONTENT_EXPORT RenderWidgetHostViewAura
@@ -619,6 +622,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                            ScrollOOPIFEditableElement);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           SetBoundsDoesNotReenterInternalSetBounds);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
                            UpdateInsetsWithVirtualKeyboardEnabled);
 
   class WindowObserver;
@@ -789,8 +794,22 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // again while inside shutdown, causing a double-free.
   bool in_shutdown_;
 
-  // True if in the process of handling a window bounds changed notification.
-  bool in_bounds_changed_;
+  // Prevents mutual recursion between `InternalSetBounds()` and
+  // `OnBoundsChanged()`:
+  //
+  // 1. Bounds set via `RenderWidgetHostViewAura::SetBounds()` / `SetSize()`:
+  //    - `InternalSetBounds()` (sets `is_setting_bounds_ = true`)
+  //    - `aura::Window::SetBounds()`
+  //    - ...
+  //    - `OnBoundsChanged()` (skips `SetSize()`)
+  //
+  // 2. Bounds set directly on `window_` via `aura::Window::SetBounds()`:
+  //    - `aura::Window::SetBounds()`
+  //    - ...
+  //    - `OnBoundsChanged()` (sets `is_setting_bounds_ = true`)
+  //    - `SetSize()`
+  //    - `InternalSetBounds()` (skips `window_->SetBounds()`)
+  bool is_setting_bounds_ = false;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
   //
