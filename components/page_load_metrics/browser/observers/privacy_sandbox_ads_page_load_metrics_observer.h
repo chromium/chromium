@@ -28,7 +28,6 @@ class PrivacySandboxAdsPageLoadMetricsObserver
     kFencedFrames,
     kProtectedAudienceRunAdAuction,
     kProtectedAudienceJoinAdInterestGroup,
-    kPrivateAggregation,
     kSharedStorage,
     kTopics,
 

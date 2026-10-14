@@ -57,9 +57,6 @@ std::string PrivacySandboxAdsPageLoadMetricsObserver::GetHistogramName(
     case PrivacySandboxAdsApi::kProtectedAudienceJoinAdInterestGroup:
       suffix = "ProtectedAudienceJoinAdInterestGroup";
       break;
-    case PrivacySandboxAdsApi::kPrivateAggregation:
-      suffix = "PrivateAggregation";
-      break;
     case PrivacySandboxAdsApi::kSharedStorage:
       suffix = "SharedStorage";
       break;
@@ -153,9 +150,6 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
         break;
       case WebFeature::kV8Navigator_JoinAdInterestGroup_Method:
         api = PrivacySandboxAdsApi::kProtectedAudienceJoinAdInterestGroup;
-        break;
-      case WebFeature::kOBSOLETE_PrivateAggregationApiAll:
-        api = PrivacySandboxAdsApi::kPrivateAggregation;
         break;
       case WebFeature::kSharedStorageAPI_SharedStorage_DOMReference:
       case WebFeature::kSharedStorageAPI_Run_Method:

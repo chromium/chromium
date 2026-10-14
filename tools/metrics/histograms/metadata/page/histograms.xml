@@ -763,7 +763,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="PrivacySandboxAdsApi">
   <variant name="FencedFrames"/>
-  <variant name="PrivateAggregation"/>
   <variant name="SharedStorage"/>
   <variant name="Topics"/>
 </variants>
