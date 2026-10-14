@@ -442,6 +442,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public @SideUiId int getSideUiId() {
+        ThreadUtils.assertOnUiThread();
         return SideUiId.SIDE_PANEL;
     }
 
@@ -519,6 +520,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public boolean shouldLockTopControls() {
+        ThreadUtils.assertOnUiThread();
         return true;
     }
 
@@ -528,6 +530,7 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
+        ThreadUtils.assertOnUiThread();
         updateContainerTopPadding(newHeightType);
     }
 
@@ -537,6 +540,7 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
+        ThreadUtils.assertOnUiThread();
         assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
                 .onPanelContainerUpdated(oldReservedWidth, newReservedWidth);
 
@@ -589,6 +593,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onWillAutoClose(boolean isShowable) {
+        ThreadUtils.assertOnUiThread();
         mIsPreparingForAutoClose = true;
         assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
                 .onWillAutoClose(isShowable);
@@ -597,6 +602,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onWillAutoRestore() {
+        ThreadUtils.assertOnUiThread();
         mIsPreparingForAutoRestore = true;
         assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge()).onWillAutoRestore();
         mIsPreparingForAutoRestore = false;
