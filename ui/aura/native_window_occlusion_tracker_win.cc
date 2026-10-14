@@ -24,6 +24,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -75,6 +76,14 @@ SkRegion AdjustForClientAndConvertToDips(
   SkRegion result;
   result.setRects(rects.data(), rects.size());
   return result;
+}
+
+void AddWindowsToTracker(
+    const base::flat_set<raw_ptr<Window, CtnExperimental>>& windows,
+    WindowTracker& tracker) {
+  for (Window* window : windows) {
+    tracker.Add(window);
+  }
 }
 
 }  // namespace
@@ -232,7 +241,13 @@ void NativeWindowOcclusionTrackerWin::UpdateOcclusionState(
     // The window was destroyed while processing occlusion.
     if (it == hwnd_root_window_map_.end())
       continue;
-    for (const auto& window : it->second) {
+    WindowTracker windows;
+    AddWindowsToTracker(it->second, windows);
+    while (!windows.windows().empty()) {
+      Window* window = windows.Pop();
+      if (!hwnd_widget_to_app_root_map_.contains(window)) {
+        continue;
+      }
       window->GetHost()->set_on_current_workspace(
           root_window_pair.second.on_current_workspace);
       // Check Window::IsVisible here, on the UI thread, because it can't be
@@ -292,6 +307,9 @@ void NativeWindowOcclusionTrackerWin::OnMinimizeEnd(HWND hwnd) {
     return;
   }
 
+  WindowTracker windows;
+  AddWindowsToTracker(it->second, windows);
+
   // The following code is similar to calling
   // `OnWindowVisibilityChanged(window, true)` on every window in the set, but
   // only queues one total `HandleVisibilityChanged()` task at the end instead
@@ -299,7 +317,11 @@ void NativeWindowOcclusionTrackerWin::OnMinimizeEnd(HWND hwnd) {
   // handled, since for non-child windows `Window::Show()` will have already
   // been called and done this work.
   bool marked_anything = false;
-  for (const auto& window : it->second) {
+  while (!windows.windows().empty()) {
+    Window* window = windows.Pop();
+    if (!hwnd_widget_to_app_root_map_.contains(window)) {
+      continue;
+    }
     if (window->IsRootWindow() &&
         window->GetHost()->GetNativeWindowOcclusionState() ==
             Window::OcclusionState::HIDDEN) {
@@ -357,14 +379,20 @@ void NativeWindowOcclusionTrackerWin::OnSuspend() {
 void NativeWindowOcclusionTrackerWin::MarkNonIconicWindowsOccluded() {
   // Set all visible root windows as occluded. If not visible,
   // set them as hidden.
+  WindowTracker windows;
   for (const auto& root_window_hwnd_pair : hwnd_root_window_map_) {
-    for (const auto& window : root_window_hwnd_pair.second) {
-      window->GetHost()->SetNativeWindowOcclusionState(
-          ::IsIconic(root_window_hwnd_pair.first)
-              ? Window::OcclusionState::HIDDEN
-              : Window::OcclusionState::OCCLUDED,
-          {});
+    AddWindowsToTracker(root_window_hwnd_pair.second, windows);
+  }
+  while (!windows.windows().empty()) {
+    Window* window = windows.Pop();
+    const auto it = hwnd_widget_to_app_root_map_.find(window);
+    if (it == hwnd_widget_to_app_root_map_.end()) {
+      continue;
     }
+    window->GetHost()->SetNativeWindowOcclusionState(
+        ::IsIconic(it->second) ? Window::OcclusionState::HIDDEN
+                               : Window::OcclusionState::OCCLUDED,
+        {});
   }
 }
 
