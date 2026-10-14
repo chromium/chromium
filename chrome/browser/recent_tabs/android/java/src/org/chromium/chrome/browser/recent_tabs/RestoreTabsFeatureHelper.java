@@ -14,6 +14,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,7 +25,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -113,9 +116,17 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
+        boolean isCooldownEnabled = ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled();
+        FeatureProperties featureProperties =
+                new FeatureProperties(
+                        UiFormat.BOTTOM_SHEET,
+                        /* isBlockedByEnterprisePolicy= */ isCooldownEnabled,
+                        /* isBlockedByCooldownGroup= */ false,
+                        /* blocksCooldownGroup= */ isCooldownEnabled);
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
         if (hasValidSyncedDevices(sessions)
-                && tracker.shouldTriggerHelpUi(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+                && tracker.shouldTriggerHelpUi(
+                        FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, featureProperties)) {
             createDelegate(
                     activity,
                     profile,

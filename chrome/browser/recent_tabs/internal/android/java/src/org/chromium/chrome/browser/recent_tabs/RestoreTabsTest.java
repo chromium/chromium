@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,6 +58,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -176,6 +178,9 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true)
+                .when(mMockTracker)
+                .shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any(FeatureProperties.class));
         doAnswer(
                         invocation -> {
                             List<ForeignSession> invokedSessions = invocation.getArgument(1);
@@ -193,6 +198,8 @@ public class RestoreTabsTest {
     public void testRestoreTabsPromo_noSyncedDevicesNoTrigger() {
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verify(mMockTracker, never()).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        verify(mMockTracker, never())
+                .shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any(FeatureProperties.class));
         Assert.assertFalse(mBottomSheetController.isSheetOpen());
         verify(mMockTracker, never()).dismissed(eq(RESTORE_TABS_FEATURE));
     }
@@ -466,6 +473,9 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true)
+                .when(mMockTracker)
+                .shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any(FeatureProperties.class));
         doAnswer(
                         invocation -> {
                             List<ForeignSession> invokedSessions = invocation.getArgument(1);
