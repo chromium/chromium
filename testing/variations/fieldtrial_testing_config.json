@@ -7793,6 +7793,23 @@
             ]
         }
     ],
+    "FixReadingListToggleForSyncToSigninMigratedUsers": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableReadingListForMigratedUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [
