@@ -2010,6 +2010,13 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
 IN_PROC_BROWSER_TEST_P(
     RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
     ItemSequenceNumberExpected) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/572178665): Re-enable the same-document variant.
+  if (GetParam() == TestConfig::kSameDoc) {
+    GTEST_SKIP() << "Same-document variant is flaky on Mac and Linux.";
+  }
+#endif
+
   ASSERT_TRUE(NavigateToURL(shell(), FirstURL()));
   ASSERT_TRUE(NavigateToURL(shell(), SecondURL()));
 
