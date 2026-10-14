@@ -466,10 +466,30 @@ TEST_F(ScheduledRestartManagerTest, IsAppMenuItemEnabled) {
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::NONE);
 
-  // Only kScheduledRestart enabled (default in fixture) -> app menu item is
-  // disabled.
+  // kScheduledRestart is enabled in the fixture and
+  // kScheduledRestartAppMenuItem is enabled by default -> app menu item is
+  // enabled.
   EXPECT_TRUE(ScheduledRestartManager::AreScheduledRestartsEnabled());
-  EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+  EXPECT_TRUE(ScheduledRestartManager::IsAppMenuItemEnabled());
+
+  // Scheduled restarts, and therefore the app menu item, are limited to
+  // unmanaged browsers.
+  {
+    policy::ScopedManagementServiceOverrideForTesting managed_override(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+    EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+  }
+
+  // Disabling kScheduledRestartAppMenuItem suppresses the app menu item while
+  // keeping scheduled restarts enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kScheduledRestartAppMenuItem);
+    EXPECT_TRUE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+    EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+  }
 
   // Only kScheduledRestartAppMenuItem enabled (kScheduledRestart disabled) ->
   // app menu item is disabled because it requires ScheduledRestart.
@@ -478,25 +498,6 @@ TEST_F(ScheduledRestartManagerTest, IsAppMenuItemEnabled) {
     feature_list.InitWithFeatures(
         /*enabled_features=*/{features::kScheduledRestartAppMenuItem},
         /*disabled_features=*/{features::kScheduledRestart});
-    EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
-    EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
-  }
-
-  // Both features enabled -> app menu item is enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kScheduledRestart,
-                              features::kScheduledRestartAppMenuItem},
-        /*disabled_features=*/{});
-    EXPECT_TRUE(ScheduledRestartManager::AreScheduledRestartsEnabled());
-    EXPECT_TRUE(ScheduledRestartManager::IsAppMenuItemEnabled());
-
-    // Scheduled restarts, and therefore the app menu item, are limited to
-    // unmanaged browsers.
-    policy::ScopedManagementServiceOverrideForTesting managed_override(
-        policy::ManagementServiceFactory::GetForPlatform(),
-        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
     EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
     EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
   }

@@ -40,7 +40,7 @@ BASE_FEATURE(kScheduledRestart, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the "Relaunch later..." item is shown in the 3-dot App Menu
 // when the Scheduled Restart feature is enabled and an update is available.
-BASE_FEATURE(kScheduledRestartAppMenuItem, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScheduledRestartAppMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kScheduledRestartFirstNudgeDelay{
     &kScheduledRestart, "first_nudge_delay", base::Days(14)};
