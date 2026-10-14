@@ -120,9 +120,6 @@ class SystemIdentityManager {
   // Callback invoked when the `GetHostedDomain()` operation completes.
   using HostedDomainCallback = base::OnceCallback<void(NSString*, NSError*)>;
 
-  // Callback invoked when the `FetchTokenAuthURL()` operation completes.
-  using AuthenticatedURLCallback = base::OnceCallback<void(NSURL*, NSError*)>;
-
   // Callback invoked once all the requested capabilities have been fetched.
   // Not used by this interface itself; implementations that fetch capabilities
   // in a single batch can use it internally.
@@ -336,14 +333,6 @@ class SystemIdentityManager {
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.
   virtual bool IsMDMError(id<SystemIdentity> identity, NSError* error) = 0;
-
-  // Asynchronously fetches the token auth URL that can be used to
-  // authorize a webview for the given identity.
-  // The callback is invoked on the calling sequence when the operation
-  // completes.
-  virtual void FetchTokenAuthURL(id<SystemIdentity> identity,
-                                 NSURL* target_url,
-                                 AuthenticatedURLCallback callback) {}
 
  protected:
   // Invokes `OnIdentityListChanged(...)` for all observers.
