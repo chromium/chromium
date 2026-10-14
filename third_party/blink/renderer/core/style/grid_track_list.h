@@ -113,7 +113,10 @@ class CORE_EXPORT GridTrackList {
 
   String ToString() const;
 
-  void operator=(const GridTrackList& o);
+  // Defaulted in the .cc file: defaulting it here would make it inline, and
+  // ComputedStyle's generated setters assign track lists from many
+  // translation units.
+  GridTrackList& operator=(const GridTrackList& o);
   bool operator==(const GridTrackList& o) const;
 
  private:

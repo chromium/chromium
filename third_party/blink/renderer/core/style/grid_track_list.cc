@@ -193,16 +193,7 @@ wtf_size_t GridTrackList::AvailableTrackCount() const {
   return kNotFound - 1 - track_count_without_auto_repeat_;
 }
 
-void GridTrackList::operator=(const GridTrackList& other) {
-  repeaters_ = other.repeaters_;
-  repeater_track_sizes_ = other.repeater_track_sizes_;
-  auto_repeater_index_ = other.auto_repeater_index_;
-  track_count_without_auto_repeat_ = other.track_count_without_auto_repeat_;
-  track_count_before_auto_repeat_ = other.track_count_before_auto_repeat_;
-  non_auto_repeat_line_count_ = other.non_auto_repeat_line_count_;
-  axis_type_ = other.axis_type_;
-  has_intrinsic_sized_repeater_ = other.has_intrinsic_sized_repeater_;
-}
+GridTrackList& GridTrackList::operator=(const GridTrackList& other) = default;
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
   return TrackCountWithoutAutoRepeat() == other.TrackCountWithoutAutoRepeat() &&
