@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -386,6 +388,16 @@ void BodyStreamBuffer::OnStateChange() {
       GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
+
+  // `consumer_` can call this from a task, with no script running. Fulfilling
+  // a read request can still run script, e.g. a "then" getter on the result. A
+  // callback called from that script must not perform a microtask checkpoint,
+  // as HTML only does so once the JavaScript execution context stack is empty.
+  // Pending microtasks run at the next checkpoint instead, e.g. at the end of
+  // the task.
+  std::unique_ptr<scheduler::EventLoop::PauseMicrotasksHandle>
+      microtasks_pauser =
+          GetExecutionContext()->GetAgent()->event_loop()->PauseMicrotasks();
 
   switch (consumer_->GetPublicState()) {
     case BytesConsumer::PublicState::kReadableOrWaiting:

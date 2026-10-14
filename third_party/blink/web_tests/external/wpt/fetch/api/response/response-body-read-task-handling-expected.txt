@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] reading from a body stream should occur in a microtask scope
-  assert_false: shouldn't have run microtasks yet expected false got true
-Harness: the test ran to completion.
-
