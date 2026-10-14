@@ -928,6 +928,20 @@ TEST(VectorTest, InlineCapacityMutationDuringIteration) {
   inline_vector = std::move(moved_inline);
   EXPECT_GE(inline_vector.size(), 3u);
 }
+
+TEST(VectorTest, SwapDuringIteration) {
+  Vector<int> vector1 = {1, 2, 3};
+  Vector<int> vector2 = {4, 5, 6};
+  auto it1 = vector1.begin();
+  auto it2 = vector2.begin();
+  EXPECT_EQ(*it1, 1);
+  EXPECT_EQ(*it2, 4);
+  vector1.swap(vector2);
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it1,
+                          "Vector modified while being iterated.");
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it2,
+                          "Vector modified while being iterated.");
+}
 #endif
 
 }  // anonymous namespace

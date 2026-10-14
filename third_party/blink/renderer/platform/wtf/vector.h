@@ -1758,6 +1758,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Swap two vectors quickly.
   void swap(Vector& other) {
+    this->RegisterModification();
+    other.RegisterModification();
     Base::SwapVectorBuffer(other, OffsetRange(), OffsetRange(),
                            VectorOperationOrigin::kRegularModification);
   }
