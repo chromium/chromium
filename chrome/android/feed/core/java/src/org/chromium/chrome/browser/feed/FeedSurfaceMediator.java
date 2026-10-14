@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -388,7 +389,12 @@ public class FeedSurfaceMediator
 
         initStreamHeaderViews();
 
-        mMemoryPressureCallback = pressure -> view.getRecycledViewPool().clear();
+        mMemoryPressureCallback =
+                pressure -> {
+                    if (pressure != MemoryPressureLevel.NONE) {
+                        view.getRecycledViewPool().clear();
+                    }
+                };
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
 
         mIsPropertiesInitializedForStream = true;

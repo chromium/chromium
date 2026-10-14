@@ -51,10 +51,10 @@ void MemoryPressureListenerPolicy::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   base::MemoryLimit limit = GetMemoryLimit();
 
-  // Always request to release memory here. The signal was originally designed
-  // for the MemoryPressureListener, which never made a distinction between
-  // capping memory usage and actively freeing it.
-  bool release_memory = true;
+  // Request to release memory whenever under pressure. The signal was
+  // originally designed for the MemoryPressureListener, which never made a
+  // distinction between capping memory usage and actively freeing it.
+  bool release_memory = level != base::MEMORY_PRESSURE_LEVEL_NONE;
 
   SetLimit(limit, release_memory);
 }

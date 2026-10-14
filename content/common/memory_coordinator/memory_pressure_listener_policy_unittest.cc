@@ -105,13 +105,13 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
-  // No pressure: 100% limit and release memory.
+  // No pressure: 100% limit and do not release memory.
   EXPECT_CALL(
       host, UpdateConsumers(UnorderedElementsAre(
                 MemoryConsumerUpdate{kConsumerId1, base::MemoryLimit::Default(),
-                                     true},
+                                     false},
                 MemoryConsumerUpdate{kConsumerId2, base::MemoryLimit::Default(),
-                                     true})));
+                                     false})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_NONE);
   Mock::VerifyAndClearExpectations(&host);
