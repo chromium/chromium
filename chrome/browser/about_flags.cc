@@ -7081,6 +7081,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxSiteSearch)},
 
+    {"android-tab-search-recent-tabs",
+     flag_descriptions::kAndroidTabSearchRecentTabsName,
+     flag_descriptions::kAndroidTabSearchRecentTabsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kAndroidTabSearchRecentTabs)},
+
     {"omnibox-diagnostics", flag_descriptions::kOmniboxDiagnosticsName,
      flag_descriptions::kOmniboxDiagnosticsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDiagnostics,

@@ -12811,6 +12811,7 @@ from previous Chrome versions.
       label="ProfileCreationFrictionReductionExperimentSkipCustomizeProfile:enabled"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-659763527" label="AccessCodeCastTabSwitchingUI:disabled"/>
+  <int value="-659583494" label="AndroidTabSearchRecentTabs:enabled"/>
   <int value="-658543308" label="AndroidTabDeclutterArchiveTabGroups:enabled"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657824773"
@@ -21903,6 +21904,7 @@ from previous Chrome versions.
   <int value="2089339185" label="GetDisplayMediaConfersActivation:disabled"/>
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2089901626" label="QuickSettingsPWA:enabled"/>
+  <int value="2089932840" label="AndroidTabSearchRecentTabs:disabled"/>
   <int value="2089934964" label="QuickActionShowBubbleLauncher:enabled"/>
   <int value="2090500262" label="ReadAloudTapToSeek:enabled"/>
   <int value="2090848663" label="NewTabPageCustomizationV2:disabled"/>

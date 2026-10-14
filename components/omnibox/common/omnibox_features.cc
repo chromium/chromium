@@ -420,6 +420,10 @@ BASE_FEATURE(kOmniboxPrefetchSelectedSuggestionsOmtAndroid, DISABLED);
 // Enables simultaneous prefetch and navigation on Enter KeyDown in Omnibox.
 BASE_FEATURE(kOmniboxSearchPrefetchOnEnterKeyDown, DISABLED);
 
+// If enabled, surfaces recent tabs, including tabs from other devices, as
+// suggestions in the Android Tab Search overlay.
+BASE_FEATURE(kAndroidTabSearchRecentTabs, DISABLED);
+
 // Enables keyword-based site search functionality on Android devices.
 BASE_FEATURE(kOmniboxSiteSearch, DISABLED);
 

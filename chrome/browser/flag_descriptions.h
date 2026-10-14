@@ -5670,6 +5670,12 @@ inline constexpr char kAndroidStartupImprovementsDescription[] =
     "recording) out of the Chrome Android startup path to reduce startup "
     "latency.";
 
+inline constexpr char kAndroidTabSearchRecentTabsName[] =
+    "Android Tab Search Recent Tabs";
+inline constexpr char kAndroidTabSearchRecentTabsDescription[] =
+    "Surfaces recent tabs, including tabs from other devices, as suggestions "
+    "in the Android Tab Search overlay";
+
 inline constexpr char kAndroidTabstripStartupCaptureBugFixName[] =
     "Android Tabstrip Startup Capture Bug Fix";
 inline constexpr char kAndroidTabstripStartupCaptureBugFixDescription[] =

@@ -93,7 +93,11 @@ bool IsCustomTab(OEP::PageClassification classification) {
 
 bool IsAndroidHubOrTabSearch(OEP::PageClassification classification) {
   return classification == OEP::ANDROID_HUB ||
-         classification == OEP::ANDROID_TAB_SEARCH_OVERLAY;
+         IsAndroidTabSearch(classification);
+}
+
+bool IsAndroidTabSearch(OEP::PageClassification classification) {
+  return classification == OEP::ANDROID_TAB_SEARCH_OVERLAY;
 }
 
 bool IsAndroidWidget(OEP::PageClassification classification) {

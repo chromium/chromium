@@ -62,6 +62,11 @@ bool IsCustomTab(
 bool IsAndroidHubOrTabSearch(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is the Android Tab Search
+// overlay.
+bool IsAndroidTabSearch(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Return true, if supplied page classification applies to Android Widget.
 bool IsAndroidWidget(
     ::metrics::OmniboxEventProto::PageClassification classification);
