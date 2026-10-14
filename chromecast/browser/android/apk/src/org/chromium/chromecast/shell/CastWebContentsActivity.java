@@ -288,7 +288,6 @@ public class CastWebContentsActivity extends ComponentActivity {
                 webContentsState.flatMap(MediaPlaying::observeFromWebContents).share();
         final var audioPlaying = any(mediaPlaying.filter(x -> x.hasAudio));
         final var videoPlaying = any(mediaPlaying.filter(x -> x.hasVideo));
-        final var anyMediaPlaying = any(audioPlaying.or(videoPlaying));
 
         videoPlaying.subscribe(
                 x -> {
@@ -310,7 +309,7 @@ public class CastWebContentsActivity extends ComponentActivity {
                 });
 
         any(shouldKeepScreenOn
-                        .or(anyMediaPlaying.and(isDocked).opaque())
+                        .or(videoPlaying.and(isDocked).opaque())
                         .or(audioPlaying.filter(x -> !canPlayBackgroundAudio()).opaque()))
                 .subscribe(
                         (x) -> {

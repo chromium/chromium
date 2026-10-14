@@ -814,6 +814,32 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    public void testDoesNotAddRequiredFlagsForDockedAndAudioPlaying() {
+        DeviceInfo.setIsTVForTesting(false);
+        mActivityLifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivity.class,
+                        CastWebContentsIntentUtils.requestStartCastActivity(
+                                mWebContents, true, false, true, /* keepScreenOn= */ false, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        // RuntimeEnvironment.application
+        updateDockState(false);
+        updateMediaState(false, false);
+        // State: Undocked & No Media Playing
+        assertWakeLockFlags(false, false);
+        // Audio Starts playing
+        updateMediaState(true, false);
+        // State: Undocked & Audio Playing
+        assertWakeLockFlags(false, false);
+        // Device docked
+        updateDockState(true);
+        // State: Docked & Audio Playing (Should NOT keep screen on, but should allow lock)
+        assertWakeLockFlags(false, true);
+    }
+
+    @Test
     public void testEnsureDockStateAndMediaStateDoNotImpactKeepScreenOnFlagIfAlwaysKeepScreenOn() {
         mActivityLifecycle =
                 Robolectric.buildActivity(
