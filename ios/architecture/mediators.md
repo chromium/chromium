@@ -4,7 +4,7 @@
 > user interface, create a **mediator** to **observe** the relevant **models**
 > and **send updates** to the UI over a **consumer** interface.
 
----
+______________________________________________________________________
 
 ## Motivating Ideas
 
@@ -27,13 +27,13 @@ view management, layout, and navigation.
 To prevent this accretion of responsibilities in view controllers, Chrome on iOS
 divides feature architecture across three core patterns:
 
-* **[Coordinators](coordinators.md)** handle feature **encapsulation**,
+- **[Coordinators](coordinators.md)** handle feature **encapsulation**,
   navigation, interaction with other parts of the UI, and **dependency
   injection**.
-* **View Controllers** and **Model Objects** sit on either side of a strict
+- **View Controllers** and **Model Objects** sit on either side of a strict
   boundary: view controllers have no direct model-layer dependencies, and
   model-layer code is never coupled to specific UI implementations.
-* **Mediators** handle the interactions between the Model and UI layers while
+- **Mediators** handle the interactions between the Model and UI layers while
   keeping them **decoupled**.
 
 The Mediator pattern is one of the classic behavioral patterns from *Design
@@ -50,19 +50,19 @@ feature like Bookmarks can be implemented without duplicating business logic,
 and a new Bookmarks backend with a different API can be adopted without changing
 any UI code.
 
----
+______________________________________________________________________
 
 ## Architectural Overview
 
 Mediators encapsulate all interactions between the model layer and the user
 interface:
 
-* They are created and owned by **coordinators**.
-* They are initialized with the specific model-layer services and objects they
+- They are created and owned by **coordinators**.
+- They are initialized with the specific model-layer services and objects they
   need.
-* They push UI configuration and model-driven updates into a **consumer**
+- They push UI configuration and model-driven updates into a **consumer**
   interface (`id<FooConsumer>`).
-* When user actions in the UI depend on the model (such as changing model
+- When user actions in the UI depend on the model (such as changing model
   state), the UI calls back into the mediator through a **mutator** interface
   (`id<FooMutator>`).
 
@@ -87,17 +87,18 @@ end of the consumer protocol can be replaced with a fake or mock in tests.
 
 ### Directory Structure and Dependencies
 
-As described in [Directory Structure and
-Dependencies](coordinators.md#directory-structure-and-dependencies), a feature's
-mediators live alongside its coordinators in the `coordinator/` subdirectory,
-while views and view controllers live in `ui/`. Because the `ui/` directory must
-not depend on `coordinator/` or `model/`, all protocol definitions shared
-between a mediator and a view controller—including **consumer**, **consumer data
-source**, and **mutator** protocols, as well as any data classes they pass—must
-be declared in headers located in the `ui/` directory. Both the view controller
-(in `ui/`) and the mediator (in `coordinator/`) import these headers from `ui/`.
+As described in
+[Directory Structure and Dependencies](coordinators.md#directory-structure-and-dependencies),
+a feature's mediators live alongside its coordinators in the `coordinator/`
+subdirectory, while views and view controllers live in `ui/`. Because the `ui/`
+directory must not depend on `coordinator/` or `model/`, all protocol
+definitions shared between a mediator and a view controller—including
+**consumer**, **consumer data source**, and **mutator** protocols, as well as
+any data classes they pass—must be declared in headers located in the `ui/`
+directory. Both the view controller (in `ui/`) and the mediator (in
+`coordinator/`) import these headers from `ui/`.
 
----
+______________________________________________________________________
 
 ## Creating, Initializing, and Disconnecting Mediators
 
@@ -105,11 +106,11 @@ be declared in headers located in the `ui/` directory. Both the view controller
 
 Mediators are created and owned by
 [coordinators](coordinators.md#objects-created-and-connected-by-a-coordinator),
-and a mediator's lifetime is strictly tied to an **[active UI
-feature](coordinators.md#parent-ownership-of-lifecycle)**. A feature's
-coordinator creates its mediator in `-start` (never in `-init`), passes the
-required model-layer services into the mediator's initializer, and assigns the
-view controller to the mediator's `consumer` property:
+and a mediator's lifetime is strictly tied to an
+**[active UI feature](coordinators.md#parent-ownership-of-lifecycle)**. A
+feature's coordinator creates its mediator in `-start` (never in `-init`),
+passes the required model-layer services into the mediator's initializer, and
+assigns the view controller to the mediator's `consumer` property:
 
 ```objectivec
 // reading_list_mediator.h (in coordinator/)
@@ -159,7 +160,8 @@ Notice that in the example above, the coordinator passes the specific
 `ReadingListService*` into the mediator rather than passing the `ProfileIOS*`
 (or `Browser*`) from which the `ReadingListService` was retrieved.
 
-This is the **[line in the sand](coordinators.md#core-guidelines-and-boundaries)**
+This is the
+**[line in the sand](coordinators.md#core-guidelines-and-boundaries)**
 principle: "backbone container" objects that can vend arbitrary services and
 dependencies—such as `Browser`, `ProfileIOS`, `SceneState`, `ProfileState`,
 `AppState`, `ApplicationContext`, or `CommandDispatcher`—are passed down through
@@ -183,8 +185,8 @@ injected at initialization, even if it is only used later—including state owne
 by other features, such as preferences or browser-scoped state. If a mediator
 seems to need something only its coordinator can provide, the work in question
 is usually a UI transition, which the mediator requests by invoking a command
-(see [Mediators Accessing Other Services and
-Commands](#mediators-accessing-other-services-and-commands)).
+(see
+[Mediators Accessing Other Services and Commands](#mediators-accessing-other-services-and-commands)).
 
 ### Observing Model Objects
 
@@ -238,11 +240,11 @@ encapsulation and decoupling: a mediator's narrowly injected dependencies *are*
 its test seam. If writing a test seems to require exposing a new interface,
 stretching an architectural pattern, routing a call through the coordinator, or
 working around the limitations of a mocking library, then **the test design is
-wrong**. Instead, inject fake or test model services, drive behavior through
-the model and the mutator, and verify results on the consumer and the model;
-don't substitute objects that the mediator creates for itself.
+wrong**. Instead, inject fake or test model services, drive behavior through the
+model and the mutator, and verify results on the consumer and the model; don't
+substitute objects that the mediator creates for itself.
 
----
+______________________________________________________________________
 
 ## Consumer Protocols
 
@@ -321,40 +323,40 @@ layer and couples the view controller to the model.
 
 Instead, the mediator is responsible for converting model-layer types into
 simple value types suitable for direct consumption by the UI—typically
-Foundation types (e.g., `NSString`), primitive integers/booleans, or `enum
-class` values. Note that this boundary is between the model layer and the UI
-layer, not between C++ and Objective-C. Because the UI layer is implemented in
-Objective-C++, general-purpose C++ types such as `enum class` values,
+Foundation types (e.g., `NSString`), primitive integers/booleans, or
+`enum class` values. Note that this boundary is between the model layer and the
+UI layer, not between C++ and Objective-C. Because the UI layer is implemented
+in Objective-C++, general-purpose C++ types such as `enum class` values,
 `std::vector` containers, or lightweight identifier types (such as `base::Uuid`)
 are appropriate in consumer protocols. However, **C++ strings (`std::string`,
 `std::u16string`) should not be passed to a consumer**: if a string is meant to
 be displayed, the mediator should convert it to `NSString*`, and if it
 represents a state used to control the UI, it should be an `enum class` instead.
 
-* **URLs:** URLs (`GURL` or `NSURL`) may be passed over consumer protocols and
+- **URLs:** URLs (`GURL` or `NSURL`) may be passed over consumer protocols and
   back through the mutator, rather than wrapped in another object just to
   round-trip them. A view controller must **never** load or fetch data from a
   URL.
-* **Colors:** Pass `UIColor*` values over a consumer protocol only when the
-  color is intrinsically associated with a specific model instance (for
-  example, a tab group color or a color provided by a cross-platform model
-  API). When color depends on the *category* or *state* of an object, pass an
-  `enum class` value identifying that state and let the UI layer map it to the
-  appropriate `UIColor`.
-* **Localized strings:** In most cases, the UI layer is responsible for
+- **Colors:** Pass `UIColor*` values over a consumer protocol only when the
+  color is intrinsically associated with a specific model instance (for example,
+  a tab group color or a color provided by a cross-platform model API). When
+  color depends on the *category* or *state* of an object, pass an `enum class`
+  value identifying that state and let the UI layer map it to the appropriate
+  `UIColor`.
+- **Localized strings:** In most cases, the UI layer is responsible for
   resolving static localized strings (including mapping an `enum class` state
   from the consumer protocol to a localized label). However, when the model
-  layer dynamically selects string identifiers (such as specific error
-  messages, warnings, or multi-step flow prompts) or when choosing the string
-  involves business logic, the mediator should resolve the localized
-  `NSString*` and pass the final string to the consumer. Passing raw string
-  resource IDs across the consumer protocol is discouraged because it makes
-  testing the consumer interface harder.
-* **Images:** Mediators for features that display model-provided images (such
-  as favicons or page thumbnails) may pass `UIImage*` instances directly over
-  the consumer protocol.
+  layer dynamically selects string identifiers (such as specific error messages,
+  warnings, or multi-step flow prompts) or when choosing the string involves
+  business logic, the mediator should resolve the localized `NSString*` and pass
+  the final string to the consumer. Passing raw string resource IDs across the
+  consumer protocol is discouraged because it makes testing the consumer
+  interface harder.
+- **Images:** Mediators for features that display model-provided images (such as
+  favicons or page thumbnails) may pass `UIImage*` instances directly over the
+  consumer protocol.
 
----
+______________________________________________________________________
 
 ## On-Demand Data from the Mediator
 
@@ -385,24 +387,24 @@ to detect model changes; detecting changes is the mediator's job, and changes
 reach the UI only by being pushed over the consumer protocol.
 
 To decide whether a value should be pushed or may be pulled, ask: **if this
-value changed while the UI is visible, would the UI be wrong?** If so, the
-value must be pushed over the consumer protocol (even if only once). If the
-value is only used for an immediate, transient decision, the view controller
-may pull it from a **consumer data source**: a protocol declared in
+value changed while the UI is visible, would the UI be wrong?** If so, the value
+must be pushed over the consumer protocol (even if only once). If the value is
+only used for an immediate, transient decision, the view controller may pull it
+from a **consumer data source**: a protocol declared in
 `<feature>_data_source.h` in `ui/` and implemented by the mediator. Unlike a
 UIKit data source (such as `UITableViewDataSource`), a consumer data source
 method must not take the requesting consumer (`self`) as a sender parameter.
 Consumer data source methods are subject to these constraints:
 
-* The method is declared on the **consumer data source** protocol, never on the
+- The method is declared on the **consumer data source** protocol, never on the
   mutator protocol.
-* The method has no side effects.
-* The method may take context that the view controller has only at the time of
+- The method has no side effects.
+- The method may take context that the view controller has only at the time of
   the interaction.
-* The method returns a **decision or configuration**, not raw model facts. The
-  view controller must not combine several pulled facts into a display
-  decision; that combination is business logic and belongs in the mediator,
-  where it can be unit-tested.
+- The method returns a **decision or configuration**, not raw model facts. The
+  view controller must not combine several pulled facts into a display decision;
+  that combination is business logic and belongs in the mediator, where it can
+  be unit-tested.
 
 ```objectivec
 // download_toolbar_actions.h (in ui/)
@@ -447,7 +449,7 @@ connects it to the mediator during `-start`:
 @end
 ```
 
----
+______________________________________________________________________
 
 ## Timing of Mediator Updates
 
@@ -470,22 +472,21 @@ correctly handle consumer calls before `-viewDidLoad` is called.**
 There are two valid ways for a view controller to handle consumer calls that
 arrive before `-viewDidLoad`:
 
-* **Store incoming state in instance variables and apply it in
-  `-viewDidLoad`:** Consumer methods store the incoming values in instance
-  variables, and the view controller uses those stored values to populate its
-  UI when the view loads.
-* **Configure lazily instantiated subviews without accessing `self.view`:**
-  If the view controller uses lazy property getters for its subviews, consumer
-  methods can configure those subviews directly so they are ready when the
-  view loads (taking care not to access `self.view`, which would prematurely
-  force the view to load).
+- **Store incoming state in instance variables and apply it in `-viewDidLoad`:**
+  Consumer methods store the incoming values in instance variables, and the view
+  controller uses those stored values to populate its UI when the view loads.
+- **Configure lazily instantiated subviews without accessing `self.view`:** If
+  the view controller uses lazy property getters for its subviews, consumer
+  methods can configure those subviews directly so they are ready when the view
+  loads (taking care not to access `self.view`, which would prematurely force
+  the view to load).
 
 Consumer methods must not assume that `-viewDidLoad` has already run (for
 example, by asserting that objects created in `-viewDidLoad` are non-nil).
 Requiring a specific setup order forces the coordinator to be coupled to the
 view controller's implementation details.
 
----
+______________________________________________________________________
 
 ## Model Updates Through the Mediator
 
@@ -518,8 +519,8 @@ dismissing the feature, navigating between parts of its UI, or showing a QR code
 for a URL it already has—do not go through the mediator; instead, the view
 controller invokes a command handler directly, using either a shared command
 protocol or a [local command protocol](coordinators.md#local-commands)
-implemented by the coordinator (see [Commands vs. Other Protocol
-Patterns](commands.md#commands-vs-other-protocol-patterns)).
+implemented by the coordinator (see
+[Commands vs. Other Protocol Patterns](commands.md#commands-vs-other-protocol-patterns)).
 
 One-way updates (`void` return type, with no completion blocks) are the norm for
 mutator methods. Passing completion callbacks to a mutator or returning mutation
@@ -536,8 +537,8 @@ controller establishes that it needs to know whether `Foo` is enabled is by
 declaring a `-setFooEnabled:` method on its consumer protocol, which the
 mediator calls during initial configuration and whenever that state changes.
 Transient decisions needed only at the moment of a user interaction are the one
-exception, and they belong on a consumer data source (see [Interaction-Time
-Queries](#interaction-time-queries)).
+exception, and they belong on a consumer data source (see
+[Interaction-Time Queries](#interaction-time-queries)).
 
 Non-`void` mutator methods should be reserved for very narrow cases where an
 underlying system API requires an immediate synchronous return value on the same
@@ -620,12 +621,12 @@ The coordinator wires the mediator and view controller together in `-start`:
 Even when `dataSource` and `mutator` point to the same mediator instance, **the
 consumer data source protocol and the mutator protocol must remain distinct**:
 
-* The **data source protocol** defines how the UI pulls interaction-time
+- The **data source protocol** defines how the UI pulls interaction-time
   decisions and is declared in its own header file (`<feature>_data_source.h`).
-* The **mutator protocol** defines how the UI requests changes to the model
-  and is declared in its own header file (`<feature>_mutator.h`). Read-only
-  configuration getters do not belong on a mutator protocol; push
-  configuration via the consumer protocol.
+- The **mutator protocol** defines how the UI requests changes to the model and
+  is declared in its own header file (`<feature>_mutator.h`). Read-only
+  configuration getters do not belong on a mutator protocol; push configuration
+  via the consumer protocol.
 
 Keeping these interfaces separate preserves flexibility: for example, mutations
 can be routed to a separate helper object without affecting how the UI queries
@@ -635,8 +636,8 @@ the mediator.
 
 When the view controller invokes a mutator method, the mediator updates the
 underlying model, observes the resulting model change notification, and pushes a
-corresponding update back to the view controller over the consumer protocol.
-The view controller updates its views only in response to that consumer call.
+corresponding update back to the view controller over the consumer protocol. The
+view controller updates its views only in response to that consumer call.
 
 This is the **Mutation-Observation Cycle**, and it is the default pattern for
 all user-initiated model changes because it guarantees that the UI always
@@ -645,17 +646,19 @@ reflects the authoritative state of the model.
 For example, when a user taps the pause button on a download toolbar:
 
 **Avoid anticipating model changes in the UI:**
+
 1. Handle the button tap in the view controller.
 2. Immediately switch the toolbar to its paused appearance.
 3. Call `[_mutator pauseDownload]`.
 4. Ignore the subsequent consumer update from the mediator.
 
 **Prefer the Mutation-Observation Cycle:**
+
 1. Handle the button tap in the view controller.
 2. Call `[_mutator pauseDownload]`.
 3. In the mediator, pause the download and observe the state change.
 4. Receive `-[DownloadToolbarConsumer setDownloadState:]` with
-  `DownloadToolbarState::kPaused` in the view controller.
+   `DownloadToolbarState::kPaused` in the view controller.
 5. Switch the toolbar to its paused appearance.
 
 If the model processes updates synchronously, step 4 occurs on the same call
@@ -731,7 +734,7 @@ this:
 @end
 ```
 
----
+______________________________________________________________________
 
 ## Mediators Accessing Other Services and Commands
 
@@ -739,9 +742,9 @@ A mediator's role is strictly to mediate between the model layer and a specific,
 active UI feature. **Side effects that are unrelated to a feature's UI do not
 belong in a mediator.** For example:
 
-* A mediator that observes a `WebState` to update a loading progress bar
-  should not also log general page-load metrics.
-* Observing system or `UIApplication` lifecycle events to update a keyed
+- A mediator that observes a `WebState` to update a loading progress bar should
+  not also log general page-load metrics.
+- Observing system or `UIApplication` lifecycle events to update a keyed
   service—with no feature UI or consumer involved—is model or application
   infrastructure logic, not UI mediation.
 
@@ -752,224 +755,223 @@ However, a mediator for an active UI feature may legitimately depend on
 additional services or [command handlers](commands.md) when that feature
 requires them:
 
-* **Additional model services:** A feature's business logic may span multiple
+- **Additional model services:** A feature's business logic may span multiple
   related services. For example, a mediator that closes tabs may need both the
   `WebStateList` and the tab restore service. The coordinator should pass all
   required services into the mediator at initialization (or via properties),
   never passing a `Browser` or `ProfileIOS` container.
-* **[Command handlers](commands.md#type-safety-and-command-handlers):**
+
+- **[Command handlers](commands.md#type-safety-and-command-handlers):**
   Sometimes a model update while a feature is active requires triggering a
   broader application or feature UI change that depends on model state unknown
   to the view controller. (By contrast, if a button tap unconditionally opens
   Settings, the view controller should invoke its own command handler directly
   without involving the mediator.) For example, if closing the last tab in a
   group while the tab group UI is open must dismiss that presentation or open
-  another UI surface, the mediator is the component that knows the last tab
-  was closed. In such cases, the coordinator should inject the appropriate
-  command handler into the mediator (see [Type Safety and Command
-  Handlers](commands.md#type-safety-and-command-handlers) and [Naming Command
-  Handlers](commands.md#naming-command-handlers)).
+  another UI surface, the mediator is the component that knows the last tab was
+  closed. In such cases, the coordinator should inject the appropriate command
+  handler into the mediator (see
+  [Type Safety and Command Handlers](commands.md#type-safety-and-command-handlers)
+  and [Naming Command Handlers](commands.md#naming-command-handlers)).
 
   Note that a mediator only dispatches commands while its own UI feature is
-  already active. **Do not create a [dormant coordinator or
-  mediator](coordinators.md#parent-ownership-of-lifecycle) in the background
-  to observe a model service and dispatch commands (especially not a command
-  to start its own feature).** Background model observation that triggers UI
-  commands when a feature is not active belongs in a model-layer observer
-  (such as a browser agent or tab helper), which dispatches a command handled
-  by a parent coordinator that then creates and starts the child feature's
-  coordinator.
+  already active. **Do not create a
+  [dormant coordinator or mediator](coordinators.md#parent-ownership-of-lifecycle)
+  in the background to observe a model service and dispatch commands (especially
+  not a command to start its own feature).** Background model observation that
+  triggers UI commands when a feature is not active belongs in a model-layer
+  observer (such as a browser agent or tab helper), which dispatches a command
+  handled by a parent coordinator that then creates and starts the child
+  feature's coordinator.
 
-* **Outcomes of UI flows:** When a mediator triggers a flow that presents UI
-  (such as sign-in, a sign-out confirmation, or reauthentication), it does so
-  by invoking a command; the coordinator that handles the command runs the
-  flow. The mediator should learn the flow's outcome by **observing the
-  model**—for example, a completed sign-in is visible to the mediator as a
-  primary account change on the `IdentityManager` it already observes. Some
-  outcomes are not reflected in the model, such as the user cancelling a
-  confirmation; in those cases, the coordinator that ran the flow reports the
-  outcome by calling the mediator's public interface (for example,
-  `-signOutFlowDidEnd`), since the coordinator owns the mediator. When a model
-  action must wait until a UI transition finishes (for example, dismissing a
-  menu before switching profiles), the command may take a completion block,
-  under the [last-resort exception](commands.md#characteristics-of-a-ui-command)
-  for completion blocks.
+- **Outcomes of UI flows:** When a mediator triggers a flow that presents UI
+  (such as sign-in, a sign-out confirmation, or reauthentication), it does so by
+  invoking a command; the coordinator that handles the command runs the flow.
+  The mediator should learn the flow's outcome by **observing the model**—for
+  example, a completed sign-in is visible to the mediator as a primary account
+  change on the `IdentityManager` it already observes. Some outcomes are not
+  reflected in the model, such as the user cancelling a confirmation; in those
+  cases, the coordinator that ran the flow reports the outcome by calling the
+  mediator's public interface (for example, `-signOutFlowDidEnd`), since the
+  coordinator owns the mediator. When a model action must wait until a UI
+  transition finishes (for example, dismissing a menu before switching
+  profiles), the command may take a completion block, under the
+  [last-resort exception](commands.md#characteristics-of-a-ui-command) for
+  completion blocks.
 
-* **Avoid mediator delegates:** Mediators should generally **not** define a
-  delegate protocol (especially one implemented by their owning coordinator).
-  A coordinator's role is to set up and tear down its feature and manage
+- **Avoid mediator delegates:** Mediators should generally **not** define a
+  delegate protocol (especially one implemented by their owning coordinator). A
+  coordinator's role is to set up and tear down its feature and manage
   navigation via commands, not to execute ongoing business logic or state
   management on behalf of its mediator. If a mediator needs to trigger a UI
   transition or dismissal in response to model state, inject a command handler
-  (for either a [shared command protocol or a feature-local command
-  protocol](commands.md#shared-vs-local-command-protocols)) into the mediator
-  rather than delegating back to the coordinator. This applies to
-  parent-agnostic coordinators too: when such a coordinator must notify
-  whichever parent started it, that notification uses a [coordinator delegate
-  protocol](coordinators.md#coordinator-delegates), reached from the mediator
-  through a local command.
+  (for either a
+  [shared command protocol or a feature-local command protocol](commands.md#shared-vs-local-command-protocols))
+  into the mediator rather than delegating back to the coordinator. This applies
+  to parent-agnostic coordinators too: when such a coordinator must notify
+  whichever parent started it, that notification uses a
+  [coordinator delegate protocol](coordinators.md#coordinator-delegates),
+  reached from the mediator through a local command.
 
----
+______________________________________________________________________
 
 ## Composing Mediators and Consumers
 
-The standard mediator pattern pairs a single mediator with a single feature
-view controller over feature-specific `Consumer` and `Mutator` protocols. In
+The standard mediator pattern pairs a single mediator with a single feature view
+controller over feature-specific `Consumer` and `Mutator` protocols. In
 practice, features frequently adapt this boundary to fit their UI structure
 without violating the core separation between model and UI:
 
 ### Multiple Mediators or Multiple Consumers
 
-* **Multiple mediators for a single view controller:** When a single UI
-  surface interacts with multiple distinct model domains, its coordinator can
-  create a separate mediator for each domain rather than combining unrelated
-  model logic into a monolithic mediator. The view controller conforms to each
-  mediator's consumer protocol (for example, `<DownloadToolbarConsumer,
-  StorageSpaceConsumer>`) and exposes descriptively named mutator or data
-  source properties (`downloadMutator`, `storageMutator`) wired up by the
-  coordinator in `-start`.
-* **Multiple consumers for a single mediator:** Conversely, when a feature's
-  UI is decomposed into multiple coordinated view controllers (such as a main
-  content view controller and a separate toolbar or header view controller)
-  that are driven by the same model domain, a single mediator can expose
-  multiple descriptively named weak consumer properties (such as
-  `resultConsumer` and `toolbarConsumer`) and push relevant state updates to
-  each surface.
+- **Multiple mediators for a single view controller:** When a single UI surface
+  interacts with multiple distinct model domains, its coordinator can create a
+  separate mediator for each domain rather than combining unrelated model logic
+  into a monolithic mediator. The view controller conforms to each mediator's
+  consumer protocol (for example,
+  `<DownloadToolbarConsumer, StorageSpaceConsumer>`) and exposes descriptively
+  named mutator or data source properties (`downloadMutator`, `storageMutator`)
+  wired up by the coordinator in `-start`.
+- **Multiple consumers for a single mediator:** Conversely, when a feature's UI
+  is decomposed into multiple coordinated view controllers (such as a main
+  content view controller and a separate toolbar or header view controller) that
+  are driven by the same model domain, a single mediator can expose multiple
+  descriptively named weak consumer properties (such as `resultConsumer` and
+  `toolbarConsumer`) and push relevant state updates to each surface.
 
 ### One-Directional Mediators
 
 A mediator only needs the protocols required by the actual direction of data
 flow in the feature:
 
-* **Read-only UIs (Consumer only):** If the user interface only displays
-  model state (or only triggers coordinator-level navigation commands without
-  mutating feature models), the mediator only pushes to a `Consumer` or
-  provides a `DataSource`, and does not need a `Mutator` protocol.
-* **Static prompts and action-only flows (Mutator only):** If a feature's UI
-  is configured once by the coordinator at presentation time and never changes
-  in response to ongoing model observations while visible, the mediator may
-  only conform to a `Mutator` protocol to handle the user's actions on the
-  model, with no `Consumer` protocol needed.
+- **Read-only UIs (Consumer only):** If the user interface only displays model
+  state (or only triggers coordinator-level navigation commands without mutating
+  feature models), the mediator only pushes to a `Consumer` or provides a
+  `DataSource`, and does not need a `Mutator` protocol.
+- **Static prompts and action-only flows (Mutator only):** If a feature's UI is
+  configured once by the coordinator at presentation time and never changes in
+  response to ongoing model observations while visible, the mediator may only
+  conform to a `Mutator` protocol to handle the user's actions on the model,
+  with no `Consumer` protocol needed.
 
 ### Mediators for Unusual UI Implementations
 
 Not every UI surface is a `UIViewController` that accepts imperative method
 calls over an Objective-C consumer protocol, for example:
 
-* **SwiftUI views:** In SwiftUI features, views bind declaratively to an
+- **SwiftUI views:** In SwiftUI features, views bind declaratively to an
   `ObservableObject` (or `@Observable`) model class defined in `ui/` with
   `@Published` properties. Instead of calling methods on an `id<FooConsumer>`
   protocol, the mediator holds a reference to that UI-layer observable model
   object and updates its properties on the main sequence as C++ model events
   arrive.
-* **Composite container modules:** In composite UI surfaces (such as the
-  Magic Stack on the New Tab Page), individual module mediators may populate
-  and update a UI-layer configuration or item object (e.g., a
-  `MagicStackModule` subclass) that is handed to the parent container, rather
-  than driving a dedicated view controller directly.
+- **Composite container modules:** In composite UI surfaces (such as the Magic
+  Stack on the New Tab Page), individual module mediators may populate and
+  update a UI-layer configuration or item object (e.g., a `MagicStackModule`
+  subclass) that is handed to the parent container, rather than driving a
+  dedicated view controller directly.
 
 Regardless of how the UI layer is implemented, the architectural pattern remains
 the same: the mediator translates between the model layer and a decoupled
 UI-layer interface or data object in `ui/` that contains only UI-ready data
 types and has no knowledge of the mediator or model services.
 
----
+______________________________________________________________________
 
 ## Guidelines Summary
 
-* **Single-feature focus:** Keep mediators focused on a single model-to-UI
+- **Single-feature focus:** Keep mediators focused on a single model-to-UI
   relationship. Use multiple mediators when a feature bridges multiple distinct
   models.
-* **Reserve the name "Mediator":** Only name a class `*Mediator` if it
-  mediates between the model layer and the UI layer as described in this
-  document. Do not use the name for general coordinator helpers or model-layer
-  classes.
-* **No backbone containers:** Never pass `Browser`, `ProfileIOS`, `SceneState`,
-  `ProfileState`, `AppState`, `ApplicationContext`, or `CommandDispatcher`
-  into a mediator, and never call `GetApplicationContext()` inside a mediator.
-  Pass all (and only) the specific services, model objects, and command
-  handlers the mediator needs.
-* **Observe `WebStateList` directly:** Mediators that track the active tab
+- **Reserve the name "Mediator":** Only name a class `*Mediator` if it mediates
+  between the model layer and the UI layer as described in this document. Do not
+  use the name for general coordinator helpers or model-layer classes.
+- **No backbone containers:** Never pass `Browser`, `ProfileIOS`, `SceneState`,
+  `ProfileState`, `AppState`, `ApplicationContext`, or `CommandDispatcher` into
+  a mediator, and never call `GetApplicationContext()` inside a mediator. Pass
+  all (and only) the specific services, model objects, and command handlers the
+  mediator needs.
+- **Observe `WebStateList` directly:** Mediators that track the active tab
   should observe the `WebStateList` (or an active `WebState` observation
   forwarder) rather than having the active `WebState` repeatedly re-injected.
-* **Gatekeep model data:** Mediators are the sole gatekeepers of model data for
-  the UI. Never pass model objects across a consumer protocol; convert them
-  into simple UI-ready value types in the mediator.
-* **Push displayed state; pull only transient decisions:** Any state that
+- **Gatekeep model data:** Mediators are the sole gatekeepers of model data for
+  the UI. Never pass model objects across a consumer protocol; convert them into
+  simple UI-ready value types in the mediator.
+- **Push displayed state; pull only transient decisions:** Any state that
   remains visible in the UI is pushed over the consumer protocol, even if only
   once. A view controller may synchronously pull from a consumer data source
   only for decisions used immediately at the moment of an interaction, and such
   methods return decisions or configuration rather than raw model facts.
-* **Consumer and Mutator protocols are not UIKit delegates:**
-  * UIKit delegates and data sources are tightly coupled to the delegating
+- **Consumer and Mutator protocols are not UIKit delegates:**
+  - UIKit delegates and data sources are tightly coupled to the delegating
     object and take the delegating object (`self`) as their first parameter.
-  * Consumer, consumer data source, and mutator protocols are decoupled by
+  - Consumer, consumer data source, and mutator protocols are decoupled by
     design. Never include the concrete calling object (such as
     `ReadingListMediator*` or `DownloadToolbarViewController*`) as a UIKit-style
     sender parameter in consumer, data source, or mutator methods.
-  * Do not name consumer or mutator protocols `*Delegate`,
-    `*ActionHandler`, or `*Commands`.
-* **Deterministic teardown:** When a mediator requires deterministic
+  - Do not name consumer or mutator protocols `*Delegate`, `*ActionHandler`, or
+    `*Commands`.
+- **Deterministic teardown:** When a mediator requires deterministic
   cleanup—such as unregistering observers or clearing references to unowned
   model-layer objects—provide a `-disconnect` method and call it from the
   coordinator's `-stop` method rather than relying on `-dealloc`.
-* **Unit testing:** Because mediators have narrow, injected dependencies and
+- **Unit testing:** Because mediators have narrow, injected dependencies and
   communicate with the UI exclusively through lightweight protocols, they are
-  designed to be easily unit-tested. Every mediator should have a
-  comprehensive unit test suite.
+  designed to be easily unit-tested. Every mediator should have a comprehensive
+  unit test suite.
 
----
+______________________________________________________________________
 
 ## Glossary
 
-* **Business Logic**: The rules, transformations, and coordination that
+- **Business Logic**: The rules, transformations, and coordination that
   translate raw model state into user-facing presentation state and translate
   user intent into model mutations.
-* **Consumer (`*Consumer`)**: An Objective-C protocol that is part of the UI
+- **Consumer (`*Consumer`)**: An Objective-C protocol that is part of the UI
   layer and implemented by a view controller (or other UI-layer object) through
   which a mediator pushes model-driven state updates and UI configuration.
-* **Consumer Data Source (`*DataSource`)**: An Objective-C protocol that is part
+- **Consumer Data Source (`*DataSource`)**: An Objective-C protocol that is part
   of the UI layer and implemented by a mediator, allowing a consumer to obtain
   transient interaction-time decisions on demand.
-* **Mediator (`*Mediator`)**: A controller-layer object created and owned by a
+- **Mediator (`*Mediator`)**: A controller-layer object created and owned by a
   [coordinator](coordinators.md) that observes and mutates model-layer objects
   and communicates with the UI layer over decoupled protocols.
-* **Mutation-Observation Cycle**: The unidirectional data flow in which a view
+- **Mutation-Observation Cycle**: The unidirectional data flow in which a view
   controller sends a user's intent to its mediator via a mutator protocol, the
   mediator updates the model, and the view controller updates its views only
   when the mediator observes the resulting model change and pushes it to the
   consumer.
-* **Mutator (`*Mutator`)**: An Objective-C protocol that is part of the UI layer
+- **Mutator (`*Mutator`)**: An Objective-C protocol that is part of the UI layer
   and implemented by a mediator, allowing a view controller to request actions
-  that depend on the model—such as changing model state or triggering UI
-  changes that require model data—in response to user actions.
-* **Observer Bridge**: A C++ helper class (typically managed with
+  that depend on the model—such as changing model state or triggering UI changes
+  that require model data—in response to user actions.
+- **Observer Bridge**: A C++ helper class (typically managed with
   `base::ScopedObservation`) that implements a C++ model observer interface and
   forwards observation callbacks to Objective-C methods on a mediator.
-* **State Independence**: The design principle that each consumer update is
+- **State Independence**: The design principle that each consumer update is
   self-contained and does not rely on the consumer's internal state being
   implicitly synchronized with prior model state.
 
----
+______________________________________________________________________
 
 ## Connecting Patterns
 
 Mediators work in concert with several complementary architectural patterns
 across Chrome on iOS:
 
-* **[Coordinators](coordinators.md)**: Controller-layer objects that encapsulate
+- **[Coordinators](coordinators.md)**: Controller-layer objects that encapsulate
   a UI feature, manage the lifecycle of its mediator and view controller,
   extract model dependencies from backbone containers, and wire the mediator and
   view controller together.
-* **Deep Models**: Rich model-layer classes (such as C++ keyed services,
+- **Deep Models**: Rich model-layer classes (such as C++ keyed services,
   `WebStateList`, browser agents, and tab helpers) that encapsulate domain
   state, persistence, and operations and notify observers when their state
   changes.
-* **Isolated View Controllers**: View controllers that have no direct
+- **Isolated View Controllers**: View controllers that have no direct
   dependencies on the model layer or concrete mediator classes, rendering state
   received via consumer protocols and reporting user actions via mutator and
   command protocols.
-* **[UI Commands and Disintermediated Dispatch](commands.md)**: Objective-C
+- **[UI Commands and Disintermediated Dispatch](commands.md)**: Objective-C
   protocols defining feature- and application-level UI actions routed through
   `CommandDispatcher` (or passed as local command handlers), allowing mediators
   and view controllers to trigger broader UI transitions without coupling to
