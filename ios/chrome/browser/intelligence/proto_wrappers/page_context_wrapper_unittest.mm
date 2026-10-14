@@ -239,6 +239,23 @@ void FindNodesWithCssPosition(
   }
 }
 
+// Returns the first node in the subtree rooted at `node` that has form control
+// data, or `nullptr` if there is none.
+const optimization_guide::proto::ContentNode* FindFirstFormControlNode(
+    const optimization_guide::proto::ContentNode& node) {
+  if (node.content_attributes().has_form_control_data()) {
+    return &node;
+  }
+  for (const optimization_guide::proto::ContentNode& child :
+       node.children_nodes()) {
+    if (const optimization_guide::proto::ContentNode* found =
+            FindFirstFormControlNode(child)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Version of AutofillManager that caches the FormData it receives so we can
@@ -9433,6 +9450,223 @@ TEST_P(PageContextWrapperTest,
   EXPECT_EQ(fixed_nodes[0]->content_attributes().geometry().css_position(),
             optimization_guide::proto::CSS_POSITION_FIXED);
   EXPECT_TRUE(VerifyGeometry(*fixed_nodes[0]));
+}
+
+// Test that in actionable Rich APC extraction, node geometries inside both
+// same-origin and cross-origin iframes are translated to top-level absolute
+// coordinates rather than remaining relative to their local iframe.
+TEST_P(
+    PageContextWrapperTest,
+    PopulatePageContext_RichExtractionActionable_IframeNodeGeometriesAreAbsolute) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto same_origin_child = HtmlPage(
+      "Same Origin Child",
+      RawHtml("<style>html, body { margin: 0; padding: 0; }</style>"
+              "<button style='position: absolute; left: 10px; top: 15px; "
+              "width: 80px; height: 30px; margin: 0; padding: 0; border: "
+              "none;'>Same Origin Button</button>"));
+
+  auto cross_origin_child = HtmlPage(
+      "Cross Origin Child",
+      RawHtml("<style>html, body { margin: 0; padding: 0; }</style>"
+              "<button style='position: absolute; left: 12px; top: 18px; "
+              "width: 90px; height: 35px; margin: 0; padding: 0; border: "
+              "none;'>Cross Origin Button</button>"));
+
+  auto page_structure = HtmlPage(
+      "Main Frame",
+      RawHtml("<style>"
+              "html, body { margin: 0; padding: 0; }"
+              "iframe:nth-of-type(1) { position: absolute; left: 40px; top: "
+              "60px; width: 200px; height: 150px; border: none; margin: 0; "
+              "padding: 0; }"
+              "iframe:nth-of-type(2) { position: absolute; left: 50px; top: "
+              "240px; width: 220px; height: 160px; border: none; margin: 0; "
+              "padding: 0; }"
+              "</style>"),
+      Iframe(TestOrigin::kMain, std::move(same_origin_child), "iframe_same"),
+      Iframe(TestOrigin::kCrossA, std::move(cross_origin_child),
+             "iframe_cross"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  GURL same_url = page_helper_->GetUrlForId("iframe_same");
+  GURL cross_url = page_helper_->GetUrlForId("iframe_cross");
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  auto* frames_manager = web_state()->GetWebFramesManager(
+      extractor_feature()->GetSupportedContentWorld());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return frames_manager->GetAllWebFrames().size() == 3;
+  }));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const optimization_guide::proto::ContentNode& root_node =
+      response.value()->annotated_page_content().root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 2);
+
+  // 1. Same-origin iframe at (40, 60, 200, 150) with button at local (10, 15,
+  //    80, 30) -> expected top-level absolute (50, 75, 80, 30).
+  const optimization_guide::proto::ContentNode& same_iframe =
+      root_node.children_nodes(0);
+  EXPECT_EQ(same_iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(same_iframe.content_attributes().iframe_data().frame_data().url(),
+            same_url.spec());
+  EXPECT_EQ(
+      same_iframe.content_attributes().geometry().outer_bounding_box().x(), 40);
+  EXPECT_EQ(
+      same_iframe.content_attributes().geometry().outer_bounding_box().y(), 60);
+  ASSERT_EQ(same_iframe.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& same_iframe_root =
+      same_iframe.children_nodes(0);
+  EXPECT_EQ(
+      same_iframe_root.content_attributes().geometry().outer_bounding_box().x(),
+      40);
+  EXPECT_EQ(
+      same_iframe_root.content_attributes().geometry().outer_bounding_box().y(),
+      60);
+  ASSERT_EQ(same_iframe_root.children_nodes_size(), 1);
+  const optimization_guide::proto::Geometry& same_button_geom =
+      same_iframe_root.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(same_button_geom.outer_bounding_box().x(), 50);
+  EXPECT_EQ(same_button_geom.outer_bounding_box().y(), 75);
+  EXPECT_EQ(same_button_geom.outer_bounding_box().width(), 80);
+  EXPECT_EQ(same_button_geom.outer_bounding_box().height(), 30);
+  EXPECT_EQ(same_button_geom.visible_bounding_box().x(), 50);
+  EXPECT_EQ(same_button_geom.visible_bounding_box().y(), 75);
+  EXPECT_EQ(same_button_geom.visible_bounding_box().width(), 80);
+  EXPECT_EQ(same_button_geom.visible_bounding_box().height(), 30);
+
+  // 2. Cross-origin iframe at (50, 240, 220, 160) with button at local (12, 18,
+  //    90, 35) -> expected top-level absolute (62, 258, 90, 35).
+  const optimization_guide::proto::ContentNode& cross_iframe =
+      root_node.children_nodes(1);
+  EXPECT_EQ(cross_iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(cross_iframe.content_attributes().iframe_data().frame_data().url(),
+            cross_url.spec());
+  EXPECT_EQ(
+      cross_iframe.content_attributes().geometry().outer_bounding_box().x(),
+      50);
+  EXPECT_EQ(
+      cross_iframe.content_attributes().geometry().outer_bounding_box().y(),
+      240);
+  ASSERT_EQ(cross_iframe.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& cross_iframe_root =
+      cross_iframe.children_nodes(0);
+  EXPECT_EQ(cross_iframe_root.content_attributes()
+                .geometry()
+                .outer_bounding_box()
+                .x(),
+            50);
+  EXPECT_EQ(cross_iframe_root.content_attributes()
+                .geometry()
+                .outer_bounding_box()
+                .y(),
+            240);
+  ASSERT_EQ(cross_iframe_root.children_nodes_size(), 1);
+  const optimization_guide::proto::Geometry& cross_button_geom =
+      cross_iframe_root.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(cross_button_geom.outer_bounding_box().x(), 62);
+  EXPECT_EQ(cross_button_geom.outer_bounding_box().y(), 258);
+  EXPECT_EQ(cross_button_geom.outer_bounding_box().width(), 90);
+  EXPECT_EQ(cross_button_geom.outer_bounding_box().height(), 35);
+  EXPECT_EQ(cross_button_geom.visible_bounding_box().x(), 62);
+  EXPECT_EQ(cross_button_geom.visible_bounding_box().y(), 258);
+  EXPECT_EQ(cross_button_geom.visible_bounding_box().width(), 90);
+  EXPECT_EQ(cross_button_geom.visible_bounding_box().height(), 35);
+}
+
+// Test that a password field inside a same-origin iframe gets a screenshot
+// redaction box at its main frame position, with the iframe offset applied
+// exactly once, and that the field's translated geometry in the tree matches
+// that box. This guards against translating the tree before the redaction
+// boxes are collected from it.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_IframePasswordRedactionBoxMatchesTreeGeometry) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kPageContextScreenshotPasswordRedaction);
+
+  auto child_page = HtmlPage(
+      "Password Child",
+      RawHtml("<style>html, body { margin: 0; padding: 0; }</style>"
+              "<input type='password' value='secret' style='position: "
+              "absolute; left: 5px; top: 10px; width: 40px; height: 20px; "
+              "margin: 0; padding: 0; border: none;'>"));
+  auto page_structure = HtmlPage(
+      "Main Frame",
+      RawHtml("<style>"
+              "html, body { margin: 0; padding: 0; }"
+              "iframe { position: absolute; left: 20px; top: 30px; width: "
+              "70px; height: 60px; border: none; margin: 0; padding: 0; }"
+              "</style>"),
+      Iframe(TestOrigin::kMain, std::move(child_page), "iframe_same"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  auto* frames_manager = web_state()->GetWebFramesManager(
+      extractor_feature()->GetSupportedContentWorld());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return frames_manager->GetAllWebFrames().size() == 2;
+  }));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  __block PageContextWrapper* captured_wrapper = nil;
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        captured_wrapper = wrapper;
+        wrapper.shouldGetAnnotatedPageContent = YES;
+        wrapper.shouldGetSnapshot = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const optimization_guide::proto::ContentNode* password_node =
+      FindFirstFormControlNode(
+          response.value()->annotated_page_content().root_node());
+  ASSERT_TRUE(password_node);
+
+  // The iframe at (20, 30) offsets the field at local (5, 10) exactly once.
+  const optimization_guide::proto::BoundingRect& visible =
+      password_node->content_attributes().geometry().visible_bounding_box();
+  EXPECT_EQ(visible.x(), 25);
+  EXPECT_EQ(visible.y(), 40);
+  EXPECT_EQ(visible.width(), 40);
+  EXPECT_EQ(visible.height(), 20);
+
+  const std::vector<RedactionBoxEntry>& redaction_boxes =
+      [captured_wrapper grafterForTesting]
+          .universal_bounding_boxes_for_redaction();
+  ASSERT_EQ(redaction_boxes.size(), 1u);
+  const CGRect& redaction_box = redaction_boxes[0].visible_box;
+  EXPECT_EQ(redaction_box.origin.x, 25);
+  EXPECT_EQ(redaction_box.origin.y, 40);
+  EXPECT_EQ(redaction_box.size.width, 40);
+  EXPECT_EQ(redaction_box.size.height, 20);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

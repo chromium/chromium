@@ -948,6 +948,16 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     if (_rawScreenshotImage) {
       [self applyRedactionsAndEncodeScreenshot:_rawScreenshotImage];
     }
+    // TODO(crbug.com/573337154): Translate the tree before screenshot redaction
+    // and screenshot info so `FrameGrafter` can reuse the translated geometry
+    // once password screenshot redaction is fully launched. `FrameGrafter`
+    // currently offsets redaction boxes by the iframe's `visible_bounding_box`
+    // rather than its `outer_bounding_box`, so this will also fix redaction
+    // offsets for partially scrolled iframes.
+    if (_pageContext->has_annotated_page_content()) {
+      TranslateIframeNodeGeometries(
+          _pageContext->mutable_annotated_page_content());
+    }
     if (_shouldGetSnapshot && !_pageContext->has_tab_screenshot()) {
       response = base::unexpected(PageContextWrapperError::kScreenshotError);
       completionStatus = PageContextCompletionStatus::kFailure;

@@ -114,4 +114,14 @@ void ResolveFocusedFrame(
     autofill::ChildFrameRegistrar* registrar,
     optimization_guide::proto::AnnotatedPageContent* apc);
 
+// Converts node geometry inside iframes in `apc` to main frame coordinates,
+// clipped to the visible area of the ancestor iframes. Mutates `apc` in place
+// and must be called at most once on the assembled tree, since calling it again
+// would apply the iframe offsets twice. Must run after screenshot redaction and
+// screenshot info.
+// TODO(crbug.com/573337154): Unify iframe offset calculation with
+// `FrameGrafter` once password screenshot redaction is fully launched.
+void TranslateIframeNodeGeometries(
+    optimization_guide::proto::AnnotatedPageContent* apc);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_ANNOTATED_PAGE_CONTENT_EXTRACTION_UTILS_H_

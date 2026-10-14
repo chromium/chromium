@@ -17,10 +17,49 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/gfx/geometry/rect.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
 using AnnotatedPageContentExtractionUtilsTest = PlatformTest;
+
+namespace {
+
+// Returns `rect` as a `gfx::Rect`.
+gfx::Rect ToGfxRect(const optimization_guide::proto::BoundingRect& rect) {
+  return gfx::Rect(rect.x(), rect.y(), rect.width(), rect.height());
+}
+
+// Copies `source` into `destination`.
+void SetBoundingRect(const gfx::Rect& source,
+                     optimization_guide::proto::BoundingRect* destination) {
+  destination->set_x(source.x());
+  destination->set_y(source.y());
+  destination->set_width(source.width());
+  destination->set_height(source.height());
+}
+
+// Appends a child of `type` to `parent` with an `outer` box and, if set, a
+// `visible` box.
+optimization_guide::proto::ContentNode* AddChildWithGeometry(
+    optimization_guide::proto::ContentNode* parent,
+    optimization_guide::proto::ContentAttributeType type,
+    const gfx::Rect& outer,
+    const std::optional<gfx::Rect>& visible) {
+  optimization_guide::proto::ContentNode* child = parent->add_children_nodes();
+  optimization_guide::proto::ContentAttributes* attributes =
+      child->mutable_content_attributes();
+  attributes->set_attribute_type(type);
+  optimization_guide::proto::Geometry* geometry =
+      attributes->mutable_geometry();
+  SetBoundingRect(outer, geometry->mutable_outer_bounding_box());
+  if (visible) {
+    SetBoundingRect(*visible, geometry->mutable_visible_bounding_box());
+  }
+  return child;
+}
+
+}  // namespace
 
 // Tests that PopulateAPCNodeFromContentTree does not populate a rectangle
 // if one of its components is missing.
@@ -674,4 +713,409 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
   EXPECT_EQ(info.bounding_box().width(), 300);
   EXPECT_EQ(info.bounding_box().height(), 200);
   EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
+}
+
+// Test that `TranslateIframeNodeGeometries` translates both same-origin iframe
+// content and cross-origin content grafted by `ResolveCrossSiteFrameContent`,
+// which itself leaves the grafted geometry in frame-local coordinates.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesTranslatesSameOriginAndGraftedContent) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_url("https://example.com/main");
+  url::Origin main_origin =
+      url::Origin::Create(GURL("https://example.com/main"));
+  FrameGrafter grafter;
+
+  // Build a main frame containing:
+  // 1. A same-origin iframe at (20, 40, 300, 200) with an inline child node at
+  //    local (5, 10, 100, 30).
+  // 2. A cross-origin iframe placeholder at (30, 300, 300, 200) to be grafted
+  //    with a child node at local (8, 12, 120, 40).
+  base::Value root_json = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800},
+          "visibleBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800}
+        }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 3,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 20, "y": 40, "width": 300, "height": 200
+              },
+              "visibleBoundingBox": {
+                "x": 20, "y": 40, "width": 300, "height": 200
+              }
+            },
+            "iframeData": {
+              "content": {
+                "localFrameData": {
+                  "sourceUrl": "https://example.com/same-origin"
+                }
+              }
+            }
+          },
+          "childrenNodes": [
+            {
+              "contentAttributes": {
+                "attributeType": 1,
+                "geometry": {
+                  "outerBoundingBox": {
+                    "x": 0, "y": 0, "width": 300, "height": 200
+                  },
+                  "visibleBoundingBox": {
+                    "x": 0, "y": 0, "width": 300, "height": 200
+                  }
+                }
+              },
+              "childrenNodes": [
+                {
+                  "contentAttributes": {
+                    "attributeType": 4,
+                    "geometry": {
+                      "outerBoundingBox": {
+                        "x": 5, "y": 10, "width": 100, "height": 30
+                      },
+                      "visibleBoundingBox": {
+                        "x": 5, "y": 10, "width": 100, "height": 30
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "contentAttributes": {
+            "attributeType": 3,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 30, "y": 300, "width": 300, "height": 200
+              },
+              "visibleBoundingBox": {
+                "x": 30, "y": 300, "width": 300, "height": 200
+              }
+            },
+            "iframeData": {
+              "remoteFrameToken": {
+                "value": "00112233445566778899aabbccddeeff"
+              },
+              "content": {
+                "localFrameData": {
+                  "sourceUrl": "https://sub.example.com/cross-origin"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  )");
+  ASSERT_TRUE(root_json.is_dict());
+  PopulateAPCNodeFromContentTree(
+      root_json.GetDict(), main_origin, grafter,
+      /*autofill_context=*/nullptr, apc.mutable_root_node(),
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  // Declare and populate the cross-origin subframe content.
+  auto local_token =
+      autofill::LocalFrameToken(base::UnguessableToken::Create());
+  std::optional<autofill::RemoteFrameToken> remote_token =
+      DeserializeFrameIdAsRemoteFrameToken("00112233445566778899aabbccddeeff");
+  ASSERT_TRUE(remote_token.has_value());
+
+  FrameGrafter::FrameContent* child_content =
+      grafter.DeclareContent(local_token);
+  ASSERT_TRUE(child_content);
+
+  base::Value child_json = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {"x": 0, "y": 0, "width": 300, "height": 200},
+          "visibleBoundingBox": {"x": 0, "y": 0, "width": 300, "height": 200}
+        }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 4,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 8, "y": 12, "width": 120, "height": 40
+              },
+              "visibleBoundingBox": {
+                "x": 8, "y": 12, "width": 120, "height": 40
+              }
+            }
+          }
+        }
+      ]
+    }
+  )");
+  ASSERT_TRUE(child_json.is_dict());
+  PopulateAPCNodeFromContentTree(
+      child_json.GetDict(),
+      url::Origin::Create(GURL("https://sub.example.com/cross-origin")),
+      grafter, /*autofill_context=*/nullptr, &child_content->content,
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  web::FakeWebState web_state;
+  web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(&web_state);
+  registrar->RegisterMapping(*remote_token, local_token);
+
+  ResolveCrossSiteFrameContent(
+      grafter, registrar, /*include_same_site_only=*/true, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
+
+  ASSERT_EQ(apc.root_node().children_nodes_size(), 2);
+  const optimization_guide::proto::ContentNode& same_origin_iframe =
+      apc.root_node().children_nodes(0);
+  ASSERT_EQ(same_origin_iframe.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& same_origin_root =
+      same_origin_iframe.children_nodes(0);
+  ASSERT_EQ(same_origin_root.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& cross_origin_iframe =
+      apc.root_node().children_nodes(1);
+  ASSERT_EQ(cross_origin_iframe.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& cross_origin_root =
+      cross_origin_iframe.children_nodes(0);
+  ASSERT_EQ(cross_origin_root.children_nodes_size(), 1);
+
+  // Grafting alone leaves the grafted content in frame-local coordinates.
+  EXPECT_EQ(ToGfxRect(cross_origin_root.children_nodes(0)
+                          .content_attributes()
+                          .geometry()
+                          .outer_bounding_box()),
+            gfx::Rect(8, 12, 120, 40));
+
+  TranslateIframeNodeGeometries(&apc);
+
+  // Same-origin iframe content is offset by (20, 40).
+  EXPECT_EQ(ToGfxRect(same_origin_root.content_attributes()
+                          .geometry()
+                          .outer_bounding_box()),
+            gfx::Rect(20, 40, 300, 200));
+  const optimization_guide::proto::Geometry& same_origin_child_geometry =
+      same_origin_root.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(same_origin_child_geometry.outer_bounding_box()),
+            gfx::Rect(25, 50, 100, 30));
+  EXPECT_EQ(ToGfxRect(same_origin_child_geometry.visible_bounding_box()),
+            gfx::Rect(25, 50, 100, 30));
+
+  // Grafted cross-origin content is offset by (30, 300).
+  EXPECT_EQ(ToGfxRect(cross_origin_root.content_attributes()
+                          .geometry()
+                          .outer_bounding_box()),
+            gfx::Rect(30, 300, 300, 200));
+  const optimization_guide::proto::Geometry& cross_origin_child_geometry =
+      cross_origin_root.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(cross_origin_child_geometry.outer_bounding_box()),
+            gfx::Rect(38, 312, 120, 40));
+  EXPECT_EQ(ToGfxRect(cross_origin_child_geometry.visible_bounding_box()),
+            gfx::Rect(38, 312, 120, 40));
+}
+
+// Test that `TranslateIframeNodeGeometries` positions the content of an iframe
+// partially scrolled above the viewport using the iframe's outer box, rather
+// than its clipped visible box, and removes the visible box of content that is
+// scrolled out of view.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesUsesIframeOuterBoxOrigin) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  // An iframe scrolled 100px above the top of the viewport.
+  optimization_guide::proto::ContentNode* iframe =
+      AddChildWithGeometry(apc.mutable_root_node(),
+                           optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+                           /*outer=*/gfx::Rect(20, -100, 300, 400),
+                           /*visible=*/gfx::Rect(20, 0, 300, 300));
+  optimization_guide::proto::ContentNode* scrolled_out = AddChildWithGeometry(
+      iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 20, 80, 30),
+      /*visible=*/gfx::Rect(10, 20, 80, 30));
+  optimization_guide::proto::ContentNode* on_screen = AddChildWithGeometry(
+      iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 150, 80, 30),
+      /*visible=*/gfx::Rect(10, 150, 80, 30));
+
+  TranslateIframeNodeGeometries(&apc);
+
+  // The iframe itself is in the main frame, so its geometry is unchanged.
+  EXPECT_EQ(
+      ToGfxRect(iframe->content_attributes().geometry().outer_bounding_box()),
+      gfx::Rect(20, -100, 300, 400));
+
+  const optimization_guide::proto::Geometry& scrolled_out_geometry =
+      scrolled_out->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(scrolled_out_geometry.outer_bounding_box()),
+            gfx::Rect(30, -80, 80, 30));
+  EXPECT_FALSE(scrolled_out_geometry.has_visible_bounding_box());
+
+  const optimization_guide::proto::Geometry& on_screen_geometry =
+      on_screen->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(on_screen_geometry.outer_bounding_box()),
+            gfx::Rect(30, 50, 80, 30));
+  EXPECT_EQ(ToGfxRect(on_screen_geometry.visible_bounding_box()),
+            gfx::Rect(30, 50, 80, 30));
+}
+
+// Test that `TranslateIframeNodeGeometries` clips the visible boxes and
+// fragments of iframe content to the iframe's visible area, dropping those
+// entirely outside of it.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesClipsVisibleBoxesToIframe) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  // A 300px tall iframe whose bottom 100px are below the viewport.
+  optimization_guide::proto::ContentNode* iframe =
+      AddChildWithGeometry(apc.mutable_root_node(),
+                           optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+                           /*outer=*/gfx::Rect(0, 600, 300, 300),
+                           /*visible=*/gfx::Rect(0, 600, 300, 200));
+  optimization_guide::proto::ContentNode* straddling = AddChildWithGeometry(
+      iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 180, 80, 40),
+      /*visible=*/gfx::Rect(10, 180, 80, 40));
+  optimization_guide::proto::Geometry* straddling_geometry =
+      straddling->mutable_content_attributes()->mutable_geometry();
+  SetBoundingRect(gfx::Rect(10, 180, 80, 20),
+                  straddling_geometry->add_fragment_visible_bounding_boxes());
+  SetBoundingRect(gfx::Rect(10, 200, 80, 20),
+                  straddling_geometry->add_fragment_visible_bounding_boxes());
+  optimization_guide::proto::ContentNode* below_viewport = AddChildWithGeometry(
+      iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 250, 80, 30),
+      /*visible=*/gfx::Rect(10, 250, 80, 30));
+
+  TranslateIframeNodeGeometries(&apc);
+
+  // Content straddling the bottom of the viewport keeps only its visible part,
+  // and its fragment below the viewport is dropped.
+  EXPECT_EQ(ToGfxRect(straddling_geometry->outer_bounding_box()),
+            gfx::Rect(10, 780, 80, 40));
+  EXPECT_EQ(ToGfxRect(straddling_geometry->visible_bounding_box()),
+            gfx::Rect(10, 780, 80, 20));
+  ASSERT_EQ(straddling_geometry->fragment_visible_bounding_boxes_size(), 1);
+  EXPECT_EQ(ToGfxRect(straddling_geometry->fragment_visible_bounding_boxes(0)),
+            gfx::Rect(10, 780, 80, 20));
+
+  const optimization_guide::proto::Geometry& below_viewport_geometry =
+      below_viewport->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(below_viewport_geometry.outer_bounding_box()),
+            gfx::Rect(10, 850, 80, 30));
+  EXPECT_FALSE(below_viewport_geometry.has_visible_bounding_box());
+}
+
+// Test that `TranslateIframeNodeGeometries` translates the content of an
+// iframe that isn't visible at all, and removes that content's visible boxes.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesTranslatesOffscreenIframeContent) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  // An iframe below the viewport, which has no visible box.
+  optimization_guide::proto::ContentNode* iframe = AddChildWithGeometry(
+      apc.mutable_root_node(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+      /*outer=*/gfx::Rect(0, 2000, 300, 200), /*visible=*/std::nullopt);
+  optimization_guide::proto::ContentNode* child = AddChildWithGeometry(
+      iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 20, 80, 30),
+      /*visible=*/gfx::Rect(10, 20, 80, 30));
+
+  TranslateIframeNodeGeometries(&apc);
+
+  const optimization_guide::proto::Geometry& geometry =
+      child->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(geometry.outer_bounding_box()),
+            gfx::Rect(10, 2020, 80, 30));
+  EXPECT_FALSE(geometry.has_visible_bounding_box());
+}
+
+// Test that `TranslateIframeNodeGeometries` composes the offsets of nested
+// iframes, clips nested content to the visible areas of all ancestor iframes,
+// and leaves main frame geometry unchanged.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesComposesNestedIframes) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  optimization_guide::proto::ContentNode* main_paragraph = AddChildWithGeometry(
+      apc.mutable_root_node(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(5, 10, 200, 30),
+      /*visible=*/gfx::Rect(5, 10, 200, 30));
+  // The outer iframe's visible area ends at y = 380, cutting off the bottom
+  // 10px of the inner iframe.
+  optimization_guide::proto::ContentNode* outer_iframe =
+      AddChildWithGeometry(apc.mutable_root_node(),
+                           optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+                           /*outer=*/gfx::Rect(100, 200, 500, 400),
+                           /*visible=*/gfx::Rect(100, 200, 500, 180));
+  optimization_guide::proto::ContentNode* inner_iframe = AddChildWithGeometry(
+      outer_iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+      /*outer=*/gfx::Rect(30, 40, 200, 150),
+      /*visible=*/gfx::Rect(30, 40, 200, 150));
+  optimization_guide::proto::ContentNode* inner_child = AddChildWithGeometry(
+      inner_iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+      /*outer=*/gfx::Rect(10, 15, 60, 20),
+      /*visible=*/gfx::Rect(10, 15, 60, 20));
+  // Extends past the right edge of the inner iframe.
+  optimization_guide::proto::ContentNode* overflowing_child =
+      AddChildWithGeometry(
+          inner_iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+          /*outer=*/gfx::Rect(190, 15, 60, 20),
+          /*visible=*/gfx::Rect(190, 15, 60, 20));
+  // Straddles the outer iframe's clipped bottom edge.
+  optimization_guide::proto::ContentNode* clipped_by_outer_child =
+      AddChildWithGeometry(
+          inner_iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+          /*outer=*/gfx::Rect(10, 130, 60, 20),
+          /*visible=*/gfx::Rect(10, 130, 60, 20));
+
+  TranslateIframeNodeGeometries(&apc);
+
+  EXPECT_EQ(
+      ToGfxRect(
+          main_paragraph->content_attributes().geometry().outer_bounding_box()),
+      gfx::Rect(5, 10, 200, 30));
+  EXPECT_EQ(
+      ToGfxRect(
+          inner_iframe->content_attributes().geometry().outer_bounding_box()),
+      gfx::Rect(130, 240, 200, 150));
+  // The inner iframe's visible box is clipped by the outer iframe.
+  EXPECT_EQ(
+      ToGfxRect(
+          inner_iframe->content_attributes().geometry().visible_bounding_box()),
+      gfx::Rect(130, 240, 200, 140));
+
+  const optimization_guide::proto::Geometry& inner_child_geometry =
+      inner_child->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(inner_child_geometry.outer_bounding_box()),
+            gfx::Rect(140, 255, 60, 20));
+  EXPECT_EQ(ToGfxRect(inner_child_geometry.visible_bounding_box()),
+            gfx::Rect(140, 255, 60, 20));
+
+  const optimization_guide::proto::Geometry& overflowing_geometry =
+      overflowing_child->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(overflowing_geometry.outer_bounding_box()),
+            gfx::Rect(320, 255, 60, 20));
+  EXPECT_EQ(ToGfxRect(overflowing_geometry.visible_bounding_box()),
+            gfx::Rect(320, 255, 10, 20));
+
+  // Content of the inner iframe is clipped by the outer iframe's visible area.
+  const optimization_guide::proto::Geometry& clipped_by_outer_geometry =
+      clipped_by_outer_child->content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(clipped_by_outer_geometry.outer_bounding_box()),
+            gfx::Rect(140, 370, 60, 20));
+  EXPECT_EQ(ToGfxRect(clipped_by_outer_geometry.visible_bounding_box()),
+            gfx::Rect(140, 370, 60, 10));
 }

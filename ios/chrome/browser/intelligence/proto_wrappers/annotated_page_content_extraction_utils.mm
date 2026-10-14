@@ -23,6 +23,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/schemeful_site.h"
+#import "ui/gfx/geometry/rect.h"
+#import "ui/gfx/geometry/vector2d.h"
 #import "url/gurl.h"
 
 // TODO(crbug.com/464473686): Measure interesting error cases.
@@ -815,6 +817,118 @@ url::Origin ExtractPlaceholderOrigin(const base::DictValue& iframe_data,
   return fallback_origin;
 }
 
+// Maps a frame's local coordinates to main frame coordinates.
+struct FrameTransform {
+  // Main frame position of the frame's origin.
+  gfx::Vector2d offset;
+  // Visible part of the frame, in main frame coordinates. May be empty.
+  gfx::Rect visible_area;
+};
+
+// Returns `rect` as a `gfx::Rect`.
+gfx::Rect ToGfxRect(const optimization_guide::proto::BoundingRect& rect) {
+  return gfx::Rect(rect.x(), rect.y(), rect.width(), rect.height());
+}
+
+// Copies `source` into `destination`.
+void SetBoundingRect(const gfx::Rect& source,
+                     optimization_guide::proto::BoundingRect* destination) {
+  destination->set_x(source.x());
+  destination->set_y(source.y());
+  destination->set_width(source.width());
+  destination->set_height(source.height());
+}
+
+// Offsets `rect` and clips it to the frame's visible area. May return empty.
+gfx::Rect TranslateVisibleRect(
+    const optimization_guide::proto::BoundingRect& rect,
+    const FrameTransform& transform) {
+  gfx::Rect result = ToGfxRect(rect);
+  result.Offset(transform.offset);
+  result.Intersect(transform.visible_area);
+  return result;
+}
+
+// Converts `geometry` to main frame coordinates using `transform`.
+void TranslateGeometry(const FrameTransform& transform,
+                       optimization_guide::proto::Geometry* geometry) {
+  // The outer box is not clipped; it is the node's layout position.
+  if (geometry->has_outer_bounding_box()) {
+    optimization_guide::proto::BoundingRect* outer =
+        geometry->mutable_outer_bounding_box();
+    gfx::Rect translated = ToGfxRect(*outer);
+    translated.Offset(transform.offset);
+    SetBoundingRect(translated, outer);
+  }
+
+  if (geometry->has_visible_bounding_box()) {
+    gfx::Rect visible =
+        TranslateVisibleRect(geometry->visible_bounding_box(), transform);
+    if (visible.IsEmpty()) {
+      geometry->clear_visible_bounding_box();
+    } else {
+      SetBoundingRect(visible, geometry->mutable_visible_bounding_box());
+    }
+  }
+
+  // Drop fragments that are clipped away, compacting in place.
+  auto* fragments = geometry->mutable_fragment_visible_bounding_boxes();
+  int kept_count = 0;
+  for (int i = 0; i < fragments->size(); ++i) {
+    gfx::Rect fragment = TranslateVisibleRect(fragments->Get(i), transform);
+    if (!fragment.IsEmpty()) {
+      SetBoundingRect(fragment, fragments->Mutable(kept_count++));
+    }
+  }
+  fragments->DeleteSubrange(kept_count, fragments->size() - kept_count);
+}
+
+// Converts the geometry of `node` and its descendants to main frame
+// coordinates. `transform` is null for main frame nodes.
+void TranslateSubtreeGeometries(optimization_guide::proto::ContentNode* node,
+                                const FrameTransform* transform) {
+  if (transform && node->content_attributes().has_geometry()) {
+    TranslateGeometry(*transform,
+                      node->mutable_content_attributes()->mutable_geometry());
+  }
+
+  std::optional<FrameTransform> next_transform;
+  const FrameTransform* children_transform = transform;
+  if (node->has_content_attributes() &&
+      node->content_attributes().attribute_type() ==
+          optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+    // `node`'s own geometry was already translated and clipped above, so for
+    // nested iframes the offsets and visible areas of all ancestor iframes
+    // compose.
+    const optimization_guide::proto::Geometry& geometry =
+        node->content_attributes().geometry();
+    // Without iframe geometry, its content has no geometry either.
+    if (!geometry.has_outer_bounding_box()) {
+      return;
+    }
+    // The outer box origin stays correct when the iframe is scrolled
+    // partially out of view; the visible box clips its content.
+    // TODO(crbug.com/573645615): The outer box is the iframe's border box,
+    // but the child frame's coordinates originate at its content box, inset
+    // by border and padding (2px by default). Account for
+    // `clientLeft`/`clientTop` and padding, or adjust the origin in JS.
+    const optimization_guide::proto::BoundingRect& outer =
+        geometry.outer_bounding_box();
+    next_transform = FrameTransform{
+        .offset = gfx::Vector2d(outer.x(), outer.y()),
+        .visible_area = geometry.has_visible_bounding_box()
+                            ? ToGfxRect(geometry.visible_bounding_box())
+                            : gfx::Rect(),
+    };
+    children_transform = &*next_transform;
+  }
+
+  for (optimization_guide::proto::ContentNode& child :
+       *node->mutable_children_nodes()) {
+    TranslateSubtreeGeometries(&child, children_transform);
+  }
+}
+
 }  // namespace
 
 void PopulateAPCNodeFromContentTree(
@@ -1296,4 +1410,14 @@ void ResolveFocusedFrame(
       break;
     }
   }
+}
+
+void TranslateIframeNodeGeometries(
+    optimization_guide::proto::AnnotatedPageContent* apc) {
+  CHECK(apc);
+  if (!apc->has_root_node()) {
+    return;
+  }
+  TranslateSubtreeGeometries(apc->mutable_root_node(),
+                             /*transform=*/nullptr);
 }

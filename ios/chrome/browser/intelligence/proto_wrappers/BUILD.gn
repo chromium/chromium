@@ -149,6 +149,7 @@ source_set("proto_wrappers") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//net",
+    "//ui/gfx/geometry",
     "//url",
   ]
 }
@@ -271,6 +272,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base:test_support",
+    "//ui/gfx/geometry",
     "//url",
   ]
 }
