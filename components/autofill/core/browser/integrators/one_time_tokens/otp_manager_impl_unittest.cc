@@ -2435,9 +2435,9 @@ TEST_F(OtpManagerImplTest,
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
 
-// Tests that when a cached Gmail token is present, GetOtpSuggestions delivers
-// it immediately and does not start GmailOtpRetriever even if
-// AffiliationService and GmailOtpBackend are present.
+// Tests that when a domain-verified cached Gmail token is present,
+// GetOtpSuggestions delivers it immediately and does not start
+// GmailOtpRetriever even if AffiliationService and GmailOtpBackend are present.
 TEST_F(OtpManagerImplTest,
        GetOtpSuggestions_CachedGmailOtpDoesNotStartGmailOtpRetriever) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
@@ -2468,6 +2468,7 @@ TEST_F(OtpManagerImplTest,
       future.Get(),
       ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  autofill_client().set_affiliation_service(nullptr);
 }
 
 // Tests that OnGmailOtpRetrieved delivers OTP suggestions when retrieval
@@ -3307,4 +3308,36 @@ TEST_F(
   autofill_client().set_affiliation_service(nullptr);
 }
 
+// Tests that when AffiliationService and GmailOtpBackend are present,
+// unverified Gmail tokens in OneTimeTokenService::GetCachedOneTimeTokens() are
+// ignored by SelectMostRecentToken() and GetOtpSuggestions(), preventing
+// cross-origin leakage of domain-mismatched tokens.
+TEST_F(
+    OtpManagerImplTest,
+    SelectMostRecentToken_IgnoresUnverifiedServiceGmailOtpWhenAffiliationPresent) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+
+  auto backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  one_time_tokens::FakeGmailOtpBackend* backend_ptr = backend.get();
+  backend_ptr->ProcessCallbacks(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, "999888",
+      base::TimeTicks::Now(), "otp@bank.test"));
+  autofill_client().set_gmail_otp_backend(std::move(backend));
+
+  OneTimeTokenServiceImpl prod_service(&sms_otp_backend_, backend_ptr);
+  OtpManagerImpl otp_manager(autofill_manager(), &prod_service);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  // Unverified token in backend cache must not be returned by
+  // SelectMostRecentToken or suppress starting GmailOtpRetriever.
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  autofill_client().set_affiliation_service(nullptr);
+}
 }  // namespace autofill
