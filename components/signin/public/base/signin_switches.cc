@@ -969,6 +969,10 @@ BASE_FEATURE(kUndoChromeOsUseConsentLevelSignin,
 BASE_FEATURE(kUnifyWaitForCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kUseAccountInfoFetcherIos, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUserPolicyFetchRequiresAcceptance,
              base::FEATURE_ENABLED_BY_DEFAULT);

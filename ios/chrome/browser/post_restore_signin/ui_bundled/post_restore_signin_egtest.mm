@@ -23,8 +23,10 @@
 
 namespace {
 
-// The primary identity.
-FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
+// The primary identity. It has no names, so the alert's primary button uses
+// a fixed label.
+FakeSystemIdentity* const kPrimaryIdentity =
+    [FakeSystemIdentity fakeIdentityWithMissingNames];
 
 }  // namespace
 
@@ -66,11 +68,12 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
 // Test that continue opens the add account view.
 - (void)testContinue {
-  // Tap on 'Continue' to present the add account view.
+  // Tap on 'Continue' to present the add account view. `kPrimaryIdentity` has
+  // no given name, so the button uses the short label.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_text(l10n_util::GetNSString(
-              IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT))]
+          chrome_test_util::AlertItemWithAccessibilityLabelId(
+              IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT)]
       performAction:grey_tap()];
 
   // Add back `kPrimaryIdentity`.
@@ -97,8 +100,8 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 - (void)testCancel {
   // Tap on 'Cancel' to present the add account view.
   [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION))]
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION)]
       performAction:grey_tap()];
 
   // Ensure the fake add-account menu is

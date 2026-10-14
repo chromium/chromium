@@ -955,6 +955,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUnifyWaitForCookies);
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
+#if BUILDFLAG(IS_IOS)
+// Feature flag to use the AccountInfoFetcherIos.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUseAccountInfoFetcherIos);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Additional gate for user policy registration and download based on user
 // accepting account management.

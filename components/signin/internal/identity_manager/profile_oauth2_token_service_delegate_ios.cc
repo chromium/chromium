@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -38,6 +39,7 @@ using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 AccountInfo AccountInfoFromDeviceAccount(const DeviceAccountInfo& account) {
   AccountInfo::Builder builder(account.GetGaiaId(), account.GetEmail());
   if (std::string hosted_domain = account.GetHostedDomain();
+      !base::FeatureList::IsEnabled(switches::kUseAccountInfoFetcherIos) &&
       !hosted_domain.empty()) {
     builder.SetHostedDomain(hosted_domain);
   }
