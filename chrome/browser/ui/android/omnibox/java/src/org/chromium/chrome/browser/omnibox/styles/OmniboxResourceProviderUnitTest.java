@@ -712,6 +712,33 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    public void testConfigurationChange_densityInvalidatesCache() {
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        ResourceCache cache1 = provider.getCacheForTesting();
+
+        Configuration config = new Configuration(mContext.getResources().getConfiguration());
+        provider.onConfigurationChanged(config);
+        assertSame(cache1, provider.getCacheForTesting());
+
+        config.densityDpi = config.densityDpi * 2;
+        provider.onConfigurationChanged(config);
+        assertNotSame(cache1, provider.getCacheForTesting());
+    }
+
+    @Test
+    public void testConfigurationChange_fontScaleInvalidatesCache() {
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        ResourceCache cache1 = provider.getCacheForTesting();
+
+        Configuration config = new Configuration(mContext.getResources().getConfiguration());
+        config.fontScale = config.fontScale * 1.5f;
+        provider.onConfigurationChanged(config);
+        assertNotSame(cache1, provider.getCacheForTesting());
+    }
+
+    @Test
     public void getStatusIconDimensions_default() {
         assertEquals(
                 R.dimen.omnibox_search_engine_logo_composed_half_size,

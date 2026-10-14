@@ -98,6 +98,8 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     private @LayoutSize int mLayoutSizeState = LayoutSize.UNKNOWN;
     private @Nullable String mLocaleState;
     private boolean mDarkModeState;
+    private int mDensityDpiState;
+    private float mFontScaleState;
 
     private final Context mContext;
     private ResourceCache mCache;
@@ -170,16 +172,24 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         boolean darkModeState =
                 (config.uiMode & Configuration.UI_MODE_NIGHT_MASK)
                         == Configuration.UI_MODE_NIGHT_YES;
+        // Chrome activities handle density and font scale changes in-process, so cached pixel
+        // dimensions must be re-resolved when either changes.
+        int densityDpi = config.densityDpi;
+        float fontScale = config.fontScale;
 
         if (newLayoutSize == mLayoutSizeState
                 && newLocale.equals(mLocaleState)
-                && darkModeState == mDarkModeState) {
+                && darkModeState == mDarkModeState
+                && densityDpi == mDensityDpiState
+                && fontScale == mFontScaleState) {
             return;
         }
 
         mLayoutSizeState = newLayoutSize;
         mLocaleState = newLocale;
         mDarkModeState = darkModeState;
+        mDensityDpiState = densityDpi;
+        mFontScaleState = fontScale;
 
         mCache = new ResourceCache(mContext);
     }
