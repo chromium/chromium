@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/material_chrome_color_mixer.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -377,6 +378,21 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorHistoryPageBookmarkStar] = {ui::kColorSysPrimary};
   mixer[kColorHistoryPageSeparator] = {ui::kColorSysSurfaceVariant};
   mixer[kColorHistoryPageText] = {ui::kColorSysOnSurfaceSubtle};
+  // These ids exist only on Android. They map onto the Material roles that
+  // ColorProviderBridgeImpl reads from the Android theme.
+#if BUILDFLAG(IS_ANDROID)
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+  mixer[kColorHistoryPageCardBackground] = {
+      dark_mode ? ui::kColorSysSurface : ui::kColorSysSurfaceContainerLowest};
+  mixer[kColorHistoryPageMenuBackground] = {
+      dark_mode ? ui::kColorSysSurfaceContainerHigh : ui::kColorSysSurface};
+  mixer[kColorHistoryPageSearchFieldBackground] = {
+      dark_mode ? ui::kColorSysSurfaceContainerHigh
+                : ui::kColorSysSurfaceContainerLowest};
+  mixer[kColorHistoryPageSelectionToolbarBackground] = {
+      dark_mode ? ui::kColorSysSurface : ui::kColorSysSurfaceContainerHigh};
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // History Embeddings colors.
   mixer[kColorHistoryEmbeddingsBackground] = {

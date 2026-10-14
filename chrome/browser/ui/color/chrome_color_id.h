@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 #define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 
+#include "build/build_config.h"
 #include "components/color/color_id.h"
 #include "ui/color/color_id.h"
 
@@ -1208,6 +1209,13 @@
     E_CPONLY(kColorCaptionForegroundInactive) \
     /* Tab search caption button colors. */ \
     E_CPONLY(kColorTabSearchCaptionButtonFocusRing)
+#elif BUILDFLAG(IS_ANDROID)
+#define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \
+    /* History colors. */ \
+    E_CPONLY(kColorHistoryPageCardBackground) \
+    E_CPONLY(kColorHistoryPageMenuBackground) \
+    E_CPONLY(kColorHistoryPageSearchFieldBackground) \
+    E_CPONLY(kColorHistoryPageSelectionToolbarBackground)
 #else
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)
