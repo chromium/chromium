@@ -111,31 +111,28 @@ void UrlData::set_valid_until(base::Time valid_until) {
   valid_until_ = valid_until;
 }
 
-bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // We're merging from another UrlData that refers to the *same*
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
   CHECK(security_origin_->IsSameOriginWith(other->security_origin_.get()));
-  if (!ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
-    return false;
+  if (ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    valid_until_ = std::max(valid_until_, other->valid_until_);
+    // set_length() will not override the length if already known.
+    set_length(other->length_);
+    cacheable_ |= other->cacheable_;
+    cache_lookup_mode_ = other->cache_lookup_mode_;
+    range_supported_ |= other->range_supported_;
+    if (last_modified_.is_null()) {
+      last_modified_ = other->last_modified_;
+    }
+    bytes_read_from_cache_ += other->bytes_read_from_cache_;
+    // is_cors_corss_origin_ will not relax from true to false.
+    set_is_cors_cross_origin(other->is_cors_cross_origin_);
+    has_access_control_ |= other->has_access_control_;
+    multibuffer()->MergeFrom(other->multibuffer());
   }
-
-  valid_until_ = std::max(valid_until_, other->valid_until_);
-  // set_length() will not override the length if already known.
-  set_length(other->length_);
-  cacheable_ |= other->cacheable_;
-  cache_lookup_mode_ = other->cache_lookup_mode_;
-  range_supported_ |= other->range_supported_;
-  if (last_modified_.is_null()) {
-    last_modified_ = other->last_modified_;
-  }
-  bytes_read_from_cache_ += other->bytes_read_from_cache_;
-  // is_cors_corss_origin_ will not relax from true to false.
-  set_is_cors_cross_origin(other->is_cors_cross_origin_);
-  has_access_control_ |= other->has_access_control_;
-  multibuffer()->MergeFrom(other->multibuffer());
-  return true;
 }
 
 void UrlData::set_cacheable(bool cacheable) {
@@ -381,15 +378,13 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
     return url_data;
   }
 
-  if (!url_data->Valid()) {
-    return url_data;
-  }
-
-  if (!iter->value->Valid() ||
-      url_data->CachedSize() > iter->value->CachedSize()) {
-    iter->value = url_data;
-  } else if (!iter->value->MergeFrom(url_data)) {
-    return url_data;
+  if (url_data->Valid()) {
+    if ((!iter->value->Valid() ||
+         url_data->CachedSize() > iter->value->CachedSize())) {
+      iter->value = url_data;
+    } else {
+      iter->value->MergeFrom(url_data);
+    }
   }
   return iter->value;
 }
