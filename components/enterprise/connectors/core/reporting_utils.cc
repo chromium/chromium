@@ -891,10 +891,9 @@ void MaybeTruncateLongUrls(proto::Event& event_variant) {
     case proto::Event::kExtensionTelemetryEvent:
     case proto::Event::kUrlNavigationEvent:
     case proto::Event::kSuspiciousUrlEvent:
-    case proto::Event::kPrototypeRawEvent:
-    case proto::Event::kTelomereEvent:
     case proto::Event::kSaasUsageReportEvent:
     case proto::Event::kBrowserLaunchEvent:
+    case proto::Event::kBrowserHistogramEvent:
     case proto::Event::EVENT_NOT_SET:
       break;
   }

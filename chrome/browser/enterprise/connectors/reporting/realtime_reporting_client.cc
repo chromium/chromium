@@ -235,10 +235,9 @@ void AddCrowdstrikeSignalsToEvent(
     case Event::kExtensionAppInstallEvent:
     case Event::kUrlNavigationEvent:
     case Event::kSuspiciousUrlEvent:
-    case Event::kPrototypeRawEvent:
-    case Event::kTelomereEvent:
     case Event::kSaasUsageReportEvent:
     case Event::kBrowserLaunchEvent:
+    case Event::kBrowserHistogramEvent:
       break;
   }
 }
