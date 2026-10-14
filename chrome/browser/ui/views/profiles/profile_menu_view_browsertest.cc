@@ -75,7 +75,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
@@ -121,6 +120,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
@@ -471,7 +471,7 @@ class ProfileMenuViewAiSubscriptionTierOverrideTest
   ProfileMenuViewAiSubscriptionTierOverrideTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{switches::kEnableAiSubscriptionAvatarRing, {}},
-         {kEnabledAiSubscriptionTierNameOverride,
+         {subscription_eligibility::kEnabledAiSubscriptionTierNameOverride,
           {{"ai_tier_override_mapping", R"({"1": "Super Tier 1"})"}}}},
         /*disabled_features=*/{});
   }

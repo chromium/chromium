@@ -26,10 +26,14 @@ source_set("subscription_eligibility") {
 
   if (is_android) {
     sources += [
+      "android/ai_subscription_tier_names_android.cc",
       "android/subscription_eligibility_service_bridge.cc",
       "android/subscription_eligibility_service_bridge.h",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//components/subscription_eligibility:tier_names",
+    ]
   }
 }
 
@@ -85,11 +89,15 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 
   generate_jni("jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/subscription_eligibility/AiSubscriptionTierNames.java",
+      "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java",
+    ]
   }
 
   android_library("java") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/subscription_eligibility/AiSubscriptionTierNames.java",
       "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java",
       "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityServiceFactory.java",
     ]

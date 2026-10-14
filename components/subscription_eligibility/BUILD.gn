@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 source_set("subscription_eligibility") {
   sources = [
     "subscription_eligibility_metrics_util.cc",
@@ -23,14 +25,32 @@ source_set("subscription_eligibility") {
   ]
 }
 
+# Display names of the AI subscription tiers.
+source_set("tier_names") {
+  public = [ "ai_subscription_tier_names.h" ]
+  sources = [ "ai_subscription_tier_names.cc" ]
+
+  # Google Chrome builds use the branded names from src-internal.
+  if (is_chrome_branded) {
+    sources += [ "//components/internal/subscription_eligibility/ai_subscription_tier_names_branded.h" ]
+  } else {
+    sources += [ "ai_subscription_tier_names_specs.h" ]
+  }
+
+  public_deps = [ "//base" ]
+  deps = [ "//build:branding_buildflags" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_subscription_tier_names_unittest.cc",
     "subscription_eligibility_metrics_util_unittest.cc",
     "subscription_eligibility_service_unittest.cc",
   ]
   deps = [
     ":subscription_eligibility",
+    ":tier_names",
     "//base",
     "//base/test:test_support",
     "//components/pref_registry",

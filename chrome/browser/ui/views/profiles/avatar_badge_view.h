@@ -9,16 +9,10 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/profiles/avatar_badge_types.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-
-BASE_DECLARE_FEATURE(kEnabledAiSubscriptionTierNameOverride);
-extern const base::FeatureParam<std::string>
-    kAiSubscriptionTierNameOverrideMapping;
 
 // A custom-painted profile avatar badge with a given text label and optional
 // background wave path.
@@ -26,16 +20,6 @@ class AvatarBadgeView : public views::View {
   METADATA_HEADER(AvatarBadgeView, views::View)
 
  public:
-  // Returns the localized badge label string for the given subscription tier,
-  // or an empty string if the tier is not recognized.
-  static std::u16string GetAvatarBadgeLabel(int tier);
-
-  // Returns the tier name announced by screen readers, or an empty string if
-  // the generic membership announcement should be used. Empty when the badge
-  // label is overridden, to avoid announcing an outdated built-in name.
-  // TODO(crbug.com/572810504): Support A11y tier name overriding.
-  static std::u16string GetAvatarA11yTierName(int tier);
-
   // Constructs an AvatarBadgeView with the specified `label_text` and optional
   // decorative `wave_path`.
   explicit AvatarBadgeView(const std::u16string& label_text,

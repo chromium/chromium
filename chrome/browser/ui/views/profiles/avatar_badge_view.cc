@@ -12,12 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
@@ -48,31 +43,7 @@
     "HAS_AVATAR_BADGE_SPECS must be defined by the avatar decoration specs header."
 #endif
 
-BASE_FEATURE(kEnabledAiSubscriptionTierNameOverride,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kAiSubscriptionTierNameOverrideMapping{
-    &kEnabledAiSubscriptionTierNameOverride, "ai_tier_override_mapping", "{}"};
-
 namespace {
-
-// Returns the badge label override for `tier`, or std::nullopt if the override
-// feature is disabled, the mapping is malformed or has no entry for `tier`.
-std::optional<std::u16string> FindBadgeLabelOverride(int tier) {
-  if (!base::FeatureList::IsEnabled(kEnabledAiSubscriptionTierNameOverride)) {
-    return std::nullopt;
-  }
-  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
-      kAiSubscriptionTierNameOverrideMapping.Get(), base::JSON_PARSE_RFC);
-  if (!dict) {
-    return std::nullopt;
-  }
-  const std::string* name = dict->FindString(base::NumberToString(tier));
-  if (!name) {
-    return std::nullopt;
-  }
-  return base::UTF8ToUTF16(*name);
-}
 
 // TODO(crbug.com/532163925): Revise and finalize the specs once the integrate
 // both private and public specs. These deviate slightly from the mock (CSS,
@@ -293,44 +264,6 @@ void PaintAvatarBadgeBackground(gfx::Canvas* canvas,
 }
 
 }  // namespace
-
-// static
-std::u16string AvatarBadgeView::GetAvatarBadgeLabel(int tier) {
-  if (std::optional<std::u16string> label = FindBadgeLabelOverride(tier)) {
-    return *label;
-  }
-
-  switch (tier) {
-    case 1:
-      return std::u16string(kAvatarBadgeLabelTier1);
-    case 2:
-      return std::u16string(kAvatarBadgeLabelTier2);
-    case 3:
-      return std::u16string(kAvatarBadgeLabelTier3);
-    default:
-      return std::u16string();
-  }
-}
-
-// static
-std::u16string AvatarBadgeView::GetAvatarA11yTierName(int tier) {
-  // A renamed badge would not match the built-in name: use the generic
-  // announcement instead.
-  if (FindBadgeLabelOverride(tier)) {
-    return std::u16string();
-  }
-
-  switch (tier) {
-    case 1:
-      return std::u16string(kAvatarFullMembershipTier1);
-    case 2:
-      return std::u16string(kAvatarFullMembershipTier2);
-    case 3:
-      return std::u16string(kAvatarFullMembershipTier3);
-    default:
-      return std::u16string();
-  }
-}
 
 AvatarBadgeView::AvatarBadgeView(const std::u16string& label_text,
                                  std::optional<SkPath> wave_path)

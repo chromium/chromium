@@ -3806,7 +3806,7 @@ deps = {
 
   'src/components/internal': {
       'url': Var('chrome_git') + '/chrome/components.git' + '@' +
-        '4e8c4db51652c4650b58b0bbfee03741df8f37d2',
+        'a44c4b3def49aa6eefab3a64eec3dec1e48ce944',
       'condition': 'checkout_src_internal',
   },
 

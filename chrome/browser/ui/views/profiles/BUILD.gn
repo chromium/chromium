@@ -406,7 +406,6 @@ if (is_win || is_mac || is_linux) {
       "//ui/views",
     ]
     deps = [
-      ":avatar_badge_view",
       "//build:branding_buildflags",
       "//chrome/app:branded_strings",
       "//chrome/app:command_ids",
@@ -445,6 +444,7 @@ if (is_win || is_mac || is_linux) {
       "//components/prefs",
       "//components/signin/public/identity_manager",
       "//components/subscription_eligibility",
+      "//components/subscription_eligibility:tier_names",
       "//components/sync/base:features",
       "//components/user_education/common",
       "//components/vector_icons",
@@ -770,9 +770,8 @@ source_set("profile_picker_feature_promo_controller") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "avatar_badge_view_unittest.cc" ]
+  sources = []
   deps = [
-    ":avatar_badge_view",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -1309,13 +1308,13 @@ source_set("browser_tests") {
       "signin_view_controller_delegate_views_browsertest.cc",
     ]
     deps += [
-      ":avatar_badge_view",
       ":signin_view_controller_delegate_views",
       "//chrome/browser/profiles/batch_upload:test_support",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/webui/signin/signout_confirmation",
       "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
       "//components/signin/core/browser:test_support",
+      "//components/subscription_eligibility:tier_names",
       "//components/sync_bookmarks",
       "//components/sync_device_info:test_support",
     ]
