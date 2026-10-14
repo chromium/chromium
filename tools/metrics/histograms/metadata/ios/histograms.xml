@@ -2145,6 +2145,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Download.WebView.Duration" units="ms"
+    expires_after="2027-09-01">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the time taken for a successful non-local web view download
+    (WKDownload in CRWWebViewDownload) to complete. Recorded when the download
+    finishes successfully. Used as a baseline to evaluate download latency
+    improvements from the upcoming in-memory blob URL optimization.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Download.WebView.Local.Succeeded" enum="BooleanSuccess"
+    expires_after="2027-09-01">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records whether a local file copy download (file:// URL in
+    CRWWebViewDownload) succeeded or failed. Recorded when the background file
+    copy task finishes.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Download.WebView.Result" enum="IOSDownloadWebViewResult"
+    expires_after="2027-09-01">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the outcome (completed, canceled, or failed with an error) of a
+    non-local web view download (WKDownload in CRWWebViewDownload).
+  </summary>
+</histogram>
+
 <histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
     expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>

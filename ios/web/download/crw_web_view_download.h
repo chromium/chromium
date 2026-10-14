@@ -7,7 +7,31 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "ios/web/public/download/crw_web_view_download.h"
+
+namespace web {
+
+inline constexpr std::string_view kIOSDownloadWebViewResultHistogram =
+    "IOS.Download.WebView.Result";
+inline constexpr std::string_view kIOSDownloadWebViewDurationHistogram =
+    "IOS.Download.WebView.Duration";
+inline constexpr std::string_view kIOSDownloadWebViewLocalSucceededHistogram =
+    "IOS.Download.WebView.Local.Succeeded";
+
+// LINT.IfChange(IOSDownloadWebViewResult)
+// Result of a non-local web view download. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSDownloadWebViewResult {
+  kCompleted = 0,
+  kCanceled = 1,
+  kError = 2,
+  kMaxValue = kError,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSDownloadWebViewResult)
+
+}  // namespace web
 
 @class WKWebView;
 

@@ -6,12 +6,17 @@
 
 #import <WebKit/WebKit.h>
 
+#import <optional>
+
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 
 @interface CRWWebViewDownload () <WKDownloadDelegate>
 
@@ -25,6 +30,7 @@
 
 @implementation CRWWebViewDownload {
   BOOL _isLocalDownload;
+  std::optional<base::ElapsedTimer> _downloadTimer;
 }
 
 - (instancetype)initWithPath:(NSString*)destination
@@ -46,6 +52,7 @@
     [self startLocalDownload];
     return;
   }
+  _downloadTimer.emplace();
   [self.webView startDownloadUsingRequest:self.request
                         completionHandler:^(WKDownload* download) {
                           download.delegate = self;
@@ -60,7 +67,9 @@
     }
     return;
   }
+  __weak __typeof(self) weakSelf = self;
   [self.download cancel:^(NSData* resumeData) {
+    [weakSelf recordResult:web::IOSDownloadWebViewResult::kCanceled];
     if (completion) {
       completion();
     }
@@ -79,19 +88,38 @@
 }
 
 - (void)downloadDidFinish:(WKDownload*)download {
+  [self recordResult:web::IOSDownloadWebViewResult::kCompleted];
   [self.delegate downloadDidFinish];
 }
 
 - (void)download:(WKDownload*)download
     didFailWithError:(NSError*)error
           resumeData:(NSData*)resumeData {
+  [self recordResult:web::IOSDownloadWebViewResult::kError];
   [self.delegate downloadDidFailWithError:error];
 }
 
 #pragma mark - Private
 
-// Start a `local download` which is really a copy from the request URL to the
-// destination path.
+// Records metrics for the `WKDownload` outcome.
+- (void)recordResult:(web::IOSDownloadWebViewResult)result {
+  // `_downloadTimer` is reset after the first report to ensure at-most-once
+  // recording (e.g. if `cancelDownload:` is called during teardown after
+  // completion or failure).
+  if (!_downloadTimer.has_value()) {
+    return;
+  }
+  base::UmaHistogramEnumeration(web::kIOSDownloadWebViewResultHistogram,
+                                result);
+  if (result == web::IOSDownloadWebViewResult::kCompleted) {
+    base::UmaHistogramMediumTimes(web::kIOSDownloadWebViewDurationHistogram,
+                                  _downloadTimer->Elapsed());
+  }
+  _downloadTimer.reset();
+}
+
+// Starts a local download by copying the file from the request URL to the
+// destination path on a background thread.
 - (void)startLocalDownload {
   _isLocalDownload = YES;
   __weak __typeof(self) weakSelf = self;
@@ -103,15 +131,22 @@
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&base::CopyFile, sourcePath, destPath),
       base::BindOnce(^(bool result) {
-        if (result) {
-          [weakSelf.delegate downloadDidFinish];
-        } else {
-          NSError* error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                               code:NSFileReadUnknownError
-                                           userInfo:nil];
-          [weakSelf.delegate downloadDidFailWithError:error];
-        }
+        [weakSelf localDownloadFinishedWithSuccess:result];
       }));
+}
+
+// Logs metrics and notifies the delegate when a local download finishes.
+- (void)localDownloadFinishedWithSuccess:(BOOL)success {
+  base::UmaHistogramBoolean(web::kIOSDownloadWebViewLocalSucceededHistogram,
+                            success);
+  if (success) {
+    [self.delegate downloadDidFinish];
+    return;
+  }
+  NSError* error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                       code:NSFileReadUnknownError
+                                   userInfo:nil];
+  [self.delegate downloadDidFailWithError:error];
 }
 
 @end

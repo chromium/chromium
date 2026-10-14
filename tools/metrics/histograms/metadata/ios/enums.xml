@@ -674,6 +674,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Low Engagement User with No Recent Icon Launches"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDownloadWebViewResult) -->
+
+<enum name="IOSDownloadWebViewResult">
+  <int value="0" label="Completed">WKDownload completed successfully.</int>
+  <int value="1" label="Canceled">
+    WKDownload was canceled by the user or client.
+  </int>
+  <int value="2" label="Error">WKDownload failed with an error.</int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/web/download/crw_web_view_download.h:IOSDownloadWebViewResult) -->
+
 <enum name="IOSEditMenuActions">
   <int value="0" label="Invalid"/>
   <int value="1" label="NativeCut"/>
