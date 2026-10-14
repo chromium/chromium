@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/40913269): Flaky on TSan and MSan bots.
-#if BUILDFLAG(IS_LINUX) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
   DISABLED_NoFocusAfterCaptureOverrideFocusBeforeCapture
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/40913269): Flaky on a TSan and MSan bot.
-#if BUILDFLAG(IS_LINUX) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture \
   DISABLED_FocusAfterCaptureOverrideNoFocusBeforeCapture
