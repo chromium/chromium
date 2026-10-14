@@ -193,6 +193,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:ActorBackgroundActuationTrigger) -->
 
+<!-- LINT.IfChange(ActorBackgroundTabCreationStatus) -->
+
+<enum name="ActorBackgroundTabCreationStatus">
+  <int value="0" label="TaskInitByChromeSuccess"/>
+  <int value="1" label="TaskInitByChromeFailure"/>
+  <int value="2" label="TaskInitByFcmSuccess"/>
+  <int value="3" label="TaskInitByFcmFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:ActorBackgroundTabCreationStatus) -->
+
 <!-- LINT.IfChange(ActorEngineState) -->
 
 <enum name="ActorEngineState">

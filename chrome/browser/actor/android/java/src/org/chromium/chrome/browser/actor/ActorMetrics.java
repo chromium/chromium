@@ -51,6 +51,8 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public static final String
             ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_WAIT_FOR_TAB_STATE_INITIALIZED =
                     "Actor.BackgroundActuation.Restore.Latency.WaitForTabStateInitialized";
+    public static final String ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND =
+            "Actor.BackgroundActuation.TabCreatedInBackground";
     public static final String ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS =
             "Actor.Notification.FetchConversationId.Status";
     public static final String ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS =
@@ -219,6 +221,25 @@ public class ActorMetrics implements ActorKeyedService.Observer {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorBackgroundActuationTrigger)
 
+    // LINT.IfChange(ActorBackgroundTabCreationStatus)
+
+    @IntDef({
+        ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_SUCCESS,
+        ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_FAILURE,
+        ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_SUCCESS,
+        ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_FAILURE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActorBackgroundTabCreationStatus {
+        int TASK_INIT_BY_CHROME_SUCCESS = 0;
+        int TASK_INIT_BY_CHROME_FAILURE = 1;
+        int TASK_INIT_BY_FCM_SUCCESS = 2;
+        int TASK_INIT_BY_FCM_FAILURE = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorBackgroundTabCreationStatus)
+
     private ActorMetrics() {}
 
     /**
@@ -346,6 +367,19 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                 "Actor.BackgroundActuation.Trigger",
                 trigger,
                 ActorBackgroundActuationTrigger.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the outcome of creating a tab during background actuation, categorized by the trigger
+     * source that initiated the task and whether provisioning succeeded or failed.
+     *
+     * @param status The creation status ({@link ActorBackgroundTabCreationStatus}).
+     */
+    public static void recordTabCreatedInBackground(@ActorBackgroundTabCreationStatus int status) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                status,
+                ActorBackgroundTabCreationStatus.NUM_ENTRIES);
     }
 
     /**
