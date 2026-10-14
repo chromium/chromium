@@ -66,11 +66,6 @@ void PixAccountLinkingManager::DoOnAccountLinkingResult(
       client()->ShowPixAccountLinkingSuccessScreen();
       break;
     case AccountLinkingResultCode::kResultCanceled:
-      // TODO(crbug.com/545056667): Update to show error notification on user
-      // cancellation.
-      DismissPrompt();
-      LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
-      break;
     case AccountLinkingResultCode::kResultError:
       DismissPrompt();
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);

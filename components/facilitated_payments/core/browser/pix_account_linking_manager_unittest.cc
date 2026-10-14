@@ -1021,12 +1021,19 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
   // UserCanceledInGmsCore.
   test_api().OnAccepted();
 
+  EXPECT_CALL(client(), ShowAccountLinkingFailureNotification(
+                            FacilitatedPaymentsType::kPix));
+
   test_api().OnAccountLinkingResult(AccountLinkingResult{
       /*is_successful=*/false, 0, AccountLinkingResultCode::kResultCanceled});
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.Result",
       /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kUserCanceledInGmsCore,
       /*expected_bucket_count=*/1);
 }
 
