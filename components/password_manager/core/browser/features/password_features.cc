@@ -163,9 +163,6 @@ BASE_FEATURE(kPasswordFormClientsideClassifier,
 #endif
 );
 
-BASE_FEATURE(kPasswordFormGroupedAffiliations,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPasswordGenerationDropFullscreenAndCheckPointerLock,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

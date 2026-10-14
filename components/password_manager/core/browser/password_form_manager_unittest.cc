@@ -2436,8 +2436,6 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedAppMatch) {
 }
 
 TEST_P(PasswordFormManagerTest, RecordsGroupedWebSiteMatch) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordFormGroupedAffiliations);
   PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   base::HistogramTester histogram_tester;
   CreateFormManager(observed_form_);

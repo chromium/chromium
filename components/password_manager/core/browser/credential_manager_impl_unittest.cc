@@ -668,8 +668,6 @@ TEST_P(CredentialManagerImplTest,
 // Checks that using grouped match credential does not trigger save bubble.
 TEST_P(CredentialManagerImplTest,
        CredentialManagerStoreGroupedMatchDoesNotTriggerBubble) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kPasswordFormGroupedAffiliations};
   PasswordForm grouped_form = affiliated_form1_;
   grouped_form.skip_zero_click = false;
   grouped_form.match_type = affiliations::MatchType::kGrouped;

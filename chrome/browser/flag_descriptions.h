@@ -4124,12 +4124,6 @@ inline constexpr char kPasswordCompromiseWarningInDetailsCardDescription[] =
     "Displays a warning banner in the password details card when a "
     "saved credential is compromised.";
 
-inline constexpr char kPasswordFormGroupedAffiliationsName[] =
-    "Grouped affiliation password suggestions";
-inline constexpr char kPasswordFormGroupedAffiliationsDescription[] =
-    "Enables offering credentials coming from grouped domains for "
-    "filling";
-
 inline constexpr char kPasswordManagerShowSuggestionsOnAutofocusName[] =
     "Showing password suggestions on autofocused password forms";
 inline constexpr char kPasswordManagerShowSuggestionsOnAutofocusDescription[] =

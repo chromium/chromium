@@ -93,10 +93,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   // only available on HTTPS origins.
   auto form_fetcher = std::make_unique<FormFetcherImpl>(
       observed_digest, client_, /*should_migrate_http_passwords=*/false);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordFormGroupedAffiliations)) {
-    form_fetcher->set_filter_grouped_credentials(false);
-  }
+  form_fetcher->set_filter_grouped_credentials(false);
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
       client_, std::move(form), this, nullptr, std::move(form_fetcher));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

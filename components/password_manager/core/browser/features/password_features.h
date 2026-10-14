@@ -167,9 +167,6 @@ BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 // Enables running the clientside form classifier to parse password forms.
 BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 
-// Enables offering credentials for filling across grouped domains.
-BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
-
 // Kill switch for dropping fullscreen and checking pointer lock before
 // showing or accepting password generation popups.
 BASE_DECLARE_FEATURE(kPasswordGenerationDropFullscreenAndCheckPointerLock);
