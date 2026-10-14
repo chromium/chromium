@@ -122,8 +122,9 @@ class EmailVerificationController {
   void ShowErrorToastImpl();
   void ShowVerifiedToastImpl(const GURL& url);
 
-  // Dismisses `popup_controller_` and restores focus to `web_contents_` if the
-  // popup was in the loading state.
+  // Dismisses `popup_controller_`, stops `hide_popup_timer_`, resets
+  // `loading_start_time_`, and restores focus to `web_contents_` if the popup
+  // was in the loading state.
   void DismissPopup();
 
   // Records `loading_start_time_` so that subsequent transitions out of loading

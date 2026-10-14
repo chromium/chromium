@@ -48,9 +48,7 @@ void EmailVerificationController::ShowPopup(
   }
 
   DismissPopup();
-  hide_popup_timer_.Stop();
   toast_timer_.Stop();
-  loading_start_time_.reset();
   prompt_state_ = PromptState::kShowing;
 
   popup_controller_.Show(
@@ -99,8 +97,6 @@ void EmailVerificationController::HidePopup() {
         }
         return;
       }
-      hide_popup_timer_.Stop();
-      loading_start_time_.reset();
       DismissPopup();
       return;
     }
@@ -114,9 +110,7 @@ void EmailVerificationController::ShowLoadingToast() {
   // pending first-run popup first, then record `loading_start_time_` so the
   // minimum loading display duration is enforced when transitioning out of
   // loading in `ShowVerifiedToast()` or `ShowErrorToast()`.
-  hide_popup_timer_.Stop();
   toast_timer_.Stop();
-  loading_start_time_.reset();
   DismissPopup();
   StartLoadingTimer();
   if (ToastController* toast_controller = GetToastController()) {
@@ -195,6 +189,8 @@ void EmailVerificationController::ShowVerifiedToastImpl(const GURL& url) {
 
 void EmailVerificationController::DismissPopup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  hide_popup_timer_.Stop();
+  loading_start_time_.reset();
   const bool was_loading = prompt_state_ == PromptState::kLoading;
   prompt_state_ = PromptState::kClosed;
   popup_controller_.Dismiss();
