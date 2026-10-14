@@ -54,20 +54,20 @@ void ErrorPageJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!script_message.legacy_body() ||
-      !script_message.legacy_body()->is_dict()) {
+  const ScriptMessageValue& body = script_message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
 
-  const base::DictValue& dict = script_message.legacy_body()->GetDict();
+  const ScriptMessageDictValue& dict = body.GetDict();
 
-  const std::string* command = dict.FindString("command");
+  std::optional<std::string> command = dict.FindString("command");
   if (!command) {
     return;
   }
 
   if (*command == "updateEasterEggHighScore") {
-    const std::string* high_score_string = dict.FindString("highScore");
+    std::optional<std::string> high_score_string = dict.FindString("highScore");
     if (!high_score_string) {
       return;
     }
