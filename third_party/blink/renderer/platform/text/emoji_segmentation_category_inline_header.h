@@ -53,10 +53,10 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (unicode::IsEmojiModifierBase(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_MODIFIER_BASE;
   }
-  if (Character::IsModifier(codepoint)) {
+  if (unicode::IsModifier(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_MODIFIER;
   }
-  if (Character::IsRegionalIndicator(codepoint)) {
+  if (unicode::IsRegionalIndicator(codepoint)) {
     return EmojiSegmentationCategory::REGIONAL_INDICATOR;
   }
 

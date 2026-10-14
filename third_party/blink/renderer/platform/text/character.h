@@ -353,32 +353,4 @@ inline bool MayNeedEastAsianSpacing(UChar32 ch) {
 
 }  // namespace blink::unicode
 
-// TODO(crbug.com/492927412): Stop using Character namespace. It's for backward
-// compatibility.
-namespace blink::Character {
-using unicode::CanReceiveTextEmphasis;
-using unicode::CanTextDecorationSkipInk;
-using unicode::GetScriptBasedOnUnicodeBlock;
-using unicode::HasLikelyScript;
-using unicode::IsBidiControl;
-using unicode::IsCommonOrInheritedScript;
-using unicode::IsCursiveScript;
-using unicode::IsGcMark;
-using unicode::IsGraphemeExtended;
-using unicode::IsInRange;
-using unicode::IsModernGeorgianUppercase;
-using unicode::IsModifier;
-using unicode::IsNonCharacter;
-using unicode::IsPrivateUse;
-using unicode::IsRegionalIndicator;
-using unicode::IsStandardizedVariationSequence;
-using unicode::IsUnicodeVariationSelector;
-using unicode::IsUprightInMixedVertical;
-using unicode::IsVariationSequence;
-using unicode::IsVerticalMathCharacter;
-using unicode::LowercaseModernGeorgianUppercase;
-using unicode::MaybeBidiRtl;
-using unicode::MaybeBidiRtlUtf16;
-}  // namespace blink::Character
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_

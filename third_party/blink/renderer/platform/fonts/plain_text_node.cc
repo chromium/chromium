@@ -59,7 +59,7 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
       normalized = uchar::kZeroWidthSpace;
     }
 
-    if (!maybe_bidi && Character::MaybeBidiRtl(character)) {
+    if (!maybe_bidi && unicode::MaybeBidiRtl(character)) {
       maybe_bidi = true;
     }
 
@@ -129,7 +129,7 @@ wtf_size_t NextWordEndIndex(StringView text, wtf_size_t start_index) {
   // For CJK/Emoji words, delimit every character because these scripts do
   // not delimit words by spaces, and delimiting only at IsWordDelimiter()
   // worsen the cache efficiency.
-  bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
+  bool has_any_script = !unicode::IsCommonOrInheritedScript(ch);
   for (wtf_size_t next_end = end; end < length; end = next_end) {
     ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
     // Modifier check in order not to split Emoji sequences.
@@ -141,7 +141,7 @@ wtf_size_t NextWordEndIndex(StringView text, wtf_size_t start_index) {
     // Avoid delimiting COMMON/INHERITED alone, which makes harder to
     // identify the script.
     if (unicode::IsCjkIdeographOrSymbol(ch)) {
-      if (Character::IsCommonOrInheritedScript(ch)) {
+      if (unicode::IsCommonOrInheritedScript(ch)) {
         continue;
       }
       if (!has_any_script) {

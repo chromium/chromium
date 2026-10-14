@@ -73,7 +73,7 @@ ForwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
         const UChar32 code_point =
             U16_GET_SUPPLEMENTARY(code_unit, pending_code_unit_);
         pending_code_unit_ = 0;
-        if (Character::IsRegionalIndicator(code_point)) {
+        if (unicode::IsRegionalIndicator(code_point)) {
           ++preceding_ris_count_;
           return MoveToNextState(InternalState::kCountRIS);
         }
@@ -156,8 +156,8 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
         const UChar32 code_point =
             U16_GET_SUPPLEMENTARY(pending_code_unit_, code_unit);
         pending_code_unit_ = 0;
-        if (Character::IsRegionalIndicator(prev_code_point_) &&
-            Character::IsRegionalIndicator(code_point)) {
+        if (unicode::IsRegionalIndicator(prev_code_point_) &&
+            unicode::IsRegionalIndicator(code_point)) {
           if (preceding_ris_count_ % 2 == 0) {
             // Odd numbered RI case, note that prev_code_point_ is also RI.
             boundary_offset_ += 2;

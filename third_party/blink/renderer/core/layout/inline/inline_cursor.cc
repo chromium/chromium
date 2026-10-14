@@ -33,7 +33,7 @@ namespace {
 bool IsBidiControl(StringView string) {
   // SAFETY: length of one implies first element valid.
   return string.length() == 1 &&
-         Character::IsBidiControl(UNSAFE_BUFFERS(string[0]));
+         unicode::IsBidiControl(UNSAFE_BUFFERS(string[0]));
 }
 
 LogicalRect ExpandedSelectionRectForSoftLineBreakIfNeeded(

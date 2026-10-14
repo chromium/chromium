@@ -20,7 +20,7 @@ namespace {
 bool ExtendsGraphemeCluster(UChar32 character,
                             UChar32 cluster_base,
                             bool after_zwj) {
-  if (Character::IsGraphemeExtended(character)) {
+  if (unicode::IsGraphemeExtended(character)) {
     return true;
   }
   if (!RuntimeEnabledFeatures::EmojiZWJVerticalOrientationEnabled()) {
@@ -59,7 +59,7 @@ bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
       RenderOrientation previous_render_orientation =
           current_render_orientation;
       current_render_orientation =
-          Character::IsUprightInMixedVertical(next_u_char32)
+          unicode::IsUprightInMixedVertical(next_u_char32)
               ? kOrientationKeep
               : kOrientationRotateSideways;
       if (previous_render_orientation != current_render_orientation &&

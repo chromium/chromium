@@ -240,9 +240,10 @@ const SimpleFontData* FontCache::FallbackFontForCharacter(
   // http://www.unicode.org/faq/private_use.html#nonchar1 - See also
   // crbug.com/862352 where performing fallback for U+FFFE causes a memory
   // regression.
-  if (Character::IsPrivateUse(lookup_char) ||
-      Character::IsNonCharacter(lookup_char))
+  if (unicode::IsPrivateUse(lookup_char) ||
+      unicode::IsNonCharacter(lookup_char)) {
     return nullptr;
+  }
   base::ElapsedTimer timer;
   const SimpleFontData* result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);

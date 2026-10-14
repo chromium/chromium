@@ -133,8 +133,8 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   VariationSelectorMode variation_selector_mode =
       hb_font_data->GetVariationSelectorMode();
   if (!ShouldIgnoreVariationSelector(variation_selector_mode) &&
-      Character::IsUnicodeVariationSelector(variation_selector) &&
-      Character::IsVariationSequence(unicode, variation_selector)) {
+      unicode::IsUnicodeVariationSelector(variation_selector) &&
+      unicode::IsVariationSequence(unicode, variation_selector)) {
     is_variation_sequence = true;
     consider_variation_selector = true;
   } else if (UseFontVariantEmojiVariationSelector(variation_selector_mode) &&

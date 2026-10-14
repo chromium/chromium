@@ -57,7 +57,7 @@ inline bool IsVerticalNonCJKUpright(FontOrientation orientation) {
 inline bool IsVerticalUpright(FontOrientation orientation, UChar32 character) {
   return orientation == FontOrientation::kVerticalUpright ||
          (orientation == FontOrientation::kVerticalMixed &&
-          Character::IsUprightInMixedVertical(character));
+          unicode::IsUprightInMixedVertical(character));
 }
 inline bool IsVerticalBaseline(FontOrientation orientation) {
   return orientation != FontOrientation::kHorizontal;
@@ -68,7 +68,7 @@ inline FontOrientation AdjustOrientationForCharacterInMixedVertical(
     UChar32 character) {
   if (orientation != FontOrientation::kVerticalMixed)
     return orientation;
-  return Character::IsUprightInMixedVertical(character)
+  return unicode::IsUprightInMixedVertical(character)
              ? FontOrientation::kVerticalUpright
              : FontOrientation::kVerticalRotated;
 }

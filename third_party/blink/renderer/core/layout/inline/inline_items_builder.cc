@@ -125,14 +125,15 @@ bool ShouldRemoveNewlineSlow(const StringBuilder& before,
     if (U16_IS_LEAD(last_last))
       last = U16_GET_SUPPLEMENTARY(last_last, last);
   }
-  if (!Character::IsHangul(last) && IsEastAsianWidthWide(last, before_style)) {
+  if (!unicode::IsHangul(last) && IsEastAsianWidthWide(last, before_style)) {
     if (U16_IS_LEAD(next) && after.length() > 1) {
       UChar next_next = after[1];
       if (U16_IS_TRAIL(next_next))
         next = U16_GET_SUPPLEMENTARY(next, next_next);
     }
-    if (!Character::IsHangul(next) && IsEastAsianWidthWide(next, after_style))
+    if (!unicode::IsHangul(next) && IsEastAsianWidthWide(next, after_style)) {
       return true;
+    }
   }
 #endif
 
@@ -1744,7 +1745,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
   // doesn't contain any RTL characters.
   data->is_bidi_enabled_ =
       HasBidiControls() ||
-      (has_non_orc_16bit_ && Character::MaybeBidiRtl(data->text_content));
+      (has_non_orc_16bit_ && unicode::MaybeBidiRtl(data->text_content));
   data->has_floats_ = has_floats_;
   data->has_out_of_flow_positioned_ = has_out_of_flow_positioned_;
   data->has_initial_letter_box_ = has_initial_letter_box_;

@@ -171,7 +171,7 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   }
   if (locale && locale->GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
       ct_font &&
-      Character::GetScriptBasedOnUnicodeBlock(character) == USCRIPT_ARABIC &&
+      unicode::GetScriptBasedOnUnicodeBlock(character) == USCRIPT_ARABIC &&
       RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
     if (ScopedCFTypeRef<CTFontRef> font_with_cascade_list =
             CreateCopyWithCascadeListForLanguage(ct_font, @"ur", size)) {

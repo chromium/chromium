@@ -334,7 +334,7 @@ UScriptCode GetScript(int ucs4) {
   // If script is invalid, common or inherited or there's an error,
   // infer a script based on the unicode block of a character.
   if (script <= USCRIPT_INHERITED || U_FAILURE(err))
-    script = Character::GetScriptBasedOnUnicodeBlock(ucs4);
+    script = unicode::GetScriptBasedOnUnicodeBlock(ucs4);
   return script;
 }
 
@@ -546,7 +546,7 @@ const AtomicString& GetFallbackFamily(
     script = USCRIPT_HAN;
 
   if (script == USCRIPT_COMMON)
-    script = Character::GetScriptBasedOnUnicodeBlock(character);
+    script = unicode::GetScriptBasedOnUnicodeBlock(character);
 
   // For unified-Han scripts, try the lang attribute, system, or
   // accept-languages.

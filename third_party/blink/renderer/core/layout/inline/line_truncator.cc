@@ -113,7 +113,7 @@ void LineTruncator::SetupEllipsis() {
   String ellipsis_text = ComputeEllipsisText();
   if (BidiParagraph bidi;
       RuntimeEnabledFeatures::TextOverflowStringEnabled() &&
-      Character::MaybeBidiRtl(ellipsis_text) &&
+      unicode::MaybeBidiRtl(ellipsis_text) &&
       bidi.SetParagraph(ellipsis_text, line_direction_) &&
       (!bidi.IsUnidirectional() || IsRtl(bidi.BaseDirection()))) {
     BidiParagraph::Runs bidi_runs;

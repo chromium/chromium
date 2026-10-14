@@ -104,10 +104,12 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR))
         return MoveToNextState(BackspaceState::kBeforeVS);
-      if (Character::IsRegionalIndicator(code_point))
+      if (unicode::IsRegionalIndicator(code_point)) {
         return MoveToNextState(BackspaceState::kOddNumberedRIS);
-      if (Character::IsModifier(code_point))
+      }
+      if (unicode::IsModifier(code_point)) {
         return MoveToNextState(BackspaceState::kBeforeEmojiModifier);
+      }
       if (IsExtendedPictographicGb11(code_point)) {
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
@@ -190,7 +192,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
     case BackspaceState::kBeforeZWJ:
       if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point) + 1;  // +1 for ZWJ
-        return Character::IsModifier(code_point)
+        return unicode::IsModifier(code_point)
                    ? MoveToNextState(BackspaceState::kBeforeEmojiModifier)
                    : MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
@@ -213,13 +215,15 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       last_seen_vs_code_units_ = 0;
       return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
     case BackspaceState::kOddNumberedRIS:
-      if (!Character::IsRegionalIndicator(code_point))
+      if (!unicode::IsRegionalIndicator(code_point)) {
         return Finish();
+      }
       code_units_to_be_deleted_ += 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kEvenNumberedRIS);
     case BackspaceState::kEvenNumberedRIS:
-      if (!Character::IsRegionalIndicator(code_point))
+      if (!unicode::IsRegionalIndicator(code_point)) {
         return Finish();
+      }
       code_units_to_be_deleted_ -= 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kOddNumberedRIS);
     case BackspaceState::kBeforeTagTerm:
@@ -245,7 +249,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       // sequences, we continue to look for the base but should finish
       // immediately after finding it (not look for ZWJ sequences).
       // https://unicode.org/reports/tr51/#def_emoji_tag_sequence
-      if (Character::IsModifier(code_point)) {
+      if (unicode::IsModifier(code_point)) {
         // Part of emoji_modifier_sequence - continue to find the base.
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         processing_tag_sequence_base_ = true;

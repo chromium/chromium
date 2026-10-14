@@ -93,7 +93,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // Urdu". Prefer "Noto Nastaliq Urdu" when the locale script is
   // USCRIPT_ARABIC_NASTALIQ and the character is in the Arabic script.
   if (font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
-      Character::GetScriptBasedOnUnicodeBlock(c) == USCRIPT_ARABIC &&
+      unicode::GetScriptBasedOnUnicodeBlock(c) == USCRIPT_ARABIC &&
       RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, kNotoNastaliqUrdu,
                                     ("Noto Nastaliq Urdu"));

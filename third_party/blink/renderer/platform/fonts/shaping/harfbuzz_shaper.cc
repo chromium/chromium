@@ -733,7 +733,7 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
         // FontFallbackIterator needs a character with a determined script to
         // perform meaningful system fallback.
         if (!needs_hint_list &&
-            !Character::IsCommonOrInheritedScript(hint_char)) {
+            !unicode::IsCommonOrInheritedScript(hint_char)) {
           return true;
         }
       }
@@ -752,8 +752,7 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
       // managed to find a character with a definite script since
       // FontFallbackIterator needs a character with a determined script to
       // perform meaningful system fallback.
-      if (!needs_hint_list &&
-          !Character::IsCommonOrInheritedScript(hint_char)) {
+      if (!needs_hint_list && !unicode::IsCommonOrInheritedScript(hint_char)) {
         return true;
       }
       iterator.Advance();

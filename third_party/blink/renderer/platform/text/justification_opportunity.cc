@@ -46,7 +46,7 @@ std::pair<bool, bool> JustificationContext::CheckOpportunity(TextJustify method,
   if constexpr (!kIsLatin) {
     if (ch == uchar::kObjectReplacementCharacter) {
       type = Type::kAtomicInline;
-    } else if (Character::IsCursiveScript(ch)) {
+    } else if (unicode::IsCursiveScript(ch)) {
       type = Type::kCursive;
     }
   }

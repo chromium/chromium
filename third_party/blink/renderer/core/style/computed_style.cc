@@ -1863,8 +1863,8 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
   // about surrogate handling.
   for (unsigned i = 0; i < length; ++i) {
     UChar character = UNSAFE_TODO(input[i]);
-    if (Character::IsModernGeorgianUppercase(character)) {
-      result.Append(Character::LowercaseModernGeorgianUppercase(character));
+    if (unicode::IsModernGeorgianUppercase(character)) {
+      result.Append(unicode::LowercaseModernGeorgianUppercase(character));
     } else {
       result.Append(character);
     }

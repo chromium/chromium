@@ -119,8 +119,8 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
         const UChar32 code_point =
             U16_GET_SUPPLEMENTARY(code_unit, trail_surrogate_);
         trail_surrogate_ = 0;
-        if (Character::IsRegionalIndicator(next_code_point_) &&
-            Character::IsRegionalIndicator(code_point)) {
+        if (unicode::IsRegionalIndicator(next_code_point_) &&
+            unicode::IsRegionalIndicator(code_point)) {
           preceding_ris_count_ = 1;
           return MoveToNextState(InternalState::kCountRIS);
         }
@@ -132,7 +132,7 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
       }
     case InternalState::kCountRIS:
       DCHECK_EQ(trail_surrogate_, 0);
-      DCHECK(Character::IsRegionalIndicator(next_code_point_));
+      DCHECK(unicode::IsRegionalIndicator(next_code_point_));
       DCHECK_LT(boundary_offset_, 0);
       DCHECK_GT(preceding_ris_count_, 0);
       if (U16_IS_TRAIL(code_unit)) {
@@ -145,7 +145,7 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
       return Finish();
     case InternalState::kCountRISWaitLeadSurrogate:
       DCHECK_NE(trail_surrogate_, 0);
-      DCHECK(Character::IsRegionalIndicator(next_code_point_));
+      DCHECK(unicode::IsRegionalIndicator(next_code_point_));
       DCHECK_LT(boundary_offset_, 0);
       DCHECK_GT(preceding_ris_count_, 0);
       if (U16_IS_LEAD(code_unit)) {
@@ -153,7 +153,7 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
         const UChar32 code_point =
             U16_GET_SUPPLEMENTARY(code_unit, trail_surrogate_);
         trail_surrogate_ = 0;
-        if (Character::IsRegionalIndicator(code_point)) {
+        if (unicode::IsRegionalIndicator(code_point)) {
           ++preceding_ris_count_;
           return MoveToNextState(InternalState::kCountRIS);
         }

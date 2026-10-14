@@ -584,8 +584,9 @@ bool OffsetMapping::HasBidiControlCharactersOnly(IfcOffset start,
   DCHECK_LE(start, end);
   DCHECK_LE(end, text_.length());
   for (IfcOffset i = start; i < end; ++i) {
-    if (!Character::IsBidiControl(text_[i]))
+    if (!unicode::IsBidiControl(text_[i])) {
       return false;
+    }
   }
   return true;
 }

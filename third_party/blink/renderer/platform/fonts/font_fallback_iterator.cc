@@ -251,7 +251,7 @@ wtf_size_t FontFallbackIterator::ChooseHintIndex(
     return 0;
 
   for (wtf_size_t i = 1; i < hint_list.size(); ++i) {
-    if (Character::HasLikelyScript(hint_list[i])) {
+    if (unicode::HasLikelyScript(hint_list[i])) {
       return i;
     }
   }

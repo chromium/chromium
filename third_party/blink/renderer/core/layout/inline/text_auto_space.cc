@@ -262,7 +262,7 @@ void TextAutoSpace::Apply(const InlineNode& node, InlineItemsData& data) {
   const auto char_end = char_begin.EndForThis();
   for (auto char_iter = char_begin; char_iter != char_end;) {
     const UChar32 ch = *char_iter;
-    if (Character::IsGcMark(ch)) [[unlikely]] {
+    if (unicode::IsGcMark(ch)) [[unlikely]] {
       ++char_iter;
       continue;
     }

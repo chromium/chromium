@@ -78,8 +78,8 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
   // sot   (RI RI)* RI x RI
   // [^RI] (RI RI)* RI x RI
   //                RI ÷ RI
-  if (Character::IsRegionalIndicator(prev_code_point) &&
-      Character::IsRegionalIndicator(next_code_point)) {
+  if (unicode::IsRegionalIndicator(prev_code_point) &&
+      unicode::IsRegionalIndicator(next_code_point)) {
     NOTREACHED() << "Do not use this function for regional indicators.";
   }
 

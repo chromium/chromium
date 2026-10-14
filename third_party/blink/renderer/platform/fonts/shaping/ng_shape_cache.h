@@ -229,7 +229,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
       const bool has_private_or_non_characters =
           !key.GetText().Is8Bit() &&
           std::ranges::any_of(key.GetText().Span16(), [](UChar32 c) {
-            return Character::IsPrivateUse(c) || Character::IsNonCharacter(c);
+            return unicode::IsPrivateUse(c) || unicode::IsNonCharacter(c);
           });
       // The shape-result call might try and reuse previous shape-results, we
       // can't check for equality in this case.

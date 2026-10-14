@@ -227,7 +227,7 @@ void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
 bool MathMLOperatorElement::IsVertical() {
   if (!is_vertical_.has_value()) {
     is_vertical_ =
-        Character::IsVerticalMathCharacter(GetTokenContent().code_point);
+        unicode::IsVerticalMathCharacter(GetTokenContent().code_point);
   }
   return is_vertical_.value();
 }
