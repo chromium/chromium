@@ -63,7 +63,7 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
   // The observer for the active WebState.
   FullscreenWebStateObserver web_state_observer_;
   // The WebStates that have been activated in `web_state_list_`.
-  std::set<web::WebState*> activated_web_states_;
+  std::set<raw_ptr<web::WebState, DanglingUntriaged>> activated_web_states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_WEB_STATE_LIST_OBSERVER_H_

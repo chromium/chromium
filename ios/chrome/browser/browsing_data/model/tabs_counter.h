@@ -85,7 +85,7 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // we should make sure we're not overcounting by keeping track of the active
   // browsers (or the active browsers of inactive browsers) with tabs within the
   // timeframe.
-  std::set<Browser*> active_browsers_;
+  std::set<raw_ptr<Browser>> active_browsers_;
 
   // Holds the tabs information used for counting the number of tabs with a last
   // navigation within the timerange. It's returned in `TabsCounter::TabsResult`
