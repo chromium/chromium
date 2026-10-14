@@ -453,22 +453,12 @@ base::span<const Ewallet> PersonalDataManagerAndroid::GetEwallets() {
 
 std::vector<std::string> PersonalDataManagerAndroid::GetProfileGUIDs(
     const std::vector<const AutofillProfile*>& profiles) {
-  std::vector<std::string> guids;
-  guids.reserve(profiles.size());
-  for (const AutofillProfile* profile : profiles) {
-    guids.push_back(profile->guid());
-  }
-  return guids;
+  return base::ToVector(profiles, &AutofillProfile::guid);
 }
 
 std::vector<std::string> PersonalDataManagerAndroid::GetCreditCardGUIDs(
     const std::vector<const CreditCard*>& credit_cards) {
-  std::vector<std::string> guids;
-  guids.reserve(credit_cards.size());
-  for (const CreditCard* credit_card : credit_cards) {
-    guids.push_back(credit_card->guid());
-  }
-  return guids;
+  return base::ToVector(credit_cards, &CreditCard::guid);
 }
 
 std::vector<std::u16string> PersonalDataManagerAndroid::GetProfileLabels(
@@ -575,10 +565,9 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
-  std::vector<ScopedJavaLocalRef<jobject>> j_ibans_list;
-  for (const Iban* iban : payments_data_manager().GetIbans()) {
-    j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
-  }
+  std::vector<ScopedJavaLocalRef<jobject>> j_ibans_list = base::ToVector(
+      payments_data_manager().GetIbans(),
+      [env](const Iban* iban) { return CreateJavaIbanFromNative(env, *iban); });
   return base::android::ToTypedJavaArrayOfObjects(
       env, j_ibans_list,
       org_chromium_components_autofill_payments_Iban_clazz(env));
