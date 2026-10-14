@@ -41,7 +41,6 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
@@ -70,16 +69,6 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
                                OneTimeTokenService* one_time_token_service)
     : owner_(owner), one_time_token_service_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
-  if (one_time_token_service_) {
-    if (owner_->driver().GetParent() == nullptr &&
-        !owner_->driver().IsEmbedded()) {
-      if (one_time_token_service_->log_sink()) {
-        log_subscription_ = one_time_token_service_->log_sink()->AddLogHandler(
-            base::BindRepeating(&OtpManagerImpl::OnLogMessage,
-                                weak_ptr_factory_.GetWeakPtr()));
-      }
-    }
-  }
 }
 
 OtpManagerImpl::~OtpManagerImpl() {
@@ -733,11 +722,6 @@ std::optional<OneTimeToken> OtpManagerImpl::SelectMostRecentToken(
     }
   }
   return most_recent ? std::optional(*most_recent) : std::nullopt;
-}
-
-void OtpManagerImpl::OnLogMessage(std::string_view message) {
-  LOG_AF(owner_->client().GetCurrentLogManager())
-      << LoggingScope::kOneTimeTokens << message;
 }
 
 LogBuffer& operator<<(LogBuffer& buffer,

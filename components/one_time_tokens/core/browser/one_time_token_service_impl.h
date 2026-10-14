@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -33,9 +34,11 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
  public:
   // If `sms_otp_backend` is null, this class does not do any SMS-based
   // subscriptions. If `gmail_otp_backend` is null, this class does not do any
-  // Gmail-based subscriptions.
+  // Gmail-based subscriptions. If `log_handler` is provided, it is registered
+  // with `log_sink_` for the lifetime of this service.
   OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend,
-                          GmailOtpBackend* gmail_otp_backend);
+                          GmailOtpBackend* gmail_otp_backend,
+                          OneTimeTokenLogSink::LogHandler log_handler = {});
   OneTimeTokenServiceImpl(const OneTimeTokenServiceImpl&) = delete;
   OneTimeTokenServiceImpl& operator=(const OneTimeTokenServiceImpl&) = delete;
   ~OneTimeTokenServiceImpl() override;
@@ -114,6 +117,7 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
       cache_;
 
   OneTimeTokenLogSink log_sink_;
+  base::CallbackListSubscription log_subscription_;
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<OneTimeTokenServiceImpl> weakptr_factory_{this};

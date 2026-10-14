@@ -4,6 +4,9 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -18,6 +21,7 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
@@ -1351,6 +1355,22 @@ TEST_F(OneTimeTokenServiceImplTest, HasPendingRequests_SourcesAreIsolated) {
 
   EXPECT_TRUE(service.HasPendingRequests(OneTimeTokenSource::kOnDeviceSms));
   EXPECT_FALSE(service.HasPendingRequests(OneTimeTokenSource::kGmail));
+}
+
+// Tests that a `LogHandler` passed to `OneTimeTokenServiceImpl` is registered
+// with `log_sink()` for the lifetime of the service.
+TEST_F(OneTimeTokenServiceImplTest, LogHandlerRegisteredInConstructor) {
+  base::test::TestFuture<std::string> log_future;
+  OneTimeTokenServiceImpl service(
+      /*sms_otp_backend=*/nullptr, /*gmail_otp_backend=*/nullptr,
+      base::BindRepeating(
+          [](base::RepeatingCallback<void(std::string)> cb,
+             std::string_view message) { cb.Run(std::string(message)); },
+          log_future.GetRepeatingCallback()));
+
+  EXPECT_TRUE(service.log_sink()->IsActive());
+  LOG_OTT(service.log_sink()) << "test log message";
+  EXPECT_EQ(log_future.Take(), "test log message");
 }
 
 }  // namespace one_time_tokens

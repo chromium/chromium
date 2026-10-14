@@ -47,8 +47,6 @@ class OtpManagerImplTestApi {
     return manager_->UserOptedIntoGmailOtpFilling();
   }
 
-  bool has_log_subscription() const { return !!manager_->log_subscription_; }
-
   std::optional<FormGlobalId> currently_focused_form_id() const {
     return manager_->currently_focused_form_id_;
   }

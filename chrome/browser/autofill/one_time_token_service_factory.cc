@@ -4,10 +4,14 @@
 
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/autofill/content/browser/autofill_log_router_factory.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/one_time_token_log_handler.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
@@ -31,6 +35,7 @@ OneTimeTokenServiceFactory::OneTimeTokenServiceFactory()
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(AndroidSmsOtpBackendFactory::GetInstance());
 #endif  // BUILDFLAG(IS_ANDROID)
+  DependsOn(AutofillLogRouterFactory::GetInstance());
   DependsOn(GmailOtpBackendFactory::GetInstance());
 }
 OneTimeTokenServiceFactory::~OneTimeTokenServiceFactory() = default;
@@ -61,8 +66,10 @@ OneTimeTokenServiceFactory::BuildServiceInstanceForBrowserContext(
                 Profile::FromBrowserContext(context))
           : nullptr;
 
-  return std::make_unique<OneTimeTokenServiceImpl>(sms_otp_backend,
-                                                   gmail_otp_backend);
+  return std::make_unique<OneTimeTokenServiceImpl>(
+      sms_otp_backend, gmail_otp_backend,
+      CreateOneTimeTokenLogHandler(
+          AutofillLogRouterFactory::GetForBrowserContext(context)));
 }
 
 }  // namespace autofill
