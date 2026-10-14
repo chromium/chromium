@@ -2,7 +2,7 @@ Name: Roboto Font
 Short Name: roboto-classic
 URL: https://github.com/googlefonts/roboto-classic
 Version: N/A
-Date: 2026-09-02
+Date: 2026-10-13
 Update Mechanism: Manual
 License: OFL-1.1
 License File: OFL.txt
@@ -11,17 +11,54 @@ Shipped: no
 
 Description:
 Licensing and origin metadata for the Roboto font subset and Incremental Font
-Transfer (IFT) glyph-keyed patches used by IftPatcherTest in
-third_party/blink/renderer/platform/fonts/ift/ift_patcher_test.cc.
+Transfer (IFT) patches used by IftPatcherTest in
+third_party/blink/renderer/platform/fonts/ift/ift_patcher_test.cc and
+IftCustomFontDataTest in
+third_party/blink/renderer/core/css/ift_custom_font_data_test.cc.
 
 The test fixture files reside in the parent directory (testing/data/) because the
-relative patch URLs ("00.1.ift_gk", "04.1.ift_gk") are embedded directly within
-the font binary:
+relative patch URLs are embedded directly within the font binary:
 - third_party/blink/renderer/platform/testing/data/roboto-ift.ttf
 - third_party/blink/renderer/platform/testing/data/roboto-ift.woff2
-- third_party/blink/renderer/platform/testing/data/00.1.ift_gk
 - third_party/blink/renderer/platform/testing/data/04.1.ift_gk
+- third_party/blink/renderer/platform/testing/data/08.1.ift_gk
+- third_party/blink/renderer/platform/testing/data/0C.ift_tk
+- third_party/blink/renderer/platform/testing/data/0G.ift_tk
+- third_party/blink/renderer/platform/testing/data/0K.ift_tk
+- third_party/blink/renderer/platform/testing/data/0O.ift_tk
 
 Local Modifications:
-Derived from Roboto by generating an IFT base font subset containing codepoint 'a'
-with IFT/IFTX tables, and two glyph-keyed patch payloads for codepoints 'b' and 'c'.
+Derived from Roboto[wdth,wght].ttf by generating a mixed-mode IFT encoding.
+The base font supports only codepoint 'a'. Codepoints 'b' and 'c' each need a
+table-keyed patch (cmap, hmtx, etc.) and a glyph-keyed patch (outlines):
+- 04.1.ift_gk: outline for 'b'.
+- 08.1.ift_gk: outline for 'c'.
+- 0K.ift_tk: tables for 'b', applied to the base font.
+- 0O.ift_tk: tables for 'c', applied to the base font.
+- 0C.ift_tk: tables for 'c', applied after 0K.ift_tk.
+- 0G.ift_tk: tables for 'b', applied after 0O.ift_tk.
+
+The font also contains an unmapped padding glyph (gid 4). The encoder always
+keeps the last glyph in the base font, so the padding glyph prevents 'c'
+(gid 3) from being pulled into the base font.
+
+The IFT encoding was generated with an internal build of the IFT encoder, using
+roboto-ift-plan.txtpb in this directory. The public equivalent is
+https://github.com/w3c/ift-encoder, which provides the same font2ift tool:
+
+  pyftsubset 'Roboto[wdth,wght].ttf' --text=abc --gids=370 \
+    --output-file=roboto-abc-pad.ttf
+  mkdir out
+  font2ift --input_font=roboto-abc-pad.ttf --plan=roboto-ift-plan.txtpb \
+    --output_path=out/ --output_font=roboto-ift.woff2
+  woff2_decompress out/roboto-ift.woff2  # Produces out/roboto-ift.ttf.
+
+- Roboto[wdth,wght].ttf is available at
+  https://github.com/google/fonts/tree/main/ofl/roboto. Glyph 370 is an
+  unmapped glyph that sorts after 'c'.
+- With the public encoder, font2ift can be built and run from the ift-encoder
+  repository with `bazel run -c opt //util:font2ift -- <flags>`. Output from
+  the public encoder may not be byte-identical to the checked-in files.
+- pyftsubset is part of fontTools. woff2_decompress is part of
+  https://github.com/google/woff2.
+- font2ift always writes WOFF2, so roboto-ift.ttf is decompressed from it.

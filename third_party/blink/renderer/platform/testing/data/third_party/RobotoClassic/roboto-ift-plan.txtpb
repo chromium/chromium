@@ -1,0 +1,23 @@
+# Segmentation plan for the Blink IFT test font (roboto-ift.ttf / .woff2).
+#
+# Input: Roboto[wdth,wght].ttf subset to 'a', 'b', 'c' plus an unmapped padding
+# glyph (gid 4). The encoder always keeps the last gid in the base font, so the
+# padding glyph ensures 'c' (gid 3) is not pulled into the base font.
+#
+# Base font: 'a' only.
+# 'b' and 'c' each need a table-keyed patch (cmap/hmtx/etc.) and a glyph-keyed
+# patch (outlines).
+
+segments { key: 1 value { codepoints { values: 0x62 } } }  # 'b'
+segments { key: 2 value { codepoints { values: 0x63 } } }  # 'c'
+
+glyph_patches { key: 1 value { values: 2 } }  # gid 2 = 'b'
+glyph_patches { key: 2 value { values: 3 } }  # gid 3 = 'c'
+
+glyph_patch_conditions { required_segments { values: 1 } activated_patch: 1 }
+glyph_patch_conditions { required_segments { values: 2 } activated_patch: 2 }
+
+initial_codepoints { values: 0x61 }  # 'a'
+
+non_glyph_segments { values: 1 }
+non_glyph_segments { values: 2 }

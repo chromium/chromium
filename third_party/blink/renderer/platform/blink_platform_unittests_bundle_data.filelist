@@ -822,8 +822,12 @@ image-decoders/testing/plte-weirdness.png
 image-decoders/testing/private-critical-chunk-before-ihdr.png
 image-decoders/testing/radient-bad-terminator.gif
 image-decoders/testing/radient.gif
-testing/data/00.1.ift_gk
 testing/data/04.1.ift_gk
+testing/data/08.1.ift_gk
+testing/data/0C.ift_tk
+testing/data/0G.ift_tk
+testing/data/0K.ift_tk
+testing/data/0O.ift_tk
 testing/data/Ahem.woff
 testing/data/AhemSpaceLigature.woff
 testing/data/anim_none.gif
