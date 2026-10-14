@@ -418,6 +418,8 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     case ContentSuggestionsModuleType::kLevelUp:
       return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
+      return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_TITLE);
     default:
       NOTREACHED();
   }
@@ -570,6 +572,7 @@ const CGFloat kSeparatorHeight = 0.5;
       return YES;
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
       return NO;
     default:
       return NO;

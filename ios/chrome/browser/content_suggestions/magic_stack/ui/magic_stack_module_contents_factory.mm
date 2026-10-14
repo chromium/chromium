@@ -113,6 +113,11 @@
       LevelUpConfig* levelUpConfig = static_cast<LevelUpConfig*>(config);
       return [self levelUpViewForConfig:levelUpConfig];
     }
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable: {
+      // TODO(crbug.com/571446927): Return `NTPThemeActionableTipView` once
+      // added.
+      return [[UIView alloc] init];
+    }
     default:
       NOTREACHED();
   }

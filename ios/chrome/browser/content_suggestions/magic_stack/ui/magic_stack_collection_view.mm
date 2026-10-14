@@ -494,6 +494,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
       return YES;

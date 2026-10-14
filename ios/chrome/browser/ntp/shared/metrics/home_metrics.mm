@@ -190,6 +190,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
       break;

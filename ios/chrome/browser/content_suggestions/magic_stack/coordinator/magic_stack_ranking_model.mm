@@ -396,7 +396,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     return;
   }
 
-  TipsModuleConfig* config = _tipsMediator.config;
+  MagicStackModule* config = _tipsMediator.activeConfig;
   [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
@@ -409,7 +409,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kTips);
 
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_tipsMediator.config
+                          didRemoveItem:_tipsMediator.activeConfig
                                 animate:YES
                          withCompletion:completion];
 }
@@ -769,8 +769,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         if (tipIdentifier == TipIdentifier::kNTPTheme &&
             segmentation_platform::features::
                 IsMagicStackTipsV2IosActionableEnabled()) {
-          // TODO(crbug.com/566960072): Configure the actionable NTP Theme tip
-          // module when the actionable variation is enabled.
+          [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
+          card = _tipsMediator.activeConfig;
+          _ephemeralCardToShow = card.type;
           break;
         }
         BOOL shouldShowTipsWithProductImage =
@@ -1014,9 +1015,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       }
       break;
     case ContentSuggestionsModuleType::kTips:
-    case ContentSuggestionsModuleType::kTipsWithProductImage: {
-      if (_tipsMediator && _tipsMediator.config) {
-        [magicStackOrder addObject:_tipsMediator.config];
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable: {
+      if (_tipsMediator && _tipsMediator.activeConfig) {
+        [magicStackOrder addObject:_tipsMediator.activeConfig];
       }
       break;
     }

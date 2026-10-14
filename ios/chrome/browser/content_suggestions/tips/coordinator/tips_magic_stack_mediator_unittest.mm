@@ -17,6 +17,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/ntp_theme_actionable_tip_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
@@ -127,6 +128,8 @@ TEST_F(TipsMagicStackMediatorTest,
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
   EXPECT_EQ(TipIdentifier::kNTPTheme, mediator_.config.identifier);
   EXPECT_NE(nil, mediator_.actionableConfig);
+  EXPECT_EQ(ContentSuggestionsModuleType::kTipsNTPThemeActionable,
+            mediator_.actionableConfig.type);
   EXPECT_EQ(mediator_.actionableConfig, mediator_.activeConfig);
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kLensShop];
   EXPECT_EQ(nil, mediator_.actionableConfig);

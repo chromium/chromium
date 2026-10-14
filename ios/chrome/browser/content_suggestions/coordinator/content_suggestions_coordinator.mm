@@ -839,8 +839,6 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case TipIdentifier::kNTPTheme: {
-      CHECK(!segmentation_platform::features::
-                IsMagicStackTipsV2IosActionableEnabled());
       [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:YES
                                                        scrollToBottom:NO];
       break;
@@ -898,7 +896,8 @@ using segmentation_platform::TipIdentifier;
           segmentation_platform::kSendTabNotificationPromo);
       break;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips: {
+    case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable: {
       CHECK(_tipsMediator);
       std::optional<std::string_view> name =
           OutputLabelForTipIdentifier(_tipsMediator.config.identifier);
@@ -956,6 +955,9 @@ using segmentation_platform::TipIdentifier;
       [priceNotificationsCommands showPriceTrackedItems];
       break;
     }
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
+      [self didSelectTip:segmentation_platform::TipIdentifier::kNTPTheme];
+      break;
     default:
       break;
   }
@@ -993,7 +995,8 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kAppBundlePromo:
-    case ContentSuggestionsModuleType::kDefaultBrowser: {
+    case ContentSuggestionsModuleType::kDefaultBrowser:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable: {
       // Disable all cards with "Chrome Tips" header.
       [self disableTipsModules];
       break;
@@ -1084,6 +1087,7 @@ using segmentation_platform::TipIdentifier;
       return NotificationOptInAccessPoint::kSetUpList;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
       return NotificationOptInAccessPoint::kTips;

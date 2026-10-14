@@ -39,6 +39,7 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShopCard:
     case ContentSuggestionsModuleType::kAppBundlePromo:
@@ -62,6 +63,7 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
       return @"";
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
@@ -109,6 +111,7 @@ NSString* GetContextMenuHideDescriptionForType(
               l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_TITLE)));
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
       return l10n_util::GetNSStringF(

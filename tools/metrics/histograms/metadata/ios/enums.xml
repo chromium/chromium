@@ -1414,6 +1414,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="App Bundle Promo"/>
   <int value="23" label="Default Browser"/>
   <int value="24" label="Level Up"/>
+  <int value="25" label="NTP Theme Actionable Tip"/>
 </enum>
 
 <enum name="IOSMiniMapConsentOutcome">

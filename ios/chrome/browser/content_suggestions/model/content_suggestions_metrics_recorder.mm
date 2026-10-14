@@ -110,6 +110,7 @@ favicon_base::IconType GetIconTypeFromAttributes(
       break;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
       UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackModuleEngagementTipsIndexHistogram,
                                  index, kMaxModuleEngagementIndex);
       break;

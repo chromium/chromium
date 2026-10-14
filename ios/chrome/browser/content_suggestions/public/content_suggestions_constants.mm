@@ -76,6 +76,7 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
+    case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
       return true;
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTabResumption:

@@ -28,8 +28,7 @@
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {
-  // TODO(crbug.com/571446927): Replace with `kActionableTips` once introduced.
-  return ContentSuggestionsModuleType::kTips;
+  return ContentSuggestionsModuleType::kTipsNTPThemeActionable;
 }
 
 @end
