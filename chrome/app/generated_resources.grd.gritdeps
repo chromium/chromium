@@ -100,6 +100,7 @@ chrome/app/resources/generated_resources_zh-CN.xtb
 chrome/app/resources/generated_resources_zh-HK.xtb
 chrome/app/resources/generated_resources_zh-TW.xtb
 chrome/app/resources/generated_resources_zu.xtb
+chrome/app/settings_search_tag_strings.grdp
 chrome/app/settings_strings.grdp
 chrome/app/shared_settings_strings.grdp
 chrome/app/sharesheet_strings.grdp

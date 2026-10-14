@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Search tags used for settings search. Result titles reuse the existing
+     IDS_SETTINGS_* strings, so this file only holds alternate phrases. -->
+<!-- TODO(b/573316647): Remove translateable="false" once search synonyms are
+     finalized. -->
+<grit-part>
+  <!-- Appearance section. -->
+  <message name="IDS_SETTINGS_TAG_THEME_ALT1" meaning="Settings search keyword for 'Theme'" desc="Search keyword for the setting for choosing a browser theme. Alternate keyword for: 'Theme'" translateable="false">
+    backgrounds
+  </message>
+  <message name="IDS_SETTINGS_TAG_THEME_ALT2" meaning="Settings search keyword for 'Theme'" desc="Search keyword for the setting for choosing a browser theme. Alternate keyword for: 'Theme'" translateable="false">
+    wallpaper
+  </message>
+  <message name="IDS_SETTINGS_TAG_THEME_ALT3" meaning="Settings search keyword for 'Theme'" desc="Search keyword for the setting for choosing a browser theme. Alternate keyword for: 'Theme'" translateable="false">
+    colors
+  </message>
+  <message name="IDS_SETTINGS_TAG_COLOR_SCHEME_MODE_ALT1" meaning="Settings search keyword for 'Mode'" desc="Search keyword for the setting for choosing a light, dark or system color scheme. Alternate keyword for: 'Mode'" translateable="false">
+    dark
+  </message>
+  <message name="IDS_SETTINGS_TAG_COLOR_SCHEME_MODE_ALT2" meaning="Settings search keyword for 'Mode'" desc="Search keyword for the setting for choosing a light, dark or system color scheme. Alternate keyword for: 'Mode'" translateable="false">
+    light
+  </message>
+  <message name="IDS_SETTINGS_TAG_COLOR_SCHEME_MODE_ALT3" meaning="Settings search keyword for 'Mode'" desc="Search keyword for the setting for choosing a light, dark or system color scheme. Alternate keyword for: 'Mode'" translateable="false">
+    night
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_TOOLBAR_ALT1" meaning="Settings search keyword for 'Customize your toolbar'" desc="Search keyword for the setting for choosing which buttons are pinned to the toolbar. Alternate keyword for: 'Customize your toolbar'" translateable="false">
+    buttons
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_TOOLBAR_ALT2" meaning="Settings search keyword for 'Customize your toolbar'" desc="Search keyword for the setting for choosing which buttons are pinned to the toolbar. Alternate keyword for: 'Customize your toolbar'" translateable="false">
+    icons
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_TOOLBAR_ALT3" meaning="Settings search keyword for 'Customize your toolbar'" desc="Search keyword for the setting for choosing which buttons are pinned to the toolbar. Alternate keyword for: 'Customize your toolbar'" translateable="false">
+    pin
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_HOME_BUTTON_ALT1" meaning="Settings search keyword for 'Show home button'" desc="Search keyword for the toggle for showing the home button on the toolbar. Alternate keyword for: 'Show home button'" translateable="false">
+    house
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_HOME_BUTTON_ALT2" meaning="Settings search keyword for 'Show home button'" desc="Search keyword for the toggle for showing the home button on the toolbar. Alternate keyword for: 'Show home button'" translateable="false">
+    icon
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_HOME_BUTTON_ALT3" meaning="Settings search keyword for 'Show home button'" desc="Search keyword for the toggle for showing the home button on the toolbar. Alternate keyword for: 'Show home button'" translateable="false">
+    toolbar
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_BOOKMARKS_BAR_ALT1" meaning="Settings search keyword for 'Show bookmarks bar'" desc="Search keyword for the setting for showing the bookmarks bar. Alternate keyword for: 'Show bookmarks bar'" translateable="false">
+    toolbar
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_BOOKMARKS_BAR_ALT2" meaning="Settings search keyword for 'Show bookmarks bar'" desc="Search keyword for the setting for showing the bookmarks bar. Alternate keyword for: 'Show bookmarks bar'" translateable="false">
+    favorites
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_BOOKMARKS_BAR_ALT3" meaning="Settings search keyword for 'Show bookmarks bar'" desc="Search keyword for the setting for showing the bookmarks bar. Alternate keyword for: 'Show bookmarks bar'" translateable="false">
+    top
+  </message>
+  <message name="IDS_SETTINGS_TAG_TAB_STRIP_POSITION_ALT1" meaning="Settings search keyword for 'Tab position'" desc="Search keyword for the setting for showing tabs at the top or on the side of the window. Alternate keyword for: 'Tab position'" translateable="false">
+    layout
+  </message>
+  <message name="IDS_SETTINGS_TAG_TAB_STRIP_POSITION_ALT2" meaning="Settings search keyword for 'Tab position'" desc="Search keyword for the setting for showing tabs at the top or on the side of the window. Alternate keyword for: 'Tab position'" translateable="false">
+    side
+  </message>
+  <message name="IDS_SETTINGS_TAG_TAB_STRIP_POSITION_ALT3" meaning="Settings search keyword for 'Tab position'" desc="Search keyword for the setting for showing tabs at the top or on the side of the window. Alternate keyword for: 'Tab position'" translateable="false">
+    vertical
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIDE_PANEL_POSITION_ALT1" meaning="Settings search keyword for 'Side panel position'" desc="Search keyword for the setting for showing the side panel on the left or right of the window. Alternate keyword for: 'Side panel position'" translateable="false">
+    left
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIDE_PANEL_POSITION_ALT2" meaning="Settings search keyword for 'Side panel position'" desc="Search keyword for the setting for showing the side panel on the left or right of the window. Alternate keyword for: 'Side panel position'" translateable="false">
+    right
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIDE_PANEL_POSITION_ALT3" meaning="Settings search keyword for 'Side panel position'" desc="Search keyword for the setting for showing the side panel on the left or right of the window. Alternate keyword for: 'Side panel position'" translateable="false">
+    sidebar
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAGE_ZOOM_ALT1" meaning="Settings search keyword for 'Page zoom'" desc="Search keyword for the setting for the default zoom level of web pages. Alternate keyword for: 'Page zoom'" translateable="false">
+    magnification
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAGE_ZOOM_ALT2" meaning="Settings search keyword for 'Page zoom'" desc="Search keyword for the setting for the default zoom level of web pages. Alternate keyword for: 'Page zoom'" translateable="false">
+    scale
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAGE_ZOOM_ALT3" meaning="Settings search keyword for 'Page zoom'" desc="Search keyword for the setting for the default zoom level of web pages. Alternate keyword for: 'Page zoom'" translateable="false">
+    size
+  </message>
+</grit-part>

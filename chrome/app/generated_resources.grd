@@ -323,6 +323,7 @@ are declared in tools/grit/grit_args.gni.
       <part file="settings_strings.grdp" />
       <if expr="not is_android">
         <part file="shared_settings_strings.grdp"/>
+        <part file="settings_search_tag_strings.grdp" />
       </if>
 
       <if expr="chrome_root_store_cert_management_ui">
