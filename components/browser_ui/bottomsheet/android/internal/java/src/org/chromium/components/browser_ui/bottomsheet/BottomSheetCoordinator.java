@@ -726,7 +726,7 @@ class BottomSheetCoordinator
     /**
      * @return Get the height in px that the sheet is offset due to the browser controls.
      */
-    float getOffsetFromBrowserControls() {
+    private float getOffsetFromBrowserControls() {
         BottomSheetContent content = getCurrentSheetContent();
         if (content == null || !content.hideOnScroll()) return 0;
 
