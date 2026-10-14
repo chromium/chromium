@@ -14,7 +14,10 @@
 namespace one_time_tokens {
 
 FakeGmailOtpBackend::FakeGmailOtpBackend()
-    : one_time_token_cache_(kGmailTokenCacheDuration,
+    : notification_cache_(
+          kNotificationExpirationDuration,
+          &OneTimeTokenBackendNotification::notification_received_timeticks),
+      one_time_token_cache_(kGmailTokenCacheDuration,
                             &OneTimeToken::on_device_arrival_time,
                             OneTimeTokenCacheProjection()) {}
 
@@ -51,9 +54,13 @@ ExpiringSubscription FakeGmailOtpBackend::Subscribe(
 ExpiringSubscription FakeGmailOtpBackend::SubscribeToTickles(
     base::Time expiration,
     TickleCallback callback) {
-  return tickle_subscription_manager_.Subscribe(
-      expiration, std::move(callback),
+  ExpiringSubscription subscription = tickle_subscription_manager_.Subscribe(
+      expiration, callback,
       /*expiration_callback=*/base::DoNothing());
+  if (!notification_cache_.PurgeExpiredAndGetItems().empty()) {
+    callback.Run();
+  }
+  return subscription;
 }
 
 std::vector<OneTimeToken> FakeGmailOtpBackend::GetCachedOneTimeTokens() const {
@@ -69,6 +76,7 @@ void FakeGmailOtpBackend::OnIncomingOneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification& notification) {
   incoming_notifications_.push_back(notification);
   tickle_subscription_manager_.Notify();
+  notification_cache_.PurgeExpiredAndAdd(notification);
 }
 
 void FakeGmailOtpBackend::FetchUserDataProcessingConsent(

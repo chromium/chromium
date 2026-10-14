@@ -1370,19 +1370,19 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
 
 #if !BUILDFLAG(IS_ANDROID)
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      base::FeatureList::IsEnabled(
+          one_time_tokens::features::kGmailOtpRetrievalService)
+          ? GetGmailOtpBackend()
+          : nullptr;
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowGmailOtpSuggestions)) {
     gmail_otp_opt_in_coordinator_ = std::make_unique<GmailOtpOptInCoordinator>(
-        *this, GetOneTimeTokenService(), *GetProfile());
+        *this, gmail_otp_backend, *GetProfile());
   }
   if (OtpMetricsTracker::IsEligibleForGmailOtps(GetIdentityManager())) {
-    // Gmail OTP tickles are only observed if Gmail OTP retrieval is enabled.
-    otp_metrics_tracker_ = std::make_unique<OtpMetricsTracker>(
-        base::FeatureList::IsEnabled(
-            one_time_tokens::features::kGmailOtpRetrievalService)
-            ? GetGmailOtpBackend()
-            : nullptr,
-        *this);
+    otp_metrics_tracker_ =
+        std::make_unique<OtpMetricsTracker>(gmail_otp_backend, *this);
   }
 #endif
 

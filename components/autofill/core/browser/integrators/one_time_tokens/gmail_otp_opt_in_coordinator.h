@@ -11,12 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
 namespace base {
 class SupportsUserData;
 }  // namespace base
+
+namespace one_time_tokens {
+class GmailOtpBackend;
+}
 
 namespace autofill {
 
@@ -38,24 +41,24 @@ class GmailOtpOptInCoordinator {
   // the opt-in bubble can be shown again.
   static constexpr base::TimeDelta kDeclinedCooldownDuration = base::Days(90);
 
+  // If `gmail_otp_backend` is null, no tickles are received.
   // `session_user_data` is a profile/session-scoped object used to record
   // in-memory dismissal state across tabs for the duration of the browser
   // session.
-  GmailOtpOptInCoordinator(
-      AutofillClient& client,
-      one_time_tokens::OneTimeTokenService* one_time_token_service,
-      base::SupportsUserData& session_user_data);
+  GmailOtpOptInCoordinator(AutofillClient& client,
+                           one_time_tokens::GmailOtpBackend* gmail_otp_backend,
+                           base::SupportsUserData& session_user_data);
   GmailOtpOptInCoordinator(const GmailOtpOptInCoordinator&) = delete;
   GmailOtpOptInCoordinator& operator=(const GmailOtpOptInCoordinator&) = delete;
   ~GmailOtpOptInCoordinator();
 
  private:
   void OnOtpFieldsDetected();
-  void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
+  void OnTickleReceived();
   void OnOptInBubbleClosed(GmailOtpOptInResult result);
 
   const raw_ref<AutofillClient> client_;
-  const raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_;
+  const raw_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend_;
   const raw_ref<base::SupportsUserData> session_user_data_;
 
   base::CallbackListSubscription otp_fields_detected_subscription_;

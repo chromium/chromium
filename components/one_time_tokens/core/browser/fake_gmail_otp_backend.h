@@ -67,6 +67,10 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
     return subscription_manager_.GetNumberSubscribers();
   }
 
+  size_t num_tickle_callbacks() const {
+    return tickle_subscription_manager_.GetNumberSubscribers();
+  }
+
   void SetUserDataProcessingConsent(
       std::optional<UserDataProcessingConsentStates> consent_states) {
     consent_states_ = std::move(consent_states);
@@ -92,6 +96,14 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
 
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
   ExpiringSubscriptionManager<void()> tickle_subscription_manager_;
+  // Recently received notifications. Like in `GmailOtpBackendImpl`, new tickle
+  // subscribers are notified immediately if this is not empty.
+  ExpiringCache<
+      OneTimeTokenBackendNotification,
+      decltype(&OneTimeTokenBackendNotification::
+                   notification_received_timeticks),
+      OneTimeTokenBackendNotification::EncryptedMessageReferenceProjection>
+      notification_cache_;
   ExpiringCache<OneTimeToken,
                 decltype(&OneTimeToken::on_device_arrival_time),
                 OneTimeTokenCacheProjection>
