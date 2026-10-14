@@ -52,7 +52,15 @@ def generate_gn_build_dir(out_dir: str):
   command = ['gn', 'gen', out_dir, f'--args={args_str}']
 
   try:
-    subprocess.run(command, cwd=chromium_src_dir, check=True, env=os.environ)
+    # Redirect gn gen's output to stderr so it doesn't get mixed into the
+    # JSON result this script prints to stdout.
+    subprocess.run(
+      command,
+      cwd=chromium_src_dir,
+      check=True,
+      env=os.environ,
+      stdout=sys.stderr,
+    )
   except subprocess.CalledProcessError as e:
     logging.error('Error running gn gen: %s', e)
     raise
@@ -115,22 +123,28 @@ def find_reverse_deps(out_dir: str, gn_file_path: str) -> List[str]:
   return run_gn_command(args)
 
 
-def get_modified_files() -> List[str]:
-  """Detects modified C/C++ files against the base revision."""
-  # TODO: Address the issue that if a chain of CLs is uploaded
-  # (HEAD -> A -> B -> C) and the CQ is run on C, this might discover
-  # changes in A or B and then cause fuzzers to run, even if C didn't
-  # have any relevant changes.
-  # https://buganizer.corp.google.com/issues/522387539
-  logging.info('Detecting modified files against HEAD~...')
-  command = ['git', 'diff', '--name-only', '--diff-filter=d', 'HEAD~']
+def get_modified_files(revision: str) -> List[str]:
+  """Detects C/C++ files modified by the given commit."""
+  # Diff against the commit's own parent rather than HEAD~: bot_update
+  # soft-resets the CL, with any unlanded CLs it's stacked on, onto a main
+  # commit, so HEAD~ would also pick up those CLs and the last main commit.
+  logging.info('Detecting files modified by %s...', revision)
+  command = [
+    'git',
+    'diff',
+    '--name-only',
+    '--diff-filter=d',
+    '-z',
+    f'{revision}~',
+    revision,
+  ]
   result = subprocess.run(
     command, cwd=chromium_src_dir, capture_output=True, text=True, check=True
   )
   return [
-    f.strip()
-    for f in result.stdout.splitlines()
-    if f.strip().endswith(('.cc', '.cpp', '.c', '.h', '.m', '.mm'))
+    f
+    for f in result.stdout.split('\0')
+    if f.endswith(('.cc', '.cpp', '.c', '.h', '.m', '.mm'))
   ]
 
 
@@ -158,6 +172,12 @@ def find_affected_fuzzers_for_file(
 
   # TODO: Query the Findit fuzzing coverage API for the changed lines of this
   # file and drop candidates with no coverage hits.
+  # https://buganizer.corp.google.com/issues/560236801
+
+  # TODO: Before matching, map the changed lines from the CL's parent commit
+  # to the coverage report's commit, since the file may have changed in
+  # between. The Findit response has the report's version of the file in
+  # data.line_to_data to diff the parent's version against.
   # https://buganizer.corp.google.com/issues/560236801
 
   # TODO: Include newly added fuzzers as it will not have Findit Fuzzing
@@ -283,6 +303,12 @@ def main():
     required=True,
     help='Build directory. GN args will be replaced in this directory.',
   )
+  parser.add_argument(
+    '--revision',
+    required=True,
+    help='The CL\'s commit. Only files it changes relative to its parent are '
+    'considered.',
+  )
 
   args = parser.parse_args()
   logging.basicConfig(
@@ -292,9 +318,9 @@ def main():
   )
 
   # Detect modified files
-  modified_files = get_modified_files()
+  modified_files = get_modified_files(args.revision)
   if not modified_files:
-    logging.info('No relevant source files modified against HEAD~.')
+    logging.info('No relevant source files modified by %s.', args.revision)
     return 0
 
   generate_gn_build_dir(args.out_dir)

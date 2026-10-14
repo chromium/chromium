@@ -17,6 +17,8 @@ from urllib.parse import urlparse
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import find_affected_coverage_guided_fuzzers
 
+MAIN_ARGV = ['script.py', '--out-dir', 'out/test', '--revision', 'abc']
+
 
 class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
   def setUp(self):
@@ -65,13 +67,20 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       self.get_calls_args(self.mock_subprocess_run),
       [f'gn gen out/test --args={expected_args_str}'],
     )
+    self.assertEqual(
+      self.mock_subprocess_run.call_args.kwargs['stdout'], sys.stderr
+    )
 
   def test_get_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = (
-      'file1.cc\nfile2.h\nfile3.txt\n'
+      'file1.cc\0file2.h\0file3.txt\0'
     )
-    files = find_affected_coverage_guided_fuzzers.get_modified_files()
+    files = find_affected_coverage_guided_fuzzers.get_modified_files('abc')
     self.assertEqual(files, ['file1.cc', 'file2.h'])
+    self.assertEqual(
+      self.get_calls_args(self.mock_subprocess_run),
+      ['git diff --name-only --diff-filter=d -z abc~ abc'],
+    )
 
   def test_get_affected_fuzzers(self):
     self._set_subprocess_run_side_effect(
@@ -206,17 +215,17 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
 
   def test_main_no_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = ''
-    with mock.patch('sys.argv', ['script.py', '--out-dir', 'out/test']):
+    with mock.patch('sys.argv', MAIN_ARGV):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
-      ['git diff --name-only --diff-filter=d HEAD~'],
+      ['git diff --name-only --diff-filter=d -z abc~ abc'],
     )
 
   def test_main_no_fuzzers(self):
-    self._set_subprocess_run_side_effect(git_diff_stdout='file1.cc\n')
+    self._set_subprocess_run_side_effect(git_diff_stdout='file1.cc\0')
 
-    with mock.patch('sys.argv', ['script.py', '--out-dir', 'out/test']):
+    with mock.patch('sys.argv', MAIN_ARGV):
       with self.assertLogs(level='WARNING') as cm:
         self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 1)
     self.assertIn('No fuzzer targets found', cm.output[0])
@@ -227,7 +236,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       [
-        'git diff --name-only --diff-filter=d HEAD~',
+        'git diff --name-only --diff-filter=d -z abc~ abc',
         f'gn gen out/test --args={expected_args_str}',
         'gn refs out/test //testing/libfuzzer:fuzzing_engine '
         '--all --type=executable --as=label -q',
@@ -236,14 +245,14 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
 
   def test_main_success(self):
     self._set_subprocess_run_side_effect(
-      git_diff_stdout='file1.cc\n',
+      git_diff_stdout='file1.cc\0',
       gn_refs_mapping={
         '//testing/libfuzzer:fuzzing_engine': '//fuzzer:fuzzer\n',
         '//file1.cc': '//fuzzer:fuzzer\n',
       },
     )
 
-    with mock.patch('sys.argv', ['script.py', '--out-dir', 'out/test']):
+    with mock.patch('sys.argv', MAIN_ARGV):
       # Redirect stdout to avoid printing during tests
       with mock.patch('sys.stdout', new_callable=mock.MagicMock) as mock_stdout:
         self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
@@ -263,7 +272,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       [
-        'git diff --name-only --diff-filter=d HEAD~',
+        'git diff --name-only --diff-filter=d -z abc~ abc',
         f'gn gen out/test --args={expected_args_str}',
         'gn refs out/test //testing/libfuzzer:fuzzing_engine '
         '--all --type=executable --as=label -q',
