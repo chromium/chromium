@@ -394,6 +394,15 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return NO;
   }
 
+  if (!isMainFrame &&
+      url::Origin::Create(self.webStateImpl->GetVisibleURL()) !=
+          url::Origin::Create(self.webStateImpl->GetLastCommittedURL())) {
+    // Do not show a dialog if the visible URL does not match the last
+    // committed URL. This could happen when a browser-initiated navigation is
+    // pending and a subframe requests a dialog.
+    return NO;
+  }
+
   return YES;
 }
 
