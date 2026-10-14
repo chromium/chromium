@@ -45,8 +45,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesWithScrollPosition);
 
-  void Timeout();
-
   bool opened_ = false;
 
   const raw_ref<BrowserWindowInterface> browser_;
@@ -56,8 +54,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<views::Label> device_label_;
 
   SendTabToSelfEntry entry_;
-
-  base::WeakPtrFactory<SendTabToSelfToolbarBubbleView> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self

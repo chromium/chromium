@@ -15,11 +15,6 @@ class TimeDelta;
 
 namespace send_tab_to_self {
 
-// If this feature is enabled, the notification shown to users will disapear
-// after a fixed timeout. When disabled, instead it will remain until the
-// user interacts with it either by dismissing or openning it.
-BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
-
 // If this feature is enabled, the back/forward history of the shared tab will
 // be captured and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);

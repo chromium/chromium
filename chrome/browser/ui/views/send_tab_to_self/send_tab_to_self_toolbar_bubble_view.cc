@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -16,7 +14,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -109,15 +106,6 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kEnd);
   AddChildView(std::move(button));
-
-  if (base::FeatureList::IsEnabled(kSendTabToSelfEnableNotificationTimeOut)) {
-    base::TimeDelta kTimeoutMs = base::Milliseconds(30000);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kTimeoutMs);
-  }
 }
 
 void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
@@ -127,12 +115,6 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   OpenEntryInNewForegroundTab(
       browser_->GetProfile(), entry_,
       send_tab_to_self::ShareActivatedEntryPoint::kDesktopToolbarBubble);
-  GetWidget()->Close();
-}
-
-void SendTabToSelfToolbarBubbleView::Timeout() {
-  send_tab_to_self::RecordNotificationStatus(
-      send_tab_to_self::NotificationStatus::kTimedOut);
   GetWidget()->Close();
 }
 
