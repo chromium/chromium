@@ -5,17 +5,10 @@
 package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.text.TextUtils;
-import android.util.Pair;
-
-import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -23,11 +16,10 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -48,7 +40,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabUndoBarController extends UndoBarController {
     private final TabModelObserver mTabModelObserver;
-    private boolean mIsDeletingTabGroups;
 
     /**
      * Creates an instance of a {@link TabUndoBarController}.
@@ -87,28 +78,23 @@ public class TabUndoBarController extends UndoBarController {
                     @Override
                     public void tabClosureUndone(Tab tab) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(List.of(tab));
-                        mSnackbarManageable
-                                .getSnackbarManager()
-                                .dismissSnackbars(TabUndoBarController.this, List.of(tab.getId()));
+                        dropFromQueue(List.of(tab.getId()));
+                        Token groupId = tab.getTabGroupId();
+                        if (groupId != null) {
+                            onTabGroupRestored(groupId);
+                        }
                     }
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(List.of(tab));
-                        mSnackbarManageable
-                                .getSnackbarManager()
-                                .dismissSnackbars(TabUndoBarController.this, List.of(tab.getId()));
+                        dropFromQueue(List.of(tab.getId()));
                     }
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(tabs);
-                        mSnackbarManageable
-                                .getSnackbarManager()
-                                .dismissSnackbars(TabUndoBarController.this, tabs);
+                        dropFromQueue(TabModelUtils.getTabIds(tabs));
                     }
 
                     @Override
@@ -117,13 +103,23 @@ public class TabUndoBarController extends UndoBarController {
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {
                         if (disableUndo(true)) return;
-                        queueUndoBar(new TabClosureEvent(tabs, isAllTabs));
+
+                        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+                        Profile profile = tabModel.getProfile();
+                        boolean tabGroupSyncEnabled =
+                                profile != null
+                                        && profile.isNativeInitialized()
+                                        && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+
+                        queueUndoBar(
+                                UndoClosureSnapshotFactory.captureFromTabModel(
+                                        tabModel, tabs, isAllTabs, tabGroupSyncEnabled));
                     }
 
                     @Override
                     public void allTabsClosureCommitted(boolean isIncognito) {
                         if (disableUndo(false)) return;
-                        mEventQueue.clear();
+                        clearEventQueue();
                         mSnackbarManageable
                                 .getSnackbarManager()
                                 .dismissSnackbars(TabUndoBarController.this);
@@ -145,155 +141,5 @@ public class TabUndoBarController extends UndoBarController {
     public void destroy() {
         TabModel model = mTabModelSelector.getModel(false);
         if (model != null) model.removeObserver(mTabModelObserver);
-    }
-
-    private static class ClosureMetadata {
-        public final boolean isDeletingTabGroups;
-        public final boolean isTabGroupSyncEnabled;
-        public final Set<Token> fullyClosingTabGroupIds;
-        public final int ungroupedOrPartialGroupTabs;
-
-        ClosureMetadata(
-                boolean isDeletingTabGroups,
-                boolean isTabGroupSyncEnabled,
-                Set<Token> fullyClosingTabGroupIds,
-                int ungroupedOrPartialGroupTabs) {
-            this.isDeletingTabGroups = isDeletingTabGroups;
-            this.isTabGroupSyncEnabled = isTabGroupSyncEnabled;
-            this.fullyClosingTabGroupIds = fullyClosingTabGroupIds;
-            this.ungroupedOrPartialGroupTabs = ungroupedOrPartialGroupTabs;
-        }
-    }
-
-    private ClosureMetadata buildClosureMetadata(List<Tab> closedTabs) {
-        if (closedTabs.isEmpty()) {
-            return new ClosureMetadata(
-                    /* isDeletingTabGroups= */ false,
-                    /* isTabGroupSyncEnabled= */ false,
-                    /* fullyClosingTabGroupIds= */ new HashSet<>(),
-                    /* ungroupedOrPartialGroupTabs= */ 0);
-        }
-
-        assert !closedTabs.get(0).isIncognito();
-
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        Profile profile = tabModel.getProfile();
-        boolean tabGroupSyncEnabled =
-                profile != null
-                        && profile.isNativeInitialized()
-                        && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
-
-        boolean isDeletingTabGroups = tabGroupSyncEnabled;
-        Set<Token> fullyClosingTabGroupIds = new HashSet<>();
-        int ungroupedOrPartialGroupTabs = 0;
-        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                tabModel.getLazyAllTabGroupIds(closedTabs, /* includePendingClosures= */ true);
-        for (Tab tab : closedTabs) {
-            // We are not deleting a tab group if:
-            // 1. Any of the tabs are in a group that is hiding.
-            // 2. The comprehensive model still contains tabs with that group ID meaning the tab
-            //    group is not being fully deleted as a result of this event.
-            @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) {
-                ungroupedOrPartialGroupTabs++;
-            } else if (tabGroupSyncEnabled && tabModel.isTabGroupHiding(tabGroupId)) {
-                fullyClosingTabGroupIds.add(tabGroupId);
-                isDeletingTabGroups = false;
-            } else if (tabGroupIdsInComprehensiveModel.get() != null
-                    && tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
-                ungroupedOrPartialGroupTabs++;
-                isDeletingTabGroups = false;
-            } else {
-                // We are fully deleting any tab group that reaches this point.
-                fullyClosingTabGroupIds.add(tabGroupId);
-            }
-        }
-        return new ClosureMetadata(
-                isDeletingTabGroups && !fullyClosingTabGroupIds.isEmpty(),
-                tabGroupSyncEnabled,
-                fullyClosingTabGroupIds,
-                ungroupedOrPartialGroupTabs);
-    }
-
-    // UndoBarController implementation.
-
-    @Override
-    protected Pair<String, String> getTemplateAndContentText(
-            List<Tab> closedTabs, List<String> savedTabGroupSyncIds) {
-        ClosureMetadata closureMetadata = buildClosureMetadata(closedTabs);
-        mIsDeletingTabGroups = closureMetadata.isDeletingTabGroups;
-
-        int totalTabsCount = closedTabs.size();
-        int tabGroupsCount = closureMetadata.fullyClosingTabGroupIds.size();
-        if (tabGroupsCount == 0) {
-            if (closureMetadata.ungroupedOrPartialGroupTabs == 1) {
-                return Pair.create(
-                        mContext.getString(R.string.undo_bar_close_message),
-                        closedTabs.get(0).getTitle());
-            } else if (closureMetadata.ungroupedOrPartialGroupTabs > 1) {
-                return Pair.create(
-                        mContext.getString(R.string.undo_bar_close_all_message),
-                        Integer.toString(totalTabsCount));
-            } else {
-                assert false : "Not reached.";
-                return Pair.create("", "");
-            }
-        } else if (tabGroupsCount == 1) {
-            if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
-                Token tabGroupId = closureMetadata.fullyClosingTabGroupIds.iterator().next();
-                TabModel tabModel = mTabModelSelector.getModel(false);
-                @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
-                if (TextUtils.isEmpty(tabGroupTitle)) {
-                    tabGroupTitle =
-                            mContext.getResources()
-                                    .getQuantityString(
-                                            R.plurals.bottom_tab_grid_title_placeholder,
-                                            totalTabsCount,
-                                            totalTabsCount);
-                }
-                @StringRes int templateRes = Resources.ID_NULL;
-                if (closureMetadata.isDeletingTabGroups) {
-                    templateRes = R.string.undo_bar_tab_group_deleted_message;
-                } else {
-                    templateRes =
-                            closureMetadata.isTabGroupSyncEnabled
-                                    ? R.string.undo_bar_tab_group_closed_and_saved_message
-                                    : R.string.undo_bar_tab_group_closed_message;
-                }
-                return Pair.create(mContext.getString(templateRes), tabGroupTitle);
-            }
-        }
-
-        // All other strings are some combination of x tab group(s), y tab(s).
-        Resources res = mContext.getResources();
-        String tabGroupsPart =
-                res.getQuantityString(
-                        R.plurals.undo_bar_tab_groups_part, tabGroupsCount, tabGroupsCount);
-        String tabGroupsAndTabsPart;
-        if (closureMetadata.ungroupedOrPartialGroupTabs > 0) {
-            tabGroupsAndTabsPart =
-                    res.getQuantityString(
-                            R.plurals.undo_bar_tab_groups_and_tabs_part,
-                            closureMetadata.ungroupedOrPartialGroupTabs,
-                            tabGroupsPart,
-                            closureMetadata.ungroupedOrPartialGroupTabs);
-        } else {
-            tabGroupsAndTabsPart = tabGroupsPart;
-        }
-        @StringRes int templateRes = Resources.ID_NULL;
-        if (closureMetadata.isDeletingTabGroups) {
-            templateRes = R.string.undo_bar_deleted_message;
-        } else {
-            templateRes =
-                    closureMetadata.isTabGroupSyncEnabled
-                            ? R.string.undo_bar_closed_and_saved_message
-                            : R.string.undo_bar_closed_message;
-        }
-        return Pair.create(mContext.getString(templateRes), tabGroupsAndTabsPart);
-    }
-
-    @Override
-    protected boolean isDeletingTabGroups(List<String> savedTabGroupSyncIds) {
-        return mIsDeletingTabGroups;
     }
 }

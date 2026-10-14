@@ -460,6 +460,9 @@ if (is_android) {
       "src/org/chromium/chrome/browser/UndoRefocusHelperTest.java",
       "src/org/chromium/chrome/browser/document/ChromeLauncherActivityTest.java",
       "src/org/chromium/chrome/browser/handoff/HandoffControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarContentFactoryTest.java",
+      "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoClosureSnapshotFactoryTest.java",
+      "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoClosureSnapshotTest.java",
       "src/org/chromium/chrome/browser/usage_stats/UsageStatsServiceTest.java",
     ]
 

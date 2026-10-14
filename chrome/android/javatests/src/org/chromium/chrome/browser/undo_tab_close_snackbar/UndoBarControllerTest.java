@@ -715,6 +715,67 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    public void testThrottleUndo_UndoOneTabOfHidingGroup_ShowsTabText() throws Exception {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        // Tab 0 stays ungrouped (and open) so the window never reaches 0 tabs. Closing every tab
+        // can finish the activity, which commits all pending closures and empties the throttled
+        // undo queue before stopThrottling() can show the snackbar.
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        Tab tab3 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2, tab3),
+                            tab1,
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(4, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+
+        int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab1, tab2, tab3))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        assertNull(getCurrentSnackbar());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.cancelTabClosure(tab1.getId());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.stopThrottling(token));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO);
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
+        clickSnackbar();
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(4, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
     // TODO(crbug.com/571360557): Re-enable.
     public void testThrottleUndo() throws Exception {

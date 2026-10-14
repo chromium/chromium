@@ -7,14 +7,10 @@ package org.chromium.chrome.browser.undo_tab_close_snackbar;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.text.TextUtils;
-import android.util.Pair;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.tab.Tab;
@@ -80,9 +76,14 @@ public class SavedTabGroupUndoBarController extends UndoBarController
             }
             return;
         }
+
+        UndoClosureSnapshot snapshot =
+                UndoClosureSnapshotFactory.captureSavedGroups(
+                        tabs, savedTabGroupSyncIds, mTabGroupSyncService);
+
         mOrchestratorLeases.add(
                 mArchivedTabModelOrchestrator.acquireLease(LeaseReason.ARCHIVED_TABS_DIALOG));
-        queueUndoBar(new TabClosureEvent(tabs, savedTabGroupSyncIds, /* isAllTabs= */ false));
+        queueUndoBar(snapshot);
     }
 
     /** Releases any remaining leases held for pending undo snackbars. */
@@ -93,83 +94,14 @@ public class SavedTabGroupUndoBarController extends UndoBarController
         mOrchestratorLeases.clear();
     }
 
-    @Override
-    protected Pair<String, String> getTemplateAndContentText(
-            List<Tab> closedTabs, List<String> closedSavedTabGroupSyncIds) {
-        int totalTabsCount = closedTabs.size();
-        int tabGroupsCount = closedSavedTabGroupSyncIds.size();
-
-        if (tabGroupsCount == 0) {
-            if (totalTabsCount == 1) {
-                return Pair.create(
-                        mContext.getString(R.string.undo_bar_close_message),
-                        closedTabs.get(0).getTitle());
-            } else if (totalTabsCount > 1) {
-                return Pair.create(
-                        mContext.getString(R.string.undo_bar_close_all_message),
-                        Integer.toString(totalTabsCount));
-            } else {
-                assert false : "Not reached.";
-                return Pair.create("", "");
-            }
-        } else if (tabGroupsCount == 1) {
-            if (totalTabsCount == 0) {
-                String tabGroupTitle = "";
-                if (mTabGroupSyncService != null) {
-                    SavedTabGroup savedTabGroup =
-                            mTabGroupSyncService.getGroup(closedSavedTabGroupSyncIds.get(0));
-                    if (savedTabGroup != null) {
-                        tabGroupTitle = savedTabGroup.title;
-                        if (TextUtils.isEmpty(tabGroupTitle)) {
-                            tabGroupTitle =
-                                    mContext.getResources()
-                                            .getQuantityString(
-                                                    R.plurals.bottom_tab_grid_title_placeholder,
-                                                    savedTabGroup.savedTabs.size(),
-                                                    savedTabGroup.savedTabs.size());
-                        }
-                    }
-                }
-                return Pair.create(
-                        mContext.getString(R.string.undo_bar_tab_group_closed_message),
-                        tabGroupTitle);
-            }
-        }
-
-        // All other strings are some combination of x tab group(s), y tab(s).
-        Resources res = mContext.getResources();
-        String tabGroupsPart =
-                res.getQuantityString(
-                        R.plurals.undo_bar_tab_groups_part, tabGroupsCount, tabGroupsCount);
-        String tabGroupsAndTabsPart;
-        if (totalTabsCount > 0) {
-            tabGroupsAndTabsPart =
-                    res.getQuantityString(
-                            R.plurals.undo_bar_tab_groups_and_tabs_part,
-                            totalTabsCount,
-                            tabGroupsPart,
-                            totalTabsCount);
-        } else {
-            tabGroupsAndTabsPart = tabGroupsPart;
-        }
-        return Pair.create(
-                mContext.getString(R.string.undo_bar_closed_message), tabGroupsAndTabsPart);
-    }
-
-    @Override
-    protected boolean isDeletingTabGroups(List<String> savedTabGroupSyncIds) {
-        return !savedTabGroupSyncIds.isEmpty();
-    }
-
     // SnackbarManager.SnackbarController implementation.
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onAction(@Nullable Object actionData) {
         try {
             super.onAction(actionData);
-            UndoActionData undoActionData = assumeNonNull((UndoActionData) actionData);
-            List<String> closedSavedTabGroupSyncIds = undoActionData.closedSavedTabGroupSyncIds;
+            UndoBarContent barContent = assumeNonNull((UndoBarContent) actionData);
+            List<String> closedSavedTabGroupSyncIds = barContent.snapshot.savedTabGroupSyncIds;
             if (!closedSavedTabGroupSyncIds.isEmpty()) {
                 for (String syncId : closedSavedTabGroupSyncIds) {
                     cancelSavedTabGroupClosure(syncId);
