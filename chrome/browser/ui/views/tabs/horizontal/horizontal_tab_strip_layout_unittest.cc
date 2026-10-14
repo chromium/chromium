@@ -374,3 +374,67 @@ TEST(HorizontalTabStripLayoutTest,
   EXPECT_EQ(expanded_total_pref - collapsed_total_pref,
             2 * preferred_tab_width - group_internal_overlap);
 }
+
+TEST(HorizontalTabStripLayoutTest,
+     MovingTabsIntoOrOutOfGroupMaintainsTabWidths) {
+  const int preferred_tab_width = GetPreferredTabWidth();
+  const int active_min_width = GetMinActiveTabWidth();
+  const int inactive_min_width = GetMinInactiveTabWidth();
+  const int crossover_tab_width = active_min_width;
+  const int header_width = 50;
+  const int num_tabs = 5;
+
+  // Calculate expected widths for 5 ungrouped tabs when total shrink is not
+  // evenly divisible by 5 (e.g. 7px of shrink).
+  const std::vector<int> flat_pref(num_tabs, preferred_tab_width);
+  const std::vector<int> flat_crossover(num_tabs, crossover_tab_width);
+  const std::vector<int> flat_min(num_tabs, inactive_min_width);
+  const int flat_available = num_tabs * preferred_tab_width - 7;
+  auto expected_tab_widths = CalculateProportionalChildWidths(
+      flat_available, flat_pref, flat_crossover, flat_min,
+      num_tabs * preferred_tab_width, num_tabs * crossover_tab_width,
+      num_tabs * inactive_min_width);
+
+  // Verify that for any number of tabs in the group (1 through 5), the
+  // two-pass allocation produces the exact same individual tab widths.
+  for (int group_tabs = 1; group_tabs <= num_tabs; ++group_tabs) {
+    const int ungrouped_tabs = num_tabs - group_tabs;
+    std::vector<int> parent_pref = {header_width +
+                                    group_tabs * preferred_tab_width};
+    std::vector<int> parent_crossover = {header_width +
+                                         group_tabs * crossover_tab_width};
+    std::vector<int> parent_min = {header_width +
+                                   group_tabs * inactive_min_width};
+    for (int i = 0; i < ungrouped_tabs; ++i) {
+      parent_pref.push_back(preferred_tab_width);
+      parent_crossover.push_back(crossover_tab_width);
+      parent_min.push_back(inactive_min_width);
+    }
+
+    const int total_preferred = header_width + num_tabs * preferred_tab_width;
+    const int total_crossover = header_width + num_tabs * crossover_tab_width;
+    const int total_min = header_width + num_tabs * inactive_min_width;
+    const int available_width = header_width + flat_available;
+
+    auto parent_widths = CalculateProportionalChildWidths(
+        available_width, parent_pref, parent_crossover, parent_min,
+        total_preferred, total_crossover, total_min);
+    int sum = std::accumulate(parent_widths.begin(), parent_widths.end(), 0);
+    EXPECT_EQ(sum, available_width);
+
+    const std::vector<int> group_child_pref(group_tabs, preferred_tab_width);
+    const std::vector<int> group_child_crossover(group_tabs,
+                                                 crossover_tab_width);
+    const std::vector<int> group_child_min(group_tabs, inactive_min_width);
+    auto group_tab_widths = CalculateProportionalChildWidths(
+        parent_widths[0] - header_width, group_child_pref,
+        group_child_crossover, group_child_min,
+        group_tabs * preferred_tab_width, group_tabs * crossover_tab_width,
+        group_tabs * inactive_min_width);
+
+    std::vector<int> all_tab_widths = group_tab_widths;
+    all_tab_widths.insert(all_tab_widths.end(), parent_widths.begin() + 1,
+                          parent_widths.end());
+    EXPECT_EQ(all_tab_widths, expected_tab_widths);
+  }
+}
