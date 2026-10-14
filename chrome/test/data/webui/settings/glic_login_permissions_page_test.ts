@@ -96,7 +96,7 @@ suite('GlicLoginPermissionsPage', function() {
 
     // Confirm dialog.
     const actionButton =
-        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
     assertTrue(!!actionButton);
     const whenClose = eventToPromise('close', dialog);
     actionButton.click();
@@ -133,7 +133,7 @@ suite('GlicLoginPermissionsPage', function() {
     assertTrue(!!dialog);
     // Confirm dialog.
     const actionButton =
-        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
     assertTrue(!!actionButton);
     const whenClose = eventToPromise('close', dialog);
     actionButton.click();

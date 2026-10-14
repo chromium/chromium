@@ -8,9 +8,10 @@
  */
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './site_favicon.html.js';
+import {getCss} from './site_favicon.css.js';
+import {getHtml} from './site_favicon.html.js';
 
 export interface SiteFaviconElement {
   $: {
@@ -18,30 +19,34 @@ export interface SiteFaviconElement {
   };
 }
 
-export class SiteFaviconElement extends PolymerElement {
+export class SiteFaviconElement extends CrLitElement {
   static get is() {
     return 'site-favicon';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      faviconUrl: String,
-      url: String,
+      faviconUrl: {type: String},
+      url: {type: String},
       // The icon's local path. We don't need to fetch the icon from the url if
       // the path is not empty.
-      iconPath: String,
+      iconPath: {type: String},
     };
   }
 
-  declare faviconUrl: string;
-  declare url: string;
-  declare iconPath: string;
+  accessor faviconUrl: string = '';
+  accessor url: string = '';
+  accessor iconPath: string = '';
 
-  private getBackgroundImage_() {
+  protected getBackgroundImage_() {
     let backgroundImage = getFavicon('');
     if (this.iconPath) {
       backgroundImage = 'url(' + this.iconPath + ')';

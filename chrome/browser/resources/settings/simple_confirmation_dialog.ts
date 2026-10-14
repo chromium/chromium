@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './simple_confirmation_dialog.html.js';
+import {getHtml} from './simple_confirmation_dialog.html.js';
 
 export interface SettingsSimpleConfirmationDialogElement {
   $: {
@@ -23,47 +23,46 @@ export interface SettingsSimpleConfirmationDialogElement {
   };
 }
 
-export class SettingsSimpleConfirmationDialogElement extends PolymerElement {
+export type SimpleConfirmationDialogElement =
+    SettingsSimpleConfirmationDialogElement;
+
+export class SettingsSimpleConfirmationDialogElement extends CrLitElement {
   static get is() {
     return 'settings-simple-confirmation-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      titleText: String,
-      bodyText: String,
-      confirmText: String,
-
-      noPrimaryButton: {
-        type: Boolean,
-        value: false,
-      },
+      titleText: {type: String},
+      bodyText: {type: String},
+      confirmText: {type: String},
+      noPrimaryButton: {type: Boolean},
     };
   }
 
-  declare titleText: string;
-  declare bodyText: string;
-  declare confirmText: string;
-  declare noPrimaryButton: boolean;
+  accessor titleText: string = '';
+  accessor bodyText: string = '';
+  accessor confirmText: string = '';
+  accessor noPrimaryButton: boolean = false;
 
   /** @return Whether the user confirmed the dialog. */
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onConfirmClick_() {
+  protected onConfirmClick_() {
     this.$.dialog.close();
   }
 
-  private getConfirmButtonCssClass_(): string {
+  protected getConfirmButtonCssClass_(): string {
     return this.noPrimaryButton ? '' : 'action-button';
   }
 }

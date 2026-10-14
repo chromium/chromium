@@ -6,6 +6,7 @@ import 'chrome://settings/settings.js';
 
 import type {SiteFaviconElement} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('SiteFavicon', function() {
   let siteFavicon: SiteFaviconElement;
@@ -37,55 +38,64 @@ suite('SiteFavicon', function() {
         encodeURIComponent(url) + '") 2x)';
   }
 
-  test('normal URL', function() {
+  test('normal URL', async function() {
     const url = 'http://www.google.com';
     siteFavicon.url = url;
+    await microtasksFinished();
     assertIconEquals(formExpected(url));
   });
 
-  test('URL without scheme', function() {
+  test('URL without scheme', async function() {
     const url = 'www.google.com';
     siteFavicon.url = url;
+    await microtasksFinished();
     assertIconEquals(formExpected(`http://${url}`));
   });
 
-  test('URLs with wildcard', function() {
+  test('URLs with wildcard', async function() {
     const url1 = 'http://[*.]google.com';
     siteFavicon.url = url1;
+    await microtasksFinished();
     assertIconEquals(formExpected('http://google.com'));
 
     const url2 = 'https://[*.]google.com';
     siteFavicon.url = url2;
+    await microtasksFinished();
     assertIconEquals(formExpected('https://google.com'));
 
     const url3 = '[*.]google.com';
     siteFavicon.url = url3;
+    await microtasksFinished();
     assertIconEquals(formExpected('http://google.com'));
   });
 
-  test('favicon URL', function() {
+  test('favicon URL', async function() {
     const faviconUrl = 'http://www.google.com/favicon.ico';
     siteFavicon.faviconUrl = faviconUrl;
+    await microtasksFinished();
     assertIconEquals(formExpectedForIcon(faviconUrl));
   });
 
-  test('favicon URL without scheme', function() {
+  test('favicon URL without scheme', async function() {
     const faviconUrl = 'www.google.com/favicon.ico';
     siteFavicon.faviconUrl = faviconUrl;
+    await microtasksFinished();
     assertIconEquals(formExpectedForIcon(`http://${faviconUrl}`));
   });
 
-  test('icon path', function() {
+  test('icon path', async function() {
     const iconPath = 'chrome://theme/IDR_GOOGLE_COM_PNG';
     siteFavicon.iconPath = iconPath;
+    await microtasksFinished();
     assertIconEquals('url("chrome://theme/IDR_GOOGLE_COM_PNG")');
   });
 
-  test('icon path with url', function() {
+  test('icon path with url', async function() {
     const iconPath = 'chrome://theme/IDR_GOOGLE_COM_PNG';
     const url = 'www.google.com';
     siteFavicon.iconPath = iconPath;
     siteFavicon.url = url;
+    await microtasksFinished();
     assertIconEquals('url("chrome://theme/IDR_GOOGLE_COM_PNG")');
   });
 });

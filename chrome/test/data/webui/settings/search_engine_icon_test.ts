@@ -36,9 +36,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
-    assertTrue(!!favicon);
-    assertTrue(isVisible(favicon));
+    assertTrue(isVisible(siteFavicon.$.favicon));
   });
 
   // Test that when a search engine has an iconURL and downloading is
@@ -61,9 +59,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
-    assertTrue(!!favicon);
-    assertFalse(isVisible(favicon));
+    assertFalse(isVisible(siteFavicon.$.favicon));
   });
 
   // Test that when a search engine has an iconURL and downloading fails,
@@ -83,9 +79,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
-    assertTrue(!!favicon);
-    assertTrue(isVisible(favicon));
+    assertTrue(isVisible(siteFavicon.$.favicon));
   });
 
   // Test that when a search engine has a data: iconURL, it is not passed to
@@ -104,9 +98,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
-    assertTrue(!!favicon);
-    assertTrue(isVisible(favicon));
+    assertTrue(isVisible(siteFavicon.$.favicon));
   });
 
   // Test that when a search engine has a chrome:// iconURL, it is not passed to
@@ -123,9 +115,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
-    assertTrue(!!favicon);
-    assertTrue(isVisible(favicon));
+    assertTrue(isVisible(siteFavicon.$.favicon));
   });
 
   // Test that when a search engine has neither an iconPath nor an iconURL,
@@ -139,9 +129,7 @@ suite('SearchEngineIconTest', function() {
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
-    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon')!;
-    assertTrue(!!favicon);
-    assertTrue(isVisible(favicon));
+    assertTrue(isVisible(siteFavicon.$.favicon));
   });
 
   // Tests that the icon is not picked up by the screen reader.
