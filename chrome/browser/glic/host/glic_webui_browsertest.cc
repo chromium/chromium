@@ -28,7 +28,9 @@ class GlicWebUiBrowserTest : public glic::GlicBrowserTest {
             {features::kGlicCSPConfig, {}},
         },
         {
-            // TODO(b/559775860): revisit this test for GlicNoWebview.
+            // WebUI host page tests (metrics recorded on the WebUI contents and
+            // WebUI error panel transitions) are specific to the <webview>
+            // architecture and not applicable in NoWebview mode.
             features::kGlicNoWebview,
         });
   }

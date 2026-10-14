@@ -28,11 +28,21 @@
 namespace glic {
 namespace {
 
-class GlicGuestNavigationThrottleBrowserTest : public GlicBrowserTest {
+class GlicGuestNavigationThrottleBrowserTest
+    : public GlicBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   GlicGuestNavigationThrottleBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicDisconnectedWebview},
-                                          {features::kGlicNoWebview});
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicDisconnectedWebview,
+                                features::kGlicNoWebview},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicDisconnectedWebview},
+          /*disabled_features=*/{features::kGlicNoWebview});
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -54,7 +64,7 @@ class GlicGuestNavigationThrottleBrowserTest : public GlicBrowserTest {
 // main frame by navigating it to about:blank. Such a navigation commits without
 // a URL loader and would inherit the subframe's origin; the throttle cancels
 // it via WillCommitWithoutUrlLoader.
-IN_PROC_BROWSER_TEST_F(GlicGuestNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicGuestNavigationThrottleBrowserTest,
                        CancelsAboutBlankMainFrameNavigationFromSubframe) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
@@ -102,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicGuestNavigationThrottleBrowserTest,
 
 // Same-document navigations in the guest main frame commit without a URL loader
 // and should proceed normally.
-IN_PROC_BROWSER_TEST_F(GlicGuestNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicGuestNavigationThrottleBrowserTest,
                        AllowsSameDocumentNavigation) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
@@ -123,6 +133,14 @@ IN_PROC_BROWSER_TEST_F(GlicGuestNavigationThrottleBrowserTest,
             guest_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_TRUE(instance->host().IsWebClientConnected());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicGuestNavigationThrottleBrowserTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "NoWebview" : "Webview";
+    });
 
 }  // namespace
 }  // namespace glic

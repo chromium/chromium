@@ -3090,12 +3090,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
 #define MAYBE_testNoBootstrap testNoBootstrap
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoBootstrap) {
-  if (GetParam().no_webview) {
-    GTEST_SKIP() << "Flaky in kGlicNoWebview";
-  }
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
-  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+  if (GetParam().no_webview) {
+    ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
+  } else {
+    ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
