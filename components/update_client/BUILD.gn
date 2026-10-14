@@ -367,6 +367,7 @@ source_set("unit_tests") {
     "//components/services/patch/public/mojom",
     "//components/services/unzip:in_process",
     "//components/version_info",
+    "//crypto",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
