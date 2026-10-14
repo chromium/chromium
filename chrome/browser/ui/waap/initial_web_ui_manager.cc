@@ -95,6 +95,17 @@ bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {
   return false;
 }
 
+bool InitialWebUIManager::RegisterWebUIReadyCallback(
+    base::OnceClosure unsafe_callback) {
+  if (is_initial_web_ui_pending_) {
+    if (unsafe_callback) {
+      web_ui_ready_callbacks_.AddUnsafe(std::move(unsafe_callback));
+    }
+    return true;
+  }
+  return false;
+}
+
 bool InitialWebUIManager::IsShowPending() const {
   return is_show_pending_;
 }

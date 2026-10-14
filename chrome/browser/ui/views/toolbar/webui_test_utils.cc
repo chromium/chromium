@@ -147,7 +147,8 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
 void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser) {
   base::RunLoop run_loop;
   InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-  if (!manager || !manager->RequestDeferShow(run_loop.QuitClosure())) {
+  if (!manager ||
+      !manager->RegisterWebUIReadyCallback(run_loop.QuitClosure())) {
     return;
   }
   run_loop.Run();
