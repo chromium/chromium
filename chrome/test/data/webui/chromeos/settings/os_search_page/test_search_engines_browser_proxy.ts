@@ -9,13 +9,9 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     SearchEnginesBrowserProxy {
   private categorizedTemplateUrls_: CategorizedTemplateUrls = {
     activeSiteShortcuts: [],
-    inactiveSiteShortcuts: [],
-    activeFeatureShortcuts: [],
-    inactiveFeatureShortcuts: [],
   };
 
-  private searchEnginesInfo_: SearchEnginesInfo =
-      {defaults: [], actives: [], others: [], extensions: []};
+  private searchEnginesInfo_: SearchEnginesInfo = {defaults: []};
 
   constructor() {
     super([

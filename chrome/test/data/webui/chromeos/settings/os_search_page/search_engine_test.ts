@@ -15,18 +15,8 @@ import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy
 
 function createSampleSearchEngine(props: Partial<SearchEngine>): SearchEngine {
   return {
-    canBeDefault: true,
-    canBeEdited: false,
-    canBeRemoved: false,
     default: false,
-    displayName: '',
-    iconURL: 'http://www.google.com/favicon.ico',
-    id: 0,
-    isOmniboxExtension: false,
-    keyword: 'google.com',
     name: '',
-    url: 'https://search.foo.com/search?p=%s',
-    urlLocked: false,
     ...props,
   };
 }
@@ -38,21 +28,14 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
   function generateSearchEngineInfo(): SearchEnginesInfo {
     const searchEngines0 = createSampleSearchEngine({
       default: true,
-      displayName: 'SearchEngine0',
-      id: 0,
       name: 'SearchEngine0',
     });
     const searchEngines1 = createSampleSearchEngine({
-      displayName: 'SearchEngine1',
-      id: 1,
       name: 'SearchEngine1',
     });
 
     return {
       defaults: [searchEngines0, searchEngines1],
-      actives: [],
-      others: [],
-      extensions: [],
     };
   }
 
@@ -111,21 +94,14 @@ suite('SearchPageTestWithSearchSettingsUpdate', () => {
   function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     const searchEngines0 = createSampleSearchEngine({
       default: true,
-      displayName: 'SearchEngine0',
-      id: 0,
       name: 'SearchEngine0',
     });
     const searchEngines1 = createSampleSearchEngine({
-      displayName: 'SearchEngine1',
-      id: 1,
       name: 'SearchEngine1',
     });
 
     return {
       activeSiteShortcuts: [searchEngines0, searchEngines1],
-      inactiveSiteShortcuts: [],
-      activeFeatureShortcuts: [],
-      inactiveFeatureShortcuts: [],
     };
   }
 

@@ -10,42 +10,21 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
- * @see chrome/browser/ui/webui/settings/search_engines_handler.cc
+ * The subset of fields sent by
+ * chrome/browser/ui/webui/settings/search_engines_handler.cc that OS Settings
+ * uses.
  */
 export interface SearchEngine {
-  canBeDefault: boolean;
-  canBeEdited: boolean;
-  canBeRemoved: boolean;
   default: boolean;
-  displayName: string;
-  extension?: {
-    id: string,
-    name: string,
-    canBeDisabled: boolean,
-    icon: string,
-  };
-  iconURL?: string;
-  id: number;
-  isOmniboxExtension: boolean;
-  keyword: string;
   name: string;
-  url: string;
-  urlLocked: boolean;
 }
 
 export interface SearchEnginesInfo {
   defaults: SearchEngine[];
-  actives: SearchEngine[];
-  others: SearchEngine[];
-  extensions: SearchEngine[];
 }
 
 export interface CategorizedTemplateUrls {
   activeSiteShortcuts: SearchEngine[];
-  inactiveSiteShortcuts: SearchEngine[];
-  activeFeatureShortcuts: SearchEngine[];
-  inactiveFeatureShortcuts: SearchEngine[];
-  [key: string]: SearchEngine[];
 }
 
 export interface SearchEnginesBrowserProxy {
