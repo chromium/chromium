@@ -230,19 +230,23 @@
   NSMutableArray<LevelUpStat*>* stats = [[NSMutableArray alloc] init];
 
   for (LevelUpTaskStatType statType : _levelUpService->GetOrderedStatTypes()) {
+    LevelUpStat* stat = nil;
     switch (statType) {
       case LevelUpTaskStatType::kTabsDecluttered:
-        [stats addObject:[self tabsDeclutteredStat]];
+        stat = [self tabsDeclutteredStat];
         break;
       case LevelUpTaskStatType::kPasswordsAutofilled:
-        [stats addObject:[self passwordsAutofilledStat]];
+        stat = [self passwordsAutofilledStat];
         break;
       case LevelUpTaskStatType::kPasswordsVerified:
-        [stats addObject:[self passwordsVerifiedStat]];
+        stat = [self passwordsVerifiedStat];
         break;
       case LevelUpTaskStatType::kPhotoSearchesPerformed:
-        [stats addObject:[self photoSearchesPerformedStat]];
+        stat = [self photoSearchesPerformedStat];
         break;
+    }
+    if (stat) {
+      [stats addObject:stat];
     }
   }
 
