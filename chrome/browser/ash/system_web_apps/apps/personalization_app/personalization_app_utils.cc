@@ -27,11 +27,11 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
@@ -49,7 +49,8 @@ namespace {
 bool CanAccessMantaFeaturesWithoutMinorRestrictions(Profile* profile) {
   // Only users who can access manta features without minor restrictions will
   // have SeaPen enabled.
-  auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
+  const AccountId account_id = GetAccountId(profile);
+  auto* manta_service = MantaServiceProvider::Get().Find(account_id);
   const bool canAccessMantaFeaturesWithoutMinorRestrictions =
       manta_service &&
       manta_service->CanAccessMantaFeaturesWithoutMinorRestrictions() ==

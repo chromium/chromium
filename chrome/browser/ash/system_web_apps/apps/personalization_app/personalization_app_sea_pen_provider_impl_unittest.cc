@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/manta_service_provider_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
@@ -207,6 +208,12 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     // starts, so an instance has to outlive the session.
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
+    // Installs the process-wide MantaServiceProvider that
+    // CanAccessMantaFeaturesWithoutMinorRestrictions() reads. Its Find()
+    // resolves the account to its profile and calls MantaServiceFactory, so it
+    // returns the same MantaService the test configures via the profile.
+    manta_service_provider_ = std::make_unique<ash::MantaServiceProviderImpl>();
+
     ASSERT_TRUE(ash::IsGenerativeAiAllowedForCountry(kAllowedCountryCode));
     local_state()->SetString(variations::prefs::kVariationsCountry,
                              kAllowedCountryCode);
@@ -239,6 +246,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     profile_manager_.reset();
     profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
+    manta_service_provider_.reset();
     browser_controller_.reset();
     testing::Test::TearDown();
   }
@@ -394,6 +402,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
+  std::unique_ptr<ash::MantaServiceProviderImpl> manta_service_provider_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
   std::unique_ptr<ash::ProfileUserManagerController>

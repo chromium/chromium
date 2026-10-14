@@ -1,0 +1,9 @@
+specific_include_rules = {
+  # Unlike production code, tests construct the //chrome-side provider impl
+  # (MantaServiceProviderImpl) themselves so it registers as the process-wide
+  # ash::MantaServiceProvider::Get() singleton. Production code uses the
+  # provider interface in //chromeos/ash/components/manta.
+  ".*_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/keyed_service_provider",
+  ],
+}

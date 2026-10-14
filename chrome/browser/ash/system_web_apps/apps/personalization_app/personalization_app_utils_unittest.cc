@@ -13,6 +13,7 @@
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/manta_service_provider_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
@@ -131,6 +132,12 @@ class PersonalizationAppUtilsTest : public testing::Test {
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
+    // Installs the process-wide MantaServiceProvider that
+    // CanAccessMantaFeaturesWithoutMinorRestrictions() reads. Its Find()
+    // resolves the account to its profile and calls MantaServiceFactory, so it
+    // returns the same MantaService the test configures via the profile.
+    manta_service_provider_ = std::make_unique<ash::MantaServiceProviderImpl>();
+
     CHECK(ash::IsGenerativeAiAllowedForCountry(kAllowedCountryCode));
     SetCountryCode(kAllowedCountryCode);
 
@@ -152,6 +159,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     test_variations_service_.reset();
     metrics_state_manager_.reset();
+    manta_service_provider_.reset();
     profile_manager_.reset();
     profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
@@ -194,6 +202,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
+  std::unique_ptr<ash::MantaServiceProviderImpl> manta_service_provider_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
   std::unique_ptr<ash::ProfileUserManagerController>
