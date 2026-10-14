@@ -11,9 +11,7 @@ stages {
   input {
     patch { copybara {} }
   }
-  output {
-    update { git {} }
-  }
+  publish { git {} }
 }
 latest {
   git {
