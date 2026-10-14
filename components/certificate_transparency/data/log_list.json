@@ -1,6 +1,6 @@
 {
-  "version": "93.12",
-  "log_list_timestamp": "2026-10-12T13:38:39Z",
+  "version": "95.0",
+  "log_list_timestamp": "2026-10-14T13:44:25Z",
   "operators": [
     {
       "name": "Google",
@@ -467,7 +467,144 @@
           }
         }
       ],
-      "tiled_logs": []
+      "tiled_logs": [
+        {
+          "description": "Sectigo Monument2027h1",
+          "log_id": "lU+RNjI2rVhXzDYVRyLcQOf5ugowsOdS+/DHSylmVrg=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE35R0yxGn1SeQHYGCO82O4hAP5Ace6KRMyVY1karr/hWvO8KEm+EWYbk2xrWnlVsyeeBPsR/nOZFoXgbSs1EKQg==",
+          "submission_url": "https://monument2027h1.sub.ct.sectigo.com/",
+          "monitoring_url": "https://monument2027h1.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Monument2027h2",
+          "log_id": "tvzC6p+E49qX4wl/sfIW6R/w154KB0QDJbBvlPXmU8U=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzAWvoYfHsDXwXaxHUTOAOYx+vESfGpSKTYPUwwDYIwKe1g4lsEmoMwlFJNP2wC8M3g721r663BQaU7I5tKa5jw==",
+          "submission_url": "https://monument2027h2.sub.ct.sectigo.com/",
+          "monitoring_url": "https://monument2027h2.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Monument2028h1",
+          "log_id": "Mk28xZLuH+bg6aYx4WURJaunVGze9l0TxxGtWhs4aqk=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE91RAoG4RS78L2dnlvN9uR7kSdPglMOYAR1Bwbh7p5Dv2yehL3OF/EiSyHCU9SaP846hR7XMNSYMIO4uYCloGgQ==",
+          "submission_url": "https://monument2028h1.sub.ct.sectigo.com/",
+          "monitoring_url": "https://monument2028h1.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Monument2028h2",
+          "log_id": "bHsR9YaIq7BLUlT3PyIbVVjgvpNRI3MlcGGfeugsbBA=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEI7iVUCkAaGP0gSWSox44MjTOQ5mngbn7cq9zS0Q3/+lMi3LNQ5J/yA8szRlS7HdkdnvfP4QFh4XMIbeCiYapYw==",
+          "submission_url": "https://monument2028h2.sub.ct.sectigo.com/",
+          "monitoring_url": "https://monument2028h2.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Statue2027h1",
+          "log_id": "k0C4iKejzC796l4cBupj6U7f6w4VXgIIZFIAYZlMotE=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFiK9nBjtUDiFSLvuKxotVbJ2aX2ldnNhEa1KGSMfF1D3IDe/rFp6cbGJIPkLzwv8SZbXKbNbcz51kL1Wmukjrg==",
+          "submission_url": "https://statue2027h1.sub.ct.sectigo.com/",
+          "monitoring_url": "https://statue2027h1.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Statue2027h2",
+          "log_id": "V+RgJ5TwE01vJbkN3nyKr9cuefY8ogzD9dFPs4lFv1U=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEn+NsNAQqvjgRLZOhS78P8JsdDwMXsASG3ZO1gqeH3dAu7MojoOV4gEZVnFtfO4KPc8pw632rpKsi2edP6rtjxg==",
+          "submission_url": "https://statue2027h2.sub.ct.sectigo.com/",
+          "monitoring_url": "https://statue2027h2.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Statue2028h1",
+          "log_id": "/Cvx3M57P/mNzO4pdqi0IuiOCa6pt5mhesjSWzqR+MA=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEffgZsTRT+6CoRLKvp2VwyZbkyvkf8HLcP6VirHDuMAvQ9jKleGpJ/XhA2ycs2DNcMyFnraw02UOVjqHVATKKBQ==",
+          "submission_url": "https://statue2028h1.sub.ct.sectigo.com/",
+          "monitoring_url": "https://statue2028h1.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo Statue2028h2",
+          "log_id": "Zw/v+c0tZeC4UfTSi9vY+BdtNeIL3fhbQhT74s+jXiM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENWGrBZrsi2C7vFdCeHyMu5wMDcs1DavVuy9ngm2zhXPrvO4e+uEouxgsHsan4P3OkKC5RoYolyxRaOmuC0ys5w==",
+          "submission_url": "https://statue2028h2.sub.ct.sectigo.com/",
+          "monitoring_url": "https://statue2028h2.mon.ct.sectigo.com/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        }
+      ]
     },
     {
       "name": "Let's Encrypt",
@@ -593,6 +730,74 @@
           "temporal_interval": {
             "start_inclusive": "2027-06-17T00:00:00Z",
             "end_exclusive": "2027-12-15T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt Sycamore2028h1",
+          "log_id": "G3i5n/pJwlzEUFl1q/10eRTf3fp7/dOdKjW5WQStPog=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaQnfbBFBTK5HQP/VclILJBM+XaMfpGxuel793+IkpNv2DmHR55rR1t61qHp7DOvQq5gciEnkbTsWYPW9nii66g==",
+          "submission_url": "https://log.sycamore.ct.letsencrypt.org/2028h1/",
+          "monitoring_url": "https://mon.sycamore.ct.letsencrypt.org/2028h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-12-16T00:00:00Z",
+            "end_exclusive": "2028-06-14T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt Sycamore2028h2",
+          "log_id": "d+CXC8fTD+AkXF2y76h1TAjrOpDdwSu11U7iiv4neHA=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExL5FIuf80L4x6aTRFesgGQ+yrIvN5yNxaK71YLp83Y4+U36M0oYKLct3nn2OffTQDqrLPCx9GJeUwHAXlwgPHw==",
+          "submission_url": "https://log.sycamore.ct.letsencrypt.org/2028h2/",
+          "monitoring_url": "https://mon.sycamore.ct.letsencrypt.org/2028h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-06-14T00:00:00Z",
+            "end_exclusive": "2028-12-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt Willow2028h1",
+          "log_id": "caQ99zUpUI88YXJqTPeP+cknbMBSwvd3Zql1T9QKkMM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENShXFppi9EOLfbZl/UeDbhMd20q28ZwfzBvZ5dxg05YwU2IlVRdUkzSDXHDw2n8S3AGjbEm7DeCwLdyrIWG09w==",
+          "submission_url": "https://log.willow.ct.letsencrypt.org/2028h1/",
+          "monitoring_url": "https://mon.willow.ct.letsencrypt.org/2028h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-12-15T00:00:00Z",
+            "end_exclusive": "2028-06-15T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt Willow2028h2",
+          "log_id": "vey1qmLph0NZ/U7NvnDZ8G8+j71Fo6xrycKFEbx0wJw=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnNwidB8P8uuMA2j+jT21aysX+4S1UcJTVvQdM+hfG/BUlJF43iCU6kUudwSgdL2cglVvlv8d+tVlqLkcTPn4tA==",
+          "submission_url": "https://log.willow.ct.letsencrypt.org/2028h2/",
+          "monitoring_url": "https://mon.willow.ct.letsencrypt.org/2028h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-14T13:50:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-06-15T00:00:00Z",
+            "end_exclusive": "2028-12-21T00:00:00Z"
           }
         }
       ]
@@ -1243,6 +1448,83 @@
           "state": {
             "qualified": {
               "timestamp": "2026-09-30T13:40:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "HARICA",
+      "email": [
+        "ct-log-ops@harica.gr"
+      ],
+      "logs": [],
+      "tiled_logs": [
+        {
+          "description": "HARICA Selene2027h1",
+          "log_id": "g92PTAqC4jctZFmPZBgRxF27h4JAz96XF7b9cOQAZ4c=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEp31CH7O1ZoSn90SXs7AxRbijXxYlV8UDMS0Q/zBGafU2yHlDzhGcoauEjpmjvH45TF7IamA8EVe4NjAaXWdAnw==",
+          "submission_url": "https://selene.ct.harica.eu/selene2027h1/",
+          "monitoring_url": "https://selene.mon.ct.harica.eu/selene2027h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-13T13:55:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "HARICA Selene2027h2",
+          "log_id": "sYdPqlxcQTingZPPo7kk2ImvyDNpOcfp+q0JVhrGpV4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzkHK2i2jO3Js7SToO7tc8d8qlxszbTjxt0wnnASCU+tIqKJLBJjmagsZsCGX7XrEK3mboD3p4Du7Viut6VcMGw==",
+          "submission_url": "https://selene.ct.harica.eu/selene2027h2/",
+          "monitoring_url": "https://selene.mon.ct.harica.eu/selene2027h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-13T13:55:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "HARICA Selene2028h1",
+          "log_id": "GZ9TRtShpGoaPdygptJx/Taqms3LslRJmOM+dVHZi8k=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEGJlHidjMrZ5jsmI9rU6INoPHv7FJ6NxlueXO8+p3e7EcTRj6uR2r2tjVKZyMdFM7zPT3QjPgi4jgM/fwtr5DKw==",
+          "submission_url": "https://selene.ct.harica.eu/selene2028h1/",
+          "monitoring_url": "https://selene.mon.ct.harica.eu/selene2028h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-13T13:55:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "HARICA Selene2028h2",
+          "log_id": "+ZgQ1evkfhzxtCH/beNb+MHsluJeBNv8dW9r5FxlXMo=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhv69aIT5VqkDal/4d7ah2Wl7eTJxB5eDkPybJgLXuIwgPrxmVMocOPc7s0q1wX87wKWimGNUBf8HvarCUVuhPQ==",
+          "submission_url": "https://selene.ct.harica.eu/selene2028h2/",
+          "monitoring_url": "https://selene.mon.ct.harica.eu/selene2028h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-10-13T13:55:00Z"
             }
           },
           "temporal_interval": {
