@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -151,10 +152,13 @@ void AccountSettingSyncBridge::ApplyDisableSyncChanges(
       base::BindOnce(&AccountSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
 
-  for (const auto& [name, specifics] : settings_) {
+  // Clear `settings_` before notifying, so that observers reading settings from
+  // within `OnDataUpdated()` observe the cleared state.
+  base::flat_map<std::string, sync_pb::AccountSettingSpecifics> old_settings =
+      std::exchange(settings_, {});
+  for (const auto& [name, specifics] : old_settings) {
     observers_.Notify(&Observer::OnDataUpdated, name);
   }
-  settings_.clear();
 }
 
 std::unique_ptr<syncer::DataBatch> AccountSettingSyncBridge::GetDataForCommit(

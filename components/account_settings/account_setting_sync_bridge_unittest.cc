@@ -239,7 +239,14 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyDisableSyncChanges) {
   ASSERT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
   ASSERT_THAT(bridge().GetStringSetting("name"), "value");
-  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  {
+    MockObserver o(&bridge());
+    // Expect that the setting is already cleared when observers are notified.
+    EXPECT_CALL(o, OnDataUpdated("name")).WillOnce([&] {
+      EXPECT_FALSE(bridge().GetStringSetting("name").has_value());
+    });
+    bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  }
   // Expect that the change was applied immediately.
   EXPECT_FALSE(bridge().GetStringSetting("name").has_value());
   // Recreate the bridge, reloading from the `store()`.
