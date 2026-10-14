@@ -131,6 +131,7 @@ source_set("impl") {
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
+    "//ui/accessibility",
   ]
   if (!is_android) {
     sources += [
@@ -324,6 +325,7 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/metrics_proto",
       "//third_party/omnibox_proto",
+      "//ui/accessibility",
       "//ui/base",
       "//ui/base:types",
       "//ui/base/clipboard",
