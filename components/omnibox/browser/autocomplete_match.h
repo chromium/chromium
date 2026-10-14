@@ -674,7 +674,7 @@ struct AutocompleteMatch {
   // Returns the value recorded for |property| in the |additional_info|
   // dictionary. Returns the empty string if no such value exists. This is for
   // debugging in chrome://omnibox-internals only. It should only be called by
-  // `OmniboxPageHandler` and tests. For match info that's used for
+  // `OmniboxInternalsPageHandler` and tests. For match info that's used for
   // non-debugging, use class fields. Unfortunately, There are existing
   // non-debug callsites; those should be cleaned up, not added to.
   std::string GetAdditionalInfoForDebugging(const std::string& property) const;

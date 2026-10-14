@@ -1168,7 +1168,7 @@
                   '^chrome/browser/ui/omnibox/|'\
                   '^chrome/browser/ui/views/location_bar/|'\
                   '^chrome/browser/ui/views/omnibox/|'\
-                  '^chrome/browser/ui/webui/omnibox/|'\
+                  '^chrome/browser/ui/webui/omnibox_internals/|'\
                   '^components/omnibox/|'\
                   '^components/search_engines/'
     },

@@ -1,0 +1,97 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "omnibox_internals.mojom" ]
+  webui_module_path = "/chrome/browser/ui/webui/omnibox_internals"
+
+  deps = [ "//url/mojom:url_mojom_gurl" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojom.ACMatchClassification"
+          cpp = "::AutocompleteMatch::ACMatchClassification"
+        },
+        {
+          mojom = "mojom.AutocompleteMatch"
+          cpp = "::AutocompleteMatchWrapper"
+        },
+        {
+          mojom = "mojom.Signals"
+          cpp = "::AutocompleteMatch::ScoringSignals"
+        },
+      ]
+      traits_headers = [ "omnibox_internals_mojom_traits.h" ]
+
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "omnibox_internals_mojom_traits.cc",
+    "omnibox_internals_mojom_traits.h",
+  ]
+
+  deps = [ "//ui/base" ]
+
+  public_deps = [
+    ":mojo_bindings_shared_cpp_sources",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/omnibox/browser",
+  ]
+}
+
+source_set("omnibox_internals") {
+  sources = [
+    "omnibox_internals_page_handler.cc",
+    "omnibox_internals_page_handler.h",
+    "omnibox_internals_ui.cc",
+    "omnibox_internals_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+  deps = [
+    ":mojom_traits",
+    "aim_eligibility",
+    "aim_eligibility:mojo_bindings",
+    "logging",
+    "logging:mojo_bindings",
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/history",
+    "//chrome/browser/omnibox",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/omnibox_internals:resources",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/webui/version",
+    "//chrome/common",
+    "//components/omnibox/browser",
+    "//components/omnibox/common:features",
+    "//components/search_engines",
+    "//content/public/common",
+    "//services/network/public/mojom",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui:theme_source" ]
+  }
+}
