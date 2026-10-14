@@ -363,7 +363,7 @@ ExtensionActionSetPopupFunction::RunExtensionAction() {
   // one is specified in the manifest).
   if (!popup_string->empty()) {
     popup_url = extension()->ResolveExtensionURL(*popup_string);
-    if (!popup_url.is_valid()) {
+    if (!popup_url.is_valid() || !popup_url.SchemeIs(kExtensionScheme)) {
       return RespondNow(Error(manifest_errors::kInvalidExtensionPopupPath));
     }
   }

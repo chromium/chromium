@@ -186,7 +186,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
       DCHECK(result->default_popup_url.is_empty());
     } else if (!url_str->empty()) {
       GURL popup_url = extension->GetResourceURL(*url_str);
-      if (!popup_url.is_valid()) {
+      if (!popup_url.is_valid() || !popup_url.SchemeIs(kExtensionScheme)) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;
       }

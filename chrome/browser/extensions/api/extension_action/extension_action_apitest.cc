@@ -1527,6 +1527,22 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
         web_contents,
         get_script(tab_id, different_extension_popup_url.c_str()));
   }
+
+  // Set the popup to a same-origin blob URL and expect an error.
+  {
+    const std::string blob_popup_url =
+        base::StrCat({"blob:", extension->GetResourceURL("popup.html").spec()});
+    RunTestAndWaitForSuccess(web_contents,
+                             get_script(tab_id, blob_popup_url.c_str()));
+  }
+
+  // Set the popup to a filesystem URL and expect an error.
+  {
+    const std::string filesystem_popup_url = base::StrCat(
+        {"filesystem:", extension->url().spec(), "temporary/popup.html"});
+    RunTestAndWaitForSuccess(web_contents,
+                             get_script(tab_id, filesystem_popup_url.c_str()));
+  }
 }
 
 // Tests various getter and setter methods.
