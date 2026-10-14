@@ -89,8 +89,7 @@ std::vector<uint8_t> RsaToCoseKey(const EVP_PKEY* key) {
   map.emplace(static_cast<int64_t>(CoseKeyKey::kRSAPublicExponent),
               std::move(e_bytes));
 
-  std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(map);
   CHECK(cbor_bytes);
   return std::move(cbor_bytes).value();
 }
@@ -113,8 +112,7 @@ std::vector<uint8_t> EcP256ToCoseKey(const keypair::PublicKey& key) {
   map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticX), std::move(x));
   map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticY), std::move(y));
 
-  std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(map);
   CHECK(cbor_bytes);
   return std::move(cbor_bytes).value();
 }
@@ -136,8 +134,7 @@ std::vector<uint8_t> Ed25519ToCoseKey(const keypair::PublicKey& key) {
   map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticX),
               std::vector<uint8_t>(std::from_range, pub_bytes));
 
-  std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(map);
   CHECK(cbor_bytes);
   return std::move(cbor_bytes).value();
 }
@@ -152,8 +149,7 @@ std::vector<uint8_t> MldsaToCoseKey(std::vector<uint8_t> pub_bytes,
   map.emplace(static_cast<int64_t>(CoseKeyKey::kAkpPublicKey),
               std::move(pub_bytes));
 
-  std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(map);
   CHECK(cbor_bytes);
   return std::move(cbor_bytes).value();
 }
