@@ -8817,8 +8817,8 @@
   },
   {
     "name": "saas-usage-reporting",
-    "owners": [ "janzarzycki@google.com", "igorruvinov@chromium.org" ],
-    "expiry_milestone": 158
+    "owners": [ "janzarzycki@google.com", "igorruvinov@chromium.org", "nicolaso@chromium.org" ],
+    "expiry_milestone": 170
   },
   {
     "name": "safe-browsing-local-lists-use-sbv5",
