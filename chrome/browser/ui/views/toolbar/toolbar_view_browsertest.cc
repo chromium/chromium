@@ -293,7 +293,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // In a super wide toolbar, the omnibox absorbs all excess space beyond its
   // preferred width, and all responsive buttons remain visible.
   toolbar->SetSize(gfx::Size(super_wide_width, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_TRUE(is_forward_visible());
   EXPECT_TRUE(is_home_visible());
   EXPECT_GT(get_location_bar_width(), preferred_width);
@@ -301,7 +300,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // When resized down to a moderate width where all elements fit, the omnibox
   // shrinks down towards its preferred width while buttons remain visible.
   toolbar->SetSize(gfx::Size(all_fit_width, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_TRUE(is_forward_visible());
   EXPECT_TRUE(is_home_visible());
   EXPECT_GE(get_location_bar_width(), preferred_width);
@@ -310,7 +308,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // hidden and the omnibox shrinks down from its preferred width towards its
   // minimum width.
   toolbar->SetSize(gfx::Size(omnibox_resizing_width, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_FALSE(is_forward_visible());
   EXPECT_FALSE(is_home_visible());
   EXPECT_LT(get_location_bar_width(), preferred_width);
@@ -319,7 +316,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // At absolute minimum width, all responsive buttons remain hidden and the
   // omnibox reaches its minimum width.
   toolbar->SetSize(gfx::Size(min_width_bound, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_FALSE(is_forward_visible());
   EXPECT_FALSE(is_home_visible());
   EXPECT_EQ(get_location_bar_width(), min_width);
@@ -327,7 +323,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // When expanding to moderate width, responsive buttons reappear with
   // non-empty bounds and the omnibox recovers its preferred width.
   toolbar->SetSize(gfx::Size(all_fit_width, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_TRUE(is_forward_visible());
   EXPECT_TRUE(is_home_visible());
   EXPECT_GE(get_location_bar_width(), preferred_width);
@@ -335,7 +330,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   // Expanding back to a super wide width allows the omnibox to expand into
   // excess space again.
   toolbar->SetSize(gfx::Size(super_wide_width, toolbar_height));
-  toolbar->DeprecatedLayoutImmediately();
   EXPECT_TRUE(is_forward_visible());
   EXPECT_TRUE(is_home_visible());
   EXPECT_GT(get_location_bar_width(), preferred_width);
@@ -370,7 +364,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   const int constrained_height = toolbar->GetPreferredSize().height() - 4;
 
   toolbar->SetSize(gfx::Size(all_fit_width, constrained_height));
-  toolbar->DeprecatedLayoutImmediately();
 
   if (forward) {
     EXPECT_TRUE(forward->GetVisible());
