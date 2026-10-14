@@ -448,7 +448,8 @@ void AudioOpusEncoder::EmitEncodedBuffer(size_t encoded_data_size) {
 
 // Creates and returns the libopus encoder instance. Returns nullptr if the
 // encoder creation fails.
-EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
+base::expected<OwnedOpusEncoder, EncoderStatus>
+AudioOpusEncoder::CreateOpusEncoder(
     const std::optional<AudioEncoder::OpusOptions>& opus_options) {
   int opus_result;
   OwnedOpusEncoder encoder(
@@ -458,20 +459,20 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
       OpusEncoderDeleter);
 
   if (opus_result < 0 || !encoder) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf(
             "Couldn't init Opus encoder: %s, sample rate: %d, channels: %d",
             opus_strerror(opus_result), converted_params_.sample_rate(),
-            converted_params_.channels()));
+            converted_params_.channels())));
   }
 
   const int bitrate =
       options_.bitrate.has_value() ? options_.bitrate.value() : OPUS_AUTO;
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
-        base::StringPrintf("Failed to set Opus bitrate: %d", bitrate));
+        base::StringPrintf("Failed to set Opus bitrate: %d", bitrate)));
   }
 
   if (options_.bitrate_mode.has_value()) {
@@ -480,10 +481,10 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
 
     if (opus_encoder_ctl(encoder.get(), OPUS_SET_VBR(vbr_enabled ? 1 : 0)) !=
         OPUS_OK) {
-      return EncoderStatus(
-          EncoderStatus::Codes::kEncoderInitializationError,
-          base::StringPrintf("Failed to set Opus bitrateMode: %d",
-                             vbr_enabled));
+      return base::unexpected(
+          EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                        base::StringPrintf("Failed to set Opus bitrateMode: %d",
+                                           vbr_enabled)));
     }
   }
 
@@ -496,28 +497,29 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
   DCHECK_LE(complexity, 10u);
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_COMPLEXITY(complexity)) !=
       OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
-        base::StringPrintf("Failed to set Opus complexity: %d", complexity));
+        base::StringPrintf("Failed to set Opus complexity: %d", complexity)));
   }
 
   const unsigned int packet_loss_perc = opus_options.value().packet_loss_perc;
   DCHECK_LE(packet_loss_perc, 100u);
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_PACKET_LOSS_PERC(
                                           packet_loss_perc)) != OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf("Failed to set Opus packetlossperc: %d",
-                           packet_loss_perc));
+                           packet_loss_perc)));
   }
 
   const unsigned int use_in_band_fec =
       opus_options.value().use_in_band_fec ? 1 : 0;
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_INBAND_FEC(use_in_band_fec)) !=
       OPUS_OK) {
-    return EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
-                         base::StringPrintf("Failed to set Opus inband FEC: %d",
-                                            use_in_band_fec));
+    return base::unexpected(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      base::StringPrintf("Failed to set Opus inband FEC: %d",
+                                         use_in_band_fec)));
   }
 
   unsigned int opus_signal;
@@ -535,16 +537,16 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
 
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_SIGNAL(opus_signal)) !=
       OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
-        base::StringPrintf("Failed to set Opus signal hint: %d", opus_signal));
+        base::StringPrintf("Failed to set Opus signal hint: %d", opus_signal)));
   }
 
   const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_DTX(use_dtx)) != OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
-        base::StringPrintf("Failed to set Opus DTX: %d", use_dtx));
+        base::StringPrintf("Failed to set Opus DTX: %d", use_dtx)));
   }
 
   unsigned int opus_application;
@@ -562,10 +564,10 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
 
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_APPLICATION(opus_application)) !=
       OPUS_OK) {
-    return EncoderStatus(
+    return base::unexpected(EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf("Failed to set Opus application hint: %d",
-                           opus_application));
+                           opus_application)));
   }
 
   return encoder;
