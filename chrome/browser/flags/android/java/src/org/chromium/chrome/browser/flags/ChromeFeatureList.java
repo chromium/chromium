@@ -1825,7 +1825,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sSidePanelTopHairlineRefactorAndroid =
             newMutableFlagWithSafeDefault(SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID, false);
     public static final MutableFlagWithSafeDefault sSideUiAllowPause =
-            newMutableFlagWithSafeDefault(SIDE_UI_ALLOW_PAUSE, false);
+            newMutableFlagWithSafeDefault(SIDE_UI_ALLOW_PAUSE, true);
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
             newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
