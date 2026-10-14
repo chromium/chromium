@@ -20,19 +20,24 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.SnoozeAction;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.user_education.FeaturePromoClosedReason;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -50,6 +55,16 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class UserEducationHelper {
+    // LINT.IfChange(BlueBubbleCooldownFeatures)
+    private static final Set<String> BLUE_BUBBLE_COOLDOWN_FEATURES =
+            Set.of(
+                    FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
+                    FeatureConstants.CCT_MINIMIZED_FEATURE,
+                    FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
+                    FeatureConstants.SITE_CONTROLS_FEATURE,
+                    FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE);
+    // LINT.ThenChange(//chrome/browser/feature_engagement/android_blue_bubble_configuration_provider.cc:BlueBubbleCooldownFeatures)
+
     private final Activity mActivity;
     private final Handler mHandler;
 
@@ -146,9 +161,21 @@ public class UserEducationHelper {
 
         HighlightParams highlightParams = iphCommand.highlightParams;
         mTextBubble = null;
+        final boolean shouldTrigger;
+        if (BLUE_BUBBLE_COOLDOWN_FEATURES.contains(featureName)) {
+            boolean isCooldownEnabled = ChromeFeatureList.sBlueBubbleIphCooldownGroup.isEnabled();
+            FeatureProperties featureProperties =
+                    new FeatureProperties(
+                            UiFormat.BLUE_BUBBLE,
+                            /* isBlockedByEnterprisePolicy= */ true,
+                            /* isBlockedByCooldownGroup= */ isCooldownEnabled,
+                            /* blocksCooldownGroup= */ isCooldownEnabled);
+            shouldTrigger = tracker.shouldTriggerHelpUi(featureName, featureProperties);
+        } else {
+            shouldTrigger = tracker.shouldTriggerHelpUi(featureName);
+        }
         TriggerDetails triggerDetails =
-                new TriggerDetails(
-                        tracker.shouldTriggerHelpUi(featureName), /* shouldShowSnooze= */ false);
+                new TriggerDetails(shouldTrigger, /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {

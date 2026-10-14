@@ -37,6 +37,9 @@ source_set("feature_engagement") {
     "non_iph_promo.h",
     "tracker_factory.h",
   ]
+  if (is_android) {
+    sources += [ "android_blue_bubble_configuration_provider.h" ]
+  }
   public_deps = [
     "//chrome/browser/profiles",
     "//components/feature_engagement/public",
@@ -57,7 +60,10 @@ source_set("impl") {
     "//content/public/browser",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "android_blue_bubble_configuration_provider.cc" ]
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  } else {
     deps += [ "//chrome/browser/user_education" ]
   }
 
@@ -69,4 +75,20 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//components/feature_engagement/public",
   ]
+}
+
+if (is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "android_blue_bubble_configuration_provider_unittest.cc" ]
+    deps = [
+      ":feature_engagement",
+      ":impl",
+      "//base/test:test_support",
+      "//chrome/browser/flags:flags_android",
+      "//components/feature_engagement/public",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

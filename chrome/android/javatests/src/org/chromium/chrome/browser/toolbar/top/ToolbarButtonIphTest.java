@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,6 +36,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -88,6 +90,10 @@ public class ToolbarButtonIphTest {
     @Restriction({DeviceFormFactor.PHONE})
     public void testTabSwitcherButtonIph() {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
+                .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE),
+                        any(FeatureProperties.class)))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));

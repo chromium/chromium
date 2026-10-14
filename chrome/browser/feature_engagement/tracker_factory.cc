@@ -21,7 +21,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/feature_engagement/android_blue_bubble_configuration_provider.h"
+#else
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
 #endif
 
@@ -84,7 +86,10 @@ TrackerFactory::BuildServiceInstanceForBrowserContext(
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   auto providers =
       feature_engagement::Tracker::GetDefaultConfigurationProviders();
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  providers.emplace_back(
+      std::make_unique<AndroidBlueBubbleConfigurationProvider>());
+#else
   providers.emplace_back(
       std::make_unique<UserEducationConfigurationProvider>());
 #endif

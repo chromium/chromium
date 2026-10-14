@@ -3135,6 +3135,7 @@ test("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/android:unit_tests",
       "//chrome/browser/facilitated_payments:unit_tests",
       "//chrome/browser/facilitated_payments/ui/android:unit_tests",
+      "//chrome/browser/feature_engagement:unit_tests",
       "//chrome/browser/finds/core:unit_tests",
       "//chrome/browser/keyboard_accessory/android:unit_tests",
       "//chrome/browser/keyboard_accessory/test_utils/android",
