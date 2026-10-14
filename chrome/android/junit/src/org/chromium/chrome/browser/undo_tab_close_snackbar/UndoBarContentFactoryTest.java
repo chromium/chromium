@@ -372,7 +372,7 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_GroupNotFound_EmptyContent() {
+    public void testSavedGroups_GroupNotFound_ShowsGenericGroupCount() {
         UndoClosureSnapshot snapshot =
                 forSavedGroups(
                         Collections.emptyList(),
@@ -381,10 +381,36 @@ public class UndoBarContentFactoryTest {
                         /* savedGroupTabCount= */ 0);
 
         UndoBarContent content = UndoBarContentFactory.create(mContext, snapshot);
+        assertEquals(mContext.getString(R.string.undo_bar_closed_message), content.template);
         assertEquals(
-                mContext.getString(R.string.undo_bar_tab_group_closed_message), content.template);
-        assertEquals("", content.content);
+                mContext.getResources().getQuantityString(R.plurals.undo_bar_tab_groups_part, 1, 1),
+                content.content);
         assertEquals(Snackbar.UMA_TAB_GROUP_DELETE_UNDO, content.umaType);
+    }
+
+    /** Guards that a missing group title with closed tabs keeps the generic text. */
+    @Test
+    public void testSavedGroups_GroupNotFoundWithTab_ShowsGenericText() {
+        UndoClosureSnapshot snapshot =
+                forSavedGroups(
+                        List.of(new UndoClosureSnapshot.ClosedTab(1, "Tab 1", /* groupId= */ null)),
+                        /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
+                        /* savedGroupTitle= */ null,
+                        /* savedGroupTabCount= */ 0);
+
+        UndoBarContent content = UndoBarContentFactory.create(mContext, snapshot);
+        assertEquals(mContext.getString(R.string.undo_bar_closed_message), content.template);
+        String expectedGroupsPart =
+                mContext.getResources().getQuantityString(R.plurals.undo_bar_tab_groups_part, 1, 1);
+        assertEquals(
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.undo_bar_tab_groups_and_tabs_part,
+                                1,
+                                expectedGroupsPart,
+                                1),
+                content.content);
+        assertEquals(Snackbar.UMA_SINGLE_TAB_GROUP_DELETE_UNDO, content.umaType);
     }
 
     @Test

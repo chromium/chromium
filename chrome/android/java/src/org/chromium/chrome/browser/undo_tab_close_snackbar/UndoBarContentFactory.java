@@ -171,12 +171,12 @@ final class UndoBarContentFactory {
                 assert false : "Not reached.";
                 return new UndoBarContent(snapshot, "", "", umaType);
             }
-        } else if (tabGroupsCount == 1) {
-            if (totalTabsCount == 0) {
-                String tabGroupTitle = snapshot.savedGroupTitle;
-                if (tabGroupTitle == null) {
-                    tabGroupTitle = "";
-                } else if (TextUtils.isEmpty(tabGroupTitle)) {
+        } else if (tabGroupsCount == 1 && totalTabsCount == 0) {
+            String tabGroupTitle = snapshot.savedGroupTitle;
+            // A saved group that was not found (or had no sync service) has no name to show; fall
+            // through to the generic "1 tab group closed" text below instead of a blank name.
+            if (tabGroupTitle != null) {
+                if (tabGroupTitle.isEmpty()) {
                     tabGroupTitle =
                             context.getResources()
                                     .getQuantityString(

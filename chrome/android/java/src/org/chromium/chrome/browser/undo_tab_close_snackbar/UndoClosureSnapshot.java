@@ -93,6 +93,7 @@ final class UndoClosureSnapshot {
     /**
      * The saved group's title (empty if it has none), or null if the sync service is unavailable or
      * the group was not found. Only set for SAVED_GROUPS snapshots capturing a single saved group.
+     * When null, the snackbar shows the generic group count instead of the group's name.
      */
     public final @Nullable String savedGroupTitle;
 
