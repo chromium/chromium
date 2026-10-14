@@ -59,10 +59,30 @@ class GIN_EXPORT ObjectTemplateBuilder {
     return SetImpl(name, ConvertToV8(isolate_, val));
   }
 
-  // In the following methods, T and U can be function pointer, member function
-  // pointer, base::RepeatingCallback, or v8::FunctionTemplate. Most clients
-  // will want to use one of the first two options. Also see
-  // gin::CreateFunctionTemplate() for creating raw function templates.
+  // In the following methods the target is either a function or member
+  // function passed as a template argument:
+  //
+  //   .SetMethod<&MyClass::DoThing>("doThing")
+  //   .SetProperty<&MyClass::width, &MyClass::set_width>("width")
+  //
+  // or a value, where T and U can be function pointer, member function
+  // pointer or base::RepeatingCallback:
+  //
+  //   .SetMethod("doThing", base::BindRepeating(&DoThing, weak_ptr))
+  //
+  // Prefer the first form whenever the target is not a bound callback: it
+  // calls the target directly instead of through a heap-allocated callback
+  // holder. In both forms a member function takes its receiver from the
+  // JavaScript `this`. Also see gin::CreateFunctionTemplate() for creating raw
+  // function templates.
+  template <auto kTarget>
+  ObjectTemplateBuilder& SetMethod(const std::string_view& name) {
+    return SetImpl(name, CreateFunctionTemplateFor<kTarget>());
+  }
+  template <auto kTarget>
+  ObjectTemplateBuilder& SetMethod(v8::Local<v8::Name> name) {
+    return SetImpl(name, CreateFunctionTemplateFor<kTarget>());
+  }
   template <typename T>
   ObjectTemplateBuilder& SetMethod(const std::string_view& name,
                                    const T& callback) {
@@ -77,6 +97,24 @@ class GIN_EXPORT ObjectTemplateBuilder {
         name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
   }
 
+  template <auto kGetter>
+  ObjectTemplateBuilder& SetProperty(const std::string_view& name) {
+    return SetPropertyImpl(name, CreateFunctionTemplateFor<kGetter>(),
+                           v8::Local<v8::FunctionTemplate>());
+  }
+  template <auto kGetter, auto kSetter>
+  ObjectTemplateBuilder& SetProperty(const std::string_view& name) {
+    return SetPropertyImpl(name, CreateFunctionTemplateFor<kGetter>(),
+                           CreateFunctionTemplateFor<kSetter>());
+  }
+  // A compile-time getter with a bound-callback setter.
+  template <auto kGetter, typename U>
+  ObjectTemplateBuilder& SetProperty(const std::string_view& name,
+                                     const U& setter) {
+    return SetPropertyImpl(
+        name, CreateFunctionTemplateFor<kGetter>(),
+        internal::CreateFunctionTemplate(isolate_, setter, type_name_));
+  }
   template <typename T>
   ObjectTemplateBuilder& SetProperty(const std::string_view& name,
                                      const T& getter) {
@@ -96,6 +134,12 @@ class GIN_EXPORT ObjectTemplateBuilder {
   // Whereas SetProperty creates an accessor property, this creates what appears
   // to be a data property but whose value is lazily computed the first time the
   // [[Get]] operation occurs.
+  template <auto kGetter>
+  ObjectTemplateBuilder& SetLazyDataProperty(const std::string_view& name) {
+    auto [callback, data] = CreateDataPropertyCallback<kGetter>(
+        isolate_, HolderTypeFor<decltype(kGetter)>());
+    return SetLazyDataPropertyImpl(name, callback, data);
+  }
   template <typename T>
   ObjectTemplateBuilder& SetLazyDataProperty(const std::string_view& name,
                                              const T& getter) {
@@ -126,6 +170,18 @@ class GIN_EXPORT ObjectTemplateBuilder {
   v8::Local<v8::ObjectTemplate> Build();
 
  private:
+  // The receiver type name is only of use to member functions, whose receiver
+  // can fail to convert.
+  template <typename Target>
+  const char* HolderTypeFor() const {
+    return std::is_member_function_pointer_v<Target> ? type_name_ : nullptr;
+  }
+  template <auto kTarget>
+  v8::Local<v8::FunctionTemplate> CreateFunctionTemplateFor() {
+    return CreateFunctionTemplate<kTarget>(isolate_,
+                                           HolderTypeFor<decltype(kTarget)>());
+  }
+
   ObjectTemplateBuilder& SetImpl(const std::string_view& name,
                                  v8::Local<v8::Data> val);
   ObjectTemplateBuilder& SetImpl(v8::Local<v8::Name> name,

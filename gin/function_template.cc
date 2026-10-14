@@ -5,6 +5,8 @@
 #include "gin/function_template.h"
 
 #include "base/strings/strcat.h"
+#include "gin/converter.h"
+#include "v8/include/v8-primitive.h"
 
 namespace gin::internal {
 
@@ -30,6 +32,14 @@ CallbackHolderBase* CallbackHolderBase::FromV8(v8::Isolate* isolate,
       isolate, {kTag, kTag});
 }
 
+v8::Local<v8::Value> HolderTypeData(v8::Isolate* isolate,
+                                    const char* holder_type) {
+  if (!holder_type) {
+    return v8::Local<v8::Value>();
+  }
+  return StringToSymbol(isolate, holder_type);
+}
+
 void ThrowConversionError(Arguments* args,
                           const InvokerOptions& invoker_options,
                           size_t index) {
@@ -37,12 +47,23 @@ void ThrowConversionError(Arguments* args,
     // Failed to get the appropriate `this` object. This can happen if a
     // method is invoked using Function.prototype.[call|apply] and passed an
     // invalid (or null) `this` argument.
+    std::string holder_type;
+    if (invoker_options.holder_type) {
+      holder_type = invoker_options.holder_type;
+    } else {
+      // Templates made by CreateFunctionTemplate<kTarget>() keep the type
+      // name in their data so that the successful path never reads it.
+      v8::Local<v8::Value> data;
+      if (args->GetData(&data) && !data.IsEmpty() && data->IsString()) {
+        holder_type = V8ToString(args->isolate(), data);
+      }
+    }
     std::string error =
-        invoker_options.holder_type
-            ? base::StrCat({"Illegal invocation: Function must be "
+        holder_type.empty()
+            ? "Illegal invocation"
+            : base::StrCat({"Illegal invocation: Function must be "
                             "called on an object of type ",
-                            invoker_options.holder_type})
-            : "Illegal invocation";
+                            holder_type});
     args->ThrowTypeError(error);
   } else {
     // Otherwise, this failed parsing on a different argument.

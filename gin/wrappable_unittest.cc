@@ -4,7 +4,10 @@
 
 #include "gin/wrappable.h"
 
+#include <utility>
+
 #include "base/check.h"
+#include "base/strings/strcat.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -72,7 +75,11 @@ class MyObject : public Wrappable<MyObject>, public BaseClass {
     return Wrappable<MyObject>::GetObjectTemplateBuilder(isolate)
         .SetProperty("value", &MyObject::value, &MyObject::set_value)
         .SetMethod("memberMethod", &MyObject::Method)
-        .SetMethod("nonMemberMethod", &NonMemberMethod);
+        .SetMethod("nonMemberMethod", &NonMemberMethod)
+        // The same again, dispatched at compile time.
+        .SetProperty<&MyObject::value, &MyObject::set_value>("directValue")
+        .SetMethod<&MyObject::Method>("directMemberMethod")
+        .SetMethod<&NonMemberMethod>("directNonMemberMethod");
   }
 
  private:
@@ -118,7 +125,9 @@ class MyNamedObject : public Wrappable<MyNamedObject> {
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
     return Wrappable<MyNamedObject>::GetObjectTemplateBuilder(isolate)
         .SetMethod("memberMethod", &MyNamedObject::Method)
-        .SetMethod("nonMemberMethod", &NonMemberMethod);
+        .SetMethod("nonMemberMethod", &NonMemberMethod)
+        .SetMethod<&MyNamedObject::Method>("directMemberMethod")
+        .SetMethod<&NonMemberMethod>("directNonMemberMethod");
   }
   const char* GetHumanReadableName() const final { return "MyNamedObject"; }
 };
@@ -154,7 +163,17 @@ TEST_F(WrappableTest, UnwrapNull) {
   EXPECT_EQ(obj, unwrapped);
 }
 
-TEST_F(WrappableTest, GetAndSetProperty) {
+class WrappablePropertyTest : public WrappableTest,
+                              public testing::WithParamInterface<const char*> {
+};
+
+// "value" goes through a CallbackHolder, "directValue" is dispatched at
+// compile time; both must behave the same.
+INSTANTIATE_TEST_SUITE_P(,
+                         WrappablePropertyTest,
+                         testing::Values("value", "directValue"));
+
+TEST_P(WrappablePropertyTest, GetAndSetProperty) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
 
@@ -163,10 +182,13 @@ TEST_F(WrappableTest, GetAndSetProperty) {
   obj->set_value(42);
   EXPECT_EQ(42, obj->value());
 
-  v8::Local<v8::String> source = StringToV8(isolate,
-      "(function (obj) {"
-      "   if (obj.value !== 42) throw 'FAIL';"
-      "   else obj.value = 191; })");
+  v8::Local<v8::String> source =
+      StringToV8(isolate, base::StrCat({"(function (obj) {"
+                                        "   if (obj.",
+                                        GetParam(),
+                                        " !== 42) throw 'FAIL';"
+                                        "   else obj.",
+                                        GetParam(), " = 191; })"}));
   EXPECT_FALSE(source.IsEmpty());
 
   gin::TryCatch try_catch(isolate);
@@ -187,7 +209,21 @@ TEST_F(WrappableTest, GetAndSetProperty) {
   EXPECT_EQ(191, obj->value());
 }
 
-TEST_F(WrappableTest, MethodInvocationErrorsOnUnnamedObject) {
+class WrappableMethodTest
+    : public WrappableTest,
+      public testing::WithParamInterface<std::pair<const char*, const char*>> {
+};
+
+// The first pair goes through a CallbackHolder, the second is dispatched at
+// compile time; both must behave the same.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WrappableMethodTest,
+    testing::Values(std::make_pair("memberMethod", "nonMemberMethod"),
+                    std::make_pair("directMemberMethod",
+                                   "directNonMemberMethod")));
+
+TEST_P(WrappableMethodTest, MethodInvocationErrorsOnUnnamedObject) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
@@ -197,11 +233,11 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnUnnamedObject) {
   v8::Local<v8::Object> v8_object =
       ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
   v8::Local<v8::Value> member_method =
-      v8_object->Get(context, StringToV8(isolate, "memberMethod"))
+      v8_object->Get(context, StringToV8(isolate, GetParam().first))
           .ToLocalChecked();
   ASSERT_TRUE(member_method->IsFunction());
   v8::Local<v8::Value> non_member_method =
-      v8_object->Get(context, StringToV8(isolate, "nonMemberMethod"))
+      v8_object->Get(context, StringToV8(isolate, GetParam().second))
           .ToLocalChecked();
   ASSERT_TRUE(non_member_method->IsFunction());
 
@@ -243,7 +279,7 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnUnnamedObject) {
   EXPECT_EQ(std::string(), get_error(non_member_method, v8::Null(isolate)));
 }
 
-TEST_F(WrappableTest, MethodInvocationErrorsOnNamedObject) {
+TEST_P(WrappableMethodTest, MethodInvocationErrorsOnNamedObject) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
@@ -253,11 +289,11 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnNamedObject) {
   v8::Local<v8::Object> v8_object =
       ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
   v8::Local<v8::Value> member_method =
-      v8_object->Get(context, StringToV8(isolate, "memberMethod"))
+      v8_object->Get(context, StringToV8(isolate, GetParam().first))
           .ToLocalChecked();
   ASSERT_TRUE(member_method->IsFunction());
   v8::Local<v8::Value> non_member_method =
-      v8_object->Get(context, StringToV8(isolate, "nonMemberMethod"))
+      v8_object->Get(context, StringToV8(isolate, GetParam().second))
           .ToLocalChecked();
   ASSERT_TRUE(non_member_method->IsFunction());
 
@@ -331,6 +367,8 @@ class MyObjectWithLazyProperties
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
     return Wrappable::GetObjectTemplateBuilder(isolate)
         .SetLazyDataProperty("fortyTwo", &MyObjectWithLazyProperties::FortyTwo)
+        .SetLazyDataProperty<&MyObjectWithLazyProperties::FortyTwo>(
+            "directFortyTwo")
         .SetLazyDataProperty("self",
                              base::BindRepeating([](gin::Arguments* arguments) {
                                v8::Local<v8::Value> holder;
@@ -347,7 +385,15 @@ class MyObjectWithLazyProperties
   int access_count_ = 0;
 };
 
-TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
+class WrappableLazyPropertyTest
+    : public WrappableTest,
+      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         WrappableLazyPropertyTest,
+                         testing::Values("fortyTwo", "directFortyTwo"));
+
+TEST_P(WrappableLazyPropertyTest, LazyPropertyGetterIsCalledOnce) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
@@ -355,7 +401,7 @@ TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   MyObjectWithLazyProperties* obj = MyObjectWithLazyProperties::Create(isolate);
   v8::Local<v8::Object> v8_object =
       ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
-  v8::Local<v8::String> key = StringToSymbol(isolate, "fortyTwo");
+  v8::Local<v8::String> key = StringToSymbol(isolate, GetParam());
   v8::Local<v8::Value> value;
 
   bool has_own_property = false;
@@ -373,7 +419,7 @@ TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   EXPECT_EQ(1, obj->access_count());
 }
 
-TEST_F(WrappableTest, LazyPropertyGetterCanBeSetFirst) {
+TEST_P(WrappableLazyPropertyTest, LazyPropertyGetterCanBeSetFirst) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
@@ -381,7 +427,7 @@ TEST_F(WrappableTest, LazyPropertyGetterCanBeSetFirst) {
   auto* obj = MyObjectWithLazyProperties::Create(isolate);
   v8::Local<v8::Object> v8_object =
       ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
-  v8::Local<v8::String> key = StringToSymbol(isolate, "fortyTwo");
+  v8::Local<v8::String> key = StringToSymbol(isolate, GetParam());
   v8::Local<v8::Value> value;
 
   EXPECT_EQ(0, obj->access_count());
