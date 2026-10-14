@@ -1071,8 +1071,8 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   // Prevent Picture-in-Picture windows from being updated to fullscreen,
   // maximized, or minimized states (https://crbug.com/514080341).
   content::WebContents* active_contents = window_controller->GetActiveTab();
-  CHECK(active_contents);
-  if (PictureInPictureWindowManager::IsChildWebContents(active_contents)) {
+  if (active_contents &&
+      PictureInPictureWindowManager::IsChildWebContents(active_contents)) {
     if (show_state == ui::mojom::WindowShowState::kFullscreen ||
         show_state == ui::mojom::WindowShowState::kMaximized ||
         show_state == ui::mojom::WindowShowState::kMinimized) {
