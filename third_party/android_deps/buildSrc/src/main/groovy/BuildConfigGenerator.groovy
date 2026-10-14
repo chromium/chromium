@@ -370,6 +370,8 @@ No modifications.
         HttpURLConnection connection
         for (int i = 0; i < 10; ++i) {
             connection = urlObj.openConnection()
+            connection.connectTimeout = ChromiumDepGraph.HTTP_TIMEOUT_MS
+            connection.readTimeout = ChromiumDepGraph.HTTP_TIMEOUT_MS
             connection.setRequestProperty("Accept", "text/plain");
             switch (connection.responseCode) {
                 case HttpURLConnection.HTTP_MOVED_PERM:
@@ -424,7 +426,7 @@ No modifications.
 
         // 2. Import artifacts into the local repository
         List<String> dependencyDirectories = []
-        ExecutorService downloadExecutor = Executors.newCachedThreadPool()
+        ExecutorService downloadExecutor = Executors.newFixedThreadPool(ChromiumDepGraph.CONCURRENT_HTTP_TASKS)
         List<Future> downloadTasks = []
         List<ChromiumDepGraph.DependencyDescription> mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
