@@ -143,8 +143,6 @@ class ContextMenuChipController implements View.OnClickListener {
 
         mChipRenderParams = chipRenderParams;
 
-        ChipView chipView = buildChipView(chipRenderParams);
-
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         // Draw a clear background to avoid blocking context menu items.
         mPopupWindow =
@@ -152,7 +150,11 @@ class ContextMenuChipController implements View.OnClickListener {
                                 mContext,
                                 mAnchorView,
                                 new ColorDrawable(Color.TRANSPARENT),
-                                () -> chipView,
+                                (context) -> {
+                                    ChipView chipView = buildChipView(chipRenderParams);
+                                    mChipView = chipView;
+                                    return chipView;
+                                },
                                 rectProvider)
                         .setAnimationStyle(R.style.ChipAnimation)
                         .setPreferredHorizontalOrientation(
@@ -168,8 +170,6 @@ class ContextMenuChipController implements View.OnClickListener {
                                 mContext.getResources()
                                         .getDimensionPixelSize(R.dimen.context_menu_chip_max_width))
                         .build();
-
-        mChipView = chipView;
 
         mPopupWindow.show();
         if (mChipRenderParams.onShowCallback != null) {
