@@ -6,6 +6,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/themes/cross_device/cross_device_theme_tracker_test_util.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/theme_android_specifics.pb.h"
 #include "components/sync/protocol/theme_ios_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
@@ -31,11 +32,11 @@ class CrossDeviceThemeTrackerDesktopTest
   CrossDeviceThemeTrackerDesktopTest() {
     android_bridge_ = RegisterBridgeHelper<sync_pb::ThemeAndroidSpecifics>(
         syncer::THEMES_ANDROID, base::BindRepeating(&themes::TranslateAndroid),
-        tracker_.get(), &test_store_service_);
+        tracker_.get());
 
     ios_bridge_ = RegisterBridgeHelper<sync_pb::ThemeIosSpecifics>(
         syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
-        tracker_.get(), &test_store_service_);
+        tracker_.get());
 
     // Wait for bridges to be ready.
     EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -66,11 +67,9 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, SyncStarted) {
   MockObserver observer;
   tracker_->AddObserver(&observer);
 
-  // We expect status change notifications.
-  // Initially, both are kInitializing.
-  // When first bridge starts, aggregate is still kInitializing (no
-  // notification). When second bridge starts, aggregate becomes kActive
-  // (notifies).
+  // Before initial sync, metadata is not yet tracked, so OnSyncStarting alone
+  // should keep the service status in kInitializing until MergeFullSyncData
+  // completes on both bridges.
   EXPECT_CALL(observer, OnServiceStatusChanged(ServiceStatus::kActive))
       .Times(1);
 
@@ -79,9 +78,90 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, SyncStarted) {
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
 
   ios_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+
+  auto create_synced_metadata = [](syncer::DataTypeSyncBridge* bridge) {
+    auto metadata_change_list = bridge->CreateMetadataChangeList();
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    metadata_change_list->UpdateDataTypeState(data_type_state);
+    return metadata_change_list;
+  };
+
+  android_bridge_->MergeFullSyncData(create_synced_metadata(android_bridge_),
+                                     syncer::EntityChangeList());
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+
+  ios_bridge_->MergeFullSyncData(create_synced_metadata(ios_bridge_),
+                                 syncer::EntityChangeList());
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kActive);
 
   tracker_->RemoveObserver(&observer);
+
+  // Disabling sync and re-starting before initial sync metadata is tracked
+  // should transition the tracker back to kInitializing until MergeFullSyncData
+  // completes on both bridges.
+  android_bridge_->ApplyDisableSyncChanges(
+      android_bridge_->CreateMetadataChangeList());
+  ios_bridge_->ApplyDisableSyncChanges(ios_bridge_->CreateMetadataChangeList());
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncDisabled);
+
+  android_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+  ios_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+
+  // Pausing sync while metadata is not yet tracked should transition the
+  // tracker to kSyncDisabled, and re-starting should return to kInitializing.
+  android_bridge_->OnSyncPaused();
+  ios_bridge_->OnSyncPaused();
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncDisabled);
+
+  android_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+  ios_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+
+  android_bridge_->MergeFullSyncData(create_synced_metadata(android_bridge_),
+                                     syncer::EntityChangeList());
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+  ios_bridge_->MergeFullSyncData(create_synced_metadata(ios_bridge_),
+                                 syncer::EntityChangeList());
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kActive);
+
+  // Simulate a restart where initial sync metadata was already persisted.
+  auto restarted_tracker =
+      std::make_unique<CrossDeviceThemeTracker<LocalSpecifics>>();
+  auto* restarted_android_bridge =
+      RegisterBridgeHelper<sync_pb::ThemeAndroidSpecifics>(
+          syncer::THEMES_ANDROID,
+          base::BindRepeating(&themes::TranslateAndroid),
+          restarted_tracker.get());
+  auto* restarted_ios_bridge = RegisterBridgeHelper<sync_pb::ThemeIosSpecifics>(
+      syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
+      restarted_tracker.get());
+
+  // Calling OnSyncStarting before the store finishes loading metadata should
+  // mark the bridge active once OnReadAllDataAndMetadata completes.
+  restarted_android_bridge->OnSyncStarting(request);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return restarted_android_bridge->IsStoreInitializedForTesting() &&
+           restarted_ios_bridge->IsStoreInitializedForTesting();
+  }));
+  EXPECT_EQ(restarted_tracker->GetServiceStatus(),
+            ServiceStatus::kInitializing);
+
+  // Calling OnSyncStarting after metadata is already loaded and tracked should
+  // immediately mark the bridge active without MergeFullSyncData.
+  restarted_ios_bridge->OnSyncStarting(request);
+  EXPECT_EQ(restarted_tracker->GetServiceStatus(), ServiceStatus::kActive);
+
+  // Pausing sync when metadata is already tracked should keep the tracker
+  // active.
+  restarted_android_bridge->OnSyncPaused();
+  restarted_ios_bridge->OnSyncPaused();
+  EXPECT_EQ(restarted_tracker->GetServiceStatus(), ServiceStatus::kActive);
 }
 
 TEST_F(CrossDeviceThemeTrackerDesktopTest, AndroidThemeUpdate) {

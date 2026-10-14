@@ -163,6 +163,12 @@ class CrossDeviceThemeTracker : public KeyedService {
     }
   }
 
+  void OnBridgeSyncStarting(syncer::DataType type) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    bridge_statuses_[type] = ServiceStatus::kInitializing;
+    UpdateAggregateStatus();
+  }
+
   void OnBridgeSyncStarted(syncer::DataType type) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bridge_statuses_[type] = ServiceStatus::kActive;

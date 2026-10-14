@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_THEMES_CROSS_DEVICE_CROSS_DEVICE_THEME_TRACKER_TEST_UTIL_H_
 #define CHROME_BROWSER_THEMES_CROSS_DEVICE_CROSS_DEVICE_THEME_TRACKER_TEST_UTIL_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,7 +19,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/test/test_data_type_store_service.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/themes/cross_device/cross_device_theme_sync_bridge.h"
 #include "components/themes/cross_device/cross_device_theme_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,10 +50,13 @@ class CrossDeviceThemeTrackerTestBase : public testing::Test {
       syncer::DataType type,
       base::RepeatingCallback<themes::DeviceThemeInfo<LocalSpecifics>(
           const RemoteSpecifics&)> translate_cb,
-      themes::CrossDeviceThemeTracker<LocalSpecifics>* tracker,
-      syncer::DataTypeStoreService* store_service) {
+      themes::CrossDeviceThemeTracker<LocalSpecifics>* tracker) {
+    auto& store = stores_[type];
+    if (!store) {
+      store = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(type);
+    }
     syncer::RepeatingDataTypeStoreFactory store_factory =
-        store_service->GetStoreFactory();
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store.get());
     auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
         type, base::DoNothing());
 
@@ -65,6 +69,9 @@ class CrossDeviceThemeTrackerTestBase : public testing::Test {
         base::BindRepeating(
             &themes::CrossDeviceThemeTracker<LocalSpecifics>::RemoveThemeInfo,
             base::Unretained(tracker)),
+        base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                                LocalSpecifics>::OnBridgeSyncStarting,
+                            base::Unretained(tracker), type),
         base::BindRepeating(&themes::CrossDeviceThemeTracker<
                                 LocalSpecifics>::OnBridgeSyncStarted,
                             base::Unretained(tracker), type),
@@ -79,7 +86,7 @@ class CrossDeviceThemeTrackerTestBase : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  syncer::TestDataTypeStoreService test_store_service_;
+  std::map<syncer::DataType, std::unique_ptr<syncer::DataTypeStore>> stores_;
   std::unique_ptr<CrossDeviceThemeTracker<LocalSpecifics>> tracker_;
 };
 

@@ -69,6 +69,7 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
       base::RepeatingCallback<void(const std::string&,
                                    DeviceThemeInfo<LocalSpecifics>)>;
   using RemoveCallback = base::RepeatingCallback<void(const std::string&)>;
+  using SyncStartingCallback = base::RepeatingClosure;
   using SyncStartedCallback = base::RepeatingClosure;
   using DisableCallback = base::RepeatingClosure;
 
@@ -77,6 +78,7 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
       TranslateCallback translate_cb,
       UpdateCallback update_cb,
       RemoveCallback remove_cb,
+      SyncStartingCallback sync_starting_cb,
       SyncStartedCallback sync_started_cb,
       DisableCallback disable_cb,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
@@ -86,6 +88,7 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
         translate_cb_(std::move(translate_cb)),
         update_cb_(std::move(update_cb)),
         remove_cb_(std::move(remove_cb)),
+        sync_starting_cb_(std::move(sync_starting_cb)),
         sync_started_cb_(std::move(sync_started_cb)),
         disable_cb_(std::move(disable_cb)) {
     std::move(store_factory)
@@ -103,7 +106,7 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
 
   bool IsStoreInitializedForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return store_ != nullptr;
+    return is_store_initialized_;
   }
 
   // DataTypeSyncBridge implementation:
@@ -111,8 +114,29 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::DataTypeActivationRequest& request) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     syncer::DataTypeSyncBridge::OnSyncStarting(request);
-    if (sync_started_cb_) {
-      sync_started_cb_.Run();
+    sync_starting_called_ = true;
+    if (change_processor()->IsTrackingMetadata()) {
+      if (sync_started_cb_) {
+        sync_started_cb_.Run();
+      }
+    } else if (sync_starting_cb_) {
+      sync_starting_cb_.Run();
+    }
+  }
+
+  void OnSyncPaused() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    sync_starting_called_ = false;
+    // Only invoke `disable_cb_` when metadata is not yet tracked: pausing sync
+    // during initial sync falls back to `kSyncDisabled` so callers do not
+    // remain stuck in `kInitializing`, whereas pausing when metadata is already
+    // tracked retains `kActive` because cached theme data in `other_themes_`
+    // remains valid locally (and invoking `disable_cb_` would clear cached
+    // themes). Note that reusing `disable_cb_` here couples pause during
+    // initial sync to the disable handler, which is safe only because no cached
+    // remote themes exist before initial metadata is tracked.
+    if (!change_processor()->IsTrackingMetadata() && disable_cb_) {
+      disable_cb_.Run();
     }
   }
 
@@ -126,8 +150,12 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                       std::move(entity_changes));
+    std::optional<syncer::ModelError> error = ApplyIncrementalSyncChanges(
+        std::move(metadata_change_list), std::move(entity_changes));
+    if (!error && sync_started_cb_) {
+      sync_started_cb_.Run();
+    }
+    return error;
   }
 
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
@@ -195,6 +223,7 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    sync_starting_called_ = false;
     if (!store_) {
       return;
     }
@@ -241,6 +270,11 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
     }
 
     change_processor()->ModelReadyToSync(std::move(metadata_batch));
+    is_store_initialized_ = true;
+    if (sync_starting_called_ && change_processor()->IsTrackingMetadata() &&
+        sync_started_cb_) {
+      sync_started_cb_.Run();
+    }
   }
 
   void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
@@ -266,9 +300,12 @@ class CrossDeviceThemeSyncBridge : public syncer::DataTypeSyncBridge {
   const TranslateCallback translate_cb_;
   const UpdateCallback update_cb_;
   const RemoveCallback remove_cb_;
+  const SyncStartingCallback sync_starting_cb_;
   const SyncStartedCallback sync_started_cb_;
   const DisableCallback disable_cb_;
 
+  bool is_store_initialized_ = false;
+  bool sync_starting_called_ = false;
   std::unique_ptr<syncer::DataTypeStore> store_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CrossDeviceThemeSyncBridge> weak_ptr_factory_{this};

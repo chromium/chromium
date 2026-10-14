@@ -45,6 +45,9 @@ void RegisterBridgeHelper(
       base::BindRepeating(
           &themes::CrossDeviceThemeTracker<LocalSpecifics>::RemoveThemeInfo,
           base::Unretained(tracker)),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              LocalSpecifics>::OnBridgeSyncStarting,
+                          base::Unretained(tracker), type),
       base::BindRepeating(
           &themes::CrossDeviceThemeTracker<LocalSpecifics>::OnBridgeSyncStarted,
           base::Unretained(tracker), type),
