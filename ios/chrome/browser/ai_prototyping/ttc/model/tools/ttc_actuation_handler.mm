@@ -14,12 +14,14 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -137,6 +139,18 @@ TtcActuationHandler::~TtcActuationHandler() {
   Disconnect();
 }
 
+#pragma mark - Properties
+
+TTCJournal* TtcActuationHandler::journal() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return journal_.get();
+}
+
+void TtcActuationHandler::set_journal(TTCJournal* journal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  journal_ = journal ? journal->GetWeakPtr() : nullptr;
+}
+
 #pragma mark - Teardown
 
 void TtcActuationHandler::Disconnect() {
@@ -168,6 +182,7 @@ void TtcActuationHandler::Disconnect() {
               std::move(actuation.call_id)));
     }
   }
+  journal_.reset();
 }
 
 #pragma mark - Public Actuation

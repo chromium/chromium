@@ -73,12 +73,13 @@ class TTCKeyedService : public KeyedService {
   // The OptimizationGuideService this service is using.
   raw_ptr<OptimizationGuideService> optimization_guide_ = nullptr;
 
+  // Shared session journal retaining entries for the current or most recent
+  // session. Declared before `session_controller_` so `journal_` outlives any
+  // active session controller referencing it.
+  TTCJournal journal_;
+
   // Active session coordinator, or nullptr when no session is in progress.
   std::unique_ptr<TtcSessionController> session_controller_;
-
-  // Shared session journal retaining entries for the current or most recent
-  // session.
-  TTCJournal journal_;
 
   // List of callbacks notified when `TTCServiceState` changes.
   base::RepeatingCallbackList<void(TTCServiceState)> state_changed_callbacks_;

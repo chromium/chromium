@@ -22,6 +22,7 @@
 
 @protocol TTCAudioController;
 @class TTCAudioControllerDelegateBridge;
+class TTCJournal;
 
 // Coordinates between audio input/output and the transport session for TTC on
 // iOS.
@@ -64,6 +65,10 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   // Sets or returns the delegate receiving conversation events.
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
   Delegate* delegate() const { return delegate_; }
+
+  // Optional session journal for structured event logging.
+  TTCJournal* journal() const;
+  void set_journal(TTCJournal* journal);
 
   // Underlying audio controller.
   id<TTCAudioController> audio_controller() const { return audio_controller_; }
@@ -140,6 +145,9 @@ class TtcConversation : public ttc::TtcBackend::Observer {
 
   // Guard flag preventing re-entrant `Stop()` invocations.
   bool is_stopping_ = false;
+
+  // Optional session journal for structured event logging.
+  base::WeakPtr<TTCJournal> journal_;
 
   base::WeakPtrFactory<TtcConversation> weak_ptr_factory_{this};
 };

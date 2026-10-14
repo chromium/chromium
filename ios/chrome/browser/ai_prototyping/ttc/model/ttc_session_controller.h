@@ -21,6 +21,8 @@ namespace ttc {
 class TtcBackend;
 }  // namespace ttc
 
+class TTCJournal;
+
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
 // for an active TTC session on iOS.
 class TtcSessionController : public TtcConversation::Delegate {
@@ -30,6 +32,10 @@ class TtcSessionController : public TtcConversation::Delegate {
 
   // Current lifecycle state of this session.
   TTCSessionLifecycle lifecycle() const { return lifecycle_; }
+
+  // Optional session journal for structured event logging.
+  TTCJournal* journal() const;
+  void set_journal(TTCJournal* journal);
 
   // Constructs a session controller injecting a custom conversation
   // coordinator.
@@ -114,6 +120,9 @@ class TtcSessionController : public TtcConversation::Delegate {
 
   // Notification token for `UIApplicationDidEnterBackgroundNotification`.
   id<NSObject> background_observer_ = nil;
+
+  // Optional session journal for structured event logging.
+  base::WeakPtr<TTCJournal> journal_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

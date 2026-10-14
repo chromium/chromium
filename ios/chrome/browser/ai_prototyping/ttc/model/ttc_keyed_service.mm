@@ -79,6 +79,7 @@ void TTCKeyedService::StartSession() {
 
   session_controller_ =
       std::make_unique<TtcSessionController>(std::move(backend));
+  session_controller_->set_journal(&journal_);
 
   session_controller_->StartSession();
   state_changed_callbacks_.Notify(GetState());

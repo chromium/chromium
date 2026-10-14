@@ -40,6 +40,7 @@ using ::testing::NiceMock;
 @property(nonatomic, assign, getter=isLoopbackEnabled) BOOL loopbackEnabled;
 @property(nonatomic, assign, getter=isOutputRoutedToSpeaker)
     BOOL outputRoutedToSpeaker;
+@property(nonatomic, assign) TTCJournal* journal;
 
 @property(nonatomic, copy) void (^startCaptureBlock)
     (void (^completion)(BOOL success, NSError* error));

@@ -2,14 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("journal") {
+  sources = [
+    "ttc_journal.cc",
+    "ttc_journal.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/ttc/app/public",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 source_set("model") {
   sources = [
     "ttc_conversation.h",
     "ttc_conversation.mm",
     "ttc_error_codes.h",
     "ttc_error_codes.mm",
-    "ttc_journal.cc",
-    "ttc_journal.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service.mm",
     "ttc_keyed_service_factory.h",
@@ -24,6 +34,7 @@ source_set("model") {
     "ttc_websocket_backend.mm",
   ]
   public_deps = [
+    ":journal",
     "//components/ttc/app",
     "//components/ttc/app/public",
   ]
@@ -39,7 +50,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
   frameworks = [

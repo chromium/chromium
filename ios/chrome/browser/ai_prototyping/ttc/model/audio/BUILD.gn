@@ -24,7 +24,10 @@ source_set("audio") {
   ]
   public_deps =
       [ "//ios/public/provider/chrome/browser/intelligence:intelligence_api" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ai_prototyping/ttc/model:journal",
+  ]
   frameworks = [
     "AVFAudio.framework",
     "Accelerate.framework",

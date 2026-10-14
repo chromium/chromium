@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 
 namespace {
@@ -100,6 +101,17 @@ TtcConversation::~TtcConversation() {
   Disconnect();
 }
 
+TTCJournal* TtcConversation::journal() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return journal_.get();
+}
+
+void TtcConversation::set_journal(TTCJournal* journal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  journal_ = journal ? journal->GetWeakPtr() : nullptr;
+  audio_controller_.journal = journal;
+}
+
 #pragma mark - Public
 
 void TtcConversation::Start() {
@@ -148,9 +160,11 @@ void TtcConversation::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
   [audio_controller_ disconnect];
+  audio_controller_.journal = nullptr;
   audio_controller_.delegate = nil;
   audio_delegate_bridge_ = nil;
   delegate_ = nullptr;
+  journal_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

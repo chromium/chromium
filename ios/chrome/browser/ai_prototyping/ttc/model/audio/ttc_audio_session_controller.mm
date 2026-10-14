@@ -16,12 +16,14 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_audio_engine_protocol.h"
 
 NSString* const kTTCAudioSessionControllerErrorDomain =
@@ -95,12 +97,23 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
 
 @implementation TTCAudioSessionController {
   SEQUENCE_CHECKER(_sequenceChecker);
+  base::WeakPtr<TTCJournal> _journal;
 }
 
 @synthesize delegate = _delegate;
 @synthesize loopbackEnabled = _loopbackEnabled;
 
 #pragma mark - Properties
+
+- (TTCJournal*)journal {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _journal.get();
+}
+
+- (void)setJournal:(TTCJournal*)journal {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _journal = journal ? journal->GetWeakPtr() : nullptr;
+}
 
 - (BOOL)isCapturing {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -293,6 +306,7 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
 
   self.sessionManager.delegate = nil;
   [self.sessionManager disconnect];
+  _journal.reset();
 }
 
 #pragma mark - TTCAudioEngineDelegate

@@ -29,6 +29,7 @@
 @property(nonatomic, assign, getter=isLoopbackEnabled) BOOL loopbackEnabled;
 @property(nonatomic, assign, getter=isOutputRoutedToSpeaker)
     BOOL outputRoutedToSpeaker;
+@property(nonatomic, assign) TTCJournal* journal;
 @property(nonatomic, assign) BOOL didStopCapture;
 @property(nonatomic, assign) BOOL didStopPlayback;
 

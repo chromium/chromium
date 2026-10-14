@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+class TTCJournal;
 @protocol TTCAudioController;
 
 // Delegate protocol receiving captured audio chunks, energy levels, route
@@ -73,6 +74,9 @@
 // AirPods, or external audio accessories.
 @property(nonatomic, readonly, assign, getter=isOutputRoutedToSpeaker)
     BOOL outputRoutedToSpeaker;
+
+// Optional session journal for structured event logging.
+@property(nonatomic, assign) TTCJournal* journal;
 
 // Starts capturing audio from the microphone asynchronously. Invokes
 // `completion` on the main thread once the capture graph and session are ready.

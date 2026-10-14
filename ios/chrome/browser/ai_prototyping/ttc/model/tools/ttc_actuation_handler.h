@@ -20,6 +20,7 @@
 #import "ios/web/public/web_state_id.h"
 
 @class TtcTaskInterventionHandler;
+class TTCJournal;
 class WebStateList;
 
 namespace actor {
@@ -42,6 +43,10 @@ class TtcActuationHandler {
   TtcActuationHandler(const TtcActuationHandler&) = delete;
   TtcActuationHandler& operator=(const TtcActuationHandler&) = delete;
   ~TtcActuationHandler();
+
+  // Optional session journal for structured event logging.
+  TTCJournal* journal() const;
+  void set_journal(TTCJournal* journal);
 
   // Disconnects active references, cancels in-flight tasks with `kShutdown`,
   // and fails pending actuation callbacks with `kExecutorDestroyed`.
@@ -97,6 +102,9 @@ class TtcActuationHandler {
 
   // Intervention delegate used for Actor tasks created by this handler.
   TtcTaskInterventionHandler* intervention_delegate_ = nil;
+
+  // Optional session journal for structured event logging.
+  base::WeakPtr<TTCJournal> journal_;
 
   base::WeakPtrFactory<TtcActuationHandler> weak_ptr_factory_{this};
 };

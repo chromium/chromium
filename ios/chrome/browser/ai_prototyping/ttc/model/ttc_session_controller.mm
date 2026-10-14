@@ -12,11 +12,13 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 
 #pragma mark - TtcConversation::Delegate
@@ -61,6 +63,19 @@ TtcSessionController::~TtcSessionController() {
   Disconnect();
 }
 
+#pragma mark - Properties
+
+TTCJournal* TtcSessionController::journal() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return journal_.get();
+}
+
+void TtcSessionController::set_journal(TTCJournal* journal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  journal_ = journal ? journal->GetWeakPtr() : nullptr;
+  conversation_->set_journal(journal);
+}
+
 #pragma mark - Session Lifecycle
 
 void TtcSessionController::StartSession() {
@@ -92,6 +107,7 @@ void TtcSessionController::Disconnect() {
   conversation_->Disconnect();
   RemoveBackgroundObserver();
   observers_.Clear();
+  journal_.reset();
 }
 
 void TtcSessionController::SetLifecycle(TTCSessionLifecycle lifecycle) {

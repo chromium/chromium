@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <string_view>
 #import <vector>
 
 #import "base/functional/bind.h"
@@ -225,16 +226,28 @@ TEST_F(TTCKeyedServiceTest,
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
+  auto has_event = [&](std::string_view name) {
+    for (const auto& entry : service->journal().entries()) {
+      if (entry.event_name == name) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   service->StartSession();
   service->journal().Log(TTCJournalComponent::kSession, "SessionStarted");
   service->journal().LogError(TTCJournalComponent::kBackend, "BackendError");
-  ASSERT_EQ(service->journal().entries().size(), 2u);
+  EXPECT_TRUE(has_event("SessionStarted"));
+  EXPECT_TRUE(has_event("BackendError"));
 
   service->EndSession();
   EXPECT_FALSE(service->is_session_active());
-  EXPECT_EQ(service->journal().entries().size(), 2u);
+  EXPECT_TRUE(has_event("SessionStarted"));
+  EXPECT_TRUE(has_event("BackendError"));
 
   service->StartSession();
-  EXPECT_TRUE(service->journal().entries().empty());
+  EXPECT_FALSE(has_event("SessionStarted"));
+  EXPECT_FALSE(has_event("BackendError"));
   service->EndSession();
 }
