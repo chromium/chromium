@@ -104,10 +104,19 @@ export class ModulesElement extends CrLitElement {
       pendingAutoRemovedModules_: {type: Array},
       /** Data about the most recent un-doable action. */
       undoData_: {type: Object},
+      /**
+       * The element whose width is used for calculating the number of modules
+       * per row and their widths. The container is expected to be sized
+       * independently of this element, otherwise updating the styles would
+       * trigger a ResizeObserver loop. If null, the window's width is used.
+       * Read when this element is connected; later changes are ignored.
+       */
+      widthContainer: {type: Object},
     };
   }
 
   accessor modulesShownToUser: boolean = false;
+  accessor widthContainer: HTMLElement|null = null;
   private waitToLoadModules_: boolean =
       loadTimeData.getBoolean('waitToLoadModules');
   accessor moduleInstances_: ModuleInstance[] = [];
@@ -133,54 +142,60 @@ export class ModulesElement extends CrLitElement {
   // loading behavior.
   private modulesReloadable_: boolean =
       loadTimeData.getBoolean('modulesReloadable');
+  private resizeObserver_: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    const widths: Set<number> = new Set();
-    for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
-      const namedWidth = SUPPORTED_MODULE_WIDTHS[i]!;
-      for (let u = 1; u <= this.maxColumnCount_ - i; u++) {
-        const width = (namedWidth.value * u) + (CONTAINER_GAP_WIDTH * (u - 1));
-        if (width <= this.containerMaxWidth_) {
-          widths.add(width);
+    if (this.widthContainer) {
+      this.observeAvailableWidth_(this.widthContainer);
+    } else {
+      const widths: Set<number> = new Set();
+      for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
+        const namedWidth = SUPPORTED_MODULE_WIDTHS[i]!;
+        for (let u = 1; u <= this.maxColumnCount_ - i; u++) {
+          const width =
+              (namedWidth.value * u) + (CONTAINER_GAP_WIDTH * (u - 1));
+          if (width <= this.containerMaxWidth_) {
+            widths.add(width);
+          }
         }
       }
-    }
-    // Widths must be deduped and sorted to ensure the min-width and max-with
-    // media features in the queries produced below are correctly generated.
-    const thresholds = [...widths];
-    thresholds.sort((i, j) => i - j);
+      // Widths must be deduped and sorted to ensure the min-width and max-with
+      // media features in the queries produced below are correctly generated.
+      const thresholds = [...widths];
+      thresholds.sort((i, j) => i - j);
 
-    const queries: QueryDetails[] = [];
-    for (let i = 1; i < thresholds.length - 1; i++) {
+      const queries: QueryDetails[] = [];
+      for (let i = 1; i < thresholds.length - 1; i++) {
+        queries.push({
+          maxWidth: (thresholds[i + 1]! - 1),
+          query: `(min-width: ${
+              thresholds[i]! + 2 * MARGIN_WIDTH}px) and (max-width: ${
+              thresholds[i + 1]! - 1 + (2 * MARGIN_WIDTH)}px)`,
+        });
+      }
+      queries.splice(0, 0, {
+        maxWidth: thresholds[0]!,
+        query: `(max-width: ${thresholds[0]! - 1 + (2 * MARGIN_WIDTH)}px)`,
+      });
       queries.push({
-        maxWidth: (thresholds[i + 1]! - 1),
+        maxWidth: thresholds[thresholds.length - 1]!,
         query: `(min-width: ${
-            thresholds[i]! + 2 * MARGIN_WIDTH}px) and (max-width: ${
-            thresholds[i + 1]! - 1 + (2 * MARGIN_WIDTH)}px)`,
+            thresholds[thresholds.length - 1]! + (2 * MARGIN_WIDTH)}px)`,
+      });
+
+      // Produce media queries with relevant view thresholds at which module
+      // instance optimal widths should be re-evaluated.
+      queries.forEach(details => {
+        const query = WindowProxy.getInstance().matchMedia(details.query);
+        this.eventTracker_.add(query, 'change', (e: MediaQueryListEvent) => {
+          if (e.matches) {
+            this.updateContainerAndChildrenStyles_(details.maxWidth);
+          }
+        });
       });
     }
-    queries.splice(0, 0, {
-      maxWidth: thresholds[0]!,
-      query: `(max-width: ${thresholds[0]! - 1 + (2 * MARGIN_WIDTH)}px)`,
-    });
-    queries.push({
-      maxWidth: thresholds[thresholds.length - 1]!,
-      query: `(min-width: ${
-          thresholds[thresholds.length - 1]! + (2 * MARGIN_WIDTH)}px)`,
-    });
-
-    // Produce media queries with relevant view thresholds at which module
-    // instance optimal widths should be re-evaluated.
-    queries.forEach(details => {
-      const query = WindowProxy.getInstance().matchMedia(details.query);
-      this.eventTracker_.add(query, 'change', (e: MediaQueryListEvent) => {
-        if (e.matches) {
-          this.updateContainerAndChildrenStyles_(details.maxWidth);
-        }
-      });
-    });
 
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
 
@@ -223,6 +238,7 @@ export class ModulesElement extends CrLitElement {
     this.callbackRouter_.removeListener(this.setModulesLoadableListenerId_);
 
     this.eventTracker_.removeAll();
+    this.resizeObserver_?.disconnect();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -244,8 +260,8 @@ export class ModulesElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    this.availableWidth_ = Math.min(
-        document.body.clientWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
+    this.availableWidth_ =
+        this.computeAvailableWidth_(this.widthContainer || document.body);
   }
 
   get pageHandler_(): PageHandlerRemote {
@@ -449,6 +465,29 @@ export class ModulesElement extends CrLitElement {
           this.moduleInstances_.length);
       this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
     }
+  }
+
+  private observeAvailableWidth_(container: HTMLElement) {
+    let lastAvailableWidth: number|null = null;
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const availableWidth = this.computeAvailableWidth_(container);
+      if (availableWidth === lastAvailableWidth) {
+        return;
+      }
+      lastAvailableWidth = availableWidth;
+      this.availableWidth_ = availableWidth;
+      this.updateContainerAndChildrenStyles_(availableWidth);
+    });
+    this.resizeObserver_.observe(container);
+  }
+
+  /**
+   * Returns the width available to the modules in `container`: its width minus
+   * the side margins, capped at the max container width.
+   */
+  private computeAvailableWidth_(container: HTMLElement): number {
+    return Math.min(
+        container.clientWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
   }
 
   private updateContainerAndChildrenStyles_(availableWidth: number) {
