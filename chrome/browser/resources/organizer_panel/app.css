@@ -43,7 +43,7 @@
 }
 
 #list::-webkit-scrollbar-thumb {
-  background: var(--color-side-panel-scrollbar-thumb);
+  background: var(--color-sys-state-disabled);
   background-clip: content-box;
   border: solid 1.5px transparent;
   border-radius: 100px;

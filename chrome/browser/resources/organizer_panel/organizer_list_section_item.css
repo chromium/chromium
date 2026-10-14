@@ -21,6 +21,7 @@
 
 #crUrlListItem::part(iconContainer) {
   background: none;
+  color: var(--color-sys-on-surface-subtle);
   margin-inline-end: 6px;
   width: 28px;
 }
