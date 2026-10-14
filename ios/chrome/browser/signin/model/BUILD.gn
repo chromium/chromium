@@ -417,17 +417,23 @@ source_set("test_support") {
   sources = [
     "identity_test_environment_browser_state_adaptor.h",
     "identity_test_environment_browser_state_adaptor.mm",
+    "signin_test_util.h",
+    "signin_test_util.mm",
   ]
   deps = [
     ":authentication_service",
+    ":fake_system_identity_manager",
     ":model",
     ":system_identity",
     "//base",
     "//components/image_fetcher/core:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
     "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model/trusted_vault",
     "//ios/chrome/browser/sync/model",
   ]
