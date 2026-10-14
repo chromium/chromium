@@ -114,11 +114,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                                 }
                             };
 
-                    private void cancelEnableFullscreenLoadDelay() {
-                        mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
-                        updateWaitingForLoad(false);
-                    }
-
                     @Override
                     public void onContentChanged(Tab tab) {
                         onWebContentsUpdated(tab.getWebContents());
@@ -160,7 +155,13 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int type) {
-                        cancelEnableFullscreenLoadDelay();
+                        mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
+                        // While a main frame navigation is still in flight the controls must stay
+                        // locked when the tab is shown again, otherwise hiding and showing the tab
+                        // lets a page scroll the real URL away before the navigation commits. The
+                        // lock is released as usual once the outstanding navigations finish.
+                        if (!mOutstandingNavigations.isEmpty()) return;
+                        updateWaitingForLoad(false);
                     }
 
                     @Override

@@ -337,6 +337,76 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
+    public void testHiddenDuringNavigationKeepsLock() {
+        // Inspired by https://crbug.com/567765567
+        when(mTabImpl.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+        when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
+        when(mNavigationHandle1.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+
+        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
+        verify(mTabImpl).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        // Set this after constructor to dodge the ImeAdapter#fromWebContents().
+        when(mTabImpl.getWebContents()).thenReturn(mWebContents);
+
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        // Background and foreground the tab while the navigation is still in flight.
+        tabObserver.onHidden(mTabImpl, TabHidingType.ACTIVITY_HIDDEN);
+        tabObserver.onShown(mTabImpl, TabSelectionType.FROM_USER);
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        // Should still be locked as the navigation is outstanding.
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        // Finishing the navigation unlocks after the usual delay.
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    public void testHiddenAfterNavigationReleasesLock() {
+        when(mTabImpl.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+        when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
+        when(mNavigationHandle1.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+
+        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
+        verify(mTabImpl).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        // Set this after constructor to dodge the ImeAdapter#fromWebContents().
+        when(mTabImpl.getWebContents()).thenReturn(mWebContents);
+
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        // With no navigation outstanding, hiding the tab releases the lock immediately.
+        tabObserver.onHidden(mTabImpl, TabHidingType.ACTIVITY_HIDDEN);
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
     public void testLockedByTabState_ChromeUrl() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
