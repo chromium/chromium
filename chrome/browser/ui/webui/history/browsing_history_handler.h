@@ -62,8 +62,6 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
       base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
 #endif
 
-  void StartQueryHistory();
-
   void SetPage(mojo::PendingRemote<history::mojom::Page> pending_page) override;
 
   void ShowSidePanelUI() override;

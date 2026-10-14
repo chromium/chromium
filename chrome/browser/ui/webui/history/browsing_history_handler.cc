@@ -458,7 +458,18 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
       identity_manager_(
           CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile))),
       clock_(base::DefaultClock::GetInstance()),
-      browsing_history_service_(nullptr) {}
+      browsing_history_service_(nullptr) {
+  HistoryService* local_history = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  auto* device_info_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
+  browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
+      this, local_history, sync_service,
+      device_info_service ? device_info_service->GetDeviceInfoTracker()
+                          : nullptr);
+}
 
 BrowsingHistoryHandler::~BrowsingHistoryHandler() = default;
 
@@ -526,33 +537,12 @@ void BrowsingHistoryHandler::ShowSidePanelUI() {
 #endif
 }
 
-void BrowsingHistoryHandler::StartQueryHistory() {
-  HistoryService* local_history = HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  auto* device_info_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-  browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
-      this, local_history, sync_service,
-      device_info_service ? device_info_service->GetDeviceInfoTracker()
-                          : nullptr);
-
-  // 150 = RESULTS_PER_PAGE from chrome/browser/resources/history/constants.js
-  SendHistoryQuery(150, std::string(), std::nullopt, true, true);
-}
-
 void BrowsingHistoryHandler::QueryHistory(const std::string& query,
                                           int max_count,
                                           std::optional<double> begin_timestamp,
                                           bool include_user_visits,
                                           bool include_actor_visits,
                                           QueryHistoryCallback callback) {
-  if (!browsing_history_service_) {
-    // Page was refreshed, so need to call StartQueryHistory here
-    StartQueryHistory();
-  }
-
   // Reset the query history continuation callback. Since it is repopulated in
   // OnQueryComplete(), it cannot be reset earlier, as the early return above
   // prevents the QueryHistory() call to the browsing history service.
