@@ -7016,7 +7016,7 @@
   {
     "name": "metrickit-defer-registration",
     "owners": [ "junov@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 165
   },
   {
     "name": "metrickit-non-crash-reports",
