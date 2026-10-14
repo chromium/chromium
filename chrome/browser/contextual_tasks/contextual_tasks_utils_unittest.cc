@@ -343,12 +343,25 @@ TEST_F(ContextualTasksUtilsTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
   EXPECT_TRUE(CanShareTabContext(profile_.get()));
+  EXPECT_FALSE(CanShareTabContext(profile_->GetPrimaryOTRProfile(true)));
 
   profile_->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kDisabled));
   EXPECT_FALSE(CanShareTabContext(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsUrlValidForContextSharing) {
+  EXPECT_TRUE(IsUrlValidForContextSharing(GURL("https://example.com")));
+  EXPECT_TRUE(IsUrlValidForContextSharing(GURL("http://example.com/page")));
+  EXPECT_TRUE(IsUrlValidForContextSharing(GURL("file:///tmp/test.pdf")));
+  EXPECT_FALSE(IsUrlValidForContextSharing(GURL()));
+  EXPECT_FALSE(IsUrlValidForContextSharing(GURL("about:blank")));
+  EXPECT_FALSE(IsUrlValidForContextSharing(GURL("chrome://version")));
+  EXPECT_FALSE(IsUrlValidForContextSharing(GURL("chrome-untrusted://test")));
+  EXPECT_FALSE(IsUrlValidForContextSharing(
+      GURL("chrome-extension://abcdefghijklmnop/index.html")));
 }
 
 TEST_F(ContextualTasksUtilsTest, CreateImageEncodingOptions) {

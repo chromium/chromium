@@ -1580,4 +1580,124 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   run_loop.Run();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    ShareTabsWithActiveOrNewThread_CreatesTaskAndAttachesActiveAndValidTabs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* active_tab = CreateMockTab();
+  tabs::TabInterface* valid_tab = CreateMockTab();
+  tabs::TabInterface* invalid_tab = CreateMockTab();
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/active"));
+  content::WebContentsTester::For(valid_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/shared"));
+  content::WebContentsTester::For(invalid_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://version"));
+
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+
+  base::Uuid new_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask new_task(new_task_id);
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillOnce(Return(std::nullopt))
+      .WillOnce(Return(std::nullopt))
+      .WillRepeatedly(Return(new_task));
+  EXPECT_CALL(
+      *mock_controller_,
+      AssociateTabWithTask(new_task_id, sessions::SessionTabHelper::IdForTab(
+                                            active_tab->GetContents())))
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(
+      *mock_controller_,
+      AssociateTabWithTask(new_task_id, sessions::SessionTabHelper::IdForTab(
+                                            valid_tab->GetContents())))
+      .Times(0);
+  EXPECT_CALL(
+      *mock_controller_,
+      AssociateTabWithTask(new_task_id, sessions::SessionTabHelper::IdForTab(
+                                            invalid_tab->GetContents())))
+      .Times(0);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(active_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(valid_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(invalid_tab->GetHandle()))
+      .Times(0);
+
+  coordinator_->ShareTabsWithActiveOrNewThread(
+      {valid_tab->GetHandle(), invalid_tab->GetHandle()});
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    ShareTabsWithActiveOrNewThread_PanelAlreadyOpen_AttachesSharedTabToCurrentTask) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* active_tab = CreateMockTab();
+  tabs::TabInterface* valid_tab = CreateMockTab();
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/active"));
+  content::WebContentsTester::For(valid_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/shared"));
+
+  base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask existing_task(existing_task_id);
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(existing_task));
+
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(0);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(0);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(active_tab->GetHandle()))
+      .Times(0);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(valid_tab->GetHandle()))
+      .Times(1);
+
+  coordinator_->ShareTabsWithActiveOrNewThread({valid_tab->GetHandle()});
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShareTabsWithActiveOrNewThread_IgnoresWhenNoValidTabs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* invalid_tab = CreateMockTab();
+  content::WebContentsTester::For(invalid_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://version"));
+
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(0);
+
+  coordinator_->ShareTabsWithActiveOrNewThread({invalid_tab->GetHandle()});
+}
+#endif
+
 }  // namespace contextual_tasks

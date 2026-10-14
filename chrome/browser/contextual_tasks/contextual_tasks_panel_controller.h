@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/observer_list_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -29,6 +32,8 @@ class ContextualTask;
 
 class ContextualTasksPanelController {
  public:
+  DECLARE_USER_DATA(ContextualTasksPanelController);
+
   virtual ~ContextualTasksPanelController() = default;
 
   class Observer : public base::CheckedObserver {
@@ -57,6 +62,14 @@ class ContextualTasksPanelController {
 
   // Open the panel in zero state, or reset to zero state if already open.
   virtual void OpenInZeroState() = 0;
+
+  // Shares `tab_handles` when starting a new thread from the tab context menu.
+  // If the side panel is already open on the active tab, attaches `tab_handles`
+  // to the current task; otherwise, opens a fresh zero-state thread and
+  // attaches both the active tab (if valid for context sharing) and
+  // `tab_handles` as context.
+  virtual void ShareTabsWithActiveOrNewThread(
+      const std::vector<tabs::TabHandle>& tab_handles) = 0;
 
   // State checks.
   // Check if the panel is currently opening for ContextualTask as another

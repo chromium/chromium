@@ -134,6 +134,9 @@ class ContextualTasksSidePanelCoordinator
       const ContextualTasksSidePanelCoordinator&) = delete;
   ~ContextualTasksSidePanelCoordinator() override;
 
+  static ContextualTasksSidePanelCoordinator* From(
+      BrowserWindowInterface* window);
+
   // ContextualTasksPanelController:
   void AddObserver(ContextualTasksPanelController::Observer* observer) override;
   void RemoveObserver(
@@ -145,6 +148,8 @@ class ContextualTasksSidePanelCoordinator
       std::optional<base::TimeTicks> open_time_ticks = std::nullopt) override;
   void Close() override;
   void OpenInZeroState() override;
+  void ShareTabsWithActiveOrNewThread(
+      const std::vector<tabs::TabHandle>& tab_handles) override;
   bool IsPanelOpenForContextualTask() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;
@@ -292,6 +297,11 @@ class ContextualTasksSidePanelCoordinator
   // Notifies the ActiveTaskContextProvider about the current session state.
   // This checks both the panel and the active tab for a valid session handle.
   void NotifyActiveTaskContextProvider();
+
+  // Attaches `tab_handles` as context to `task_id` and updates the side panel
+  // session and tab underlines.
+  void AttachTabsToTask(const base::Uuid& task_id,
+                        const std::vector<tabs::TabHandle>& tab_handles);
 
   void RecordSessionEndMetrics();
 
