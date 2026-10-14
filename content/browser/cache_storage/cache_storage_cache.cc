@@ -294,10 +294,19 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
 // duplicates.
 //
 // The URLs are reported in normalized (fragment-stripped) form, since that is
-// what the duplicates collided on.  It is also deterministic: std::sort()
-// below is not stable, so among operations sharing a URL the relative order
-// is unspecified, and reporting the raw URL of one member of a duplicate pair
-// could name either fragment.
+// what the duplicates collided on; the raw URLs of a colliding pair may differ
+// in their fragments.
+//
+// See Batch Cache Operations, Query Cache and Request Matches Cached Item:
+//   https://w3c.github.io/ServiceWorker/#batch-cache-operations-algorithm
+//   https://w3c.github.io/ServiceWorker/#query-cache-algorithm
+//   https://w3c.github.io/ServiceWorker/#request-matches-cached-item-algorithm
+//
+// The check is order-dependent: each operation is compared only against the
+// puts that come before it in the list, using the earlier put's VARY header.
+// For puts A with "Vary: x-a" and B with "Vary: x-b" to the same URL, [A, B]
+// compares the requests' x-a headers while [B, A] compares their x-b headers,
+// so one order can be rejected while the other succeeds.
 std::vector<std::string> FindDuplicateOperations(
     const std::vector<blink::mojom::BatchOperationPtr>& operations) {
   using blink::mojom::BatchOperation;
@@ -331,10 +340,9 @@ std::vector<std::string> FindDuplicateOperations(
   for (const auto& op : operations) {
     sorted.push_back({op.get(), NormalizeCacheUrl(op->request->url).spec()});
   }
-  std::sort(sorted.begin(), sorted.end(),
-            [](const SortedOperation& left, const SortedOperation& right) {
-              return left.normalized_url < right.normalized_url;
-            });
+  // The sort is stable so that entries sharing a URL stay in batch order,
+  // which the order-dependent check below relies on.
+  std::ranges::stable_sort(sorted, {}, &SortedOperation::normalized_url);
 
   // Check each entry in the sorted vector for any duplicates.  Since the
   // list is sorted we only need to inspect the immediate neighbors that
@@ -367,14 +375,9 @@ std::vector<std::string> FindDuplicateOperations(
         break;
       }
 
-      // VaryMatches() is asymmetric since the operation depends on the VARY
-      // header in the target response.  Since we only visit each pair of
-      // entries once we need to perform the VaryMatches() call in both
-      // directions.
-      if (VaryMatches(outer_op->request->headers, inner_op->request->headers,
-                      inner_op->response->response_type,
-                      inner_op->response->headers) ||
-          VaryMatches(outer_op->request->headers, inner_op->request->headers,
+      // `outer_op` comes before `inner_op` in the batch, so only its VARY
+      // header is used.
+      if (VaryMatches(inner_op->request->headers, outer_op->request->headers,
                       outer_op->response->response_type,
                       outer_op->response->headers)) {
         duplicate_url_list.push_back(sorted[j].normalized_url);

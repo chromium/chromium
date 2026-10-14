@@ -1724,6 +1724,65 @@ TEST_P(CacheStorageCacheTestP, PutDifferentVaryInBatchSucceeds) {
   EXPECT_TRUE(Match(bar_request));
 }
 
+// The duplicate check is order-dependent.  Each entry is compared only against
+// the entries before it, using the VARY header of the earlier entry's
+// response.  The next two tests put the same pair of entries in both orders:
+//
+//   shape: request {vary_shape: circle, vary_size: big}, "Vary: vary_shape"
+//   size:  request {vary_shape: square, vary_size: big}, "Vary: vary_size"
+//
+// Checked with shape's VARY header the requests differ; checked with size's
+// they are equal.
+std::vector<blink::mojom::BatchOperationPtr> CreateAsymmetricVaryOperations(
+    const blink::mojom::FetchAPIRequestPtr& request,
+    blink::mojom::FetchAPIResponsePtr shape_response,
+    blink::mojom::FetchAPIResponsePtr size_response,
+    bool shape_first) {
+  blink::mojom::BatchOperationPtr shape =
+      CreatePutOperation(request, std::move(shape_response));
+  shape->request->headers["vary_shape"] = "circle";
+  shape->request->headers["vary_size"] = "big";
+  shape->response->headers["vary"] = "vary_shape";
+
+  blink::mojom::BatchOperationPtr size =
+      CreatePutOperation(request, std::move(size_response));
+  size->request->headers["vary_shape"] = "square";
+  size->request->headers["vary_size"] = "big";
+  size->response->headers["vary"] = "vary_size";
+
+  std::vector<blink::mojom::BatchOperationPtr> operations;
+  operations.push_back(std::move(shape_first ? shape : size));
+  operations.push_back(std::move(shape_first ? size : shape));
+  return operations;
+}
+
+TEST_P(CacheStorageCacheTestP, PutVaryMatchingOnlyLaterEntryInBatchSucceeds) {
+  // The size entry is checked against the shape entry using
+  // "Vary: vary_shape", and circle != square.  The shape entry's request would
+  // match the size entry under "Vary: vary_size", but the spec never makes
+  // that comparison because the size entry comes later.
+  EXPECT_EQ(CacheStorageError::kSuccess,
+            BatchOperation(CreateAsymmetricVaryOperations(
+                body_request_, CreateNoBodyResponse(), CreateBlobBodyResponse(),
+                /*shape_first=*/true)));
+  EXPECT_FALSE(callback_message_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutVaryMatchingEarlierEntryInBatchFails) {
+  // The shape entry is checked against the size entry using
+  // "Vary: vary_size", and both requests are big.
+  EXPECT_EQ(CacheStorageError::kErrorDuplicateOperation,
+            BatchOperation(CreateAsymmetricVaryOperations(
+                body_request_, CreateNoBodyResponse(), CreateBlobBodyResponse(),
+                /*shape_first=*/false)));
+  ASSERT_TRUE(callback_message_);
+  EXPECT_TRUE(callback_message_.value().contains(BodyUrl().spec()));
+
+  // Neither operation should have completed.
+  EXPECT_TRUE(Keys());
+  EXPECT_EQ(0u, callback_strings_.size());
+}
+
 TEST_P(CacheStorageCacheTestP, MatchNoBody) {
   EXPECT_TRUE(Put(no_body_request_, CreateNoBodyResponse()));
   EXPECT_TRUE(Match(no_body_request_));
