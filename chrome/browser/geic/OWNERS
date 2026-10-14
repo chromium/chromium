@@ -1,7 +1,7 @@
-alexwchen@google.com
+alexwchen@chromium.org
 austinzzr@google.com
 esalma@google.com
-ftirelo@google.com
+ftirelo@chromium.org
 
 # Mojom defines the IPC surface exposed to privileged content and is
 # security-sensitive: adding an interface or method requires security review.
