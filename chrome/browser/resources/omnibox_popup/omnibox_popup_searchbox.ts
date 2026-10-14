@@ -887,9 +887,14 @@ export class OmniboxPopupSearchboxElement extends
     // A right-click should only open the context menu: keep the current
     // selection and elided URL, matching Views omnibox. On Mac, Blink's
     // context menu selects the word under the pointer (native behavior), so
-    // only guard when there is an active selection. Blink still dispatches
-    // the `contextmenu` event.
-    if (e.button === 2 && (hasSelection || !isMac)) {
+    // only guard when there is an active selection. If the input was unfocused
+    // focus it and select all text first. Blink still dispatches the
+    // `contextmenu` event.
+    if (e.button === 2 && (wasUnfocused || hasSelection || !isMac)) {
+      if (wasUnfocused) {
+        this.$.input.focus();
+        this.getInputElement().select();
+      }
       e.preventDefault();
       return;
     }

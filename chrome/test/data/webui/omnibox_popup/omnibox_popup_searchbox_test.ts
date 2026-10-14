@@ -5057,6 +5057,46 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(elidedText.length, input.selectionEnd);
      });
 
+ test('RightClickWhenBlurred_FocusesAndSelectsAll', async () => {
+   const text = 'hello world';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: text,
+     isFocused: true,
+     selection: {start: text.length, end: text.length},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+   assertEquals(text, input.value);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+
+   // Blur the searchbox while keeping the popup open (e.g. draft text).
+   callbackRouter.setFocus(false, false, false);
+   await microtasksFinished();
+   assertEquals(null, searchbox.shadowRoot.activeElement);
+
+   // Right-click mousedown on the blurred input.
+   const event = new MouseEvent('mousedown', {
+     button: 2,
+     buttons: 2,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     cancelable: true,
+     composed: true,
+   });
+   searchbox.getInputElement().dispatchEvent(event);
+   await microtasksFinished();
+
+   // Verify the input is focused, all text is selected, and default mousedown
+   // was prevented.
+   assertTrue(event.defaultPrevented);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(0, input.selectionStart);
+   assertEquals(text.length, input.selectionEnd);
+ });
+
  suite('SecondClickOnAllSelectedElidedUrl', () => {
    const elidedText = 'example.com/path';
    const fullUrl = 'https://www.example.com/path';
