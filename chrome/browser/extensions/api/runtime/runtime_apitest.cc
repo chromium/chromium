@@ -2245,9 +2245,6 @@ IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
   // `onExtensionLoaded` must not also receive `"reload"`. Also verify that
   // `onEnabled` is not dispatched and `onExtensionLoaded` does not receive
   // `"enable"`.
-  // TODO(crbug.com/550447466): Look into changing unpacked reload to behave
-  // like a reload rather than an update and a reload. Until then, the
-  // `"update"` event overrides the `"reload"` event for unpacked extensions.
   ExtensionTestMessageListener update_install_listener("installed");
   ExtensionTestMessageListener update_loaded_listener("loaded:update");
   ExtensionTestMessageListener loaded_reload_failure_listener("loaded:reload");
