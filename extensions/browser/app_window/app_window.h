@@ -361,10 +361,16 @@ class AppWindow : public content::WebContentsDelegate,
 
   // Shows the window if its contents have been painted; otherwise flags the
   // window to be shown as soon as its contents are painted for the first time.
+  // Note: May synchronously close the native window and destroy `this`.
+  // Callers that access the AppWindow after this call must check liveness via
+  // GetWeakPtr().
   void Show(ShowType show_type);
 
   // Hides the window. If the window was previously flagged to be shown on
   // first paint, it will be unflagged.
+  // Note: May synchronously close the native window and destroy `this`.
+  // Callers that access the AppWindow after this call must check liveness via
+  // GetWeakPtr().
   void Hide();
 
   AppWindowContents* app_window_contents_for_test() {

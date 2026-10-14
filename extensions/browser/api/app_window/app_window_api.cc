@@ -200,10 +200,18 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           }
 
           if (!options->hidden || !*options->hidden) {
+            // Showing the existing window may synchronously close the native
+            // window and destroy `existing_window`.
+            base::WeakPtr<AppWindow> weak_existing_window =
+                existing_window->GetWeakPtr();
             if (options->focused && !*options->focused)
               existing_window->Show(AppWindow::SHOW_INACTIVE);
             else
               existing_window->Show(AppWindow::SHOW_ACTIVE);
+            if (!weak_existing_window) {
+              return RespondNow(
+                  Error(app_window_constants::kPrematureWindowClose));
+            }
           }
 
           // We should not return the window until that window is properly

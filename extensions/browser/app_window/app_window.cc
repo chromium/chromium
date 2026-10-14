@@ -740,6 +740,7 @@ void AppWindow::Show(ShowType show_type) {
   bool was_hidden = is_hidden_ || !has_been_shown_;
   is_hidden_ = false;
 
+  base::WeakPtr<AppWindow> weak_this = weak_ptr_factory_.GetWeakPtr();
   switch (show_type) {
     case SHOW_ACTIVE:
       GetBaseWindow()->Show();
@@ -748,13 +749,20 @@ void AppWindow::Show(ShowType show_type) {
       GetBaseWindow()->ShowInactive();
       break;
   }
+  if (!weak_this) {
+    return;
+  }
   AppWindowRegistry::Get(browser_context_)->AppWindowShown(this, was_hidden);
   has_been_shown_ = true;
 }
 
 void AppWindow::Hide() {
   is_hidden_ = true;
+  base::WeakPtr<AppWindow> weak_this = weak_ptr_factory_.GetWeakPtr();
   GetBaseWindow()->Hide();
+  if (!weak_this) {
+    return;
+  }
   AppWindowRegistry::Get(browser_context_)->AppWindowHidden(this);
   app_delegate_->OnHide();
 }

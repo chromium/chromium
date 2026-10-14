@@ -318,6 +318,33 @@ class TestAppWindowClient : public ChromeAppWindowClient {
   }
 };
 
+class ClosingOnShowWindow : public native_app_window::NativeAppWindowViews {
+ public:
+  ClosingOnShowWindow() = default;
+  ~ClosingOnShowWindow() override = default;
+
+  void Show() override {
+    // Simulate synchronous window closure during Show() (e.g. as can happen
+    // when spinning a nested run loop or during synchronous activation
+    // observer notifications).
+    widget()->CloseNow();
+  }
+};
+
+class ClosingOnShowAppWindowClient : public ChromeAppWindowClient {
+ public:
+  ClosingOnShowAppWindowClient() = default;
+  ~ClosingOnShowAppWindowClient() override = default;
+
+  std::unique_ptr<extensions::NativeAppWindow> CreateNativeAppWindow(
+      extensions::AppWindow* window,
+      extensions::AppWindow::CreateParams* params) override {
+    auto native_window = std::make_unique<ClosingOnShowWindow>();
+    native_window->Init(window, *params);
+    return native_window;
+  }
+};
+
 }  // namespace
 
 // Regression test for crbug.com/516948486.
@@ -417,6 +444,48 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInAppWindowCreateForcedFullscreen) {
                               ? chrome.runtime.lastError.message
                               : 'ok');
                 });
+              })
+            )"));
+  EXPECT_EQ(0u, GetAppWindowCount());
+
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+}
+
+// Regression test for crbug.com/553159779: when `chrome.app.window.create()`
+// is called with a window `id` matching an existing singleton window,
+// `AppWindowCreateFunction::Run()` calls `existing_window->Show()`. If `Show()`
+// synchronously closes the native window and deletes `AppWindow`, `Show()` and
+// `AppWindowCreateFunction::Run()` must not continue accessing the destroyed
+// `AppWindow`.
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
+                       UafInAppWindowCreateExistingWindowShow) {
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
+  ASSERT_TRUE(extension);
+
+  ClosingOnShowAppWindowClient test_client;
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::ProcessManager* process_manager =
+      extensions::ProcessManager::Get(browser()->GetProfile());
+  extensions::ExtensionHost* background_host =
+      process_manager->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(background_host);
+
+  EXPECT_EQ("App window is closed before ready to commit first navigation.",
+            content::EvalJs(background_host->host_contents(), R"(
+              new Promise(resolve => {
+                chrome.app.window.create(
+                    'test.html', {id: 'singleton', hidden: true}, () => {
+                      chrome.app.window.create(
+                          'test.html', {id: 'singleton'}, () => {
+                            resolve(chrome.runtime.lastError
+                                        ? chrome.runtime.lastError.message
+                                        : 'ok');
+                          });
+                    });
               })
             )"));
   EXPECT_EQ(0u, GetAppWindowCount());
