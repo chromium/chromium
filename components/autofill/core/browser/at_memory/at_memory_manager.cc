@@ -563,8 +563,8 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
           features::kAutofillAtMemorySearchStatefulness)) {
     state_manager_.OnFilterChanged(filter);
   }
+  CancelPendingQueries(AtMemoryQueryCompleted(false));
   if (filter.empty()) {
-    CancelPendingQueries(AtMemoryQueryCompleted(false));
     ShowEmptyQuerySuggestions();
     return true;
   }
