@@ -31,7 +31,8 @@ export function getHtml(this: OrganizerPanelAppElement) {
   `}
   <button id="closeTabSearchButton" class="dropdown-item"
       @click="${this.onCloseTabSearchClick_}">
-    $i18n{closeTabSearch}
+    ${this.verticalTabsEnabled ? '$i18n{goBackToOpenTabs}' :
+                               '$i18n{closeTabSearch}'}
   </button>
 </cr-action-menu>
 <!--_html_template_end_-->`;

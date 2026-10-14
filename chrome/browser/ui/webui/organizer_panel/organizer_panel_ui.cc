@@ -55,6 +55,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"createTabGroup", IDS_ORGANIZER_PANEL_CREATE_TAB_GROUP},
       {"currentlyPlaying", IDS_ORGANIZER_PANEL_CURRENTLY_PLAYING},
       {"expandAll", IDS_ORGANIZER_PANEL_EXPAND_ALL},
+      {"goBackToOpenTabs", IDS_ORGANIZER_PANEL_GO_BACK_TO_OPEN_TABS},
       {"noRecentlyClosedTabs", IDS_ORGANIZER_PANEL_NO_RECENTLY_CLOSED_TABS},
       {"noResults", IDS_ORGANIZER_PANEL_NO_RESULTS},
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},

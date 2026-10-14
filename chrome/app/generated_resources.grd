@@ -10693,6 +10693,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="In Title Case: The label for the close button and context menu item in the organizer panel to close tab search.">
             Close Tab Search
           </message>
+          <message name="IDS_ORGANIZER_PANEL_GO_BACK_TO_OPEN_TABS" desc="In Title Case: The label for the context menu item in the organizer panel to go back to open tabs.">
+            Go Back to Open Tabs
+          </message>
           <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="In Title Case: The label for the context menu item in the organizer panel that expands all sections.">
             Expand All
           </message>
@@ -10709,6 +10712,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
           <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="The label for the close button and context menu item in the organizer panel to close tab search.">
             Close tab search
+          </message>
+          <message name="IDS_ORGANIZER_PANEL_GO_BACK_TO_OPEN_TABS" desc="The label for the context menu item in the organizer panel to go back to open tabs.">
+            Go back to open tabs
           </message>
           <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="The label for the context menu item in the organizer panel that expands all sections.">
             Expand all
