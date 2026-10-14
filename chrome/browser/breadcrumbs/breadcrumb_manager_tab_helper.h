@@ -38,10 +38,6 @@ class BreadcrumbManagerTabHelper
 
   static BreadcrumbManagerTabHelper* From(tabs::TabInterface* tab);
   static const BreadcrumbManagerTabHelper* From(const tabs::TabInterface* tab);
-  static BreadcrumbManagerTabHelper* FromWebContents(
-      content::WebContents* web_contents);
-  static const BreadcrumbManagerTabHelper* FromWebContents(
-      const content::WebContents* web_contents);
 
   std::optional<int> GetPreviousUniqueId() const { return previous_unique_id_; }
 

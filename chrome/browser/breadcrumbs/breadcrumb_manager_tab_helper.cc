@@ -54,22 +54,6 @@ const BreadcrumbManagerTabHelper* BreadcrumbManagerTabHelper::From(
   return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
-// static
-BreadcrumbManagerTabHelper* BreadcrumbManagerTabHelper::FromWebContents(
-    content::WebContents* web_contents) {
-  return web_contents
-             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
-             : nullptr;
-}
-
-// static
-const BreadcrumbManagerTabHelper* BreadcrumbManagerTabHelper::FromWebContents(
-    const content::WebContents* web_contents) {
-  return web_contents ? From(tabs::TabInterface::MaybeGetFromContents(
-                            const_cast<content::WebContents*>(web_contents)))
-                      : nullptr;
-}
-
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   // web_contents() securely returns nullptr if the WebContents is tearing down.
   // Events emitted by other UserData objects during destruction are ignored.

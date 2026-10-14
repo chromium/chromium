@@ -4,7 +4,8 @@
 
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
-#include "base/strings/string_util.h"
+#include <string>
+
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"

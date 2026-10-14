@@ -20,7 +20,6 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"

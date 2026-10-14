@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <ranges>
+#include <string>
 
 #include "base/containers/circular_deque.h"
-#include "build/build_config.h"
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,32 +18,9 @@
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 namespace {
-
-// A WebContentsObserver to allow waiting on a change in visible security state.
-class SecurityStyleTestObserver : public content::WebContentsObserver {
- public:
-  explicit SecurityStyleTestObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
-  SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
-      delete;
-
-  ~SecurityStyleTestObserver() override = default;
-
-  void DidChangeVisibleSecurityState() override { run_loop_.Quit(); }
-
-  void WaitForDidChangeVisibleSecurityState() { run_loop_.Run(); }
-
- private:
-  // TODO(https://crbug.com/423465927): Explore a better approach to make the
-  // existing tests run with the prewarm feature enabled.
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  base::RunLoop run_loop_;
-};
 
 const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
@@ -100,11 +75,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
  public:
   BreadcrumbManagerTabHelperSecurityStateBrowserTest() {
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
-    CertVerifierBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
