@@ -31,17 +31,17 @@ TPIncident_ValueState MapValueState(
     ValueState value_state,
     ValueState external_validation_value_state) {
   switch (value_state) {
-    case ValueState::CLEARED:
+    case ValueState::CLEARED_HMAC:
       return TPIncident::CLEARED;
-    case ValueState::CHANGED:
+    case ValueState::CHANGED_HMAC:
       return TPIncident::CHANGED;
     case ValueState::UNTRUSTED_UNKNOWN_VALUE:
       return TPIncident::UNTRUSTED_UNKNOWN_VALUE;
     default:
       switch (external_validation_value_state) {
-        case ValueState::CLEARED:
+        case ValueState::CLEARED_HMAC:
           return TPIncident::BYPASS_CLEARED;
-        case ValueState::CHANGED:
+        case ValueState::CHANGED_HMAC:
           return TPIncident::BYPASS_CHANGED;
         default:
           return TPIncident::UNKNOWN;

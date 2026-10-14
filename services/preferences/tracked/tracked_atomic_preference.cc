@@ -101,7 +101,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
   // Auth data needs to be stored if the state is anything other than the two
   // ideal "unchanged" states. This includes writing an encrypted hash to a
   // preference that was UNCHANGED_VIA_HMAC_FALLBACK.
-  if (value_state != ValueState::UNCHANGED &&
+  if (value_state != ValueState::UNCHANGED_HMAC &&
       value_state != ValueState::UNCHANGED_ENCRYPTED) {
     // Get the new value (which could be the default if a reset occurred).
     const base::Value* new_value =
@@ -118,7 +118,8 @@ bool TrackedAtomicPreference::EnforceAndReport(
   // Update auth data in the external store if there is one and there either was
   // a reset or external validation failed.
   if (external_validation_transaction &&
-      (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
+      (was_reset ||
+       external_validation_value_state != ValueState::UNCHANGED_HMAC)) {
     const base::Value* new_value =
         pref_store_contents.FindByDottedPath(pref_path_);
     external_validation_transaction->StoreHmac(pref_path_, new_value);

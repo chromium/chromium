@@ -74,19 +74,20 @@ class PreferenceValidationDelegateTest : public testing::Test {
     typedef safe_browsing::
         ClientIncidentReport_IncidentData_TrackedPreferenceIncident TPIncident;
     switch (store_state) {
-      case ValueState::CLEARED:
+      case ValueState::CLEARED_HMAC:
         EXPECT_EQ(TPIncident::CLEARED, incident_state);
         break;
-      case ValueState::CHANGED:
+      case ValueState::CHANGED_HMAC:
         EXPECT_EQ(TPIncident::CHANGED, incident_state);
         break;
       case ValueState::UNTRUSTED_UNKNOWN_VALUE:
         EXPECT_EQ(TPIncident::UNTRUSTED_UNKNOWN_VALUE, incident_state);
         break;
       default:
-        if (external_validation_value_state == ValueState::CLEARED) {
+        if (external_validation_value_state == ValueState::CLEARED_HMAC) {
           EXPECT_EQ(TPIncident::BYPASS_CLEARED, incident_state);
-        } else if (external_validation_value_state == ValueState::CHANGED) {
+        } else if (external_validation_value_state ==
+                   ValueState::CHANGED_HMAC) {
           EXPECT_EQ(TPIncident::BYPASS_CHANGED, incident_state);
         } else {
           FAIL() << "unexpected store state";
@@ -115,8 +116,8 @@ class PreferenceValidationDelegateTest : public testing::Test {
 // Tests that a NULL value results in an incident with no value.
 TEST_F(PreferenceValidationDelegateTest, NullValue) {
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, std::nullopt, ValueState::CLEARED, ValueState::UNSUPPORTED,
-      false /* is_personal */);
+      kPrefPath, std::nullopt, ValueState::CLEARED_HMAC,
+      ValueState::UNSUPPORTED, false /* is_personal */);
   std::unique_ptr<safe_browsing::ClientIncidentReport_IncidentData> incident(
       incidents_.back()->TakePayload());
   EXPECT_FALSE(incident->tracked_preference().has_atomic_value());
@@ -177,7 +178,7 @@ class PreferenceValidationDelegateValues
 
 TEST_P(PreferenceValidationDelegateValues, Value) {
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, MakeValue(value_type_), ValueState::CLEARED,
+      kPrefPath, MakeValue(value_type_), ValueState::CLEARED_HMAC,
       ValueState::UNSUPPORTED, false /* is_personal */);
   ASSERT_EQ(1U, incidents_.size());
   std::unique_ptr<safe_browsing::ClientIncidentReport_IncidentData> incident(
@@ -189,7 +190,7 @@ TEST_P(PreferenceValidationDelegateValues, Value) {
 TEST_P(PreferenceValidationDelegateValues, OnProfileDestroyed) {
   testing_profile_manager_.DeleteTestingProfile("profile 1");
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, MakeValue(value_type_), ValueState::CLEARED,
+      kPrefPath, MakeValue(value_type_), ValueState::CLEARED_HMAC,
       ValueState::UNSUPPORTED, false /* is_personal */);
   ASSERT_EQ(0U, incidents_.size());
 }
@@ -202,12 +203,14 @@ TEST_F(PreferenceValidationDelegateTest, OnProfileDestroyedSplit) {
   testing_profile_manager_.DeleteTestingProfile("profile 2");
   delegate->OnSplitPreferenceValidation(
       kPrefPath, invalid_keys_, external_validation_invalid_keys_,
-      ValueState::CLEARED, ValueState::UNSUPPORTED, false /* is_personal */);
+      ValueState::CLEARED_HMAC, ValueState::UNSUPPORTED,
+      false /* is_personal */);
 
   testing_profile_manager_.DeleteTestingProfile("profile 1");
   instance_->OnSplitPreferenceValidation(
       kPrefPath, invalid_keys_, external_validation_invalid_keys_,
-      ValueState::CLEARED, ValueState::UNSUPPORTED, false /* is_personal */);
+      ValueState::CLEARED_HMAC, ValueState::UNSUPPORTED,
+      false /* is_personal */);
   ASSERT_EQ(0U, incidents_.size());
 }
 
@@ -262,9 +265,9 @@ TEST_P(PreferenceValidationDelegateNoIncident, Split) {
 INSTANTIATE_TEST_SUITE_P(
     NoIncident,
     PreferenceValidationDelegateNoIncident,
-    testing::Combine(testing::Values(ValueState::UNCHANGED,
+    testing::Combine(testing::Values(ValueState::UNCHANGED_HMAC,
                                      ValueState::TRUSTED_UNKNOWN_VALUE),
-                     testing::Values(ValueState::UNCHANGED,
+                     testing::Values(ValueState::UNCHANGED_HMAC,
                                      ValueState::UNSUPPORTED,
                                      ValueState::UNTRUSTED_UNKNOWN_VALUE)));
 
@@ -325,8 +328,8 @@ TEST_P(PreferenceValidationDelegateWithIncident, Split) {
   EXPECT_EQ(kPrefPath, tp_incident.path());
   EXPECT_FALSE(tp_incident.has_atomic_value());
   if (!is_personal_) {
-    if (value_state_ == ValueState::CLEARED ||
-        value_state_ == ValueState::CHANGED ||
+    if (value_state_ == ValueState::CLEARED_HMAC ||
+        value_state_ == ValueState::CHANGED_HMAC ||
         value_state_ == ValueState::UNTRUSTED_UNKNOWN_VALUE) {
       ExpectKeysEquate(invalid_keys_, tp_incident.split_key());
     } else {
@@ -344,10 +347,10 @@ TEST_P(PreferenceValidationDelegateWithIncident, Split) {
 INSTANTIATE_TEST_SUITE_P(
     WithIncident,
     PreferenceValidationDelegateWithIncident,
-    testing::Combine(testing::Values(ValueState::CLEARED,
-                                     ValueState::CHANGED,
+    testing::Combine(testing::Values(ValueState::CLEARED_HMAC,
+                                     ValueState::CHANGED_HMAC,
                                      ValueState::UNTRUSTED_UNKNOWN_VALUE),
-                     testing::Values(ValueState::UNCHANGED,
+                     testing::Values(ValueState::UNCHANGED_HMAC,
                                      ValueState::UNSUPPORTED,
                                      ValueState::UNTRUSTED_UNKNOWN_VALUE),
                      testing::Bool()));
@@ -355,16 +358,18 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     WithBypassIncident,
     PreferenceValidationDelegateWithIncident,
-    testing::Combine(testing::Values(ValueState::UNCHANGED,
+    testing::Combine(testing::Values(ValueState::UNCHANGED_HMAC,
                                      ValueState::TRUSTED_UNKNOWN_VALUE),
-                     testing::Values(ValueState::CHANGED, ValueState::CLEARED),
+                     testing::Values(ValueState::CHANGED_HMAC,
+                                     ValueState::CLEARED_HMAC),
                      testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     WithIncidentIgnoreBypass,
     PreferenceValidationDelegateWithIncident,
-    testing::Combine(testing::Values(ValueState::CLEARED,
-                                     ValueState::CHANGED,
+    testing::Combine(testing::Values(ValueState::CLEARED_HMAC,
+                                     ValueState::CHANGED_HMAC,
                                      ValueState::UNTRUSTED_UNKNOWN_VALUE),
-                     testing::Values(ValueState::CHANGED, ValueState::CLEARED),
+                     testing::Values(ValueState::CHANGED_HMAC,
+                                     ValueState::CLEARED_HMAC),
                      testing::Bool()));

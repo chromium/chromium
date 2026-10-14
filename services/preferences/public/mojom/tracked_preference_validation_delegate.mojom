@@ -10,18 +10,18 @@ import "mojo/public/mojom/base/values.mojom";
 // tracked preference validation event.
 interface TrackedPreferenceValidationDelegate {
   enum ValueState {
-    // The preference value corresponds to its stored hash.
-    UNCHANGED,
-    // The preference has been cleared since the last hash.
-    CLEARED,
-    // The preference value has been changed since the last hash.
-    CHANGED,
-    // No stored hash exists for the preference value.
+    // The preference value corresponds to its stored HMAC.
+    UNCHANGED_HMAC,
+    // The preference has been cleared since the last HMAC.
+    CLEARED_HMAC,
+    // The preference value has been changed since the last HMAC.
+    CHANGED_HMAC,
+    // No stored authenticator exists for the preference value.
     UNTRUSTED_UNKNOWN_VALUE,
-    // No stored hash exists for the preference value, but the current set of
-    // hashes stored is trusted and thus this value can safely be seeded. This
-    // happens when all hashes are already properly seeded and a newly
-    // tracked value needs to be seeded).
+    // No stored authenticator exists for the preference value, but the current
+    // set of authenticators stored is trusted and thus this value can safely be
+    // authenticated. This happens when all authenticators are already valid and
+    // a newly tracked value needs to have an authenticator calculated.
     TRUSTED_UNKNOWN_VALUE,
     // Null values are inherently trusted.
     TRUSTED_NULL_VALUE,
@@ -30,44 +30,42 @@ interface TrackedPreferenceValidationDelegate {
     // ---- Encrypted Hash Path States ----
     // These are used when the encryptor is available and an encrypted hash is
     // present.
-    // The preference value corresponds to its stored and valid ENCRYPTED HASH.
+    // The preference value corresponds to its stored and valid encrypted hash.
     UNCHANGED_ENCRYPTED,
-    // The preference value has been changed, and its stored ENCRYPTED HASH is
+    // The preference value has been changed, and its stored encrypted hash is
     // invalid or fails to decrypt.
     CHANGED_ENCRYPTED,
-    // The preference has been cleared, but a stored ENCRYPTED HASH was found.
+    // The preference has been cleared, but a stored encrypted hash was found.
     CLEARED_ENCRYPTED,
 
     // ---- Encrypted Fallback PathStates ----
     // These are used when the encryptor is available, but NO encrypted hash is
-    // present, so validation falls back to the legacy MAC.
-    // The preference value corresponds to its stored legacy MAC, signaling
+    // present, so validation falls back to the legacy HMAC.
+    // The preference value corresponds to its stored legacy HMAC, signaling
     // that an encrypted hash should be generated.
     UNCHANGED_VIA_HMAC_FALLBACK,
-    // The preference value has been changed, and its legacy MAC is invalid.
+    // The preference value has been changed, and its legacy HMAC is invalid.
     CHANGED_VIA_HMAC_FALLBACK,
-    // The preference has been cleared since the last legacy MAC was stored.
-    CLEARED_VIA_HMAC_FALLBACK
+    // The preference has been cleared since the last legacy HMAC was stored.
+    CLEARED_VIA_HMAC_FALLBACK,
   };
 
-  // Notifies observes of the result (|value_state|) of checking the atomic
+  // Notifies observers of the result (|value_state|) of checking the atomic
   // |value| (which may be null) at |pref_path|. |is_personal| indicates whether
   // or not the value may contain personal information.
-  OnAtomicPreferenceValidation(
-      string pref_path,
-      mojo_base.mojom.Value? value,
-      ValueState value_state,
-      ValueState external_validation_value_state,
-      bool is_personal);
+  OnAtomicPreferenceValidation(string pref_path,
+                               mojo_base.mojom.Value? value,
+                               ValueState value_state,
+                               ValueState external_validation_value_state,
+                               bool is_personal);
 
-  // Notifies observes of the result (|value_state|) of checking the split
+  // Notifies observers of the result (|value_state|) of checking the split
   // value at |pref_path|. |is_personal| indicates whether or not the value may
   // contain personal information.
-  OnSplitPreferenceValidation(
-      string pref_path,
-      array<string> invalid_keys,
-      array<string> external_validation_invalid_keys,
-      ValueState value_state,
-      ValueState external_validation_value_state,
-      bool is_personal);
+  OnSplitPreferenceValidation(string pref_path,
+                              array<string> invalid_keys,
+                              array<string> external_validation_invalid_keys,
+                              ValueState value_state,
+                              ValueState external_validation_value_state,
+                              bool is_personal);
 };

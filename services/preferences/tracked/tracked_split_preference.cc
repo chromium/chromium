@@ -110,7 +110,7 @@ bool TrackedSplitPreference::EnforceAndReport(
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
     base::ListValue* reset_prefs_list =
         pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
-    if (value_state == ValueState::CHANGED ||
+    if (value_state == ValueState::CHANGED_HMAC ||
         value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK ||
         value_state == ValueState::CHANGED_ENCRYPTED) {
       DCHECK(!invalid_keys.empty());
@@ -140,7 +140,7 @@ bool TrackedSplitPreference::EnforceAndReport(
     was_reset = true;
   }
 
-  if (value_state != ValueState::UNCHANGED &&
+  if (value_state != ValueState::UNCHANGED_HMAC &&
       value_state != ValueState::UNCHANGED_ENCRYPTED) {
     // Store authenticators for the new value (whether it was reset or not).
     transaction->StoreSplitHmac(
@@ -155,7 +155,8 @@ bool TrackedSplitPreference::EnforceAndReport(
   // Update authenticators in the external store if there is one and there
   // either was a reset or external validation failed.
   if (external_validation_transaction &&
-      (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
+      (was_reset ||
+       external_validation_value_state != ValueState::UNCHANGED_HMAC)) {
     external_validation_transaction->StoreSplitHmac(
         pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
     if (encryptor) {

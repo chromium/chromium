@@ -31,12 +31,12 @@ TrackedPreferenceHelper::TrackedPreferenceHelper(
 TrackedPreferenceHelper::ResetAction TrackedPreferenceHelper::GetAction(
     ValueState value_state) const {
   switch (value_state) {
-    case ValueState::UNCHANGED:
+    case ValueState::UNCHANGED_HMAC:
     case ValueState::UNCHANGED_ENCRYPTED:
     case ValueState::UNCHANGED_VIA_HMAC_FALLBACK:
       // Desired case, nothing to do.
       return DONT_RESET;
-    case ValueState::CLEARED:
+    case ValueState::CLEARED_HMAC:
     case ValueState::CLEARED_ENCRYPTED:
     case ValueState::CLEARED_VIA_HMAC_FALLBACK:
       // Unfortunate case, but there is nothing we can do.
@@ -49,7 +49,7 @@ TrackedPreferenceHelper::ResetAction TrackedPreferenceHelper::GetAction(
       NOTREACHED()
           << "GetAction should not be called with an UNSUPPORTED value state";
     case ValueState::UNTRUSTED_UNKNOWN_VALUE:  // Falls through.
-    case ValueState::CHANGED:                  // Falls through.
+    case ValueState::CHANGED_HMAC:             // Falls through.
     case ValueState::CHANGED_VIA_HMAC_FALLBACK:
       return enforce_ ? DO_RESET : WANTED_RESET;
     case ValueState::CHANGED_ENCRYPTED:
@@ -67,13 +67,13 @@ void TrackedPreferenceHelper::ReportValidationResult(
     std::string_view validation_type_suffix) const {
   const char* histogram_name = nullptr;
   switch (value_state) {
-    case ValueState::UNCHANGED:
+    case ValueState::UNCHANGED_HMAC:
       histogram_name = user_prefs::tracked::kTrackedPrefHistogramUnchanged;
       break;
-    case ValueState::CLEARED:
+    case ValueState::CLEARED_HMAC:
       histogram_name = user_prefs::tracked::kTrackedPrefHistogramCleared;
       break;
-    case ValueState::CHANGED:
+    case ValueState::CHANGED_HMAC:
       histogram_name = user_prefs::tracked::kTrackedPrefHistogramChanged;
       break;
     case ValueState::UNCHANGED_ENCRYPTED:

@@ -402,7 +402,7 @@ void MockPrefHashStore::SetInvalidKeysResult(
       check_results_.find(path);
   ASSERT_TRUE(result != check_results_.end());
   ValueState value_state = result->second;
-  ASSERT_TRUE(value_state == ValueState::CHANGED ||
+  ASSERT_TRUE(value_state == ValueState::CHANGED_HMAC ||
               value_state == ValueState::CHANGED_ENCRYPTED ||
               value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK);
 
@@ -480,7 +480,7 @@ ValueState MockPrefHashStore::RecordCheckValue(const std::string& path,
   if (result != check_results_.end()) {
     return result->second;
   }
-  return ValueState::UNCHANGED;
+  return ValueState::UNCHANGED_HMAC;
 }
 
 void MockPrefHashStore::RecordStoreHash(const std::string& path,
@@ -506,7 +506,7 @@ void MockPrefHashStore::ClearStoreHash(const std::string& path) {
 }
 
 std::string_view
-MockPrefHashStore::MockPrefHashStoreTransaction ::GetStoreUMASuffix() const {
+MockPrefHashStore::MockPrefHashStoreTransaction::GetStoreUMASuffix() const {
   return "unused";
 }
 
@@ -1039,7 +1039,7 @@ TEST_P(PrefHashFilterTest, EmptyAndUnchanged) {
             mock_validation_delegate_record_->recorded_validations_count());
   ASSERT_EQ(std::size(kTestTrackedPrefs),
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 }
 
 TEST_P(PrefHashFilterTest, StampSuperMACAltersStore) {
@@ -1307,7 +1307,7 @@ TEST_P(PrefHashFilterTest, UnknownNullValue) {
                     ValueState::TRUSTED_NULL_VALUE));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   const MockValidationDelegateRecord::ValidationEvent* validated_split_pref =
       mock_validation_delegate_record_->GetEventForPath(kSplitPref);
@@ -1348,7 +1348,7 @@ TEST_P(PrefHashFilterTest, InitialValueUnknown) {
                     ValueState::UNTRUSTED_UNKNOWN_VALUE));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   MockPrefHashStore::ValuePtrStrategyPair stored_atomic_value_info =
       mock_pref_hash_store_->stored_value(kAtomicPref);
@@ -1422,7 +1422,7 @@ TEST_P(PrefHashFilterTest, InitialValueTrustedUnknown) {
                     ValueState::TRUSTED_UNKNOWN_VALUE));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   // Seeding is always allowed for trusted unknown values.
   const base::Value* atomic_value_in_store =
@@ -1474,8 +1474,8 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
   ASSERT_TRUE(pref_store_contents_.contains(kAtomicPref));
   ASSERT_TRUE(pref_store_contents_.contains(kSplitPref));
 
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED_HMAC);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED_HMAC);
 
   std::vector<std::string> mock_invalid_keys;
   mock_invalid_keys.push_back("a");
@@ -1619,8 +1619,8 @@ TEST_P(PrefHashFilterTest, InitialValueChangedViaHmacFallback) {
 TEST_P(PrefHashFilterTest, EmptyCleared) {
   ASSERT_FALSE(pref_store_contents_.contains(kAtomicPref));
   ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CLEARED);
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CLEARED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CLEARED_HMAC);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CLEARED_HMAC);
   DoFilterOnLoad(false);
   ASSERT_EQ(std::size(kTestTrackedPrefs),
             mock_pref_hash_store_->checked_paths_count());
@@ -1631,10 +1631,10 @@ TEST_P(PrefHashFilterTest, EmptyCleared) {
   ASSERT_EQ(std::size(kTestTrackedPrefs),
             mock_validation_delegate_record_->recorded_validations_count());
   ASSERT_EQ(2u, mock_validation_delegate_record_->CountValidationsOfState(
-                    ValueState::CLEARED));
+                    ValueState::CLEARED_HMAC));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   // Regardless of the enforcement level, the only thing that should be done is
   // to restore the hash for nullptr. The value itself should still be nullptr.
@@ -1664,11 +1664,12 @@ TEST_P(PrefHashFilterTest, DontResetReportOnly) {
   pref_store_contents_.Set(kReportOnlySplitPref,
                            expected_report_only_split_val_content.Clone());
 
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref2, ValueState::CHANGED);
-  mock_pref_hash_store_->SetCheckResult(kReportOnlyPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED_HMAC);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref2, ValueState::CHANGED_HMAC);
+  mock_pref_hash_store_->SetCheckResult(kReportOnlyPref,
+                                        ValueState::CHANGED_HMAC);
   mock_pref_hash_store_->SetCheckResult(kReportOnlySplitPref,
-                                        ValueState::CHANGED);
+                                        ValueState::CHANGED_HMAC);
 
   DoFilterOnLoad(GetParam() >= EnforcementLevel::ENFORCE_ON_LOAD);
   // All prefs should be checked and a new hash should be stored for each tested
@@ -1682,10 +1683,10 @@ TEST_P(PrefHashFilterTest, DontResetReportOnly) {
   ASSERT_EQ(std::size(kTestTrackedPrefs),
             mock_validation_delegate_record_->recorded_validations_count());
   ASSERT_EQ(4u, mock_validation_delegate_record_->CountValidationsOfState(
-                    ValueState::CHANGED));
+                    ValueState::CHANGED_HMAC));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 4u,
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   // No matter what the enforcement level is, the report only pref should never
   // be reset.
@@ -1831,9 +1832,9 @@ TEST_P(PrefHashFilterTest, ExternalValidationValueChanged) {
   pref_store_contents_.Set(kSplitPref, std::move(dict_value));
 
   mock_external_validation_pref_hash_store_->SetCheckResult(
-      kAtomicPref, ValueState::CHANGED);
+      kAtomicPref, ValueState::CHANGED_HMAC);
   mock_external_validation_pref_hash_store_->SetCheckResult(
-      kSplitPref, ValueState::CHANGED);
+      kSplitPref, ValueState::CHANGED_HMAC);
 
   std::vector<std::string> mock_invalid_keys;
   mock_invalid_keys.push_back("a");
@@ -1856,15 +1857,15 @@ TEST_P(PrefHashFilterTest, ExternalValidationValueChanged) {
   // Regular validation should not have any CHANGED prefs.
   ASSERT_EQ(std::size(kTestTrackedPrefs),
             mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 
   // External validation should have two CHANGED prefs (kAtomic and kSplit).
   ASSERT_EQ(2u,
             mock_validation_delegate_record_->CountExternalValidationsOfState(
-                ValueState::CHANGED));
+                ValueState::CHANGED_HMAC));
   ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
             mock_validation_delegate_record_->CountExternalValidationsOfState(
-                ValueState::UNCHANGED));
+                ValueState::UNCHANGED_HMAC));
 }
 
 TEST_P(PrefHashFilterTest, TrackedPreferenceResetStored) {
@@ -1877,7 +1878,7 @@ TEST_P(PrefHashFilterTest, TrackedPreferenceResetStored) {
   int expected_atomic_int_content = 1234;
   pref_store_contents_.Set(kAtomicPref, expected_atomic_int_content);
   ASSERT_TRUE(pref_store_contents_.contains(kAtomicPref));
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED_HMAC);
   DoFilterOnLoad(true);
   ASSERT_FALSE(pref_store_contents_.contains(kAtomicPref));
   const base::ListValue* reset_prefs =
@@ -1903,7 +1904,7 @@ TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetStored) {
   pref_store_contents_.Set(kSplitPref, initial_split_dict_content.Clone());
   ASSERT_TRUE(pref_store_contents_.contains(kSplitPref));
 
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED_HMAC);
   std::vector<std::string> mock_invalid_keys;
   mock_invalid_keys.push_back("a");
   mock_invalid_keys.push_back("c");
@@ -1974,7 +1975,7 @@ TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetMissingDict) {
 
   ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
 
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED_HMAC);
   mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"z", "a", "c", "k"});
 
   // This the code should run without crashing.
@@ -2126,7 +2127,8 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationResetsIfValueChanged) {
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::UNCHANGED_HMAC);
 
   pref_hash_filter_->FilterOnLoad(
       base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
@@ -2171,7 +2173,8 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationResetsIfValueCleared) {
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::UNCHANGED_HMAC);
 
   pref_hash_filter_->FilterOnLoad(
       base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
@@ -2230,7 +2233,7 @@ TEST_P(PrefHashFilterEncryptedTest,
 
   // 2. Configure the mock for the SYNCHRONOUS pass.
   // The HMACs are all valid, so the initial check is UNCHANGED.
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::UNCHANGED);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::UNCHANGED_HMAC);
 
   // 3. Run the synchronous load. This should schedule the deferred task.
   pref_hash_filter_->FilterOnLoad(
@@ -2350,7 +2353,7 @@ TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
   pref_store_contents_.Set(kSplitPref, std::move(tampered_dict));
 
   // Configure the mock to report an invalid unencrypted hash.
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED_HMAC);
   mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"some_invalid_key"});
 
   base::RunLoop run_loop;
@@ -2373,7 +2376,7 @@ TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
   // Clear the mock's call history, then reconfigure it to report that the
   // encrypted hash for the same preference is also invalid.
   mock_pref_hash_store_->ClearTestState();
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED_HMAC);
 
   run_loop.Run();
 
@@ -2421,7 +2424,8 @@ TEST_P(PrefHashFilterEncryptedTest,
   pref_store_contents_.Set(user_prefs::kTrackedPreferencesReset,
                            base::ListValue());
 
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::UNCHANGED_HMAC);
   pref_hash_filter_->FilterOnLoad(
       base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
                      false /* expected_altered */),
@@ -2472,7 +2476,7 @@ TEST_P(PrefHashFilterEncryptedTest,
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED_HMAC);
 
   // The live pref list should be empty before we start.
   ASSERT_TRUE(mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset)
@@ -2521,7 +2525,8 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredValidation_TypeMismatch) {
 
   // Configure the mock for the synchronous pass.
   // The HMACs are all valid, so the initial check is UNCHANGED.
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::UNCHANGED_HMAC);
 
   base::HistogramTester histogram_tester;
 
@@ -2610,7 +2615,7 @@ TEST_P(PrefHashFilterEncryptedTest, DetectsAndLogsMismatch_AllPrefs) {
     pref_store_contents_.SetByDottedPath(param.pref_name,
                                          mismatch_value.Clone());
     mock_pref_hash_store_->SetCheckResult(param.pref_name,
-                                          ValueState::UNCHANGED);
+                                          ValueState::UNCHANGED_HMAC);
     pref_hash_filter_->FilterOnLoad(
         base::BindOnce(&PrefHashFilterTest::GetPrefsBack,
                        base::Unretained(this), false),
