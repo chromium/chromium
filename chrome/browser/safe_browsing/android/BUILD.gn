@@ -161,6 +161,7 @@ android_library("tips_java") {
     "//chrome/browser/tips/android:java",
     "//chrome/browser/tips/android:java_resources",
     "//components/browser_ui/settings/android:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.safe_browsing.tips"
 }

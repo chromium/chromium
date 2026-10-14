@@ -29,10 +29,14 @@ public interface TipsPromoHandler {
     /**
      * Called when the user clicks the positive action button on the promo bottom sheet.
      *
-     * @param context The current Android {@link Context}, typically the hosting activity, which can
-     *     be used to launch the feature's UI (e.g. a settings page).
+     * <p>The {@link WindowAndroid} is the single entry point for activity-scoped dependencies: the
+     * hosting activity {@link Context} is available via {@link WindowAndroid#getContext()}, and
+     * other components (tab model, layout manager, snackbar manager, etc.) via their {@code
+     * UnownedUserData} providers keyed on the window.
+     *
+     * @param windowAndroid The current {@link WindowAndroid}.
      */
-    void onPromoAccepted(Context context);
+    void onPromoAccepted(WindowAndroid windowAndroid);
 
     /**
      * Called when the promo bottom sheet is displayed. Handlers can use the provided {@link

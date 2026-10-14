@@ -11,6 +11,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteAnimationGradientDrawable.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteController.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteControllerProvider.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMediator.java",
@@ -63,6 +64,22 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.quick_delete"
 }
 
+# Kept separate from ":java" because //chrome/browser/tips/android:java depends
+# on ":java" for the legacy promo handler, which would otherwise form a cycle.
+# TODO(crbug.com/559296862): Fold into ":java" once the legacy handler is
+# removed and the cycle no longer exists.
+android_library("tips_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/quick_delete/tips/QuickDeleteTipsPromoHandler.java" ]
+  deps = [
+    ":java",
+    "//build/android:build_java",
+    "//chrome/browser/tips/android:java",
+    "//chrome/browser/tips/android:java_resources",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.quick_delete.tips"
+}
+
 generate_jni("jni_headers") {
   sources = [ "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java" ]
 }
@@ -92,10 +109,12 @@ robolectric_library("junit") {
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilterTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteViewBinderTest.java",
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/tips/QuickDeleteTipsPromoHandlerUnitTest.java",
   ]
   deps = [
     ":java",
     ":java_resources",
+    ":tips_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -108,6 +127,8 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tips/android:java",
+    "//chrome/browser/tips/android:java_resources",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",

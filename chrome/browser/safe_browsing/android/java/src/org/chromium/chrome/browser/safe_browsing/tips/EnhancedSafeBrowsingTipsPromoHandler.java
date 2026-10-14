@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safe_browsing.tips;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
@@ -12,6 +14,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tips.TipsPromoHandler;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -38,7 +41,8 @@ public class EnhancedSafeBrowsingTipsPromoHandler implements TipsPromoHandler {
     }
 
     @Override
-    public void onPromoAccepted(Context context) {
+    public void onPromoAccepted(WindowAndroid windowAndroid) {
+        Context context = assumeNonNull(windowAndroid.getContext().get());
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
                         context,

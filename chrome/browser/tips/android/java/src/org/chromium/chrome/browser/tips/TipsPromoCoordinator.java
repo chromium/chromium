@@ -94,6 +94,7 @@ public class TipsPromoCoordinator {
     public static final int INVALID_TIPS_NOTIFICATION_FEATURE_TYPE = -1;
 
     private final Context mContext;
+    private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final TipsPromoSheetContent mSheetContent;
     private final PropertyModel mPropertyModel;
@@ -131,6 +132,7 @@ public class TipsPromoCoordinator {
             Supplier<LayoutManager> layoutManagerSupplier,
             @TipsNotificationsFeatureType int featureType) {
         mContext = context;
+        mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mPropertyModel = TipsPromoProperties.createDefaultModel();
         mLensController = LensController.getInstance();
@@ -159,7 +161,6 @@ public class TipsPromoCoordinator {
                         ? promoHandler
                         : new LegacyTipsPromoHandler(
                                 featureType,
-                                windowAndroid,
                                 isIncognito,
                                 mIsUserSignedIn,
                                 quickDeleteControllerCreator,
@@ -240,7 +241,7 @@ public class TipsPromoCoordinator {
     }
 
     private void performFeatureAction() {
-        mPromoHandler.onPromoAccepted(mContext);
+        mPromoHandler.onPromoAccepted(mWindowAndroid);
     }
 
     private void onShowPromoForFeatureType(

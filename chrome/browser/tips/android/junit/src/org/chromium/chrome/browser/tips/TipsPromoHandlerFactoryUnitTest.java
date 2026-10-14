@@ -58,7 +58,7 @@ public class TipsPromoHandlerFactoryUnitTest {
         }
 
         @Override
-        public void onPromoAccepted(Context context) {}
+        public void onPromoAccepted(WindowAndroid windowAndroid) {}
 
         @Override
         public Map<String, Float> getCustomSignals(WindowAndroid windowAndroid) {
@@ -74,7 +74,7 @@ public class TipsPromoHandlerFactoryUnitTest {
         }
 
         @Override
-        public void onPromoAccepted(Context context) {}
+        public void onPromoAccepted(WindowAndroid windowAndroid) {}
     }
 
     @Before

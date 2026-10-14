@@ -65,6 +65,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 
 /** Unit tests for {@link TipsPromoCoordinator}. */
@@ -97,6 +98,7 @@ public class TipsPromoCoordinatorUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
@@ -714,7 +716,7 @@ public class TipsPromoCoordinatorUnitTest {
         // Click the positive action button
         mPropertyModel.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER).onClick(mView);
 
-        verify(mockHandler).onPromoAccepted(mActivity);
+        verify(mockHandler).onPromoAccepted(mWindowAndroid);
     }
 
     @Test

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.os.Bundle;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -40,13 +42,20 @@ public class EnhancedSafeBrowsingTipsPromoHandlerUnitTest {
     @Mock private SettingsNavigation mSettingsNavigation;
 
     private Activity mActivity;
+    private WindowAndroid mWindowAndroid;
     private EnhancedSafeBrowsingTipsPromoHandler mHandler;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         mHandler = new EnhancedSafeBrowsingTipsPromoHandler();
+    }
+
+    @After
+    public void tearDown() {
+        mWindowAndroid.destroy();
     }
 
     @Test
@@ -76,7 +85,7 @@ public class EnhancedSafeBrowsingTipsPromoHandlerUnitTest {
 
     @Test
     public void testOnPromoAccepted_OpensSafeBrowsingSettings() {
-        mHandler.onPromoAccepted(mActivity);
+        mHandler.onPromoAccepted(mWindowAndroid);
 
         ArgumentCaptor<Bundle> argsCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mSettingsNavigation)

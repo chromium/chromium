@@ -1599,6 +1599,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/browser/quick_delete:tips_java",
       "//chrome/browser/safe_browsing/android:tips_java",
       "//chrome/browser/tips/android:java",
     ]
