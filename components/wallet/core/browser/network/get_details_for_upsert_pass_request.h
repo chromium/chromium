@@ -13,10 +13,10 @@
 
 namespace wallet {
 
-// Request to retrieve details (legal message and context token) needed prior
-// to upserting a public pass. If the user is not eligible for legal
-// disclosures (e.g. non-US regions), `PassUpsertDetails::context_token` and
-// `PassUpsertDetails::legal_message` will be `std::nullopt`.
+// Request to retrieve details (legal message and its token) needed prior to
+// upserting a public pass. If the user is not eligible for legal disclosures
+// (e.g. non-US regions), `PassUpsertDetails::legal_message` will be
+// `std::nullopt`.
 class GetDetailsForUpsertPassRequest : public WalletRequest {
  public:
   GetDetailsForUpsertPassRequest(

@@ -83,7 +83,7 @@ class AutofillWebDataBackend {
   // NOTE: This method is intended to be called from the DB sequence.
   virtual void NotifyOnEntityInstanceChanged(
       const EntityInstanceChange& change,
-      std::optional<std::string_view> context_token) = 0;
+      std::optional<std::string_view> legal_message_token) = 0;
 
   // Notifies listeners on the DB sequence that a server entity instance's
   // metadata has been added/removed/updated in the WebDatabase.

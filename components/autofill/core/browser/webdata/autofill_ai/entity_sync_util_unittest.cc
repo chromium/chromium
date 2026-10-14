@@ -1176,7 +1176,7 @@ TEST(EntitySyncUtilTest,
   sync_pb::AutofillValuableSpecifics specifics_empty_token =
       CreateSpecificsFromEntityInstance(vehicle_entity,
                                         /*base_specifics=*/{},
-                                        /*context_token=*/"");
+                                        /*legal_message_token=*/"");
   EXPECT_FALSE(specifics_empty_token.has_legal_message_token());
 }
 

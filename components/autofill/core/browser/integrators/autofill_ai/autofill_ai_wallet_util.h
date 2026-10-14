@@ -61,8 +61,8 @@ bool IsEligibleForWalletNotice(const EntityType& type,
 // Returns true if `response` is valid for saving a public pass to Google
 // Wallet. When `user_eligibility` is `UserEligibility::kEligible`, the user
 // must be shown the legal disclosure notice, so both `legal_message_lines` and
-// `context_token` must be non-empty. When the user is not `kEligible` (e.g.
-// `kIneligible`), the response is valid even without them.
+// `legal_message_token` must be non-empty. When the user is not `kEligible`
+// (e.g. `kIneligible`), the response is valid even without them.
 bool IsValidUpsertPassDetailsResponse(
     const WalletPassAccessManager::GetDetailsForUpsertPassResponse& response);
 

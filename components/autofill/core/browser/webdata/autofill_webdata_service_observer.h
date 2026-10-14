@@ -41,7 +41,7 @@ class AutofillWebDataServiceObserverOnDBSequence {
   // in the WebDatabase.
   virtual void EntityInstanceChanged(
       const EntityInstanceChange& change,
-      std::optional<std::string_view> context_token) {}
+      std::optional<std::string_view> legal_message_token) {}
 
   // Called on DB sequence when a server entity instance's metadata has been
   // added/updated/deleted in the WebDatabase.

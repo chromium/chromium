@@ -153,7 +153,7 @@ bool IsValidUpsertPassDetailsResponse(
       WalletPassAccessManager::UserEligibility::kEligible;
   return !should_see_legal_message_notice ||
          (!response.legal_message_lines.empty() &&
-          !response.context_token.empty());
+          !response.legal_message_token.empty());
 }
 
 }  // namespace autofill

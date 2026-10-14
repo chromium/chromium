@@ -221,13 +221,13 @@ class AutofillAiManager
       AutofillClient::AutofillAiBubbleResult result,
       std::optional<EntityInstance> edited_entity,
       const AutofillClient::EntityImportUIContext& ui_context,
-      std::optional<std::string> context_token);
+      std::optional<std::string> legal_message_token);
 
   // Handles the response of `GetDetailsForUpsertPass`. If the request
   // succeeded, `ShowEntityImportBubble` is called with the retrieved legal
-  // disclosure details and `context_token`. If the request failed, the entity
-  // falls back to a local save (`EntityInstance::RecordType::kLocal`) and
-  // `ShowEntityImportBubble` is called without details.
+  // disclosure details and `legal_message_token`. If the request failed, the
+  // entity falls back to a local save (`EntityInstance::RecordType::kLocal`)
+  // and `ShowEntityImportBubble` is called without details.
   void OnGetDetailsForUpsertPassResponse(
       const FormData& form,
       ukm::SourceId ukm_source_id,
@@ -240,7 +240,7 @@ class AutofillAiManager
 
   // Displays the entity import bubble on `client_`. If `public_passes_notice`
   // is present, its legal disclosure messages will be shown in the prompt.
-  // `context_token` is forwarded to `HandlePromptResult` upon acceptance.
+  // `legal_message_token` is forwarded to `HandlePromptResult` upon acceptance.
   void ShowEntityImportBubble(
       const FormData& form,
       ukm::SourceId ukm_source_id,
@@ -249,7 +249,7 @@ class AutofillAiManager
       std::optional<EntityInstance> old_entity,
       bool is_save_synchronous,
       LegalMessageLines public_passes_notice,
-      std::optional<std::string> context_token);
+      std::optional<std::string> legal_message_token);
 
   // Handles the fallback UI and storage logic when a Wallet save is
   // accepted but the user is no longer eligible. This can happen if eligibility

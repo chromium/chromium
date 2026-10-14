@@ -180,7 +180,7 @@ CreateExpectedUpsertPassResponse() {
           "The terms are Terms and Privacy.",
           {LegalMessageLine::Link(14, 19, "https://example.com/terms"),
            LegalMessageLine::Link(24, 31, "https://example.com/privacy")})},
-      .context_token = "test_legal_message_token",
+      .legal_message_token = "test_legal_message_token",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible,
   };
 }
@@ -642,7 +642,7 @@ TEST_P(WalletPassAccessManagerImplTest, GetDetailsForUpsertPass_Success) {
               "The terms are Terms and Privacy.",
               {LegalMessageLine::Link(14, 19, "https://example.com/terms"),
                LegalMessageLine::Link(24, 31, "https://example.com/privacy")})},
-          .context_token = raw_token,
+          .legal_message_token = raw_token,
           .user_eligibility =
               WalletPassAccessManager::UserEligibility::kEligible,
       };
@@ -673,7 +673,7 @@ TEST_P(WalletPassAccessManagerImplTest,
   const WalletPassAccessManager::GetDetailsForUpsertPassResponse
       expected_response{
           .legal_message_lines = {},
-          .context_token = "",
+          .legal_message_token = "",
           .user_eligibility =
               WalletPassAccessManager::UserEligibility::kEligible,
       };
@@ -702,7 +702,7 @@ TEST_P(WalletPassAccessManagerImplTest,
 
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_response =
       CreateExpectedUpsertPassResponse();
-  expected_response.context_token = "";
+  expected_response.legal_message_token = "";
   EXPECT_THAT(future.Get(), ValueIs(expected_response));
 }
 
@@ -955,10 +955,11 @@ TEST_P(WalletPassAccessManagerImplTest,
       CreateTestPassUpsertDetails();
   direct_details.legal_message->set_token("direct_token");
   std::move(direct_cb).Run(std::move(direct_details));
-  EXPECT_THAT(direct_future.Get(),
-              ValueIs(Field(&WalletPassAccessManager::
-                                GetDetailsForUpsertPassResponse::context_token,
-                            "direct_token")));
+  EXPECT_THAT(
+      direct_future.Get(),
+      ValueIs(Field(&WalletPassAccessManager::GetDetailsForUpsertPassResponse::
+                        legal_message_token,
+                    "direct_token")));
 
   // Preload completes: response is cached.
   wallet::WalletHttpClient::PassUpsertDetails preload_details =
@@ -973,10 +974,11 @@ TEST_P(WalletPassAccessManagerImplTest,
       cached_future;
   access_manager().GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle),
                                            cached_future.GetCallback());
-  EXPECT_THAT(cached_future.Get(),
-              ValueIs(Field(&WalletPassAccessManager::
-                                GetDetailsForUpsertPassResponse::context_token,
-                            "preload_token")));
+  EXPECT_THAT(
+      cached_future.Get(),
+      ValueIs(Field(&WalletPassAccessManager::GetDetailsForUpsertPassResponse::
+                        legal_message_token,
+                    "preload_token")));
   EXPECT_FALSE(refill_cb.is_null());
 }
 

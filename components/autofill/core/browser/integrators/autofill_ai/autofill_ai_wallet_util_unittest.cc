@@ -295,17 +295,19 @@ TEST_F(AutofillAiWalletUtilsTest, IsValidUpsertPassDetailsResponse) {
   LegalMessageLines legal_message_lines;
   legal_message_lines.emplace_back();
 
-  // Eligible user with both legal message lines and context token is valid.
+  // Eligible user with both legal message lines and legal message token is
+  // valid.
   Response valid_eligible{
       .legal_message_lines = legal_message_lines,
-      .context_token = "token",
+      .legal_message_token = "token",
       .user_eligibility = UserEligibility::kEligible,
   };
   EXPECT_TRUE(IsValidUpsertPassDetailsResponse(valid_eligible));
 
-  // Eligible user missing legal message lines or context token is invalid.
+  // Eligible user missing legal message lines or legal message token is
+  // invalid.
   Response missing_lines{
-      .context_token = "token",
+      .legal_message_token = "token",
       .user_eligibility = UserEligibility::kEligible,
   };
   EXPECT_FALSE(IsValidUpsertPassDetailsResponse(missing_lines));

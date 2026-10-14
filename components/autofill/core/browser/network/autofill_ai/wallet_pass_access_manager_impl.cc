@@ -151,7 +151,7 @@ ToGetDetailsForUpsertPassResponse(
   }
   return WalletPassAccessManager::GetDetailsForUpsertPassResponse{
       .legal_message_lines = std::move(legal_message_lines),
-      .context_token = std::move(legal_message_token),
+      .legal_message_token = std::move(legal_message_token),
       .user_eligibility = response->user_eligibility,
   };
 }
@@ -290,7 +290,7 @@ void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
   // consumer. If a background preload is already in flight, this fetch runs
   // concurrently rather than coalescing. Preloading is opportunistic and
   // designed to warm the cache; decoupling foreground fetches ensures the
-  // consumer receives an isolated, single-use `context_token` without
+  // consumer receives an isolated, single-use `legal_message_token` without
   // introducing callback synchronization across async boundaries. Any
   // in-flight preload completing later remains cached for subsequent
   // operations.
@@ -300,10 +300,10 @@ void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
 std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
 WalletPassAccessManagerImpl::ConsumeCachedDetailsForUpsertPass(
     EntityType entity_type) {
-  // Google Wallet `context_token`s are single-use tokens bound to a specific
-  // upsert operation. Once read by an active consumer, the cached entry must
-  // be removed so that subsequent flows do not attempt to reuse an expired or
-  // spent token.
+  // Google Wallet `legal_message_token`s are single-use tokens bound to a
+  // specific upsert operation. Once read by an active consumer, the cached
+  // entry must be removed so that subsequent flows do not attempt to reuse an
+  // expired or spent token.
   absl::flat_hash_map<PassType, GetDetailsForUpsertPassResponse>::node_type
       node = upsert_details_cache_.extract(PassTypeFromEntityType(entity_type));
   if (node.empty()) {

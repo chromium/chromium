@@ -49,7 +49,7 @@ CreateFakeUpsertPassResponse() {
 
   return WalletPassAccessManager::GetDetailsForUpsertPassResponse{
       .legal_message_lines = std::move(legal_message_lines),
-      .context_token = "mock_context_token",
+      .legal_message_token = "mock_legal_message_token",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible,
   };
 }

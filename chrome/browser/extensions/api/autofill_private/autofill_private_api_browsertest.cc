@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
   // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
   const std::string raw_token = "test_token_\xff\xfe";
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
-  response.context_token = raw_token;
+  response.legal_message_token = raw_token;
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kEligible;
   autofill::LegalMessageLine::Links links;
@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillPrivateApiPublicPassTest,
     GetDetailsForUpsertPass_ReturnsNoArgumentsWhenContextTokenEmpty) {
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
-  response.context_token = "";
+  response.legal_message_token = "";
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kEligible;
 
@@ -984,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(
     GetDetailsForUpsertPass_ReturnsDetailsWhenIneligibleUserWithoutToken) {
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
   response.legal_message_lines = {};
-  response.context_token = "";
+  response.legal_message_token = "";
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kIneligible;
 

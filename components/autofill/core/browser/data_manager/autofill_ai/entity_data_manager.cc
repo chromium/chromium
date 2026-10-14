@@ -198,13 +198,13 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
 
 void EntityDataManager::AddOrUpdateEntityInstance(
     EntityInstance entity,
-    std::optional<std::string> context_token) {
+    std::optional<std::string> legal_message_token) {
   switch (entity.record_type()) {
     case EntityInstance::RecordType::kLocal:
     case EntityInstance::RecordType::kServerWallet:
       // Local and wallet entities are stored in EntityTable.
       webdata_service_->AddOrUpdateEntityInstance(
-          std::move(entity), std::move(context_token),
+          std::move(entity), std::move(legal_message_token),
           base::BindOnce(
               [](base::WeakPtr<EntityDataManager> self,
                  EntityInstanceChange eic) {

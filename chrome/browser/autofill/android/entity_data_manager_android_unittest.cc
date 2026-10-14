@@ -482,7 +482,7 @@ TEST_F(EntityDataManagerAndroidTest,
   // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_response{
       .legal_message_lines = {TestLegalMessageLine("Legal message")},
-      .context_token = "raw_token_\xff\xfe",
+      .legal_message_token = "raw_token_\xff\xfe",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass(
@@ -527,7 +527,7 @@ TEST_F(
   // Missing `legal_message_lines`.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse
       missing_legal_message{
-          .context_token = "test_legal_message_token",
+          .legal_message_token = "test_legal_message_token",
           .user_eligibility =
               WalletPassAccessManager::UserEligibility::kEligible};
   // Missing `legal_message_token`.

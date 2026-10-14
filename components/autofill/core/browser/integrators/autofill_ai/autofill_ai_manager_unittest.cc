@@ -1932,7 +1932,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 // Tests that when saving an eligible public pass to Google Wallet,
 // `GetDetailsForUpsertPass` is called and its legal message lines are forwarded
 // to `ShowEntityImportBubble`. Also tests that accepting the bubble saves the
-// entity as `kServerWallet` with `context_token`.
+// entity as `kServerWallet` with `legal_message_token`.
 TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_RetrievesDetailsAndShowsBubble) {
   base::test::ScopedFeatureList feature_list{
@@ -1945,7 +1945,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   expected_notice.emplace_back();
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_details{
       .legal_message_lines = expected_notice,
-      .context_token = "test_context_token",
+      .legal_message_token = "test_legal_message_token",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
 
   EXPECT_CALL(wallet_manager(),
@@ -1997,7 +1997,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   expected_notice.emplace_back();
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_details{
       .legal_message_lines = expected_notice,
-      .context_token = "test_context_token",
+      .legal_message_token = "test_legal_message_token",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
 
   EXPECT_CALL(wallet_manager(),
@@ -2036,7 +2036,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
       .legal_message_lines = {},
-      .context_token = "test_context_token",
+      .legal_message_token = "test_legal_message_token",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
 
   EXPECT_CALL(wallet_manager(),
@@ -2074,11 +2074,13 @@ TEST_F(AutofillAiManagerImportFormTest,
               1)));
 }
 
-// Tests that when `GetDetailsForUpsertPass` returns an empty context token for
-// an eligible user (`kEligible`), the entity falls back to a local save and
-// the import bubble is shown with `RecordType::kLocal` and an empty notice.
-TEST_F(AutofillAiManagerImportFormTest,
-       EligibleWalletPass_EligibleUserWithEmptyContextToken_FallsBackToLocal) {
+// Tests that when `GetDetailsForUpsertPass` returns an empty legal message
+// token for an eligible user (`kEligible`), the entity falls back to a local
+// save and the import bubble is shown with `RecordType::kLocal` and an empty
+// notice.
+TEST_F(
+    AutofillAiManagerImportFormTest,
+    EligibleWalletPass_EligibleUserWithEmptyLegalMessageToken_FallsBackToLocal) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
   base::HistogramTester histogram_tester;
@@ -2087,7 +2089,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   notice.emplace_back();
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
       .legal_message_lines = std::move(notice),
-      .context_token = "",
+      .legal_message_token = "",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
 
   EXPECT_CALL(wallet_manager(),
@@ -2136,7 +2138,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
       .legal_message_lines = {},
-      .context_token = "",
+      .legal_message_token = "",
       .user_eligibility =
           WalletPassAccessManager::UserEligibility::kIneligible};
 

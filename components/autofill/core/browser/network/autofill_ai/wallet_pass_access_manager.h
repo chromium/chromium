@@ -29,7 +29,7 @@ class WalletPassAccessManager : public KeyedService {
   // Information retrieved from a `GetDetailsForUpsertPass` request.
   struct GetDetailsForUpsertPassResponse {
     LegalMessageLines legal_message_lines;
-    std::string context_token;
+    std::string legal_message_token;
     UserEligibility user_eligibility = UserEligibility::kUnspecified;
 
     friend bool operator==(const GetDetailsForUpsertPassResponse&,
@@ -49,8 +49,8 @@ class WalletPassAccessManager : public KeyedService {
       base::OnceCallback<void(std::optional<EntityInstance>)>;
 
   // Callback for `GetDetailsForUpsertPass` requests. On success, it returns
-  // the response containing the legal disclosure message lines and context
-  // token. On failure, it returns a
+  // the response containing the legal disclosure message lines and legal
+  // message token. On failure, it returns a
   // `wallet::WalletHttpClient::WalletRequestError`.
   using GetDetailsForUpsertPassCallback = base::OnceCallback<void(
       base::expected<GetDetailsForUpsertPassResponse,
@@ -77,7 +77,7 @@ class WalletPassAccessManager : public KeyedService {
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) = 0;
 
-  // Pre-fetches the legal disclosure messages and context token for
+  // Pre-fetches the legal disclosure messages and legal message token for
   // `entity_type` in the background (typically called when entering an
   // add settings flow) and populates an internal cache so that a subsequent
   // call to `GetDetailsForUpsertPass` resolves immediately. If a request is
@@ -91,7 +91,7 @@ class WalletPassAccessManager : public KeyedService {
   // entry points that must not wait on the Wallet backend.
   //
   // Side effects on a cache hit:
-  // - The entry is removed from the cache, since the context token is
+  // - The entry is removed from the cache, since the legal message token is
   //   single-use.
   // - A new `PreloadDetailsForUpsertPass` is started to refill the cache, so
   //   a later flow also finds cached details.
@@ -99,8 +99,8 @@ class WalletPassAccessManager : public KeyedService {
   ExtractPreloadedDetailsForUpsertPass(EntityType entity_type) = 0;
 
   // Issues a `GetDetailsForUpsertPass` request to the Wallet backend to fetch
-  // legal disclosure messages and a context token for audit logging prior to
-  // upserting a public non-readonly pass of type `entity_type`.
+  // legal disclosure messages and a legal message token for audit logging
+  // prior to upserting a public non-readonly pass of type `entity_type`.
   //
   // If cached details are available from a previous
   // `PreloadDetailsForUpsertPass` call, the cached entry is consumed,

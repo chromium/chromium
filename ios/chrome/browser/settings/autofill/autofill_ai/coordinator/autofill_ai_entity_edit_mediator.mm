@@ -121,7 +121,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // Ties a save to the Google Wallet disclosure notice the user was shown, so
   // it only holds a value when that notice is shown. Resolved once at
   // initialization, since it only depends on immutable inputs.
-  std::optional<std::string> _contextToken;
+  std::optional<std::string> _legalMessageToken;
 }
 
 - (instancetype)
@@ -287,10 +287,11 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
              autofill::EntityInstance::RecordType::kPersonalContext);
     LogEntitySaveOrUpdate(_mode, *_entityInstance);
 
-    // The context token ties the save to the disclosure notice the user was
-    // shown, so it only holds a value when that notice was actually displayed.
-    _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance,
-                                                  std::move(_contextToken));
+    // The legal message token ties the save to the disclosure notice the user
+    // was shown, so it only holds a value when that notice was actually
+    // displayed.
+    _entityDataManager->AddOrUpdateEntityInstance(
+        *_entityInstance, std::move(_legalMessageToken));
     [self.consumer didFinishSavingWithLocalFallback:NO];
     return;
   }
@@ -404,9 +405,9 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     return;
   }
 
-  // The preloaded details hold a single-use `context_token`, so they are only
-  // taken when the notice may be shown. Reading them synchronously keeps the
-  // add flow from waiting on the network.
+  // The preloaded details hold a single-use `legal_message_token`, so they are
+  // only taken when the notice may be shown. Reading them synchronously keeps
+  // the add flow from waiting on the network.
   std::optional<
       autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse>
       response;
@@ -432,7 +433,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // An eligible user's response that cannot back the notice is treated like a
   // missing response.
   if (response->legal_message_lines.empty() ||
-      response->context_token.empty()) {
+      response->legal_message_token.empty()) {
     [self downgradeEntityToLocalStorage];
     return;
   }
@@ -440,7 +441,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // Only the parts of the response that back the notice are kept.
   _legalMessages =
       [AutofillLegalMessageLine convertFrom:response->legal_message_lines];
-  _contextToken = std::move(response->context_token);
+  _legalMessageToken = std::move(response->legal_message_token);
 }
 
 // Stores the entity locally instead of in Wallet. The prompt then presents it

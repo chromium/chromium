@@ -152,19 +152,20 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
 void AutofillWebDataService::AddOrUpdateEntityInstance(
     EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
-  AddOrUpdateEntityInstance(std::move(entity), /*context_token=*/std::nullopt,
+  AddOrUpdateEntityInstance(std::move(entity),
+                            /*legal_message_token=*/std::nullopt,
                             std::move(on_success));
 }
 
 void AutofillWebDataService::AddOrUpdateEntityInstance(
     EntityInstance entity,
-    std::optional<std::string> context_token,
+    std::optional<std::string> legal_message_token,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::AddOrUpdateEntityInstance,
                      autofill_backend_, std::move(entity),
-                     std::move(context_token), std::move(on_success)));
+                     std::move(legal_message_token), std::move(on_success)));
 }
 
 void AutofillWebDataService::UpdateEntityMetadata(

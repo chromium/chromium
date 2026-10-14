@@ -28,7 +28,7 @@ class EntityDataManagerAndroidTestApi {
       base::OnceClosure on_local_save_fallback = base::DoNothing()) {
     AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
                               description_string_id, accept_button_string_id,
-                              /*context_token=*/std::nullopt,
+                              /*legal_message_token=*/std::nullopt,
                               std::move(on_local_save_fallback));
   }
 
@@ -37,11 +37,11 @@ class EntityDataManagerAndroidTestApi {
       EntityInstance::RecordType targeted_record_type,
       int description_string_id,
       int accept_button_string_id,
-      std::optional<std::string> context_token,
+      std::optional<std::string> legal_message_token,
       base::OnceClosure on_local_save_fallback = base::DoNothing()) {
     entity_data_manager_android_->AddOrUpdateEntityInstance(
         std::move(entity_instance), targeted_record_type, description_string_id,
-        accept_button_string_id, std::move(context_token),
+        accept_button_string_id, std::move(legal_message_token),
         std::move(on_local_save_fallback));
   }
 

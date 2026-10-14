@@ -882,7 +882,7 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
 
 void ValuableSyncBridge::EntityInstanceChanged(
     const EntityInstanceChange& change,
-    std::optional<std::string_view> context_token) {
+    std::optional<std::string_view> legal_message_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsSyncWalletFlightReservationsEnabled() &&
       !IsSyncWalletVehicleRegistrationsEnabled()) {
@@ -909,17 +909,17 @@ void ValuableSyncBridge::EntityInstanceChanged(
           CreateEntityDataFromEntityInstance(
               change.data_model(),
               GetPossiblyTrimmedValuableSpecifics(*change.key()),
-              context_token.value_or("")),
+              legal_message_token.value_or("")),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::UPDATE:
-      CHECK(!context_token.has_value());
+      CHECK(!legal_message_token.has_value());
       change_processor()->Put(
           *change.key(),
           CreateEntityDataFromEntityInstance(
               change.data_model(),
               GetPossiblyTrimmedValuableSpecifics(*change.key()),
-              /*context_token=*/{}),
+              /*legal_message_token=*/{}),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:

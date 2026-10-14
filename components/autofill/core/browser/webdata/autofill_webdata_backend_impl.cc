@@ -367,13 +367,13 @@ void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(
 
 void AutofillWebDataBackendImpl::NotifyOnEntityInstanceChanged(
     const EntityInstanceChange& change,
-    std::optional<std::string_view> context_token) {
+    std::optional<std::string_view> legal_message_token) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // DB sequence notification.
   for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
        db_observer_list_) {
-    db_observer.EntityInstanceChanged(change, context_token);
+    db_observer.EntityInstanceChanged(change, legal_message_token);
   }
 
   // Notify about potential server metadata changes.
@@ -677,7 +677,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
 
 WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
     EntityInstance entity,
-    std::optional<std::string> context_token,
+    std::optional<std::string> legal_message_token,
     base::OnceCallback<void(EntityInstanceChange)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
@@ -693,7 +693,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
   }
 
   EntityInstanceChange change(change_type, std::move(guid), std::move(entity));
-  NotifyOnEntityInstanceChanged(change, context_token);
+  NotifyOnEntityInstanceChanged(change, legal_message_token);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
@@ -734,7 +734,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
   // Notify observers.
   EntityInstanceChange change(EntityInstanceChange::REMOVE, std::move(guid),
                               std::move(entity));
-  NotifyOnEntityInstanceChanged(change, /*context_token=*/std::nullopt);
+  NotifyOnEntityInstanceChanged(change, /*legal_message_token=*/std::nullopt);
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
   ReportResult(Result::kRemoveEntityInstance_Success);

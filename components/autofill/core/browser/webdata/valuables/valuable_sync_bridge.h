@@ -108,7 +108,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // AutofillWebDataServiceObserverOnDBSequence:
   void EntityInstanceChanged(
       const EntityInstanceChange& change,
-      std::optional<std::string_view> context_token) override;
+      std::optional<std::string_view> legal_message_token) override;
 
  private:
   // Synchronously load sync metadata from the `ValuablesTable` and pass it to

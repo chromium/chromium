@@ -168,10 +168,10 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl, fr));
 }
 
-// Tests that AddOrUpdateEntityInstance() with a context_token asynchronously
-// adds entities.
+// Tests that AddOrUpdateEntityInstance() with a `legal_message_token`
+// asynchronously adds entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty,
-       AddEntityInstanceWithContextToken) {
+       AddEntityInstanceWithLegalMessageToken) {
   MockEntityDataManagerObserver observer;
   base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
       observation{&observer};
@@ -179,7 +179,8 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
 
   EntityInstance pp = test::GetPassportEntityInstance();
   EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(1));
-  entity_data_manager().AddOrUpdateEntityInstance(pp, "test_context_token");
+  entity_data_manager().AddOrUpdateEntityInstance(pp,
+                                                  "test_legal_message_token");
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 }
 

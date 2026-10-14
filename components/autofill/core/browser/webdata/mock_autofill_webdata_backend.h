@@ -70,7 +70,7 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
   MOCK_METHOD(void,
               NotifyOnEntityInstanceChanged,
               (const EntityInstanceChange& change,
-               std::optional<std::string_view> context_token),
+               std::optional<std::string_view> legal_message_token),
               (override));
   MOCK_METHOD(void,
               NotifyOnServerEntityMetadataChanged,

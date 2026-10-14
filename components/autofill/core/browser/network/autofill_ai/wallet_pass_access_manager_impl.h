@@ -120,7 +120,7 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   // Cache of preloaded details for upserting passes.
   // Entries are populated by `PreloadDetailsForUpsertPass` and consumed on
   // read via `ExtractPreloadedDetailsForUpsertPass` or
-  // `GetDetailsForUpsertPass` because Google Wallet `context_token`s are
+  // `GetDetailsForUpsertPass` because Google Wallet `legal_message_token`s are
   // single-use. Because tokens and disclosure lines validate user consent for a
   // given pass type and do not depend on client-side entity instances, entries
   // are not affected by entity data changes.

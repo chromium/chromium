@@ -105,7 +105,7 @@ class AutofillWebDataBackendImpl final
   void NotifyOnServerCvcChanged(const ServerCvcChange& change) override;
   void NotifyOnEntityInstanceChanged(
       const EntityInstanceChange& change,
-      std::optional<std::string_view> context_token) override;
+      std::optional<std::string_view> legal_message_token) override;
   void NotifyOnServerEntityMetadataChanged(
       const EntityInstanceMetadataChange& change) override;
   void NotifyOnValuableMetadataChanged(
@@ -185,7 +185,7 @@ class AutofillWebDataBackendImpl final
   // RemoveEntityInstancesModifiedBetween() exists.
   WebDatabase::State AddOrUpdateEntityInstance(
       EntityInstance entity,
-      std::optional<std::string> context_token,
+      std::optional<std::string> legal_message_token,
       base::OnceCallback<void(EntityInstanceChange)> on_success,
       WebDatabase* db);
   WebDatabase::State RemoveEntityInstance(

@@ -1080,7 +1080,7 @@ TEST_F(ValuableSyncBridgeTest,
 
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` ignores local entities.
@@ -1090,7 +1090,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_IgnoresLocalEntities) {
 
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` handles ADD and UPDATE changes.
@@ -1107,7 +1107,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       });
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 
   EXPECT_CALL(mock_processor(), Put)
       .WillOnce([](const std::string&,
@@ -1119,7 +1119,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::UPDATE, vehicle.guid(),
                            vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` includes the legal message token.
@@ -1150,7 +1150,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_RemoveLocal) {
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::REMOVE, vehicle.guid(),
                            vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` doesn't commit changes for private
@@ -1163,15 +1163,15 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PrivatePasses) {
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, passport.guid(),
                            passport),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::UPDATE, passport.guid(),
                            passport),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::REMOVE, passport.guid(),
                            passport),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` doesn't commit changes for shopping
@@ -1187,11 +1187,11 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_Shopping) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, order.guid(), order),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::UPDATE, shipment.guid(),
                            shipment),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` includes unknown fields from the server.
@@ -1218,7 +1218,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
 
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
-      /*context_token=*/std::nullopt);
+      /*legal_message_token=*/std::nullopt);
 }
 
 class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {

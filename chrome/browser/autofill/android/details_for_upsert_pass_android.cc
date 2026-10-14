@@ -20,7 +20,7 @@ ToJniType<autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse>(
         response) {
   return autofill::Java_DetailsForUpsertPass_Constructor(
       env, response.legal_message_lines,
-      base::android::ToJavaByteArray(env, response.context_token));
+      base::android::ToJavaByteArray(env, response.legal_message_token));
 }
 
 }  // namespace jni_zero

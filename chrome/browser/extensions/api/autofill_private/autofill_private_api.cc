@@ -1459,13 +1459,13 @@ AutofillPrivateGetDetailsForUpsertPassFunction::Run() {
   }
 
   api::autofill_private::UpsertPassDetails details;
-  // `response->context_token` contains raw encrypted binary bytes, whereas
-  // `base::Value(std::string)` (used by Extensions IDL serialization) enforces
-  // `DCHECK(IsStringUTF8AllowingNoncharacters(...))`. Base64-encode the token
-  // for transport to the WebUI;
+  // `response->legal_message_token` contains raw encrypted binary bytes,
+  // whereas `base::Value(std::string)` (used by Extensions IDL serialization)
+  // enforces `DCHECK(IsStringUTF8AllowingNoncharacters(...))`. Base64-encode
+  // the token for transport to the WebUI;
   // `AutofillPrivateAddOrUpdateEntityInstanceFunction` decodes it back to raw
   // bytes via `base::Base64Decode`.
-  details.context_token = base::Base64Encode(response->context_token);
+  details.context_token = base::Base64Encode(response->legal_message_token);
   details.legal_message_lines.reserve(response->legal_message_lines.size());
   for (const auto& line : response->legal_message_lines) {
     api::autofill_private::LegalMessageLine idl_line;
