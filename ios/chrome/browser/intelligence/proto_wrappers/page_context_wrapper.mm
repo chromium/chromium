@@ -582,22 +582,17 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 
   __weak PageContextWrapper* weakSelf = self;
 
-  // If the WebState is currently visible, update the snapshot in case the
-  // user was scrolling, otherwise retrieve the latest version in cache or on
-  // disk.
-  if (_webState->IsVisible()) {
+  // Capture a live snapshot if the WebState is visible or the cache is
+  // bypassed; otherwise retrieve the cached snapshot.
+  const bool shouldBypassCache =
+      _config->snapshot_cache_policy() ==
+      PageContextWrapperConfig::SnapshotCachePolicy::kBypassCache;
+  if (_webState->IsVisible() || shouldBypassCache) {
     auto updateSnapshotCallback =
         base::BindOnce(^(std::optional<int> result_matches) {
           // TODO(crbug.com/401282824): Log the matches count to measure text
           // highlighting precision.
-          [weakSelf updateSnapshotWithCallback:^(UIImage* image) {
-            __strong __typeof(weakSelf) strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
-            [strongSelf stashRawScreenshotImage:image];
-            barrier.Run();
-          }];
+          [weakSelf updateSnapshotWithBarrier:barrier];
         });
 
     // If there is text to highlight, do it before capturing the screenshot.
@@ -968,10 +963,12 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   std::move(_completionCallback).Run(std::move(response));
 }
 
-// Returns YES if the image is nil and forcing the update of missing snapshots
-// is enabled.
+// Returns YES if the stored snapshot is nil and the configured policy falls
+// back to capturing a live snapshot when missing.
 - (BOOL)shouldUpdateSnapshotWithImage:(UIImage*)image {
-  return !image && _shouldForceUpdateMissingSnapshots;
+  return !image &&
+         _config->snapshot_cache_policy() !=
+             PageContextWrapperConfig::SnapshotCachePolicy::kUseCacheWhenHidden;
 }
 
 // Returns the visible web viewport rect in GetView() coordinates, insetting

@@ -257,8 +257,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_swift",
-    "//ios/chrome/browser/snapshots/model:snapshot_source",
-    "//ios/chrome/browser/snapshots/model:test_utils",
     "//ios/chrome/test:test_support",
     "//ios/testing:embedded_test_server_support",
     "//ios/web/common:features",
@@ -271,6 +269,8 @@ source_set("unit_tests") {
     "//ios/web/public/ui",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
     "//url",
   ]
 }

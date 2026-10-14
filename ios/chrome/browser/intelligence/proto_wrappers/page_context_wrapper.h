@@ -87,10 +87,6 @@ using PageContextWrapperCallbackResponse =
 // Same as `populatePageContextFieldsAsync`, but with a custom timeout.
 - (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout;
 
-// Enables force taking snapshots if none could be retrieved from storage, does
-// nothing if `shouldGetSnapshot` is NO.
-@property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
-
 // Since most of the extraction needs to run on the main thread anyways,
 // enabling this flag will simply post the task on the main thread instead of
 // executing it synchronously, so it can be picked up at a later (hopefully
@@ -100,17 +96,20 @@ using PageContextWrapperCallbackResponse =
 
 // Text to highlight in the snapshot. Will be highlighted just before taking the
 // snapshot, and unhighlighted right after. Nil if no text should be
-// highlighted. Only applies if the tab being processed is currently visible,
-// and if `shouldGetSnapshot` is enabled. Beware this does visibly highlight
-// said text in the webpage for the user for a split-second.
+// highlighted. Only applies when a live snapshot is captured directly (when the
+// tab is visible or `SnapshotCachePolicy::kBypassCache` is used), and if
+// `shouldGetSnapshot` is enabled. Beware this does visibly highlight said text
+// in the webpage for the user for a split-second.
 @property(nonatomic, copy) NSString* textToHighlight;
 
 // Boolean flags for enabling/disabling the async tasks that the PageContext
 // wrapper can execute.
+// TODO(crbug.com/572108551): Move the `shouldGet*` task properties to
+// `PageContextWrapperConfigBuilder`.
 
-// Whether a snapshot of the associated WebState should be fetched. If the
-// WebState is currently visible, updates the snapshot taken instead of getting
-// the previously saved snapshot.
+// Whether a snapshot of the associated WebState should be fetched. Whether the
+// snapshot is captured anew or retrieved from storage is controlled by
+// `PageContextWrapperConfig::snapshot_cache_policy()`.
 @property(nonatomic, assign) BOOL shouldGetSnapshot;
 
 // Whether a full page PDF of the associated WebState should be fetched. This

@@ -64,10 +64,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_test_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/embedded_test_server_handlers.h"
@@ -96,6 +93,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 #import "url/origin.h"
 
 // TODO(crbug.com/458081684): Move away from all autofill dependencies once
@@ -142,18 +141,37 @@
 
 namespace {
 
+using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
+
 const char kMainPagePath[] = "/main.html";
+
+// Encodes `image` as a base64 PNG string matching `PageContext.tab_screenshot`.
+std::string EncodeScreenshot(UIImage* image) {
+  return base::SysNSStringToUTF8(
+      [UIImagePNGRepresentation(image) base64EncodedStringWithOptions:0]);
+}
 
 // Corresponds to MASKED_TEXT_LENGTH in
 // resources/annotated_page_content_extraction.ts.
 constexpr size_t MASKED_TEXT_LENGTH = 7;
 
-// A fake web state that can be controlled to simulate PDF generation failures.
+// A fake web state that can be controlled to simulate PDF generation failures
+// and custom snapshots.
 class FakeWebStateForFailureTest : public web::FakeWebState {
  public:
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override {
     std::move(callback).Run(nil);
   }
+
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), snapshot_));
+  }
+
+  void SetSnapshot(UIImage* snapshot) { snapshot_ = snapshot; }
+
+ private:
+  UIImage* snapshot_ = nil;
 };
 
 // Helper to verify geometry existence and basic validity.
@@ -223,27 +241,6 @@ void FindNodesWithCssPosition(
 
 }  // namespace
 
-// A fake snapshot generator delegate that can be controlled to simulate
-// failures.
-@interface ControllableFakeSnapshotGeneratorDelegate
-    : FakeSnapshotGeneratorDelegate
-// This property controls the value returned by -canTakeSnapshotForWebState:
-// method of the SnapshotGeneratorDelegate protocol.
-@property(nonatomic, assign) BOOL canTakeSnapshot;
-@end
-
-@implementation ControllableFakeSnapshotGeneratorDelegate
-- (instancetype)init {
-  if ((self = [super init])) {
-    _canTakeSnapshot = YES;
-  }
-  return self;
-}
-- (BOOL)canTakeSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
-  return self.canTakeSnapshot;
-}
-@end
-
 // Version of AutofillManager that caches the FormData it receives so we can
 // examine them. The public API deals with FormStructure, the post-parsing
 // data structure, but we want to intercept the FormData and ensure we're
@@ -296,7 +293,6 @@ class PageContextWrapperTest : public PlatformTest,
       base::test::TaskEnvironment::TimeSource time_source)
       : task_environment_(time_source),
         web_client_(std::make_unique<web::FakeWebClient>()) {}
-  ~PageContextWrapperTest() override { [snapshot_storage_ shutdown]; }
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -326,17 +322,6 @@ class PageContextWrapperTest : public PlatformTest,
     web_state_->WasShown();
     web_state_->SetKeepRenderProcessAlive(true);
 
-    SnapshotTabHelper::CreateForWebState(web_state_.get());
-    SnapshotSourceTabHelper::CreateForWebState(web_state_.get());
-    snapshot_storage_ = CreateSnapshotStorage(temp_dir_.GetPath());
-    SnapshotTabHelper* snapshot_tab_helper =
-        SnapshotTabHelper::FromWebState(web_state_.get());
-    snapshot_tab_helper->SetSnapshotStorage(snapshot_storage_);
-    snapshot_delegate_ =
-        [[ControllableFakeSnapshotGeneratorDelegate alloc] init];
-    snapshot_delegate_.view = web_state_->GetView();
-    snapshot_tab_helper->SetDelegate(snapshot_delegate_);
-
     GetWebClient()->SetJavaScriptFeatures({
         web::FindInPageJavaScriptFeature::GetInstance(),
         extractor_feature(),
@@ -358,11 +343,12 @@ class PageContextWrapperTest : public PlatformTest,
         autofill::TestAutofillManagerInjectorIOS<TestAutofillManager>>(
         web_state_.get());
 
-    // Set the fake env used for testing errors.
-    profile2_ = TestProfileIOS::Builder().Build();
-    web::test::OverrideJavaScriptFeatures(
-        profile2_.get(), {web::FindInPageJavaScriptFeature::GetInstance()});
+    // Set up the fake WebState used for testing failure and snapshot scenarios.
     fake_web_state_ = std::make_unique<FakeWebStateForFailureTest>();
+    fake_web_state_->SetVisibleURL(GURL("http://example.com/"));
+    fake_web_state_->SetContentsMimeType("text/html");
+    SnapshotTabHelper::CreateForWebState(fake_web_state_.get());
+    SetCachedSnapshot(nil);
 
     // Set fake web frames managers for scenarios to simulate a state where
     // no frames are available from the manager which can be used for testing
@@ -378,6 +364,41 @@ class PageContextWrapperTest : public PlatformTest,
     page_helper_ = std::make_unique<PageContext>(
         &test_server_, &xorigin_test_server_, &xorigin_test_server_b_,
         &xorigin_test_server_c_);
+  }
+
+  // Configures `fake_web_state()`'s `SnapshotTabHelper` storage to
+  // asynchronously return `cached_snapshot`.
+  void SetCachedSnapshot(UIImage* cached_snapshot) {
+    id<SnapshotStorage> storage = OCMProtocolMock(@protocol(SnapshotStorage));
+    OCMStub([storage
+        retrieveImageWithSnapshotID:[OCMArg any]
+                       snapshotKind:SnapshotKindColor
+                         completion:[OCMArg checkWithBlock:^BOOL(
+                                                void (^completion)(UIImage*)) {
+                           base::SequencedTaskRunner::GetCurrentDefault()
+                               ->PostTask(
+                                   FROM_HERE,
+                                   base::BindOnce(completion, cached_snapshot));
+                           return YES;
+                         }]]);
+    SnapshotTabHelper::FromWebState(fake_web_state())
+        ->SetSnapshotStorage(storage);
+  }
+
+  // Runs `PageContextWrapper` with `shouldGetSnapshot` enabled and the given
+  // `policy`.
+  PageContextWrapperCallbackResponse RunSnapshotWithCachePolicy(
+      web::WebState* web_state,
+      PageContextWrapperConfig::SnapshotCachePolicy policy =
+          PageContextWrapperConfig::SnapshotCachePolicy::
+              kCaptureWhenVisibleOrUncached) {
+    return RunPageContextWrapperWithConfig(web_state,
+                                           PageContextWrapperConfigBuilder()
+                                               .SetSnapshotCachePolicy(policy)
+                                               .Build(),
+                                           ^(PageContextWrapper* wrapper) {
+                                             wrapper.shouldGetSnapshot = YES;
+                                           });
   }
 
   // Calls a script on the webview of the web_state() in the right ContentWorld.
@@ -446,20 +467,17 @@ class PageContextWrapperTest : public PlatformTest,
   PageContextExtractorJavaScriptFeature* extractor_feature() {
     return PageContextExtractorJavaScriptFeature::GetInstance();
   }
-
-  // Getters for fake env.
-  TestProfileIOS* profile2() { return profile2_.get(); }
-  web::FakeWebState* fake_web_state() { return fake_web_state_.get(); }
+  FakeWebStateForFailureTest* fake_web_state() { return fake_web_state_.get(); }
 
   void TearDown() override {
     autofill_manager_injector_.reset();
     PlatformTest::TearDown();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   ScopedKeyWindow scoped_window_;
   web::ScopedTestingWebClient web_client_;
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
@@ -467,10 +485,7 @@ class PageContextWrapperTest : public PlatformTest,
   net::EmbeddedTestServer xorigin_test_server_;
   net::EmbeddedTestServer xorigin_test_server_b_;
   net::EmbeddedTestServer xorigin_test_server_c_;
-  id<SnapshotStorage> snapshot_storage_ = nil;
-  ControllableFakeSnapshotGeneratorDelegate* snapshot_delegate_ = nil;
-  std::unique_ptr<TestProfileIOS> profile2_;
-  std::unique_ptr<web::FakeWebState> fake_web_state_;
+  std::unique_ptr<FakeWebStateForFailureTest> fake_web_state_;
   std::unique_ptr<PageContext> page_helper_;
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
@@ -1152,9 +1167,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithAriaCustomFormControls) {
 TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
   base::HistogramTester histogram_tester;
 
-  // Use a fake web state configured to fail snapshotting.
-  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
-  fake_web_state()->SetContentsMimeType("text/html");
   fake_web_state()->WasShown();
   fake_web_state()->SetCanTakeSnapshot(false);
 
@@ -1175,17 +1187,65 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
                                     1);
 }
 
-// Tests that the wrapper correctly handles a failure in one of the async tasks.
+// Tests that `SnapshotCachePolicy` (`kUseCacheWhenHidden`,
+// `kCaptureWhenVisibleOrUncached`, and `kBypassCache`) controls snapshot
+// retrieval and capture for a hidden WebState.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_SnapshotCachePolicy_HiddenWebState) {
+  using Policy = PageContextWrapperConfig::SnapshotCachePolicy;
+  UIImage* live_image = UIImageWithSizeAndSolidColor(
+      {1, 1}, [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0]);
+  UIImage* cached_image = UIImageWithSizeAndSolidColor(
+      {1, 1}, [UIColor colorWithRed:1.0 green:0.0 blue:1.0 alpha:1.0]);
+  std::string expected_live_screenshot = EncodeScreenshot(live_image);
+  std::string expected_cached_screenshot = EncodeScreenshot(cached_image);
+  ASSERT_NE(expected_live_screenshot, expected_cached_screenshot);
+
+  fake_web_state()->WasHidden();
+  fake_web_state()->SetCanTakeSnapshot(true);
+  fake_web_state()->SetSnapshot(live_image);
+
+  // Without a cached snapshot, `kUseCacheWhenHidden` fails without capturing a
+  // live snapshot, whereas `kCaptureWhenVisibleOrUncached` falls back to live
+  // capture.
+  PageContextWrapperCallbackResponse uncached_response =
+      RunSnapshotWithCachePolicy(fake_web_state(), Policy::kUseCacheWhenHidden);
+  ASSERT_FALSE(uncached_response.has_value());
+  EXPECT_EQ(uncached_response.error(),
+            PageContextWrapperError::kScreenshotError);
+
+  PageContextWrapperCallbackResponse fallback_response =
+      RunSnapshotWithCachePolicy(fake_web_state());
+  ASSERT_TRUE(fallback_response.has_value());
+  EXPECT_EQ(fallback_response.value()->tab_screenshot(),
+            expected_live_screenshot);
+
+  // With a cached snapshot, `kUseCacheWhenHidden` and
+  // `kCaptureWhenVisibleOrUncached` return the cached snapshot, whereas
+  // `kBypassCache` captures a fresh live snapshot.
+  SetCachedSnapshot(cached_image);
+
+  PageContextWrapperCallbackResponse cached_when_hidden_response =
+      RunSnapshotWithCachePolicy(fake_web_state(), Policy::kUseCacheWhenHidden);
+  ASSERT_TRUE(cached_when_hidden_response.has_value());
+  EXPECT_EQ(cached_when_hidden_response.value()->tab_screenshot(),
+            expected_cached_screenshot);
+
+  PageContextWrapperCallbackResponse cached_default_response =
+      RunSnapshotWithCachePolicy(fake_web_state());
+  ASSERT_TRUE(cached_default_response.has_value());
+  EXPECT_EQ(cached_default_response.value()->tab_screenshot(),
+            expected_cached_screenshot);
+
+  PageContextWrapperCallbackResponse bypass_cache_response =
+      RunSnapshotWithCachePolicy(fake_web_state(), Policy::kBypassCache);
+  ASSERT_TRUE(bypass_cache_response.has_value());
+  EXPECT_EQ(bypass_cache_response.value()->tab_screenshot(),
+            expected_live_screenshot);
+}
+
+// Tests that the wrapper correctly handles a failure in inner text generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextFailure) {
-  auto page_structure = HtmlPage("", Paragraph("Hello"));
-  std::string main_html = page_helper_->Build(page_structure);
-  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
-                      test_server_.GetURL(kMainPagePath), web_state());
-
-  // Use a fake web state to cause inner text extraction to fail.
-  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
-  fake_web_state()->SetContentsMimeType("text/html");
-
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetInnerText = YES;
@@ -1248,9 +1308,6 @@ TEST_P(PageContextWrapperTest, TimeoutVerification) {
       },
       base::Milliseconds(5));
 
-  // Fast forward time past the timeout duration to trigger the timeout.
-  // task_environment_.FastForwardBy(base::Milliseconds(150));
-
   // Verify that the callback was called with a timeout error.
   ASSERT_FALSE(captured_response.has_value());
   EXPECT_EQ(captured_response.error(), PageContextWrapperError::kTimeout);
@@ -1258,9 +1315,6 @@ TEST_P(PageContextWrapperTest, TimeoutVerification) {
 
 // Tests that the wrapper correctly handles a failure in PDF generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
-  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
-  fake_web_state()->SetContentsMimeType("text/html");
-
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetFullPagePDF = YES;
@@ -1273,9 +1327,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
 
 // Tests that the wrapper correctly handles a failure in APC generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
-  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
-  fake_web_state()->SetContentsMimeType("text/html");
-
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetAnnotatedPageContent = YES;
@@ -1289,7 +1340,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
 // Tests that the wrapper correctly handles an unextractable page.
 TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable) {
   fake_web_state()->SetVisibleURL(GURL("chrome://version"));
-  fake_web_state()->SetContentsMimeType("text/html");
 
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
@@ -1352,22 +1402,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable_Zip) {
   ASSERT_FALSE(captured_response.has_value());
   EXPECT_EQ(captured_response.error(),
             PageContextWrapperError::kPageNotExtractableError);
-}
-
-// Tests that the wrapper correctly handles a failure in inner text generation.
-TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
-  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
-  fake_web_state()->SetContentsMimeType("text/html");
-
-  PageContextWrapperCallbackResponse captured_response =
-      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
-        wrapper.shouldGetInnerText = YES;
-      });
-
-  // Verify that the callback was called with an inner text error.
-  ASSERT_FALSE(captured_response.has_value());
-  EXPECT_EQ(captured_response.error(),
-            PageContextWrapperError::kInnerTextError);
 }
 
 // Tests that extraction works across origins.
@@ -1655,35 +1689,18 @@ TEST_P(PageContextWrapperTest,
 // snapshot update.
 TEST_P(PageContextWrapperTest,
        PopulatePageContext_WebStateDestroyedDuringForcedSnapshot) {
-  web::test::LoadHtml(@"<html></html>", GURL("http://example.com/"),
-                      web_state());
+  fake_web_state()->WasHidden();
 
-  auto* web_state_ptr = &web_state_;
-  auto* autofill_injector_ptr = &autofill_manager_injector_;
   PageContextWrapperCallbackResponse captured_response =
-      RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
+      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetSnapshot = YES;
-        wrapper.shouldForceUpdateMissingSnapshots = YES;
 
-        // Simulate a snapshot failure, which will trigger a forced update.
-        snapshot_delegate_.canTakeSnapshot = NO;
-
-        // Make the web_state hidden to trigger the async snapshot retrieval
-        // path.
-        web_state()->WasHidden();
-
-        // Destroy the web state immediately after the async work has started
-        // (by posting a task to run after the wrapper's method returns).
+        // Destroy the WebState immediately after async snapshot retrieval has
+        // started.
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](std::unique_ptr<autofill::TestAutofillManagerInjectorIOS<
-                       TestAutofillManager>>* injector,
-                   std::unique_ptr<web::WebState>* web_state) {
-                  injector->reset();
-                  web_state->reset();
-                },
-                autofill_injector_ptr, web_state_ptr));
+            FROM_HERE, base::BindOnce(^{
+              fake_web_state_.reset();
+            }));
       });
 
   // Verify that the callback was called with a generic error because the
@@ -1694,17 +1711,15 @@ TEST_P(PageContextWrapperTest,
 
 // Tests that the wrapper correctly handles a destroyed WebState.
 TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
-  auto* autofill_injector_ptr = &autofill_manager_injector_;
   PageContextWrapperCallbackResponse captured_response =
-      RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
+      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetSnapshot = YES;
         wrapper.shouldGetAnnotatedPageContent = YES;
         wrapper.shouldGetInnerText = YES;
         wrapper.shouldGetFullPagePDF = YES;
 
         // Destroy the web state after initializing the wrapper.
-        autofill_injector_ptr->reset();
-        web_state_.reset();
+        fake_web_state_.reset();
       });
 
   // Verify that the callback was called with a generic error because the

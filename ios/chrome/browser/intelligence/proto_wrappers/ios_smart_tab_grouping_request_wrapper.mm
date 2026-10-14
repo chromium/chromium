@@ -175,7 +175,6 @@
         completionCallback:std::move(completionCallback)];
 
     [pageContextWrapper setShouldGetSnapshot:NO];
-    [pageContextWrapper setShouldForceUpdateMissingSnapshots:NO];
     [pageContextWrapper setShouldGetAnnotatedPageContent:NO];
     [pageContextWrapper setShouldGetInnerText:YES];
 

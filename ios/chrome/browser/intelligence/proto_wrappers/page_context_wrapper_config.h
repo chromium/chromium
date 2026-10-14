@@ -12,6 +12,20 @@
 // Configuration for the PageContextWrapper.
 class PageContextWrapperConfig {
  public:
+  // Policy controlling when a live snapshot is captured vs. retrieved from
+  // cache storage (when `shouldGetSnapshot` is YES).
+  enum class SnapshotCachePolicy {
+    // Captures live when the WebState is visible; uses the cache when hidden.
+    kUseCacheWhenHidden,
+
+    // Captures live when the WebState is visible or when the cache is empty;
+    // otherwise uses the cache.
+    kCaptureWhenVisibleOrUncached,
+
+    // Always captures a live snapshot, bypassing the cache.
+    kBypassCache,
+  };
+
   PageContextWrapperConfig(const PageContextWrapperConfig&);
   PageContextWrapperConfig& operator=(const PageContextWrapperConfig&);
   ~PageContextWrapperConfig();
@@ -69,6 +83,10 @@ class PageContextWrapperConfig {
   // Returns whether only same-site iframe data should be extracted.
   bool include_same_site_only() const;
 
+  // Returns the policy controlling when a live snapshot is captured vs.
+  // retrieved from cache.
+  SnapshotCachePolicy snapshot_cache_policy() const;
+
  private:
   friend class PageContextWrapperConfigBuilder;
 
@@ -86,7 +104,8 @@ class PageContextWrapperConfig {
       bool extract_autofill_otp_redactions,
       bool extract_password_screenshot_redactions,
       bool block_unsafe_pages,
-      bool include_same_site_only);
+      bool include_same_site_only,
+      SnapshotCachePolicy snapshot_cache_policy);
 
   // Bit to use the refactored PageContextExtractor.
   bool use_refactored_extractor_;
@@ -126,6 +145,10 @@ class PageContextWrapperConfig {
 
   // Bit to extract only same-site iframe data.
   bool include_same_site_only_;
+
+  // Policy controlling when a live snapshot is captured vs. retrieved from
+  // cache.
+  SnapshotCachePolicy snapshot_cache_policy_;
 };
 
 // Builder for PageContextWrapperConfig.
@@ -204,6 +227,12 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetIncludeSameSiteOnly(
       bool include_same_site_only);
 
+  // Sets the policy controlling when a live snapshot is captured vs. retrieved
+  // from cache. Defaults to
+  // `SnapshotCachePolicy::kCaptureWhenVisibleOrUncached`.
+  PageContextWrapperConfigBuilder& SetSnapshotCachePolicy(
+      PageContextWrapperConfig::SnapshotCachePolicy snapshot_cache_policy);
+
   // Returns the PageContextWrapperConfig.
   PageContextWrapperConfig Build() const;
 
@@ -221,6 +250,7 @@ class PageContextWrapperConfigBuilder {
   bool extract_password_screenshot_redactions_;
   bool block_unsafe_pages_;
   bool include_same_site_only_;
+  PageContextWrapperConfig::SnapshotCachePolicy snapshot_cache_policy_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_WRAPPER_CONFIG_H_

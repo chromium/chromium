@@ -27,6 +27,9 @@ TEST_F(PageContextWrapperConfigTest, BuilderDefaults_FlagsDisabled) {
   EXPECT_FALSE(config.use_rich_extraction_with_actionable());
   EXPECT_FALSE(config.extract_password_screenshot_redactions());
   EXPECT_TRUE(config.block_unsafe_pages());
+  EXPECT_EQ(config.snapshot_cache_policy(),
+            PageContextWrapperConfig::SnapshotCachePolicy::
+                kCaptureWhenVisibleOrUncached);
 }
 
 // Tests that when the refactored extractor flag is enabled, it's reflected in
@@ -59,6 +62,8 @@ TEST_F(PageContextWrapperConfigTest, BuilderSetters) {
           .SetUseRichExtraction(true)
           .SetUseRichExtractionWithActionable(true)
           .SetExtractPasswordScreenshotRedactions(true)
+          .SetSnapshotCachePolicy(
+              PageContextWrapperConfig::SnapshotCachePolicy::kBypassCache)
           .Build();
 
   EXPECT_TRUE(config.use_refactored_extractor());
@@ -66,6 +71,8 @@ TEST_F(PageContextWrapperConfigTest, BuilderSetters) {
   EXPECT_TRUE(config.use_rich_extraction());
   EXPECT_TRUE(config.use_rich_extraction_with_actionable());
   EXPECT_TRUE(config.extract_password_screenshot_redactions());
+  EXPECT_EQ(config.snapshot_cache_policy(),
+            PageContextWrapperConfig::SnapshotCachePolicy::kBypassCache);
 }
 
 // Tests that extract_password_screenshot_redactions reflects feature flag
