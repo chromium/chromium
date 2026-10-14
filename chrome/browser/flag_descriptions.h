@@ -8825,11 +8825,6 @@ inline constexpr char kHandleMdmErrorsForDasherAccountsOnAndroidName[] =
 inline constexpr char kHandleMdmErrorsForDasherAccountsOnAndroidDescription[] =
     "Enables MDM error handling for managed accounts on Android.";
 
-inline constexpr char kEnableOktaSSOName[] =
-    "Enable Okta SSO for enterprise browsers.";
-inline constexpr char kEnableOktaSSODescription[] =
-    "Enables native support for Okta SSO on managed MacOS devices.";
-
 inline constexpr char kEnablePingSSOName[] =
     "Enable Ping SSO for enterprise browsers.";
 inline constexpr char kEnablePingSSODescription[] =

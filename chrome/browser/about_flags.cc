@@ -5176,8 +5176,8 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
 // Note: In production, each remote actor must have its own dedicated origin
 // policy, OAuth client ID, task namespace ID, and UI strings rather than
 // overriding them globally via testing feature parameters.
-const FeatureEntry::FeatureParam
-    kRemoteActorCredentialSharingGwsForTesting[] = {
+const FeatureEntry::FeatureParam kRemoteActorCredentialSharingGwsForTesting[] =
+    {
         {"allowed_host_for_testing", "gws-prod.corp.google.com"},
         {"actor_name_for_testing", "Search Agent"},
         {"oauth_client_id",
@@ -5185,8 +5185,8 @@ const FeatureEntry::FeatureParam
          "googleusercontent.com"},
 };
 
-const FeatureEntry::FeatureVariation
-    kRemoteActorCredentialSharingVariations[] = {
+const FeatureEntry::FeatureVariation kRemoteActorCredentialSharingVariations[] =
+    {
         {"for GWS", kRemoteActorCredentialSharingGwsForTesting, nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -12742,12 +12742,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPkAutocorrectUnderlineV2Name,
      flag_descriptions::kAndroidPkAutocorrectUnderlineV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidPkAutocorrectUnderlineV2)},
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    {"mac-enable-okta-sso", flag_descriptions::kEnableOktaSSOName,
-     flag_descriptions::kEnableOktaSSODescription, kOsMac,
-     FEATURE_VALUE_TYPE(enterprise_auth::kOktaSSO)},
 #endif
 
 #if BUILDFLAG(IS_MAC)

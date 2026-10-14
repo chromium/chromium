@@ -6896,13 +6896,6 @@
     "expiry_milestone": 161
   },
   {
-    "name": "mac-enable-okta-sso",
-    "owners": [
-      "ssolarewicz@chromium.com", "cec-growth-eng@google.com"
-    ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "mac-enable-ping-sso",
     "owners": [
       "ssolarewicz@google.com", "cec-growth-eng@google.com"
