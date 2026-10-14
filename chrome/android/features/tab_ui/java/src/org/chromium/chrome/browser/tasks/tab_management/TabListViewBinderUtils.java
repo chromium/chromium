@@ -123,8 +123,9 @@ public class TabListViewBinderUtils {
     public static void setNullableContextClickListener(
             @Nullable TabActionListener listener, View view, PropertyModel propertyModel) {
         if (listener == null) {
-            view.setContextClickable(false);
+            // setOnContextClickListener() makes the view context-clickable, so call it first.
             view.setOnContextClickListener(null);
+            view.setContextClickable(false);
         } else {
             view.setContextClickable(true);
             view.setOnContextClickListener(
