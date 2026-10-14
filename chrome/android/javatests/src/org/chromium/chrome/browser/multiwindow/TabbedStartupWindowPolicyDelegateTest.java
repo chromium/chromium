@@ -307,19 +307,17 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     private void setRestoreOnStartupUrlsPref(List<String> startupUrls) {
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetState();
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-                    // Setting the native SessionStartupPref updates both kRestoreOnStartup (to
-                    // URLS) and kURLsToRestoreOnStartup, synchronously firing
-                    // TabbedStartupWindowPolicyDelegate's PrefChangeRegistrar observers. Those
-                    // observers validate the URLs via JNI GetSessionStartupUrls() and persist both
-                    // SessionStartupPref.URLS and the filtered URL list to
-                    // ChromeMultiInstancePersistentStore.
-                    TabbedStartupWindowPolicyDelegateJni.get()
-                            .setSessionStartupUrlsForTesting(prefService, startupUrls);
+                    // Updating the startup URLs via setSessionStartupUrls() validates and persists
+                    // the URLs to native prefs (falling back to NEW_TAB if no valid URLs remain),
+                    // synchronously firing TabbedStartupWindowPolicyDelegate's PrefChangeRegistrar
+                    // observers to update ChromeMultiInstancePersistentStore.
+                    TabbedStartupWindowPolicyDelegate.getInstance()
+                            .setSessionStartupUrls(prefService, startupUrls);
                 });
     }
 

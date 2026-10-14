@@ -1756,11 +1756,11 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Returns whether syncing or locally enforcing the session restore-on-startup user preference
-     * is applicable.
+     * is supported.
      *
-     * @return {@code true} if applicable; {@code false} otherwise.
+     * @return {@code true} if supported; {@code false} otherwise.
      */
-    public static boolean isRestoreOnStartupPrefApplicable() {
+    public static boolean isRestoreOnStartupPrefSupported() {
         return isRestoreOnStartupPrefSyncEnabled() || isOnStartupSettingsUiEnabled();
     }
 

@@ -85,7 +85,7 @@ class ChromeLifetimeController
         // instance allocation on restart.
         boolean removeTask =
                 MultiWindowUtils.isNewStartupWindowPolicyEnabled()
-                        || MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled();
+                        || MultiWindowUtils.isRestoreOnStartupPrefSupported();
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             ApplicationStatus.registerStateListenerForActivity(this, activity);
             mRemainingActivitiesCount++;

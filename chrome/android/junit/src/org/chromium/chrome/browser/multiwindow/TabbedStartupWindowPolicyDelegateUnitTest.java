@@ -608,6 +608,27 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+    public void testPreferenceChange_signedOutWithOnStartupSettingsUiEnabled_cachesLocalPrefs() {
+        // Setup mock native preferences when user is signed out with default sync flag enabled.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP)).thenReturn(SessionStartupPref.URLS);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        when(mSyncService.getAccountInfo()).thenReturn(null);
+
+        // Act.
+        mDelegate.onNativeInitialized(mProfile);
+
+        // Verify local startup preferences are cached and enforced on startup.
+        assertEquals(
+                SessionStartupPref.URLS,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertEquals(
+                List.of("https://www.google.com"),
+                mDelegate.resolveStartupUrls(/* incognito= */ false));
+    }
+
+    @Test
     public void testSyncStateChanged_historySyncToggledOff_clearsCache() {
         // Setup initially active History sync with cached preferences.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))

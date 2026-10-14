@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -77,6 +78,27 @@ public final class TabbedStartupCoordinator {
             Activity activity) {
         return TabbedCrashRecoveryDelegate.getInstance()
                 .maybeShowCrashRecoveryDialog(modalDialogManagerSupplier, activity);
+    }
+
+    /**
+     * Returns the validated web-safe startup URLs stored in {@code prefService}.
+     *
+     * @param prefService The {@link PrefService} for the user profile.
+     * @return List of startup URL strings.
+     */
+    public static List<String> getSessionStartupUrls(PrefService prefService) {
+        return TabbedStartupWindowPolicyDelegate.getInstance().getSessionStartupUrls(prefService);
+    }
+
+    /**
+     * Persists the provided startup URLs into {@code prefService}, falling back to {@link
+     * SessionStartupPref#NEW_TAB} when the list of valid URLs is empty.
+     *
+     * @param prefService The {@link PrefService} for the user profile.
+     * @param urls List of startup URL strings to save.
+     */
+    public static void setSessionStartupUrls(PrefService prefService, List<String> urls) {
+        TabbedStartupWindowPolicyDelegate.getInstance().setSessionStartupUrls(prefService, urls);
     }
 
     /**
