@@ -144,6 +144,14 @@ bool HitTestManager::ValidateHitTestRegionList(
       region.frame_sink_id = FrameSinkId(surface_id.frame_sink_id().client_id(),
                                          region.frame_sink_id.sink_id());
     }
+    // An untrusted renderer can omit kHitTestChildSurface on a given region to
+    // bypass child validation in the aggregation step and supply an arbitrary
+    // frame_sink_id. If a region purports to target a non-child surface, its
+    // frame_sink_id must match the submitting frame sink's id.
+    if (!(region.flags & HitTestRegionFlags::kHitTestChildSurface) &&
+        region.frame_sink_id != surface_id.frame_sink_id()) {
+      return false;
+    }
     if (!FlagsAndAsyncReasonsMatch(region.flags, region.async_hit_test_reasons))
       return false;
   }

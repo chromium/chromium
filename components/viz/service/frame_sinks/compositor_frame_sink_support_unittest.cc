@@ -1876,6 +1876,113 @@ TEST_P(CompositorFrameSinkSupportTest, RedirectionToInvalidFlags) {
   manager_->InvalidateFrameSinkId(frame_sink_id, {});
 }
 
+// Accept non-child regions whose frame sink id matches that of the submitted
+// surface.
+TEST_P(CompositorFrameSinkSupportTest, NonChildRegionWithSubmitterFrameSinkId) {
+  const FrameSinkId submitter_frame_sink_ids[] = {
+      kArbitraryFrameSinkId,
+      FrameSinkId(0, kArbitraryFrameSinkId.sink_id()),
+  };
+  TestLookupDelegate lookup_delegate;
+  lookup_delegate.SetSurface(kArbitraryFrameSinkId, local_surface_id_);
+
+  for (const auto& frame_sink_id : submitter_frame_sink_ids) {
+    SCOPED_TRACE(frame_sink_id.ToString());
+    HitTestRegionList hit_test_region_list;
+    hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine;
+    hit_test_region_list.bounds = kDefaultOutputRect;
+
+    HitTestRegion region;
+    region.frame_sink_id = frame_sink_id;
+    region.rect = gfx::RRectF(gfx::RectF(kDefaultOutputRect));
+    hit_test_region_list.regions.push_back(std::move(region));
+
+    ASSERT_EQ(SubmitResult::ACCEPTED,
+              support_->MaybeSubmitCompositorFrame(
+                  local_surface_id_, MakeDefaultCompositorFrame(),
+                  std::move(hit_test_region_list), 0));
+    const auto* active_list =
+        manager_->hit_test_manager()->GetActiveHitTestRegionList(
+            &lookup_delegate, kArbitraryFrameSinkId);
+    ASSERT_TRUE(active_list);
+    ASSERT_EQ(1u, active_list->regions.size());
+    EXPECT_EQ(kArbitraryFrameSinkId, active_list->regions[0].frame_sink_id);
+    EXPECT_EQ(0u, active_list->regions[0].flags);
+  }
+}
+
+// Reject non-child regions whose frame sink id does not match that of the
+// submitted surface.
+TEST_P(CompositorFrameSinkSupportTest, NonChildRegionWithForeignFrameSinkId) {
+  const FrameSinkId foreign_frame_sink_ids[] = {
+      kAnotherArbitraryFrameSinkId,
+      FrameSinkId(kArbitraryFrameSinkId.client_id(), 2),
+      FrameSinkId(0, 2),
+  };
+  manager_->RegisterFrameSinkHierarchy(kArbitraryFrameSinkId,
+                                       kAnotherArbitraryFrameSinkId);
+  TestLookupDelegate lookup_delegate;
+  lookup_delegate.SetSurface(kArbitraryFrameSinkId, local_surface_id_);
+
+  for (const auto& frame_sink_id : foreign_frame_sink_ids) {
+    SCOPED_TRACE(frame_sink_id.ToString());
+    HitTestRegionList hit_test_region_list;
+    hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine;
+    hit_test_region_list.bounds = kDefaultOutputRect;
+
+    HitTestRegion region;
+    region.frame_sink_id = frame_sink_id;
+    region.rect = gfx::RRectF(gfx::RectF(kDefaultOutputRect));
+    hit_test_region_list.regions.push_back(std::move(region));
+
+    EXPECT_EQ(SubmitResult::HIT_TEST_DATA_INVALID,
+              support_->MaybeSubmitCompositorFrame(
+                  local_surface_id_, MakeDefaultCompositorFrame(),
+                  std::move(hit_test_region_list), 0));
+    EXPECT_EQ(
+        0u, manager_->hit_test_manager()->submit_hit_test_region_list_index());
+    EXPECT_FALSE(manager_->hit_test_manager()->GetActiveHitTestRegionList(
+        &lookup_delegate, kArbitraryFrameSinkId));
+  }
+  manager_->UnregisterFrameSinkHierarchy(kArbitraryFrameSinkId,
+                                         kAnotherArbitraryFrameSinkId);
+}
+
+// A child region's parentage cannot be verified until aggregation so it is
+// accepted regardless of the frame sink id.
+TEST_P(CompositorFrameSinkSupportTest, ChildRegionAccepted) {
+  manager_->RegisterFrameSinkHierarchy(kArbitraryFrameSinkId,
+                                       kAnotherArbitraryFrameSinkId);
+  TestLookupDelegate lookup_delegate;
+  lookup_delegate.SetSurface(kArbitraryFrameSinkId, local_surface_id_);
+
+  HitTestRegionList hit_test_region_list;
+  hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine;
+  hit_test_region_list.bounds = kDefaultOutputRect;
+
+  HitTestRegion region;
+  region.frame_sink_id = kAnotherArbitraryFrameSinkId;
+  region.flags = HitTestRegionFlags::kHitTestChildSurface;
+  region.rect = gfx::RRectF(gfx::RectF(kDefaultOutputRect));
+  hit_test_region_list.regions.push_back(std::move(region));
+
+  ASSERT_EQ(SubmitResult::ACCEPTED,
+            support_->MaybeSubmitCompositorFrame(
+                local_surface_id_, MakeDefaultCompositorFrame(),
+                std::move(hit_test_region_list), 0));
+  const auto* active_list =
+      manager_->hit_test_manager()->GetActiveHitTestRegionList(
+          &lookup_delegate, kArbitraryFrameSinkId);
+  ASSERT_TRUE(active_list);
+  ASSERT_EQ(1u, active_list->regions.size());
+  EXPECT_EQ(kAnotherArbitraryFrameSinkId,
+            active_list->regions[0].frame_sink_id);
+  EXPECT_EQ(HitTestRegionFlags::kHitTestChildSurface,
+            active_list->regions[0].flags);
+  manager_->UnregisterFrameSinkHierarchy(kArbitraryFrameSinkId,
+                                         kAnotherArbitraryFrameSinkId);
+}
+
 // Verifies that an unresponsive client has OnBeginFrame() messages throttled
 // and then stopped until it becomes responsive again.
 TEST_P(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {

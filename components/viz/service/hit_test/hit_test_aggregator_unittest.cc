@@ -174,6 +174,7 @@ class HitTestAggregatorTest : public testing::Test {
             CreateAndSubmitHitTestRegionListWith8Children(client_id, depth - 1);
       } else {
         hit_test_region.flags = HitTestRegionFlags::kHitTestMine;
+        hit_test_region.frame_sink_id = surface_id.frame_sink_id();
       }
       hit_test_region_list.regions.push_back(std::move(hit_test_region));
     }
