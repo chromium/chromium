@@ -117,6 +117,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
@@ -138,6 +139,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -146,6 +148,7 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
@@ -8813,6 +8816,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsTitle) {
 }
 
 // Helper class that waits to receive a favicon from the renderer process.
+// Must stay in an anonymous namespace: media_session_impl_browsertest.cc
+// defines a different content::FaviconWaiter in the same test binary.
+namespace {
+
+struct DidUpdateFaviconUrlData {
+  std::vector<blink::mojom::FaviconURLPtr> candidates;
+  blink::mojom::FaviconUpdateReason reason;
+};
+
 class FaviconWaiter : public WebContentsObserver {
  public:
   explicit FaviconWaiter(WebContents* web_contents)
@@ -8823,21 +8835,25 @@ class FaviconWaiter : public WebContentsObserver {
       RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates,
       blink::mojom::FaviconUpdateReason reason) override {
-    received_favicon_ = true;
+    last_data_ = DidUpdateFaviconUrlData{mojo::Clone(candidates), reason};
     run_loop_.Quit();
   }
 
   void Wait() {
-    if (received_favicon_) {
-      return;
+    if (!last_data_) {
+      run_loop_.Run();
     }
-    run_loop_.Run();
+  }
+
+  const std::optional<DidUpdateFaviconUrlData>& last_data() const {
+    return last_data_;
   }
 
  private:
-  bool received_favicon_ = false;
+  std::optional<DidUpdateFaviconUrlData> last_data_;
   base::RunLoop run_loop_;
 };
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsFavicon) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -8877,6 +8893,75 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsFavicon) {
   // The favicon URLs should remain unchanged.
   EXPECT_EQ(1u, contents->GetFaviconURLs().size());
   EXPECT_THAT(favicon_url, contents->GetFaviconURLs()[0]->icon_url);
+}
+
+// Verify that all FaviconURL fields declared in favicon_url.mojom arrive in
+// the browser process on page load.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UpdateFaviconURLPayload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FaviconWaiter favicon_waiter(contents);
+
+  const GURL page_url = embedded_test_server()->GetURL("/favicon-links.html");
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  favicon_waiter.Wait();
+
+  EXPECT_EQ(favicon_waiter.last_data()->reason,
+            blink::mojom::FaviconUpdateReason::kPageLoad);
+
+  const auto& candidates = favicon_waiter.last_data()->candidates;
+  ASSERT_EQ(3u, candidates.size());
+
+  EXPECT_EQ(embedded_test_server()->GetURL("/favicon.ico"),
+            candidates[0]->icon_url);
+  EXPECT_EQ(blink::mojom::FaviconIconType::kFavicon, candidates[0]->icon_type);
+  EXPECT_THAT(candidates[0]->icon_sizes,
+              testing::ElementsAre(gfx::Size(16, 16), gfx::Size(32, 32)));
+  EXPECT_FALSE(candidates[0]->is_default_icon);
+
+  EXPECT_EQ(embedded_test_server()->GetURL("/touch.png"),
+            candidates[1]->icon_url);
+  EXPECT_EQ(blink::mojom::FaviconIconType::kTouchIcon,
+            candidates[1]->icon_type);
+  EXPECT_THAT(candidates[1]->icon_sizes, testing::IsEmpty());
+  EXPECT_FALSE(candidates[1]->is_default_icon);
+
+  EXPECT_EQ(embedded_test_server()->GetURL("/precomposed.png"),
+            candidates[2]->icon_url);
+  EXPECT_EQ(blink::mojom::FaviconIconType::kTouchPrecomposedIcon,
+            candidates[2]->icon_type);
+  EXPECT_THAT(candidates[2]->icon_sizes, testing::IsEmpty());
+  EXPECT_FALSE(candidates[2]->is_default_icon);
+
+  EXPECT_EQ(candidates, contents->GetFaviconURLs());
+}
+
+// Verify that a page without any <link> icons reports the generated default
+// /favicon.ico with is_default_icon set.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       UpdateFaviconURLDefaultIcon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FaviconWaiter favicon_waiter(contents);
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  favicon_waiter.Wait();
+
+  EXPECT_EQ(favicon_waiter.last_data()->reason,
+            blink::mojom::FaviconUpdateReason::kPageLoad);
+
+  const auto& candidates = favicon_waiter.last_data()->candidates;
+  ASSERT_EQ(1u, candidates.size());
+  EXPECT_EQ(embedded_test_server()->GetURL("/favicon.ico"),
+            candidates[0]->icon_url);
+  EXPECT_EQ(blink::mojom::FaviconIconType::kFavicon, candidates[0]->icon_type);
+  EXPECT_THAT(candidates[0]->icon_sizes, testing::IsEmpty());
+  EXPECT_TRUE(candidates[0]->is_default_icon);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

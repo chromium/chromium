@@ -7960,6 +7960,7 @@ data/empty.html
 data/empty404.html
 data/empty404.html.mock-http-headers
 data/event-latency-animation.html
+data/favicon-links.html
 data/fedcm/accounts_endpoint.json
 data/fedcm/client_metadata_endpoint.json
 data/fedcm/eval_worker.js
