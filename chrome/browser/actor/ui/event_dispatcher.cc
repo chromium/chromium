@@ -81,6 +81,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<ExitFullscreenToolRequest>,
 #endif
     NoUiEvents<AddBookmarkToolRequest>,
+    NoUiEvents<CloseGeminiPanelToolRequest>,
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
@@ -101,6 +102,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,
+    NoUiEvents<PromptGeminiPanelToolRequest>,
     NoUiEvents<ReloadPageToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
@@ -137,6 +139,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<ExitFullscreenToolRequest>,
 #endif
     NoUiEvents<AddBookmarkToolRequest>,
+    NoUiEvents<CloseGeminiPanelToolRequest>,
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
@@ -153,6 +156,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,
+    NoUiEvents<PromptGeminiPanelToolRequest>,
     NoUiEvents<ReloadPageToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,

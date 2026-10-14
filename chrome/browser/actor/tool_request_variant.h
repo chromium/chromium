@@ -24,6 +24,7 @@ using ToolRequestVariant = std::variant<
     AttemptOtpFillingToolRequest,
     ChangePasswordToolRequest,
     ClickToolRequest,
+    CloseGeminiPanelToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     CloseTabToolRequest,
     CloseWindowToolRequest,
@@ -50,6 +51,7 @@ using ToolRequestVariant = std::variant<
     PauseMediaToolRequest,
     PerformSearchToolRequest,
     PlayMediaToolRequest,
+    PromptGeminiPanelToolRequest,
     ReloadPageToolRequest,
     RemoveBookmarkToolRequest,
     ScriptToolRequest,

@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -52,6 +53,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const AttemptOtpFillingToolRequest&) = 0;
   virtual void Apply(const ChangePasswordToolRequest&) = 0;
   virtual void Apply(const ClickToolRequest&) = 0;
+  virtual void Apply(const CloseGeminiPanelToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const CloseTabToolRequest&) = 0;
   virtual void Apply(const CloseWindowToolRequest&) = 0;
@@ -76,6 +78,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const PauseMediaToolRequest&) = 0;
   virtual void Apply(const PerformSearchToolRequest&) = 0;
   virtual void Apply(const PlayMediaToolRequest&) = 0;
+  virtual void Apply(const PromptGeminiPanelToolRequest&) = 0;
   virtual void Apply(const ReloadPageToolRequest&) = 0;
   virtual void Apply(const RemoveBookmarkToolRequest&) = 0;
   virtual void Apply(const ScriptToolRequest&) = 0;

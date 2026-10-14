@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AttemptOtpFilling" summary="Attempt OTP Filling"/>
   <variant name="ChangePassword" summary="Change Password"/>
   <variant name="Click" summary="Click"/>
+  <variant name="CloseGeminiPanel" summary="Close Gemini Panel"/>
   <variant name="CloseTab" summary="Close Tab"/>
   <variant name="CloseWindow" summary="Close Window"/>
   <variant name="CreateTab" summary="Create Tab"/>
@@ -94,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PauseMedia" summary="Pause Media"/>
   <variant name="PerformSearch" summary="Perform Search"/>
   <variant name="PlayMedia" summary="Play Media"/>
+  <variant name="PromptGeminiPanel" summary="Prompt Gemini Panel"/>
   <variant name="ReloadPage" summary="Reload Page"/>
   <variant name="RemoveBookmark" summary="Remove Bookmark"/>
   <variant name="ScriptTool" summary="ScriptTool"/>

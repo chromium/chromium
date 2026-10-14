@@ -36,6 +36,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
+#include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -1101,8 +1102,10 @@ constexpr absl::Overload kGetCapabilityFn{
     // Tools that don't have an `ActuationCapability` in the proto yet.
     ToUnknown<AddBookmarkToolRequest>,
     ToUnknown<ChangePasswordToolRequest>,
+    ToUnknown<CloseGeminiPanelToolRequest>,
     ToUnknown<FindAndHighlightToolRequest>,
     ToUnknown<PerformSearchToolRequest>,
+    ToUnknown<PromptGeminiPanelToolRequest>,
     ToUnknown<ReloadPageToolRequest>,
     ToUnknown<RemoveBookmarkToolRequest>,
     ToUnknown<SiteBasedSearchToolRequest>,
