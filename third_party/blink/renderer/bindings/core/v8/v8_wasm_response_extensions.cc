@@ -8,7 +8,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -98,13 +97,7 @@ class WasmCodeCachingCallback {
     // Called from V8 background thread.
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                         "v8.wasm.compiledModule", "url", response_url_.Utf8());
-    v8::OwnedBuffer serialized_module;
-    {
-      // Use a standard milliseconds based timer (up to 10 seconds, 50 buckets),
-      // similar to "V8.WasmDeserializationTimeMilliSeconds" defined in V8.
-      SCOPED_UMA_HISTOGRAM_TIMER("V8.WasmSerializationTimeMilliSeconds");
-      serialized_module = compiled_module.Serialize();
-    }
+    v8::OwnedBuffer serialized_module = compiled_module.Serialize();
     // V8 might not be able to serialize the module.
     if (serialized_module.size == 0)
       return;

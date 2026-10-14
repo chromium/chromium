@@ -1816,18 +1816,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmDeserializationTimeMilliSeconds" units="ms"
-    expires_after="2026-10-25">
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-runtime@google.com</owner>
-  <summary>
-    Time to deserialize a WebAssembly module when the WebAssembly module is
-    loaded from the cache. Recorded whenever a WebAssembly module gets
-    deserialized during streaming compilation.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmEngineMetadataSizeKiB" units="KB"
     expires_after="2027-02-14">
   <owner>ecmziegler@chromium.org</owner>
@@ -2056,18 +2044,6 @@ chromium-metrics-reviews@google.com.
     The percentage of SIMD operations that were successfully re-vectorized.
     Recorded for each optimized Wasm function compilation if re-vectorization is
     enabled.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmSerializationTimeMilliSeconds" units="ms"
-    expires_after="2027-02-21">
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-runtime@google.com</owner>
-  <summary>
-    Time to serialize a WebAssembly module for storing it in the cache. Recorded
-    on each serialization, which happens after top-tier compilation finished, or
-    when a new chunk of functions was compiled (with dynamic tiering).
   </summary>
 </histogram>
 
