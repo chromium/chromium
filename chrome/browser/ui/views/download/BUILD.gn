@@ -162,6 +162,7 @@ source_set("browser_tests") {
       "//chrome/browser/download:test_support",
       "//chrome/browser/download/bubble",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
       "//chrome/test:test_support",

@@ -17,9 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -37,8 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/controls/image_view.h"
 
 // This tests the download button view in the toolbar.
 // TODO(chlily): Add more tests to cover all functionality.
@@ -69,19 +66,8 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
     DownloadTestBase::TearDownOnMainThread();
   }
 
-  views::View* toolbar_container(BrowserWindowInterface* browser) {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    return static_cast<PinnedToolbarActionsContainer*>(
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->toolbar_button_provider()
-            ->GetPinnedToolbarActions());
-  }
-
-  ToolbarButton* toolbar_button(BrowserWindowInterface* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar_button_provider()
-        ->GetDownloadButton();
+  PinnedActionTestAccessor download_button(BrowserWindowInterface* browser) {
+    return PinnedActionTestAccessor(browser, kActionShowDownloads);
   }
 
   WebAppFrameToolbarTestHelper& toolbar_helper() {
@@ -89,15 +75,6 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   }
 
  protected:
-  void ClickButton(views::Button* button) {
-    button->OnMousePressed(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    button->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
   // OS integration is needed to be able to launch web applications. This
   // override ensures OS integration doesn't leave any traces.
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
@@ -106,85 +83,78 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest, ShowHide) {
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
   controller(browser())->Show();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   controller(browser())->Hide();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_FALSE(download_button(browser()).GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        HideDoesNotRemoveButtonIfPinned) {
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   // Verify calling Hide does not change the visibility of the button when
   // pinned.
   controller(browser())->Hide();
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ControllerUpdatesButtonEnabledState) {
   // Pin downloads to the toolbar.
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  EXPECT_TRUE(toolbar_button(browser())->GetEnabled());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
+  EXPECT_TRUE(download_button(browser()).GetEnabled());
   // Disable the via the controller and verify the button's enabled state.
   controller(browser())->Disable();
-  EXPECT_FALSE(toolbar_button(browser())->GetEnabled());
+  EXPECT_FALSE(download_button(browser()).GetEnabled());
   // Enable the via the controller and verify the button's enabled state.
   controller(browser())->Enable();
-  EXPECT_TRUE(toolbar_button(browser())->GetEnabled());
+  EXPECT_TRUE(download_button(browser()).GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ButtonShowsForDownloadingItems) {
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
   // Download a file and verify the download button appears after the download.
   ui_test_utils::DownloadURL(
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   // Verify calling Hide does change the visibility of the button.
   controller(browser())->Hide();
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ButtonShowsInNewBrowserWithRecentDownload) {
-  EXPECT_EQ(toolbar_button(browser()), nullptr);
+  EXPECT_FALSE(download_button(browser()).GetVisible());
   // Download a file and verify the download button appears after the download.
   ui_test_utils::DownloadURL(
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   // Create another browser and set it as active so the button becomes dormant.
   BrowserWindowInterface* extra_browser =
       CreateBrowser(browser()->GetProfile());
+  PinnedActionTestAccessor::WaitForAnimation(extra_browser);
   ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(extra_browser), nullptr);
-  EXPECT_TRUE(toolbar_button(extra_browser)->GetVisible());
+  EXPECT_TRUE(download_button(extra_browser).GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
@@ -193,13 +163,12 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   {
     content::LoadStopObserver observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    ClickButton(toolbar_button(browser()));
+    download_button(browser()).Click();
     observer.Wait();
   }
   EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
@@ -212,10 +181,9 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  ClickButton(toolbar_button(browser()));
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
+  download_button(browser()).Click();
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
 }
@@ -239,21 +207,19 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       app_browser, chrome_test_utils::GetTestUrl(
                        base::FilePath().AppendASCII("downloads"),
                        base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(app_browser));
-  EXPECT_NE(toolbar_button(app_browser), nullptr);
-  EXPECT_TRUE(toolbar_button(app_browser)->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(app_browser);
+  EXPECT_TRUE(download_button(app_browser).GetVisible());
   // Close web app.
   CloseBrowserSynchronously(app_browser);
 
   // Reopen web app and verify download button appears.
   BrowserWindowInterface* app_browser2 =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(app_browser2));
-  EXPECT_NE(toolbar_button(app_browser2), nullptr);
-  EXPECT_TRUE(toolbar_button(app_browser2)->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(app_browser2);
+  EXPECT_TRUE(download_button(app_browser2).GetVisible());
 
   // Click the button and verify the bubble opens.
-  ClickButton(toolbar_button(app_browser2));
+  download_button(app_browser2).Click();
   EXPECT_EQ(
       controller(app_browser2)->bubble_contents_for_testing()->VisiblePage(),
       DownloadBubbleContentsView::Page::kPrimary);
@@ -265,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  PinnedActionTestAccessor::WaitForAnimation(browser());
   controller(browser())->ShowDetails();
   controller(browser())->OpenPrimaryDialog();
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
@@ -313,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  PinnedActionTestAccessor::WaitForAnimation(browser());
   controller(browser())->ShowDetails();
   controller(browser())->OpenPrimaryDialog();
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
@@ -343,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  PinnedActionTestAccessor::WaitForAnimation(browser());
 
   offline_items_collection::ContentId content_id =
       OfflineItemUtils::GetContentIdForDownload(download_items[0].get());
@@ -364,9 +330,8 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ProgressRingVisibleDuringDownload) {
   controller(browser())->Show();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   EXPECT_FALSE(
       controller(browser())->IsProgressRingInDownloadingStateForTesting());
   download::DownloadItem* download_item = CreateSlowTestDownload();
@@ -381,15 +346,14 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ProgressRingDormantState) {
   EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   download::DownloadItem* download_item = CreateSlowTestDownload();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
   EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   // Create another browser and set it as active so the button becomes dormant.
   BrowserWindowInterface* extra_browser =
       CreateBrowser(browser()->GetProfile());
+  PinnedActionTestAccessor::WaitForAnimation(extra_browser);
   ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(extra_browser));
 
   EXPECT_TRUE(controller(browser())->IsProgressRingInDormantStateForTesting());
   download_item->Cancel(true);
@@ -399,13 +363,16 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ImageBadgeDoesNotShowForSingleDownload) {
   download::DownloadItem* download_item = CreateSlowTestDownload();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  EXPECT_TRUE(controller(browser())
-                  ->GetImageBadgeForTesting()
-                  ->GetImageModel()
-                  .IsEmpty());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
+  if (!features::IsWebUIPinnedToolbarActionsEnabled()) {
+    // TODO(https://crbug.com/474063115): Verify the badge in the WebUI toolbar
+    // once implemented.
+    EXPECT_TRUE(controller(browser())
+                    ->GetImageBadgeForTesting()
+                    ->GetImageModel()
+                    .IsEmpty());
+  }
   download_item->Cancel(true);
 }
 
@@ -413,9 +380,8 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        DISABLED_ImageBadgeShowsForMultipleDownloads) {
   controller(browser())->Show();
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  EXPECT_NE(toolbar_button(browser()), nullptr);
-  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  PinnedActionTestAccessor::WaitForAnimation(browser());
+  EXPECT_TRUE(download_button(browser()).GetVisible());
 
   content::DownloadManager* manager = DownloadManagerForBrowser(browser());
 
@@ -460,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
-  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  PinnedActionTestAccessor::WaitForAnimation(browser());
   controller(browser())->ShowDetails();
   controller(browser())->OpenPrimaryDialog();
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
