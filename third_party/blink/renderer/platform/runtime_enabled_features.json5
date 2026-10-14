@@ -7047,6 +7047,14 @@
       status: "stable",
     },
     {
+      // Kill switch. Doesn't generate the ::view-transition pseudo-element
+      // tree when capturing the outgoing document of a cross-document view
+      // transition, since the animation runs on the new document. This avoids
+      // extra style and layout passes in the capture frame.
+      name: "ViewTransitionSkipPseudoTreeForNavigationCapture",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/569098933. Doesn't snap the browser
       // controls to fully shown when capturing the outgoing document of a
       // cross-document view transition if the browser controls have zero

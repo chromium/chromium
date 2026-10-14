@@ -428,9 +428,11 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
-    const blink::ViewTransitionToken& transition_token)
+    const blink::ViewTransitionToken& transition_token,
+    bool generates_pseudo_element_tree)
     : document_(document),
       transition_token_(transition_token),
+      generates_pseudo_element_tree_(generates_pseudo_element_tree),
       device_pixel_ratio_(DevicePixelRatioFromDocument(document)) {}
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
@@ -1076,7 +1078,8 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 
   view_transition_names_ = std::move(transition_names);
 
-  // We need a style invalidation to generate the pseudo-element tree.
+  // We need a style invalidation to generate the pseudo-element tree (if any)
+  // and to update the participants' style and paint properties.
   InvalidateStyleAndCompositing();
 
   set_element_sequence_id_ = 0;
@@ -1726,6 +1729,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     return true;
   }
 
+  const bool captured_rect_changed =
+      captured_rect_in_layout_space !=
+      element_data->captured_rect_in_layout_space;
+
   element_data->container_properties = container_properties;
 
   element_data->visual_overflow_rect_in_layout_space =
@@ -1760,7 +1767,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     element_data->CacheStateForOldSnapshot();
   }
 
-  needs_style_invalidation = true;
+  // Without the pseudo-element tree, the invalidation is only needed to update
+  // the capture clip, which is a paint property of the participant.
+  needs_style_invalidation |=
+      generates_pseudo_element_tree_ || captured_rect_changed;
   return true;
 }
 
@@ -2258,6 +2268,9 @@ void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
     return;
   }
 
+  // This is needed even if the pseudo-element tree isn't generated, since it
+  // ensures that the lifecycle reruns to apply the paint property updates
+  // below (e.g. if the root is the only participant).
   originating_element->SetNeedsStyleRecalc(
       kLocalStyleChange, StyleChangeReasonForTracing::Create(
                              style_change_reason::kViewTransition));

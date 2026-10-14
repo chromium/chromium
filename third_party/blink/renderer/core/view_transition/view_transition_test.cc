@@ -10,9 +10,11 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -35,12 +37,15 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
+#include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -150,22 +155,31 @@ class ViewTransitionTest : public testing::Test,
     return transition->GetViewTransitionForTest()->state_;
   }
 
-  // Captures the document for a cross-document navigation, as is done for the
-  // outgoing document, and returns whether the capture finished.
-  bool SnapshotDocumentForNavigation() {
-    bool callback_ran = false;
+  // Starts capturing the document for a cross-document navigation, as is done
+  // for the outgoing document. `navigation_snapshot_state_` is set once the
+  // capture finishes.
+  void StartSnapshotDocumentForNavigation() {
+    navigation_snapshot_state_.reset();
     auto page_swap_params = mojom::blink::PageSwapEventParams::New();
     page_swap_params->url = KURL("http://test.com");
     page_swap_params->navigation_type =
         mojom::blink::NavigationTypeForNavigationApi::kPush;
+    // The fixture outlives the document, which runs the callback if the
+    // transition is skipped during teardown.
     ViewTransitionSupplement::SnapshotDocumentForNavigation(
         GetDocument(), blink::ViewTransitionToken(),
         std::move(page_swap_params),
-        base::BindOnce([](bool* callback_ran,
-                          const ViewTransitionState&) { *callback_ran = true; },
-                       &callback_ran));
+        base::BindLambdaForTesting([this](const ViewTransitionState& state) {
+          navigation_snapshot_state_ = state;
+        }));
+  }
+
+  // Captures the document for a cross-document navigation, as is done for the
+  // outgoing document, and returns whether the capture finished.
+  bool SnapshotDocumentForNavigation() {
+    StartSnapshotDocumentForNavigation();
     UpdateAllLifecyclePhasesAndFinishDirectives();
-    return callback_ran;
+    return navigation_snapshot_state_.has_value();
   }
 
   void FinishTransition() {
@@ -264,6 +278,7 @@ class ViewTransitionTest : public testing::Test,
  protected:
   test::TaskEnvironment task_environment;
 
+  std::optional<ViewTransitionState> navigation_snapshot_state_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
@@ -2073,6 +2088,142 @@ TEST_P(ViewTransitionTest, NavigationCaptureDoesNotSnapZeroHeightControls) {
   EXPECT_TRUE(SnapshotDocumentForNavigation());
   EXPECT_EQ(browser_controls.TopShownRatio(), 0);
   EXPECT_EQ(browser_controls.BottomShownRatio(), 0);
+}
+
+// The outgoing document of a cross-document navigation only captures its
+// participants since the animation runs on the new document. So it shouldn't
+// generate the pseudo-element tree, which costs extra style and layout passes
+// in the capture frame.
+TEST_P(ViewTransitionTest, NavigationCaptureDoesNotGeneratePseudoElementTree) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html { view-transition-name: root; }
+      div { width: 100px; height: 100px; contain: paint; background: green; }
+      #first { view-transition-name: first; }
+      #second { view-transition-name: second; }
+    </style>
+    <div id=first></div>
+    <div id=second></div>
+  )HTML");
+
+  StartSnapshotDocumentForNavigation();
+  ASSERT_TRUE(ViewTransitionUtils::GetTransition(GetDocument()));
+
+  // Nothing else in the page changed, so the capture frame doesn't need any
+  // layout.
+  const unsigned layout_count = GetLocalFrameView()->LayoutCountForTesting();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetLocalFrameView()->LayoutCountForTesting(), layout_count);
+
+  Element* root = GetDocument().documentElement();
+  EXPECT_FALSE(root->GetPseudoElement(kPseudoIdViewTransition));
+  EXPECT_FALSE(GetDocument().GetLayoutView()->GetViewTransitionRoot());
+
+  // The participants are still captured.
+  EXPECT_TRUE(ShouldCompositeForViewTransition(
+      GetDocument().getElementById(AtomicString("first"))));
+  EXPECT_TRUE(ShouldCompositeForViewTransition(
+      GetDocument().getElementById(AtomicString("second"))));
+  EXPECT_TRUE(ElementIsComposited("first"));
+  EXPECT_TRUE(ElementIsComposited("second"));
+
+  ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
+                                                    LayerTreeHost());
+  ASSERT_TRUE(navigation_snapshot_state_.has_value());
+  EXPECT_TRUE(navigation_snapshot_state_->IsValid());
+  EXPECT_FALSE(root->GetPseudoElement(kPseudoIdViewTransition));
+}
+
+// A participant that is too large to be captured fully is clipped. The clip
+// depends on geometry that's only known after the participants are discovered,
+// so it must be in place by the time the capture frame is painted.
+TEST_P(ViewTransitionTest, NavigationCaptureClipsLargeParticipant) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html { view-transition-name: root; }
+      #large {
+        width: 100px;
+        height: 1000px;
+        contain: paint;
+        background: green;
+        view-transition-name: large;
+      }
+    </style>
+    <div id=large></div>
+  )HTML");
+
+  StartSnapshotDocumentForNavigation();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
+  ASSERT_TRUE(transition);
+  const LayoutObject& large =
+      *GetDocument().getElementById(AtomicString("large"))->GetLayoutObject();
+  ASSERT_TRUE(transition->NeedsViewTransitionClipNode(large));
+  EXPECT_EQ(&large.FirstFragment().LocalBorderBoxProperties().Clip(),
+            transition->GetCaptureClip(large));
+
+  ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
+                                                    LayerTreeHost());
+  ASSERT_TRUE(navigation_snapshot_state_.has_value());
+  EXPECT_TRUE(navigation_snapshot_state_->IsValid());
+}
+
+// The root's snapshot ID is only known after the participants are discovered,
+// so the capture frame must update the LayoutView's paint properties after
+// that, even if the root is the only participant.
+TEST_P(ViewTransitionTest, NavigationCaptureWithOnlyRootParticipant) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html { view-transition-name: root; }
+      div { width: 100px; height: 100px; background: green; }
+    </style>
+    <div></div>
+  )HTML");
+
+  StartSnapshotDocumentForNavigation();
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto* properties =
+      GetDocument().GetLayoutView()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->ViewTransitionEffect());
+  EXPECT_TRUE(properties->ViewTransitionEffect()
+                  ->ViewTransitionElementResourceId()
+                  .IsValid());
+
+  ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
+                                                    LayerTreeHost());
+  ASSERT_TRUE(navigation_snapshot_state_.has_value());
+  EXPECT_TRUE(navigation_snapshot_state_->IsValid());
+}
+
+// The kill switch restores generating the pseudo-element tree on the outgoing
+// document.
+TEST_P(ViewTransitionTest,
+       NavigationCaptureGeneratesPseudoElementTreeIfSkipDisabled) {
+  ScopedViewTransitionSkipPseudoTreeForNavigationCaptureForTest
+      skip_pseudo_tree(false);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html { view-transition-name: root; }
+      div { width: 100px; height: 100px; contain: paint; background: green; }
+      #first { view-transition-name: first; }
+    </style>
+    <div id=first></div>
+  )HTML");
+
+  StartSnapshotDocumentForNavigation();
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* root = GetDocument().documentElement();
+  EXPECT_TRUE(root->GetPseudoElement(kPseudoIdViewTransition));
+  EXPECT_TRUE(GetDocument().GetLayoutView()->GetViewTransitionRoot());
+
+  ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
+                                                    LayerTreeHost());
+  ASSERT_TRUE(navigation_snapshot_state_.has_value());
+  EXPECT_TRUE(navigation_snapshot_state_->IsValid());
 }
 
 TEST_P(ViewTransitionTest, AutoResizeMismatchedSizes) {

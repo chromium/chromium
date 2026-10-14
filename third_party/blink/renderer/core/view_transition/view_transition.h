@@ -301,6 +301,11 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool IsGeneratingPseudo(
       const ViewTransitionPseudoElementBase& pseudo_element) const;
 
+  // Returns true if this transition generates the ::view-transition
+  // pseudo-element tree. See
+  // ViewTransitionStyleTracker::GeneratesPseudoElementTree().
+  bool GeneratesPseudoElementTree() const;
+
   Element* Scope() const;
   bool NeedsContainmentForDurationOfCapture() const;
 

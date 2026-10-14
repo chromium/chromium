@@ -90,7 +90,8 @@ class ViewTransitionStyleTracker
 
   explicit ViewTransitionStyleTracker(
       Document& document,
-      const blink::ViewTransitionToken& transition_token);
+      const blink::ViewTransitionToken& transition_token,
+      bool generates_pseudo_element_tree);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
   ViewTransitionStyleTracker(
       Element& element,
@@ -246,6 +247,14 @@ class ViewTransitionStyleTracker
   void InvalidateBackdropFilterCompositingProperties();
   bool IsOldSnapshotFrozen() const {
     return state_ == State::kOldSnapshotFrozen;
+  }
+
+  // Returns false if this transition doesn't generate the ::view-transition
+  // pseudo-element tree. This is the case when capturing the outgoing document
+  // of a cross-document transition, since the animation runs on the new
+  // document.
+  bool GeneratesPseudoElementTree() const {
+    return generates_pseudo_element_tree_;
   }
 
  private:
@@ -459,6 +468,9 @@ class ViewTransitionStyleTracker
   // initiated by navigations where capture and animation could run in different
   // Documents which are cross-process.
   const bool deserialized_ = false;
+
+  // See GeneratesPseudoElementTree().
+  const bool generates_pseudo_element_tree_ = true;
 
   // Tracks the number of names discovered during the capture phase of the
   // transition.
