@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -81,7 +83,7 @@ public class AppRatingPromoControllerTest {
         when(mLocalPrefService.getBoolean(Pref.APP_RATING_POLICY_ENABLED)).thenReturn(true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
                 .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(eq(FeatureConstants.APP_RATING_PROMPT_FEATURE), any()))
                 .thenReturn(true);
     }
 
@@ -180,6 +182,7 @@ public class AppRatingPromoControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
+    @DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
     public void testOnSegmentationResultReceived_HighEngagement() {
         Assert.assertTrue(
                 "Promo should potentially be shown if all conditions are met.",
@@ -196,7 +199,10 @@ public class AppRatingPromoControllerTest {
         mCallbackCapturer.getValue().onResult(result);
 
         // Verify the review flow is triggered for high engagement users.
-        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE);
+        verify(mTracker)
+                .shouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
+                        eq(new FeatureProperties(UiFormat.DIALOG, false, false, false)));
         verify(mPrefService).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
         verify(mAppRatingManager)
                 .requestAndShowReviewFlow(eq(mActivity), mRunnableCapturer.capture());
@@ -204,6 +210,34 @@ public class AppRatingPromoControllerTest {
         // Complete the review flow
         mRunnableCapturer.getValue().run();
         verify(mTracker).dismissed(FeatureConstants.APP_RATING_PROMPT_FEATURE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_RATING_PROMPT,
+        ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+    })
+    public void testOnSegmentationResultReceived_HighEngagement_CooldownGroupEnabled() {
+        Assert.assertTrue(
+                "Promo should potentially be shown if all conditions are met.",
+                AppRatingPromoController.maybeShowPromo(mProfile, mActivity, ALLOWED_COUNTRY));
+        verify(mSegmentationService)
+                .getClassificationResult(any(), any(), any(), mCallbackCapturer.capture());
+
+        ClassificationResult result =
+                new ClassificationResult(
+                        PredictionStatus.SUCCEEDED,
+                        new String[] {SegmentationPlatformConstants.SEARCH_USER_MODEL_LABEL_HIGH},
+                        0L);
+
+        mCallbackCapturer.getValue().onResult(result);
+
+        verify(mTracker)
+                .shouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
+                        eq(new FeatureProperties(UiFormat.DIALOG, true, true, true)));
+        verify(mAppRatingManager)
+                .requestAndShowReviewFlow(eq(mActivity), mRunnableCapturer.capture());
     }
 
     @Test
@@ -225,7 +259,8 @@ public class AppRatingPromoControllerTest {
 
         // Verify the review flow is NOT triggered for low engagement users.
         verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
-        verify(mTracker, never()).shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE);
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(eq(FeatureConstants.APP_RATING_PROMPT_FEATURE), any());
     }
 
     @Test
@@ -237,7 +272,7 @@ public class AppRatingPromoControllerTest {
         verify(mSegmentationService)
                 .getClassificationResult(any(), any(), any(), mCallbackCapturer.capture());
 
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(eq(FeatureConstants.APP_RATING_PROMPT_FEATURE), any()))
                 .thenReturn(false);
 
         ClassificationResult result =
@@ -273,6 +308,6 @@ public class AppRatingPromoControllerTest {
 
         // Verify the review flow is NOT triggered if activity is finishing.
         verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
-        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        verify(mTracker, never()).shouldTriggerHelpUi(any(), any());
     }
 }

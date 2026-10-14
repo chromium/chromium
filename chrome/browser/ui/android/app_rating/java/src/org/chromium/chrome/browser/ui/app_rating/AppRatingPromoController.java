@@ -15,7 +15,9 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
@@ -132,9 +134,18 @@ public class AppRatingPromoController {
         // Double-check eligibility and officially claim the UI state.
         // This is necessary because another promo might have been triggered while we were waiting
         // for the async segmentation result.
-        if (mTracker != null
-                && !mTracker.shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
-            return;
+        if (mTracker != null) {
+            boolean isCooldownEnabled = ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled();
+            FeatureProperties featureProperties =
+                    new FeatureProperties(
+                            UiFormat.DIALOG,
+                            /* isBlockedByEnterprisePolicy= */ isCooldownEnabled,
+                            /* isBlockedByCooldownGroup= */ isCooldownEnabled,
+                            /* blocksCooldownGroup= */ isCooldownEnabled);
+            if (!mTracker.shouldTriggerHelpUi(
+                    FeatureConstants.APP_RATING_PROMPT_FEATURE, featureProperties)) {
+                return;
+            }
         }
 
         triggerAppRatingReviewFlow(activity, mProfile, mTracker);
