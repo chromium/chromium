@@ -247,7 +247,7 @@ cargo_crate("alloc") {
     target_name = "alloc_bindings"
     cpp_namespace = "rs::alloc"
     h_out = "$root_gen_dir/third_party/crubit/support/rs_std/rs_alloc.h"
-    deps = [ ":core_bindings" ]
+    bindings_deps = [ ":core_bindings" ]
   }
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -1129,7 +1129,7 @@ cargo_crate("core") {
     target_name = "core_bindings"
     cpp_namespace = "rs::core"
     h_out = "$root_gen_dir/third_party/crubit/support/rs_std/rs_core.h"
-    deps = []
+    bindings_deps = []
   }
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -3289,7 +3289,7 @@ cargo_crate("std") {
     target_name = "std_bindings"
     cpp_namespace = "rs::std"
     h_out = "$root_gen_dir/third_party/crubit/support/rs_std/rs_std.h"
-    deps = [
+    bindings_deps = [
       ":alloc_bindings",
       ":core_bindings",
     ]

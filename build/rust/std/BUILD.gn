@@ -421,15 +421,15 @@ if (toolchain_has_rust) {
       _prebuilt_stdlib_bindings = [
         {
           crate_name = "core"
-          deps = []
+          bindings_deps = []
         },
         {
           crate_name = "alloc"
-          deps = [ ":prebuilt_core_bindings" ]
+          bindings_deps = [ ":prebuilt_core_bindings" ]
         },
         {
           crate_name = "std"
-          deps = [
+          bindings_deps = [
             ":prebuilt_alloc_bindings",
             ":prebuilt_core_bindings",
           ]
@@ -444,7 +444,7 @@ if (toolchain_has_rust) {
                   "rs_${_bindings.crate_name}.h"
           original_attributes = {
             cpp_namespace = "rs::${_bindings.crate_name}"
-            deps = _bindings.deps
+            bindings_deps = _bindings.bindings_deps
           }
 
           # Crubit reads the `.rmeta` files from `rust_sysroot`.  The copies

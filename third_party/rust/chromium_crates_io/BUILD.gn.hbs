@@ -45,9 +45,9 @@ cargo_crate("{{this.name}}") {
   {{#with extra_kv.cpp_api_from_rust}}
   cpp_api_from_rust = {
     target_name = "cpp_api_from_rust"
-    {{#if_key_present "deps" this}}
-      deps = [
-        {{#each this.deps}}
+    {{#if_key_present "bindings_deps" this}}
+      bindings_deps = [
+        {{#each this.bindings_deps}}
           "//third_party/rust/{{this}}:cpp_api_from_rust",
         {{/each}}
       ]

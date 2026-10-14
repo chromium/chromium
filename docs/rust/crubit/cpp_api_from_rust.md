@@ -174,16 +174,17 @@ rust_static_library("rust_lib") {
   cpp_api_from_rust = {
     target_name = "rust_lib_bindings"
     cpp_namespace = "rust_lib"
-    deps = [ "//some/other/lib:other_lib_bindings" ]
+    bindings_deps = [ "//some/other/lib:other_lib_bindings" ]
   }
 }
 ```
 
-Note how `other_lib_bindings` are listed in `deps` of `cpp_api_from_rust` above.
+Note how `other_lib_bindings` are listed in `bindings_deps` of
+`cpp_api_from_rust` above.
 
 Note that types from `internal_helper` are _not_ used in public APIs of
 `rust_lib` and therefore `internal_helper` is _not_ listed
-in `deps` attribute of `cpp_api_from_rust`.
+in `bindings_deps` attribute of `cpp_api_from_rust`.
 
 ### Bindings dependencies for `//third_party/rust` libraries
 
@@ -193,7 +194,7 @@ with the following `gnrt_config.toml` entry:
 ```
 [crate.my_crate_name.extra_kv]
 allow_unsafe = false
-cpp_api_from_rust = { deps = ["some_other_crate/v123"] }
+cpp_api_from_rust = { bindings_deps = ["some_other_crate/v123"] }
 ```
 
 After modifying `gnrt_config.toml` you have to re-run

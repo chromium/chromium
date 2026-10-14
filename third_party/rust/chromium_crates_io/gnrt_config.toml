@@ -88,8 +88,9 @@
 #     configs_to_remove / configs_to_add: A list of GN config labels.
 #
 #     cpp_api_from_rust: Either a boolean (e.g. `cpp_api_from_rust = true`) or
-#       a sub-table (e.g. `cpp_api_from_rust = { deps = ["png/v0_18"] }`) that
-#       asks for Crubit-based C++ bindings to be generated for the given crate.
+#       a sub-table (e.g.
+#       `cpp_api_from_rust = { bindings_deps = ["png/v0_18"] }`) that asks for
+#       Crubit-based C++ bindings to be generated for the given crate.
 #       See `//docs/rust/crubit/cpp_api_from_rust.md` for more details
 #       (and `//docs/rust/crubit/README.md` for general Crubit information).
 #

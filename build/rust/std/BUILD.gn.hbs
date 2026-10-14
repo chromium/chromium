@@ -43,8 +43,8 @@ cargo_crate("{{../name}}") {
       target_name = "{{../name}}_bindings"
       cpp_namespace = "rs::{{../name}}"
       h_out = "$root_gen_dir/third_party/crubit/support/rs_std/rs_{{../name}}.h"
-      deps = [
-        {{#each extra_kv.cpp_api_from_rust.deps}}
+      bindings_deps = [
+        {{#each extra_kv.cpp_api_from_rust.bindings_deps}}
         ":{{this}}_bindings",
         {{/each}}
       ]
