@@ -92,6 +92,8 @@ def init(ctx):
         # Outputs with known missing deps. They don't fail the build with
         # -missing_deps=error/fatal.
         "missing_deps": {
+            "./android_clang_arm/obj/chrome/browser/offline_pages/impl/offline_page_utils_android.o": "crbug.com/572931511",
+            "./android_clang_arm/obj/chrome/browser/webapps/android_impl/webapps_client_android.o": "crbug.com/572931511",
             "./gen/third_party/devtools-frontend/src/front_end/panels/application/application.js": "crbug.com/556413211",
             "./gen/third_party/devtools-frontend/src/front_end/panels/sources/sources.js": "crbug.com/556926446",
             "./gen/third_party/devtools-frontend/src/front_end/panels/timeline/timeline.js": "crbug.com/556600964",
@@ -99,7 +101,9 @@ def init(ctx):
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
             "./obj/chrome/browser/ash/guest_os/public/public/guest_os_mount_provider.o": "crbug.com/565544340",
+            "./obj/chrome/browser/offline_pages/impl/offline_page_utils_android.o": "crbug.com/572931511",
             "./obj/chrome/browser/ui/views/upgrade_notification_controller/upgrade_notification_controller.o": "crbug.com/555387059",
+            "./obj/chrome/browser/webapps/android_impl/webapps_client_android.o": "crbug.com/572931511",
             "./obj/chrome/common/apps/platform_apps/api/api_features/api_features.o": "crbug.com/570385211",
             "./obj/chrome/common/apps/platform_apps/api/permission_features/permission_features.o": "crbug.com/570385211",
             "./obj/chrome/common/controlled_frame/api/api_features/api_features.o": "crbug.com/570385211",
