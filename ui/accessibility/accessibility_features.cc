@@ -59,12 +59,6 @@ bool IsAccessibilityHandleOccludingViewsEnabled() {
       ::features::kAccessibilityHandleOccludingViews);
 }
 
-BASE_FEATURE(kAccessibilityTextChangeTypes, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityTextChangeTypesEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityTextChangeTypes);
-}
-
 BASE_FEATURE(kAccessibilityLabeledBy, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityLabeledByEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityLabeledBy);

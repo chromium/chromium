@@ -692,22 +692,20 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       if (android_node->IsTextField() && GetFocus() == wrapper) {
         int32_t text_change_types =
             ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_UNDEFINED;
-        if (::features::IsAccessibilityTextChangeTypesEnabled()) {
-          if (android_node->GetBoolAttribute(
-                  ax::mojom::BoolAttribute::kHasComposition)) {
-            text_change_types |=
-                ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_IN_COMPOSITION;
-          }
-          if (android_node->GetBoolAttribute(
-                  ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME)) {
-            text_change_types |=
-                ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_CONVERSION_SUGGESTION_SELECTED_BY_IME;
-          }
-          if (android_node->GetIntAttribute(
-                  ax::mojom::IntAttribute::kCommittedTextLength) > 0) {
-            text_change_types |=
-                ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_COMMITTED_BY_IME;
-          }
+        if (android_node->GetBoolAttribute(
+                ax::mojom::BoolAttribute::kHasComposition)) {
+          text_change_types |=
+              ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_IN_COMPOSITION;
+        }
+        if (android_node->GetBoolAttribute(
+                ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME)) {
+          text_change_types |=
+              ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_CONVERSION_SUGGESTION_SELECTED_BY_IME;
+        }
+        if (android_node->GetIntAttribute(
+                ax::mojom::IntAttribute::kCommittedTextLength) > 0) {
+          text_change_types |=
+              ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_COMMITTED_BY_IME;
         }
         wcax->HandleEditableTextChanged(android_node->GetUniqueId(),
                                         text_change_types);

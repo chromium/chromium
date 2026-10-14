@@ -3404,11 +3404,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-accessibility-text-change-types",
-    "owners": [ "yichenz@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-accessibility-text-formatting",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145

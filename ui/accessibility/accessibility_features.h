@@ -65,10 +65,6 @@ AX_BASE_EXPORT bool IsAccessibilityTextFormattingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityHandleOccludingViews);
 AX_BASE_EXPORT bool IsAccessibilityHandleOccludingViewsEnabled();
 
-// Enables text change types for text changed events.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextChangeTypes);
-AX_BASE_EXPORT bool IsAccessibilityTextChangeTypesEnabled();
-
 // Enables the addition of `labeledby` relationships in the accessibility tree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityLabeledBy);
 AX_BASE_EXPORT bool IsAccessibilityLabeledByEnabled();

@@ -7,7 +7,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -19,7 +18,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -46,9 +44,7 @@ class ImeAccessibilityBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<std::string> {
  public:
-  ImeAccessibilityBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAccessibilityTextChangeTypes);
-  }
+  ImeAccessibilityBrowserTest() = default;
   ~ImeAccessibilityBrowserTest() override = default;
 
  protected:
@@ -73,7 +69,6 @@ class ImeAccessibilityBrowserTest
   }
 
   std::unique_ptr<ScopedAccessibilityModeOverride> scoped_accessibility_mode_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ImeAccessibilityBrowserTest,

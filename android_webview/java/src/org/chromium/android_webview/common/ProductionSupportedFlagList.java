@@ -1047,9 +1047,6 @@ public final class ProductionSupportedFlagList {
                 "Enables Magnification and other views to keep the text cursor onscreen when no"
                         + " physical keyboard is attached."),
         Flag.baseFeature(
-                AccessibilityFeatures.ACCESSIBILITY_TEXT_CHANGE_TYPES,
-                "Enables text change types for text changed events."),
-        Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING,
                 "Enables text formatting information to be surfaced as Spans on"
                     + " AccessibilityNodeInfo text for consumption by ATs like screen readers."),

@@ -5455,12 +5455,6 @@ inline constexpr char kAccessibilityTextFormattingDescription[] =
     "When enabled, text formatting information will be included in the "
     "AccessibilityNodeInfo tree on Android";
 
-inline constexpr char kAccessibilityTextChangeTypesName[] =
-    "Accessibility Text Change Types";
-inline constexpr char kAccessibilityTextChangeTypesDescription[] =
-    "When enabled, text change types will be set alongside with text changed "
-    "events to Android a11y services for finely-grained a11y feedback";
-
 inline constexpr char kAllowMultipleMediaNotificationsName[] =
     "Allow multiple media notifications";
 inline constexpr char kAllowMultipleMediaNotificationsDescription[] =
