@@ -585,67 +585,45 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getAdditionalTextColor(mContext);
     }
 
-    /**
-     * Get request type button color.
-     *
-     * @see #getRequestTypeButtonColor(Context, ...)
-     */
+    /** Resolves the background color of the chip showing the active tool. */
     public @ColorInt int getRequestTypeButtonColor() {
-        return getRequestTypeButtonColor(mContext, getBrandedColorScheme());
+        return IncognitoColors.getInteractableChipBgColor(mContext, isIncognito());
     }
 
     /**
-     * Get color surface.
-     *
-     * @see #getColorSurface(Context, ...)
+     * Resolves the surface color. Used for the contrast background of the close button on
+     * attachment chips.
      */
     public @ColorInt int getColorSurface() {
-        return getColorSurface(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorSurface(mContext, isIncognito());
     }
 
-    /**
-     * Get color on surface.
-     *
-     * @see #getColorOnSurface(Context, ...)
-     */
+    /** Resolves the on-surface color. Used for the close src image on attachment chips. */
     public @ColorInt int getColorOnSurface() {
-        return getColorOnSurface(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorOnSurface(mContext, isIncognito());
     }
 
-    /**
-     * Get color surface container high.
-     *
-     * @see #getColorSurfaceContainerHigh(Context, ...)
-     */
+    /** Resolves the surface container high color. Used for the activation chip. */
     public @ColorInt int getColorSurfaceContainerHigh() {
-        return getColorSurfaceContainerHigh(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorSurfaceContainerHigh(mContext, isIncognito());
     }
 
-    /**
-     * Get color surface container highest.
-     *
-     * @see #getColorSurfaceContainerHighest(Context, ...)
-     */
+    /** Resolves the surface container highest color. Used for the activation chip. */
     public @ColorInt int getColorSurfaceContainerHighest() {
-        return getColorSurfaceContainerHighest(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorSurfaceContainerHighest(mContext, isIncognito());
     }
 
     /**
-     * Get color primary.
-     *
-     * @see #getColorPrimary(Context, ...)
+     * Resolves the vivid color used for the border of the tool chip when used as a hint to enter AI
+     * Mode, as well as the background of the send button.
      */
     public @ColorInt int getColorPrimary() {
-        return getColorPrimary(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorPrimary(mContext, isIncognito());
     }
 
-    /**
-     * Get default icon color.
-     *
-     * @see #getDefaultIconColor(Context, ...)
-     */
+    /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
     public @ColorInt int getDefaultIconColor() {
-        return getDefaultIconColor(mContext, getBrandedColorScheme());
+        return IncognitoColors.getDefaultIconColor(mContext, isIncognito());
     }
 
     /**
@@ -720,22 +698,14 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getPrimaryIconBackgroundTintList(mContext, getBrandedColorScheme());
     }
 
-    /**
-     * Get popup divider line color.
-     *
-     * @see #getPopupDividerLineColor(Context, ...)
-     */
+    /** Resolves the divider line color for the popup. */
     public @ColorInt int getPopupDividerLineColor() {
-        return getPopupDividerLineColor(mContext, getBrandedColorScheme());
+        return IncognitoColors.getDividerLineBgColor(mContext, isIncognito());
     }
 
-    /**
-     * Get send icon contrast color.
-     *
-     * @see #getSendIconContrastColor(Context, ...)
-     */
+    /** Resolves the icon tint for the plus button on top of the vivid send button. */
     public @ColorInt int getSendIconContrastColor() {
-        return getSendIconContrastColor(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorOnPrimary(mContext, isIncognito());
     }
 
     /**
@@ -1295,77 +1265,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return brandedColorScheme == BrandedColorScheme.INCOGNITO;
     }
 
-    /** Resolves the background color of the chip showing the active tool. */
-    public static @ColorInt int getRequestTypeButtonColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getInteractableChipBgColor(context, isIncognito);
-    }
-
-    /**
-     * A color scheme version of {@link IncognitoColors#getColorSurface(Context, boolean)}. Used for
-     * the contrast background of the close button on attachment chips.
-     */
-    public static @ColorInt int getColorSurface(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorSurface(context, isIncognito);
-    }
-
-    /**
-     * A color scheme version of {@link IncognitoColors#getColorOnSurface(Context, boolean)}. Used
-     * for the close src image on attachment chips.
-     */
-    public static @ColorInt int getColorOnSurface(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorOnSurface(context, isIncognito);
-    }
-
-    /**
-     * A color scheme version of {@link IncognitoColors#getColorSurfaceContainerHigh(Context,
-     * boolean)}. Used for the activation chip.
-     */
-    public static @ColorInt int getColorSurfaceContainerHigh(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
-    }
-
-    /**
-     * A color scheme version of {@link IncognitoColors#getColorSurfaceContainerHighest(Context,
-     * boolean)}. Used for the activation chip.
-     */
-    public static @ColorInt int getColorSurfaceContainerHighest(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorSurfaceContainerHighest(context, isIncognito);
-    }
-
-    /**
-     * Resolves the vivid color used for the border of the tool chip when used as a hint to enter AI
-     * Mode, as well as the background of the send button.
-     */
-    public static @ColorInt int getColorPrimary(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorPrimary(context, isIncognito);
-    }
-
-    /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
-    public static @ColorInt int getDefaultIconColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getDefaultIconColor(context, isIncognito);
-    }
-
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public static ColorStateList getPrimaryIconTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
@@ -1428,22 +1327,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         return IncognitoColors.getColorSurfaceContainerTintList(context, isIncognito);
-    }
-
-    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
-    public static @ColorInt int getPopupDividerLineColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getDividerLineBgColor(context, isIncognito);
-    }
-
-    /** Resolves the icon tint for the plus button on top of the vivid send button. */
-    public static @ColorInt int getSendIconContrastColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorOnPrimary(context, isIncognito);
     }
 
     /** Resolves the text appearance for the active tool button. */
