@@ -833,8 +833,6 @@ should be able to be added at any place in this file.
       summary="For reading mode omnibox entrypoint."/>
   <variant name="_ReadingModePresentationMode"
       summary="For changing reading mode presentation mode onboarding."/>
-  <variant name="_ReadingModeSidePanel"
-      summary="For reading mode side panel feature."/>
   <variant name="_ReadLaterAppMenuBookmarks"
       summary="For ReadLaterAppMenuBookmarks feature."/>
   <variant name="_ReadLaterAppMenuBookmarkThisPage"

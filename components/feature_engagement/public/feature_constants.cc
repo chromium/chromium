@@ -249,9 +249,6 @@ BASE_FEATURE(kIPHReadingModePageActionLabelFeature,
 BASE_FEATURE(kIPHReadingModePresentationModeFeature,
              "IPH_ReadingModePresentationMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHReadingModeSidePanelFeature,
-             "IPH_ReadingModeSidePanel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSendTabToSelfTutorialFeature,
              "IPH_SendTabToSelfTutorial",
              base::FEATURE_DISABLED_BY_DEFAULT);

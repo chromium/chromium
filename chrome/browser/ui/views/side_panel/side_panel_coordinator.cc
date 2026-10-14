@@ -156,9 +156,6 @@ void SidePanelCoordinator::Show(
     ClosePromoAndMaybeNotifyUsed(
         feature_engagement::kIPHPowerBookmarksSidePanelFeature,
         SidePanelEntryId::kBookmarks, input.key.id());
-    ClosePromoAndMaybeNotifyUsed(
-        feature_engagement::kIPHReadingModeSidePanelFeature,
-        SidePanelEntryId::kReadAnything, input.key.id());
   }
 
   SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);

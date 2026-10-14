@@ -1418,17 +1418,6 @@ void MaybeRegisterChromeFeaturePromos(
                 "customize settings in Reading Mode.")));
   }
 
-  // kIPHReadingModeSidePanelFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForSnoozePromo(
-          feature_engagement::kIPHReadingModeSidePanelFeature,
-          kToolbarAppMenuButtonElementId,
-          IDS_READING_MODE_SIDE_PANEL_PROMO_PINNING)
-          .SetHighlightedMenuItem(ToolsMenuModel::kReadingModeMenuItem)
-          .SetMetadata(115, "jocelyntran@chromium.org",
-                       "Triggered to encourage users to try out the reading "
-                       "mode feature.")));
-
   // kIPHResumptionRailFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

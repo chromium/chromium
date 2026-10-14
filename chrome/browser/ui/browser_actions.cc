@@ -598,13 +598,6 @@ void BrowserActions::InitializeSidePanelActions() {
                                   kAppMenu
                             : read_anything::SidePanelToReadAnythingOpenTrigger(
                                   side_panel_trigger);
-                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
-                    chrome::ActionInvocationSource::kAppMenu) {
-                  BrowserUserEducationInterface::From(bwi)
-                      ->NotifyFeaturePromoFeatureUsed(
-                          feature_engagement::kIPHReadingModeSidePanelFeature,
-                          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
-                }
                 read_anything::ReadAnythingEntryPointController::ShowUI(
                     bwi, open_trigger);
               },

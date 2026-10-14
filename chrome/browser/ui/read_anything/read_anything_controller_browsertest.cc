@@ -2753,8 +2753,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Initial state check
   content::WebContents* old_contents = tab1->GetContents();
-  auto* old_side_panel_ptr = controller->GetSidePanelControllerForTesting();
-  ASSERT_EQ(old_side_panel_ptr->web_contents(), old_contents);
+  ASSERT_EQ(controller->web_contents(), old_contents);
 
   // Open a new tab and switch to it, to background the original tab
   chrome::AddTabAt(browser(), GURL("about:blank"), 1, true);
@@ -2770,8 +2769,7 @@ IN_PROC_BROWSER_TEST_F(
                                                     std::move(new_contents));
 
   // Verify original controller is observing the new contents
-  EXPECT_EQ(controller->GetSidePanelControllerForTesting()->web_contents(),
-            new_contents_ptr);
+  EXPECT_EQ(controller->web_contents(), new_contents_ptr);
 
   // Verify that the new contents can be navigated without crashing the
   // controllers

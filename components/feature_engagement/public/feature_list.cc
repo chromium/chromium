@@ -323,7 +323,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadingModeLineFocusFeature,
     &kIPHReadingModePageActionLabelFeature,
     &kIPHReadingModePresentationModeFeature,
-    &kIPHReadingModeSidePanelFeature,
     &kIPHSendTabToSelfTutorialFeature,
     &kIPHShoppingCollectionFeature,
     &kIPHSideBySidePinnableFeature,

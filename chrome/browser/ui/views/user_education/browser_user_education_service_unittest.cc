@@ -204,7 +204,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       &feature_engagement::kIPHPasswordSharingFeature,
       &feature_engagement::kIPHPowerBookmarksSidePanelFeature,
       &feature_engagement::kIPHReadingListInSidePanelFeature,
-      &feature_engagement::kIPHReadingModeSidePanelFeature,
       &feature_engagement::kIPHSidePanelGenericPinnableFeature,
       &feature_engagement::kIPHProfileSwitchFeature,
       &feature_engagement::kIPHPriceTrackingInSidePanelFeature,

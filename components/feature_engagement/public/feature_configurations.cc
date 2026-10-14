@@ -148,19 +148,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHReadingModeSidePanelFeature.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = Comparator(EQUAL, 0);
-    // Show the promo up to 3 times a year.
-    config.trigger = EventConfig("iph_reading_mode_side_panel_trigger",
-                                 Comparator(LESS_THAN, 3), 360, 360);
-    config.used = EventConfig("reading_mode_side_panel_shown",
-                              Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
-
   if (kIPHSidePanelGenericPinnableFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

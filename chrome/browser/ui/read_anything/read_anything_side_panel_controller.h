@@ -12,9 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
-#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
@@ -59,9 +57,7 @@ class ReadAnythingSidePanelControllerGlue
 };
 
 // A per-tab class that facilitates the showing of the Read Anything side panel.
-class ReadAnythingSidePanelController
-    : public SidePanelEntryObserver,
-      public tabs::ContentsObservingTabFeature {
+class ReadAnythingSidePanelController : public SidePanelEntryObserver {
  public:
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);
@@ -91,38 +87,14 @@ class ReadAnythingSidePanelController
   // Returns the preferred default width for the side panel.
   int GetPreferredDefaultWidth();
 
-  // Decides whether the active page is distillable.
-  bool IsActivePageDistillable() const;
-
-  // Called when the associated tab enters the foreground.
-  void TabForegrounded(tabs::TabInterface* tab);
-
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
-
-  // content::WebContentsObserver:
-  void DidStopLoading() override;
-  void PrimaryPageChanged(content::Page& page) override;
-
-  // Call this to update the visibility of the IPH. The foreground tab controls
-  // visibility and background tabs do nothing.
-  void UpdateIphVisibility();
 
   std::string default_language_code_;
 
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;
-
-  // The foreground tab is responsible for determining whether IPH is shown. IPH
-  // should be shown if:
-  // (1) the committed url is on an allow-list
-  // (2) the page has finished loading
-  // If (1) is true and the page is still loading, we use distillability from
-  // the previously committed url to avoid sudden state changes.
-  bool distillable_ = false;
-  bool previous_page_distillable_ = false;
-  bool loading_ = false;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

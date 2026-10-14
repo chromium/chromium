@@ -136,7 +136,6 @@ source_set("side_panel") {
     "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
     "//chrome/common:constants",
-    "//components/accessibility:reading",
     "//components/download/content/factory",
     "//components/download/content/public",
     "//components/favicon_base",
