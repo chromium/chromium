@@ -20,7 +20,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -40,7 +39,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
@@ -52,7 +50,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -111,7 +108,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -123,7 +119,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link ToolbarControlContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarControlContainerTest {
     private static final String BLOCK_NAME = "Android.TopToolbar.BlockCaptureReason";
     private static final String ALLOW_NAME = "Android.TopToolbar.AllowCaptureReason";
@@ -133,13 +128,8 @@ public class ToolbarControlContainerTest {
     @Rule public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
-    @Mock private View mToolbarContainer;
-    @Mock private ViewGroup mToolbarView;
-    @Mock private View mLocationBarView;
-    @Mock private ToolbarHairlineView mToolbarHairline;
     @Mock private Toolbar mToolbar;
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
-    @Mock private ToolbarProgressBar mProgressBar;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private FullscreenManager mFullscreenManager;
@@ -157,14 +147,10 @@ public class ToolbarControlContainerTest {
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private ViewTreeObserver mViewTreeObserver;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private Callback<Integer> mRightMarginCallback;
-    @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
-    @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
-    @Captor private ArgumentCaptor<ViewTreeObserver.OnPreDrawListener> mOnPreDrawCaptor;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final SettableNonNullObservableSupplier<Boolean> mCompositorInMotionSupplier =
@@ -185,6 +171,11 @@ public class ToolbarControlContainerTest {
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
+    private FrameLayout mToolbarContainer;
+    private ViewGroup mToolbarView;
+    private View mLocationBarView;
+    private ToolbarHairlineView mToolbarHairline;
+    private ToolbarProgressBar mProgressBar;
     private ToolbarViewResourceAdapter mAdapter;
     private ToolbarControlContainer mControlContainer;
     private TestActivity mActivity;
@@ -234,9 +225,12 @@ public class ToolbarControlContainerTest {
     private void initControlContainer(@LayoutRes int toolbarLayoutId) {
         mControlContainer =
                 (ToolbarControlContainer)
-                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.control_container, /* root= */ null);
         mControlContainer.initWithToolbar(toolbarLayoutId, R.dimen.toolbar_height_no_shadow);
-        mControlContainer.setToolbarHairlineForTesting(mToolbarHairline);
+        mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
+        mToolbarHairline.layout(0, 0, 1, 1);
         mControlContainer.setPostInitializationDependencies(
                 mToolbar,
                 mToolbarView,
@@ -353,24 +347,27 @@ public class ToolbarControlContainerTest {
     @Before
     public void before() {
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
-        when(mToolbarContainer.getWidth()).thenReturn(1);
-        when(mToolbarContainer.getHeight()).thenReturn(1);
-        when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);
-        when(mToolbarContainer.getViewTreeObserver()).thenReturn(mViewTreeObserver);
-        // Run posted Runnables inline so OnPreDrawListener-scheduled captures are
-        // observable synchronously in tests.
-        when(mToolbarContainer.post(any(Runnable.class)))
-                .thenAnswer(
-                        inv -> {
-                            ((Runnable) inv.getArgument(0)).run();
-                            return true;
-                        });
-        when(mToolbarHairline.getHeight()).thenReturn(1);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+        mToolbarContainer = new FrameLayout(mActivity);
+        mToolbarHairline = new ToolbarHairlineView(mActivity, /* attrs= */ null);
+        mToolbarHairline.setId(R.id.toolbar_hairline);
+        mToolbarHairline.setLayoutParams(
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mToolbarHairline.layout(0, 0, 1, 1);
+        mToolbarContainer.addView(mToolbarHairline);
+        mActivity.setContentView(mToolbarContainer);
+        mToolbarContainer.layout(0, 0, 1, 1);
+
+        mToolbarView = new FrameLayout(mActivity);
+        mToolbarView.setLayoutParams(
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mLocationBarView = new View(mActivity);
+        mProgressBar = new ToolbarProgressBar(mActivity, /* attrs= */ null);
         doReturn(mProgressBar).when(mToolbar).getProgressBar();
-        doReturn(new CoordinatorLayout.LayoutParams(-1, -1)).when(mToolbarView).getLayoutParams();
-        doReturn(new CoordinatorLayout.LayoutParams(-1, -1))
-                .when(mToolbarHairline)
-                .getLayoutParams();
+
         mBrowserStateBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
         mCompositorInMotionSupplier.set(false);
         mBrowserStateBrowserControlsVisibilityDelegate.addSyncObserverAndPostIfNonNull(
@@ -379,7 +376,6 @@ public class ToolbarControlContainerTest {
                         mConstraintsSupplier.set(result);
                     }
                 });
-        mActivity = Robolectric.buildActivity(TestActivity.class).get();
     }
 
     @After
@@ -557,8 +553,8 @@ public class ToolbarControlContainerTest {
     // Tests assert on observable behavior (capture count, no-throw), not on the
     // specific scheduling mechanism.
     private void pumpFrame() {
-        verify(mViewTreeObserver, atLeastOnce()).addOnPreDrawListener(mOnPreDrawCaptor.capture());
-        mOnPreDrawCaptor.getValue().onPreDraw();
+        mToolbarContainer.getViewTreeObserver().dispatchOnPreDraw();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -609,8 +605,8 @@ public class ToolbarControlContainerTest {
 
         // Toolbar starts revealing; subsequent frames must not produce captures.
         when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(0.5f);
-        mOnPreDrawCaptor.getValue().onPreDraw();
-        mOnPreDrawCaptor.getValue().onPreDraw();
+        pumpFrame();
+        pumpFrame();
 
         assertEquals(1, mTriggerBitmapCaptureCount.get());
     }
@@ -1195,7 +1191,9 @@ public class ToolbarControlContainerTest {
         doReturn(Color.RED).when(mToolbarDataProvider).getPrimaryColor();
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.control_container, /* root= */ null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -1237,10 +1235,11 @@ public class ToolbarControlContainerTest {
                 /* incognitoWindowCountSupplier= */ null,
                 mWindowAndroid);
 
+        mToolbarView.addView(mLocationBarView);
         controlContainer.toggleLocationBarOnlyMode(true);
-        verify(mProgressBar).setVisibility(View.GONE);
-        verify(mToolbarView).setVisibility(View.GONE);
-        verify(mToolbarView).removeView(mLocationBarView);
+        assertEquals(View.GONE, mProgressBar.getDesiredAndroidVisibility());
+        assertEquals(View.GONE, mToolbarView.getVisibility());
+        assertEquals(0, mToolbarView.getChildCount());
 
         assertEquals(Color.RED, ((ColorDrawable) controlContainer.getBackground()).getColor());
         doReturn(Color.GREEN).when(mToolbarDataProvider).getPrimaryColor();
@@ -1257,8 +1256,8 @@ public class ToolbarControlContainerTest {
         MarginLayoutParams layoutParams = new MarginLayoutParams(500, 100);
         doReturn(layoutParams).when(mLocationBarCoordinatorPhone).getMarginLayoutParams();
         controlContainer.toggleLocationBarOnlyMode(false);
-        verify(mProgressBar).setVisibility(View.VISIBLE);
-        verify(mToolbarView).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mProgressBar.getDesiredAndroidVisibility());
+        assertEquals(View.VISIBLE, mToolbarView.getVisibility());
         verify(mToolbar).restoreLocationBarView();
         assertEquals(
                 Color.TRANSPARENT, ((ColorDrawable) controlContainer.getBackground()).getColor());
@@ -1268,7 +1267,9 @@ public class ToolbarControlContainerTest {
     public void testInterceptTouchEvent() {
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.control_container, /* root= */ null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -1308,7 +1309,9 @@ public class ToolbarControlContainerTest {
     public void testTouchEvent_BelowToolbarContainer() {
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.control_container, /* root= */ null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -1496,7 +1499,9 @@ public class ToolbarControlContainerTest {
     public void testOnTouchEvent() {
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.control_container, /* root= */ null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -1536,7 +1541,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testHeightSupplier() {
-        var controlContainer = new ToolbarControlContainer(mActivity, null);
+        var controlContainer = new ToolbarControlContainer(mActivity, /* attrs= */ null);
         var heightSupplier = ObservableSuppliers.createNonNull(-1);
         controlContainer.setOnHeightChangedListener(heightSupplier);
         controlContainer.onSizeChanged(100, 200, 100, 100);
@@ -1545,7 +1550,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testHeightSupplier_noHeightChange() {
-        var controlContainer = new ToolbarControlContainer(mActivity, null);
+        var controlContainer = new ToolbarControlContainer(mActivity, /* attrs= */ null);
         var heightSupplier = ObservableSuppliers.createNonNull(-1);
         controlContainer.setOnHeightChangedListener(heightSupplier);
         controlContainer.onSizeChanged(100, 100, 100, 100);
@@ -1634,21 +1639,19 @@ public class ToolbarControlContainerTest {
         int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         doReturn(0).when(mToolbar).getTabStripHeight();
         doReturn(toolbarHeight).when(mToolbar).getHeight();
-        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+        mToolbarHairline.layout(0, 0, 1, hairlineHeight);
 
         // Start transition
         mControlContainer.onHeightChanged(tabStripHeight, 0, true);
 
-        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
-        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
         assertEquals(
                 "Toolbar top margin is wrong.",
                 tabStripHeight,
-                mToolbarLayoutParamsCaptor.getValue().topMargin);
+                ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 "Hairline top margin is wrong.",
                 tabStripHeight + toolbarHeight,
-                mHairlineLayoutParamsCaptor.getValue().topMargin);
+                ((MarginLayoutParams) mToolbarHairline.getLayoutParams()).topMargin);
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(true);
@@ -1671,19 +1674,19 @@ public class ToolbarControlContainerTest {
         int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         doReturn(tabStripHeight).when(mToolbar).getTabStripHeight();
         doReturn(toolbarHeight).when(mToolbar).getHeight();
-        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+        mToolbarHairline.layout(0, 0, 1, hairlineHeight);
+        ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin = tabStripHeight;
 
         mControlContainer.onHeightChanged(0, 0, true);
 
-        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
-        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
-
         assertEquals(
-                "Toolbar top margin is wrong.", 0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+                "Toolbar top margin is wrong.",
+                0,
+                ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 "Hairline top margin is wrong.",
                 toolbarHeight,
-                mHairlineLayoutParamsCaptor.getValue().topMargin);
+                ((MarginLayoutParams) mToolbarHairline.getLayoutParams()).topMargin);
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(true);
@@ -1705,19 +1708,19 @@ public class ToolbarControlContainerTest {
         int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         doReturn(tabStripHeight).when(mToolbar).getTabStripHeight();
         doReturn(toolbarHeight).when(mToolbar).getHeight();
-        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+        mToolbarHairline.layout(0, 0, 1, hairlineHeight);
+        ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin = tabStripHeight;
 
         mControlContainer.onHeightChanged(0, 0, true);
 
-        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
-        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
-
         assertEquals(
-                "Toolbar top margin is wrong.", 0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+                "Toolbar top margin is wrong.",
+                0,
+                ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 "Hairline top margin is wrong.",
                 toolbarHeight,
-                mHairlineLayoutParamsCaptor.getValue().topMargin);
+                ((MarginLayoutParams) mToolbarHairline.getLayoutParams()).topMargin);
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(false);
@@ -1731,33 +1734,34 @@ public class ToolbarControlContainerTest {
     @Test
     public void testDoSynchronousLayout() {
         initControlContainer(R.layout.toolbar_phone);
-        ViewResourceAdapter mockAdapter = mock(ViewResourceAdapter.class);
-
-        ToolbarControlContainer spyContainer = spy(mControlContainer);
-        doReturn(mockAdapter).when(spyContainer).getToolbarResourceAdapter();
+        mControlContainer.findViewById(R.id.toolbar_container).setVisibility(View.VISIBLE);
+        mControlContainer.findViewById(R.id.toolbar).setVisibility(View.GONE);
+        mToolbarHairline.setMinimumHeight(10);
+        mControlContainer.layout(0, 0, 100, 0);
+        when(mToolbarDataProvider.getUrlBarData()).thenReturn(UrlBarData.EMPTY);
+        AtomicInteger captureCount = new AtomicInteger();
+        mControlContainer
+                .getToolbarResourceAdapter()
+                .addOnResourceReadyCallback(resource -> captureCount.incrementAndGet());
 
         // Test with forceCaptureAfterLayout = false
-        spyContainer.doSynchronousLayout(false);
-        verify(spyContainer).measure(anyInt(), anyInt());
-        verify(spyContainer).layout(anyInt(), anyInt(), anyInt(), anyInt());
-        verify(mockAdapter, never()).invalidate(null);
-        verify(mockAdapter, never()).triggerBitmapCapture();
+        mControlContainer.doSynchronousLayout(false);
+        assertTrue(mControlContainer.getMeasuredHeight() > 0);
+        assertEquals(mControlContainer.getMeasuredHeight(), mControlContainer.getHeight());
+        assertEquals(0, captureCount.get());
 
         // Test with forceCaptureAfterLayout = true
-        spyContainer.doSynchronousLayout(true);
-        verify(mockAdapter).invalidate(null);
-        verify(mockAdapter).triggerBitmapCapture();
+        mControlContainer.doSynchronousLayout(true);
+        assertEquals(1, captureCount.get());
 
         // Test with explicit positive height (e.g. mini origin bar).
-        clearInvocations(spyContainer);
         int explicitHeight = 50;
-        spyContainer.setLayoutParams(
+        mControlContainer.setLayoutParams(
                 new CoordinatorLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, explicitHeight));
-        int exactHeightSpec =
-                View.MeasureSpec.makeMeasureSpec(explicitHeight, View.MeasureSpec.EXACTLY);
-        spyContainer.doSynchronousLayout(false);
-        verify(spyContainer).measure(anyInt(), eq(exactHeightSpec));
+        mControlContainer.doSynchronousLayout(false);
+        assertEquals(explicitHeight, mControlContainer.getMeasuredHeight());
+        assertEquals(explicitHeight, mControlContainer.getHeight());
     }
 
     @Test
@@ -1880,11 +1884,11 @@ public class ToolbarControlContainerTest {
     public void
             testOnHeightChanged_WithToolbarSnapshotRefactorEnabled_SetsToolbarViewTopMarginToZero() {
         initControlContainer(R.layout.toolbar_tablet);
+        ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin = 80;
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
-        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
-        assertEquals(0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(0, ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
     }
 
     @Test
@@ -1895,8 +1899,7 @@ public class ToolbarControlContainerTest {
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
-        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
-        assertEquals(80, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(80, ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
     }
 
     private void checkSetToolbarContainerTopMarginForAutoHiddenVerticalTab() {

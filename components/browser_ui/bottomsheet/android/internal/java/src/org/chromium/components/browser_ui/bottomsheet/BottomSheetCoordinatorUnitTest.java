@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -54,6 +53,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -81,7 +81,6 @@ import java.util.List;
 
 /** Unit tests for {@link BottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetCoordinatorUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     private static final int SHEET_CONTAINER_HEIGHT = 200;
@@ -89,10 +88,7 @@ public class BottomSheetCoordinatorUnitTest {
     private static final int SHEET_PEEK_HEIGHT = 60;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock View mSheetBackground;
-    private @Mock ShadowLayerView mShadowLayerView;
     private @Mock BottomSheetContent mSheetContent;
-    private @Mock TouchRestrictingFrameLayout mToolbarHolder;
     private @Mock InsetObserver mInsetObserver;
     private @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
     private @Mock BottomSheetObserver mBottomSheetObserver;
@@ -129,10 +125,7 @@ public class BottomSheetCoordinatorUnitTest {
         // Stub the mocks before they are installed, so that init() observes them fully configured.
         mKeyboardInsetSupplier = ObservableSuppliers.createNonNull(0);
         doReturn(mKeyboardInsetSupplier).when(mInsetObserver).getSupplierForKeyboardInset();
-        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(0, 0);
-        doReturn(params).when(mShadowLayerView).getLayoutParams();
 
-        installSharedTestViews(mBottomSheet);
         initSheet(mBottomSheet, /* isLargeFormFactor= */ false);
 
         when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(MAX_HEIGHT_RATIO);
@@ -143,9 +136,8 @@ public class BottomSheetCoordinatorUnitTest {
      * child of {@link #mSheetContainer}.
      *
      * <p>Callers that need to resize or lay out the container before {@link
-     * BottomSheetCoordinator#init} runs should use this together with {@link
-     * #installSharedTestViews} and {@link #initSheet}; all other callers should prefer {@link
-     * #buildSheet}.
+     * BottomSheetCoordinator#init} runs should use this together with {@link #initSheet}; all other
+     * callers should prefer {@link #buildSheet}.
      *
      * @param isLargeFormFactor Whether to inflate the desktop (large form factor) layout.
      * @return The inflated, not-yet-initialized sheet.
@@ -153,34 +145,16 @@ public class BottomSheetCoordinatorUnitTest {
     private BottomSheetCoordinator inflateAndAttachSheet(boolean isLargeFormFactor) {
         int layoutId = isLargeFormFactor ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
         BottomSheetView view =
-                (BottomSheetView) LayoutInflater.from(mActivity).inflate(layoutId, null);
+                (BottomSheetView)
+                        LayoutInflater.from(mActivity).inflate(layoutId, /* root= */ null);
         mSheetContainer.removeAllViews();
         mSheetContainer.addView(view);
         return new BottomSheetCoordinator(view);
     }
 
     /**
-     * Installs the shared test doubles for the sheet's child views.
-     *
-     * <p>Tests that need to assert against the real inflated views must skip this and wire up the
-     * views they care about themselves.
-     */
-    private void installSharedTestViews(BottomSheetCoordinator sheet) {
-        sheet.setSheetContainerForTesting(mSheetContainer);
-        sheet.getView().setToolbarHolderForTesting(mToolbarHolder);
-        sheet.getView()
-                .setBottomSheetContentContainerForTesting(
-                        sheet.getView().findViewById(R.id.bottom_sheet_content));
-        sheet.getView().setSheetBackgroundForTesting(mSheetBackground);
-        sheet.getView().setShadowLayerForTesting(mShadowLayerView);
-    }
-
-    /**
      * Runs {@link BottomSheetCoordinator#init} with the parameters shared by every test in this
      * class.
-     *
-     * <p>This is always called after the test doubles are installed so that initialization observes
-     * the same views the test will later assert against.
      */
     private void initSheet(BottomSheetCoordinator sheet, boolean isLargeFormFactor) {
         sheet.init(
@@ -195,14 +169,12 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     /**
-     * Builds a fully initialized sheet attached to {@link #mSheetContainer}, backed by the shared
-     * test doubles.
+     * Builds a fully initialized sheet attached to {@link #mSheetContainer}.
      *
      * @param isLargeFormFactor Whether to build the desktop (large form factor) sheet.
      */
     private BottomSheetCoordinator buildSheet(boolean isLargeFormFactor) {
         BottomSheetCoordinator sheet = inflateAndAttachSheet(isLargeFormFactor);
-        installSharedTestViews(sheet);
         initSheet(sheet, isLargeFormFactor);
         return sheet;
     }
@@ -212,7 +184,6 @@ public class BottomSheetCoordinatorUnitTest {
             boolean isLargeFormFactor, int height) {
         BottomSheetCoordinator sheet = inflateAndAttachSheet(isLargeFormFactor);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, height);
-        installSharedTestViews(sheet);
         initSheet(sheet, isLargeFormFactor);
         return sheet;
     }
@@ -664,24 +635,28 @@ public class BottomSheetCoordinatorUnitTest {
 
         mBottomSheet.showContent(mSheetContent);
 
-        verify(mShadowLayerView).setBackgroundTintList(ColorStateList.valueOf(glowColor));
+        ShadowLayerView shadowLayer = mBottomSheet.getView().findViewById(R.id.shadow_layer);
+        assertEquals(ColorStateList.valueOf(glowColor), shadowLayer.getBackgroundTintList());
         int expectedSize =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
-        verify(mShadowLayerView).setShadowLength(expectedSize);
+        assertEquals(-expectedSize, shadowLayer.getTranslationY(), MathUtils.EPSILON);
     }
 
     @Test
     public void testBackgroundGlowColor_Transparent() {
+        ShadowLayerView shadowLayer = mBottomSheet.getView().findViewById(R.id.shadow_layer);
+        shadowLayer.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+        shadowLayer.setShadowLength(999);
         doReturn(null).when(mSheetContent).getSheetBackgroundGlowSpecOverride();
 
         mBottomSheet.showContent(mSheetContent);
 
-        verify(mShadowLayerView).setBackgroundTintList(null);
+        assertNull(shadowLayer.getBackgroundTintList());
         int defaultSize =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
-        verify(mShadowLayerView).setShadowLength(defaultSize);
+        assertEquals(-defaultSize, shadowLayer.getTranslationY(), MathUtils.EPSILON);
     }
 
     @Test
@@ -690,22 +665,19 @@ public class BottomSheetCoordinatorUnitTest {
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
 
-        // Stub layout properties that would normally be inflated or measured by Android framework
-        // natively.
         final int shadowPaddingTop = 10;
         final int shadowPaddingBottom = 20;
         final int shadowTop = 10;
         final int backgroundTop = 20;
-        final int backgroundMeasuredHeight = 300;
         final float userDragTranslationY = 100f;
 
-        doReturn(shadowPaddingTop).when(mShadowLayerView).getPaddingTop();
-        doReturn(shadowPaddingBottom).when(mShadowLayerView).getPaddingBottom();
-        doReturn(shadowTop).when(mShadowLayerView).getTop();
-        doReturn(backgroundTop).when(mSheetBackground).getTop();
-        doReturn(backgroundMeasuredHeight).when(mSheetBackground).getMeasuredHeight();
-
         sheet.showContent(mSheetContent);
+
+        View sheetBackground = sheet.getView().findViewById(R.id.background);
+        View shadowLayer = sheet.getView().findViewById(R.id.shadow_layer);
+        shadowLayer.setPadding(0, shadowPaddingTop, 0, shadowPaddingBottom);
+        shadowLayer.setTop(shadowTop);
+        sheetBackground.setTop(backgroundTop);
 
         // At this point, the layout and visibility should be initialized.
         // We will call the private method indirectly by triggering a layout pass or updating
@@ -714,12 +686,12 @@ public class BottomSheetCoordinatorUnitTest {
                 userDragTranslationY, BottomSheetController.StateChangeReason.NONE);
 
         // Evaluate exactly what boundaries the method derived:
-        // visibleHeight = min(currentOffsetPx, measuredBgHeight) = min(100, 300) = 100.
+        // visibleHeight = 100.
         // backgroundBottom = backgroundTop + visibleHeight = 20 + 100 = 120.
         // shadowBottom = shadowTop + visibleHeight + shadowPaddingTop + shadowPaddingBottom
         //              = 10 + 100 + 10 + 20 = 140.
-        verify(mSheetBackground, atLeastOnce()).setBottom(120);
-        verify(mShadowLayerView, atLeastOnce()).setBottom(140);
+        assertEquals(120, sheetBackground.getBottom());
+        assertEquals(140, shadowLayer.getBottom());
     }
 
     @Test
@@ -730,22 +702,20 @@ public class BottomSheetCoordinatorUnitTest {
 
         int expectedSize =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
-        doReturn(expectedSize).when(mShadowLayerView).getPaddingLeft();
-        doReturn(expectedSize).when(mShadowLayerView).getPaddingTop();
-        doReturn(expectedSize).when(mShadowLayerView).getPaddingRight();
-        doReturn(expectedSize).when(mShadowLayerView).getPaddingBottom();
+        View shadowLayer = sheet.getView().findViewById(R.id.shadow_layer);
+        shadowLayer.setPadding(expectedSize, expectedSize, expectedSize, expectedSize);
 
         sheet.showContent(mSheetContent);
 
-        verify(mShadowLayerView).setBackgroundResource(R.drawable.popup_bg_shadow_16dp);
-        ArgumentCaptor<ViewGroup.LayoutParams> captor =
-                ArgumentCaptor.forClass(ViewGroup.LayoutParams.class);
-        verify(mShadowLayerView, atLeastOnce()).setLayoutParams(captor.capture());
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) captor.getValue();
-        assertEquals(-expectedSize, params.leftMargin);
-        assertEquals(-expectedSize, params.topMargin);
-        assertEquals(-expectedSize, params.rightMargin);
-        assertEquals(-expectedSize, params.bottomMargin);
+        assertEquals(
+                R.drawable.popup_bg_shadow_16dp,
+                Shadows.shadowOf(shadowLayer.getBackground()).getCreatedFromResId());
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) shadowLayer.getLayoutParams();
+        assertEquals(-shadowLayer.getPaddingLeft(), params.leftMargin);
+        assertEquals(-shadowLayer.getPaddingTop(), params.topMargin);
+        assertEquals(-shadowLayer.getPaddingRight(), params.rightMargin);
+        assertEquals(-shadowLayer.getPaddingBottom(), params.bottomMargin);
     }
 
     @Test
@@ -1174,7 +1144,6 @@ public class BottomSheetCoordinatorUnitTest {
                 View.MeasureSpec.makeMeasureSpec(shortContainerHeight, View.MeasureSpec.EXACTLY));
         mSheetContainer.layout(0, 0, narrowContainerWidth, shortContainerHeight);
 
-        installSharedTestViews(sheet);
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
@@ -1316,14 +1285,6 @@ public class BottomSheetCoordinatorUnitTest {
     @Test
     public void testDesktopUi_LargeFormFactorNotSupported_FallbackToMobileRendering() {
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
-        sheet.setSheetContainerForTesting(mSheetContainer);
-        sheet.getView().setToolbarHolderForTesting(mToolbarHolder);
-        sheet.getView()
-                .setBottomSheetContentContainerForTesting(
-                        sheet.getView().findViewById(R.id.bottom_sheet_content));
-
-        // Use the real views found inside bottom_sheet_desktop, rather than mocks, to verify exact
-        // layout behaviors. This is why the test cannot use installSharedTestViews().
         View sheetBackground = sheet.getView().findViewById(R.id.background);
         View shadowLayer = sheet.getView().findViewById(R.id.shadow_layer);
         View fallbackShadowLayer = sheet.getView().findViewById(R.id.desktop_fallback_shadow);
@@ -1716,7 +1677,6 @@ public class BottomSheetCoordinatorUnitTest {
     public void testWrapContentHeightIncludesHandlebarHeight() {
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
         mSheetContainer.layout(0, 0, 1000, 800);
-        installSharedTestViews(sheet);
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
         View contentView =
@@ -1771,7 +1731,6 @@ public class BottomSheetCoordinatorUnitTest {
         int containerHeight = 800;
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
         mSheetContainer.layout(0, 0, 1000, containerHeight);
-        installSharedTestViews(sheet);
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
@@ -1793,7 +1752,6 @@ public class BottomSheetCoordinatorUnitTest {
         int containerHeight = 1000;
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
         mSheetContainer.layout(0, 0, 1000, containerHeight);
-        installSharedTestViews(sheet);
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
@@ -1814,7 +1772,6 @@ public class BottomSheetCoordinatorUnitTest {
         int containerHeight = 1000;
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
         mSheetContainer.layout(0, 0, 1000, containerHeight);
-        installSharedTestViews(sheet);
         TouchRestrictingFrameLayout contentContainer =
                 sheet.getView().findViewById(R.id.bottom_sheet_content);
         initSheet(sheet, /* isLargeFormFactor= */ true);
@@ -1856,7 +1813,6 @@ public class BottomSheetCoordinatorUnitTest {
         int containerHeight = 1000;
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ false);
         mSheetContainer.layout(0, 0, 1000, containerHeight);
-        installSharedTestViews(sheet);
         TouchRestrictingFrameLayout contentContainer =
                 sheet.getView().findViewById(R.id.bottom_sheet_content);
         initSheet(sheet, /* isLargeFormFactor= */ false);
@@ -1880,14 +1836,8 @@ public class BottomSheetCoordinatorUnitTest {
     @Test
     public void testToolbarHolderTopMarginWithHandlebar() {
         BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ false);
-        installSharedTestViews(sheet);
-
-        // This test asserts on the toolbar holder's own top margin, so it needs the real
-        // inflated view rather than the shared mock. It must be installed before init().
         TouchRestrictingFrameLayout toolbarHolder =
                 sheet.getView().findViewById(R.id.bottom_sheet_toolbar_container);
-        sheet.getView().setToolbarHolderForTesting(toolbarHolder);
-
         initSheet(sheet, /* isLargeFormFactor= */ false);
 
         View toolbarView = new View(mActivity);
@@ -2229,9 +2179,11 @@ public class BottomSheetCoordinatorUnitTest {
         assertFalse(mBottomSheet.shouldDragSheet(null));
 
         MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+        View toolbarHolder =
+                mBottomSheet.getView().findViewById(R.id.bottom_sheet_toolbar_container);
 
         // When sheet content is null and toolbar height is 0, should return false.
-        when(mToolbarHolder.getHeight()).thenReturn(0);
+        toolbarHolder.layout(0, 0, SHEET_CONTAINER_WIDTH, 0);
         assertFalse(mBottomSheet.shouldDragSheet(event));
 
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
@@ -2244,12 +2196,12 @@ public class BottomSheetCoordinatorUnitTest {
 
         // When content canDragSheet returns false and toolbar height is 0, should return false.
         doReturn(false).when(mSheetContent).canDragSheet(event);
-        when(mToolbarHolder.getHeight()).thenReturn(0);
+        toolbarHolder.layout(0, 0, SHEET_CONTAINER_WIDTH, 0);
         assertFalse(mBottomSheet.shouldDragSheet(event));
 
         // When content canDragSheet returns false and toolbar has height 100 with event rawY 50,
         // should return true based on toolbar.
-        when(mToolbarHolder.getHeight()).thenReturn(100);
+        toolbarHolder.layout(0, 0, SHEET_CONTAINER_WIDTH, 100);
         assertTrue(mBottomSheet.shouldDragSheet(event));
 
         // When event rawY is 150 (below toolbar height 100), should return false.
@@ -2328,15 +2280,8 @@ public class BottomSheetCoordinatorUnitTest {
 
     @Test
     public void testPointerIcon_ShowsHandOnHandlebarInDesktopMode_ShowsArrowOnSheet() {
-        BottomSheetCoordinator coordinator = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
-        coordinator.setSheetContainerForTesting(mSheetContainer);
+        BottomSheetCoordinator coordinator = buildSheet(/* isLargeFormFactor= */ true);
         BottomSheetView sheet = coordinator.getView();
-        TouchRestrictingFrameLayout toolbarHolder =
-                sheet.findViewById(R.id.bottom_sheet_toolbar_container);
-        sheet.setToolbarHolderForTesting(toolbarHolder);
-        sheet.setBottomSheetContentContainerForTesting(
-                sheet.findViewById(R.id.bottom_sheet_content));
-        initSheet(coordinator, /* isLargeFormFactor= */ true);
 
         BottomSheetContent desktopContent = mock(BottomSheetContent.class);
         when(desktopContent.supportsLargeFormFactor()).thenReturn(true);
@@ -2723,7 +2668,6 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetCoordinator lffSheet =
                 buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 800);
         View bgView = lffSheet.getView().findViewById(R.id.background);
-        lffSheet.getView().setSheetBackgroundForTesting(bgView);
         View lffContentContainer = lffSheet.getView().findViewById(R.id.bottom_sheet_content);
         BottomSheetContent popupContent =
                 buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f);
@@ -2949,7 +2893,8 @@ public class BottomSheetCoordinatorUnitTest {
         edgeToEdgeBottomInsetSupplier.set(48);
         ViewUtils.requestLayout(
                 mSheetContainer,
-                "BottomSheetCoordinatorUnitTest.testWrapContentMeasure_AccountsForHandlebarAndBottomInset");
+                "BottomSheetCoordinatorUnitTest."
+                        + "testWrapContentMeasure_AccountsForHandlebarAndBottomInset");
         mSheetContainer.measure(
                 View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_WIDTH, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_HEIGHT, View.MeasureSpec.EXACTLY));
@@ -2992,7 +2937,8 @@ public class BottomSheetCoordinatorUnitTest {
 
         ViewUtils.requestLayout(
                 mSheetContainer,
-                "BottomSheetCoordinatorUnitTest.testOnInsetChanged_WrapContentInvalidatesAndResettles");
+                "BottomSheetCoordinatorUnitTest."
+                        + "testOnInsetChanged_WrapContentInvalidatesAndResettles");
         mSheetContainer.measure(
                 View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_WIDTH, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_HEIGHT, View.MeasureSpec.EXACTLY));
