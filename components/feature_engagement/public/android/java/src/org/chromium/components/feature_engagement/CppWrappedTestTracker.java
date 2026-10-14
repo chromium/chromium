@@ -66,14 +66,31 @@ public class CppWrappedTestTracker implements Tracker {
     @CheckResult
     @CalledByNative
     @Override
+    @Deprecated
     public boolean shouldTriggerHelpUi(String feature) {
         return ourFeature(feature);
     }
 
     @CheckResult
     @Override
+    @SuppressWarnings("deprecation")
+    public boolean shouldTriggerHelpUi(String feature, FeatureProperties featureProperties) {
+        return shouldTriggerHelpUi(feature);
+    }
+
+    @CheckResult
+    @Override
+    @Deprecated
     public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
         return new TriggerDetails(ourFeature(feature), false);
+    }
+
+    @CheckResult
+    @Override
+    @SuppressWarnings("deprecation")
+    public TriggerDetails shouldTriggerHelpUiWithSnooze(
+            String feature, FeatureProperties featureProperties) {
+        return shouldTriggerHelpUiWithSnooze(feature);
     }
 
     @CalledByNative

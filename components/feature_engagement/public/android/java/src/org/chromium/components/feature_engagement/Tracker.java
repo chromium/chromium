@@ -37,6 +37,15 @@ public interface Tracker {
      */
     default void setPromotionsEnabledSupplier(BooleanSupplier supplier) {}
 
+    /**
+     * Sets a supplier that provides whether legacy {@link #shouldTriggerHelpUi(String)} callers
+     * should aggressively trigger cooldown groups.
+     *
+     * @param supplier A supplier returning true when legacy callers should emit cooldown trigger
+     *     events.
+     */
+    default void setAggressivelyCooldownIphsSupplier(BooleanSupplier supplier) {}
+
     /** Must be called whenever an event happens. */
     void notifyEvent(String event);
 
@@ -48,9 +57,28 @@ public interface Tracker {
      *
      * @param feature The name of the feature requesting in-product help.
      * @return Whether feature enlightenment should be displayed.
+     * @deprecated Use {@link #shouldTriggerHelpUi(String, FeatureProperties)} instead.
      */
     @CheckResult
+    @Deprecated
     boolean shouldTriggerHelpUi(String feature);
+
+    /**
+     * This function must be called whenever the triggering condition for a specific feature
+     * happens. Returns true iff the display of the in-product help must happen. If {@code true} is
+     * returned, the caller *must* call {@link #dismissed(String)} when display of feature
+     * enlightenment ends.
+     *
+     * @param feature The name of the feature requesting in-product help.
+     * @param featureProperties The {@link FeatureProperties} for cooldown and enterprise policy
+     *     evaluation.
+     * @return Whether feature enlightenment should be displayed.
+     */
+    @CheckResult
+    @SuppressWarnings("deprecation")
+    default boolean shouldTriggerHelpUi(String feature, FeatureProperties featureProperties) {
+        return shouldTriggerHelpUi(feature);
+    }
 
     /**
      * For callers interested in showing a snooze button. For other callers, use the
@@ -59,9 +87,28 @@ public interface Tracker {
      * @param feature The name of the feature requesting in-product help.
      * @return Whether feature enlightenment should be displayed and whether snooze button should be
      *     shown.
+     * @deprecated Use {@link #shouldTriggerHelpUiWithSnooze(String, FeatureProperties)} instead.
      */
     @CheckResult
+    @Deprecated
     TriggerDetails shouldTriggerHelpUiWithSnooze(String feature);
+
+    /**
+     * For callers interested in showing a snooze button. For other callers, use the {@link
+     * #shouldTriggerHelpUi(String, FeatureProperties)} method.
+     *
+     * @param feature The name of the feature requesting in-product help.
+     * @param featureProperties The {@link FeatureProperties} for cooldown and enterprise policy
+     *     evaluation.
+     * @return Whether feature enlightenment should be displayed and whether snooze button should be
+     *     shown.
+     */
+    @CheckResult
+    @SuppressWarnings("deprecation")
+    default TriggerDetails shouldTriggerHelpUiWithSnooze(
+            String feature, FeatureProperties featureProperties) {
+        return shouldTriggerHelpUiWithSnooze(feature);
+    }
 
     /**
      * Invoking this is basically the same as being allowed to invoke {@link

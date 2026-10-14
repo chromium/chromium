@@ -163,7 +163,10 @@ source_set("unit_tests") {
 
 if (is_android) {
   android_library("internal_java") {
-    visibility = [ "//components/feature_engagement:feature_engagement_java" ]
+    visibility = [
+      ":junit",
+      "//components/feature_engagement:feature_engagement_java",
+    ]
 
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java" ]
@@ -174,6 +177,22 @@ if (is_android) {
       "//components/feature_engagement/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/feature_engagement/internal/TrackerImplTest.java" ]
+
+    deps = [
+      ":internal_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//components/feature_engagement/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
     ]
   }

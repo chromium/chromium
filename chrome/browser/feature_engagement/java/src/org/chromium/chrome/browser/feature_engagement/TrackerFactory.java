@@ -48,6 +48,10 @@ public final class TrackerFactory {
                     PrefService localState = LocalStatePrefs.get();
                     return localState == null || localState.getBoolean(Pref.PROMOTIONS_ENABLED);
                 });
+        tracker.setAggressivelyCooldownIphsSupplier(
+                () ->
+                        ChromeFeatureList.sAndroidUserEducationFramework.isEnabled()
+                                && ChromeFeatureList.sAggressivelyCooldownIphs.isEnabled());
         return tracker;
     }
 

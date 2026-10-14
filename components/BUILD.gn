@@ -1484,6 +1484,7 @@ if (is_android) {
       "//components/external_intents/android:junit",
       "//components/facilitated_payments/android/junit",
       "//components/fcm/android:components_fcm_junit_tests",
+      "//components/feature_engagement/internal:junit",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
       "//components/image_fetcher:junit",
       "//components/installedapp/android:junit",

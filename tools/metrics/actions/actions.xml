@@ -15313,6 +15313,18 @@ should be able to be added at any place in this file.
   <description>Reported when the inforbar modal is cancelled.</description>
 </action>
 
+<action name="InProductHelp.CooldownGroupActive.IPH{InProductHelp_Type}"
+    not_user_triggered="true">
+  <owner>jhimawan@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    Recorded when an in-product help query encounters an active cooldown group.
+    {InProductHelp_Type}
+  </description>
+  <token key="InProductHelp_Type" variants="InProductHelp_Type"/>
+</action>
+
 <action name="InProductHelp.Dismissed">
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
@@ -15365,6 +15377,32 @@ should be able to be added at any place in this file.
   <description>
     The feature engagement tracker tried to determine whether in-product help
     should be shown to the user. {InProductHelp_Type}
+  </description>
+  <token key="InProductHelp_Type" variants="InProductHelp_Type"/>
+</action>
+
+<action
+    name="InProductHelp.ShouldTriggerHelpUIResult.BlockedByCooldownGroup.IPH{InProductHelp_Type}"
+    not_user_triggered="true">
+  <owner>jhimawan@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    An in-product help feature was blocked from showing by its cooldown group.
+    {InProductHelp_Type}
+  </description>
+  <token key="InProductHelp_Type" variants="InProductHelp_Type"/>
+</action>
+
+<action
+    name="InProductHelp.ShouldTriggerHelpUIResult.BypassedCooldownGroup.IPH{InProductHelp_Type}"
+    not_user_triggered="true">
+  <owner>jhimawan@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    An in-product help feature bypassed an active cooldown group.
+    {InProductHelp_Type}
   </description>
   <token key="InProductHelp_Type" variants="InProductHelp_Type"/>
 </action>
