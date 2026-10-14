@@ -17,6 +17,7 @@ import {getCss} from './back_forward_button.css.js';
 import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
+import type {OverflowableButtonState} from './overflowable_button.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 
 const BackForwardButtonElementBase =
@@ -54,8 +55,11 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   }
 
   accessor direction: 'back'|'forward' = 'back';
-  override accessor state: BackForwardButtonState = {
+  override accessor state: BackForwardButtonState&OverflowableButtonState = {
     enabled: false,
+
+    // These fields are from OverflowableButtonState (in addition to
+    // BackForwardButtonState), and are used by OverflowableButtonMixin.
     shouldBeShown: true,
     isContextMenuVisible: false,
   };

@@ -16,6 +16,7 @@ import type {SplitTabsControlState} from '/shared/toolbar_ui_api_data_model.mojo
 
 import {BrowserProxyImpl, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import type {OverflowableButtonState} from './overflowable_button.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getHtml} from './split_tabs_button.html.js';
 import {getCss} from './toolbar_button.css.js';
@@ -43,9 +44,12 @@ export class SplitTabsButtonElement extends SplitTabsButtonElementBase {
     };
   }
 
-  override accessor state: SplitTabsControlState = {
+  override accessor state: SplitTabsControlState&OverflowableButtonState = {
     isCurrentTabSplit: false,
     location: SplitTabActiveLocation.kStart,
+
+    // These fields are from OverflowableButtonState (in addition to
+    // SplitTabsControlState), and are used by OverflowableButtonMixin.
     shouldBeShown: false,
     isContextMenuVisible: false,
     menuOpenToken: 0,

@@ -16,6 +16,7 @@ import type {BatterySaverControlState} from '/shared/toolbar_ui_api_data_model.m
 import {getHtml} from './battery_saver_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import type {OverflowableButtonState} from './overflowable_button.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
 
@@ -47,7 +48,9 @@ export class BatterySaverButtonElement extends BatterySaverButtonElementBase {
     };
   }
 
-  override accessor state: BatterySaverControlState = {
+  override accessor state: BatterySaverControlState&OverflowableButtonState = {
+    // These fields are from OverflowableButtonState (in addition to
+    // BatterySaverControlState), and are used by OverflowableButtonMixin.
     shouldBeShown: false,
     preventOverflow: false,
   };

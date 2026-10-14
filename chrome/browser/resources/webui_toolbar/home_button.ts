@@ -15,6 +15,7 @@ import type {HomeControlState} from '/shared/toolbar_ui_api_data_model.mojom-web
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './home_button.html.js';
+import type {OverflowableButtonState} from './overflowable_button.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
 
@@ -42,7 +43,9 @@ export class HomeButtonElement extends HomeButtonElementBase {
     };
   }
 
-  override accessor state: HomeControlState = {
+  override accessor state: HomeControlState&OverflowableButtonState = {
+    // These fields are from OverflowableButtonState (in addition to
+    // HomeControlState), and are used by OverflowableButtonMixin.
     shouldBeShown: false,
     isContextMenuVisible: false,
   };

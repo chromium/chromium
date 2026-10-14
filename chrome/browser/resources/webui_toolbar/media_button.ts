@@ -16,6 +16,7 @@ import type {MediaControlState} from '/shared/toolbar_ui_api_data_model.mojom-we
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './media_button.html.js';
+import type {OverflowableButtonState} from './overflowable_button.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
 
@@ -42,8 +43,11 @@ export class MediaButtonElement extends MediaButtonElementBase {
     };
   }
 
-  override accessor state: MediaControlState = {
+  override accessor state: MediaControlState&OverflowableButtonState = {
     enabled: true,
+
+    // These fields are from OverflowableButtonState (in addition to
+    // MediaControlState), and are used by OverflowableButtonMixin.
     shouldBeShown: false,
     isContextMenuVisible: false,
     preventOverflow: false,
