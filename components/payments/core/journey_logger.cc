@@ -367,6 +367,13 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
   ValidateEventBits();
   base::UmaHistogramSparse("PaymentRequest.Events2", events2_);
 
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestRejectTooSmallWindows)) {
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        window_size_check_rejection_reason_);
+  }
+
   if (payment_request_source_id_ == ukm::kInvalidSourceId)
     return;
 
@@ -377,10 +384,6 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
 
   if (base::FeatureList::IsEnabled(
           features::kPaymentRequestRejectTooSmallWindows)) {
-    base::UmaHistogramEnumeration(
-        "PaymentRequest.WindowSizeCheckRejectionReason",
-        window_size_check_rejection_reason_);
-
     ukm_builder.SetWindowSizeCheckRejectionReason(
         base::checked_cast<int64_t>(window_size_check_rejection_reason_));
   }

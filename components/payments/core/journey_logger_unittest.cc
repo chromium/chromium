@@ -813,6 +813,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_WindowSizeCheckRejection) {
   base::test::ScopedFeatureList feature_list(
       features::kPaymentRequestRejectTooSmallWindows);
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   char test_url[] = "http://www.google.com/";
@@ -842,6 +843,29 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_WindowSizeCheckRejection) {
         static_cast<int64_t>(
             JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize));
   }
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.WindowSizeCheckRejectionReason",
+      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize, 1);
+}
+
+// Tests that the browser window size check rejection reason is still logged to
+// UMA even when the UKM source ID is invalid (e.g., in an initial about:blank
+// Document Picture-in-Picture window).
+TEST(JourneyLoggerTest,
+     RecordJourneyStatsHistograms_WindowSizeCheckRejection_InvalidUkmSourceId) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPaymentRequestRejectTooSmallWindows);
+  base::HistogramTester histogram_tester;
+
+  JourneyLogger logger(ukm::kInvalidSourceId);
+  logger.SetWindowSizeCheckRejectionReason(
+      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize);
+  logger.SetAborted(JourneyLogger::ABORT_REASON_INTERNAL_ERROR);
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.WindowSizeCheckRejectionReason",
+      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize, 1);
 }
 
 // Tests that the browser window size check rejection reason is NOT logged to
