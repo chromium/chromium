@@ -5,6 +5,7 @@
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_is_test.h"
 #include "base/cpu.h"
@@ -23,6 +24,8 @@ namespace {
 const char kMinExpectedVersion[] = "140.3";
 const int kScreenAICleanUpDelayInDays = 30;
 
+std::optional<bool> g_device_compatible_for_testing;
+
 }  // namespace
 
 namespace screen_ai {
@@ -33,6 +36,10 @@ ScreenAIInstallState* g_instance = nullptr;
 
 // static
 bool ScreenAIInstallState::IsDeviceCompatible() {
+  if (g_device_compatible_for_testing.has_value()) {
+    return *g_device_compatible_for_testing;
+  }
+
 #if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Screen AI
   // library.
@@ -48,6 +55,18 @@ bool ScreenAIInstallState::IsDeviceCompatible() {
 }
 
 // static
+void ScreenAIInstallState::SetDeviceCompatibleForTesting(bool compatible) {
+  CHECK_IS_TEST();
+  g_device_compatible_for_testing = compatible;
+}
+
+// static
+void ScreenAIInstallState::ResetDeviceCompatibilityForTesting() {
+  CHECK_IS_TEST();
+  g_device_compatible_for_testing.reset();
+}
+
+// static
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
   if (g_instance) {
     return g_instance;
@@ -60,6 +79,13 @@ ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
 
 // static
 bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
+  // As a defense-in-depth guard, reject the library if the device is not
+  // compatible, preventing it from being marked ready or loaded.
+  if (!IsDeviceCompatible()) {
+    VLOG(0) << "Device is not compatible with Screen AI requirements.";
+    return false;
+  }
+
   base::Version min_version(kMinExpectedVersion);
   CHECK(min_version.IsValid());
 
@@ -88,6 +114,7 @@ ScreenAIInstallState::~ScreenAIInstallState() {
   }
   CHECK_NE(g_instance, nullptr);
   g_instance = nullptr;
+  g_device_compatible_for_testing.reset();
 }
 
 // static
@@ -126,15 +153,26 @@ void ScreenAIInstallState::AddObserver(
 }
 
 void ScreenAIInstallState::DownloadComponent() {
+  if (!MayTryDownload()) {
+    return;
+  }
+
   if (!features::IsScreenAIOCREnabled() &&
       !features::IsScreenAIMainContentExtractionEnabled()) {
     SetState(State::kDownloadFailed);
     return;
   }
 
-  if (MayTryDownload()) {
-    DownloadComponentInternal();
+  // Although verification rejects incompatible binaries post-install, this
+  // check avoids initiating an unnecessary network download when a feature
+  // triggers an on-demand download request.
+  if (!IsDeviceCompatible()) {
+    VLOG(0) << "Device is not compatible with Screen AI requirements.";
+    SetState(State::kDownloadFailed);
+    return;
   }
+
+  DownloadComponentInternal();
 }
 
 void ScreenAIInstallState::RemoveObserver(
@@ -198,6 +236,7 @@ bool ScreenAIInstallState::MayTryDownload() {
 void ScreenAIInstallState::ResetForTesting() {
   state_ = State::kNotDownloaded;
   component_binary_path_.clear();
+  ResetDeviceCompatibilityForTesting();
 }
 
 void ScreenAIInstallState::SetStateForTesting(State state) {

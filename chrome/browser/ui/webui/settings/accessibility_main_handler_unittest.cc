@@ -87,6 +87,7 @@ class AccessibilityMainHandlerScreenAITest : public testing::Test {
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
 
+    screen_ai::ScreenAIInstallState::SetDeviceCompatibleForTesting(true);
     test_screen_ai_install_state_ =
         std::make_unique<TestScreenAIInstallState>();
 

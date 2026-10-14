@@ -49,13 +49,16 @@ class ScreenAIInstallState {
   static std::unique_ptr<ScreenAIInstallState> Create();
   static ScreenAIInstallState* CreateForTesting();
 
-  // Verifies that the library version is compatible with current Chromium
-  // version. Will be used to avoid accepting the library if a newer version is
-  // expected.
+  // Verifies that the device and library version are compatible with current
+  // Chromium requirements. Will be used to avoid accepting the library if the
+  // device is incompatible or a newer version is expected.
   static bool VerifyLibraryVersion(const base::Version& version);
 
   // Returns true if the device is compatible with ScreenAI requirements.
   static bool IsDeviceCompatible();
+
+  static void SetDeviceCompatibleForTesting(bool compatible);
+  static void ResetDeviceCompatibilityForTesting();
 
   // Returns true if the library is used recently and we need to keep it on
   // device and updated.

@@ -37,6 +37,7 @@ class ScreenAIInstallStateTest : public testing::Test,
                                  ScreenAIInstallState::Observer {
  public:
   ScreenAIInstallStateTest() {
+    ScreenAIInstallState::SetDeviceCompatibleForTesting(true);
     test_install_state_ = std::make_unique<TestScreenAIInstallState>();
   }
 
@@ -44,7 +45,9 @@ class ScreenAIInstallStateTest : public testing::Test,
     component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
   }
 
-  void DownloadComponent() { test_install_state_->DownloadComponentInternal(); }
+  void SimulateSuccessfulDownload() {
+    test_install_state_->DownloadComponentInternal();
+  }
 
   void StateChanged(ScreenAIInstallState::State state) override {
     if (state == ScreenAIInstallState::State::kDownloaded) {
@@ -80,7 +83,7 @@ TEST_F(ScreenAIInstallStateTest, AddingObserverTriggersDownload) {
 }
 
 TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
-  DownloadComponent();
+  SimulateSuccessfulDownload();
   StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }
@@ -97,6 +100,78 @@ TEST_F(ScreenAIInstallStateTest, DestroyStateBeforeObserver) {
   EXPECT_TRUE(IsObserving());
   DestroyInstallState();
   EXPECT_FALSE(IsObserving());
+}
+
+TEST_F(ScreenAIInstallStateTest, DeviceCompatibility) {
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(true);
+  EXPECT_TRUE(ScreenAIInstallState::IsDeviceCompatible());
+
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+  EXPECT_FALSE(ScreenAIInstallState::IsDeviceCompatible());
+}
+
+TEST_F(ScreenAIInstallStateTest, VerifyLibraryVersion) {
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(true);
+  EXPECT_TRUE(
+      ScreenAIInstallState::VerifyLibraryVersion(base::Version("140.3")));
+  EXPECT_TRUE(
+      ScreenAIInstallState::VerifyLibraryVersion(base::Version("141.0")));
+  EXPECT_FALSE(
+      ScreenAIInstallState::VerifyLibraryVersion(base::Version("140.2")));
+  EXPECT_FALSE(ScreenAIInstallState::VerifyLibraryVersion(base::Version("")));
+
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+  EXPECT_FALSE(
+      ScreenAIInstallState::VerifyLibraryVersion(base::Version("140.3")));
+  EXPECT_FALSE(
+      ScreenAIInstallState::VerifyLibraryVersion(base::Version("141.0")));
+}
+
+TEST_F(ScreenAIInstallStateTest, IncompatibleDeviceDownloadFails) {
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+  StartObservation();
+  EXPECT_FALSE(ComponentDownloadedReceived());
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloadFailed);
+  EXPECT_FALSE(ScreenAIInstallState::GetInstance()->IsComponentAvailable());
+}
+
+TEST_F(ScreenAIInstallStateTest, IncompatibleDeviceTriggerDownloadFails) {
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+  ScreenAIInstallState::GetInstance()->DownloadComponent();
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloadFailed);
+  EXPECT_FALSE(ScreenAIInstallState::GetInstance()->IsComponentAvailable());
+}
+
+TEST_F(ScreenAIInstallStateTest,
+       DownloadedComponentNotOverwrittenOnIncompatibleDevice) {
+  // An incompatible device in production would never reach the `kDownloaded`
+  // state because ShouldInstall() prevents installation at startup,
+  // VerifyLibraryVersion() rejects the library binary, and DownloadComponent()
+  // returns early on demand. However, tests frequently mock an installed
+  // component via SetComponentFolder(); calling DownloadComponent() or
+  // AddObserver() must not overwrite that state.
+  SimulateSuccessfulDownload();
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloaded);
+  EXPECT_TRUE(ScreenAIInstallState::GetInstance()->IsComponentAvailable());
+
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+
+  // Calling DownloadComponent() directly must not overwrite the downloaded
+  // state.
+  ScreenAIInstallState::GetInstance()->DownloadComponent();
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloaded);
+
+  // Adding an observer triggers DownloadComponent(), which must also not
+  // overwrite the downloaded state.
+  StartObservation();
+  EXPECT_TRUE(ComponentDownloadedReceived());
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloaded);
+  EXPECT_TRUE(ScreenAIInstallState::GetInstance()->IsComponentAvailable());
 }
 
 }  // namespace screen_ai
