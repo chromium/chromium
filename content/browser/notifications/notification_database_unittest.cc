@@ -14,8 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/uuid.h"
+#include "content/browser/notifications/notification_database_conversions.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/common/database/database_identifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
@@ -965,6 +967,53 @@ TEST_F(NotificationDatabaseTest,
                 std::nullopt /* is_shown_by_browser */, &notifications));
 
   EXPECT_EQ(0u, notifications.size());
+}
+
+TEST_F(NotificationDatabaseTest,
+       CorruptedEmptyNotificationIdReturnsCorruptedStatus) {
+  std::unique_ptr<NotificationDatabase> database(CreateDatabaseInMemory());
+  ASSERT_EQ(NotificationDatabase::STATUS_OK,
+            database->Open(/*create_if_missing=*/true));
+
+  GURL origin("https://example.com");
+  const std::string notification_id = GenerateNotificationId();
+
+  // Serialize a NotificationDatabaseData whose notification_id field is empty
+  // (e.g. a legacy or corrupted protobuf record).
+  NotificationDatabaseData corrupted_data;
+  corrupted_data.origin = origin;
+  std::string serialized_data;
+  ASSERT_TRUE(
+      SerializeNotificationDatabaseData(corrupted_data, &serialized_data));
+
+  std::string key = "DATA:" + storage::GetIdentifierFromOrigin(origin) + '\0' +
+                    notification_id;
+  WriteLevelDBKeyValuePair(database.get(), key, serialized_data);
+
+  NotificationDatabaseData read_data;
+  EXPECT_EQ(
+      NotificationDatabase::STATUS_ERROR_CORRUPTED,
+      database->ReadNotificationData(notification_id, origin, &read_data));
+
+  bool callback_called = false;
+  EXPECT_EQ(NotificationDatabase::STATUS_ERROR_CORRUPTED,
+            database->ForEachNotificationData(base::BindLambdaForTesting(
+                [&](const NotificationDatabaseData& data) {
+                  callback_called = true;
+                })));
+  EXPECT_FALSE(callback_called);
+
+  std::vector<NotificationDatabaseData> notifications;
+  EXPECT_EQ(NotificationDatabase::STATUS_ERROR_CORRUPTED,
+            database->ReadAllNotificationDataForOrigin(origin, &notifications));
+  EXPECT_TRUE(notifications.empty());
+
+  std::set<std::string> deleted_notification_ids;
+  EXPECT_EQ(NotificationDatabase::STATUS_ERROR_CORRUPTED,
+            database->DeleteAllNotificationDataForOrigin(
+                origin, /*tag=*/"", /*is_shown_by_browser=*/std::nullopt,
+                &deleted_notification_ids));
+  EXPECT_TRUE(deleted_notification_ids.empty());
 }
 
 }  // namespace content

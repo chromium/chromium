@@ -228,6 +228,9 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
     const NotificationDatabaseData& data) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   CHECK(close_notification_ids, base::NotFatalUntil::M159);
+  if (data.notification_id.empty() || !data.origin.is_valid()) {
+    return;
+  }
 
   // Handle pending notifications.
   if (CanTrigger(data)) {
@@ -346,7 +349,9 @@ void PlatformNotificationContextImpl::DoReadAllNotificationOrigins(
   NotificationDatabase::Status status =
       database_->ForEachNotificationData(base::BindRepeating(
           [](std::set<GURL>* origins, const NotificationDatabaseData& data) {
-            origins->insert(data.origin);
+            if (data.origin.is_valid()) {
+              origins->insert(data.origin);
+            }
           },
           &origins));
 
@@ -480,7 +485,7 @@ void PlatformNotificationContextImpl::DoReadNotificationData(
     ReadResultCallback callback,
     bool initialized) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
-  if (!initialized) {
+  if (!initialized || notification_id.empty() || !origin.is_valid()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,
                                   NotificationDatabaseData()));
@@ -585,6 +590,9 @@ void PlatformNotificationContextImpl::DoWriteNotificationResources(
 
   NotificationDatabase::Status status = NotificationDatabase::STATUS_OK;
   for (auto& data : resource_data) {
+    if (data.notification_id.empty() || !data.origin.is_valid()) {
+      continue;
+    }
     NotificationDatabaseData notification_data;
     status = database_->ReadNotificationData(data.notification_id, data.origin,
                                              &notification_data);
@@ -656,8 +664,10 @@ void PlatformNotificationContextImpl::DoReDisplayNotifications(
       break;
 
     for (const auto& data : datas) {
-      if (CanTrigger(data))
+      if (CanTrigger(data) || data.notification_id.empty() ||
+          !data.origin.is_valid()) {
         continue;
+      }
       blink::NotificationResources resources;
       status = database_->ReadNotificationResources(data.notification_id,
                                                     data.origin, &resources);
@@ -717,7 +727,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationMetadata(
     WriteResourcesResultCallback callback,
     bool initialized) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
-  if (!initialized) {
+  if (!initialized || notification_id.empty() || !origin.is_valid()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false));
     return;
@@ -778,7 +788,7 @@ void PlatformNotificationContextImpl::DoReadNotificationResources(
     ReadResourcesResultCallback callback,
     bool initialized) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
-  if (!initialized) {
+  if (!initialized || notification_id.empty() || !origin.is_valid()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,
                                   blink::NotificationResources()));
@@ -878,7 +888,7 @@ void PlatformNotificationContextImpl::
         bool supports_synchronization,
         bool initialized) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
-  if (!initialized) {
+  if (!initialized || !origin.is_valid()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,
                                   std::vector<NotificationDatabaseData>()));
@@ -1134,6 +1144,11 @@ void PlatformNotificationContextImpl::DeleteNotificationData(
   if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
   }
+  if (notification_id.empty() || !origin.is_valid()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false));
+    return;
+  }
 
   // Close notification as we're about to delete its data.
   if (close_notification) {
@@ -1158,7 +1173,7 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
     bool should_log_close,
     bool initialized) {
   CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
-  if (!initialized) {
+  if (!initialized || notification_id.empty() || !origin.is_valid()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;

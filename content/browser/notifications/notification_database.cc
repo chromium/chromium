@@ -112,7 +112,8 @@ NotificationDatabase::Status DeserializedNotificationData(
     NotificationDatabaseData* notification_database_data) {
   CHECK(notification_database_data, base::NotFatalUntil::M159);
   if (DeserializeNotificationDatabaseData(serialized_data,
-                                          notification_database_data)) {
+                                          notification_database_data) &&
+      !notification_database_data->notification_id.empty()) {
     return NotificationDatabase::STATUS_OK;
   }
 
