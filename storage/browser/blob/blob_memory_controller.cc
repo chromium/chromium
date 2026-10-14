@@ -798,7 +798,7 @@ void BlobMemoryController::NotifyMemoryItemsUsed(
     }
     // We don't want to re-add the item if we're currently paging it to disk.
     if (items_paging_to_file_.contains(item->item_id())) {
-      return;
+      continue;
     }
     auto iterator = populated_memory_items_.Get(item->item_id());
     if (iterator == populated_memory_items_.end()) {

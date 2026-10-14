@@ -668,6 +668,61 @@ TEST_F(BlobMemoryControllerTest, PartialEviction) {
   }
 }
 
+// An item that is being paged to disk doesn't prevent the other items passed
+// to NotifyMemoryItemsUsed() from being tracked for eviction.
+TEST_F(BlobMemoryControllerTest, NotifyMemoryItemsUsedWhilePaging) {
+  BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
+  SetTestMemoryLimits(&controller);
+  AssertEnoughDiskSpace();
+
+  // Populate item A.
+  BlobDataBuilder builder_a("fake_a");
+  builder_a.AppendData(std::string(300, 'a'));
+  std::vector<scoped_refptr<ShareableBlobDataItem>> items_a =
+      CreateSharedDataItems(builder_a);
+  EXPECT_FALSE(
+      controller.ReserveMemoryQuota(items_a, GetMemoryRequestCallback()));
+  items_a[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
+  controller.NotifyMemoryItemsUsed(items_a);
+  EXPECT_FALSE(file_runner_->HasPendingTask());
+
+  // Reserving item B goes above the paging limit, so item A starts paging.
+  BlobDataBuilder builder_b("fake_b");
+  builder_b.AppendData(std::string(200, 'b'));
+  std::vector<scoped_refptr<ShareableBlobDataItem>> items_b =
+      CreateSharedDataItems(builder_b);
+  EXPECT_FALSE(
+      controller.ReserveMemoryQuota(items_b, GetMemoryRequestCallback()));
+  EXPECT_TRUE(file_runner_->HasPendingTask());
+  items_b[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
+
+  // Notify with A (being paged) first, then B.
+  controller.NotifyMemoryItemsUsed({items_a[0], items_b[0]});
+
+  RunFileThreadTasks();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(300u, controller.disk_usage());
+  EXPECT_EQ(200u, controller.memory_usage());
+  EXPECT_EQ(BlobDataItem::Type::kFile, items_a[0]->item()->type());
+  EXPECT_EQ(BlobDataItem::Type::kBytes, items_b[0]->item()->type());
+
+  // Reserving item C goes above the paging limit again, so item B is paged.
+  // This only happens if B was tracked.
+  BlobDataBuilder builder_c("fake_c");
+  builder_c.AppendData(std::string(300, 'c'));
+  std::vector<scoped_refptr<ShareableBlobDataItem>> items_c =
+      CreateSharedDataItems(builder_c);
+  EXPECT_FALSE(
+      controller.ReserveMemoryQuota(items_c, GetMemoryRequestCallback()));
+  EXPECT_TRUE(file_runner_->HasPendingTask());
+
+  RunFileThreadTasks();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(500u, controller.disk_usage());
+  EXPECT_EQ(300u, controller.memory_usage());
+  EXPECT_EQ(BlobDataItem::Type::kFile, items_b[0]->item()->type());
+}
+
 TEST_F(BlobMemoryControllerTest, FullEviction) {
   BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
   SetTestMemoryLimits(&controller);
