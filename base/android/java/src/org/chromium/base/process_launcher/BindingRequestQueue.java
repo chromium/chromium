@@ -85,17 +85,39 @@ class BindingRequestQueue {
         }
         int size = mBindingRequestQueue.size();
         TraceEvent.begin("BindingRequestQueue.flush", size);
-        ContextUtils.getApplicationContext().updateServiceBindings(mBindingRequestQueue.values());
-        mBindingRequestQueue.clear();
-        TraceEvent.end("BindingRequestQueue.flush");
-        // We don't log the size histogram if the batch is empty because flush() can be called not
-        // only at the end of batch duration but also at other timings (e.g. just before
-        // Context.bindService(), launcher thread is idle).
-        RecordHistogram.recordCount1000Histogram(
-                "Android.ChildProcessBinding.BatchRequestSize", size);
-        RecordHistogram.recordTimesHistogram(
-                "Android.ChildProcessBinding.BatchRequestDelay",
-                TimeUtils.elapsedRealtimeMillis() - mFirstRequestTimeMillis);
-        mFirstRequestTimeMillis = 0;
+        Context context = ContextUtils.getApplicationContext();
+        try {
+            context.updateServiceBindings(mBindingRequestQueue.values());
+        } catch (IllegalArgumentException e) {
+            // If a connection in the batch was already removed in AMS (e.g. due to a child
+            // process crash before onServiceDisconnected is processed on the launcher thread),
+            // ActiveServices.updateServiceBindingsLocked throws IllegalArgumentException and
+            // aborts the remaining items in the batch. Fall back to applying each item
+            // individually so valid updates in the batch are not lost.
+            for (Context.UpdateBindingParams params : mBindingRequestQueue.values()) {
+                try {
+                    if (params.isUnbind()) {
+                        context.unbindService(params.getConnection());
+                    } else {
+                        assert params.getFlags() != null;
+                        context.rebindService(params.getConnection(), params.getFlags());
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // Ignore connections that were already removed.
+                }
+            }
+        } finally {
+            mBindingRequestQueue.clear();
+            TraceEvent.end("BindingRequestQueue.flush");
+            // We don't log the size histogram if the batch is empty because flush() can be called
+            // not only at the end of batch duration but also at other timings (e.g. just before
+            // Context.bindService(), launcher thread is idle).
+            RecordHistogram.recordCount1000Histogram(
+                    "Android.ChildProcessBinding.BatchRequestSize", size);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.ChildProcessBinding.BatchRequestDelay",
+                    TimeUtils.elapsedRealtimeMillis() - mFirstRequestTimeMillis);
+            mFirstRequestTimeMillis = 0;
+        }
     }
 }

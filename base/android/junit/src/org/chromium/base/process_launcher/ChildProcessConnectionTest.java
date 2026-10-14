@@ -10,8 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -21,11 +24,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 
 import org.junit.Assert;
@@ -38,6 +45,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
@@ -868,5 +876,44 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testChildServiceConnectionImplRebindService_handlesUnboundAndException() {
+        Context context = mock(Context.class);
+        when(context.bindIsolatedService(any(), anyInt(), any(), any(), any())).thenReturn(true);
+        Intent intent = new Intent();
+        Handler handler = new Handler(Looper.getMainLooper());
+        ChildServiceConnectionDelegate delegate = mock(ChildServiceConnectionDelegate.class);
+
+        ChildServiceConnectionImpl connection =
+                new ChildServiceConnectionImpl(
+                        context,
+                        intent,
+                        /* bindFlags= */ 0,
+                        handler,
+                        Runnable::run,
+                        delegate,
+                        /* instanceName= */ "test");
+
+        // Rebinding before bindServiceConnection() should be a no-op.
+        connection.rebindService(Context.BIND_IMPORTANT, /* urgent= */ false);
+        verify(context, never()).rebindService(any(), any());
+
+        assertTrue(connection.bindServiceConnection());
+
+        // IllegalArgumentException thrown by Context.rebindService should be caught and
+        // ignored.
+        doThrow(new IllegalArgumentException("Could not find connection"))
+                .when(context)
+                .rebindService(eq(connection), any());
+        connection.rebindService(Context.BIND_IMPORTANT, /* urgent= */ false);
+        verify(context, times(1)).rebindService(eq(connection), any());
+
+        // Rebinding after unbindServiceConnection() should be a no-op.
+        connection.unbindServiceConnection(null);
+        connection.rebindService(Context.BIND_IMPORTANT, /* urgent= */ false);
+        verify(context, times(1)).rebindService(eq(connection), any());
     }
 }

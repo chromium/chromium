@@ -115,6 +115,9 @@ import java.util.concurrent.Executor;
 
     @Override
     public void rebindService(int bindFlags, boolean urgent) {
+        if (!isBound()) {
+            return;
+        }
         BindService.doRebindService(mContext, this, bindFlags, urgent);
     }
 

@@ -151,7 +151,13 @@ public final class BindService {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
-            context.rebindService(connection, bindServiceFlags);
+            try {
+                context.rebindService(connection, bindServiceFlags);
+            } catch (IllegalArgumentException e) {
+                // There is an unavoidable race here where the binding might be removed in AMS
+                // (for example due to a crash) before onServiceDisconnected is processed on the
+                // launcher thread. Ignore these. See crbug.com/1026626 for context.
+            }
         }
     }
 

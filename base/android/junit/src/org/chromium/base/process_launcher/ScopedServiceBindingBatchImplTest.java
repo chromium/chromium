@@ -9,7 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.ServiceConnection;
@@ -297,5 +303,45 @@ public class ScopedServiceBindingBatchImplTest {
                 "ScopedServiceBindingBatch must remain an abstract class, not an interface! "
                         + "Converting it to an interface breaks downstream JNI desugaring.",
                 ScopedServiceBindingBatch.class.isInterface());
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.CINNAMON_BUN)
+    public void testBindingRequestQueueFlush_fallsBackOnIllegalArgumentException() {
+        Context originalContext = ContextUtils.getApplicationContext();
+        Context spyContext = spy(originalContext);
+        ContextUtils.initApplicationContextForTests(spyContext);
+        try {
+            doThrow(new IllegalArgumentException("Could not find connection"))
+                    .when(spyContext)
+                    .updateServiceBindings(any());
+
+            BindingRequestQueue queue = new BindingRequestQueue();
+            ServiceConnection deadConn = mock(ServiceConnection.class);
+            ServiceConnection validRebindConn = mock(ServiceConnection.class);
+            ServiceConnection validUnbindConn = mock(ServiceConnection.class);
+            Context.BindServiceFlags flags = Context.BindServiceFlags.of(0);
+
+            doThrow(new IllegalArgumentException("Could not find connection"))
+                    .when(spyContext)
+                    .rebindService(eq(deadConn), any());
+
+            queue.rebind(deadConn, flags);
+            queue.rebind(validRebindConn, flags);
+            queue.unbind(validUnbindConn);
+
+            queue.flush();
+
+            verify(spyContext, times(1)).updateServiceBindings(any());
+            verify(spyContext, times(1)).rebindService(eq(deadConn), eq(flags));
+            verify(spyContext, times(1)).rebindService(eq(validRebindConn), eq(flags));
+            verify(spyContext, times(1)).unbindService(eq(validUnbindConn));
+
+            // Subsequent flush should be a no-op because the queue was cleared in finally.
+            queue.flush();
+            verify(spyContext, times(1)).updateServiceBindings(any());
+        } finally {
+            ContextUtils.initApplicationContextForTests(originalContext);
+        }
     }
 }
