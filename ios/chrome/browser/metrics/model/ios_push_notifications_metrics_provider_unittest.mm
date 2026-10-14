@@ -9,10 +9,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/test_sync_service.h"
-#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -20,7 +18,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -68,48 +66,35 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Creates a personal TestProfileIOS with the given `name`. This must be the
-  // first profile that's created (because secondary profiles are work profiles,
-  // which must be associated with a managed account).
-  void AddPersonalProfile(const std::string& name) {
+  // Creates a personal TestProfileIOS. This must be the first profile that's
+  // created (because secondary profiles are work profiles, which must be
+  // associated with a managed account).
+  void AddPersonalProfile() {
     CHECK(profile_manager_.GetLoadedProfiles().empty());
-    AddProfileImpl(name);
+    profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
   }
 
-  // Creates a work TestProfileIOS and pretends it is signed-in with `identity`
-  // which must be a managed identity.
-  void AddWorkProfileForManagedIdentity(FakeSystemIdentity* identity) {
-    FakeSystemIdentityManager::FromSystemIdentityManager(
-        GetApplicationContext()->GetSystemIdentityManager())
-        ->AddIdentity(identity);
-    std::optional<std::string> assigned_profile_name =
-        GetApplicationContext()
-            ->GetAccountProfileMapper()
-            ->FindProfileNameForGaiaID(identity.gaiaId);
-    CHECK(assigned_profile_name.has_value());
-    std::string profile_name = *assigned_profile_name;
+  // Creates a work TestProfileIOS and pretends it is signed-in with
+  // `managed_identity`.
+  void AddWorkProfileForManagedIdentity(FakeSystemIdentity* managed_identity) {
+    ProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+        profile_manager_, managed_identity, CreateProfileBuilder());
 
-    CHECK(!profile_name.empty());
-
-    ProfileIOS* profile = AddProfileImpl(profile_name);
-
-    AuthenticationServiceFactory::GetForProfile(profile)->SignIn(
-        identity, signin_metrics::AccessPoint::kSettings);
+    AuthenticationServiceFactory::GetForProfile(managed_profile)
+        ->SignIn(managed_identity, signin_metrics::AccessPoint::kSettings);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  ProfileIOS* AddProfileImpl(const std::string& name) {
+  TestProfileIOS::Builder CreateProfileBuilder() {
     TestProfileIOS::Builder builder;
-    builder.SetName(name);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-
-    return profile_manager_.AddProfileWithBuilder(std::move(builder));
+    return builder;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -171,7 +156,7 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   IOSPushNotificationsMetricsProvider provider;
 
   // Add one BrowserState and record the metrics.
-  AddPersonalProfile("Default");
+  AddPersonalProfile();
   provider.ProvideCurrentSessionData(/*uma_proto*/ nullptr);
 
   // The status of the notification authorization must always be logged
@@ -217,7 +202,7 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   IOSPushNotificationsMetricsProvider provider;
 
   // Add a few BrowserStates and record the metrics.
-  AddPersonalProfile("Profile1");
+  AddPersonalProfile();
   AddWorkProfileForManagedIdentity([FakeSystemIdentity fakeManagedIdentity]);
   provider.ProvideCurrentSessionData(/*uma_proto*/ nullptr);
 
