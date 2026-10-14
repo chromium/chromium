@@ -171,7 +171,7 @@ void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
   TRACE_EVENT_INSTANT(
       "glic", "GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone",
       perfetto::TerminatingFlow::FromPointer(this), "status", status);
-  base::UmaHistogramEnumeration("Glic.Session.WebUiCrash.TerminationStatus",
+  base::UmaHistogramEnumeration("Glic.Contents.WebUiCrash.TerminationStatus",
                                 status, base::TERMINATION_STATUS_MAX_ENUM);
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
     base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));

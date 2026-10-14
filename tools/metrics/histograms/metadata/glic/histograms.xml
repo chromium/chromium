@@ -615,6 +615,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Contents.WebClientCrash.ExitReason"
+    enum="GlicWebviewExitReason" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records the exit reason of the Glic web client (guest contents) process.
+    Logged by the glic host when the web client's render process goes away.
+    Previously recorded as Glic.Session.WebClientCrash.ExitReason.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Contents.WebUiCrash.TerminationStatus"
+    enum="TerminationStatus" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records the termination status of the Glic WebUI process. Logged by the glic
+    host when the WebUI process associated with Glic is terminated for any
+    reason. Previously recorded as Glic.Session.WebUiCrash.TerminationStatus.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CookieSynchronization.FailureByTrigger"
     enum="GlicCookieSyncTrigger" expires_after="2027-04-23">
   <owner>harringtond@chromium.org</owner>
@@ -3330,26 +3352,6 @@ chromium-metrics-reviews@google.com.
   <owner>carlosk@chromium.org</owner>
   <summary>
     Records the browser active state when a Glic response starts rendering.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.WebClientCrash.ExitReason"
-    enum="GlicWebviewExitReason" expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Records the exit reason of the Glic webview. This is logged when the
-    webview's `exit` event is fired.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.WebUiCrash.TerminationStatus"
-    enum="TerminationStatus" expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Records the termination status of the Glic WebUI process. This is logged
-    when the WebUI process associated with Glic is terminated for any reason.
   </summary>
 </histogram>
 

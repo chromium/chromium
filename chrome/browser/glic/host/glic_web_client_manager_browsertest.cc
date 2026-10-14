@@ -159,6 +159,29 @@ IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
   histogram_tester.ExpectTotalCount("Glic.Contents.TimeToWarmed", 0);
 }
 
+IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
+                       RecordsWebClientCrashExitReason) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<content::WebContents> test_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  GlicWebClientManager manager;
+  manager.AttachGuestContents(test_contents.get());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      test_contents.get(), embedded_test_server()->GetURL("/title1.html")));
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::CrashTab(test_contents.get());
+  }
+
+  // The exact exit reason depends on the platform, so only check the count.
+  histogram_tester.ExpectTotalCount("Glic.Contents.WebClientCrash.ExitReason",
+                                    1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          GlicWebClientManagerBrowserTest,
                          testing::Bool(),

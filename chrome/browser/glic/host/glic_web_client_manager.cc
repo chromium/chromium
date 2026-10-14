@@ -129,7 +129,7 @@ class GlicWebClientManager::Metrics {
 
   void OnProcessGone(base::TerminationStatus status) {
     has_error_or_crash_ = true;
-    base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
+    base::UmaHistogramEnumeration("Glic.Contents.WebClientCrash.ExitReason",
                                   TerminationStatusToExitReason(status));
     if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
       base::RecordAction(base::UserMetricsAction("GlicSessionWebClientCrash"));

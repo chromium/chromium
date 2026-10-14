@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/process/kill.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -11,10 +12,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
 
@@ -110,6 +115,39 @@ IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
   // The metrics must not be recorded again for subsequent navigations.
   histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime2", 1);
   histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime2", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
+                       RecordsWebUiCrashTerminationStatus) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(instance).has_value());
+
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_TRUE(webui_contents);
+  content::RenderProcessHost* process =
+      webui_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(process);
+
+  // Kill the WebUI renderer process. content::CrashTab() is not used here
+  // because it accesses the WebContents after the process exits, and the glic
+  // host destroys the WebUI contents synchronously when its process goes away.
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderProcessHostWatcher watcher(
+        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    EXPECT_TRUE(process->Shutdown(content::RESULT_CODE_KILLED));
+    watcher.Wait();
+  }
+
+  // The exact termination status depends on the platform, but it must not be
+  // a normal termination.
+  histogram_tester.ExpectTotalCount(
+      "Glic.Contents.WebUiCrash.TerminationStatus", 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Contents.WebUiCrash.TerminationStatus",
+      base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
 }
 
 }  // namespace glic
