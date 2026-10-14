@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/actuation_worklog_debug_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_tool_chip_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_header_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_intervention_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_task_button_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_task_card_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
@@ -88,9 +89,15 @@ NSString* const kUICatalogCellIdentifier = @"UICatalogCell";
   headerItem.viewControllerClass =
       [AIPrototypingActuationHeaderViewController class];
 
+  AIPrototypingUICatalogItem* interventionItem =
+      [[AIPrototypingUICatalogItem alloc] init];
+  interventionItem.title = @"Actuation Intervention";
+  interventionItem.viewControllerClass =
+      [AIPrototypingActuationInterventionViewController class];
+
   _items = @[
     chipsItem, worklogItem, compactWorklogItem, actuationSandboxItem,
-    taskButtonItem, taskCardItem, headerItem
+    taskButtonItem, taskCardItem, headerItem, interventionItem
   ];
 }
 
