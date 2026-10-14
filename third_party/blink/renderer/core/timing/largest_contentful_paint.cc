@@ -50,8 +50,9 @@ Element* LargestContentfulPaint::element() const {
 
   // Do not expose |element_| when the document is not 'fully active'.
   const Document& document = element_->GetDocument();
-  if (!document.IsActive() || !document.GetFrame())
+  if (!document.IsActive() || !document.GetFrame()) {
     return nullptr;
+  }
 
   return element_.Get();
 }

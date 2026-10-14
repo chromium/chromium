@@ -231,14 +231,16 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
                                         uint64_t navigation_id) {
   double start_time =
       start ? GetTimeOrFindMarkTime(measure_name, start, exception_state) : 0;
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   double end_time =
       end ? GetTimeOrFindMarkTime(measure_name, end, exception_state)
           : performance_->now();
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   if (duration.has_value()) {
     // When |duration| is specified, we require that exactly one of |start| and
@@ -299,8 +301,9 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
   PerformanceMeasure* measure = PerformanceMeasure::Create(
       script_state, measure_name, start_time, end_time, detail, exception_state,
       source, navigation_id);
-  if (!measure)
+  if (!measure) {
     return nullptr;
+  }
   InsertPerformanceEntry(measures_map_, measures_buffer_, *measure);
   return measure;
 }

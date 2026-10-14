@@ -21,8 +21,9 @@ class EventCountsIterationSource final
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
                      uint64_t& map_value) override {
-    if (iterator_ == map_->Map().end())
+    if (iterator_ == map_->Map().end()) {
       return false;
+    }
     map_key = iterator_->key;
     map_value = iterator_->value;
     ++iterator_;
@@ -51,8 +52,9 @@ void EventCounts::Add(const AtomicString& event_type) {
 void EventCounts::AddMultipleEvents(const AtomicString& event_type,
                                     uint64_t count) {
   auto iterator = event_count_map_.find(event_type);
-  if (iterator == event_count_map_.end())
+  if (iterator == event_count_map_.end()) {
     return;
+  }
   iterator->value += count;
 }
 
@@ -110,8 +112,9 @@ bool EventCounts::GetMapEntry(ScriptState*,
                               const String& key,
                               uint64_t& value) {
   auto it = event_count_map_.find(AtomicString(key));
-  if (it == event_count_map_.end())
+  if (it == event_count_map_.end()) {
     return false;
+  }
 
   value = it->value;
   return true;

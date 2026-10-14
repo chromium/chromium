@@ -491,14 +491,16 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
                         WebFeature::kEventTimingExplicitlyRequested);
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kEventTimingFirstInputExplicitlyRequested);
-      if (first_input_timing_)
+      if (first_input_timing_) {
         entries_storage = {first_input_timing_};
+      }
       break;
 
     case PerformanceEntry::kNavigation:
       UseCounter::Count(GetExecutionContext(), WebFeature::kNavigationTimingL2);
-      if (navigation_timing_)
+      if (navigation_timing_) {
         entries_storage = {navigation_timing_};
+      }
       break;
 
     case PerformanceEntry::kMark:
@@ -574,9 +576,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kLongAnimationFrame:
-        UseCounter::Count(GetExecutionContext(),
-                          WebFeature::kLongAnimationFrameRequested);
-        entries = &long_animation_frame_buffer_;
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kLongAnimationFrameRequested);
+      entries = &long_animation_frame_buffer_;
       break;
 
     // Conditional user timing entries are included in other relevant
@@ -667,8 +669,9 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
 
 // Called after loadEventEnd happens.
 void Performance::NotifyNavigationTimingToObservers() {
-  if (navigation_timing_)
+  if (navigation_timing_) {
     NotifyObserversOfEntry(*navigation_timing_);
+  }
 }
 
 bool Performance::IsContainerTimingBufferFull() const {
@@ -872,8 +875,9 @@ void Performance::AddBackForwardCacheRestoration(
 }
 
 UserTiming& Performance::GetUserTiming() {
-  if (!user_timing_)
+  if (!user_timing_) {
     user_timing_ = MakeGarbageCollected<UserTiming>(*this);
+  }
   return *user_timing_;
 }
 
@@ -1194,8 +1198,9 @@ PerformanceMeasure* Performance::MeasureWithDetail(
   PerformanceMeasure* performance_measure = GetUserTiming().Measure(
       script_state, measure_name, start, duration, end, detail, exception_state,
       LocalDOMWindow::From(script_state), NavigationId().web_exposed_id);
-  if (performance_measure)
+  if (performance_measure) {
     NotifyObserversOfEntry(*performance_measure);
+  }
   return performance_measure;
 }
 
@@ -1238,8 +1243,9 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
       observer_found = true;
     }
   }
-  if (observer_found && entry.EntryTypeEnum() == PerformanceEntry::kPaint)
+  if (observer_found && entry.EntryTypeEnum() == PerformanceEntry::kPaint) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
+  }
 }
 
 void Performance::NotifyObserversOfContainerEntry(
@@ -1273,8 +1279,9 @@ bool Performance::HasObserverFor(
 }
 
 void Performance::ActivateObserver(PerformanceObserver& observer) {
-  if (active_observers_.empty())
+  if (active_observers_.empty()) {
     deliver_observations_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 
   // erase() is a no-op when the observer isn't present, so no guard is needed.
   suspended_observers_.erase(&observer);
@@ -1286,8 +1293,9 @@ void Performance::SuspendObserver(PerformanceObserver& observer) {
     return;
   }
   auto it = active_observers_.find(&observer);
-  if (it == active_observers_.end())
+  if (it == active_observers_.end()) {
     return;
+  }
   active_observers_.erase(it);
   suspended_observers_.insert(&observer);
 }
@@ -1309,8 +1317,9 @@ void Performance::DeliverObservationsTimerFired(TimerBase*) {
 int Performance::GetDroppedEntriesForTypes(PerformanceEntryTypeMask types) {
   int dropped_count = 0;
   for (const auto type : kDroppableEntryTypes) {
-    if (types & type)
+    if (types & type) {
       dropped_count += dropped_entries_count_map_.at(type);
+    }
   }
   return dropped_count;
 }
@@ -1331,16 +1340,18 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     bool allow_negative_value,
     bool cross_origin_isolated_capability) {
   // Avoid exposing raw platform timestamps.
-  if (monotonic_time.is_null() || time_origin.is_null())
+  if (monotonic_time.is_null() || time_origin.is_null()) {
     return 0.0;
+  }
 
   DOMHighResTimeStamp clamped_time =
       ClampTimeResolution(monotonic_time.since_origin(),
                           cross_origin_isolated_capability) -
       ClampTimeResolution(time_origin.since_origin(),
                           cross_origin_isolated_capability);
-  if (clamped_time < 0 && !allow_negative_value)
+  if (clamped_time < 0 && !allow_negative_value) {
     return 0.0;
+  }
   return clamped_time;
 }
 
@@ -1364,8 +1375,9 @@ bool Performance::CanExposeNode(Node* node) {
 
   // Do not expose |node| when the document is not 'fully active'.
   const Document& document = node->GetDocument();
-  if (!document.IsActive() || !document.GetFrame())
+  if (!document.IsActive() || !document.GetFrame()) {
     return false;
+  }
 
   return true;
 }

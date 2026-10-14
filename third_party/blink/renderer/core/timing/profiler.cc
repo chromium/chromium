@@ -48,8 +48,9 @@ Profiler* Profiler::Create(ScriptState* script_state,
   auto* profiler = profiler_group->CreateProfiler(
       script_state, *options, performance->GetTimeOriginInternal(),
       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   return profiler;
 }

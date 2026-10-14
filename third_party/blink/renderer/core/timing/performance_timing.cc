@@ -44,111 +44,128 @@ PerformanceTiming::PerformanceTiming(ExecutionContext* context)
 
 uint64_t PerformanceTiming::navigationStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->NavigationStart());
 }
 
 uint64_t PerformanceTiming::unloadEventStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   if (timing->HasCrossOriginRedirect() ||
-      !timing->CanRequestFromPreviousDocument())
+      !timing->CanRequestFromPreviousDocument()) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->UnloadEventStart());
 }
 
 uint64_t PerformanceTiming::unloadEventEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   if (timing->HasCrossOriginRedirect() ||
-      !timing->CanRequestFromPreviousDocument())
+      !timing->CanRequestFromPreviousDocument()) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->UnloadEventEnd());
 }
 
 uint64_t PerformanceTiming::redirectStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
-  if (timing->HasCrossOriginRedirect())
+  if (timing->HasCrossOriginRedirect()) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->RedirectStart());
 }
 
 uint64_t PerformanceTiming::redirectEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
-  if (timing->HasCrossOriginRedirect())
+  if (timing->HasCrossOriginRedirect()) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->RedirectEnd());
 }
 
 uint64_t PerformanceTiming::fetchStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->FetchStart());
 }
 
 uint64_t PerformanceTiming::domainLookupStart() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return fetchStart();
+  }
 
   // This will be zero when a DNS request is not performed.  Rather than
   // exposing a special value that indicates no DNS, we "backfill" with
   // fetchStart.
   base::TimeTicks domain_lookup_start = timing->DomainLookupStart();
-  if (domain_lookup_start.is_null())
+  if (domain_lookup_start.is_null()) {
     return fetchStart();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(domain_lookup_start);
 }
 
 uint64_t PerformanceTiming::domainLookupEnd() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return domainLookupStart();
+  }
 
   // This will be zero when a DNS request is not performed.  Rather than
   // exposing a special value that indicates no DNS, we "backfill" with
   // domainLookupStart.
   base::TimeTicks domain_lookup_end = timing->DomainLookupEnd();
-  if (domain_lookup_end.is_null())
+  if (domain_lookup_end.is_null()) {
     return domainLookupStart();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(domain_lookup_end);
 }
 
 uint64_t PerformanceTiming::connectStart() const {
   DocumentLoader* loader = GetDocumentLoader();
-  if (!loader)
+  if (!loader) {
     return domainLookupEnd();
+  }
 
   ResourceLoadTiming* timing = loader->GetResponse().GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return domainLookupEnd();
+  }
 
   // connectStart will be zero when a network request is not made.  Rather than
   // exposing a special value that indicates no new connection, we "backfill"
   // with domainLookupEnd.
   base::TimeTicks connect_start = timing->ConnectStart();
-  if (connect_start.is_null() || loader->GetResponse().ConnectionReused())
+  if (connect_start.is_null() || loader->GetResponse().ConnectionReused()) {
     return domainLookupEnd();
+  }
 
   // ResourceLoadTiming's connect phase includes DNS, however Navigation
   // Timing's connect phase should not. So if there is DNS time, trim it from
@@ -163,35 +180,41 @@ uint64_t PerformanceTiming::connectStart() const {
 
 uint64_t PerformanceTiming::connectEnd() const {
   DocumentLoader* loader = GetDocumentLoader();
-  if (!loader)
+  if (!loader) {
     return connectStart();
+  }
 
   ResourceLoadTiming* timing = loader->GetResponse().GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return connectStart();
+  }
 
   // connectEnd will be zero when a network request is not made.  Rather than
   // exposing a special value that indicates no new connection, we "backfill"
   // with connectStart.
   base::TimeTicks connect_end = timing->ConnectEnd();
-  if (connect_end.is_null() || loader->GetResponse().ConnectionReused())
+  if (connect_end.is_null() || loader->GetResponse().ConnectionReused()) {
     return connectStart();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(connect_end);
 }
 
 uint64_t PerformanceTiming::secureConnectionStart() const {
   DocumentLoader* loader = GetDocumentLoader();
-  if (!loader)
+  if (!loader) {
     return 0;
+  }
 
   ResourceLoadTiming* timing = loader->GetResponse().GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   base::TimeTicks ssl_start = timing->SslStart();
-  if (ssl_start.is_null())
+  if (ssl_start.is_null()) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(ssl_start);
 }
@@ -199,54 +222,62 @@ uint64_t PerformanceTiming::secureConnectionStart() const {
 uint64_t PerformanceTiming::requestStart() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
 
-  if (!timing || timing->SendStart().is_null())
+  if (!timing || timing->SendStart().is_null()) {
     return connectEnd();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->SendStart());
 }
 
 uint64_t PerformanceTiming::responseStart() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing) {
     return requestStart();
+  }
 
   base::TimeTicks response_start = timing->ReceiveHeadersStart();
-  if (response_start.is_null())
+  if (response_start.is_null()) {
     response_start = timing->ReceiveHeadersEnd();
-  if (response_start.is_null())
+  }
+  if (response_start.is_null()) {
     return requestStart();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(response_start);
 }
 
 uint64_t PerformanceTiming::responseEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->ResponseEnd());
 }
 
 uint64_t PerformanceTiming::domLoading() const {
   const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing)
+  if (!timing) {
     return fetchStart();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->DomLoading());
 }
 
 uint64_t PerformanceTiming::domInteractive() const {
   const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->DomInteractive());
 }
 
 uint64_t PerformanceTiming::domContentLoadedEventStart() const {
   const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(
       timing->DomContentLoadedEventStart());
@@ -254,32 +285,36 @@ uint64_t PerformanceTiming::domContentLoadedEventStart() const {
 
 uint64_t PerformanceTiming::domContentLoadedEventEnd() const {
   const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->DomContentLoadedEventEnd());
 }
 
 uint64_t PerformanceTiming::domComplete() const {
   const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->DomComplete());
 }
 
 uint64_t PerformanceTiming::loadEventStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->LoadEventStart());
 }
 
 uint64_t PerformanceTiming::loadEventEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return MonotonicTimeToIntegerMilliseconds(timing->LoadEventEnd());
 }
@@ -290,23 +325,26 @@ DocumentLoader* PerformanceTiming::GetDocumentLoader() const {
 }
 
 const DocumentTiming* PerformanceTiming::GetDocumentTiming() const {
-  if (!DomWindow() || !DomWindow()->document())
+  if (!DomWindow() || !DomWindow()->document()) {
     return nullptr;
+  }
   return &DomWindow()->document()->GetTiming();
 }
 
 DocumentLoadTiming* PerformanceTiming::GetDocumentLoadTiming() const {
   DocumentLoader* loader = GetDocumentLoader();
-  if (!loader)
+  if (!loader) {
     return nullptr;
+  }
 
   return &loader->GetTiming();
 }
 
 ResourceLoadTiming* PerformanceTiming::GetResourceLoadTiming() const {
   DocumentLoader* loader = GetDocumentLoader();
-  if (!loader)
+  if (!loader) {
     return nullptr;
+  }
 
   return loader->GetResponse().GetResourceLoadTiming();
 }
@@ -340,8 +378,9 @@ ScriptObject PerformanceTiming::toJSONForBinding(
 uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
     base::TimeTicks time) const {
   const DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
+  if (!timing) {
     return 0;
+  }
 
   return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
                                cross_origin_isolated_capability_);

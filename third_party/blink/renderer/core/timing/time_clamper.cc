@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 
+#include <cmath>
+
 #include "base/bit_cast.h"
 #include "base/rand_util.h"
-
-#include <cmath>
 
 namespace blink {
 
@@ -54,8 +54,9 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   // As such it remains a double, in order to guarantee that distribution,
   // and the clamping's uniformity.
   double tick_threshold = ThresholdFor(clamped_time, resolution);
-  if (time_lower_digits >= tick_threshold)
+  if (time_lower_digits >= tick_threshold) {
     clamped_time += resolution;
+  }
 
   // Add back the upper digits portion while avoiding signed integer overflow.
   time_upper_digits = std::min(
@@ -63,8 +64,9 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   clamped_time += time_upper_digits;
 
   // Flip the number back to being negative if it started that way.
-  if (was_negative)
+  if (was_negative) {
     clamped_time = -clamped_time;
+  }
   return base::Microseconds(clamped_time);
 }
 

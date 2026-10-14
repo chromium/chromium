@@ -95,8 +95,9 @@ class HeapSizeCache {
 
   void Update(MemoryInfo::Precision precision) {
     GetHeapSize(info_);
-    if (precision == MemoryInfo::Precision::kPrecise)
+    if (precision == MemoryInfo::Precision::kPrecise) {
       return;
+    }
 
     info_.used_js_heap_size = QuantizeMemorySize(info_.used_js_heap_size);
     info_.total_js_heap_size = QuantizeMemorySize(info_.total_js_heap_size);
@@ -149,14 +150,16 @@ size_t QuantizeMemorySize(size_t size) {
       }
 
       // Watch out for overflow, if the range is too large for size_t.
-      if (i > 0 && bucket_size_list[i] < bucket_size_list[i - 1])
+      if (i > 0 && bucket_size_list[i] < bucket_size_list[i - 1]) {
         bucket_size_list[i] = std::numeric_limits<size_t>::max();
+      }
     }
   }
 
   for (int i = 0; i < kNumberOfBuckets; ++i) {
-    if (size <= bucket_size_list[i])
+    if (size <= bucket_size_list[i]) {
       return bucket_size_list[i];
+    }
   }
 
   return bucket_size_list[kNumberOfBuckets - 1];
@@ -167,10 +170,11 @@ MemoryInfo::MemoryInfo(Precision precision) {
   // bucketize or cache values, regardless of the value of |precision|. When the
   // flag is off then our cache is used and |precision| determines the
   // granularity of the values and the timer of the cache we use.
-  if (RuntimeEnabledFeatures::PreciseMemoryInfoEnabled())
+  if (RuntimeEnabledFeatures::PreciseMemoryInfoEnabled()) {
     GetHeapSize(info_);
-  else
+  } else {
     HeapSizeCache::ForCurrentThread().GetCachedHeapSize(info_, precision);
+  }
   // The values must have been computed, so totalJSHeapSize must be greater than
   // 0.
   DCHECK_GT(totalJSHeapSize(), 0u);

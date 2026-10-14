@@ -33,8 +33,9 @@ FirstMeaningfulPaintDetector& FirstMeaningfulPaintDetector::From(
 FirstMeaningfulPaintDetector::FirstMeaningfulPaintDetector(
     PaintTiming* paint_timing)
     : paint_timing_(paint_timing) {
-  if (!g_clock)
+  if (!g_clock) {
     g_clock = base::DefaultTickClock::GetInstance();
+  }
 }
 
 Document* FirstMeaningfulPaintDetector::GetDocument() {
@@ -51,14 +52,16 @@ void FirstMeaningfulPaintDetector::MarkNextPaintAsMeaningfulIfNeeded(
     double contents_height_before_layout,
     double contents_height_after_layout,
     int visible_height) {
-  if (network_quiet_reached_)
+  if (network_quiet_reached_) {
     return;
+  }
 
   unsigned delta = counter.Count() - prev_layout_object_count_;
   prev_layout_object_count_ = counter.Count();
 
-  if (visible_height == 0)
+  if (visible_height == 0) {
     return;
+  }
 
   double ratio_before =
       std::max(1.0, contents_height_before_layout / visible_height);
@@ -83,17 +86,20 @@ void FirstMeaningfulPaintDetector::MarkNextPaintAsMeaningfulIfNeeded(
 }
 
 void FirstMeaningfulPaintDetector::NotifyPaint() {
-  if (!next_paint_is_meaningful_)
+  if (!next_paint_is_meaningful_) {
     return;
+  }
 
   // Skip document background-only paints.
-  if (paint_timing_->FirstPaintRendered().is_null())
+  if (paint_timing_->FirstPaintRendered().is_null()) {
     return;
+  }
   provisional_first_meaningful_paint_ = g_clock->NowTicks();
   next_paint_is_meaningful_ = false;
 
-  if (network_quiet_reached_)
+  if (network_quiet_reached_) {
     return;
+  }
 
   had_user_input_before_provisional_first_meaningful_paint_ = had_user_input_;
   provisional_first_meaningful_paint_presentation_ = base::TimeTicks();
@@ -103,8 +109,9 @@ void FirstMeaningfulPaintDetector::NotifyPaint() {
 // This is called only on FirstMeaningfulPaintDetector for main frame.
 void FirstMeaningfulPaintDetector::NotifyInputEvent() {
   // Ignore user inputs before first paint.
-  if (paint_timing_->FirstPaintRendered().is_null())
+  if (paint_timing_->FirstPaintRendered().is_null()) {
     return;
+  }
   had_user_input_ = kHadUserInput;
 }
 
@@ -112,8 +119,9 @@ void FirstMeaningfulPaintDetector::OnNetwork2Quiet() {
   if (!GetDocument() || network_quiet_reached_ ||
       paint_timing_
           ->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
-          .is_null())
+          .is_null()) {
     return;
+  }
   network_quiet_reached_ = true;
 
   if (!provisional_first_meaningful_paint_.is_null()) {
@@ -130,8 +138,9 @@ void FirstMeaningfulPaintDetector::OnNetwork2Quiet() {
       // It's possible that this timer fires between when the first contentful
       // paint is set and its presentation promise is fulfilled. If this
       // happens, defer until NotifyFirstContentfulPaint() is called.
-      if (first_meaningful_paint_presentation.is_null())
+      if (first_meaningful_paint_presentation.is_null()) {
         defer_first_meaningful_paint_ = kDeferFirstContentfulPaintNotSet;
+      }
     } else {
       first_meaningful_paint_ = provisional_first_meaningful_paint_;
       first_meaningful_paint_presentation =
@@ -140,8 +149,9 @@ void FirstMeaningfulPaintDetector::OnNetwork2Quiet() {
       // which case we want to defer reporting first meaningful paint until they
       // complete. Otherwise, we would either report the wrong presentation
       // timestamp or none at all.
-      if (outstanding_presentation_promise_count_ > 0)
+      if (outstanding_presentation_promise_count_ > 0) {
         defer_first_meaningful_paint_ = kDeferOutstandingPresentationPromises;
+      }
     }
     if (defer_first_meaningful_paint_ == kDoNotDefer) {
       // Report FirstMeaningfulPaint when the page reached network 2-quiet if
@@ -195,8 +205,9 @@ void FirstMeaningfulPaintDetector::ReportPresentationTime(
 
 void FirstMeaningfulPaintDetector::NotifyFirstContentfulPaint(
     base::TimeTicks presentation_time) {
-  if (defer_first_meaningful_paint_ != kDeferFirstContentfulPaintNotSet)
+  if (defer_first_meaningful_paint_ != kDeferFirstContentfulPaintNotSet) {
     return;
+  }
   SetFirstMeaningfulPaint(presentation_time);
 }
 

@@ -160,7 +160,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   bool IsReadyForReporting() const;
 
-
   base::TimeTicks GetStartTime() const;
   base::TimeTicks GetEndTime() const;
 

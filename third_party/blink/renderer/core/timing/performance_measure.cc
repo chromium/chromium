@@ -41,8 +41,9 @@ PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
     serialized_detail = SerializedScriptValue::Serialize(
         script_state->GetIsolate(), detail.V8Value(),
         SerializedScriptValue::SerializeOptions(), exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return nullptr;
+    }
   }
   return MakeGarbageCollected<PerformanceMeasure>(
       script_state, name, start_time, end_time, serialized_detail,
@@ -51,14 +52,16 @@ PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
 
 ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  if (!serialized_detail_)
+  if (!serialized_detail_) {
     return ScriptValue(isolate, v8::Null(isolate));
+  }
   auto result = deserialized_detail_map_.insert(
       script_state, TraceWrapperV8Reference<v8::Value>());
   TraceWrapperV8Reference<v8::Value>& relevant_data =
       result.stored_value->value;
-  if (!result.is_new_entry)
+  if (!result.is_new_entry) {
     return ScriptValue(isolate, relevant_data.Get(isolate));
+  }
   v8::Local<v8::Value> value = serialized_detail_->Deserialize(isolate);
   relevant_data.Reset(isolate, value);
   return ScriptValue(isolate, value);

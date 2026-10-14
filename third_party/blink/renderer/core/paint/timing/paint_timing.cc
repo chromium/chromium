@@ -168,8 +168,9 @@ void PaintTiming::MarkFirstContentfulPaint() {
   if (!relevant_paint_details.first_contentful_paint_.is_null()) {
     return;
   }
-  if (IgnorePaintTimingScope::IgnoreDepth() > 0)
+  if (IgnorePaintTimingScope::IgnoreDepth() > 0) {
     return;
+  }
   SetFirstContentfulPaint(base::TimeTicks::Now());
 }
 
@@ -185,8 +186,9 @@ void PaintTiming::MarkFirstImagePaint() {
 }
 
 void PaintTiming::MarkFirstEligibleToPaint() {
-  if (!first_eligible_to_paint_.is_null())
+  if (!first_eligible_to_paint_.is_null()) {
     return;
+  }
 
   first_eligible_to_paint_ = base::TimeTicks::Now();
   NotifyPaintTimingChanged();
@@ -208,8 +210,9 @@ void PaintTiming::MarkIneligibleToPaint() {
 }
 
 void PaintTiming::SetFirstMeaningfulPaintCandidate(base::TimeTicks timestamp) {
-  if (!first_meaningful_paint_candidate_.is_null())
+  if (!first_meaningful_paint_candidate_.is_null()) {
     return;
+  }
   first_meaningful_paint_candidate_ = timestamp;
   if (GetFrame() && GetFrame()->View() && !GetFrame()->View()->IsAttached()) {
     GetFrame()->GetFrameScheduler()->OnFirstMeaningfulPaint();
@@ -238,19 +241,24 @@ void PaintTiming::SetFirstMeaningfulPaint(
 void PaintTiming::NotifyPaint(bool is_first_paint,
                               bool text_painted,
                               bool image_painted) {
-  if (IgnorePaintTimingScope::IgnoreDepth() > 0)
+  if (IgnorePaintTimingScope::IgnoreDepth() > 0) {
     return;
+  }
 
-  if (is_first_paint)
+  if (is_first_paint) {
     MarkFirstPaint();
-  if (text_painted)
+  }
+  if (text_painted) {
     MarkFirstContentfulPaint();
-  if (image_painted)
+  }
+  if (image_painted) {
     MarkFirstImagePaint();
+  }
   fmp_detector_->NotifyPaint();
 
-  if (is_first_paint)
+  if (is_first_paint) {
     GetFrame()->OnFirstPaint(text_painted, image_painted);
+  }
 }
 
 // https://w3c.github.io/paint-timing/#mark-paint-timing
@@ -708,13 +716,13 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
 
   relevant_paint_details.first_paint_ = stamp;
 
-    LocalFrame* frame = GetFrame();
-    if (frame && frame->GetDocument()) {
-      frame->GetDocument()->MarkFirstPaint();
-    }
-    if (frame && frame->View()) {
-      frame->View()->MaybeStopDeferringCommitsWithoutContentfulPaint();
-    }
+  LocalFrame* frame = GetFrame();
+  if (frame && frame->GetDocument()) {
+    frame->GetDocument()->MarkFirstPaint();
+  }
+  if (frame && frame->View()) {
+    frame->View()->MaybeStopDeferringCommitsWithoutContentfulPaint();
+  }
 
   pending_paint_events_.insert(PaintEvent::kFirstPaint);
 }

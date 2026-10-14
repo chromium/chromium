@@ -106,39 +106,54 @@ PerformanceEntry::ToMojoPerformanceMarkOrMeasure() {
 
 PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     const AtomicString& entry_type) {
-  if (entry_type == performance_entry_names::kLongtask)
+  if (entry_type == performance_entry_names::kLongtask) {
     return kLongTask;
-  if (entry_type == performance_entry_names::kMark)
+  }
+  if (entry_type == performance_entry_names::kMark) {
     return kMark;
-  if (entry_type == performance_entry_names::kMeasure)
+  }
+  if (entry_type == performance_entry_names::kMeasure) {
     return kMeasure;
-  if (entry_type == performance_entry_names::kResource)
+  }
+  if (entry_type == performance_entry_names::kResource) {
     return kResource;
-  if (entry_type == performance_entry_names::kNavigation)
+  }
+  if (entry_type == performance_entry_names::kNavigation) {
     return kNavigation;
-  if (entry_type == performance_entry_names::kTaskattribution)
+  }
+  if (entry_type == performance_entry_names::kTaskattribution) {
     return kTaskAttribution;
-  if (entry_type == performance_entry_names::kPaint)
+  }
+  if (entry_type == performance_entry_names::kPaint) {
     return kPaint;
-  if (entry_type == performance_entry_names::kEvent)
+  }
+  if (entry_type == performance_entry_names::kEvent) {
     return kEvent;
-  if (entry_type == performance_entry_names::kFirstInput)
+  }
+  if (entry_type == performance_entry_names::kFirstInput) {
     return kFirstInput;
-  if (entry_type == performance_entry_names::kElement)
+  }
+  if (entry_type == performance_entry_names::kElement) {
     return kElement;
-  if (entry_type == performance_entry_names::kLayoutShift)
+  }
+  if (entry_type == performance_entry_names::kLayoutShift) {
     return kLayoutShift;
-  if (entry_type == performance_entry_names::kLargestContentfulPaint)
+  }
+  if (entry_type == performance_entry_names::kLargestContentfulPaint) {
     return kLargestContentfulPaint;
+  }
   if (entry_type == performance_entry_names::kInteractionContentfulPaint) {
     return kInteractionContentfulPaint;
   }
-  if (entry_type == performance_entry_names::kVisibilityState)
+  if (entry_type == performance_entry_names::kVisibilityState) {
     return kVisibilityState;
-  if (entry_type == performance_entry_names::kBackForwardCacheRestoration)
+  }
+  if (entry_type == performance_entry_names::kBackForwardCacheRestoration) {
     return kBackForwardCacheRestoration;
-  if (entry_type == performance_entry_names::kSoftNavigation)
+  }
+  if (entry_type == performance_entry_names::kSoftNavigation) {
     return kSoftNavigation;
+  }
   if (entry_type == performance_entry_names::kLongAnimationFrame) {
     return kLongAnimationFrame;
   }

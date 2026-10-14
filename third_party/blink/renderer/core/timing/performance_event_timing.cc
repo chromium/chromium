@@ -172,7 +172,6 @@ bool PerformanceEventTiming::IsReadyForReporting() const {
          HasInteractionId();
 }
 
-
 base::TimeTicks PerformanceEventTiming::GetStartTime() const {
   return reporting_info_.creation_time;
 }

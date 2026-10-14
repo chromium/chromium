@@ -289,8 +289,9 @@ DOMHighResTimeStamp PerformanceResourceTiming::redirectStart() const {
     return 0.0;
   }
 
-  if (DOMHighResTimeStamp worker_ready_time = WorkerReady())
+  if (DOMHighResTimeStamp worker_ready_time = WorkerReady()) {
     return worker_ready_time;
+  }
 
   return PerformanceEntry::startTime();
 }
@@ -316,8 +317,9 @@ DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
         info_->allow_negative_values, CrossOriginIsolatedCapability());
   }
 
-  if (DOMHighResTimeStamp worker_ready_time = WorkerReady())
+  if (DOMHighResTimeStamp worker_ready_time = WorkerReady()) {
     return worker_ready_time;
+  }
 
   // If the fetch came from service worker static routing API and the actual
   // source type is cache, we will not have a fetch start. For compatibility,
@@ -482,10 +484,12 @@ DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
   }
 
   base::TimeTicks response_start = info_->timing->receive_headers_start;
-  if (response_start.is_null())
+  if (response_start.is_null()) {
     response_start = info_->timing->receive_headers_end;
-  if (response_start.is_null())
+  }
+  if (response_start.is_null()) {
     return requestStart();
+  }
 
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), response_start, info_->allow_negative_values,

@@ -67,6 +67,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   }
 
   void Trace(Visitor*) const override;
+
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
   uint32_t script_count_ = 0;

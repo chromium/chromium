@@ -30,8 +30,9 @@ class FirstMeaningfulPaintDetectorTest : public PaintTimingTestBase {
   void SimulateLayoutAndPaint(int new_elements) {
     AdvanceClock(base::Milliseconds(1));
     StringBuilder builder;
-    for (int i = 0; i < new_elements; i++)
+    for (int i = 0; i < new_elements; i++) {
       builder.Append("<span>a</span>");
+    }
     GetDocument().write(builder.ToString());
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     Detector().NotifyPaint();

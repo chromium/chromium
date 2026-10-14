@@ -55,8 +55,9 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
   value->SetBoolean("is_in_outermost_main_frame",
                     object.GetFrame()->IsOutermostMainFrame());
-  if (object.GetNode())
+  if (object.GetNode()) {
     value->SetInteger("dom_node_id", object.GetNode()->GetDomNodeId());
+  }
 }
 
 void PaintTimingVisualizer::DumpTextDebuggingRect(const LayoutObject& object,

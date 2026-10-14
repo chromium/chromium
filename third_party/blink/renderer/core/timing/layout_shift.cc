@@ -21,7 +21,8 @@ LayoutShift* LayoutShift::Create(double start_time,
                                  DOMWindow* source,
                                  uint64_t navigation_id) {
   return MakeGarbageCollected<LayoutShift>(start_time, value, input_detected,
-                                           input_timestamp, sources, source, navigation_id);
+                                           input_timestamp, sources, source,
+                                           navigation_id);
 }
 
 LayoutShift::LayoutShift(double start_time,

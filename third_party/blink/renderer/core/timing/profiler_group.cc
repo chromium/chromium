@@ -279,8 +279,9 @@ void ProfilerGroup::WillBeDestroyed() {
 
   StopDetachedProfilers();
 
-  if (cpu_profiler_)
+  if (cpu_profiler_) {
     TeardownV8Profiler();
+  }
 }
 
 void ProfilerGroup::Trace(Visitor* visitor) const {
@@ -334,8 +335,9 @@ void ProfilerGroup::StopProfiler(
                                                   profiler->TimeOrigin());
   resolver->Resolve(trace);
 
-  if (profile)
+  if (profile) {
     profile->Delete();
+  }
 
   profilers_.erase(profiler);
   --num_active_profilers_;
@@ -393,8 +395,9 @@ void ProfilerGroup::StopDetachedProfilers() {
 }
 
 void ProfilerGroup::CancelProfilerImpl(String profiler_id) {
-  if (!cpu_profiler_)
+  if (!cpu_profiler_) {
     return;
+  }
 
   v8::HandleScope scope(isolate_);
   v8::Local<v8::String> v8_profiler_id = V8String(isolate_, profiler_id);

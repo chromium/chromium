@@ -341,10 +341,11 @@ void PerformanceObserver::observe(ScriptState* script_state,
   }
 
   requires_dropped_entries_ = true;
-  if (is_registered_)
+  if (is_registered_) {
     performance_->UpdatePerformanceObserverFilterOptions();
-  else
+  } else {
     performance_->RegisterPerformanceObserver(*this);
+  }
   is_registered_ = true;
   if (is_buffered) {
     UseCounter::Count(GetExecutionContext(),
@@ -355,8 +356,9 @@ void PerformanceObserver::observe(ScriptState* script_state,
 
 void PerformanceObserver::disconnect() {
   performance_entries_.clear();
-  if (performance_)
+  if (performance_) {
     performance_->UnregisterPerformanceObserver(*this);
+  }
   is_registered_ = false;
   filter_options_ = PerformanceEntry::kInvalid;
 }
@@ -369,13 +371,15 @@ PerformanceEntryVector PerformanceObserver::takeRecords() {
 
 void PerformanceObserver::EnqueuePerformanceEntry(PerformanceEntry& entry) {
   performance_entries_.push_back(&entry);
-  if (performance_)
+  if (performance_) {
     performance_->ActivateObserver(*this);
+  }
 }
 
 bool PerformanceObserver::CanObserve(const PerformanceEntry& entry) const {
-  if (entry.EntryTypeEnum() != PerformanceEntry::kEvent)
+  if (entry.EntryTypeEnum() != PerformanceEntry::kEvent) {
     return true;
+  }
   return entry.duration() >= duration_threshold_;
 }
 
@@ -384,12 +388,14 @@ bool PerformanceObserver::HasPendingActivity() const {
 }
 
 void PerformanceObserver::Deliver(std::optional<int> dropped_entries_count) {
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  if (performance_entries_.empty())
+  if (performance_entries_.empty()) {
     return;
+  }
 
   PerformanceEntryVector performance_entries;
   performance_entries.swap(performance_entries_);
@@ -405,10 +411,11 @@ void PerformanceObserver::Deliver(std::optional<int> dropped_entries_count) {
 
 void PerformanceObserver::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
-  if (state == mojom::FrameLifecycleState::kRunning)
+  if (state == mojom::FrameLifecycleState::kRunning) {
     performance_->ActivateObserver(*this);
-  else
+  } else {
     performance_->SuspendObserver(*this);
+  }
 }
 
 void PerformanceObserver::Trace(Visitor* visitor) const {
