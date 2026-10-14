@@ -6116,6 +6116,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/t
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-mode-changed.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-negative-line-numbers.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-no-space.html [ Failure Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-non-snap-to-lines-collision.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-non-snap-to-lines-within-rendering-area.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-on-resize.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-overscan.html [ Failure Skip ]

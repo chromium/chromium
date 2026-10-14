@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -185,10 +186,17 @@ PhysicalRect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
       cue_box.LocalToAncestorRect(cue_box.PhysicalBorderBoxRect(), container);
   const PhysicalSize size = container->StitchedSize();
   const auto* cue_dom = To<VTTCueBox>(cue_box.GetNode());
-  if (cue_box.IsHorizontalWritingMode())
+  if (cue_box.IsHorizontalWritingMode()) {
     border_box.SetY(cue_dom->AdjustedPosition(size.height, PassKey()));
-  else
+    if (cue_dom->HasInlineAdjustment()) {
+      border_box.SetX(cue_dom->AdjustedInlinePosition(PassKey()));
+    }
+  } else {
     border_box.SetX(cue_dom->AdjustedPosition(size.width, PassKey()));
+    if (cue_dom->HasInlineAdjustment()) {
+      border_box.SetY(cue_dom->AdjustedInlinePosition(PassKey()));
+    }
+  }
   return border_box;
 }
 
@@ -370,37 +378,117 @@ void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {
   if (FirstInlineBoxSize(cue_box).IsEmpty()) {
     return;
   }
+  if (!cue_box.Parent() || !cue_box.Parent()->Parent()) {
+    return;
+  }
 
   const bool is_horizontal = cue_box.IsHorizontalWritingMode();
   const LayoutBox& container = *cue_box.ContainingBlock();
-  const PhysicalSize container_size = container.StitchedSize();
-  const LayoutUnit full_dimension =
-      is_horizontal ? container_size.height : container_size.width;
+  const PhysicalRect area(PhysicalOffset(), container.StitchedSize());
 
-  const PhysicalRect bounding_box = CueBoundingBox(cue_box);
-  const LayoutUnit position =
-      is_horizontal ? bounding_box.Y() : bounding_box.X();
+  PhysicalRect bounding_box = CueBoundingBox(cue_box);
+
+  // 2. Offset the boxes along the line axis by the line alignment.
   const LayoutUnit block_size =
       is_horizontal ? bounding_box.Height() : bounding_box.Width();
+  LayoutUnit alignment_offset;
+  switch (cue_.LineAlign()) {
+    case LineAlignSetting::kStart:
+      break;
+    case LineAlignSetting::kCenter:
+      alignment_offset = block_size / 2;
+      break;
+    case LineAlignSetting::kEnd:
+      alignment_offset = block_size;
+      break;
+  }
+  if (is_horizontal) {
+    bounding_box.offset.top -= alignment_offset;
+  } else {
+    bounding_box.offset.left -= alignment_offset;
+  }
+  const PhysicalOffset initial_offset = bounding_box.offset;
 
-  // 3-4. If the boxes are not within the video's rendering area, move them to
-  // the closest position where they are. Only the line axis can overflow.
-  // TODO(crbug.com/40339463): Also avoid overlapping earlier cues and the
-  // media controls.
-  if (block_size > full_dimension) {
-    return;
+  // output: earlier cue boxes and the media controls.
+  Vector<PhysicalRect> obstacles;
+  for (const LayoutObject* object = cue_box.PreviousSibling(); object;
+       object = object->PreviousSibling()) {
+    const auto* sibling = DynamicTo<VTTCueBox>(object->GetNode());
+    if (sibling && sibling->GetLayoutBox()) {
+      obstacles.push_back(CueBoundingBox(*sibling->GetLayoutBox()));
+    }
   }
-  const LayoutUnit adjusted_position =
-      std::clamp(position, LayoutUnit(), full_dimension - block_size);
-  if (adjusted_position == position) {
-    return;
+  const gfx::Rect controls_rect = ComputeControlsRect(*cue_box.Parent());
+  if (!controls_rect.IsEmpty()) {
+    obstacles.push_back(PhysicalRect(controls_rect));
   }
-  cue_.StartAdjustment(adjusted_position, PassKey());
+
+  auto fits = [&](const PhysicalOffset& offset) {
+    const PhysicalRect candidate(offset, bounding_box.size);
+    if (!area.Contains(candidate)) {
+      return false;
+    }
+    for (const PhysicalRect& obstacle : obstacles) {
+      if (candidate.Intersects(obstacle)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // 3-4. If the boxes overlap output or leave the rendering area, move them to
+  // the closest fitting position, preferring the topmost, then leftmost one.
+  // The candidates are the clamped initial coordinates and obstacle edges.
+  PhysicalOffset chosen = initial_offset;
+  if (!fits(initial_offset)) {
+    Vector<LayoutUnit> xs;
+    Vector<LayoutUnit> ys;
+    xs.push_back(std::min(std::max(initial_offset.left, LayoutUnit()),
+                          area.Width() - bounding_box.Width()));
+    ys.push_back(std::min(std::max(initial_offset.top, LayoutUnit()),
+                          area.Height() - bounding_box.Height()));
+    for (const PhysicalRect& obstacle : obstacles) {
+      xs.push_back(obstacle.X() - bounding_box.Width());
+      xs.push_back(obstacle.Right());
+      ys.push_back(obstacle.Y() - bounding_box.Height());
+      ys.push_back(obstacle.Bottom());
+    }
+    bool found = false;
+    double best_distance_squared = 0;
+    for (LayoutUnit x : xs) {
+      for (LayoutUnit y : ys) {
+        const PhysicalOffset candidate(x, y);
+        if (!fits(candidate)) {
+          continue;
+        }
+        const double distance_squared =
+            gfx::Vector2dF(candidate - initial_offset).LengthSquared();
+        if (!found || distance_squared < best_distance_squared ||
+            (distance_squared == best_distance_squared &&
+             (y < chosen.top || (y == chosen.top && x < chosen.left)))) {
+          chosen = candidate;
+          best_distance_squared = distance_squared;
+          found = true;
+        }
+      }
+    }
+    // 5. Nothing fits: keep the initial position.
+    if (!found) {
+      chosen = initial_offset;
+    }
+  }
+
+  cue_.StartAdjustment(is_horizontal ? chosen.top : chosen.left, PassKey());
+  cue_.StartInlineAdjustment(is_horizontal ? chosen.left : chosen.top,
+                             PassKey());
 
   cue_.SetInlineStyleProperty(
-      is_horizontal ? CSSPropertyID::kTop : CSSPropertyID::kLeft,
-      full_dimension ? (adjusted_position * 100 / full_dimension).ToDouble()
-                     : 100.0,
+      CSSPropertyID::kTop,
+      area.Height() ? (chosen.top * 100 / area.Height()).ToDouble() : 100.0,
+      CSSPrimitiveValue::UnitType::kPercentage);
+  cue_.SetInlineStyleProperty(
+      CSSPropertyID::kLeft,
+      area.Width() ? (chosen.left * 100 / area.Width()).ToDouble() : 100.0,
       CSSPrimitiveValue::UnitType::kPercentage);
 }
 

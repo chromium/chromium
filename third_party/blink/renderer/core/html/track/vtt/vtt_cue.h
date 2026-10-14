@@ -68,6 +68,7 @@ struct VTTDisplayParameters {
   CSSValueID text_align;
   CSSValueID writing_mode;
   double snap_to_lines_position;
+  LineAlignSetting line_align = LineAlignSetting::kStart;
 };
 
 class VTTCueBackgroundBox final : public HTMLDivElement {

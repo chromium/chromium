@@ -151,6 +151,7 @@ void VTTCueBox::ApplyCSSProperties(
 
   // The snap-to-lines position is propagated to VttCueLayoutAlgorithm.
   snap_to_lines_position_ = display_parameters.snap_to_lines_position;
+  line_align_ = display_parameters.line_align;
 }
 
 LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style) {
@@ -199,8 +200,15 @@ LayoutUnit& VTTCueBox::StartAdjustment(LayoutUnit new_value,
   return adjusted_position_;
 }
 
+void VTTCueBox::StartInlineAdjustment(LayoutUnit new_value,
+                                      base::PassKey<VttCueLayoutAlgorithm>) {
+  adjusted_inline_position_ = new_value;
+  DCHECK(HasInlineAdjustment()) << new_value;
+}
+
 void VTTCueBox::RevertAdjustment() {
   adjusted_position_ = LayoutUnit::Min();
+  adjusted_inline_position_ = LayoutUnit::Min();
 }
 
 LayoutUnit VTTCueBox::AdjustedPosition(

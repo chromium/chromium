@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<title>A non-snap-to-lines cue that overlaps an earlier cue moves to the closest fitting position, along either axis.</title>
+<script src="../media-controls.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+video { width: 320px; height: 240px; }
+video::cue { font-family: Ahem; font-size: 20px; }
+</style>
+<video></video>
+<script>
+// The video is 320x240 and every cue box is 25% (80px) wide with 20px lines.
+function addCue(track, start, text, line, position, align, vertical) {
+    var cue = new VTTCue(start, start + 1, text);
+    cue.snapToLines = false;
+    cue.line = line;
+    cue.position = position;
+    cue.size = 25;
+    if (align)
+        cue.align = align;
+    if (vertical)
+        cue.vertical = vertical;
+    track.addCue(cue);
+}
+
+function cueBoxRect(video, index) {
+    var container = textTrackContainerElement(video).getBoundingClientRect();
+    var rect = textTrackCueElementByIndex(video, index).getBoundingClientRect();
+    return { left: rect.left - container.left, top: rect.top - container.top,
+             width: rect.width, height: rect.height };
+}
+
+async_test(function(t) {
+    var video = document.querySelector('video');
+    var track = video.addTextTrack('captions');
+    track.mode = 'showing';
+
+    // Case 1 (t=1): overlaps the first cue by 6.4px; moves right to 200px.
+    addCue(track, 0.5, 'ab', 50, 50);
+    addCue(track, 0.5, 'cd', 50, 73);
+
+    // Case 2 (t=2.25): RTL with align:start anchors the right edge; moves left to 80px.
+    addCue(track, 1.75, 'a\nb\nc', 50, 50, 'start');
+    addCue(track, 1.75, '\u05D0', 50, 53, 'start');
+
+    // Case 3 (t=4): the first cue is full height; moves right to 200px.
+    addCue(track, 3.5, 'a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl', 0, 50);
+    addCue(track, 3.5, 'cd', 50, 60);
+
+    // Case 4 (t=5.5): vertical-rl; moves right to 180px.
+    addCue(track, 5, 'ab', 50, 50, null, 'rl');
+    addCue(track, 5, 'cd', 55, 50, null, 'rl');
+
+    var checks = [
+        [1, function() {
+            var first = cueBoxRect(video, 0);
+            assert_equals(first.left, 120, 'case 1: first cue left');
+            assert_equals(first.top, 120, 'case 1: first cue top');
+            var second = cueBoxRect(video, 1);
+            assert_equals(second.left, 200, 'case 1: second cue moved right');
+            assert_equals(second.top, 120, 'case 1: second cue stays on its line');
+        }],
+        [2.25, function() {
+            var first = cueBoxRect(video, 0);
+            assert_equals(first.left, 160, 'case 2: first cue left');
+            assert_equals(first.top, 120, 'case 2: first cue top');
+            var rtl = textTrackCueElementByIndex(video, 1);
+            assert_equals(getComputedStyle(rtl).direction, 'rtl', 'case 2: second cue is rtl');
+            var second = cueBoxRect(video, 1);
+            assert_equals(second.left, 80, 'case 2: second cue moved left');
+            assert_equals(second.top, 120, 'case 2: second cue stays on its line');
+        }],
+        [4, function() {
+            var first = cueBoxRect(video, 0);
+            assert_equals(first.height, 240, 'case 3: first cue spans the video');
+            var second = cueBoxRect(video, 1);
+            assert_equals(second.left, 200, 'case 3: second cue moved right');
+            assert_equals(second.top, 120, 'case 3: second cue stays on its line');
+        }],
+        [5.5, function() {
+            var first = cueBoxRect(video, 0);
+            assert_equals(first.left, 160, 'case 4: first cue left');
+            assert_equals(first.top, 90, 'case 4: first cue top');
+            assert_equals(first.width, 20, 'case 4: first cue width');
+            var second = cueBoxRect(video, 1);
+            assert_equals(second.left, 180, 'case 4: second cue moved right');
+            assert_equals(second.top, 90, 'case 4: second cue stays on its line');
+        }],
+    ];
+
+    function next() {
+        if (!checks.length) {
+            t.done();
+            return;
+        }
+        var check = checks.shift();
+        video.onseeked = t.step_func(function() {
+            requestAnimationFrame(t.step_func(function() {
+                requestAnimationFrame(t.step_func(function() {
+                    check[1]();
+                    next();
+                }));
+            }));
+        });
+        video.currentTime = check[0];
+    }
+
+    video.oncanplaythrough = t.step_func(function() {
+        video.oncanplaythrough = null;
+        next();
+    });
+    video.src = '../content/test.ogv';
+});
+</script>

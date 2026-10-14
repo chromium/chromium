@@ -775,6 +775,8 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
       snap_to_lines_ ? computed_line_position
                      : std::numeric_limits<float>::quiet_NaN();
 
+  display_parameters.line_align = line_align_;
+
   DCHECK(std::isfinite(display_parameters.size));
   DCHECK_NE(display_parameters.direction, CSSValueID::kNone);
   DCHECK_NE(display_parameters.writing_mode, CSSValueID::kNone);

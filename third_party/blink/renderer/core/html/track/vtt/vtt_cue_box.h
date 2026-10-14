@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_BOX_H_
 
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
 namespace blink {
 
@@ -50,12 +51,23 @@ class VTTCueBox final : public HTMLDivElement {
   void ApplyCSSProperties(const VTTDisplayParameters&);
 
   float SnapToLinesPosition() const { return snap_to_lines_position_; }
+  LineAlignSetting LineAlign() const { return line_align_; }
   bool IsAdjusted() const { return adjusted_position_ != LayoutUnit::Min(); }
   // IsAdjusted() becomes true after calling this.
   LayoutUnit& StartAdjustment(LayoutUnit new_value,
                               base::PassKey<VttCueLayoutAlgorithm>);
   // IsAdjusted() becomes false after calling this.
   void RevertAdjustment();
+  // Inline-axis counterpart of StartAdjustment() for non-snap-to-lines cues.
+  void StartInlineAdjustment(LayoutUnit new_value,
+                             base::PassKey<VttCueLayoutAlgorithm>);
+  bool HasInlineAdjustment() const {
+    return adjusted_inline_position_ != LayoutUnit::Min();
+  }
+  LayoutUnit AdjustedInlinePosition(
+      base::PassKey<VttCueLayoutAlgorithm>) const {
+    return adjusted_inline_position_;
+  }
   // Returns adjusted_position_ if IsAdjusted(), or the initial position
   // without adjustment otherwise.
   LayoutUnit AdjustedPosition(LayoutUnit full_dimention,
@@ -78,9 +90,12 @@ class VTTCueBox final : public HTMLDivElement {
   // Percentage position before adjustment.
   float original_percent_position_;
 
+  LineAlignSetting line_align_ = LineAlignSetting::kStart;
+
   // Pixel position after adjustment. LayoutUnit::Min() means this box is not
   // adjusted yet.
   LayoutUnit adjusted_position_ = LayoutUnit::Min();
+  LayoutUnit adjusted_inline_position_ = LayoutUnit::Min();
 };
 
 template <>
