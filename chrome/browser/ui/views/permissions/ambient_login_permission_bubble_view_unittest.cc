@@ -7,11 +7,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
@@ -33,6 +35,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -72,6 +75,22 @@ views::ImageView* FindImageViewWithImage(views::View* view) {
 int GetBubbleWidth() {
   return views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+}
+
+// Returns whether `label` is elided at the start, i.e. shows an ellipsis
+// followed by the end of its text.
+testing::AssertionResult IsElidedAtStart(const views::Label& label) {
+  if (!label.IsDisplayTextTruncated()) {
+    return testing::AssertionFailure() << "The text is not elided";
+  }
+  std::u16string_view display_text = label.GetDisplayTextForTesting();
+  if (!display_text.starts_with(gfx::kEllipsisUTF16) ||
+      !label.GetText().ends_with(display_text.substr(1))) {
+    return testing::AssertionFailure()
+           << "The text is not elided at the start: "
+           << base::UTF16ToUTF8(display_text);
+  }
+  return testing::AssertionSuccess();
 }
 
 class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
@@ -752,6 +771,10 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, LongTextIsElided) {
     ASSERT_NE(label, nullptr);
     EXPECT_TRUE(label->IsDisplayTextTruncated());
   }
+  // Unlike an IdP domain, the provider name is elided at the end.
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[1])
+                ->GetElideBehavior(),
+            gfx::ELIDE_TAIL);
 
   // The buttons are neither shrunk nor pushed out of the bubble.
   views::View* sign_in_button = bubble->children()[2].get();
@@ -814,6 +837,94 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, LongTextIsElidedInExpandedList) {
     ASSERT_NE(label, nullptr);
     EXPECT_TRUE(label->IsDisplayTextTruncated());
   }
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, OnlyIdpNameIsElidedAtStart) {
+  // The IdP name is a domain, so the end stays visible. Other text is still
+  // elided at the end.
+  const std::u16string long_idp_name =
+      std::u16string(200, u'a') + u"-idp.example";
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      // The IdP name is shown below the account name and the email.
+      {long_idp_name, u"Carol", u"carol@example.com",
+       GURL("https://idp.example")},
+      // The IdP name is shown below the email.
+      {long_idp_name, /*account_name=*/u"", u"dave@example.com",
+       GURL("https://idp.example")},
+      // There is no IdP name to show below the account name and the email.
+      {/*idp_name=*/u"", u"Erin", u"erin@example.com",
+       GURL("https://idp.example")}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(), base::DoNothing()));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The collapsed bubble shows the IdP name below the account name.
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* text_container = bubble->children()[1].get();
+  ASSERT_EQ(text_container->children().size(), 2u);
+  auto* idp_label =
+      views::AsViewClass<views::Label>(text_container->children()[1]);
+  ASSERT_NE(idp_label, nullptr);
+  EXPECT_TRUE(IsElidedAtStart(*idp_label));
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  views::View* list_view = scroll_view->contents();
+  ASSERT_NE(list_view, nullptr);
+  ASSERT_EQ(list_view->children().size(), 3u);
+
+  HoverButton* row0 = views::AsViewClass<HoverButton>(list_view->children()[0]);
+  ASSERT_NE(row0, nullptr);
+  views::View* row0_labels = row0->title()->parent();
+  ASSERT_EQ(row0_labels->children().size(), 3u);
+  auto* row0_email_label =
+      views::AsViewClass<views::Label>(row0_labels->children()[1]);
+  ASSERT_NE(row0_email_label, nullptr);
+  EXPECT_EQ(row0_email_label->GetElideBehavior(), gfx::ELIDE_TAIL);
+  auto* row0_idp_label =
+      views::AsViewClass<views::Label>(row0_labels->children()[2]);
+  ASSERT_NE(row0_idp_label, nullptr);
+  EXPECT_TRUE(IsElidedAtStart(*row0_idp_label));
+
+  HoverButton* row1 = views::AsViewClass<HoverButton>(list_view->children()[1]);
+  ASSERT_NE(row1, nullptr);
+  views::View* row1_labels = row1->title()->parent();
+  ASSERT_EQ(row1_labels->children().size(), 2u);
+  auto* row1_idp_label =
+      views::AsViewClass<views::Label>(row1_labels->children()[1]);
+  ASSERT_NE(row1_idp_label, nullptr);
+  EXPECT_TRUE(IsElidedAtStart(*row1_idp_label));
+
+  HoverButton* row2 = views::AsViewClass<HoverButton>(list_view->children()[2]);
+  ASSERT_NE(row2, nullptr);
+  views::View* row2_labels = row2->title()->parent();
+  ASSERT_EQ(row2_labels->children().size(), 2u);
+  auto* row2_email_label =
+      views::AsViewClass<views::Label>(row2_labels->children()[1]);
+  ASSERT_NE(row2_email_label, nullptr);
+  EXPECT_EQ(row2_email_label->GetElideBehavior(), gfx::ELIDE_TAIL);
 }
 
 }  // namespace

@@ -32,6 +32,9 @@ struct PasskeyOrPasswordCredential {
 
 // Represents a federated sign-in credential option (e.g. from FedCM).
 struct FederatedCredential {
+  // The identity provider's domain formatted for display, e.g. "idp.example".
+  // The prompt elides it at the start, so that the end of the domain stays
+  // visible.
   std::u16string idp_name;
   std::u16string account_name;
   std::u16string email;
