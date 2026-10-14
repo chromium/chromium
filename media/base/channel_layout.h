@@ -230,8 +230,9 @@ class MEDIA_EXPORT ChannelLayoutConfig {
   // Crashes if `channel_layout` and `channels` are incompatible.
   ChannelLayoutConfig(ChannelLayout channel_layout, int channels);
 
-  ChannelLayoutConfig(const ChannelLayoutConfig& other);
-  ChannelLayoutConfig& operator=(const ChannelLayoutConfig& other);
+  constexpr ChannelLayoutConfig(const ChannelLayoutConfig& other) = default;
+  constexpr ChannelLayoutConfig& operator=(const ChannelLayoutConfig& other) =
+      default;
 
   constexpr ~ChannelLayoutConfig() = default;
 

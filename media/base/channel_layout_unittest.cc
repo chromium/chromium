@@ -4,10 +4,14 @@
 
 #include "media/base/channel_layout.h"
 
+#include <type_traits>
+
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+
+static_assert(std::is_trivially_copyable_v<ChannelLayoutConfig>);
 
 TEST(ChannelLayoutTest, ChannelMaskToLayout_StandardLayouts) {
   // Test standard layouts.

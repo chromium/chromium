@@ -369,11 +369,6 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
   NOTREACHED() << "Invalid channel layout provided: " << layout;
 }
 
-ChannelLayoutConfig::ChannelLayoutConfig(const ChannelLayoutConfig& other) =
-    default;
-ChannelLayoutConfig& ChannelLayoutConfig::operator=(
-    const ChannelLayoutConfig& other) = default;
-
 ChannelLayoutConfig::ChannelLayoutConfig(ChannelLayout channel_layout,
                                          int channels)
     : channel_layout_(channel_layout),
