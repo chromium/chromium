@@ -222,7 +222,7 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
       views::AsViewClass<views::MdTextButton>(pill_children[0]);
   ASSERT_TRUE(ask_gemini_btn);
   EXPECT_TRUE(ask_gemini_btn->GetText().empty());
-  EXPECT_EQ(ask_gemini_btn->GetPreferredSize(), gfx::Size(28, 28));
+  EXPECT_EQ(ask_gemini_btn->GetPreferredSize(), gfx::Size(30, 30));
 
   views::test::ButtonTestApi(ask_gemini_btn)
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
