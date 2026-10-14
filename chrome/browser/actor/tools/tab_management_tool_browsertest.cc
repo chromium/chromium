@@ -124,7 +124,9 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
       MakeCloseTabRequest(incognito_tab->GetHandle());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kActionTargetCrossProfile);
+  // The incognito profile has no ActorKeyedService, so its tab has no surface
+  // and is reported as gone.
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
 
   EXPECT_EQ(incognito_tab_count,
             incognito_browser->GetTabStripModel()->count());

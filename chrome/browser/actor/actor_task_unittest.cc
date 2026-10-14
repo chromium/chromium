@@ -820,7 +820,9 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTab) {
                 add_tab_future.GetCallback());
   auto result = add_tab_future.Take();
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
+  // The tab has no surface in this task's profile, so it can't be added and is
+  // reported as gone.
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
   EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
   EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
 }
@@ -836,7 +838,9 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {
                 add_tab_future.GetCallback());
   auto result = add_tab_future.Take();
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
+  // The tab has no surface in this task's profile, so it can't be added and is
+  // reported as gone.
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
   EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
   EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
 }

@@ -403,13 +403,10 @@ class ActorTask : public base::SupportsUserData {
   void DidContentsExitActorControl(ActorControlledTabState* state,
                                    content::WebContents* contents);
 
-  // Returns true if the surface/tab does not exist or belongs to a different
+  // Returns true if the surface does not exist or belongs to a different
   // profile than the task, and logs an error to the journal.
   bool CheckCrossProfileAndLog(ActorSurface* actor_surface,
                                ActorSurfaceHandle actor_surface_handle,
-                               std::string_view method_name);
-  bool CheckCrossProfileAndLog(tabs::TabInterface* tab,
-                               tabs::TabHandle tab_handle,
                                std::string_view method_name);
 
   // Callback from TabInterface for when the WebContents change.

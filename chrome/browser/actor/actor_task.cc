@@ -395,21 +395,25 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   // TODO(b/474410401): ActorTask tabs should be explicitly added by the client.
   if (base::FeatureList::IsEnabled(kGlicEarlyAddTaskTabs)) {
-    absl::flat_hash_set<tabs::TabHandle> tabs_to_add;
+    ActorSurfaceHandleSet actor_surfaces_to_add;
     for (const std::unique_ptr<ToolRequest>& request : actions) {
       CHECK(request);
-      tabs::TabHandle tab = request->GetTabHandle();
-      if (tab != tabs::TabHandle::Null()) {
-        tabs_to_add.insert(tab);
+      // TODO(b/567721071): Filter on the request's surface handle once requests
+      // carry one. Until then a null handle can't tell "targets no page" from
+      // "targets a tab without a surface", which must still fail.
+      if (request->GetTabHandle() != tabs::TabHandle::Null()) {
+        actor_surfaces_to_add.insert(request->GetActorSurfaceHandle());
       }
     }
 
     did_add_tabs_callback_.Reset(base::BindOnce(
         &ActorTask::DidEarlyAddTabs, GetWeakPtr(), std::move(actions)));
     auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
-        tabs_to_add.size(), did_add_tabs_callback_.callback());
-    for (const tabs::TabHandle& tab : tabs_to_add) {
-      AddTab(tab, /*stop_task_on_detach=*/true, add_tabs_barrier);
+        actor_surfaces_to_add.size(), did_add_tabs_callback_.callback());
+    for (const ActorSurfaceHandle& actor_surface_handle :
+         actor_surfaces_to_add) {
+      AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                      add_tabs_barrier);
     }
   } else {
     SetState(State::kActing);
@@ -634,24 +638,6 @@ base::Time ActorTask::GetEndTime() const {
 void ActorTask::AddTab(tabs::TabHandle tab_handle,
                        bool stop_task_on_detach,
                        AddTabCallback callback) {
-  // A tab in a profile without an ActorKeyedService (e.g. incognito) has no
-  // surface, so only the tab can tell "gone" from "cross-profile". When not
-  // under actor control, AddActorSurface() reports that error first.
-  // TODO(b/567721071): Remove once callers pass surface handles, or such tabs
-  // get surfaces, so AddActorSurface() alone can report it.
-  if (IsUnderActorControl()) {
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (CheckCrossProfileAndLog(tab, tab_handle, "ActorTask::AddTab")) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback),
-              MakeResult(
-                  tab ? mojom::ActionResultCode::kActionTargetCrossProfile
-                      : mojom::ActionResultCode::kTabWentAway)));
-      return;
-    }
-  }
   AddActorSurface(ActorSurfaceHandle::From(tab_handle), stop_task_on_detach,
                   std::move(callback));
 }
@@ -765,12 +751,6 @@ void ActorTask::RemoveActorSurface(ActorSurfaceHandle actor_surface_handle) {
 }
 
 void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
-  CHECK(IsUnderActorControl());
-
-  tabs::TabInterface* tab = tab_handle.Get();
-  if (CheckCrossProfileAndLog(tab, tab_handle, "ObserveTabOnce")) {
-    return;
-  }
   ObserveActorSurfaceOnce(ActorSurfaceHandle::From(tab_handle));
 }
 
@@ -1067,21 +1047,6 @@ bool ActorTask::CheckCrossProfileAndLog(ActorSurface* actor_surface,
             .AddError(!actor_surface ? "Tab does not exist"
                                      : "Cross-profile access denied")
             .Build());
-    return true;
-  }
-  return false;
-}
-
-bool ActorTask::CheckCrossProfileAndLog(tabs::TabInterface* tab,
-                                        tabs::TabHandle tab_handle,
-                                        std::string_view method_name) {
-  if (!tab || tab->GetProfile() != GetProfile()) {
-    journal_->Log(GURL(), id(), method_name,
-                  JournalDetailsBuilder()
-                      .Add("tab_id", tab_handle.raw_value())
-                      .AddError(!tab ? "Tab does not exist"
-                                     : "Cross-profile access denied")
-                      .Build());
     return true;
   }
   return false;
