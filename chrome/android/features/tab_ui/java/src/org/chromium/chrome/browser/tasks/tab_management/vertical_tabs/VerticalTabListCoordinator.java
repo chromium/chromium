@@ -1459,10 +1459,17 @@ public class VerticalTabListCoordinator {
      * <p>A view has a single {@code OnDragListener} slot. Nothing else in Chrome sets one on a
      * decor view; do not add a second one without merging it with this.
      *
+     * <p>Not installed with {@link ChromeFeatureList#SIDE_UI_ALLOW_PAUSE}: the rail's Side UI
+     * container is then frozen for the duration of a drag started from the rail (see {@link
+     * VerticalTabsSideUiCoordinator}), so the rail's listener is never detached mid-drag and {@code
+     * ACTION_DRAG_ENDED} reaches it on its normal path. TODO(crbug.com/556140903): Remove the relay
+     * once the flag ships.
+     *
      * @param dragHandler The drag handler to forward {@code ACTION_DRAG_ENDED} to.
      */
     private void installDragEndRelay(TabSwitcherDragHandler dragHandler) {
         removeDragEndRelay();
+        if (ChromeFeatureList.sSideUiAllowPause.isEnabled()) return;
 
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
