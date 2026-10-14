@@ -33,6 +33,7 @@ suite('ReadOnlyOmniboxFocus', function() {
     selection: null,
     textIsUrl: false,
     userInputInProgress: false,
+    hasTemporaryText: false,
   };
 
   function getTextInput(): HTMLInputElement|HTMLTextAreaElement {

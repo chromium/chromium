@@ -29,6 +29,7 @@ suite('ReadonlyOmnibox', function() {
     selection: null,
     textIsUrl: false,
     userInputInProgress: false,
+    hasTemporaryText: false,
   };
 
   function getTextPieces(): NodeListOf<HTMLElement> {
@@ -1130,6 +1131,43 @@ suite('ReadonlyOmnibox', function() {
     // And it's selecting the second copy, not the first one.
     assertEquals(9, input.selectionStart);
     assertEquals(13, input.selectionEnd);
+  });
+
+  test('Do not unelide temporary text', async () => {
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'suggestion',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      inlineAutocompletion: '',
+      formattedFullUrl: '',
+      selection: {start: 10, end: 10},
+      textIsUrl: false,
+      hasTemporaryText: true,
+    };
+    await microtasksFinished();
+
+    // Simulate user pressing left button. The fake left key press won't
+    // actually update the selection, but the key up will make us check it w/o
+    // needing focus.
+    const input = getTextInput();
+    fakeKeyDown('ArrowLeft');
+    input.setSelectionRange(9, 9);
+    input.dispatchEvent(new KeyboardEvent('keyup', {key: 'ArrowLeft'}));
+    await microtasksFinished();
+
+    // This should send a selection input update, which is not an unelision.
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].textInput);
+    assertEquals('suggestion', args[0].textInput.text);
+    assertEquals(9, args[0].textInput.selection.start);
+    assertEquals(9, args[0].textInput.selection.end);
+    assertFalse(args[0].textInput.unelision);
   });
 
   test('Single touch tap selects all and triggers zero-suggest', async () => {

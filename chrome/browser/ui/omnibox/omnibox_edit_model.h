@@ -185,6 +185,7 @@ class OmniboxEditModel {
                          bool* write_url);
 
   bool user_input_in_progress() const { return user_input_in_progress_; }
+  bool has_temporary_text() const { return has_temporary_text_; }
 
   std::u16string user_text() const { return user_text_; }
 

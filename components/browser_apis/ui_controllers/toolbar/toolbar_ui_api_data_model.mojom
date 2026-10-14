@@ -654,6 +654,9 @@ struct OmniboxViewState {
   // This is the same as `user_input_in_progress` in LocationBarFlags, but also
   // included here for convenience.
   bool user_input_in_progress = false;
+
+  // True if temporary text is being displayed, i.e. from suggestions.
+  bool has_temporary_text = false;
 };
 
 struct LocationBarFlags {

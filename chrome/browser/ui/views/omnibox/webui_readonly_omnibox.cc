@@ -522,6 +522,7 @@ WebUIReadOnlyOmnibox::ComputeMojoState() {
   state->a11y_friendly_suggestion_text = friendly_accessible_label_;
   state->user_input_in_progress =
       controller()->edit_model()->user_input_in_progress();
+  state->has_temporary_text = controller()->edit_model()->has_temporary_text();
 
   // Figure out all the breakpoints so we can go through text span-by-span.
   std::vector<size_t> breakpoints;

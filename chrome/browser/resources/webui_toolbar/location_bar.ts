@@ -60,6 +60,7 @@ export function createDefaultLocationBarState(): LocationBarState {
       selection: null,
       textIsUrl: false,
       userInputInProgress: false,
+      hasTemporaryText: false,
     },
     locationBarFlags: {
       userInputInProgress: false,

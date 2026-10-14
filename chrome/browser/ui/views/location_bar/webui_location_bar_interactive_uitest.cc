@@ -1561,6 +1561,31 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ClickSelectsAll) {
       WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)));
 }
 
+// Make sure that interacting with a zero-suggest suggestion doesn't
+// mess things up by trying to do an unelide.
+// See crbug.com/572584251
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ZeroSuggestNoEnlide) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // Unfocus, want the popup that shows from focus in.
+      FocusTab(),
+      // Go to a URL that will give us a popup.
+      NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test", View::kStatic),
+      // Click to focus location bar.
+      MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitTillOmniboxViewFocus(),
+      WaitForPopupShow(),
+      // Select a suggestion from the zero-suggest dropdown, and then change
+      // caret position in it (which is an action that can trigger unelide).
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_DOWN)),
+      WaitTillOmniboxViewText("Ask Google about this page"),
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_LEFT)),
+      WaitTillOmniboxViewSelection("", gfx::Range(25, 25)));
+}
+
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, Placeholder) {
   FAILS_IN_MODE(Mode::kFull, "Full doesn't seem to have the AIM placeholder");
   RunTestSequence(
