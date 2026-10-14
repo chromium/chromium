@@ -34,6 +34,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -164,8 +165,20 @@ void OrganizerTrayView::UpdatePanelClipAndShadow() {
 bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point& point) {
   const auto in_controls =
       views::View::ConvertPointToTarget(this, controls_view_, point);
-  return controls_view_->HitTestPoint(in_controls) &&
-         controls_view_->IsPositionInWindowCaption(in_controls);
+  if (controls_view_->HitTestPoint(in_controls) &&
+      controls_view_->IsPositionInWindowCaption(in_controls)) {
+    return true;
+  }
+
+  if (auto* panel = views::AsViewClass<OrganizerPanelView>(panel_view_)) {
+    const auto in_panel = views::View::ConvertPointToTarget(this, panel, point);
+    if (panel->HitTestPoint(in_panel) &&
+        panel->IsPositionInWindowCaption(in_panel)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void OrganizerTrayView::SetTopLeadingExclusion(

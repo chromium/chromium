@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
@@ -329,6 +330,18 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     views::View::ConvertPointToTarget(this, bottom_button_container_,
                                       &point_in_child);
     return bottom_button_container_->IsPositionInWindowCaption(point_in_child);
+  }
+
+  if (organizer_panel_view_ && IsHitInView(organizer_panel_view_, point)) {
+    const gfx::Point point_in_child =
+        views::View::ConvertPointToTarget(this, organizer_panel_view_, point);
+    if (auto* panel = views::AsViewClass<OrganizerPanelView>(
+            organizer_panel_view_.get())) {
+      if (panel->IsPositionInWindowCaption(point_in_child)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // For any of the other children, absorb the click as non window caption.

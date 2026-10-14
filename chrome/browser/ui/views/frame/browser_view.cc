@@ -4559,6 +4559,15 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
            WidgetOwnedByAnchorContainsPoint(point_in_browser_view_coords);
   }
 
+  if (organizer_tray_ && organizer_tray_->GetVisible()) {
+    const gfx::Point point_in_tray_coords = views::View::ConvertPointToTarget(
+        GetWidget()->GetRootView(), organizer_tray_, location);
+    if (organizer_tray_->HitTestPoint(point_in_tray_coords) &&
+        organizer_tray_->IsPositionInWindowCaption(point_in_tray_coords)) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -4646,8 +4655,8 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
       return HTCLIENT;
     }
 
-    // The vertical tabstrip is not part of the overlay in immersive mode and
-    // must be tested separately.
+    // The vertical tabstrip and organizer tray are not part of the overlay in
+    // immersive mode and must be tested separately.
     if (vertical_tab_strip_region_view_ &&
         vertical_tab_strip_region_view_->GetVisible()) {
       gfx::Point test_point(point);
@@ -4655,6 +4664,16 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
                            &test_point)) {
         if (vertical_tab_strip_region_view_->IsPositionInWindowCaption(
                 test_point)) {
+          return HTCAPTION;
+        }
+        return HTCLIENT;
+      }
+    }
+
+    if (organizer_tray_ && organizer_tray_->GetVisible()) {
+      gfx::Point test_point(point);
+      if (ConvertedHitTest(parent(), organizer_tray_, &test_point)) {
+        if (organizer_tray_->IsPositionInWindowCaption(test_point)) {
           return HTCAPTION;
         }
         return HTCLIENT;

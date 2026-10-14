@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -23,11 +24,15 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/draggable_region.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -62,8 +67,19 @@ class OrganizerPanelWebView : public views::WebView {
                                                        GetFocusManager());
   }
 
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override {
+    draggable_region_ = gfx::DraggableRegionsToSkRegion(regions);
+  }
+
+  bool IsPositionInWindowCaption(const gfx::Point& point) const {
+    return draggable_region_.contains(point.x(), point.y());
+  }
+
  private:
   views::UnhandledKeyboardEventHandler keyboard_event_handler_;
+  SkRegion draggable_region_;
 };
 
 BEGIN_METADATA(OrganizerPanelWebView)
@@ -79,6 +95,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     web_view_ = AddChildView(
         std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
     webui::SetBrowserWindowInterface(web_view_->GetWebContents(), &browser);
+    web_view_->GetWebContents()->SetSupportsDraggableRegions(true);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         web_view_->GetWebContents(), SK_ColorTRANSPARENT);
     web_view_->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
@@ -123,9 +140,23 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     }
   }
 
+  bool IsPositionInWindowCaption(const gfx::Point& point) const override {
+    if (!web_view_) {
+      return false;
+    }
+    const auto* controller =
+        tabs::VerticalTabStripStateController::From(&browser_.get());
+    if (!controller || !controller->ShouldDisplayVerticalTabs()) {
+      return false;
+    }
+    const gfx::Point point_in_webview =
+        views::View::ConvertPointToTarget(this, web_view_, point);
+    return web_view_->IsPositionInWindowCaption(point_in_webview);
+  }
+
  private:
   const raw_ref<BrowserWindowInterface> browser_;
-  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<OrganizerPanelWebView> web_view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
   views::ViewTracker previously_focused_view_;
 };
@@ -170,6 +201,11 @@ OrganizerPanelView::OrganizerPanelView(BrowserWindowInterface& browser)
 OrganizerPanelView::~OrganizerPanelView() = default;
 
 bool OrganizerPanelView::IsInExtensionModeForTesting() const {
+  return false;
+}
+
+bool OrganizerPanelView::IsPositionInWindowCaption(
+    const gfx::Point& point) const {
   return false;
 }
 

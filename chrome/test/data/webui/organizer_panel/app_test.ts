@@ -8,7 +8,7 @@ import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -175,12 +175,15 @@ suite('OrganizerPanelAppTest', () => {
         assertEquals('0', searchFieldStyle.flexShrink);
 
         const listStyle = window.getComputedStyle(app.$.list);
-        assertEquals('1', listStyle.flexGrow);
+        assertEquals('0', listStyle.flexGrow);
         assertEquals('auto', listStyle.overflowY);
         assertEquals('hidden', listStyle.overflowX);
         assertEquals('none', listStyle.overscrollBehavior);
         assertEquals('8px', listStyle.paddingLeft);
         assertEquals('8px', listStyle.paddingRight);
+
+        const dragRegionStyle = window.getComputedStyle(app.$.dragRegion);
+        assertEquals('1', dragRegionStyle.flexGrow);
 
         app.style.height = '100px';
         const dummy = document.createElement('div');
@@ -198,6 +201,19 @@ suite('OrganizerPanelAppTest', () => {
         assertEquals(searchFieldRectBefore.top, searchFieldRectAfter.top);
       });
 
+  test('drag region expands to fill unused height', async () => {
+    app.style.height = '500px';
+    await microtasksFinished();
+
+    const dragRegionRect = app.$.dragRegion.getBoundingClientRect();
+    const listRect = app.$.list.getBoundingClientRect();
+    const appRect = app.getBoundingClientRect();
+
+    assertTrue(dragRegionRect.height > 0);
+    assertEquals(appRect.bottom, dragRegionRect.bottom);
+    assertEquals(listRect.bottom, dragRegionRect.top);
+  });
+
   test('right clicking app shows context menu', async () => {
     assertFalse(app.$.menu.open);
 
@@ -212,8 +228,6 @@ suite('OrganizerPanelAppTest', () => {
 
     assertTrue(event.defaultPrevented);
     assertTrue(app.$.menu.open);
-    assertEquals(
-        0, mockOrganizerPanelHandler.getCallCount('showSystemContextMenu'));
 
     const expandAllButton =
         app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton');
@@ -242,24 +256,19 @@ suite('OrganizerPanelAppTest', () => {
         closeButton.textContent.trim());
   });
 
-  test('shows system context menu when right clicking below app', async () => {
-    const appRect = app.getBoundingClientRect();
-    const clickX = 50;
-    const clickY = Math.ceil(appRect.bottom) + 20;
-
+  test('right clicking drag region does not show menu', async () => {
     const event = new MouseEvent('contextmenu', {
       bubbles: true,
       cancelable: true,
-      clientX: clickX,
-      clientY: clickY,
+      composed: true,
+      clientX: 50,
+      clientY: 100,
     });
-    window.dispatchEvent(event);
+    app.$.dragRegion.dispatchEvent(event);
+    await microtasksFinished();
 
     assertTrue(event.defaultPrevented);
     assertFalse(app.$.menu.open);
-    const point =
-        await mockOrganizerPanelHandler.whenCalled('showSystemContextMenu');
-    assertDeepEquals({x: clickX, y: clickY}, point);
   });
 
   test(

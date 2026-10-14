@@ -17,6 +17,7 @@ export function getHtml(this: OrganizerPanelAppElement) {
 <organizer-list id="list" .sectionDelegates="${this.sectionDelegates_}"
     .searchQuery="${this.searchQuery_}">
 </organizer-list>
+<div id="dragRegion"></div>
 <cr-action-menu id="menu">
   ${this.allSectionsExpanded_ ? html`
     <button id="collapseAllButton" class="dropdown-item"

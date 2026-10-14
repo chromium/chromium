@@ -10,7 +10,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  height: 100%;
   user-select: none;
 }
 
@@ -34,7 +34,6 @@
 
 #list {
   box-sizing: border-box;
-  flex-grow: 1;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -52,4 +51,10 @@
   background-clip: content-box;
   border: solid 1.5px transparent;
   border-radius: 100px;
+}
+
+#dragRegion {
+  app-region: drag;
+  -webkit-app-region: drag;
+  flex-grow: 1;
 }

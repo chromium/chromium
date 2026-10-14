@@ -14,6 +14,10 @@
 
 class BrowserWindowInterface;
 
+namespace gfx {
+class Point;
+}
+
 // Holds the organizer panel and clips it during animations.
 //
 // Specific panels are created for normal organizer and other prototype
@@ -32,6 +36,10 @@ class OrganizerPanelView : public views::View {
   ~OrganizerPanelView() override;
 
   virtual bool IsInExtensionModeForTesting() const;
+
+  // Returns true if `point` is in an area that should be treated as window
+  // caption (for dragging the window).
+  virtual bool IsPositionInWindowCaption(const gfx::Point& point) const;
 
  protected:
   explicit OrganizerPanelView(BrowserWindowInterface& browser);

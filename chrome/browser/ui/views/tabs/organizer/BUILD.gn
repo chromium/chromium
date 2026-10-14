@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/interaction:impl",
     "//chrome/test:test_support",

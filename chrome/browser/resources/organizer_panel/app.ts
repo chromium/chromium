@@ -27,6 +27,7 @@ import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
 
 export interface OrganizerPanelAppElement {
   $: {
+    dragRegion: HTMLElement,
     list: OrganizerListElement,
     menu: CrActionMenuElement,
     searchField: CrToolbarSearchFieldElement,
@@ -76,18 +77,14 @@ export class OrganizerPanelAppElement extends CrLitElement {
   };
   private onContextMenu_: (e: MouseEvent) => void = (e: MouseEvent) => {
     e.preventDefault();
-    if (e.clientY > this.getBoundingClientRect().bottom) {
-      this.browserProxy_.handler.showSystemContextMenu({
-        x: Math.round(e.clientX),
-        y: Math.round(e.clientY),
-      });
-    } else {
-      this.allSectionsExpanded_ = this.$.list.areAllSectionsExpanded();
-      this.$.menu.showAtPosition({
-        top: e.clientY,
-        left: e.clientX,
-      });
+    if (e.composedPath().includes(this.$.dragRegion)) {
+      return;
     }
+    this.allSectionsExpanded_ = this.$.list.areAllSectionsExpanded();
+    this.$.menu.showAtPosition({
+      top: e.clientY,
+      left: e.clientX,
+    });
   };
 
   override connectedCallback() {
