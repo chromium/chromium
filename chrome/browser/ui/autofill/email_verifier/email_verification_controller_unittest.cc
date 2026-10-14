@@ -568,6 +568,7 @@ TEST_F(EmailVerificationControllerTest,
             EmailVerificationControllerTestApi::PromptState::kLoading);
   EXPECT_EQ(test_api(controller()).loading_start_time(),
             initial_loading_start_time);
+  EXPECT_EQ(popup_controller().element_bounds(), kDefaultBounds);
   histogram_tester.ExpectBucketCount(
       "Blink.Evp.PermissionUi.Status",
       EmailVerificationPermissionUiStatus::kOverlappingPrompt, 1);

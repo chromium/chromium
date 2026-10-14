@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -35,13 +36,22 @@ void EmailVerificationController::ShowPopup(
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsFirstRunRequestInFlight()) {
-    DismissPopup();
-    hide_popup_timer_.Stop();
-    toast_timer_.Stop();
-    loading_start_time_.reset();
-    prompt_state_ = PromptState::kShowing;
+  if (IsFirstRunRequestInFlight()) {
+    base::UmaHistogramEnumeration(
+        "Blink.Evp.PermissionUi.Status",
+        AutofillClient::EmailVerificationPermissionUiStatus::
+            kOverlappingPrompt);
+    std::move(callback).Run(
+        AutofillClient::EmailVerificationPermissionUiStatus::
+            kOverlappingPrompt);
+    return;
   }
+
+  DismissPopup();
+  hide_popup_timer_.Stop();
+  toast_timer_.Stop();
+  loading_start_time_.reset();
+  prompt_state_ = PromptState::kShowing;
 
   popup_controller_.Show(
       element_bounds_in_screen_space, issuer_site, email,
