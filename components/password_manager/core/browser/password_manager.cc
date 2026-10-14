@@ -1317,11 +1317,9 @@ void PasswordManager::OnNonPasswordLoginDetected() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPreventAPCOnFederatedLogin)) {
-    PasswordFormManager* manager = GetSubmittedManager();
-    if (manager) {
-      manager->SetNonPasswordLoginDetected(true);
-    }
+  PasswordFormManager* manager = GetSubmittedManager();
+  if (manager) {
+    manager->SetNonPasswordLoginDetected(true);
   }
 }
 

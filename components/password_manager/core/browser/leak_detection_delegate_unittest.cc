@@ -836,8 +836,6 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
 }
 
 TEST_F(LeakDetectionDelegateTest, ApcNotSuggestedWhenFederatedLoginDetected) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPreventAPCOnFederatedLogin);
   const PasswordForm form = CreateTestForm();
 
   MockPasswordChangeService mock_password_change_service;

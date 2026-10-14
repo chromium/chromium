@@ -187,8 +187,6 @@ BASE_FEATURE(kPasswordSignInInContextErrorResolution,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kPreventAPCOnFederatedLogin, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreventNonHttpSuggestionsInHttpManualFallbackFlows,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
