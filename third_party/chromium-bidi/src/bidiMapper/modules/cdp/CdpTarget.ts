@@ -281,14 +281,14 @@ export class CdpTarget {
       this.#cdpClient.sendCommand('Runtime.enable'),
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
-      this.#cdpClient
-        .sendCommand('Network.enable', {
-          // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
-          // messages.
-          enableDurableMessages: config.disableNetworkDurableMessages !== true,
-          maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
-        })
-        .then(() => this.toggleNetworkIfNeeded()),
+      this.#cdpClient.sendCommand('Network.enable', {
+        // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
+        // messages.
+        enableDurableMessages: config.disableNetworkDurableMessages !== true,
+        maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+      }),
+      // Schedule network and Fetch configuration before unpausing the target so initial popup requests are intercepted.
+      this.toggleNetworkIfNeeded(),
       this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,
         waitForDebuggerOnStart: true,

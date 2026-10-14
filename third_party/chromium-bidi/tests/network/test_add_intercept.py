@@ -404,3 +404,85 @@ async def test_add_intercept_blocks(
             "type": "event",
         }
     )
+
+
+@pytest.mark.asyncio
+async def test_add_intercept_no_contexts_intercepts_popup(
+    websocket,
+    context_id,
+    html,
+):
+    # Create opener and popup test URLs.
+    url = html()
+    popup_url = html()
+
+    # Subscribe to both request and completion events so unblocked requests fail fast.
+    await subscribe(
+        websocket, ["network.beforeRequestSent", "network.responseCompleted"]
+    )
+
+    # Register a global intercept with no contexts specified.
+    result = await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [
+                    {
+                        "type": "string",
+                        "pattern": popup_url,
+                    },
+                ],
+            },
+        },
+    )
+
+    # Verify the intercept ID is returned.
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+    # Navigate the opener browsing context before opening the popup.
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "complete",
+            },
+        },
+    )
+
+    # Open the popup via window.open to trigger its initial navigation request.
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.open('{popup_url}')",
+                "target": {"context": context_id},
+                "awaitPromise": False,
+                "userActivation": True,
+            },
+        },
+    )
+
+    # Wait for the first network event emitted for the popup navigation.
+    event_response = await wait_for_event(websocket, "network.")
+    # Verify the popup's initial request is intercepted at beforeRequestSent.
+    assert event_response == AnyExtending(
+        {
+            "method": "network.beforeRequestSent",
+            "params": {
+                "intercepts": [result["intercept"]],
+                "isBlocked": True,
+                "request": {
+                    "url": popup_url,
+                },
+            },
+            "type": "event",
+        }
+    )
