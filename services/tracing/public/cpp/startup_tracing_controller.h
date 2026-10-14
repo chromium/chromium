@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
   static void OverrideDefaultBasenameForTest(std::string basename,  // IN-TEST
                                              ExtensionType extension_type);
 
+  // Returns the output file path where the startup trace will be written.
+  base::FilePath GetOutputPath() const;
+
   bool is_finished_for_testing() const { return state_ == State::kStopped; }
 
  private:
@@ -100,9 +103,8 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
 
   void OnStoppedOnUIThread();
 
-  base::FilePath BasenameToPath(std::string_view basename);
-  base::FilePath RebasePathIfNeeded(const base::FilePath& path);
-  base::FilePath GetOutputPath();
+  base::FilePath BasenameToPath(std::string_view basename) const;
+  base::FilePath RebasePathIfNeeded(const base::FilePath& path) const;
 
   enum class State {
     kNotEnabled,

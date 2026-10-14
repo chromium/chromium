@@ -386,7 +386,7 @@ class TracingSessionCoordinator {
 };
 
 base::FilePath StartupTracingController::BasenameToPath(
-    std::string_view basename) {
+    std::string_view basename) const {
 #if BUILDFLAG(IS_ANDROID)
   if (android_path_generator_callback_) {
     return android_path_generator_callback_.Run(basename);
@@ -401,7 +401,7 @@ base::FilePath StartupTracingController::BasenameToPath(
 }
 
 base::FilePath StartupTracingController::RebasePathIfNeeded(
-    const base::FilePath& path) {
+    const base::FilePath& path) const {
 #if BUILDFLAG(IS_IOS)
   // Relative paths specified at the command line are rebased to the app's user
   // documents directory on iOS to avoid issues with file system permissions.
@@ -430,13 +430,15 @@ StartupTracingController::~StartupTracingController() {
   CHECK_NE(state_, State::kRunning);
 }
 
-base::FilePath StartupTracingController::GetOutputPath() {
+base::FilePath StartupTracingController::GetOutputPath() const {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  base::FilePath path_from_config =
-      tracing::TraceStartupConfig::GetInstance().GetResultFile();
-  if (!path_from_config.empty()) {
-    return RebasePathIfNeeded(path_from_config);
+  if (tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
+    base::FilePath path_from_config =
+        tracing::TraceStartupConfig::GetInstance().GetResultFile();
+    if (!path_from_config.empty()) {
+      return RebasePathIfNeeded(path_from_config);
+    }
   }
 
   // If --trace-startup-file is specified, use it.
@@ -467,13 +469,15 @@ base::FilePath StartupTracingController::GetOutputPath() {
     basename = "chrome.pftrace";
   } else if (GetGlobalDefaultBasenameExtensionType() ==
              ExtensionType::kAppendAppropriate) {
-    switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
-      case tracing::TraceStartupConfig::OutputFormat::kLegacyJSON:
-        basename += ".json";
-        break;
-      case tracing::TraceStartupConfig::OutputFormat::kProto:
-        basename += ".pftrace";
-        break;
+    if (tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
+      switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
+        case tracing::TraceStartupConfig::OutputFormat::kLegacyJSON:
+          basename += ".json";
+          break;
+        case tracing::TraceStartupConfig::OutputFormat::kProto:
+          basename += ".pftrace";
+          break;
+      }
     }
   }
 

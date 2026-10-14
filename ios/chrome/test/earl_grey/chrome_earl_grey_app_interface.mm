@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 
 #import <algorithm>
+#import <memory>
 #import <string>
 
 #import "base/apple/foundation_util.h"
@@ -17,6 +18,7 @@
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
+#import "base/no_destructor.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -84,6 +86,7 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
+#import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -122,6 +125,7 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
+#import "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #import "ui/base/device_form_factor.h"
 
 using base::test::ios::kWaitForActionTimeout;
@@ -132,6 +136,16 @@ using collaboration::messaging::MessagingBackendService;
 using collaboration::messaging::MessagingBackendServiceFactory;
 
 namespace {
+
+struct ManualTracingState {
+  std::unique_ptr<perfetto::TracingSession> session;
+  base::FilePath trace_file_path;
+};
+
+ManualTracingState& GetManualTracingState() {
+  static base::NoDestructor<ManualTracingState> state;
+  return *state;
+}
 
 // The timeout for the MessagingBackendService initialization. This is taking
 // a long time on the bots, so the value is pretty large.
@@ -221,6 +235,83 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 
 + (BOOL)isRTL {
   return UseRTLLayout();
+}
+
++ (NSString*)stopStartupTracing {
+  if (IOSTracingController::HasInstance()) {
+    base::FilePath path =
+        IOSTracingController::GetInstance().StopStartupTracingForTesting();
+    return base::apple::FilePathToNSString(path);
+  }
+  return nil;
+}
+
++ (BOOL)startManualTracing {
+  ManualTracingState& state = GetManualTracingState();
+  if (state.session) {
+    return NO;
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  perfetto::TraceConfig config =
+      IOSTracingController::GetInstance().CreateDeveloperTraceConfig();
+  state.trace_file_path =
+      base::apple::GetUserDocumentPath().AppendASCII("manual_trace.pftrace");
+
+  // Remove any stale trace file from a previous session.
+  base::DeleteFile(state.trace_file_path);
+
+  base::File file(state.trace_file_path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    return NO;
+  }
+
+  state.session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kInProcessBackend);
+  state.session->Setup(config, file.TakePlatformFile());
+  state.session->StartBlocking();
+  return YES;
+}
+
++ (NSString*)stopManualTracing {
+  ManualTracingState& state = GetManualTracingState();
+  if (!state.session) {
+    return nil;
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  state.session->FlushBlocking(/*timeout_ms=*/10000);
+  state.session->StopBlocking();
+
+  state.session.reset();
+  return base::apple::FilePathToNSString(state.trace_file_path);
+}
+
++ (BOOL)isTraceFileReadyAtPath:(NSString*)filePathString {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath path = base::apple::NSStringToFilePath(filePathString);
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  return base::PathExists(path) && file_size.has_value() &&
+         file_size.value() > 0;
+}
+
++ (NSData*)traceDataForPath:(NSString*)filePathString {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath path = base::apple::NSStringToFilePath(filePathString);
+  std::string content;
+  if (!base::ReadFileToString(path, &content)) {
+    return nil;
+  }
+  return [NSData dataWithBytes:content.data() length:content.size()];
+}
+
++ (BOOL)removeTraceFileAtPath:(NSString*)filePathString {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath path = base::apple::NSStringToFilePath(filePathString);
+  return base::DeleteFile(path);
 }
 
 + (BOOL)isWindowedMode {

@@ -67,6 +67,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Wait until `matcher` is accessible (not nil) on the device.
 - (void)waitForMatcher:(id<GREYMatcher>)matcher;
 
+// Stops startup tracing, flushes trace file to disk, and returns trace file
+// path.
+- (NSString*)stopStartupTracing;
+
+// Starts manual tracing. Returns YES on success.
+- (BOOL)startManualTracing;
+
+// Stops manual tracing, flushes trace file to disk, and returns trace file
+// path.
+- (NSString*)stopManualTracing;
+
+// Returns YES if the trace file at `filePath` exists and has a size greater
+// than 0.
+- (BOOL)isTraceFileReadyAtPath:(NSString*)filePath;
+
+// Returns the content of the trace file at `filePath` as NSData, or nil if
+// reading failed.
+- (NSData*)traceDataForPath:(NSString*)filePath;
+
+// Removes the trace file at `filePath`. Returns YES if successfully deleted.
+- (BOOL)removeTraceFileAtPath:(NSString*)filePath;
+
 // Returns YES if `matcher` is sufficiently_visible;
 - (BOOL)isMatcherSufficientlyVisible:(id<GREYMatcher>)matcher;
 

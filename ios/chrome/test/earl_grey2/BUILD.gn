@@ -80,6 +80,7 @@ _integration_eg2tests_deps = [
   "//ios/chrome/browser/sync/model/prefs:eg2_tests",
   "//ios/chrome/browser/sync/test:eg2_tests",
   "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
+  "//ios/chrome/browser/tracing:eg2_tests",
   "//ios/chrome/browser/variations/model:eg2_tests",
   "//ios/chrome/browser/webauthn/test:eg2_tests",
 ]

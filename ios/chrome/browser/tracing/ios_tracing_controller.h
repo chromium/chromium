@@ -48,6 +48,10 @@ class IOSTracingController : public tracing::BackgroundTracingManager {
   // using a large 50MB in-memory buffer.
   perfetto::TraceConfig CreateDeveloperTraceConfig();
 
+  // Stops the active startup tracing session and flushes the trace file to
+  // disk. Returns the path of the trace file. For testing only.
+  base::FilePath StopStartupTracingForTesting();
+
   void SetLatestIncognitoLaunchedForTesting(base::TimeTicks timestamp);
 
   tracing::StartupTracingController* startup_tracing_controller() {

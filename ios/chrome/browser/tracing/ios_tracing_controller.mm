@@ -14,7 +14,6 @@
 #import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/trace_event/trace_config.h"
@@ -67,9 +66,11 @@ IOSTracingController::IOSTracingController(
           ? std::move(task_runner)
           : base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
 
+  // Pass nullptr for `io_task_runner` because iOS uses in-process tracing only
+  // (no multi-process Mojo coordination required).
   startup_tracing_controller_ =
       std::make_unique<tracing::StartupTracingController>(
-          base::SingleThreadTaskRunner::GetCurrentDefault());
+          /*io_task_runner=*/nullptr);
 }
 
 IOSTracingController::~IOSTracingController() {
@@ -122,6 +123,13 @@ perfetto::TraceConfig IOSTracingController::CreateDeveloperTraceConfig() {
     buffer.set_fill_policy(perfetto::TraceConfig::BufferConfig::RING_BUFFER);
   }
   return perfetto_config;
+}
+
+base::FilePath IOSTracingController::StopStartupTracingForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracing::StartupTracingController::EmergencyStop();
+  CHECK(startup_tracing_controller_);
+  return startup_tracing_controller_->GetOutputPath();
 }
 
 void IOSTracingController::SetLatestIncognitoLaunchedForTesting(  // IN-TEST

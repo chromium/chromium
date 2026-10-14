@@ -356,3 +356,74 @@ TEST_F(IOSTracingControllerTest, IsRecordingAllowedOTRProtection) {
   instance.SetLatestIncognitoLaunchedForTesting(now - base::Seconds(5));
   EXPECT_TRUE(IsRecordingAllowed(instance, now));
 }
+
+// Tests that StopStartupTracingForTesting returns the path specified by the
+// kTraceStartupFile switch when an absolute path is present.
+TEST_F(IOSTracingControllerTest, StopStartupTracingWithCustomFileSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::FilePath custom_path =
+      base::FilePath(FILE_PATH_LITERAL("/tmp/custom_startup_trace.pftrace"));
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kTraceStartupFile, custom_path);
+
+  // Reset and recreate the controller with the new command line switches.
+  tracing_controller_.reset();
+  tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>(
+      *scoped_command_line.GetProcessCommandLine());
+
+  base::FilePath returned_path =
+      IOSTracingController::GetInstance().StopStartupTracingForTesting();
+  EXPECT_EQ(returned_path, custom_path);
+}
+
+// Tests that StopStartupTracingForTesting rebases a relative path specified by
+// the kTraceStartupFile switch to the user documents directory.
+TEST_F(IOSTracingControllerTest, StopStartupTracingWithRelativeFileSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::FilePath relative_path =
+      base::FilePath(FILE_PATH_LITERAL("relative_startup_trace.pftrace"));
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kTraceStartupFile, relative_path);
+
+  // Reset and recreate the controller with the new command line switches.
+  tracing_controller_.reset();
+  tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>(
+      *scoped_command_line.GetProcessCommandLine());
+
+  base::FilePath expected_path = base::apple::GetUserDocumentPath().AppendASCII(
+      relative_path.AsUTF8Unsafe());
+  base::FilePath returned_path =
+      IOSTracingController::GetInstance().StopStartupTracingForTesting();
+  EXPECT_EQ(returned_path, expected_path);
+}
+
+// Tests that StopStartupTracingForTesting returns the default document path
+// when the kTraceStartupFile switch is not provided.
+TEST_F(IOSTracingControllerTest, StopStartupTracingWithDefaultFile) {
+  base::FilePath expected_path =
+      base::apple::GetUserDocumentPath().AppendASCII("chrome.pftrace");
+
+  base::FilePath returned_path =
+      IOSTracingController::GetInstance().StopStartupTracingForTesting();
+  EXPECT_EQ(returned_path, expected_path);
+}
+
+// Tests that StopStartupTracingForTesting falls back to the default document
+// path when the kTraceStartupFile switch is present but set to an empty path.
+TEST_F(IOSTracingControllerTest, StopStartupTracingWithEmptyFileSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kTraceStartupFile, "");
+
+  // Reset and recreate the controller with the new command line switches.
+  tracing_controller_.reset();
+  tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>(
+      *scoped_command_line.GetProcessCommandLine());
+
+  base::FilePath expected_path =
+      base::apple::GetUserDocumentPath().AppendASCII("chrome.pftrace");
+
+  base::FilePath returned_path =
+      IOSTracingController::GetInstance().StopStartupTracingForTesting();
+  EXPECT_EQ(returned_path, expected_path);
+}

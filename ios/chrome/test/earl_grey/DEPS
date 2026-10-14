@@ -10,6 +10,7 @@ specific_include_rules = {
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",
    "+services/metrics/public/cpp/ukm_recorder.h",
+   "+third_party/perfetto/include/perfetto/tracing",
   ],
 
   "chrome_earl_grey_app_interface\\.h":[

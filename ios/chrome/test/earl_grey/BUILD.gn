@@ -309,6 +309,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons:constants",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/browser/toolbar/ui:constants",
+    "//ios/chrome/browser/tracing",
     "//ios/chrome/browser/translate/model:eg_app_support+eg2",
     "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/browser/unit_conversion/ui_bundled:eg_app_support+eg2",
@@ -355,6 +356,7 @@ source_set("eg_app_support+eg2") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/metrics_proto",
     "//third_party/ocmock",
+    "//third_party/perfetto:libperfetto",
     "//ui/base",
     "//ui/base:test_support",
   ]

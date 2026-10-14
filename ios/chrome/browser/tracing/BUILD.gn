@@ -48,3 +48,16 @@ source_set("unit_tests") {
     "//third_party/perfetto:libperfetto",
   ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tracing_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//base/test:test_trace_processor",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

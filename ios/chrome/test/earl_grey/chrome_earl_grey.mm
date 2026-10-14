@@ -189,6 +189,30 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isRTL];
 }
 
+- (NSString*)stopStartupTracing {
+  return [ChromeEarlGreyAppInterface stopStartupTracing];
+}
+
+- (BOOL)startManualTracing {
+  return [ChromeEarlGreyAppInterface startManualTracing];
+}
+
+- (NSString*)stopManualTracing {
+  return [ChromeEarlGreyAppInterface stopManualTracing];
+}
+
+- (BOOL)isTraceFileReadyAtPath:(NSString*)filePath {
+  return [ChromeEarlGreyAppInterface isTraceFileReadyAtPath:filePath];
+}
+
+- (NSData*)traceDataForPath:(NSString*)filePath {
+  return [ChromeEarlGreyAppInterface traceDataForPath:filePath];
+}
+
+- (BOOL)removeTraceFileAtPath:(NSString*)filePath {
+  return [ChromeEarlGreyAppInterface removeTraceFileAtPath:filePath];
+}
+
 - (BOOL)isCompactWidth {
   UIUserInterfaceSizeClass horizontalSpace =
       [[chrome_test_util::GetAnyKeyWindow() traitCollection]
