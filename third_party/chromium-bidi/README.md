@@ -482,7 +482,13 @@ new command, add it to `_processCommand`, write and call the module processor fo
 
 ### Publish new `npm` release
 
-TODO(crbug.com/540164671): describe the process.
+Publishing to npm is automated and is part of the [Chrome for Testing (CfT)](https://developer.chrome.com/blog/chrome-for-testing/) release pipeline, replacing the GitHub Actions workflow that was used before the move to Chromium. There are no manual steps: since `chromium-bidi` is tightly coupled with ChromeDriver, which is released through the CfT infrastructure, one `npm publish` happens per Chrome release.
+
+**How it works.** The package is published by the [`linux64-cft`](https://ci.chromium.org/ui/p/chrome/builders/official.cft/linux64-cft) official builder (Googlers: see the `npm_archive_datas` section of `internal/testing/buildbot/archive/linux64-cft.json`). The builder does not run `npm publish` itself and holds no npm credentials; the final release is delegated to the OSS Exit Gate, an internal Google service for publishing to external registries.
+
+**Versioning.** The published version follows the Chrome version, not the `version` field in `package.json`. The fourth component becomes a semver pre-release suffix, e.g. Chrome `153.0.8009.0` is published as `153.0.8009-0`.
+
+**Tagging.** Every release is tagged as `latest`.
 
 ### Syncing from Chromium to GitHub
 
