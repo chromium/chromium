@@ -731,6 +731,7 @@ class EslintTsTest(unittest.TestCase):
     non_errors = [
       "mixinString is referenced in the HTML template for SomeFooElement",
       "propInProperties is referenced in the HTML template for SomeFooElement",
+      "Missing Lit reactive property declaration for property 'readonlyProp' in class 'SomeFooElement'",
     ]
     for e in errors:
       self.assertTrue(

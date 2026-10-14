@@ -101,6 +101,14 @@ export const litReactiveProperties = ESLintUtils.RuleCreator.withoutDocs<
         return;
       }
 
+      // Skip readonly properties, which should not be reactive properties.
+      const isReadonly = declarations.some(
+          d => (ts.getCombinedModifierFlags(d) & ts.ModifierFlags.Readonly) !==
+              0);
+      if (isReadonly) {
+        return;
+      }
+
       const hasProp = localDeclaredProps.some(p => {
         if (isIdentifier(p.key)) {
           return p.key.name === propName;

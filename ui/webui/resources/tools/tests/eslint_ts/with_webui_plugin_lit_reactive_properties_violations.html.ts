@@ -10,6 +10,7 @@ export function getHtml(this: SomeFooElement) {
   return html`
       <div>${this.propInProperties}</div>
       <div>${this.propNotInProperties}</div>
+      <div>${this.readonlyProp}</div>
       <div>${this.mixinString}</div>
       <div>${this.getterProp}</div>
     `;

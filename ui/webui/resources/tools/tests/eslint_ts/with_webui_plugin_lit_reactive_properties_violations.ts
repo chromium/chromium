@@ -29,6 +29,7 @@ export class SomeFooElement extends SomeFooElementBase {
 
   accessor propInProperties: string = 'in properties';
   propNotInProperties: string = 'not in properties';
+  readonly readonlyProp: string = 'readonly';
   get getterProp(): string {
     return 'getter';
   }
