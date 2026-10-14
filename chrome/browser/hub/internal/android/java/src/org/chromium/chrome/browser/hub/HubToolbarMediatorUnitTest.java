@@ -222,14 +222,7 @@ public class HubToolbarMediatorUnitTest {
     public void testDestroy() {
         assertFalse(mFocusedPaneSupplier.hasObservers());
 
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
         assertTrue(mFocusedPaneSupplier.hasObservers());
 
         mediator.destroy();
@@ -246,14 +239,7 @@ public class HubToolbarMediatorUnitTest {
         when(mPaneOrderController.getPaneOrder())
                 .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
         assertTrue(mRegularHubSearchEnabledStateSupplier.hasObservers());
 
         mRegularHubSearchEnabledStateSupplier.set(false);
@@ -270,8 +256,7 @@ public class HubToolbarMediatorUnitTest {
         when(mPaneOrderController.getPaneOrder())
                 .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
 
         // Mimic incognito reauth pending
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
@@ -290,8 +275,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testPaneSwitcherButtonData() {
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
 
@@ -307,8 +291,7 @@ public class HubToolbarMediatorUnitTest {
     public void testNullPane() {
         when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(null);
 
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(1, paneSwitcherButtonData.size());
 
@@ -321,8 +304,7 @@ public class HubToolbarMediatorUnitTest {
     public void testPaneSwitcherButtonDataEventCount() {
         verify(mPropertyObserver, never()).onPropertyChanged(any(), eq(PANE_SWITCHER_BUTTON_DATA));
 
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         verify(mPropertyObserver, times(1)).onPropertyChanged(any(), eq(PANE_SWITCHER_BUTTON_DATA));
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
@@ -337,8 +319,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testPaneSwitcherIndex() {
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
 
         mFocusedPaneSupplier.set(mTabSwitcherPane);
@@ -363,8 +344,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testMenuButtonVisibility() {
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         when(mIncognitoTabSwitcherPane.getMenuButtonVisible()).thenReturn(false);
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertFalse(mModel.get(MENU_BUTTON_VISIBLE));
@@ -376,14 +356,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testPaneButtonLookupCallback() {
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
         assertEquals(2, mModel.get(PANE_SWITCHER_BUTTON_DATA).size());
         assertNull(mediator.getButton(PaneId.TAB_SWITCHER));
 
@@ -404,8 +377,7 @@ public class HubToolbarMediatorUnitTest {
                 .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.TAB_GROUPS));
         when(mPaneManager.getPaneForId(PaneId.TAB_GROUPS)).thenReturn(mTabSwitcherPane);
 
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
 
@@ -421,8 +393,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testIsCurrentPaneIncognito() {
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertFalse(mModel.get(IS_INCOGNITO));
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
@@ -433,13 +404,7 @@ public class HubToolbarMediatorUnitTest {
     public void testSearchBoxSetup() {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mExitHubRunnable);
+        createMediator(Robolectric.buildActivity(Activity.class).get());
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNotNull(mModel.get(SEARCH_LISTENER));
@@ -451,8 +416,7 @@ public class HubToolbarMediatorUnitTest {
 
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNotNull(mModel.get(SEARCH_LISTENER));
@@ -463,8 +427,7 @@ public class HubToolbarMediatorUnitTest {
         when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertFalse(mModel.get(CLOSE_BUTTON_VISIBLE));
     }
 
@@ -474,8 +437,7 @@ public class HubToolbarMediatorUnitTest {
                 .thenReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertTrue(mModel.get(CLOSE_BUTTON_VISIBLE));
     }
 
@@ -483,13 +445,7 @@ public class HubToolbarMediatorUnitTest {
     public void testSearchBox_TogglePanesSearchBoxVisibility_Phone() {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mExitHubRunnable);
+        createMediator(Robolectric.buildActivity(Activity.class).get());
         assertFalse(mModel.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -511,13 +467,7 @@ public class HubToolbarMediatorUnitTest {
     public void testSearchBoxToGroups_TogglePanesSearchBoxVisibility_Phone() {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mExitHubRunnable);
+        createMediator(Robolectric.buildActivity(Activity.class).get());
         assertFalse(mModel.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -541,8 +491,7 @@ public class HubToolbarMediatorUnitTest {
 
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
 
@@ -563,8 +512,7 @@ public class HubToolbarMediatorUnitTest {
 
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
 
@@ -582,13 +530,7 @@ public class HubToolbarMediatorUnitTest {
     @Test
     public void testSearchBox_ClickListener_Phone() {
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mExitHubRunnable);
+        createMediator(Robolectric.buildActivity(Activity.class).get());
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNotNull(mModel.get(SEARCH_LISTENER));
@@ -632,8 +574,7 @@ public class HubToolbarMediatorUnitTest {
     public void testSearchBox_ClickListener_Tablet() {
         mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNotNull(mModel.get(SEARCH_LISTENER));
@@ -684,14 +625,7 @@ public class HubToolbarMediatorUnitTest {
         // Set up mediator with phone configuration
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
 
         // Initially should show search box (phone behavior)
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
@@ -728,13 +662,7 @@ public class HubToolbarMediatorUnitTest {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        Robolectric.buildActivity(Activity.class).get(),
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+                createMediator(Robolectric.buildActivity(Activity.class).get());
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
 
         // Setting supplier to false should hide the search box.
@@ -756,13 +684,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testButtonRunnablesAreIgnoredWhenSettingButtonData() {
-        new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mExitHubRunnable);
+        createMediator(Robolectric.buildActivity(Activity.class).get());
 
         View view = new View(ContextUtils.getApplicationContext());
         // Verify that focus pane is called when runnables are invoked.
@@ -791,14 +713,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testManualSearchBoxAnimation() {
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
 
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -818,14 +733,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testSearchBoxVisibilityFraction() {
-        HubToolbarMediator mediator =
-                new HubToolbarMediator(
-                        mContext,
-                        mModel,
-                        mPaneManager,
-                        mTracker,
-                        mSearchActivityClient,
-                        mExitHubRunnable);
+        HubToolbarMediator mediator = createMediator();
 
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -845,8 +753,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     public void testPaneSwitchingForManualAnimationAndFraction() {
-        new HubToolbarMediator(
-                mContext, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        createMediator();
 
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -876,6 +783,15 @@ public class HubToolbarMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(mModel.get(MANUAL_SEARCH_BOX_ANIMATION));
         assertEquals(0.75f, mModel.get(SEARCH_BOX_VISIBILITY_FRACTION), 0.0f);
+    }
+
+    private HubToolbarMediator createMediator() {
+        return createMediator(mContext);
+    }
+
+    private HubToolbarMediator createMediator(Context context) {
+        return new HubToolbarMediator(
+                context, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
     }
 
     private void mockSearchActivityClient() {
