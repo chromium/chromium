@@ -173,14 +173,9 @@ class InteractionTestUtilSimulatorBrowser
     // Browser accelerators must be sent via key events to the window on Mac or
     // they don't work properly. Dialog accelerators still appear to work the
     // same as on other platforms.
-    //
-    // Synthesized key events are posted to the application's event queue and
-    // dispatched asynchronously, so wait for them to be processed: callers
-    // expect the accelerator to have taken effect when this returns, as is
-    // the case for FocusManager::ProcessAccelerator() on other platforms.
     if (auto* const bwi = InteractionTestUtilBrowser::GetBrowserFromContext(
             element->context())) {
-      if (!ui_test_utils::SendKeyPressToWindowSync(
+      if (!ui_controls::SendKeyPress(
               BrowserView::GetBrowserViewForBrowser(bwi)->GetNativeWindow(),
               accelerator.key_code(), accelerator.IsCtrlDown(),
               accelerator.IsShiftDown(), accelerator.IsAltDown(),

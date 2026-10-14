@@ -6,7 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <vector>
 
 #import "base/apple/foundation_util.h"
@@ -22,20 +24,34 @@
 #include "ui/gfx/geometry/point.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-// Implementation details: Synthesized keyboard and mouse button events are
-// posted to the application's event queue with
-// -[NSApplication postEvent:atStart:], like real input, rather than dispatched
-// synchronously with -[NSApplication sendEvent:]. This way,
-// `NSApp.currentEvent` points to an event while it is being dispatched, and a
-// nested event loop that retrieves events with
-// -[NSApplication nextEventMatchingMask:...] (e.g. during a mouse drag)
-// dequeues and dispatches them itself.
+// Implementation details: We use [NSApplication sendEvent:] instead
+// of [NSApplication postEvent:atStart:] so that the event gets sent
+// immediately.  This lets us run the post-event task right
+// immediately as well.  Unfortunately I cannot subclass NSEvent (it's
+// probably a class cluster) to allow other easy answers.  For
+// example, if I could subclass NSEvent, I could run the Task in it's
+// dealloc routine (which necessarily happens after the event is
+// dispatched).  Unlike Linux, Mac does not have message loop
+// observer/notification.  Unlike windows, I cannot post non-events
+// into the event queue.  (I can post other kinds of tasks but can't
+// guarantee their order with regards to events).
+
+// But [NSApplication sendEvent:] causes a problem when sending mouse click
+// events. Because in order to handle mouse drag, when processing a mouse
+// click event, the application may want to retrieve the next event
+// synchronously by calling NSApplication's nextEventMatchingMask method.
+// In this case, [NSApplication sendEvent:] causes deadlock.
+// So we need to use [NSApplication postEvent:atStart:] for mouse click
+// events. In order to notify the caller correctly after all events has been
+// processed, we setup a task to watch for the event queue time to time and
+// notify the caller as soon as there is no event in the queue.
 //
-// As a consequence, events are processed asynchronously. AppKit provides no
-// notification when an event has been dispatched, so the *NotifyWhenDone()
-// variants poll the event queue (see PostWhenEventQueueIsEmpty()) and run the
-// callback once it is empty. Callers that depend on the effects of the events
-// must wait for that callback.
+// TODO(suzhe):
+// 1. Investigate why using [NSApplication postEvent:atStart:] for keyboard
+//    events causes BrowserKeyEventsTest.CommandKeyEvents to fail.
+//    See http://crbug.com/49270
+// 2. On OSX 10.6, [NSEvent addLocalMonitorForEventsMatchingMask:handler:] may
+//    be used, so that we don't need to poll the event queue time to time.
 
 using cocoa_test_event_utils::SynthesizeKeyEvent;
 using cocoa_test_event_utils::TimeIntervalSinceSystemStartup;
@@ -67,7 +83,7 @@ void CheckUIControlsEnabled() {
          "lead to flaky tests.";
 }
 
-// Creates the proper sequence of key events for a key down + up.
+// Creates the proper sequence of autoreleased key events for a key down + up.
 void SynthesizeKeyEventsSequence(NSWindow* window,
                                  ui::KeyboardCode keycode,
                                  int key_event_types,
@@ -580,16 +596,26 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
   SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, key_event_types,
                               accelerator_state, &events);
 
-  // Post the events rather than dispatching them synchronously; see the
-  // implementation details at the top of this file. In particular, calling
-  // `-[NSApplication sendEvent:]` from a Chrome task (`DoWorkImpl()`) while a
-  // nested drag/move loop is spinning inside
-  // `-[NSApp nextEventMatchingMask:...]` (`CFRunLoopRunSpecific`) can quit the
-  // nested `base::RunLoop` before `CFRunLoopRunSpecific` exits, leaving
-  // `MessagePumpCFRunLoopBase`'s `WorkDeduplicator` wedged when the outer loop
-  // resumes.
+  // TODO(suzhe): Using [NSApplication postEvent:atStart:] unconditionally here
+  // causes BrowserKeyEventsTest.CommandKeyEvents to fail. See
+  // https://crbug.com/41177633. However, while a mouse button is down or a drag
+  // session is active, the application may be spinning a nested drag/move loop
+  // inside `-[NSApp nextEventMatchingMask:...]` (`CFRunLoopRunSpecific`).
+  // Calling `-[NSApplication sendEvent:]` synchronously from a Chrome task
+  // (`DoWorkImpl()`) in that state can quit the nested `base::RunLoop` before
+  // `CFRunLoopRunSpecific` exits, leaving `MessagePumpCFRunLoopBase`'s
+  // `WorkDeduplicator` wedged when the outer loop resumes. Post key events to
+  // the `NSApplication` event queue during mouse drags so the active drag loop
+  // dequeues and dispatches them outside `DoWorkImpl()`.
+  const bool mouse_button_down =
+      std::ranges::any_of(g_mouse_button_down, std::identity()) ||
+      IsDragSessionActive();
   for (NSEvent* event : events) {
-    [[NSApplication sharedApplication] postEvent:event atStart:NO];
+    if (mouse_button_down) {
+      [[NSApplication sharedApplication] postEvent:event atStart:NO];
+    } else {
+      [[NSApplication sharedApplication] sendEvent:event];
+    }
   }
 
   if (!task.is_null()) {
