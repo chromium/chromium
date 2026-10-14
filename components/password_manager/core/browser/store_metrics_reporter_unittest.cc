@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -181,7 +182,8 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kProfileStoreMigratedToOSCryptAsync, false);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kAccountStoreMigratedToOSCryptAsync, false);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
     prefs_.registry()->RegisterBooleanPref(
         prefs::kBiometricAuthenticationBeforeFilling, false);
 #endif
@@ -293,14 +295,20 @@ INSTANTIATE_TEST_SUITE_P(
         EnableStateParam(false, EnableSettingManageState::kPolicy, 8),
         EnableStateParam(false, EnableSettingManageState::kRecommended, 9)));
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 
 // The test fixture is used to test StoreIndependentMetrics. Depending on the
 // test, the parameter defines whether password manager or
 // kBiometricAuthenticationBeforeFilling pref is enabled.
 class StoreMetricsReporterTestWithParams
     : public StoreMetricsReporterTest,
-      public ::testing::WithParamInterface<bool> {};
+      public ::testing::WithParamInterface<bool> {
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kBiometricTouchToFill};
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 TEST_P(StoreMetricsReporterTestWithParams,
        ReportMetricsBiometricAuthBeforeFilling) {
@@ -324,6 +332,23 @@ TEST_P(StoreMetricsReporterTestWithParams,
 INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
 
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(StoreMetricsReporterTest,
+       NoBiometricAuthBeforeFillingMetricWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBiometricTouchToFill);
+  base::HistogramTester histogram_tester;
+
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
+      &prefs_, /*password_reuse_manager=*/nullptr, &settings_service(),
+      /*done_callback*/ base::DoNothing());
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.BiometricAuthBeforeFillingEnabled2", 0);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   auto profile_store =

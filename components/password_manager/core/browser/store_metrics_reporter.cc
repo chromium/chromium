@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -16,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -675,7 +677,14 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
 }
 
 void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(features::kBiometricTouchToFill)) {
+    return;
+  }
+#endif
+  // TODO(crbug.com/358998546): use PasswordManagerSettingsService here.
   base::UmaHistogramBoolean(
       base::StrCat({kPasswordManager, ".BiometricAuthBeforeFillingEnabled2"}),
       prefs->GetBoolean(
