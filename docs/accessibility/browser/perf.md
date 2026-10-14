@@ -63,7 +63,7 @@ tools/perf/run_benchmark blink_perf.accessibility \
 ## Results
 
 The results can be found at
-[https://chromeperf.appspot.com](chromeperf.appspot.com).
+[Chrome Performance Dashboard](https://perf.luci.app/).
 
 ## Google-internal Info
 
