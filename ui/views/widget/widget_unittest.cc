@@ -6762,7 +6762,8 @@ TEST_F(WidgetTest, ReplaceClientContentsView) {
   EXPECT_EQ(client_view_ptr, widget->GetClientContentsView());
 }
 
-// Ensure that view accelerators unregistered when closing a chid widget.
+// Ensure that view accelerators unregistered when closing a chid widget, and
+// that other targets of the same accelerator stay registered.
 TEST_F(WidgetTest, ClosingChildWidgetUnregisterAccelerators) {
   auto parent_widget = base::WrapUnique<Widget>(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
@@ -6781,15 +6782,28 @@ TEST_F(WidgetTest, ClosingChildWidgetUnregisterAccelerators) {
   auto* focus_manager = parent_widget->GetFocusManager();
   ui::Accelerator accelerator(ui::VKEY_F10,
                               ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ui::Accelerator shared_accelerator(ui::VKEY_F11, ui::EF_NONE);
   ASSERT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
+  ASSERT_FALSE(focus_manager->IsAcceleratorRegistered(shared_accelerator));
   View* view =
       child_widget->GetContentsView()->AddChildView(std::make_unique<View>());
   view->AddAccelerator(accelerator);
+  view->AddAccelerator(shared_accelerator);
   ASSERT_EQ(view->GetFocusManager(), parent_widget->GetFocusManager());
 
+  // A view in the parent widget registers `shared_accelerator` as well.
+  View* parent_view =
+      parent_widget->GetContentsView()->AddChildView(std::make_unique<View>());
+  parent_view->AddAccelerator(shared_accelerator);
+
   ASSERT_TRUE(focus_manager->IsAcceleratorRegistered(accelerator));
+  ASSERT_TRUE(focus_manager->IsAcceleratorRegistered(shared_accelerator));
   child_widget.reset();
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
+  EXPECT_TRUE(focus_manager->IsAcceleratorRegistered(shared_accelerator));
+
+  parent_view->ResetAccelerators();
+  EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(shared_accelerator));
 }
 
 TEST_F(WidgetTest, IsDragging) {

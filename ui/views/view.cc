@@ -4030,7 +4030,18 @@ void View::UnregisterAccelerators(bool leave_data_intact) {
 
   if (GetWidget()) {
     if (auto* focus_manager = GetFocusManager()) {
-      focus_manager->UnregisterAccelerators(this);
+      // Only [0, registered_accelerator_count_) are registered with the
+      // FocusManager. Unregister just those rather than scanning every
+      // accelerator registered in the FocusManager. Accelerators registered
+      // for this view by other means would stay registered, so make sure
+      // there are none.
+#if DCHECK_IS_ON()
+      DCHECK_EQ(focus_manager->GetAcceleratorCountForTarget(this),
+                registered_accelerator_count_);
+#endif
+      for (size_t i = 0; i < registered_accelerator_count_; ++i) {
+        focus_manager->UnregisterAccelerator((*accelerators_)[i], this);
+      }
     }
     if (!leave_data_intact) {
       accelerators_->clear();

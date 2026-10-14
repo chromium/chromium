@@ -131,6 +131,8 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   // Iterators for the internal map.
   iterator begin() { return map_.begin(); }
   iterator end() { return map_.end(); }
+  const_iterator begin() const { return map_.begin(); }
+  const_iterator end() const { return map_.end(); }
 
   // Returns the number of items in the map.
   size_t size() const { return map_.size(); }

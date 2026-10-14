@@ -68,6 +68,19 @@ void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
   }
 }
 
+#if DCHECK_IS_ON()
+size_t AcceleratorManager::GetAcceleratorCountForTarget(
+    AcceleratorTarget* target) const {
+  size_t count = 0;
+  for (const auto& [accelerator, target_info] : accelerators_) {
+    if (target_info.Contains(target)) {
+      ++count;
+    }
+  }
+  return count;
+}
+#endif
+
 bool AcceleratorManager::IsRegistered(const Accelerator& accelerator) const {
   const AcceleratorTargetInfo* target_info = accelerators_.Find(accelerator);
 

@@ -547,6 +547,13 @@ bool FocusManager::ProcessAccelerator(const ui::Accelerator& accelerator) {
 #endif
 }
 
+#if DCHECK_IS_ON()
+size_t FocusManager::GetAcceleratorCountForTarget(
+    ui::AcceleratorTarget* target) const {
+  return accelerator_manager_.GetAcceleratorCountForTarget(target);
+}
+#endif
+
 bool FocusManager::IsAcceleratorRegistered(
     const ui::Accelerator& accelerator) const {
   return accelerator_manager_.IsRegistered(accelerator);

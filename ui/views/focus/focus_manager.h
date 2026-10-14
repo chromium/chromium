@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -273,6 +274,12 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 
   // Whether the given |accelerator| is registered.
   bool IsAcceleratorRegistered(const ui::Accelerator& accelerator) const;
+
+#if DCHECK_IS_ON()
+  // Returns the number of accelerators |target| is registered for. This walks
+  // every registered accelerator, so use it only in DCHECKs.
+  size_t GetAcceleratorCountForTarget(ui::AcceleratorTarget* target) const;
+#endif
 
   // Whether the given |accelerator| has a priority handler associated with it.
   bool HasPriorityHandler(const ui::Accelerator& accelerator) const;

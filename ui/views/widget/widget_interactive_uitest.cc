@@ -2670,13 +2670,12 @@ TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
                          ui::EF_ALT_DOWN);
   ui::Accelerator accelerator(key_event);
-  widget->GetFocusManager()->RegisterAccelerator(
-      accelerator, ui::AcceleratorManager::kNormalPriority, textfield);
+  textfield->AddAccelerator(accelerator);
 
   widget->OnKeyEvent(&key_event);
   EXPECT_TRUE(key_event.stopped_propagation());
 
-  widget->GetFocusManager()->UnregisterAccelerators(textfield);
+  textfield->RemoveAccelerator(accelerator);
 
   ui::KeyEvent key_event2(key_event);
   widget->OnKeyEvent(&key_event2);
