@@ -61,6 +61,7 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/facegaze_bubble_controller.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
+#include "ash/system/accessibility/hover_text_bubble_controller.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
@@ -1574,6 +1575,7 @@ void AccessibilityController::Shutdown() {
   // Clean up any child windows and widgets that might be animating out.
   dictation_bubble_controller_.reset();
   facegaze_bubble_controller_.reset();
+  hover_text_bubble_controller_.reset();
 
   for (auto& observer : observers_) {
     observer.OnAccessibilityControllerShutdown();
@@ -4008,12 +4010,33 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       UpdateFlashNotificationsFromPrefs();
       break;
     case FeatureType::kHoverText:
+      if (enabled && ::features::IsAccessibilityHoverTextEnabled()) {
+        if (!hover_text_bubble_controller_) {
+          hover_text_bubble_controller_ =
+              std::make_unique<HoverTextBubbleController>();
+        }
+      } else {
+        hover_text_bubble_controller_.reset();
+      }
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:
       NOTREACHED();
   }
   NotifyAccessibilityStatusChanged();
+}
+
+void AccessibilityController::UpdateHoverTextBubble(
+    const HoverTextBubbleProps& props) {
+  if (!hover_text_bubble_controller_) {
+    return;
+  }
+  hover_text_bubble_controller_->UpdateBubble(props);
+}
+
+HoverTextBubbleController*
+AccessibilityController::GetHoverTextBubbleControllerForTest() {
+  return hover_text_bubble_controller_.get();
 }
 
 void AccessibilityController::UpdateDictationBubble(

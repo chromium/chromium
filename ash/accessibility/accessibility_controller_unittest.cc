@@ -37,6 +37,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/hover_text_bubble_controller.h"
+#include "ash/system/accessibility/hover_text_bubble_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -393,6 +395,7 @@ TEST_F(AccessibilityControllerTest, SetHoverTextEnabled) {
   base::test::ScopedFeatureList scoped_feature_list(
       ::features::kAccessibilityHoverText);
   EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
 
   TestAccessibilityObserver observer;
   EXPECT_EQ(0, observer.status_changed_count_);
@@ -400,11 +403,13 @@ TEST_F(AccessibilityControllerTest, SetHoverTextEnabled) {
   controller()->hover_text().SetEnabled(true);
   EXPECT_TRUE(controller()->hover_text().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  EXPECT_NE(nullptr, controller()->GetHoverTextBubbleControllerForTest());
   ExpectSessionDurationMetricCount("CrosHoverText", 0);
 
   controller()->hover_text().SetEnabled(false);
   EXPECT_FALSE(controller()->hover_text().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
   ExpectSessionDurationMetricCount("CrosHoverText", 1);
 }
 
@@ -445,6 +450,46 @@ TEST_F(AccessibilityControllerTest, HoverTextConflictsWithChromeVox) {
 
   controller()->spoken_feedback().SetEnabled(false);
   controller()->hover_text().SetEnabled(false);
+}
+
+TEST_F(AccessibilityControllerTest, HoverTextPrefsUpdateControllers) {
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        ::features::kAccessibilityHoverText);
+    controller()->hover_text().SetEnabled(true);
+    EXPECT_EQ(nullptr, controller()->GetHoverTextBubbleControllerForTest());
+    controller()->hover_text().SetEnabled(false);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kAccessibilityHoverText);
+  controller()->hover_text().SetEnabled(true);
+  ASSERT_NE(nullptr, controller()->GetHoverTextBubbleControllerForTest());
+
+  HoverTextBubbleProps props;
+  props.visible = true;
+  props.text = u"Test";
+  props.anchor_rect = gfx::Rect(100, 100, 50, 20);
+  controller()->UpdateHoverTextBubble(props);
+  ASSERT_NE(nullptr, controller()
+                         ->GetHoverTextBubbleControllerForTest()
+                         ->bubble_view_for_testing());
+
+  props.font_scale = 3.0;
+  props.font_style = HoverTextFontStyle::kMonospace;
+  controller()->UpdateHoverTextBubble(props);
+
+  EXPECT_EQ(48, controller()
+                    ->GetHoverTextBubbleControllerForTest()
+                    ->bubble_view_for_testing()
+                    ->GetFontSizePixelsForTesting());
+  const std::string font_family = controller()
+                                      ->GetHoverTextBubbleControllerForTest()
+                                      ->bubble_view_for_testing()
+                                      ->GetFontFamilyForTesting();
+  EXPECT_TRUE(font_family == "Roboto Mono" ||
+              font_family == "DejaVu Sans Mono" || font_family == "monospace");
 }
 
 TEST_F(AccessibilityControllerTest, SetAlwaysShowScrollbarEnabled) {
