@@ -5484,6 +5484,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See for https://github.com/WICG/crash-reporting/issues/24 more details.
   std::string crash_reporting_group_ = "default";
 
+  // Prevents generating duplicate crash reports for this frame when an
+  // ancestor's `RenderProcessGone()` visits descendant frames in the crashed
+  // `SiteInstanceGroup` in addition to this frame receiving its own
+  // `SiteInstanceGroup::Observer` notification. This is usually redundant with
+  // `ResetChildren()` destroying descendant frames before their observer
+  // notifications run, but enforces a stronger per-frame invariant if that
+  // ordering or cleanup ever changes.
+  bool has_reported_crash_ = false;
+
   PrerenderStateChangedCallback prerender_state_callback_;
 
   base::OnceClosure on_process_before_unload_completed_for_testing_;

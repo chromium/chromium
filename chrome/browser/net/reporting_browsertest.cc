@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/base_switches.h"
+#include "base/check_op.h"
 #include "base/process/kill.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -55,6 +56,21 @@ namespace {
 
 const char kReportingHost[] = "example.test";
 const char kCrossOriginHost[] = "cross-origin.test";
+
+base::ListValue ParseReportUpload(const std::string& payload) {
+  base::ListValue parsed_payload = base::test::ParseJsonList(payload);
+
+  // Clear out any non-reproducible fields.
+  for (auto& report_value : parsed_payload) {
+    base::DictValue& report = report_value.GetDict();
+    report.Remove("age");
+    report.RemoveByDottedPath("body.elapsed_time");
+    if (report.FindString("user_agent")) {
+      report.Set("user_agent", "Mozilla/1.0");
+    }
+  }
+  return parsed_payload;
+}
 
 class BaseReportingBrowserTest : public CertVerifierBrowserTest,
                                  public ::testing::WithParamInterface<bool> {
@@ -145,10 +161,33 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
   )");
   }
 
+  base::ListValue WaitForReportUploads(size_t expected_report_count) {
+    base::ListValue all_reports;
+    net::test_server::ControllableHttpResponse* responses[] = {
+        upload_response_.get(), upload_response2_.get()};
+    CHECK_LE(expected_report_count, std::size(responses));
+    for (auto* response : responses) {
+      if (all_reports.size() >= expected_report_count) {
+        break;
+      }
+      response->WaitForRequest();
+      base::ListValue batch =
+          ParseReportUpload(response->http_request()->content);
+      response->Send("HTTP/1.1 200 OK\r\n");
+      response->Send("\r\n");
+      response->Done();
+      for (auto& item : batch) {
+        all_reports.Append(std::move(item));
+      }
+    }
+    return all_reports;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response2_;
 };
 
 void BaseReportingBrowserTest::SetUp() {
@@ -166,6 +205,9 @@ void BaseReportingBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
 
   upload_response_ =
+      std::make_unique<net::test_server::ControllableHttpResponse>(server(),
+                                                                   "/upload");
+  upload_response2_ =
       std::make_unique<net::test_server::ControllableHttpResponse>(server(),
                                                                    "/upload");
 
@@ -388,22 +430,6 @@ class HistogramReportingBrowserTest : public BaseReportingBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-base::ListValue ParseReportUpload(const std::string& payload) {
-  base::ListValue parsed_payload = base::test::ParseJsonList(payload);
-
-  // Clear out any non-reproducible fields.
-  for (auto& report_value : parsed_payload) {
-    base::DictValue& report = report_value.GetDict();
-    report.Remove("age");
-    report.RemoveByDottedPath("body.elapsed_time");
-    std::string* user_agent = report.FindString("user_agent");
-    if (user_agent) {
-      *user_agent = "Mozilla/1.0";
-    }
-  }
-  return parsed_payload;
-}
 
 }  // namespace
 
@@ -1680,6 +1706,216 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+IN_PROC_BROWSER_TEST_P(
+    ReportingBrowserTestMoreContextData,
+    DISABLED_ON_ASAN(CrashReportUnresponsiveSameOriginIframe)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header-with-file/chrome/test/data/iframe.html?" +
+                          GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  GURL iframe_url(server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader()));
+  ASSERT_TRUE(NavigateIframeToURL(contents, "test", iframe_url));
+
+  content::RenderFrameHost* main_rfh = contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ(main_rfh->GetProcess(), subframe->GetProcess());
+
+  constexpr char kScript[] = R"(
+    (async () => {
+      await crashReport.initialize(100);
+      crashReport.set('subframe_key', 'subframe_value');
+    })();
+  )";
+  EXPECT_TRUE(content::EvalJs(subframe, kScript).is_ok());
+
+  // Simulate the shared process being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  main_rfh->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
+
+  base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
+  ASSERT_EQ(2u, reports.size());
+
+  // Verify the main frame report.
+  const base::DictValue& main_report = reports[0].GetDict();
+  const std::string* main_type = main_report.FindString("type");
+  ASSERT_NE(main_type, nullptr);
+  EXPECT_EQ("crash", *main_type);
+
+  const std::string* main_report_url = main_report.FindString("url");
+  ASSERT_NE(main_report_url, nullptr);
+  EXPECT_EQ(main_url.spec(), *main_report_url);
+
+  const base::DictValue* main_body = main_report.FindDict("body");
+  ASSERT_NE(main_body, nullptr);
+
+  const std::string* main_reason = main_body->FindString("reason");
+  ASSERT_NE(main_reason, nullptr);
+  EXPECT_EQ("unresponsive", *main_reason);
+
+  const base::DictValue* main_crash_report_api_body =
+      main_body->FindDict("crash_report_api");
+  ASSERT_NE(main_crash_report_api_body, nullptr);
+  EXPECT_TRUE(main_crash_report_api_body->empty());
+
+  if (GetParam()) {
+    const std::optional<bool> main_is_top_level =
+        main_body->FindBool("is_top_level");
+    ASSERT_TRUE(main_is_top_level.has_value());
+    EXPECT_TRUE(*main_is_top_level);
+
+    const std::string* main_visibility_state =
+        main_body->FindString("visibility_state");
+    ASSERT_NE(main_visibility_state, nullptr);
+    EXPECT_EQ("visible", *main_visibility_state);
+  } else {
+    EXPECT_EQ(std::nullopt, main_body->FindBool("is_top_level"));
+    EXPECT_EQ(nullptr, main_body->FindString("visibility_state"));
+  }
+
+  // Verify the report generated by the same-process iframe.
+  const base::DictValue& iframe_report = reports[1].GetDict();
+
+  const std::string* iframe_type = iframe_report.FindString("type");
+  ASSERT_NE(iframe_type, nullptr);
+  EXPECT_EQ("crash", *iframe_type);
+
+  const std::string* iframe_report_url = iframe_report.FindString("url");
+  ASSERT_NE(iframe_report_url, nullptr);
+  EXPECT_EQ(iframe_url.spec(), *iframe_report_url);
+
+  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  ASSERT_NE(iframe_body, nullptr);
+
+  const std::string* iframe_reason = iframe_body->FindString("reason");
+  ASSERT_NE(iframe_reason, nullptr);
+  EXPECT_EQ("unresponsive", *iframe_reason);
+
+  const base::DictValue* crash_report_api_body =
+      iframe_body->FindDict("crash_report_api");
+  ASSERT_NE(crash_report_api_body, nullptr);
+
+  const std::string* subframe_key =
+      crash_report_api_body->FindString("subframe_key");
+  ASSERT_NE(subframe_key, nullptr);
+  EXPECT_EQ("subframe_value", *subframe_key);
+
+  if (GetParam()) {
+    const std::optional<bool> iframe_is_top_level =
+        iframe_body->FindBool("is_top_level");
+    ASSERT_TRUE(iframe_is_top_level.has_value());
+    EXPECT_FALSE(*iframe_is_top_level);
+
+    const std::string* iframe_visibility_state =
+        iframe_body->FindString("visibility_state");
+    ASSERT_NE(iframe_visibility_state, nullptr);
+    EXPECT_EQ("visible", *iframe_visibility_state);
+  } else {
+    EXPECT_EQ(std::nullopt, iframe_body->FindBool("is_top_level"));
+    EXPECT_EQ(nullptr, iframe_body->FindString("visibility_state"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CrashReportingBrowserTest,
+    DISABLED_ON_ASAN(CrashReportMainFrameAndSameOriginIframe)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header-with-file/chrome/test/data/iframe.html?" +
+                          GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  GURL iframe_url(server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader()));
+  ASSERT_TRUE(NavigateIframeToURL(contents, "test", iframe_url));
+
+  content::RenderFrameHost* main_rfh = contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ(main_rfh->GetProcess(), subframe->GetProcess());
+
+  constexpr char kMainScript[] = R"(
+    (async () => {
+      await crashReport.initialize(100);
+      crashReport.set('frame', 'main');
+    })();
+  )";
+  EXPECT_TRUE(content::EvalJs(main_rfh, kMainScript).is_ok());
+
+  constexpr char kSubframeScript[] = R"(
+    (async () => {
+      await crashReport.initialize(100);
+      crashReport.set('frame', 'subframe');
+    })();
+  )";
+  EXPECT_TRUE(content::EvalJs(subframe, kSubframeScript).is_ok());
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  content::SimulateOOMPrimaryMainFrameAndWaitForExit(contents);
+
+  base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
+  ASSERT_EQ(2u, reports.size());
+
+  const base::DictValue& main_report = reports[0].GetDict();
+
+  const std::string* main_type = main_report.FindString("type");
+  ASSERT_NE(main_type, nullptr);
+  EXPECT_EQ("crash", *main_type);
+
+  const std::string* main_report_url = main_report.FindString("url");
+  ASSERT_NE(main_report_url, nullptr);
+  EXPECT_EQ(main_url.spec(), *main_report_url);
+
+  const base::DictValue* main_body = main_report.FindDict("body");
+  ASSERT_NE(main_body, nullptr);
+
+  const std::string* main_reason = main_body->FindString("reason");
+  ASSERT_NE(main_reason, nullptr);
+  EXPECT_EQ("oom", *main_reason);
+
+  const base::DictValue* main_crash_report_api =
+      main_body->FindDict("crash_report_api");
+  ASSERT_NE(main_crash_report_api, nullptr);
+
+  const std::string* main_frame_value =
+      main_crash_report_api->FindString("frame");
+  ASSERT_NE(main_frame_value, nullptr);
+  EXPECT_EQ("main", *main_frame_value);
+
+  const base::DictValue& iframe_report = reports[1].GetDict();
+
+  const std::string* iframe_type = iframe_report.FindString("type");
+  ASSERT_NE(iframe_type, nullptr);
+  EXPECT_EQ("crash", *iframe_type);
+
+  const std::string* iframe_report_url = iframe_report.FindString("url");
+  ASSERT_NE(iframe_report_url, nullptr);
+  EXPECT_EQ(iframe_url.spec(), *iframe_report_url);
+
+  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  ASSERT_NE(iframe_body, nullptr);
+
+  const std::string* iframe_reason = iframe_body->FindString("reason");
+  ASSERT_NE(iframe_reason, nullptr);
+  EXPECT_EQ("oom", *iframe_reason);
+
+  const base::DictValue* iframe_crash_report_api =
+      iframe_body->FindDict("crash_report_api");
+  ASSERT_NE(iframe_crash_report_api, nullptr);
+
+  const std::string* iframe_frame_value =
+      iframe_crash_report_api->FindString("frame");
+  ASSERT_NE(iframe_frame_value, nullptr);
+  EXPECT_EQ("subframe", *iframe_frame_value);
+}
+
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
                        DISABLED_ON_ASAN(SpecifyCrashEndpoint)) {
   content::WebContents* contents =
@@ -1836,29 +2072,57 @@ IN_PROC_BROWSER_TEST_P(
 
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
-  upload_response()->WaitForRequest();
-  base::ListValue response =
-      ParseReportUpload(upload_response()->http_request()->content);
-  upload_response()->Send("HTTP/1.1 200 OK\r\n");
-  upload_response()->Send("\r\n");
-  upload_response()->Done();
+  base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
+  ASSERT_EQ(2u, reports.size());
 
-  // Verify the contents of the report that we received.
-  const base::DictValue& report = response.begin()->GetDict();
-  const std::string* type = report.FindString("type");
-  const std::string* url = report.FindString("url");
-  const base::DictValue* body = report.FindDict("body");
-  const std::string* reason = body->FindString("reason");
-  const std::string* call_stack = body->FindString("stack");
+  // Verify the main frame report.
+  const base::DictValue& main_report = reports[0].GetDict();
 
-  EXPECT_EQ("crash", *type);
-  EXPECT_EQ(*url, main_url.spec());
-  EXPECT_EQ("unresponsive", *reason);
-  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
-  if (GetParam() && call_stack) {
-    EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
+  const std::string* main_type = main_report.FindString("type");
+  ASSERT_NE(main_type, nullptr);
+  EXPECT_EQ("crash", *main_type);
+
+  const std::string* main_report_url = main_report.FindString("url");
+  ASSERT_NE(main_report_url, nullptr);
+  EXPECT_EQ(main_url.spec(), *main_report_url);
+
+  const base::DictValue* main_body = main_report.FindDict("body");
+  ASSERT_NE(main_body, nullptr);
+
+  const std::string* main_reason = main_body->FindString("reason");
+  ASSERT_NE(main_reason, nullptr);
+  EXPECT_EQ("unresponsive", *main_reason);
+
+  const std::string* main_call_stack = main_body->FindString("stack");
+  if (GetParam() && main_call_stack) {
+    EXPECT_EQ("Unable to collect JS call stack.", *main_call_stack);
   } else {
-    EXPECT_EQ(nullptr, call_stack);
+    EXPECT_EQ(nullptr, main_call_stack);
+  }
+
+  // Verify the same-process iframe report includes the JS call stack.
+  const base::DictValue& iframe_report = reports[1].GetDict();
+
+  const std::string* iframe_type = iframe_report.FindString("type");
+  ASSERT_NE(iframe_type, nullptr);
+  EXPECT_EQ("crash", *iframe_type);
+
+  const std::string* iframe_report_url = iframe_report.FindString("url");
+  ASSERT_NE(iframe_report_url, nullptr);
+  EXPECT_EQ(iframe_url.spec(), *iframe_report_url);
+
+  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  ASSERT_NE(iframe_body, nullptr);
+
+  const std::string* iframe_reason = iframe_body->FindString("reason");
+  ASSERT_NE(iframe_reason, nullptr);
+  EXPECT_EQ("unresponsive", *iframe_reason);
+
+  const std::string* iframe_call_stack = iframe_body->FindString("stack");
+  if (GetParam() && iframe_call_stack) {
+    EXPECT_TRUE(iframe_call_stack->find("infiniteLoop") != std::string::npos);
+  } else {
+    EXPECT_EQ(nullptr, iframe_call_stack);
   }
 }
 
@@ -1888,29 +2152,60 @@ IN_PROC_BROWSER_TEST_P(
 
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
-  upload_response()->WaitForRequest();
-  base::ListValue response =
-      ParseReportUpload(upload_response()->http_request()->content);
-  upload_response()->Send("HTTP/1.1 200 OK\r\n");
-  upload_response()->Send("\r\n");
-  upload_response()->Done();
+  base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
+  ASSERT_EQ(2u, reports.size());
 
-  // Verify the contents of the report that we received.
-  const base::DictValue& report = response.begin()->GetDict();
-  const std::string* type = report.FindString("type");
-  const std::string* url = report.FindString("url");
-  const base::DictValue* body = report.FindDict("body");
-  const std::string* reason = body->FindString("reason");
-  const std::string* call_stack = body->FindString("stack");
+  // Verify the main frame report.
+  const base::DictValue& main_report = reports[0].GetDict();
 
-  EXPECT_EQ("crash", *type);
-  EXPECT_EQ(*url, main_url.spec());
-  EXPECT_EQ("unresponsive", *reason);
-  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
-  if (GetParam() && call_stack) {
-    EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
+  const std::string* main_type = main_report.FindString("type");
+  ASSERT_NE(main_type, nullptr);
+  EXPECT_EQ("crash", *main_type);
+
+  const std::string* main_report_url = main_report.FindString("url");
+  ASSERT_NE(main_report_url, nullptr);
+  EXPECT_EQ(main_url.spec(), *main_report_url);
+
+  const base::DictValue* main_body = main_report.FindDict("body");
+  ASSERT_NE(main_body, nullptr);
+
+  const std::string* main_reason = main_body->FindString("reason");
+  ASSERT_NE(main_reason, nullptr);
+  EXPECT_EQ("unresponsive", *main_reason);
+
+  const std::string* main_call_stack = main_body->FindString("stack");
+  if (GetParam() && main_call_stack) {
+    EXPECT_EQ("Unable to collect JS call stack.", *main_call_stack);
   } else {
-    EXPECT_EQ(nullptr, call_stack);
+    EXPECT_EQ(nullptr, main_call_stack);
+  }
+
+  // Verify the same-process iframe report omits the JS call stack since the
+  // iframe did not opt in.
+  const base::DictValue& iframe_report = reports[1].GetDict();
+
+  const std::string* iframe_type = iframe_report.FindString("type");
+  ASSERT_NE(iframe_type, nullptr);
+  EXPECT_EQ("crash", *iframe_type);
+
+  const std::string* iframe_report_url = iframe_report.FindString("url");
+  ASSERT_NE(iframe_report_url, nullptr);
+  EXPECT_EQ(iframe_url.spec(), *iframe_report_url);
+
+  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  ASSERT_NE(iframe_body, nullptr);
+
+  const std::string* iframe_reason = iframe_body->FindString("reason");
+  ASSERT_NE(iframe_reason, nullptr);
+  EXPECT_EQ("unresponsive", *iframe_reason);
+
+  const std::string* iframe_call_stack = iframe_body->FindString("stack");
+  if (GetParam() && iframe_call_stack) {
+    EXPECT_EQ(
+        "Website owner has not opted in for JS call stacks in crash reports.",
+        *iframe_call_stack);
+  } else {
+    EXPECT_EQ(nullptr, iframe_call_stack);
   }
 }
 

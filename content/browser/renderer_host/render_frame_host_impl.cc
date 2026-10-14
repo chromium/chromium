@@ -4645,7 +4645,15 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   ++renderer_exit_count_;
 
-  MaybeGenerateCrashReport(info);
+  // Generate crash reports for this frame and any descendant frames hosted in
+  // the crashed process before `ResetChildren()` and `RenderFrameDeleted()`
+  // destroy them (and expire their reporting sources in
+  // `~RenderFrameHostImpl()`).
+  ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
+    if (rfh->site_instance_->group() == site_instance_group) {
+      rfh->MaybeGenerateCrashReport(info);
+    }
+  });
 
   // When a frame's process dies, its RenderFrame no longer exists, which means
   // that its child frames must be cleaned up as well.
@@ -4999,6 +5007,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   const RenderFrameState old_render_frame_state = render_frame_state_;
   render_frame_state_ = RenderFrameState::kCreated;
+  has_reported_crash_ = false;
 
   if (old_render_frame_state == RenderFrameState::kDeleted) {
     // Dispatch update notification when a Page is recreated after a crash. Only
@@ -17228,6 +17237,11 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
 
 void RenderFrameHostImpl::MaybeGenerateCrashReport(
     const ChildProcessTerminationInfo& info) {
+  if (has_reported_crash_) {
+    return;
+  }
+  has_reported_crash_ = true;
+
   if (!last_committed_url_.SchemeIsHTTPOrHTTPS()) {
     return;
   }
@@ -17242,13 +17256,6 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
     return;
   }
 
-  // Only generate reports for local root frames that are in a different
-  // process than their parent.
-  if (!is_main_frame() && !IsCrossProcessSubframe()) {
-    return;
-  }
-  CHECK(is_local_root());
-
   const int exit_code = info.exit_code;
   auto metrics = GetProcess()->GetCrashMemoryMetrics();
 
@@ -17262,9 +17269,10 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
           static_cast<int>(partition_alloc::kTerminateOnCommitFailureExitCode);
 
   // All frames in the same renderer process share the main thread and V8
-  // isolate. If one frame hangs, the entire process is blocked and killed.
-  // Therefore, unresponsiveness is attributed to all local root frames in this
-  // process (individual documents are differentiated later by stack capture).
+  // isolate, so if one frame hangs, every frame in the process is blocked and
+  // killed together. An "unresponsive" report is generated for each frame in
+  // the process, however, only the frame whose `FrameToken` was executing when
+  // the hang occurred will have the actual call stack attached below.
   const bool is_unresponsive =
       exit_code == RESULT_CODE_HUNG ||
       (GetRenderWidgetHost() &&
