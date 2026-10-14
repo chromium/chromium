@@ -3761,9 +3761,6 @@ TEST_P(QuicSessionPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.Superseded",
       QuicMigrationAttemptCause::kOnNetworkMadeDefault, 1);
-  histogram_tester.ExpectBucketCount(
-      "Net.QuicSession.ConnectionMigration",
-      MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
 
   // Probe 2 fails because active_connection_id_limit is 2 and Probe 1 consumed
   // the only spare CID.
@@ -3772,8 +3769,6 @@ TEST_P(QuicSessionPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.FailureReason",
       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
-  histogram_tester.ExpectBucketCount("Net.QuicSession.ConnectionMigration",
-                                     MIGRATION_STATUS_INTERNAL_ERROR, 1);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
@@ -3908,9 +3903,6 @@ TEST_P(QuicSessionPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.Superseded",
       QuicMigrationAttemptCause::kOnNetworkMadeDefault, 1);
-  histogram_tester.ExpectBucketCount(
-      "Net.QuicSession.ConnectionMigration",
-      MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
 
   // Probe 2 fails because active_connection_id_limit is 2 and Probe 1 consumed
   // the only spare CID.
@@ -3926,8 +3918,6 @@ TEST_P(QuicSessionPoolTest,
       "Net.Quic.Migration.Attempt.FailureReason.ByTrigger."
       "OnNetworkMadeDefault.GoogleHost",
       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
-  histogram_tester.ExpectBucketCount("Net.QuicSession.ConnectionMigration",
-                                     MIGRATION_STATUS_INTERNAL_ERROR, 1);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
@@ -6534,10 +6524,15 @@ TEST_P(QuicSessionPoolTest, NoMigrationWhenTargetingNetwork) {
       /*disable_cert_verification_network_fetches=*/false,
       kDefaultNetworkForTests));
 
-  // Verify that migration was NOT triggered and it logged the failure reason.
+  // Verify that migration was NOT triggered and it logged the ineligible
+  // reason.
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.ConnectionMigration.OnPathDegrading",
-      MIGRATION_STATUS_PATH_DEGRADING_NOT_ENABLED, 1);
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kDisabledByClient, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      QuicMigrationAttemptIneligibleReason::kDisabledByClient, 1);
 
   stream.reset();
   quic_data1.ExpectAllReadDataConsumed();
@@ -6653,9 +6648,9 @@ TEST_P(QuicSessionPoolTest,
       kDefaultNetworkForTests));
 
   // Verify that no migration was triggered.
-  histogram_tester.ExpectTotalCount("Net.QuicSession.ConnectionMigration", 0);
-  histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
 
   stream.reset();
   quic_data1.ExpectAllReadDataConsumed();

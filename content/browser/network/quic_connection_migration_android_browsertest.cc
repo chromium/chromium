@@ -18,6 +18,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/quic/quic_chromium_client_session.h"
+#include "net/quic/quic_migration_attempt_context.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
@@ -174,10 +175,7 @@ IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest, Basic) {
   ASSERT_EQ(result, "Simple Hello from QUIC Server");
 
   FetchHistogramsFromChildProcesses();
-  ASSERT_GE(histograms.GetBucketCount(
-                "Net.QuicSession.ConnectionMigration",
-                net::QuicConnectionMigrationStatus::MIGRATION_STATUS_SUCCESS),
-            1);
+  histograms.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible", true, 1);
 }
 
 // Currently trybots skip this test because trybots disabled real networks.
@@ -208,10 +206,8 @@ IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest,
   EXPECT_EQ(histograms.GetTotalSum("Net.QuicProtocolError.RetryStatus"), 0);
 
   FetchHistogramsFromChildProcesses();
-  ASSERT_EQ(histograms.GetBucketCount(
-                "Net.QuicSession.ConnectionMigration",
-                net::QuicConnectionMigrationStatus::MIGRATION_STATUS_SUCCESS),
-            0);
+  histograms.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible", false,
+                                1);
 }
 
 }  // namespace content

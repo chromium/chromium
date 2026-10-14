@@ -86,11 +86,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="coalesced"/>
 </enum>
 
-<enum name="BooleanConfirmed">
-  <int value="0" label="Not Confirmed"/>
-  <int value="1" label="Confirmed"/>
-</enum>
-
 <enum name="BooleanExceeded">
   <int value="0" label="Not exceeded"/>
   <int value="1" label="Exceeded"/>
@@ -2849,29 +2844,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="THREE_PACKETS_LOST"/>
   <int value="4" label="FOUR_PACKETS_LOST"/>
   <int value="5" label="FIVE_PACKETS_LOST"/>
-</enum>
-
-<enum name="QuicConnectionMigrationStatus">
-  <int value="0" label="No stream to migrate"/>
-  <int value="1" label="Already migrated"/>
-  <int value="2" label="Internal error"/>
-  <int value="3" label="Too many migrations"/>
-  <int value="4" label="Success"/>
-  <int value="5" label="Disabled by non-migratable stream"/>
-  <int value="6" label="Migration not enabled"/>
-  <int value="7" label="No alternate network"/>
-  <int value="8" label="Disabled by too many path degradings"/>
-  <int value="9" label="Disabled by config"/>
-  <int value="10" label="Path degrading not enabled"/>
-  <int value="11" label="Timeout with no new network"/>
-  <int value="12"
-      label="Exceeding maximum number of migrations on write error"/>
-  <int value="13" label="Path degrading before handshake confirmed"/>
-  <int value="14" label="Idle migration period exceeded"/>
-  <int value="15" label="Migration fails due to lack of connection ID"/>
-  <int value="16" label="Migration Probe received Stateless Reset"/>
-  <int value="17" label="Migration aborted due to session close"/>
-  <int value="18" label="Path validation aborted because of newer validation"/>
 </enum>
 
 <enum name="QuicDisabledReason">

@@ -108,30 +108,6 @@ enum class ConnectionMigrationMode {
   FULL_MIGRATION_V2
 };
 
-// Result of connection migration.
-enum QuicConnectionMigrationStatus {
-  MIGRATION_STATUS_NO_MIGRATABLE_STREAMS,
-  MIGRATION_STATUS_ALREADY_MIGRATED,
-  MIGRATION_STATUS_INTERNAL_ERROR,
-  MIGRATION_STATUS_TOO_MANY_CHANGES,
-  MIGRATION_STATUS_SUCCESS,
-  MIGRATION_STATUS_NON_MIGRATABLE_STREAM,
-  MIGRATION_STATUS_NOT_ENABLED,
-  MIGRATION_STATUS_NO_ALTERNATE_NETWORK,
-  MIGRATION_STATUS_ON_PATH_DEGRADING_DISABLED,
-  MIGRATION_STATUS_DISABLED_BY_CONFIG,
-  MIGRATION_STATUS_PATH_DEGRADING_NOT_ENABLED,
-  MIGRATION_STATUS_TIMEOUT,
-  MIGRATION_STATUS_ON_WRITE_ERROR_DISABLED,
-  MIGRATION_STATUS_PATH_DEGRADING_BEFORE_HANDSHAKE_CONFIRMED,
-  MIGRATION_STATUS_IDLE_MIGRATION_TIMEOUT,
-  MIGRATION_STATUS_NO_UNUSED_CONNECTION_ID,
-  MIGRATION_STATUS_STATELESS_RESET,
-  MIGRATION_STATUS_DISCONNECTING,
-  MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION,
-  MIGRATION_STATUS_MAX
-};
-
 // Result of a connectivity probing attempt.
 enum class ProbingResult {
   PENDING,                          // Probing started, pending result.
@@ -1147,12 +1123,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void ResetNonMigratableStreams();
   void LogMetricsOnNetworkDisconnected();
   void LogMetricsOnNetworkMadeDefault();
-  void LogMigrationResultToHistogram(QuicConnectionMigrationStatus status);
-  void LogHandshakeStatusOnMigrationSignal() const;
-  void HistogramAndLogMigrationFailure(QuicConnectionMigrationStatus status,
-                                       quic::QuicConnectionId connection_id,
-                                       const char* reason);
-  void HistogramAndLogMigrationSuccess(quic::QuicConnectionId connection_id);
+  void LogMigrationFailure(quic::QuicConnectionId connection_id,
+                           const char* reason);
+  void LogMigrationSuccess(quic::QuicConnectionId connection_id);
   void LogPathValidationFailure(QuicChromiumPathValidationContext* context);
 
   // Notifies the factory that this session is going away and no more streams

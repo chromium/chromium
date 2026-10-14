@@ -2432,8 +2432,6 @@ TEST_P(QuicChromiumClientSessionTest,
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
-                                      MIGRATION_STATUS_INTERNAL_ERROR, 1);
 }
 
 // A probe that cannot even be started because the connection has no unused
@@ -2494,8 +2492,6 @@ TEST_P(QuicChromiumClientSessionTest, ProbingFailsWithNoUnusedConnectionId) {
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
-                                      MIGRATION_STATUS_INTERNAL_ERROR, 1);
 }
 
 TEST_P(QuicChromiumClientSessionTest,
@@ -2565,8 +2561,6 @@ TEST_P(QuicChromiumClientSessionTest,
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
-                                      MIGRATION_STATUS_DISCONNECTING, 1);
 }
 
 TEST_P(QuicChromiumClientSessionTest,
@@ -2633,9 +2627,6 @@ TEST_P(QuicChromiumClientSessionTest,
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.ConnectionMigration",
-      MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
 }
 
 TEST_P(QuicChromiumClientSessionTest,
@@ -2874,8 +2865,6 @@ TEST_P(QuicChromiumClientSessionTest, PathValidationFailure_RetryTimeout) {
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
-                                      MIGRATION_STATUS_TIMEOUT, 1);
 }
 
 TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
@@ -3575,11 +3564,8 @@ TEST_P(QuicChromiumClientSessionTest,
   // Simulate redundant OnNetworkMadeDefault with the SAME network.
   session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
 
-  // Verify that ALREADY_MIGRATED IS logged because feature is disabled by
-  // default.
-  histogram_tester.ExpectBucketCount(
-      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
-      MIGRATION_STATUS_ALREADY_MIGRATED, 1);
+  // Verify that kAlreadyOnTargetNetwork IS logged because feature is disabled
+  // by default.
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
       QuicMigrationAttemptIneligibleReason::kAlreadyOnTargetNetwork, 1);
@@ -3610,10 +3596,8 @@ TEST_P(QuicChromiumClientSessionTest,
   // Simulate redundant OnNetworkMadeDefault with the SAME network.
   session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
 
-  // Verify that ALREADY_MIGRATED is NOT logged because feature is enabled.
-  histogram_tester.ExpectBucketCount(
-      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
-      MIGRATION_STATUS_ALREADY_MIGRATED, 0);
+  // Verify that kAlreadyOnTargetNetwork is NOT logged because feature is
+  // enabled.
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
       QuicMigrationAttemptIneligibleReason::kAlreadyOnTargetNetwork, 0);
@@ -3630,13 +3614,10 @@ TEST_P(QuicChromiumClientSessionTest,
   // Call OnNetworkMadeDefault with WiFi again.
   // Since default_network_ is now invalid, it should NOT return early.
   // Since GetCurrentNetwork() is WiFi, and new_network is WiFi,
-  // it should detect we are already on WiFi and log ALREADY_MIGRATED.
+  // it should detect we are already on WiFi and log kAlreadyOnTargetNetwork.
   session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
 
-  // Verify that ALREADY_MIGRATED IS logged now.
-  histogram_tester.ExpectBucketCount(
-      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
-      MIGRATION_STATUS_ALREADY_MIGRATED, 1);
+  // Verify that kAlreadyOnTargetNetwork IS logged now.
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
       QuicMigrationAttemptIneligibleReason::kAlreadyOnTargetNetwork, 1);

@@ -30,19 +30,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Http." summary="Collected from the HTTP Cache instance."/>
 </variants>
 
-<variants name="ConnectionMigrationCause">
-  <variant name=".ChangePortOnPathDegrading" summary=""/>
-  <variant name=".NewNetworkConnectedPostPathDegrading" summary=""/>
-  <variant name=".OnMigrateBackToDefaultNetwork" summary=""/>
-  <variant name=".OnNetworkConnected" summary=""/>
-  <variant name=".OnNetworkDisconnected" summary=""/>
-  <variant name=".OnNetworkMadeDefault" summary=""/>
-  <variant name=".OnPathDegrading" summary=""/>
-  <variant name=".OnServerPreferredAddressAvailable" summary=""/>
-  <variant name=".OnWriteError" summary=""/>
-  <variant name=".Unknown" summary=""/>
-</variants>
-
 <!-- LINT.IfChange(PrewarmOutcome) -->
 
 <variants name="DeviceBoundSessionPrewarmOutcome">
@@ -6223,19 +6210,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ConnectionMigration{ConnectionMigrationCause}"
-    enum="QuicConnectionMigrationStatus" expires_after="2027-04-04">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The result of a QUIC connection migration attempt. The suffix specifies the
-    cause of connection migration. {ConnectionMigrationCause}
-  </summary>
-  <token key="ConnectionMigrationCause" variants="ConnectionMigrationCause">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Net.QuicSession.ConnectionTypeFromPeer" enum="AddressFamily"
     expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>
@@ -6509,41 +6483,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Net.QuicSession.HandshakeStatusOnConnectionMigration{ConnectionMigrationCause}"
-    enum="BooleanConfirmed" expires_after="2023-09-17">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The handshake status when the session attempts to migrate the connection
-    according to different migration causes. {ConnectionMigrationCause}
-  </summary>
-  <token key="ConnectionMigrationCause" variants="ConnectionMigrationCause">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.HandshakeStatusOnMigratingToServerPreferredAddress"
-    enum="BooleanConfirmed" expires_after="2024-05-11">
-  <owner>fayang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The handshake status when the session attempts to validate received server
-    preferred address.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.HandshakeStatusOnPortMigration"
-    enum="BooleanConfirmed" expires_after="2027-02-02">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The handshake status when the session attempts to port migration on path
-    degrading.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.HandshakeTimeout.PathDegradingDetected"
     enum="BooleanDetected" expires_after="2027-04-04">
   <owner>dschinazi@chromium.org</owner>
@@ -6749,16 +6688,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.MigrateToSocketSuccess" enum="Boolean"
-    expires_after="2025-04-13">
-  <owner>renjietang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records whether the migration of the QuicSession to a new socket is
-    successful.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.MinRTT" units="ms" expires_after="2027-04-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -6918,15 +6847,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total number of streams created by the client when the session is
     closed.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.OnServerPreferredAddressAvailable"
-    enum="QuicConnectionMigrationStatus" expires_after="2024-08-25">
-  <owner>fayang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The result of a QUIC server preferred address migration attempt.
   </summary>
 </histogram>
 
@@ -7101,20 +7021,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Net.QuicSession.PathValidationSuccess{ConnectionMigrationCause}"
-    enum="BooleanSuccess" expires_after="2027-08-09">
-  <owner>martinduke@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The result of path validation according to different migration causes.
-    {ConnectionMigrationCause}
-  </summary>
-  <token key="ConnectionMigrationCause" variants="ConnectionMigrationCause">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Net.QuicSession.PendingStreamsWaitTime" units="ms"
     expires_after="2027-01-17">
   <owner>bashi@chromium.org</owner>
@@ -7137,13 +7043,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The platform notification received by QUIC when network change happens.
   </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.PortMigration"
-    enum="QuicConnectionMigrationStatus" expires_after="2027-04-04">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>The result of a QUIC port migration attempt.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.PreferAesGcm" enum="BooleanPreferred"
