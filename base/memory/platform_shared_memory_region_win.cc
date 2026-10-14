@@ -123,7 +123,7 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
       base::FeatureList::IsEnabled(
           base::features::kRetryCreateFileMappingOnCommitLimit)) {
     // This retry mechanic is inspired by the proven OOM handling logic found in
-    // components/memory_pressure/system_memory_pressure_evaluator_win.cc. These
+    // components/memory_pressure/threshold_memory_pressure_evaluator.cc. These
     // specific variables are chosen to match that existing behavior.
     constexpr int kMaxTries = 25;
     constexpr base::TimeDelta kDelay = base::Milliseconds(50);

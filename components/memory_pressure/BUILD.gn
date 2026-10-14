@@ -4,6 +4,8 @@
 
 source_set("memory_pressure") {
   sources = [
+    "available_memory_monitor_evaluator.cc",
+    "available_memory_monitor_evaluator.h",
     "memory_pressure_level_reporter.cc",
     "memory_pressure_level_reporter.h",
     "memory_pressure_voter.cc",
@@ -13,18 +15,13 @@ source_set("memory_pressure") {
     "reclaim_target.h",
     "system_memory_pressure_evaluator.cc",
     "system_memory_pressure_evaluator.h",
+    "threshold_memory_pressure_evaluator.cc",
+    "threshold_memory_pressure_evaluator.h",
     "unnecessary_discard_monitor.cc",
     "unnecessary_discard_monitor.h",
   ]
 
   deps = [ "//base" ]
-
-  if (is_win) {
-    sources += [
-      "system_memory_pressure_evaluator_win.cc",
-      "system_memory_pressure_evaluator_win.h",
-    ]
-  }
 
   if (is_apple) {
     sources += [
@@ -49,9 +46,11 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "available_memory_monitor_evaluator_unittest.cc",
     "memory_pressure_level_reporter_unittest.cc",
     "memory_pressure_voter_unittest.cc",
     "multi_source_memory_pressure_monitor_unittest.cc",
+    "threshold_memory_pressure_evaluator_unittest.cc",
     "unnecessary_discard_monitor_unittest.cc",
   ]
 
@@ -62,10 +61,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_win) {
-    sources += [ "system_memory_pressure_evaluator_win_unittest.cc" ]
-  }
 
   if (is_mac) {
     sources += [ "system_memory_pressure_evaluator_mac_unittest.cc" ]

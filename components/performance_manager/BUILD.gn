@@ -318,6 +318,7 @@ static_library("performance_manager") {
   deps = [
     "//components/content_settings/core/common",
     "//components/guest_view/buildflags",
+    "//components/memory_pressure",
     "//components/metrics",
     "//components/performance_manager/scenario_api",
     "//components/pref_registry",
@@ -358,10 +359,6 @@ static_library("performance_manager") {
       "power/dbus_power_manager_sampling_event_source.cc",
       "power/dbus_power_manager_sampling_event_source.h",
     ]
-  }
-
-  if (is_win) {
-    deps += [ "//components/memory_pressure" ]
   }
 }
 

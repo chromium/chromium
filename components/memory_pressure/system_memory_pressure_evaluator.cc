@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -15,7 +14,7 @@
 #elif BUILDFLAG(IS_APPLE)
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #elif BUILDFLAG(IS_WIN)
-#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
+#include "components/memory_pressure/threshold_memory_pressure_evaluator.h"
 #endif
 
 namespace memory_pressure {
@@ -32,10 +31,8 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
       monitor->CreateVoter());
 #elif BUILDFLAG(IS_WIN)
-  auto evaluator =
-      std::make_unique<memory_pressure::win::SystemMemoryPressureEvaluator>(
-          monitor->CreateVoter());
-  return evaluator;
+  return ThresholdMemoryPressureEvaluator::CreateWithWinDefaults(
+      monitor->CreateVoter());
 #else
   // Chrome OS and Chromecast evaluators are created in separate components.
   return nullptr;

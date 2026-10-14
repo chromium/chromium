@@ -39,7 +39,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
+#include "components/memory_pressure/threshold_memory_pressure_evaluator.h"
 #endif
 
 namespace performance_manager {
@@ -1523,8 +1523,8 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
   // TODO(b/466015017): Standardize memory pressure handling and remove this
   // direct dependency on //components/memory_pressure once the experiment
   // concludes.
-  if (avail <= memory_pressure::win::SystemMemoryPressureEvaluator::
-                   kPhysicalMemoryDefaultCriticalThreshold) {
+  if (avail <= memory_pressure::ThresholdMemoryPressureEvaluator::
+                   kDefaultWinCriticalThreshold) {
     new_level = base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
   } else if (is_now_under_pressure) {
     new_level = base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
