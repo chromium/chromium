@@ -22,11 +22,12 @@
 
 class MetricsReporter;
 class OmniboxController;
+class Profile;
 
 struct AiModeButtonUiConfig;
 
 namespace content {
-class WebUI;
+class WebContents;
 }  // namespace content
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
@@ -38,7 +39,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       MetricsReporter* metrics_reporter,
       OmniboxController* omnibox_controller,
-      content::WebUI* web_ui,
+      Profile* profile,
+      content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback);
 
   WebuiOmniboxHandler(const WebuiOmniboxHandler&) = delete;

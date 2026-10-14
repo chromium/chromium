@@ -67,7 +67,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/common/extension_features.h"
@@ -1379,7 +1378,6 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    web_ui_.set_web_contents(web_contents_.get());
 
     popup_view_ =
         std::make_unique<FakeOmniboxPopupView>(omnibox_controller_.get());
@@ -1393,7 +1391,8 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
     handler_ = std::make_unique<WebuiOmniboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_,
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), profile(),
+        web_contents_.get(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;
@@ -1409,7 +1408,6 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
-  content::TestWebUI web_ui_;
   std::unique_ptr<OmniboxPopupUI> omnibox_popup_ui_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<FakeOmniboxPopupView> popup_view_;

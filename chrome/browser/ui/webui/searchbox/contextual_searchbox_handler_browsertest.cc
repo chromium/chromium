@@ -44,7 +44,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_observer_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -573,9 +572,6 @@ class WebuiOmniboxHandlerBrowserTest
   void SetUpOnMainThread() override {
     ContextualSearchboxHandlerBrowserTest::SetUpOnMainThread();
 
-    test_web_ui_.set_web_contents(
-        browser()->GetTabStripModel()->GetActiveWebContents());
-
     omnibox_controller_ = std::make_unique<OmniboxController>(
         std::make_unique<TestOmniboxClient>());
     omnibox_controller_->SetEditModelForTesting(
@@ -585,7 +581,9 @@ class WebuiOmniboxHandlerBrowserTest
     omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         omnibox_page_.BindAndGetRemote(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &test_web_ui_,
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(),
+        browser()->GetProfile(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
   }
 
@@ -595,7 +593,6 @@ class WebuiOmniboxHandlerBrowserTest
     ContextualSearchboxHandlerBrowserTest::TearDownOnMainThread();
   }
 
-  content::TestWebUI test_web_ui_;
   testing::NiceMock<MockSearchboxPage> omnibox_page_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;

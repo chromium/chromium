@@ -571,7 +571,7 @@ void WebUIToolbarUI::CreatePageHandler(
   omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(receiver), std::move(page),
       metrics_reporter_service->metrics_reporter(), omnibox_controller_,
-      web_ui(),
+      Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       base::BindRepeating(&WebUIToolbarUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 }
