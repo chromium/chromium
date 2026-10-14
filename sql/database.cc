@@ -222,7 +222,7 @@ enum class OpenDatabaseFailedReason {
   kMaxValue = kPragmaJournalFailed
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:OpenDatabaseFailedReason)
 // Reports the reason for a failure in Database::Open(...).
 void RecordOpenDatabaseFailureReason(const std::string& histogram_tag,
                                      OpenDatabaseFailedReason reason) {
@@ -249,7 +249,7 @@ enum class RazeDatabaseFailedReason {
   kMaxValue = kCheckpointFailed
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:RazeDatabaseFailedReason)
 // Reports the reason for a failure in Database::Raze(...).
 void RecordRazeDatabaseFailureReason(const std::string& histogram_tag,
                                      RazeDatabaseFailedReason reason) {
