@@ -181,7 +181,7 @@ gfx::ColorSpace CopyOutputResult::GetRGBAColorSpace() const {
   if (!bitmap.readyToDraw())
     return gfx::ColorSpace();
   DCHECK(bitmap.colorSpace());
-  return gfx::ColorSpace(*(bitmap.colorSpace()));
+  return gfx::ColorSpace(bitmap.colorSpace());
 }
 
 CopyOutputSkBitmapResult::CopyOutputSkBitmapResult(const gfx::Rect& rect,

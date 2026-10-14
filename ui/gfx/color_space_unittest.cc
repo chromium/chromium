@@ -269,7 +269,7 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   // ColorSpace back to SkColorSpace is also producing an equivalent
   // representation.
   for (size_t i = 0; i < std::size(color_spaces); ++i) {
-    const ColorSpace from_sk_color_space(*sk_color_spaces[i],
+    const ColorSpace from_sk_color_space(sk_color_spaces[i].get(),
                                          color_spaces[i].IsHDR());
     EXPECT_EQ(color_spaces[i], from_sk_color_space);
     EXPECT_TRUE(SkColorSpace::Equals(

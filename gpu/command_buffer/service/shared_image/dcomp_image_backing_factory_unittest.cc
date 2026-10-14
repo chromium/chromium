@@ -569,7 +569,7 @@ class DCompImageBackingFactoryVisualTreeTest
     if (color_space.IsAffectedBySDRWhiteLevel()) {
       auto sk_color_space =
           color_space.ToSkColorSpace(gfx::ColorSpace::kDefaultSDRWhiteLevel);
-      color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
+      color_space = gfx::ColorSpace(sk_color_space.get(), /*is_hdr=*/true);
     }
 
     DVLOG(2) << "usage = " << CreateLabelForSharedImageUsage(usage)

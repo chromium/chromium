@@ -161,16 +161,15 @@ ColorSpace::ColorSpace(const SkColorSpacePrimaries& primaries,
   SetCustomTransferFunction(fn, /*is_hdr=*/false);
 }
 
-ColorSpace::ColorSpace(const SkColorSpace* sk_color_space, bool is_hdr)
-    : ColorSpace(sk_color_space ? ColorSpace(*sk_color_space, is_hdr) : ColorSpace()) {}
+ColorSpace::ColorSpace(const SkColorSpace* sk_color_space, bool is_hdr) {
+  if (!sk_color_space) {
+    return;
+  }
+  matrix_ = MatrixID::RGB;
+  range_ = RangeID::FULL;
 
-ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
-    : ColorSpace(PrimaryID::INVALID,
-                 TransferID::INVALID,
-                 MatrixID::RGB,
-                 RangeID::FULL) {
   skcms_TransferFunction fn;
-  if (sk_color_space.isNumericalTransferFn(&fn)) {
+  if (sk_color_space->isNumericalTransferFn(&fn)) {
     SetCustomTransferFunction(fn, is_hdr);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::HLG;
@@ -197,7 +196,7 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
   }
 
   skcms_Matrix3x3 to_XYZD50;
-  if (!sk_color_space.toXYZD50(&to_XYZD50)) {
+  if (!sk_color_space->toXYZD50(&to_XYZD50)) {
     // Construct an invalid result: Unable to extract necessary parameters
     return;
   }
@@ -707,7 +706,8 @@ ColorSpace ColorSpace::GetWithSdrWhiteLevel(float sdr_white_level) const {
   if (!IsAffectedBySDRWhiteLevel())
     return *this;
 
-  return gfx::ColorSpace(*ToSkColorSpace(sdr_white_level), /*is_hdr=*/true);
+  return gfx::ColorSpace(ToSkColorSpace(sdr_white_level).get(),
+                         /*is_hdr=*/true);
 }
 
 sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(

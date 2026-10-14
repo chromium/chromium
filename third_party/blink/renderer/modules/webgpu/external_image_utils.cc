@@ -227,7 +227,8 @@ wgpu::CopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
     sk_src_color_space = SkColorSpace::MakeSRGB();
   }
 
-  gfx::ColorSpace gfx_src_color_space = gfx::ColorSpace(*sk_src_color_space);
+  gfx::ColorSpace gfx_src_color_space =
+      gfx::ColorSpace(sk_src_color_space.get());
   gfx::ColorSpace gfx_dst_color_space =
       PredefinedColorSpaceToGfxColorSpace(dst_color_space);
 

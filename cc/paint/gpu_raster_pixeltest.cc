@@ -828,7 +828,7 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImage) {
   {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
-        gfx::ColorSpace(*dest_color_space);
+        gfx::ColorSpace(dest_color_space.get());
     options.target_color_params.hdr_headroom = 0.f;
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
@@ -842,7 +842,7 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImage) {
   {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
-        gfx::ColorSpace(*dest_color_space);
+        gfx::ColorSpace(dest_color_space.get());
     options.target_color_params.hdr_headroom = std::log2(kDestScale);
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
@@ -916,7 +916,7 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImageCubic) {
   {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
-        gfx::ColorSpace(*dest_color_space);
+        gfx::ColorSpace(dest_color_space.get());
     options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);
@@ -1019,7 +1019,7 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImageFiltering) {
   {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
-        gfx::ColorSpace(*dest_color_space);
+        gfx::ColorSpace(dest_color_space.get());
     options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);

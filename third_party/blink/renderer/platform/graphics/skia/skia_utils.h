@@ -47,7 +47,7 @@ namespace blink {
 // TODO(crbug.com/371227617): Remove this once conversion is complete.
 inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
     sk_sp<SkColorSpace> sk_color_space) {
-  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
+  return sk_color_space ? gfx::ColorSpace(sk_color_space.get())
                         : gfx::ColorSpace::CreateSRGB();
 }
 

@@ -938,7 +938,7 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
     return nullptr;
 
   if (sk_image->colorSpace()) {
-    frame->set_color_space(gfx::ColorSpace(*sk_image->colorSpace()));
+    frame->set_color_space(gfx::ColorSpace(sk_image->colorSpace()));
   }
 
   frame->AddDestructionObserver(

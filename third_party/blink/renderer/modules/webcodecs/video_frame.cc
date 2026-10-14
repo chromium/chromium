@@ -766,7 +766,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // content will convert to LINEAR in the lower branch.
     gfx_color_space = gfx::ColorSpace::CreateSRGBLinear();
   } else {
-    gfx_color_space = gfx::ColorSpace(*sk_color_space);
+    gfx_color_space = gfx::ColorSpace(sk_color_space.get());
     if (!gfx_color_space.IsValid()) {
       exception_state.ThrowTypeError("Invalid color space");
       return nullptr;

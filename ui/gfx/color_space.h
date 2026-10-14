@@ -183,7 +183,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
              const skcms_TransferFunction& fn);
 
   explicit ColorSpace(const SkColorSpace* sk_color_space, bool is_hdr = false);
-  explicit ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr = false);
 
   // Returns true if this is not the default-constructor object.
   bool IsValid() const;

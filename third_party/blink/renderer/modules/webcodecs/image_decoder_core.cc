@@ -406,7 +406,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   }
 
   if (auto sk_cs = decoder_->ColorSpaceForSkImages()) {
-    auto gfx_cs = gfx::ColorSpace(*sk_cs);
+    auto gfx_cs = gfx::ColorSpace(sk_cs.get());
     if (gfx_cs.IsValid()) {
       frame->set_color_space(gfx_cs);
     }
@@ -544,7 +544,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
 
   gfx::ColorSpace gfx_cs;
   if (auto sk_cs = decoder_->ColorSpaceForSkImages())
-    gfx_cs = gfx::ColorSpace(*sk_cs);
+    gfx_cs = gfx::ColorSpace(sk_cs.get());
 
   const auto skyuv_cs = decoder_->GetYUVColorSpace();
   DCHECK_NE(skyuv_cs, kIdentity_SkYUVColorSpace);

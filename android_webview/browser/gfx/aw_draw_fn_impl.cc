@@ -146,8 +146,7 @@ HardwareRendererDrawParams CreateHRDrawParams(T* params,
       .width = params->width,
       .height = params->height,
       .transform = std::to_array(params->transform),
-      .color_space =
-          color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
+      .color_space = gfx::ColorSpace(color_space),
   };
 }
 

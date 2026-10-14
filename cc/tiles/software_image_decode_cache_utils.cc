@@ -311,7 +311,7 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
                                                paint_image.GetHDRMetadata())) {
     if (paint_image.color_space()) {
       target_color_params.color_space =
-          gfx::ColorSpace(*paint_image.color_space());
+          gfx::ColorSpace(paint_image.color_space());
     }
   }
 
