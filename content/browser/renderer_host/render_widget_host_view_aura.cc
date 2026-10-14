@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -3067,6 +3068,10 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
 
   delegated_frame_host_.reset();
   window_observer_.reset();
+  // TODO(crbug.com/568824848): Remove the `if (window_)` branch once M160
+  // confirms `window_` is always null here (both `DestroyImpl()` and
+  // `OnWindowDestroyed()` clear `window_ = nullptr` before `delete this`).
+  CHECK(!window_, base::NotFatalUntil::M160);
   if (window_) {
     aura::client::SetFocusChangeObserver(window_, nullptr);
     if (window_->GetHost())
