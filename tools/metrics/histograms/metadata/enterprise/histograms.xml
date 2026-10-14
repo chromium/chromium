@@ -1788,7 +1788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.{Variant}"
-    enum="DeviceSignalsSignalName" expires_after="2027-03-14">
+    enum="DeviceSignalsSignalName" expires_after="2027-10-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1867,9 +1867,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
-    enum="DTAttestationFunnelStep" expires_after="2027-04-04">
+    enum="DTAttestationFunnelStep" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
   <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Various steps recorded when a device goes through the device trust connector
     attestation flow with a partner website.
@@ -1877,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.PolicyLevel"
-    enum="DTAttestationPolicyLevel" expires_after="2027-04-11">
+    enum="DTAttestationPolicyLevel" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1890,9 +1891,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
-    units="ms" expires_after="2027-04-04">
+    units="ms" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
   <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Latency of a {Variant} attestation step in the overarching Device Trust
     connector's attestation flow. This measures the amount of time required to
@@ -1906,9 +1908,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Result"
-    enum="DTAttestationResult" expires_after="2027-03-07">
+    enum="DTAttestationResult" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
   <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Result of the attestation step in the overarching Device Trust connector's
     attestation flow. Logged whenever the attestation step finishes, success or
@@ -1928,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Handshake.Result"
-    enum="DTHandshakeResult" expires_after="2027-03-07">
+    enum="DTHandshakeResult" expires_after="2027-10-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -2168,9 +2171,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}"
-    units="ms" expires_after="2027-04-11">
+    units="ms" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
   <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Latency recorded when the {Variant} decorator(s) finish collecting their
     signals. Captures the amount of time required to collect the signals under
