@@ -477,8 +477,13 @@ rustc_wrapper_inputs = [
   "//build/rust/gni_impl/rustc_wrapper.py",
 ]
 
-if (host_os == "win") {
-  rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc.exe" ]
-} else {
-  rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc" ]
+if (enable_rust) {
+  # Path to the `rustc` executable (from either the Chromium toolchain or
+  # from a custom toolchain specified via `rust_sysroot_absolute`).
+  rustc_exe_path = "$rust_sysroot/bin/rustc"
+  if (host_os == "win") {
+    rustc_exe_path += ".exe"
+  }
+
+  rustc_wrapper_inputs += [ rustc_exe_path ]
 }
