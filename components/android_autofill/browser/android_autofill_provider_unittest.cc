@@ -926,19 +926,9 @@ class AndroidAutofillProviderWithCredManTest
     AndroidAutofillProviderTestBase::SetUp();
 
     autofill_provider().MaybeInitKeyboardSuppressor();
-
-    // Navigation creates the AndroidAutofillManager for the main frame.
-    NavigateAndCommit(GURL("https://foo.com"));
-    FocusWebContentsOnMainFrame();
-
-    // Load a form with webuthn-annotated username and regular password fields.
-    test_webauthn_form_ = CreateFormDataForFrame(
-        CreateTestWebAuthnPasswordFormData(), main_frame_token());
-    url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-    test_api(test_webauthn_form_).field(0).set_origin(foo_origin);
-    test_api(test_webauthn_form_).field(1).set_origin(foo_origin);
-
-    InitializeWebAuthnFactoryWithMock();
+    webauthn::WebAuthnClientAndroid::SetClient(
+        std::make_unique<webauthn::StubWebAuthnClientAndroid>());
+    NavigateMainFrameTo(GURL("https://foo.com"));
   }
 
   void TearDown() override {
@@ -946,9 +936,22 @@ class AndroidAutofillProviderWithCredManTest
     AndroidAutofillProviderTestBase::TearDown();
   }
 
+  void NavigateMainFrameTo(const GURL& url) {
+    // Navigation creates the AndroidAutofillManager for the main frame.
+    NavigateAndCommit(url);
+    FocusWebContentsOnMainFrame();
+
+    // Load a form with webuthn-annotated username and regular password fields.
+    test_webauthn_form_ = CreateFormDataForFrame(
+        CreateTestWebAuthnPasswordFormData(), main_frame_token());
+    url::Origin origin = url::Origin::Create(url);
+    test_api(test_webauthn_form_).field(0).set_origin(origin);
+    test_api(test_webauthn_form_).field(1).set_origin(origin);
+
+    InitializeWebAuthnFactoryWithMock();
+  }
+
   void InitializeWebAuthnFactoryWithMock() {
-    webauthn::WebAuthnClientAndroid::SetClient(
-        std::make_unique<webauthn::StubWebAuthnClientAndroid>());
     auto mock_cred_man_delegate =
         std::make_unique<NiceMock<webauthn::MockWebAuthnCredManDelegate>>();
     webauthn::test_api(web_authn_delegate_factory())
@@ -1021,7 +1024,7 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
   FocusFormField(webauthn_email_field());
 
   // Navigate which allows CredMan to be shown again.
-  NavigateAndCommit(GURL("about:to-do-stuff"));
+  NavigateMainFrameTo(GURL("https://foo.com/to-do-stuff"));
   EXPECT_CALL(cred_man_delegate(),
               TriggerCredManUi(Eq(
                   webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
@@ -1584,6 +1587,71 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
       AutofillManagerTestApi::pass_key());
 
   // Verify sheet status is still showing and session was not reset.
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+
+  // Subsequent AskForValuesToFill from attacker frame should be ignored while
+  // CredMan is showing, preventing origin poisoning.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, attacker_field.global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+}
+
+// Tests that an uncommitted navigation in the frame hosting the CredMan sheet
+// does not reset the CredMan sheet status or allow origin spoofing.
+// (See crbug.com/573266324)
+TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
+       UncommittedNavDoesNotResetCredManSheetStatus) {
+  const url::Origin attacker_origin =
+      url::Origin::Create(GURL(kAttackerOrigin));
+  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
+
+  // Setup form spanning multiple frames.
+  FormData form = GetFormData({
+      .fields = {{
+                     .host_frame = LocalFrameToken(
+                         attacker_frame_->GetFrameToken().value()),
+                     .origin = attacker_origin,
+                 },
+                 {
+                     .host_frame =
+                         LocalFrameToken(main_frame()->GetFrameToken().value()),
+                     .autocomplete_attribute = "webauthn",
+                     .origin = victim_origin,
+                 }},
+      .url = std::string(kVictimOrigin) + "/form.html",
+      .main_frame_origin = victim_origin,
+  });
+
+  const FormFieldData& attacker_field = form.fields()[0];
+  const FormFieldData& victim_field = form.fields()[1];
+
+  android_autofill_manager().OnFormsSeen({form}, {},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Victim frame queries and focuses, starting session and triggering CredMan
+  // sheet.
+  test_api(autofill_provider())
+      .StartNewSession(&android_autofill_manager(), form, victim_field);
+  android_autofill_manager().OnFocusOnFormField(
+      form, victim_field.global_id(), AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(form,
+                                                      victim_field.global_id());
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+
+  // Start and abort a navigation on the main frame (which hosts the CredMan
+  // sheet) so that DidFinishNavigation() runs with HasCommitted() == false.
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL(std::string(kAttackerOrigin) + "/204"), main_frame());
+  simulator->Start();
+  simulator->AbortCommit();
+
+  // Verify sheet status is still showing and session origin is preserved.
   EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             victim_origin);

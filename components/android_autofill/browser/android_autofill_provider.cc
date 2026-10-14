@@ -177,17 +177,20 @@ void AndroidAutofillProvider::RenderFrameDeleted(
 
 void AndroidAutofillProvider::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
   if (session_state_ && session_state_->manager &&
       session_state_->last_queried_field_rfh_id ==
-          navigation_handle->GetPreviousRenderFrameHostId() &&
-      !navigation_handle->IsSameDocument()) {
+          navigation_handle->GetPreviousRenderFrameHostId()) {
     OnHidePopup(session_state_->manager.get());
     session_state_->last_queried_field_rfh_id = {};
   }
 
   if (credman_sheet_rfh_id_ ==
-          navigation_handle->GetPreviousRenderFrameHostId() &&
-      !navigation_handle->IsSameDocument()) {
+      navigation_handle->GetPreviousRenderFrameHostId()) {
     if (content::RenderFrameHost* rfh =
             content::RenderFrameHost::FromID(credman_sheet_rfh_id_)) {
       if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
