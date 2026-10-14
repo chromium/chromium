@@ -165,7 +165,6 @@ static_library("browser") {
   ]
 
   all_dependent_configs = [ ":password_reuse_detection_config" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":metrics_util",
@@ -312,7 +311,6 @@ source_set("password_string") {
     "//base",
     "//components/password_manager/core/browser/features:password_features",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # PasswordForm is an extremely common struct used by many sub-components and
@@ -335,7 +333,6 @@ source_set("password_form") {
     "//components/signin/public/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("passkey_credential") {
@@ -409,7 +406,6 @@ static_library("password_hash_data") {
     "//crypto",
     "//google_apis",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("hash_password_manager") {
@@ -425,7 +421,6 @@ static_library("hash_password_manager") {
     "//components/password_manager/core/common",
     "//components/prefs",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

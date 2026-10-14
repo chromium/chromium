@@ -12,7 +12,6 @@ source_set("password_features") {
     "//base",
     "//components/password_manager/core/browser:password_manager_buildflags",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("utils") {
@@ -28,8 +27,6 @@ source_set("utils") {
     "//components/prefs",
     "//components/sync/service",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

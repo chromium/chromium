@@ -29,7 +29,6 @@ source_set("password_store_interface") {
     "//components/keyed_service/core",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("password_store_impl") {
@@ -115,7 +114,6 @@ source_set("password_store_impl") {
       sources += [ "login_database_win.cc" ]
     }
   }
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -143,7 +141,6 @@ static_library("test_support") {
     "//components/sync/model",
     "//testing/gmock",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -198,5 +195,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

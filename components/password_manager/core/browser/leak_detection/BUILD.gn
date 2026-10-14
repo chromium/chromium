@@ -29,7 +29,6 @@ source_set("leak_detection_interface_headers") {
     "//components/keyed_service/core",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("leak_detection") {
@@ -81,8 +80,6 @@ source_set("leak_detection") {
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

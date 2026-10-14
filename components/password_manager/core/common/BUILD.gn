@@ -40,8 +40,6 @@ static_library("common") {
     ":features",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("browser_assisted_login_type") {
@@ -51,7 +49,6 @@ source_set("browser_assisted_login_type") {
 source_set("constants") {
   sources = [ "password_manager_constants.h" ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("features") {
@@ -64,8 +61,6 @@ source_set("features") {
     "//base",
     "//build:blink_buildflags",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

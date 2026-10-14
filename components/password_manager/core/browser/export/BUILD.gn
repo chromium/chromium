@@ -21,7 +21,6 @@ source_set("export") {
     "//components/password_manager/core/browser/ui",
     "//components/sync/base:features",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

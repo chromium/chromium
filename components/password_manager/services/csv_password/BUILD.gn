@@ -21,8 +21,6 @@ source_set("lib") {
     public_deps +=
         [ "//components/password_manager/services/csv_password/ios:lib" ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("service") {
@@ -44,8 +42,6 @@ source_set("service") {
       "//content/public/browser",
     ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("fake_password_parser_service") {
