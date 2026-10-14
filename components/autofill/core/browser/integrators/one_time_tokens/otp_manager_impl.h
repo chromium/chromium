@@ -181,6 +181,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   GetOtpSuggestionsCallback last_pending_get_suggestions_callback_;
   LocalFrameToken last_pending_frame_token_;
 
+  // True while an asynchronous PhishGuard check is pending for a Gmail OTP
+  // associated with `last_pending_get_suggestions_callback_`. Prevents
+  // non-Gmail callbacks (such as synchronous SMS backend errors on Desktop)
+  // from consuming `last_pending_get_suggestions_callback_` before the
+  // PhishGuard check completes.
+  bool is_gmail_phish_guard_pending_ = false;
+
   // Tracks the currently focused form and field, if any.
   std::optional<FormGlobalId> currently_focused_form_id_;
   std::optional<FieldGlobalId> currently_focused_field_id_;

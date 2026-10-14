@@ -3340,4 +3340,67 @@ TEST_F(
 
   autofill_client().set_affiliation_service(nullptr);
 }
+
+// Tests that when OtpPhishGuardDelegate completes asynchronously and the SMS
+// backend is null (as on Desktop), GetOtpSuggestions() delivers the cached
+// Gmail OTP rather than having its callback stolen by the synchronous
+// kSmsOtpBackendPlatformNotSupported error.
+TEST_F(
+    OtpManagerImplTest,
+    ProactiveTickle_AsyncPhishGuardWithNullSmsBackendDeliversCachedGmailOtp) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+
+  OneTimeTokenServiceImpl desktop_service(/*sms_otp_backend=*/nullptr,
+                                          /*gmail_otp_backend=*/nullptr);
+  OtpManagerImpl otp_manager(autofill_manager(), &desktop_service);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->field_count(), 1u);
+  FieldGlobalId otp_field_id = form->field(0)->global_id();
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
+                                       otp_field_id);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .Times(2)
+      .WillRepeatedly([](LocalFrameToken,
+                         base::OnceCallback<void(bool is_phishing)> callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), false));
+      });
+  EXPECT_CALL(
+      autofill_driver(),
+      RendererShouldTriggerSuggestions(
+          otp_field_id,
+          AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable));
+
+  test_api(otp_manager)
+      .OnGmailOtpRetrieved(one_time_tokens::GmailOtpRetriever::Result{
+          .token = one_time_tokens::OneTimeToken(
+              one_time_tokens::OneTimeTokenType::kGmail, "654321",
+              base::TimeTicks::Now(), "sender@example.com"),
+          .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
+      });
+  task_environment_.RunUntilIdle();
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      followup_future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0),
+                                followup_future.GetCallback());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(followup_future.IsReady());
+  EXPECT_THAT(
+      followup_future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
+
+  autofill_client().set_affiliation_service(nullptr);
+}
+
 }  // namespace autofill

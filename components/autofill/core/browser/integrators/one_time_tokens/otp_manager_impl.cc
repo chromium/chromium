@@ -102,6 +102,7 @@ void OtpManagerImpl::GetOtpSuggestions(
   if (last_pending_get_suggestions_callback_) {
     std::move(last_pending_get_suggestions_callback_).Run({});
   }
+  is_gmail_phish_guard_pending_ = false;
   last_pending_frame_token_ = field.host_frame();
   last_pending_get_suggestions_callback_ = std::move(callback);
 
@@ -261,6 +262,7 @@ void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
   }
 
   if (last_pending_get_suggestions_callback_) {
+    is_gmail_phish_guard_pending_ = false;
     // Post the callback asynchronously to prevent re-entrancy when notifying
     // `Observer::OnAfterAskForValuesToFill` from inside this
     // `Observer::OnBeforeFocusOnFormField` notification loop.
@@ -281,6 +283,7 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
   last_triggered_otp_value_.clear();
 
   if (last_pending_get_suggestions_callback_) {
+    is_gmail_phish_guard_pending_ = false;
     // Post the callback asynchronously to prevent re-entrancy when notifying
     // `Observer::OnAfterAskForValuesToFill` from inside this
     // `Observer::OnBeforeFocusOnNonFormField` notification loop.
@@ -405,7 +408,8 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
   if (backend_type != OneTimeTokenSource::kGmail &&
-      !last_pending_get_suggestions_callback_) {
+      (!last_pending_get_suggestions_callback_ ||
+       is_gmail_phish_guard_pending_)) {
     return;
   }
 
@@ -415,6 +419,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   if (backend_type == OneTimeTokenSource::kGmail &&
       !UserOptedIntoGmailOtpFilling()) {
     if (last_pending_get_suggestions_callback_) {
+      is_gmail_phish_guard_pending_ = false;
       std::move(last_pending_get_suggestions_callback_).Run({});
     }
     return;
@@ -423,6 +428,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   // If token_or_error holds an error, run the callback with empty otp value.
   if (!token_or_error) {
     if (last_pending_get_suggestions_callback_) {
+      is_gmail_phish_guard_pending_ = false;
       std::move(last_pending_get_suggestions_callback_).Run({});
     }
     return;
@@ -462,6 +468,10 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   // potential phishing sites.
   if (OtpPhishGuardDelegate* delegate =
           owner_->client().GetOtpPhishGuardDelegate()) {
+    if (backend_type == OneTimeTokenSource::kGmail &&
+        last_pending_get_suggestions_callback_) {
+      is_gmail_phish_guard_pending_ = true;
+    }
     base::TimeTicks start_time = base::TimeTicks::Now();
     base::UmaHistogramBoolean(
         "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", true);
@@ -557,6 +567,7 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
     if (last_pending_frame_token_ != frame_token) {
       return;
     }
+    is_gmail_phish_guard_pending_ = false;
     std::vector<OneTimeToken> suggestions;
     if (verdict == OneTimeTokensPhishGuardVerdict::kPhishing) {
       last_retrieved_gmail_otp_.reset();
