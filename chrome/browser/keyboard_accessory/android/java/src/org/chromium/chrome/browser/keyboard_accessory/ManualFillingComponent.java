@@ -215,12 +215,13 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param waitForKeyboard signals if the keyboard is requested.
      * @param shouldShowOnLargeFormFactor signals if the accessory should be shown on Large Form
      *     Factors.
-     * @param isContentEditable signals if the currently focused field is a contenteditable element.
+     * @param isUnstructuredField signals if the currently focused field is an unstructured field
+     *     (contenteditable or textarea) that only supports AtMemory.
      */
     void show(
             boolean waitForKeyboard,
             boolean shouldShowOnLargeFormFactor,
-            boolean isContentEditable);
+            boolean isUnstructuredField);
 
     /**
      * Requests to close the active tab in the keyboard accessory. If there is no active tab, this

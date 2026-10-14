@@ -229,6 +229,8 @@ BASE_DECLARE_FEATURE(kAutofillAtMemorySearchStatefulness);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAtMemorySupportTextAreaOnAndroid);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryTriggerShortcut);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryTriggerString);

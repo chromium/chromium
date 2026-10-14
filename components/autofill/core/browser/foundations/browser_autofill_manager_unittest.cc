@@ -5820,6 +5820,50 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
        CreateManageAddressesSuggestion()});
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Parametrized over `kAutofillNewSuggestionGeneration`: the textarea
+// suppression must apply on both the legacy and the new generation path.
+class BrowserAutofillManagerTextAreaTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerTextAreaTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillNewSuggestionGeneration, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAutofillManagerTextAreaTest,
+                         testing::Bool());
+
+// Tests that with `kAutofillAtMemorySupportTextAreaOnAndroid`, no Autofill
+// suggestions are generated for a <textarea> on Android, even if the field is
+// classified: textareas only offer the AtMemory entry point in the keyboard
+// accessory.
+TEST_P(BrowserAutofillManagerTextAreaTest, NoSuggestionsForTextAreaOnAndroid) {
+  FormData form = CreateTestAddressFormData();
+  test_api(form).field(3).set_form_control_type(FormControlType::kTextArea);
+  FormsSeen({form});
+
+  // Without the feature, the classified textarea yields address suggestions
+  // (two entries, a separator and "Manage addresses").
+  OnAskForValuesToFill(form, form.fields()[3]);
+  external_delegate()->CheckSuggestionCount(form.fields()[3].global_id(), 4);
+
+  // With the feature, it yields none.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySupportTextAreaOnAndroid};
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  OnAskForValuesToFill(form, form.fields()[3]);
+  external_delegate()->CheckNoSuggestions(form.fields()[3].global_id());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Tests that Compose suggestions are queried if the trigger source indicates
 // that the focus change happened without click/tap interaction. It also
 // verifies that neither Autofill nor single form fill suggestions are queried.

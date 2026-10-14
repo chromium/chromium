@@ -96,7 +96,7 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
     public void show(
             boolean waitForKeyboard,
             boolean shouldShowOnLargeFormFactor,
-            boolean isContentEditable) {}
+            boolean isUnstructuredField) {}
 
     @Override
     public void closeAccessorySheet() {}

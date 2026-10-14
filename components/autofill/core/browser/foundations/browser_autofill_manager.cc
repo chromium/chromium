@@ -524,6 +524,25 @@ bool IsTriggerSourceOnlyRelevantForCompose(
   NOTREACHED();
 }
 
+// Returns true if regular Autofill suggestions must not be generated for
+// `field` because it is a <textarea> on Android. With
+// `kAutofillAtMemorySupportTextAreaOnAndroid`, textareas behave like
+// contenteditables: the keyboard accessory only offers the AtMemory entry
+// point, so no address, payment or single-field suggestions are generated for
+// them. AtMemory-triggered suggestions are unaffected.
+bool ShouldSuppressSuggestionsForTextArea(
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source) {
+#if BUILDFLAG(IS_ANDROID)
+  return field.form_control_type() == FormControlType::kTextArea &&
+         !IsAtMemoryTriggerSource(trigger_source) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillAtMemorySupportTextAreaOnAndroid);
+#else
+  return false;
+#endif
+}
+
 // Returns `true` if this suggestion trigger source should replace the currently
 // showing suggestions. `true` for everything but IPH-like nudges to start using
 // a product (Compose, AtMemory).
@@ -1248,6 +1267,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
+
+  // Textareas on Android only offer the AtMemory entry point in the keyboard
+  // accessory, so no Autofill suggestions are generated for them.
+  if (ShouldSuppressSuggestionsForTextArea(field, trigger_source)) {
+    external_delegate_->OnSuggestionsReturned(field, /*input_suggestions=*/{},
+                                              /*prefilled_query=*/{});
+    return;
+  }
 
   if (AtMemoryManager* amm = client().GetAtMemoryManager();
       amm && IsAtMemoryTriggerSource(trigger_source)) {

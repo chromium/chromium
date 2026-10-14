@@ -1149,7 +1149,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
@@ -1178,7 +1178,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
@@ -1202,7 +1202,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         setContentAreaDimensions(2.f, 180, 220);
         mMediator.onLayoutChange(mContentView, 0, 0, 540, 360, 0, 0, 640, 360);
         verify(mMockKeyboardAccessory).show();
@@ -1235,7 +1235,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
         verify(mMockKeyboardAccessory).show();
 
@@ -1278,7 +1278,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Use a width that is too small but with a valid height (e.g. resized multi-window window).
@@ -1729,7 +1729,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -1748,7 +1748,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
     }
@@ -1889,7 +1889,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ false,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
         verify(mMockKeyboardAccessory, never()).setStyle(any());
@@ -1912,7 +1912,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -1982,7 +1982,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         // Verify the accessory is shown as a floating bar with the correct style.
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
@@ -2027,7 +2027,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         // Verify the accessory is shown as a floating bar with the correct style.
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
@@ -2078,7 +2078,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -2106,7 +2106,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -2155,7 +2155,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
 
         // Scrolling should trigger a transition into HIDDEN state.
@@ -2177,7 +2177,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
 
         // Scrolling shouldn't trigger a transition into HIDDEN state.
@@ -2212,7 +2212,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         // We can't directly check mWaitingForFetch because it's private in Mediator,
         // but we can verify that dismissIfWaitingForFetch still works.
@@ -2303,7 +2303,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ true);
+                /* isUnstructuredField= */ true);
 
         // Verify that AtMemory remains enabled while empty tabs are passed to both accessory bar
         // and accessory sheet (so exclusively the AtMemory icon is displayed).
@@ -2320,7 +2320,7 @@ public class ManualFillingControllerTest {
         mController.show(
                 /* waitForKeyboard= */ true,
                 /* shouldShowOnLargeFormFactor= */ true,
-                /* isContentEditable= */ false);
+                /* isUnstructuredField= */ false);
 
         // Verify that the cached tabs (passwords) are restored alongside AtMemory enablement.
         verify(mMockKeyboardAccessory).setAtMemoryEnabled(true);

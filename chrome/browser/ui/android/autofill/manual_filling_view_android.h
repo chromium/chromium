@@ -45,7 +45,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void SwapSheetWithKeyboard() override;
   void Show(WaitForKeyboard wait_for_keyboard,
             ShouldShowOnLargeFormFactor should_show_on_large_form_factor,
-            IsContentEditable is_content_editable) override;
+            IsUnstructuredField is_unstructured_field) override;
   void Hide() override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
