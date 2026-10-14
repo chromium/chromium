@@ -6,7 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <vector>
 
 #import "base/apple/foundation_util.h"
@@ -594,13 +596,26 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
   SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, key_event_types,
                               accelerator_state, &events);
 
-  // TODO(suzhe): Using [NSApplication postEvent:atStart:] here causes
-  // BrowserKeyEventsTest.CommandKeyEvents to fail. See http://crbug.com/49270
-  // But using [NSApplication sendEvent:] should be safe for keyboard events,
-  // because until now, no code wants to retrieve the next event when handling
-  // a keyboard event.
+  // TODO(suzhe): Using [NSApplication postEvent:atStart:] unconditionally here
+  // causes BrowserKeyEventsTest.CommandKeyEvents to fail. See
+  // https://crbug.com/41177633. However, while a mouse button is down or a drag
+  // session is active, the application may be spinning a nested drag/move loop
+  // inside `-[NSApp nextEventMatchingMask:...]` (`CFRunLoopRunSpecific`).
+  // Calling `-[NSApplication sendEvent:]` synchronously from a Chrome task
+  // (`DoWorkImpl()`) in that state can quit the nested `base::RunLoop` before
+  // `CFRunLoopRunSpecific` exits, leaving `MessagePumpCFRunLoopBase`'s
+  // `WorkDeduplicator` wedged when the outer loop resumes. Post key events to
+  // the `NSApplication` event queue during mouse drags so the active drag loop
+  // dequeues and dispatches them outside `DoWorkImpl()`.
+  const bool mouse_button_down =
+      std::ranges::any_of(g_mouse_button_down, std::identity()) ||
+      IsDragSessionActive();
   for (NSEvent* event : events) {
-    [[NSApplication sharedApplication] sendEvent:event];
+    if (mouse_button_down) {
+      [[NSApplication sharedApplication] postEvent:event atStart:NO];
+    } else {
+      [[NSApplication sharedApplication] sendEvent:event];
+    }
   }
 
   if (!task.is_null()) {

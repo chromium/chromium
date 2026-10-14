@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/test/bind.h"
@@ -38,7 +37,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ozone_buildflags.h"
@@ -130,27 +128,6 @@ base::RepeatingCallback<bool()> GetDragActive() {
   return base::BindRepeating([]() { return TabDragController::IsActive(); });
 }
 
-class WidgetVisibilityWaiter : public views::WidgetObserver {
- public:
-  WidgetVisibilityWaiter(views::Widget* widget, base::RunLoop& run_loop)
-      : run_loop_(run_loop) {
-    obs_.Observe(widget);
-  }
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
-    if (visible) {
-      run_loop_->Quit();
-    }
-  }
-  void OnWidgetDestroying(views::Widget* widget) override {
-    obs_.Reset();
-    run_loop_->Quit();
-  }
-
- private:
-  const raw_ref<base::RunLoop> run_loop_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> obs_{this};
-};
-
 }  // namespace
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -159,6 +136,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
                                     kBrowserCountPoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kDragStatePoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kDetachedWindowVisiblePoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
                                     kTabOrderPoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
@@ -335,17 +314,18 @@ class VerticalTabDragTest
   }
 
   auto WaitForDetachedWindowVisible() {
-    return Do([&]() {
-      BrowserWindowInterface& latest = GetLatestBrowser();
-      BrowserView* browser_view =
-          BrowserView::GetBrowserViewForBrowser(&latest);
-      views::Widget* widget = browser_view->GetWidget();
-      if (!widget->IsVisible() && widget->IsMoveLoopSupported()) {
-        base::RunLoop run_loop;
-        WidgetVisibilityWaiter waiter(widget, run_loop);
-        run_loop.Run();
-      }
-    });
+    return Steps(PollState(kDetachedWindowVisiblePoller,
+                           [this]() {
+                             BrowserWindowInterface& latest =
+                                 GetLatestBrowser();
+                             BrowserView* browser_view =
+                                 BrowserView::GetBrowserViewForBrowser(&latest);
+                             views::Widget* widget = browser_view->GetWidget();
+                             return widget->IsVisible() ||
+                                    !widget->IsMoveLoopSupported();
+                           }),
+                 WaitForState(kDetachedWindowVisiblePoller, true),
+                 StopObservingState(kDetachedWindowVisiblePoller));
   }
 
   auto MoveMouseOutOfTabstrip() {
@@ -1196,9 +1176,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenCancel) {
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
+  if (!GetBrowserView().GetWidget()->IsMoveLoopSupported()) {
+    GTEST_SKIP() << "Not relevant for fallback tab dragging";
   }
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
