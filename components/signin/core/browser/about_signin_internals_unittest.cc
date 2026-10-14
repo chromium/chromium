@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
@@ -17,9 +18,13 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/channel.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::base::test::DictionaryHasValues;
+using ::testing::ElementsAre;
 
 constexpr char kTestEmail[] = "test@example.com";
 
@@ -187,6 +192,35 @@ TEST_F(AboutSigninInternalsTest, ResetSigninPrefs) {
     EXPECT_TRUE(pref_service_.HasPrefPath(pref));
     EXPECT_EQ(pref_service_.GetString(pref), "");
   }
+}
+
+TEST_F(AboutSigninInternalsTest, AccountReconcilorEvents) {
+  static_cast<AccountReconcilor::Observer*>(about_signin_internals())
+      ->OnReconcileFinished(AccountReconcilor::Trigger::kTokenChange,
+                            AccountReconcilor::Operation::kMultilogin,
+                            GoogleServiceAuthError::AuthErrorNone());
+  static_cast<AccountReconcilor::Observer*>(about_signin_internals())
+      ->OnReconcileFinished(
+          AccountReconcilor::Trigger::kCookieChange,
+          AccountReconcilor::Operation::kLogout,
+          GoogleServiceAuthError::FromServiceError("Logout failed"));
+
+  base::DictValue status = about_signin_internals()->GetSigninStatus();
+  const base::ListValue* events = status.FindList("accountReconcilorEvents");
+  ASSERT_TRUE(events);
+  EXPECT_THAT(
+      *events,
+      ElementsAre(
+          DictionaryHasValues(base::DictValue()
+                                  .Set("trigger", "TokenChange")
+                                  .Set("operation", "Multilogin")
+                                  .Set("result", "OK")),
+          DictionaryHasValues(base::DictValue()
+                                  .Set("trigger", "CookieChange")
+                                  .Set("operation", "Logout")
+                                  .Set("result",
+                                       "Failure: Service responded with error: "
+                                       "'Logout failed'"))));
 }
 
 }  // namespace

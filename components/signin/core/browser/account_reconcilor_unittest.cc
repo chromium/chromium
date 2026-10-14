@@ -216,6 +216,24 @@ MockAccountReconcilor::MockAccountReconcilor(
           delegate.release()) {
 }
 
+class MockAccountReconcilorObserver : public AccountReconcilor::Observer {
+ public:
+  explicit MockAccountReconcilorObserver(AccountReconcilor* reconcilor) {
+    scoped_observation_.Observe(reconcilor);
+  }
+
+  MOCK_METHOD(void,
+              OnReconcileFinished,
+              (AccountReconcilor::Trigger trigger,
+               AccountReconcilor::Operation operation,
+               const GoogleServiceAuthError& error),
+              (override));
+
+ private:
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      scoped_observation_{this};
+};
+
 struct Cookie {
   GaiaId gaia_id;
   bool is_valid;
@@ -1929,6 +1947,12 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileNoop) {
                                             account_info.GetGaiaId(),
                                             &test_url_loader_factory_);
 
+  MockAccountReconcilorObserver observer(reconcilor);
+  EXPECT_CALL(observer,
+              OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                  AccountReconcilor::Operation::kNoop,
+                                  GoogleServiceAuthError::AuthErrorNone()));
+
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
@@ -2127,6 +2151,12 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookie) {
               PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
+  MockAccountReconcilorObserver observer(reconcilor);
+  EXPECT_CALL(observer,
+              OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                  AccountReconcilor::Operation::kMultilogin,
+                                  GoogleServiceAuthError::AuthErrorNone()));
+
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
@@ -2738,6 +2768,7 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
+  MockAccountReconcilorObserver observer(reconcilor);
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2745,6 +2776,11 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
+  EXPECT_CALL(observer,
+              OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                  AccountReconcilor::Operation::kMultilogin,
+                                  GoogleServiceAuthError::FromServiceError(
+                                      "Failed to set accounts in cookies")));
 
   // The primary cannot be added to cookie, so it fails.
   SimulateSetAccountsInCookieCompleted(
@@ -2755,6 +2791,7 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
   ASSERT_NE(GoogleServiceAuthError::State::NONE,
             reconcilor->error_during_last_reconcile_.state());
   testing::Mock::VerifyAndClearExpectations(GetMockReconcilor());
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Now that we've tried once, the token service knows that the primary
   // account has an auth error.
@@ -2762,6 +2799,15 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
       identity_test_env()->identity_manager(), account_id1, error);
 
   // A second attempt to reconcile should be a noop.
+
+  // `UpdatePersistentErrorOfRefreshTokenForAccount` above also triggers an
+  // asynchronous `/ListAccounts` request that completes during `RunUntilIdle()`
+  // and starts another `kCookieChange` reconcile cycle that also aborts as a
+  // noop.
+  EXPECT_CALL(observer,
+              OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                  AccountReconcilor::Operation::kNoop, error))
+      .Times(2);
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -3150,6 +3196,24 @@ TEST_F(AccountReconcilorTest, OnAccountsInCookieUpdatedLogoutInProgress) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
+  MockAccountReconcilorObserver observer(reconcilor);
+  {
+    InSequence seq;
+    // The explicit `OnAccountsInCookieUpdated()` call below passes the cached
+    // cookie jar (which is still empty before the `/ListAccounts` response is
+    // processed), completing synchronously as `kNoop`. Once `RunUntilIdle()`
+    // processes the `/ListAccounts` response containing `kFakeEmail`, a second
+    // reconcile cycle starts and performs `kLogout`.
+    EXPECT_CALL(observer,
+                OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                    AccountReconcilor::Operation::kNoop,
+                                    GoogleServiceAuthError::AuthErrorNone()));
+    EXPECT_CALL(observer,
+                OnReconcileFinished(AccountReconcilor::Trigger::kCookieChange,
+                                    AccountReconcilor::Operation::kLogout,
+                                    GoogleServiceAuthError::AuthErrorNone()));
+  }
+
   ASSERT_EQ(AccountReconcilorState::kScheduled, reconcilor->GetState());
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_EQ(AccountReconcilorState::kRunning, reconcilor->GetState());
@@ -3216,6 +3280,11 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
 
   void VerifyRequestsBlockedByThrottler() {
     AccountReconcilor* reconcilor = GetMockReconcilor();
+    MockAccountReconcilorObserver observer(reconcilor);
+    EXPECT_CALL(observer, OnReconcileFinished(
+                              AccountReconcilor::Trigger::kCookieChange,
+                              AccountReconcilor::Operation::kThrottled,
+                              GoogleServiceAuthError::CreateRequestCanceled()));
     reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
     base::RunLoop().RunUntilIdle();
     // Reconciliation should fail.

@@ -17,6 +17,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
@@ -40,8 +41,12 @@
 namespace {
 
 // The maximum number of the refresh token events. Only the last
-// |kMaxRefreshTokenListSize| events are kept in memory.
-const size_t kMaxRefreshTokenListSize = 50;
+// `kMaxRefreshTokenListSize` events are kept in memory.
+constexpr size_t kMaxRefreshTokenListSize = 50;
+
+// The maximum number of the account reconcilor events. Only the last
+// `kMaxAccountReconcilorListSize` events are kept in memory.
+constexpr size_t kMaxAccountReconcilorListSize = 50;
 
 enum class GaiaCookiesState {
   kAllowed,
@@ -557,6 +562,18 @@ void AboutSigninInternals::OnStateChanged(
   NotifyObservers();
 }
 
+void AboutSigninInternals::OnReconcileFinished(
+    AccountReconcilor::Trigger trigger,
+    AccountReconcilor::Operation operation,
+    const GoogleServiceAuthError& error) {
+  signin_status_.AddAccountReconcilorEvent({
+      .trigger = trigger,
+      .operation = operation,
+      .error = error,
+  });
+  NotifyObservers();
+}
+
 void AboutSigninInternals::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
@@ -692,6 +709,56 @@ std::string AboutSigninInternals::RefreshTokenEvent::GetTypeAsString() const {
   }
 }
 
+std::string AboutSigninInternals::AccountReconcilorEvent::GetTriggerAsString()
+    const {
+  switch (trigger) {
+    case AccountReconcilor::Trigger::kInitialized:
+      return "Initialized";
+    case AccountReconcilor::Trigger::kTokensLoaded:
+      return "TokensLoaded";
+    case AccountReconcilor::Trigger::kEnableReconcile:
+      return "EnableReconcile";
+    case AccountReconcilor::Trigger::kUnblockReconcile:
+      return "UnblockReconcile";
+    case AccountReconcilor::Trigger::kTokenChange:
+      return "TokenChange";
+    case AccountReconcilor::Trigger::kTokenChangeDuringReconcile:
+      return "TokenChangeDuringReconcile";
+    case AccountReconcilor::Trigger::kCookieChange:
+      return "CookieChange";
+    case AccountReconcilor::Trigger::kCookieSettingChange:
+      return "CookieSettingChange";
+    case AccountReconcilor::Trigger::kForcedReconcile:
+      return "ForcedReconcile";
+    case AccountReconcilor::Trigger::kPrimaryAccountChanged:
+      return "PrimaryAccountChanged";
+    case AccountReconcilor::Trigger::kDeviceBoundSessionsFetched:
+      return "DeviceBoundSessionsFetched";
+  }
+}
+
+std::string AboutSigninInternals::AccountReconcilorEvent::GetOperationAsString()
+    const {
+  switch (operation) {
+    case AccountReconcilor::Operation::kNoop:
+      return "Noop";
+    case AccountReconcilor::Operation::kLogout:
+      return "Logout";
+    case AccountReconcilor::Operation::kMultilogin:
+      return "Multilogin";
+    case AccountReconcilor::Operation::kThrottled:
+      return "Throttled";
+  }
+}
+
+std::string AboutSigninInternals::AccountReconcilorEvent::GetResultAsString()
+    const {
+  if (error.state() == GoogleServiceAuthError::State::NONE) {
+    return kOk;
+  }
+  return base::StrCat({"Failure: ", error.ToString()});
+}
+
 AboutSigninInternals::SigninStatus::SigninStatus()
     : timed_signin_fields(signin_internals_util::TIMED_FIELDS_END) {}
 
@@ -716,6 +783,15 @@ void AboutSigninInternals::SigninStatus::AddRefreshTokenEvent(
   }
 
   refresh_token_events.push_back(event);
+}
+
+void AboutSigninInternals::SigninStatus::AddAccountReconcilorEvent(
+    const AboutSigninInternals::AccountReconcilorEvent& event) {
+  if (account_reconcilor_events.size() >= kMaxAccountReconcilorListSize) {
+    account_reconcilor_events.pop_front();
+  }
+
+  account_reconcilor_events.push_back(event);
 }
 
 base::DictValue AboutSigninInternals::SigninStatus::ToValue(
@@ -956,6 +1032,19 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
   }
   signin_status.Set("refreshTokenEvents",
                     std::move(refresh_token_events_value));
+
+  // Account reconcilor events section
+  base::ListValue account_reconcilor_events_value;
+  for (const auto& event : account_reconcilor_events) {
+    account_reconcilor_events_value.Append(
+        base::DictValue()
+            .Set("timestamp", base::TimeFormatAsIso8601(event.timestamp))
+            .Set("trigger", event.GetTriggerAsString())
+            .Set("operation", event.GetOperationAsString())
+            .Set("result", event.GetResultAsString()));
+  }
+  signin_status.Set("accountReconcilorEvents",
+                    std::move(account_reconcilor_events_value));
 
   return signin_status;
 }

@@ -511,7 +511,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
       // required between successive identical requests that has not yet passed.
       error_during_last_reconcile_ =
           GoogleServiceAuthError::CreateRequestCanceled();
-      CalculateIfMultiloginReconcileIsDone();
+      CalculateIfMultiloginReconcileIsDone(Operation::kThrottled);
       ScheduleStartReconcileIfChromeAccountsChanged();
       RecordReconcileOperation(trigger_, Operation::kThrottled);
     }
@@ -520,7 +520,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     RecordReconcileOperation(trigger_, Operation::kNoop);
     throttler_.Reset();
     error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
-    CalculateIfMultiloginReconcileIsDone();
+    CalculateIfMultiloginReconcileIsDone(Operation::kNoop);
 
     // TODO(droger): investigate if |is_reconcile_started_| is still needed for
     // multilogin.
@@ -660,9 +660,15 @@ void AccountReconcilor::OnReceivedManageAccountsResponse(
 
 void AccountReconcilor::AbortReconcile() {
   VLOG(1) << "AccountReconcilor::AbortReconcile: try again later";
+  Operation operation = Operation::kNoop;
+  if (log_out_in_progress_) {
+    operation = Operation::kLogout;
+  } else if (set_accounts_in_progress_) {
+    operation = Operation::kMultilogin;
+  }
   log_out_in_progress_ = false;
   set_accounts_in_progress_ = false;
-  CalculateIfMultiloginReconcileIsDone();
+  CalculateIfMultiloginReconcileIsDone(operation);
   DCHECK(!is_reconcile_started_);
   DCHECK(!timer_->IsRunning());
 }
@@ -776,11 +782,12 @@ void AccountReconcilor::OnSetAccountsInCookieCompleted(
           "Failed to set accounts in cookies");
       break;
   }
-  CalculateIfMultiloginReconcileIsDone();
+  CalculateIfMultiloginReconcileIsDone(Operation::kMultilogin);
   ScheduleStartReconcileIfChromeAccountsChanged();
 }
 
-void AccountReconcilor::CalculateIfMultiloginReconcileIsDone() {
+void AccountReconcilor::CalculateIfMultiloginReconcileIsDone(
+    Operation operation) {
   DCHECK(!set_accounts_in_progress_);
   DCHECK(!log_out_in_progress_);
   VLOG(1) << "AccountReconcilor::CalculateIfMultiloginReconcileIsDone: "
@@ -802,6 +809,10 @@ void AccountReconcilor::CalculateIfMultiloginReconcileIsDone() {
   base::TimeDelta duration = base::Time::Now() - reconcile_start_time_;
   signin_metrics::LogSigninAccountReconciliationDuration(
       duration, was_last_reconcile_successful);
+  for (auto& observer : observer_list_) {
+    observer.OnReconcileFinished(trigger_, operation,
+                                 error_during_last_reconcile_);
+  }
 }
 
 void AccountReconcilor::OnLogOutFromCookieCompleted(
@@ -820,7 +831,7 @@ void AccountReconcilor::OnLogOutFromCookieCompleted(
         !error_during_last_reconcile_.IsPersistentError()) {
       error_during_last_reconcile_ = error;
     }
-    CalculateIfMultiloginReconcileIsDone();
+    CalculateIfMultiloginReconcileIsDone(Operation::kLogout);
     ScheduleStartReconcileIfChromeAccountsChanged();
   }
 }

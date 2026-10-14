@@ -62,6 +62,40 @@ class AccountReconcilor : public KeyedService,
     THREAD_CHECKER(thread_checker_);
   };
 
+  // Operation executed by the reconcilor.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Operation {
+    kNoop = 0,
+    kLogout = 1,
+    kMultilogin = 2,
+    kThrottled = 3,
+
+    kMaxValue = kThrottled
+  };
+
+  // Event triggering a call to StartReconcile().
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(Trigger)
+  enum class Trigger {
+    kInitialized = 0,
+    kTokensLoaded = 1,
+    kEnableReconcile = 2,
+    kUnblockReconcile = 3,
+    kTokenChange = 4,
+    kTokenChangeDuringReconcile = 5,
+    kCookieChange = 6,
+    kCookieSettingChange = 7,
+    kForcedReconcile = 8,
+    kPrimaryAccountChanged = 9,
+    kDeviceBoundSessionsFetched = 10,
+
+    kMaxValue = kDeviceBoundSessionsFetched
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninReconcilerTrigger)
+
   class Observer {
    public:
     virtual ~Observer() = default;
@@ -82,6 +116,11 @@ class AccountReconcilor : public KeyedService,
     virtual void OnBlockReconcile() {}
     // Called when the AccountReconcilor is unblocked.
     virtual void OnUnblockReconcile() {}
+    // Called when a reconcile cycle finishes.
+    // Should not call back into the reconcillor.
+    virtual void OnReconcileFinished(Trigger trigger,
+                                     Operation operation,
+                                     const GoogleServiceAuthError& error) {}
   };
 
   AccountReconcilor(
@@ -320,40 +359,6 @@ class AccountReconcilor : public KeyedService,
                            NewRequestParamsPasses);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, BlockFiveRequests);
 
-  // Operation executed by the reconcilor.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Operation {
-    kNoop = 0,
-    kLogout = 1,
-    kMultilogin = 2,
-    kThrottled = 3,
-
-    kMaxValue = kThrottled
-  };
-
-  // Event triggering a call to StartReconcile().
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(Trigger)
-  enum class Trigger {
-    kInitialized = 0,
-    kTokensLoaded = 1,
-    kEnableReconcile = 2,
-    kUnblockReconcile = 3,
-    kTokenChange = 4,
-    kTokenChangeDuringReconcile = 5,
-    kCookieChange = 6,
-    kCookieSettingChange = 7,
-    kForcedReconcile = 8,
-    kPrimaryAccountChanged = 9,
-    kDeviceBoundSessionsFetched = 10,
-
-    kMaxValue = kDeviceBoundSessionsFetched
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninReconcilerTrigger)
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // LINT.IfChange(CookieBindingUpgradeStatus)
@@ -439,7 +444,7 @@ class AccountReconcilor : public KeyedService,
       const CoreAccountId& primary_account,
       const std::vector<CoreAccountId>& chrome_accounts,
       std::vector<gaia::ListedAccount>&& gaia_accounts);
-  void CalculateIfMultiloginReconcileIsDone();
+  void CalculateIfMultiloginReconcileIsDone(Operation operation);
 
   // Lock related methods.
   void IncrementLockCount();

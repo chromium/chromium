@@ -44,6 +44,13 @@ interface RefreshTokenEvent {
   source: string;
 }
 
+interface AccountReconcilorEvent {
+  timestamp: string;
+  trigger: string;
+  operation: string;
+  result: string;
+}
+
 interface BoundSessionInfo {
   sessionID: string;
   domain?: string;
@@ -93,6 +100,7 @@ interface AccountCapabilitiesInfo {
 interface SigninInfo {
   accountInfo: AccountInfo[];
   refreshTokenEvents: RefreshTokenEvent[];
+  accountReconcilorEvents: AccountReconcilorEvent[];
   boundSessionInfo?: BoundSessionInfo[];
   signin_info: BasicInfo[];
   token_info: TokenInfo[];
@@ -237,6 +245,32 @@ function getRefreshTokenEventsHtml(events: RefreshTokenEvent[]) {
   // clang-format on
 }
 
+function getAccountReconcilorEventsHtml(events: AccountReconcilorEvent[]) {
+  // clang-format off
+  return html`
+    <h2>Account reconcilor events</h2>
+    <div class="account-reconcilor-events-section">
+      <table class="signin-details">
+        <tr class="header">
+          <td>Timestamp</td>
+          <td>Trigger</td>
+          <td>Operation</td>
+          <td>Result</td>
+        </tr>
+        ${events.map(event => html`
+          <tr>
+            <td>${event.timestamp}</td>
+            <td>${event.trigger}</td>
+            <td>${event.operation}</td>
+            <td>${event.result}</td>
+          </tr>
+        `)}
+      </table>
+    </div>
+  `;
+  // clang-format on
+}
+
 function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
   if (!infos) {
     return html``;
@@ -366,6 +400,9 @@ function refreshSigninInfo(signinInfo: SigninInfo) {
   render(
       getRefreshTokenEventsHtml(signinInfo.refreshTokenEvents),
       getRequiredElement('refresh-token-events'));
+  render(
+      getAccountReconcilorEventsHtml(signinInfo.accountReconcilorEvents),
+      getRequiredElement('account-reconcilor-events'));
   render(
       getBoundSessionInfoHtml(signinInfo.boundSessionInfo),
       getRequiredElement('bound-session-info'));
