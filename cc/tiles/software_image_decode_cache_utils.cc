@@ -16,12 +16,12 @@
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
-#include "cc/paint/tone_map_util.h"
 #include "cc/tiles/mipmap_util.h"
 #include "skia/ext/geometry.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -307,8 +307,8 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
   TargetColorParams target_color_params = image.target_color_params();
   target_color_params.hdr_headroom = std::nullopt;
   if (paint_image.HasGainmapInfo() ||
-      ToneMapUtil::UseGlobalToneMapFilter(paint_image.color_space(),
-                                          paint_image.GetHDRMetadata())) {
+      gfx::ToneMapUtil::UseGlobalToneMapFilter(paint_image.color_space(),
+                                               paint_image.GetHDRMetadata())) {
     if (paint_image.color_space()) {
       target_color_params.color_space =
           gfx::ColorSpace(*paint_image.color_space());

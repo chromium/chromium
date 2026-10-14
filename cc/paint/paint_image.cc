@@ -19,7 +19,6 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "cc/paint/texture_backing.h"
-#include "cc/paint/tone_map_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -34,6 +33,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -384,7 +384,7 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
   }
 
   const auto* color_space = GetSkImageInfo().colorSpace();
-  if (ToneMapUtil::IsHDR(color_space, hdr_metadata_)) {
+  if (gfx::ToneMapUtil::IsHDR(color_space, hdr_metadata_)) {
     return gfx::ContentColorUsage::kHDR;
   }
 
@@ -512,7 +512,7 @@ float PaintImage::GetMaximumRenderedHdrHeadroom() const {
     return std::log2(
         std::max(gainmap_info.fDisplayRatioSdr, gainmap_info.fDisplayRatioHdr));
   }
-  return ToneMapUtil::GetMaxHdrHeadroom(color_space(), hdr_metadata_);
+  return gfx::ToneMapUtil::GetMaxHdrHeadroom(color_space(), hdr_metadata_);
 }
 
 }  // namespace cc

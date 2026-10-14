@@ -14,7 +14,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "cc/paint/tone_map_util.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"

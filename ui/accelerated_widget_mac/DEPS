@@ -1,5 +1,4 @@
 include_rules = [
-  "+cc/paint/tone_map_util.h",
   "+components/metal_util",
   "+components/viz/common/resources/shared_image_format.h",
   "+gpu/GLES2",

@@ -36,7 +36,6 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/paint/render_surface_filters.h"
-#include "cc/paint/tone_map_util.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -106,6 +105,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gfx/tone_map_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display/overlay_processor_surface_control.h"
@@ -2728,7 +2728,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const float targeted_hdr_headroom =
       quad->dynamic_range_limit.ComputeEffectiveHdrHeadroom(
           current_frame()->display_color_spaces.GetHdrHeadroom());
-  const bool needs_tone_map = cc::ToneMapUtil::UseGlobalToneMapFilter(
+  const bool needs_tone_map = gfx::ToneMapUtil::UseGlobalToneMapFilter(
       src_color_space, hdr_metadata, targeted_hdr_headroom);
 
   sk_sp<SkColorSpace> override_color_space;
@@ -2791,8 +2791,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
 
   if (needs_tone_map) {
-    cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, image, hdr_metadata,
-                                                   targeted_hdr_headroom);
+    gfx::ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, image, hdr_metadata,
+                                                    targeted_hdr_headroom);
   }
 
   // From gl_renderer, the final src color will be

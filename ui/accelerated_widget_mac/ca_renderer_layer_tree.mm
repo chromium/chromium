@@ -21,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/paint/tone_map_util.h"
 #include "components/metal_util/hdr_copier_layer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -33,6 +32,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/tone_map_util.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
 namespace ui {
@@ -1283,7 +1283,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
 
   if (UseCALayerContentsHeadroom() && update_contents) {
     if (@available(macOS 26, iOS 26, *)) {
-      float max_hdr_headroom = cc::ToneMapUtil::GetMaxHdrHeadroom(
+      float max_hdr_headroom = gfx::ToneMapUtil::GetMaxHdrHeadroom(
           io_surface_color_space_, hdr_metadata_);
       if (io_surface_color_space_.IsHDR() || max_hdr_headroom > 0.f) {
         // Assume that all HDR content uses the full 4 stops (16x linear)

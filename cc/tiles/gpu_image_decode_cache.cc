@@ -57,6 +57,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/skia_span_util.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 
@@ -2152,7 +2153,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // Do not color convert images that are YUV or might be tone mapped.
   if (image_data->info.yuva.has_value() ||
       draw_image.paint_image().HasGainmapInfo() ||
-      ToneMapUtil::UseGlobalToneMapFilter(
+      gfx::ToneMapUtil::UseGlobalToneMapFilter(
           decoded_color_space.get(),
           draw_image.paint_image().GetHDRMetadata())) {
     target_color_space = nullptr;

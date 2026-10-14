@@ -32,7 +32,6 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_serialization_history.h"
-#include "cc/paint/tone_map_util.h"
 #include "skia/ext/draw_gainmap_image.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -53,6 +52,7 @@
 #include "third_party/skia/include/private/chromium/Slug.h"
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -1406,12 +1406,12 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     }
 
     // Add a tone mapping filter to `paint` if needed.
-    if (ToneMapUtil::UseGlobalToneMapFilter(sk_image->colorSpace(),
-                                            op->image.hdr_metadata_,
-                                            targeted_hdr_headroom)) {
-      ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, sk_image.get(),
+    if (gfx::ToneMapUtil::UseGlobalToneMapFilter(sk_image->colorSpace(),
                                                  op->image.hdr_metadata_,
-                                                 targeted_hdr_headroom);
+                                                 targeted_hdr_headroom)) {
+      gfx::ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, sk_image.get(),
+                                                      op->image.hdr_metadata_,
+                                                      targeted_hdr_headroom);
     }
   }
   SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
@@ -1539,11 +1539,11 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
       // If this uses a global tone map filter, then incorporate that filter
       // into the paint.
-      if (ToneMapUtil::UseGlobalToneMapFilter(sk_image->colorSpace(),
-                                              op->image.hdr_metadata_,
-                                              targeted_hdr_headroom)) {
+      if (gfx::ToneMapUtil::UseGlobalToneMapFilter(sk_image->colorSpace(),
+                                                   op->image.hdr_metadata_,
+                                                   targeted_hdr_headroom)) {
         SkPaint tonemap_paint = p;
-        ToneMapUtil::AddGlobalToneMapFilterToPaint(
+        gfx::ToneMapUtil::AddGlobalToneMapFilterToPaint(
             tonemap_paint, sk_image.get(), op->image.hdr_metadata_,
             targeted_hdr_headroom);
         DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,

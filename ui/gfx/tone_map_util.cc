@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/paint/tone_map_util.h"
+#include "ui/gfx/tone_map_util.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,10 +10,11 @@
 #include <string_view>
 #include <utility>
 
-#include "cc/paint/paint_image.h"
+#include "base/check.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
@@ -21,7 +22,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 
-namespace cc {
+namespace gfx {
 
 namespace {
 
@@ -64,7 +65,7 @@ struct ToneMapInfo {
 };
 
 ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
-                               const gfx::HDRMetadata& metadata) {
+                               const HDRMetadata& metadata) {
   const auto fn_type = skcms_TransferFunction_getType(&fn);
   ToneMapInfo info;
 
@@ -110,7 +111,7 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
   // For HLG and PQ (which are the only ways we can reach here), compute the
   // baseline headroom using the CLLI and MDCV metadata.
   DCHECK(fn_type == skcms_TFType_PQ || fn_type == skcms_TFType_HLG);
-  float peak_luminance = gfx::HDRMetadata::GetContentMaxLuminance(metadata);
+  float peak_luminance = HDRMetadata::GetContentMaxLuminance(metadata);
   if (peak_luminance > hdr_reference_white) {
     info.baseline_headroom = std::log2(peak_luminance / hdr_reference_white);
     info.max_headroom = info.baseline_headroom;
@@ -122,7 +123,7 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
 
 bool ToneMapUtil::UseGlobalToneMapFilter(
     const SkColorSpace* cs,
-    const gfx::HDRMetadata& metadata,
+    const HDRMetadata& metadata,
     std::optional<float> targeted_hdr_headroom) {
   if (!cs) {
     return false;
@@ -134,15 +135,15 @@ bool ToneMapUtil::UseGlobalToneMapFilter(
 }
 
 bool ToneMapUtil::UseGlobalToneMapFilter(
-    const gfx::ColorSpace& cs,
-    const gfx::HDRMetadata& metadata,
+    const ColorSpace& cs,
+    const HDRMetadata& metadata,
     std::optional<float> targeted_hdr_headroom) {
   return UseGlobalToneMapFilter(cs.ToSkColorSpace().get(), metadata,
                                 targeted_hdr_headroom);
 }
 
 float ToneMapUtil::GetMaxHdrHeadroom(const SkColorSpace* cs,
-                                     const gfx::HDRMetadata& metadata) {
+                                     const HDRMetadata& metadata) {
   if (!cs) {
     return 0.f;
   }
@@ -151,26 +152,23 @@ float ToneMapUtil::GetMaxHdrHeadroom(const SkColorSpace* cs,
   return ComputeToneMapInfo(fn, metadata).max_headroom;
 }
 
-float ToneMapUtil::GetMaxHdrHeadroom(const gfx::ColorSpace& cs,
-                                     const gfx::HDRMetadata& metadata) {
+float ToneMapUtil::GetMaxHdrHeadroom(const ColorSpace& cs,
+                                     const HDRMetadata& metadata) {
   return GetMaxHdrHeadroom(cs.ToSkColorSpace().get(), metadata);
 }
 
-bool ToneMapUtil::IsHDR(const SkColorSpace* cs,
-                        const gfx::HDRMetadata& metadata) {
+bool ToneMapUtil::IsHDR(const SkColorSpace* cs, const HDRMetadata& metadata) {
   return GetMaxHdrHeadroom(cs, metadata) > 0.f;
 }
 
-bool ToneMapUtil::IsHDR(const gfx::ColorSpace& cs,
-                        const gfx::HDRMetadata& metadata) {
+bool ToneMapUtil::IsHDR(const ColorSpace& cs, const HDRMetadata& metadata) {
   return GetMaxHdrHeadroom(cs, metadata) > 0.f;
 }
 
-void ToneMapUtil::AddGlobalToneMapFilterToPaint(
-    SkPaint& paint,
-    const SkImage* image,
-    const gfx::HDRMetadata& metadata,
-    float target_hdr_headroom) {
+void ToneMapUtil::AddGlobalToneMapFilterToPaint(SkPaint& paint,
+                                                const SkImage* image,
+                                                const HDRMetadata& metadata,
+                                                float target_hdr_headroom) {
   if (!image || !image->colorSpace()) {
     return;
   }
@@ -199,4 +197,4 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   }
 }
 
-}  // namespace cc
+}  // namespace gfx

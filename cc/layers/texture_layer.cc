@@ -18,8 +18,8 @@
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
-#include "cc/paint/tone_map_util.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 
@@ -145,7 +145,8 @@ bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
   }
 
   const auto& resource = resource_holder_.Read(*this)->resource();
-  return ToneMapUtil::IsHDR(resource.GetColorSpace(), resource.hdr_metadata);
+  return gfx::ToneMapUtil::IsHDR(resource.GetColorSpace(),
+                                 resource.hdr_metadata);
 }
 
 bool TextureLayer::Update() {

@@ -34,6 +34,7 @@
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -651,8 +652,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // but is odd. All of the caching of the color space conversion here should be
   // removed.
   const bool is_tone_mapped =
-      has_gainmap_ || ToneMapUtil::UseGlobalToneMapFilter(image_->colorSpace(),
-                                                          gfx::HDRMetadata());
+      has_gainmap_ || gfx::ToneMapUtil::UseGlobalToneMapFilter(
+                          image_->colorSpace(), gfx::HDRMetadata());
 
   // Perform color conversion (if no tone mapping is needed).
   if (target_color_space && !is_tone_mapped) {
