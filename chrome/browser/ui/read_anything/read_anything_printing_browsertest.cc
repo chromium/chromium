@@ -420,8 +420,9 @@ class ReadAnythingPrintingBrowserTest : public ReadAnythingPrintingTestBase {
 
 // Prints IRM and checks that the output has all of the distilled content and
 // the Reading Mode theme.
+// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
-                       PrintsFullStyledIrmContent) {
+                       DISABLED_PrintsFullStyledIrmContent) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   NavigateToArticle();
   browser()->GetProfile()->GetPrefs()->SetInteger(
@@ -540,8 +541,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 
 // Closing IRM with a preview open closes the preview and restores the print
 // target, and IRM can print again after it is reopened.
+// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
-                       CloseWithPreviewOpenThenReopenPrintsAgain) {
+                       DISABLED_CloseWithPreviewOpenThenReopenPrintsAgain) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   NavigateToArticle();
   tabs::TabInterface* tab = GetActiveTab();
@@ -609,8 +611,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 // If a user requests print and closes IRM before preview arrives, the request
 // is dropped and does not show or crash, and IRM can print again after it is
 // reopened.
-IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
-                       PrintRequestWhileClosingIrmIsDroppedThenReopenPrints) {
+// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingPrintingBrowserTest,
+    DISABLED_PrintRequestWhileClosingIrmIsDroppedThenReopenPrints) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   auto* dialog_controller =
       printing::PrintPreviewDialogController::GetInstance();
