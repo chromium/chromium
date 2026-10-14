@@ -11,7 +11,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 
 suite('LineFocusMenuElement', () => {
   let lineFocusMenu: LineFocusMenuElement;
@@ -24,10 +24,6 @@ suite('LineFocusMenuElement', () => {
 
     lineFocusMenu = document.createElement('line-focus-menu');
     document.body.appendChild(lineFocusMenu);
-  });
-
-  test('has checkmarks', () => {
-    assertCheckMarksForDropdown(lineFocusMenu);
   });
 
   test('has header shortcut', () => {

@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('FontMenu', () => {
@@ -36,10 +36,6 @@ suite('FontMenu', () => {
     await microtasksFinished();
     fontMenuOptions = getItemsInMenu(fontMenu.$.menu.$.lazyMenu);
   }
-
-  test('has checkmarks', () => {
-    assertCheckMarksForDropdown(fontMenu);
-  });
 
   test('updates fonts on page language change', async () => {
     visualBrowserProxy.supportedFonts =

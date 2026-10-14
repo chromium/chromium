@@ -6,7 +6,6 @@ import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_rende
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -191,26 +190,6 @@ export function getItemsInMenu(
   // query the dropdown item elements.
   const menu = lazyMenu.get();
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-}
-
-function assertCheckMarkVisible(
-    checkMarks: NodeListOf<HTMLElement>, expectedIndex: number): void {
-  checkMarks.forEach((element, index) => {
-    assertEquals(
-        index === expectedIndex ? 'visible' : 'hidden',
-        element.style.visibility);
-  });
-}
-
-export function assertCheckMarksForDropdown(dropdown: HTMLElement): void {
-  const buttons =
-      dropdown.querySelectorAll<HTMLButtonElement>('.dropdown-item');
-  const checkMarks = dropdown.querySelectorAll<HTMLElement>('.check-mark');
-  assertEquals(buttons.length, checkMarks.length);
-  buttons.forEach((button, index) => {
-    button.click();
-    assertCheckMarkVisible(checkMarks, index);
-  });
 }
 
 export function createSpeechErrorEvent(

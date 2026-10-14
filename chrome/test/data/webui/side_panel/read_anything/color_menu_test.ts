@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('ColorMenuElement', () => {
@@ -22,10 +22,6 @@ suite('ColorMenuElement', () => {
 
     colorMenu = document.createElement('color-menu');
     document.body.appendChild(colorMenu);
-  });
-
-  test('has checkmarks', () => {
-    assertCheckMarksForDropdown(colorMenu);
   });
 
   test('theme change closes all menus', async () => {

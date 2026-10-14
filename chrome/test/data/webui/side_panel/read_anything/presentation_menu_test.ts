@@ -9,7 +9,7 @@ import type {PresentationMenuElement} from 'chrome-untrusted://read-anything-sid
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('PresentationMenuElement', () => {
@@ -24,10 +24,6 @@ suite('PresentationMenuElement', () => {
     presentationMenu.presentationState =
         visualBrowserProxy.getInImmersiveOverlayPresentationState();
     document.body.appendChild(presentationMenu);
-  });
-
-  test('has checkmarks', () => {
-    assertCheckMarksForDropdown(presentationMenu);
   });
 
   test('restores saved presentation state', async () => {

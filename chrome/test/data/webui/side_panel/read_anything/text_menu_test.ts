@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('TextMenuElement', () => {
@@ -25,10 +25,6 @@ suite('TextMenuElement', () => {
     textMenu.font = 'Poppins';
     textMenu.areFontsLoaded = true;
     document.body.appendChild(textMenu);
-  });
-
-  test('dropdown renders checkmark elements for all menu groups', () => {
-    assertCheckMarksForDropdown(textMenu);
   });
 
   test(

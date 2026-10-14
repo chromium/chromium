@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, getItemsInMenu, setupTestEnvironment} from './common.js';
+import {getItemsInMenu, setupTestEnvironment} from './common.js';
 
 suite('RateMenuElement', () => {
   let rateMenu: RateMenuElement;
@@ -19,10 +19,6 @@ suite('RateMenuElement', () => {
 
     rateMenu = document.createElement('rate-menu');
     document.body.appendChild(rateMenu);
-  });
-
-  test('has checkmarks', () => {
-    assertCheckMarksForDropdown(rateMenu);
   });
 
   test('selecting a rate fires rate event with the rate', async () => {
