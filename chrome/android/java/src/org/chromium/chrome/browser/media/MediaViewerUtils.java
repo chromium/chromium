@@ -74,6 +74,8 @@ public class MediaViewerUtils {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             Intent intent = createViewIntentForUri(contentUri, mimeType, null, null);
+            intent.removeFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             intent.setClass(context, ChromeLauncherActivity.class);
             intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());

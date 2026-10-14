@@ -140,6 +140,11 @@ public class MediaViewerUtilsTest {
                 ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
         Assert.assertFalse(intent.hasExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE));
+        Assert.assertEquals(
+                0,
+                intent.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
     }
 
     @Test

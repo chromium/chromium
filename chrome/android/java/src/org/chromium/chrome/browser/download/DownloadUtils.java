@@ -645,8 +645,12 @@ public class DownloadUtils {
                         !isAutomotive,
                         req.mContext);
         if (intent != null) {
-            IntentHandler.startActivityForTrustedIntent(req.mContext, intent);
-            return true;
+            try {
+                IntentHandler.startActivityForTrustedIntent(req.mContext, intent);
+                return true;
+            } catch (Exception e) {
+                Log.e(TAG, "Cannot start activity to open file", e);
+            }
         }
         return false;
     }

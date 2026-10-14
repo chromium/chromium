@@ -16,12 +16,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
+import android.provider.Browser;
 import android.view.ViewConfiguration;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -408,5 +410,47 @@ public class DownloadUtilsUnitTest {
 
         watcher.assertExpected();
         verify(mMockDownloadManagerService, times(0)).updateLastAccessTime(any(), any());
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testOpenInChromeInternal_StartActivityThrowsException_ReturnsFalse() {
+        Context throwingContext =
+                new ContextWrapper(mContext) {
+                    @Override
+                    public void startActivity(Intent intent) {
+                        throw new SecurityException("Permission denied");
+                    }
+                };
+        DownloadOpenRequest req =
+                DownloadOpenRequest.builder(
+                                throwingContext, "content://media/external/images/media/1")
+                        .mimeType("image/png")
+                        .build();
+
+        assertFalse(DownloadUtils.openInChromeInternal(req));
+    }
+
+    @Test
+    @Feature({"Download"})
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB})
+    public void testOpenInChromeInternal_OpenDownloadInNewTab_NoUriPermissionFlags() {
+        DownloadOpenRequest req =
+                DownloadOpenRequest.builder(mContext, "content://media/external/images/media/1")
+                        .mimeType("image/png")
+                        .build();
+
+        assertTrue(DownloadUtils.openInChromeInternal(req));
+
+        Intent startedIntent =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertTrue(startedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertEquals(
+                0,
+                startedIntent.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
     }
 }
