@@ -15679,6 +15679,7 @@ from previous Chrome versions.
   <int value="215528151" label="NearbySharingWebRtc:enabled"/>
   <int value="215743648" label="cast-streaming-max-video-bitrate:disabled"/>
   <int value="215966274" label="AccessibilityTextChangeTypes:enabled"/>
+  <int value="217061451" label="TextDetector:enabled"/>
   <int value="217262564" label="ProfilePickerTextVariations:enabled"/>
   <int value="217284084" label="IPH_AutofillCreditCardBenefit:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
@@ -18410,6 +18411,7 @@ from previous Chrome versions.
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
   <int value="1047110483" label="ShelfHotseat:disabled"/>
   <int value="1047277536" label="AutofillEnableCardBenefitsIph:disabled"/>
+  <int value="1047529924" label="TextDetector:disabled"/>
   <int value="1047733864" label="ComposeboxPersistentAimButtonWithX:enabled"/>
   <int value="1048263286" label="LauncherManateeForKeyboardShortcuts:disabled"/>
   <int value="1048760359"

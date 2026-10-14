@@ -5858,6 +5858,10 @@ inline constexpr char kSideUiAllowPauseDescription[] =
     "which keeps it at its current size. For example, vertical tabs keeps its "
     "size while a tab is dragged out of it.";
 
+inline constexpr char kTextDetectionAPIName[] = "Text Detection API";
+inline constexpr char kTextDetectionAPIDescription[] =
+    "Enables the Web Text Detection API (Shape Detection API for text).";
+
 inline constexpr char kTextHighlightFullLinkName[] = "Text Highlight Full Link";
 inline constexpr char kTextHighlightFullLinkDescription[] =
     "In the share sheet, use the full URL instead of canonical URL for "

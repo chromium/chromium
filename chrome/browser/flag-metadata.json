@@ -4638,6 +4638,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-text-detection-api",
+    "owners": [ "alvinji@chromium.org", "mattreynolds@chromium.org", "deviceapi-team@google.com" ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "enable-three-dot-menu-back-button",
     "owners": [
       "jtanaristy@google.com"
