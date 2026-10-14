@@ -24,6 +24,27 @@
   gap: 8px;
 }
 
+.filter-chips {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.filter-chips cr-icon {
+  --iron-icon-fill-color: var(--color-chip-icon-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  display: none;
+  inset-inline-start: 8px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.filter-chips:has(option:not(:first-child):checked) cr-icon {
+  display: inline-flex;
+}
+
 .md-select {
   --md-select-side-padding: 8px;
   --md-select-width: auto;
@@ -31,4 +52,14 @@
   font-size: var(--cr-chip-font-size, 12px);
   font-weight: 500;
   height: var(--cr-chip-height, 28px);
+}
+
+.md-select:has(option:not(:first-child):checked) {
+  background-color: var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  border-color: var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  color: var(--color-chip-foreground-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  padding-inline-start: 28px;
 }

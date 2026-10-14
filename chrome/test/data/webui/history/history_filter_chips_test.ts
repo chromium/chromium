@@ -8,7 +8,7 @@ import {BrowserProxyImpl} from 'chrome://history/history.js';
 import type {HistoryFilterChipsElement} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 
@@ -291,24 +291,37 @@ suite('HistoryFilterChipsTest', function() {
   test('DeviceFilterVisibilityAndInitialState', async () => {
     // If the parent does not pass `showDeviceFilter`, do not show the filter by
     // default.
-    assertFalse(!!element.shadowRoot.querySelector('#deviceSelect'));
+    assertFalse(!!element.shadowRoot.querySelector('#deviceFilterChip'));
 
     element.devices = [{name: 'Device 1'}, {name: 'Device 2'}];
     element.showDeviceFilter = true;
     await microtasksFinished();
-    const deviceSelect =
-        element.shadowRoot.querySelector<HTMLSelectElement>('#deviceSelect');
-    assertTrue(!!deviceSelect);
-    assertEquals(3, deviceSelect.options.length);
-    assertEquals('All devices', deviceSelect.options[0]!.textContent.trim());
-    assertTrue(deviceSelect.options[0]!.selected);
-    assertEquals('Device 1', deviceSelect.options[1]!.textContent.trim());
-    assertFalse(deviceSelect.options[1]!.selected);
-    assertEquals('Device 2', deviceSelect.options[2]!.textContent.trim());
-    assertFalse(deviceSelect.options[2]!.selected);
+    const deviceChip = element.shadowRoot.querySelector<HTMLSelectElement>(
+        '#deviceFilterChip');
+    assertTrue(!!deviceChip);
+    assertEquals(3, deviceChip.options.length);
+    assertEquals('All devices', deviceChip.options[0]!.textContent.trim());
+    assertTrue(deviceChip.options[0]!.selected);
+    assertEquals('Device 1', deviceChip.options[1]!.textContent.trim());
+    assertFalse(deviceChip.options[1]!.selected);
+    assertEquals('Device 2', deviceChip.options[2]!.textContent.trim());
+    assertFalse(deviceChip.options[2]!.selected);
+
+    const icon = element.shadowRoot.querySelector<HTMLElement>(
+        '.filter-chips cr-icon');
+    assertTrue(!!icon);
+    assertFalse(isVisible(icon));
+
+    // Select a device.
+    deviceChip.selectedIndex = 1;
+    assertTrue(isVisible(icon));
+
+    // Select 'All devices' again.
+    deviceChip.selectedIndex = 0;
+    assertFalse(isVisible(icon));
 
     element.showDeviceFilter = false;
     await microtasksFinished();
-    assertFalse(!!element.shadowRoot.querySelector('#deviceSelect'));
+    assertFalse(!!element.shadowRoot.querySelector('#deviceFilterChip'));
   });
 });

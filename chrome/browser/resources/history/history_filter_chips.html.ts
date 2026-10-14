@@ -34,13 +34,16 @@ export function getHtml(this: HistoryFilterChipsElement) {
       `}
     ` : ''}
     ${this.showDeviceFilter ? html`
-      <select id="deviceSelect" class="md-select">
-        <!-- TODO(b/558659016): Replace hardcoded string with a localized string. -->
-        <option>All devices</option>
-        ${this.devices.map(device => html`
-          <option>${device.name}</option>
-        `)}
-      </select>
+      <div class="filter-chips">
+        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+        <select id="deviceFilterChip" class="md-select">
+          <!-- TODO(b/558659016): Replace hardcoded string with a localized string. -->
+          <option>All devices</option>
+          ${this.devices.map(device => html`
+            <option>${device.name}</option>
+          `)}
+        </select>
+      </div>
     ` : ''}
   </div>
 </div>
