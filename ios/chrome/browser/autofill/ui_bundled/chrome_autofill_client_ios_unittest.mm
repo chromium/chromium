@@ -769,9 +769,19 @@ TEST_F(ChromeAutofillClientIOSTest, GetAiPageContent_Default) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->mode(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT);
+  // Expected arguments after `nonce` in
+  // `pageContextExtractor.extractPageContext`:
+  // - `include_cross_origin_frame_content`: true
+  // - `use_rich_extraction`: true
+  // - `use_rich_extraction_with_actionable`: false
+  // - `extract_paid_content`: true
+  // - `attempt_paid_content_json_fixing`: false
+  // - `include_sensitive_payments_for_redaction`: false
+  // - `extract_autofill_otp_redactions`: false
+  // - `extract_password_screenshot_redactions`: true
   EXPECT_THAT(
       base::UTF16ToUTF8(main_frame_ptr->GetLastJavaScriptCall()),
-      HasSubstr(", true, true, false, true, false, false, false, false]);"));
+      HasSubstr(", true, true, false, true, false, false, false, true]);"));
   ASSERT_EQ(result->root_node().children_nodes_size(), 1);
   const optimization_guide::proto::ContentNode& form_node =
       result->root_node().children_nodes(0);
@@ -861,9 +871,19 @@ TEST_F(ChromeAutofillClientIOSTest, GetAiPageContent_Actionable) {
   EXPECT_EQ(result->mode(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
+  // Expected arguments after `nonce` in
+  // `pageContextExtractor.extractPageContext`:
+  // - `include_cross_origin_frame_content`: true
+  // - `use_rich_extraction`: true
+  // - `use_rich_extraction_with_actionable`: true
+  // - `extract_paid_content`: true
+  // - `attempt_paid_content_json_fixing`: false
+  // - `include_sensitive_payments_for_redaction`: false
+  // - `extract_autofill_otp_redactions`: false
+  // - `extract_password_screenshot_redactions`: true
   EXPECT_THAT(
       base::UTF16ToUTF8(main_frame_ptr->GetLastJavaScriptCall()),
-      HasSubstr(", true, true, true, true, false, false, false, false]);"));
+      HasSubstr(", true, true, true, true, false, false, false, true]);"));
   ASSERT_EQ(result->root_node().children_nodes_size(), 1);
   const optimization_guide::proto::ContentNode& form_node =
       result->root_node().children_nodes(0);

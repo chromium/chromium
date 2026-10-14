@@ -963,7 +963,7 @@ bool IsPageContextAutofillOtpRedactionsEnabled() {
 }
 
 BASE_FEATURE(kPageContextScreenshotPasswordRedaction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageContextScreenshotPasswordRedactionEnabled() {
   return base::FeatureList::IsEnabled(kPageContextScreenshotPasswordRedaction);
