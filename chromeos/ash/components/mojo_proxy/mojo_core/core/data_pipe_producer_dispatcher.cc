@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -140,11 +141,13 @@ MojoResult DataPipeProducerDispatcher::WriteData(
   *num_bytes = num_bytes_to_write;
 
   CHECK(ring_buffer_mapping_.IsValid());
-  uint8_t* data = static_cast<uint8_t*>(ring_buffer_mapping_.memory());
-  CHECK(data);
+  auto data = base::span(ring_buffer_mapping_);
 
-  const uint8_t* source = static_cast<const uint8_t*>(elements);
-  CHECK(source);
+  CHECK(elements);
+  // SAFETY: MojoWriteData() requires `elements` to contain the requested number
+  // of bytes, and num_bytes_to_write is no larger than that request.
+  const auto source = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(elements), num_bytes_to_write));
 
   DCHECK_LE(write_offset_, options_.capacity_num_bytes);
   uint32_t tail_bytes_to_write =
@@ -152,10 +155,11 @@ MojoResult DataPipeProducerDispatcher::WriteData(
   uint32_t head_bytes_to_write = num_bytes_to_write - tail_bytes_to_write;
 
   DCHECK_GT(tail_bytes_to_write, 0u);
-  UNSAFE_TODO(memcpy(data + write_offset_, source, tail_bytes_to_write));
+  data.subspan(write_offset_, tail_bytes_to_write)
+      .copy_from(source.first(tail_bytes_to_write));
   if (head_bytes_to_write > 0) {
-    UNSAFE_TODO(
-        memcpy(data, source + tail_bytes_to_write, head_bytes_to_write));
+    data.first(head_bytes_to_write)
+        .copy_from(source.subspan(tail_bytes_to_write));
   }
 
   DCHECK_LE(num_bytes_to_write, available_capacity_);
@@ -198,8 +202,9 @@ MojoResult DataPipeProducerDispatcher::BeginWriteData(
   DCHECK_GT(*buffer_num_bytes, 0u);
 
   CHECK(ring_buffer_mapping_.IsValid());
-  uint8_t* data = static_cast<uint8_t*>(ring_buffer_mapping_.memory());
-  *buffer = UNSAFE_TODO(data + write_offset_);
+  *buffer = base::span(ring_buffer_mapping_)
+                .subspan(write_offset_, *buffer_num_bytes)
+                .data();
 
   return MOJO_LEGACY_RESULT_OK;
 }

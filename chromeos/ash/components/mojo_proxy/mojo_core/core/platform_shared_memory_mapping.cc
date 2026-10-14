@@ -73,7 +73,7 @@ void* PlatformSharedMemoryMapping::GetBase() const {
         if constexpr (std::is_same_v<T, std::monostate>) {
           return nullptr;
         } else {
-          return const_cast<void*>(member.memory());
+          return const_cast<uint8_t*>(member.data());
         }
       },
       mapping_);

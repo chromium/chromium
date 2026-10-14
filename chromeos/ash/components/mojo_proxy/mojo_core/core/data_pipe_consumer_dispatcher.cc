@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -170,23 +171,26 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
   }
 
   if (!discard) {
-    const uint8_t* data =
-        static_cast<const uint8_t*>(ring_buffer_mapping_.memory());
-    CHECK(data);
+    CHECK(ring_buffer_mapping_.IsValid());
+    const auto data = base::span<const uint8_t>(ring_buffer_mapping_);
 
-    uint8_t* destination = static_cast<uint8_t*>(elements);
-    CHECK(destination);
+    CHECK(elements);
+    // SAFETY: MojoReadData() requires space for the requested number of bytes
+    // in `elements`, and bytes_to_read is no larger than that request.
+    auto destination = UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(elements), bytes_to_read));
 
     DCHECK_LE(read_offset_, options_.capacity_num_bytes);
     uint32_t tail_bytes_to_copy =
         std::min(options_.capacity_num_bytes - read_offset_, bytes_to_read);
     uint32_t head_bytes_to_copy = bytes_to_read - tail_bytes_to_copy;
     if (tail_bytes_to_copy > 0) {
-      UNSAFE_TODO(memcpy(destination, data + read_offset_, tail_bytes_to_copy));
+      destination.first(tail_bytes_to_copy)
+          .copy_from(data.subspan(read_offset_, tail_bytes_to_copy));
     }
     if (head_bytes_to_copy > 0) {
-      UNSAFE_TODO(
-          memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy));
+      destination.subspan(tail_bytes_to_copy)
+          .copy_from(data.first(head_bytes_to_copy));
     }
   }
   *num_bytes = bytes_to_read;
@@ -235,11 +239,10 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
       std::min(bytes_available_, options_.capacity_num_bytes - read_offset_);
 
   CHECK(ring_buffer_mapping_.IsValid());
-  uint8_t* data = static_cast<uint8_t*>(ring_buffer_mapping_.memory());
-  CHECK(data);
+  const auto data = base::span<const uint8_t>(ring_buffer_mapping_);
 
   in_two_phase_read_ = true;
-  *buffer = UNSAFE_TODO(data + read_offset_);
+  *buffer = data.subspan(read_offset_, bytes_to_read).data();
   *buffer_num_bytes = bytes_to_read;
   two_phase_max_bytes_read_ = bytes_to_read;
 

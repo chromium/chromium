@@ -13,6 +13,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -304,7 +305,9 @@ TEST_F(EmbedderTest, MultiprocessBaseSharedMemory) {
         MOJO_LEGACY_RESULT_OK,
         MojoMapBuffer(sb1, 0, 123, nullptr, reinterpret_cast<void**>(&buffer)));
     ASSERT_TRUE(buffer);
-    UNSAFE_TODO(memcpy(buffer, kHelloWorld, sizeof(kHelloWorld)));
+    // SAFETY: MojoMapBuffer() succeeded in mapping 123 bytes at `buffer`.
+    auto buffer_span = UNSAFE_BUFFERS(base::span(buffer, 123u));
+    buffer_span.copy_prefix_from(base::span_with_nul_from_cstring(kHelloWorld));
 
     // 3. Duplicate |sb1| into |sb2| and pass to |server_mp|.
     MojoHandle sb2 = MOJO_LEGACY_HANDLE_INVALID;
@@ -317,13 +320,15 @@ TEST_F(EmbedderTest, MultiprocessBaseSharedMemory) {
     EXPECT_EQ("hey", ReadMessage(server_mp));
 
     // 5. Expect that the contents of the shared buffer have changed.
-    EXPECT_EQ(kByeWorld, std::string(buffer));
+    EXPECT_EQ(base::span_with_nul_from_cstring(kByeWorld),
+              buffer_span.first<sizeof(kByeWorld)>());
 
     // 6. Map the original base::SharedMemory and expect it contains the
     // expected value.
     auto mapping = shared_memory.Map();
     ASSERT_TRUE(mapping.IsValid());
-    EXPECT_EQ(kByeWorld, std::string(static_cast<char*>(mapping.memory())));
+    EXPECT_EQ(base::span_with_nul_from_cstring(kByeWorld),
+              mapping.GetMemoryAsSpan<char>().first<sizeof(kByeWorld)>());
 
     ASSERT_EQ(MOJO_LEGACY_RESULT_OK, MojoClose(sb1));
 
@@ -346,12 +351,15 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
       MOJO_LEGACY_RESULT_OK,
       MojoMapBuffer(sb1, 0, 123, nullptr, reinterpret_cast<void**>(&buffer)));
   ASSERT_TRUE(buffer);
+  // SAFETY: MojoMapBuffer() succeeded in mapping 123 bytes at `buffer`.
+  auto buffer_span = UNSAFE_BUFFERS(base::span(buffer, 123u));
 
   // 3. Ensure |buffer| contains the values we expect.
-  EXPECT_EQ(kHelloWorld, std::string(buffer));
+  EXPECT_EQ(base::span_with_nul_from_cstring(kHelloWorld),
+            buffer_span.first<sizeof(kHelloWorld)>());
 
   // 4. Write into |buffer| and send a message back.
-  UNSAFE_TODO(memcpy(buffer, kByeWorld, sizeof(kByeWorld)));
+  buffer_span.copy_prefix_from(base::span_with_nul_from_cstring(kByeWorld));
   WriteMessage(client_mp, "hey");
 
   // 5. Extract the shared memory handle and ensure we can map it and read the
@@ -361,8 +369,10 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
             ExtractRegionFromSharedBuffer(sb1, &shared_memory));
   auto mapping = shared_memory.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_NE(buffer, mapping.memory());
-  EXPECT_EQ(kByeWorld, std::string(static_cast<char*>(mapping.memory())));
+  EXPECT_NE(static_cast<const void*>(buffer),
+            static_cast<const void*>(mapping.data()));
+  EXPECT_EQ(base::span_with_nul_from_cstring(kByeWorld),
+            mapping.GetMemoryAsSpan<char>().first<sizeof(kByeWorld)>());
 
   EXPECT_EQ("bye", ReadMessage(client_mp));
 
