@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_handler.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -127,6 +129,10 @@ class SpotlightSessionManagerTest : public testing::Test {
         {ash::features::kBocaSpotlight,
          ash::features::kBocaSpotlightRobotRequester},
         /*disabled_features=*/{});
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
 
     // Set up global BocaAppClient's mock.
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
@@ -159,6 +165,7 @@ class SpotlightSessionManagerTest : public testing::Test {
     spotlight_session_manager_.reset();
     boca_session_manager_.reset();
     boca_app_client_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -176,7 +183,9 @@ class SpotlightSessionManagerTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
   std::unique_ptr<StrictMock<MockSessionManager>> boca_session_manager_;
   raw_ptr<NiceMock<MockSpotlightCrdManager>> spotlight_crd_manager_;

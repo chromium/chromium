@@ -28,6 +28,8 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,6 +162,11 @@ class FakeOnTaskNotificationsManagerDelegate
 class OnTaskSessionManagerTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+
     auto system_web_app_manager =
         std::make_unique<NiceMock<OnTaskSystemWebAppManagerMock>>();
     system_web_app_manager_ptr_ = system_web_app_manager.get();
@@ -180,6 +187,15 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     session_manager_->SetNotificationManagerForTesting(
         OnTaskNotificationsManager::CreateForTest(
             std::move(fake_notifications_delegate)));
+  }
+
+  void TearDown() override {
+    fake_notifications_delegate_ptr_ = nullptr;
+    extensions_manager_ptr_ = nullptr;
+    system_web_app_manager_ptr_ = nullptr;
+    session_manager_.reset();
+    boca_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   base::flat_map<GURL, ::boca::UrlType>* provider_url_map() {
@@ -210,6 +226,9 @@ class OnTaskSessionManagerTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NiceMock<MockSessionManager>> boca_session_manager_;
   std::unique_ptr<OnTaskSessionManager> session_manager_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;

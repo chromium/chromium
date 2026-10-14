@@ -45,6 +45,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
@@ -112,10 +113,7 @@ BocaSessionManager::BocaSessionManager(
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
-  if (session_manager::SessionManager::Get()) {
-    session_manager_observation_.Observe(
-        session_manager::SessionManager::Get());
-  }
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
   // Session load will be triggered when network state loaded.
   LoadInitialNetworkState();
   // This load thereotically can be removed in favor of the load after network
@@ -617,10 +615,9 @@ void BocaSessionManager::ActiveUserChanged(user_manager::User* active_user) {
 }
 
 bool BocaSessionManager::IsProfileActive() {
-  return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->GetActiveUser() &&
-         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId() ==
-             account_id_;
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  return active_session && active_session->account_id() == account_id_;
 }
 
 bool BocaSessionManager::IsSessionActive(const ::boca::Session* session) {

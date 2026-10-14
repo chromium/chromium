@@ -82,6 +82,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/strings:strings_grit",
+    "//components/prefs:test_support",
+    "//components/session_manager/test:test_support",
     "//components/sessions:session_id",
   ]
 }

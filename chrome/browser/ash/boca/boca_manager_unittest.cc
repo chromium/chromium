@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
@@ -25,6 +26,7 @@
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/common/request_sender.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -103,6 +105,9 @@ class BocaManagerTest : public testing::Test {
   BocaManagerTest() = default;
 
   void SetUp() override {
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     // This is called in the FCMHandler.
     ON_CALL(mock_instance_id_driver_, GetInstanceID)
         .WillByDefault(Return(&mock_instance_id_));
@@ -120,6 +125,13 @@ class BocaManagerTest : public testing::Test {
             boca_session_manager_.get());
   }
 
+  void TearDown() override {
+    invalidation_service_impl_.reset();
+    boca_session_manager_.reset();
+    session_client_impl_.reset();
+    user_session_test_environment_.reset();
+  }
+
   boca::BabelOrcaManager::ControllerFactory GetBabelOrcaControllerFactory() {
     return base::BindLambdaForTesting(
         [](babelorca::TokenManager*, babelorca::TachyonRequestDataProvider*)
@@ -130,17 +142,19 @@ class BocaManagerTest : public testing::Test {
 
   // BocaSessionManager require task_env for mojom binding.
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::FakeBrowserContextHelperDelegate>
       fake_browser_context_helper_delegate_ =
           std::make_unique<ash::FakeBrowserContextHelperDelegate>();
   ash::BrowserContextHelper helper{
       std::move(fake_browser_context_helper_delegate_)};
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
-  std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
   gcm::FakeGCMDriver fake_gcm_driver_;
   NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
   NiceMock<MockInstanceID> mock_instance_id_;
+  std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
+  std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl_;
   network::TestURLLoaderFactory url_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -148,14 +162,14 @@ class BocaManagerTest : public testing::Test {
 
 class BocaManagerProducerTest : public BocaManagerTest {
  protected:
-  BocaManagerProducerTest() = default;
-
-  void SetUp() override {
-    BocaManagerTest::SetUp();
+  BocaManagerProducerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca},
         /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
+  }
 
+  void SetUp() override {
+    BocaManagerTest::SetUp();
     auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
@@ -176,8 +190,13 @@ class BocaManagerProducerTest : public BocaManagerTest {
         /*profile=*/nullptr, identity_test_env_.identity_manager());
   }
 
-  std::unique_ptr<BocaManager> boca_manager_;
+  void TearDown() override {
+    boca_manager_.reset();
+    BocaManagerTest::TearDown();
+  }
+
   TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<BocaManager> boca_manager_;
 };
 
 TEST_F(BocaManagerProducerTest, VerifyOnTaskObserverNotAddedForProducer) {
@@ -209,16 +228,16 @@ TEST_F(BocaManagerProducerTest,
 
 class BocaManagerConsumerTest : public BocaManagerTest {
  protected:
-  BocaManagerConsumerTest() = default;
-
-  void SetUp() override {
-    BocaManagerTest::SetUp();
+  BocaManagerConsumerTest() {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features=*/{ash::features::kBoca,
                                ash::features::kBocaConsumer,
                                ash::features::kBocaSpotlightRobotRequester},
         /* disabled_features=*/{});
+  }
 
+  void SetUp() override {
+    BocaManagerTest::SetUp();
     auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
@@ -239,8 +258,13 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         /*profile=*/nullptr, identity_test_env_.identity_manager());
   }
 
-  std::unique_ptr<BocaManager> boca_manager_;
+  void TearDown() override {
+    boca_manager_.reset();
+    BocaManagerTest::TearDown();
+  }
+
   TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<BocaManager> boca_manager_;
 };
 
 TEST_F(BocaManagerConsumerTest, VerifyOnTaskObserverHasAddedForConsumer) {

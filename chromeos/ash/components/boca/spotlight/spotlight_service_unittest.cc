@@ -11,6 +11,8 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -104,6 +106,10 @@ class SpotlightServiceTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca},
         /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
     ON_CALL(boca_app_client_, GetDeviceId()).WillByDefault(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<StrictMock<MockSessionManager>>(
         nullptr, identity_test_env_.identity_manager());
@@ -115,6 +121,12 @@ class SpotlightServiceTest : public testing::Test {
 
     spotlight_service_ = std::make_unique<SpotlightService>(
         boca_session_manager_.get(), MakeRequestSender());
+  }
+
+  void TearDown() override {
+    spotlight_service_.reset();
+    boca_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -129,6 +141,9 @@ class SpotlightServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_ =
           base::MakeRefCounted<network::TestSharedURLLoaderFactory>(

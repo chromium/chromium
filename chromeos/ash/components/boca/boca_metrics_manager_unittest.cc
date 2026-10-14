@@ -13,6 +13,8 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/common/request_sender.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -44,37 +46,63 @@ class MockSessionManager : public BocaSessionManager {
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    session_manager_ = std::make_unique<NiceMock<MockSessionManager>>();
+  }
+
+  void TearDown() override {
+    session_manager_.reset();
+    user_session_test_environment_.reset();
+  }
+
   const base::TimeDelta fast_forward_timeskip =
       base::Seconds(60) + base::Seconds(1);
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  NiceMock<MockSessionManager> session_manager_;
+  std::unique_ptr<NiceMock<MockSessionManager>> session_manager_;
 };
 
 class BocaMetricsManagerProducerTest : public BocaMetricsManagerTest {
  protected:
-  BocaMetricsManager metrics_manager_{&session_manager_,
-                                      /*is_producer*/ true};
+  void SetUp() override {
+    BocaMetricsManagerTest::SetUp();
+    metrics_manager_ = std::make_unique<BocaMetricsManager>(
+        session_manager_.get(), /*is_producer=*/true);
+  }
+
+  void TearDown() override {
+    metrics_manager_.reset();
+    BocaMetricsManagerTest::TearDown();
+  }
+
+  std::unique_ptr<BocaMetricsManager> metrics_manager_;
 };
 
 TEST_F(BocaMetricsManagerProducerTest,
        RecordLockedAndUnlockedStateDurationPercentageMetricsCorrectly) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle_1;
   bundle_1.set_locked(true);
 
-  metrics_manager_.OnBundleUpdated(bundle_1);
+  metrics_manager_->OnBundleUpdated(bundle_1);
   task_environment_.FastForwardBy(fast_forward_timeskip);
 
   ::boca::Bundle bundle_2;
   bundle_2.set_locked(false);
-  metrics_manager_.OnBundleUpdated(bundle_2);
+  metrics_manager_->OnBundleUpdated(bundle_2);
   task_environment_.FastForwardBy(2 * fast_forward_timeskip);
 
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionEnded("test_session_id");
   const base::TimeDelta total_duration = 3 * fast_forward_timeskip;
 
   // We waited for one `fast_forward_timeskip` duration before we got the update
@@ -99,7 +127,7 @@ TEST_F(
     RecordNumOfStudentsJoinedViaCodeDuringSessionMetricsForProducerCorrectly) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Roster roster;
   auto* student_groups_1 = roster.mutable_student_groups()->Add();
   student_groups_1->set_group_source(::boca::StudentGroup::JOIN_CODE);
@@ -108,8 +136,8 @@ TEST_F(
   auto* student_groups_2 = roster.mutable_student_groups()->Add();
   student_groups_2->set_group_source(::boca::StudentGroup::CLASSROOM);
   student_groups_2->add_students()->set_email(kTestEmail3);
-  metrics_manager_.OnSessionRosterUpdated(roster);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionRosterUpdated(roster);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   const int expected_num_of_students = 2;
   histograms.ExpectTotalCount(kBocaNumOfStudentsJoinedViaCodeDuringSession, 1);
@@ -130,10 +158,10 @@ TEST_F(BocaMetricsManagerProducerTest,
   status_2.set_state(::boca::StudentStatus::ADDED);
   session.mutable_student_statuses()->emplace("student_1", std::move(status_1));
   session.mutable_student_statuses()->emplace("student_2", std::move(status_2));
-  ON_CALL(session_manager_, GetPreviousSession())
+  ON_CALL(*session_manager_, GetPreviousSession())
       .WillByDefault(Return(&session));
 
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   const int expected_num_of_active_students = 1;
   histograms.ExpectTotalCount(kBocaNumOfActiveStudentsWhenSessionEnded, 1);
@@ -145,15 +173,15 @@ TEST_F(BocaMetricsManagerProducerTest,
        RecordNumOfTabsWhenSessionEndedMetricsForProducerCorrectly) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle_1;
   bundle_1.add_content_configs()->set_url(kTestUrl1);
   bundle_1.add_content_configs()->set_url(kTestUrl2);
-  metrics_manager_.OnBundleUpdated(bundle_1);
+  metrics_manager_->OnBundleUpdated(bundle_1);
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
-  metrics_manager_.OnBundleUpdated(bundle_2);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnBundleUpdated(bundle_2);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   const int expected_num_of_tabs = 1;
   histograms.ExpectTotalCount(kBocaOnTaskNumOfTabsWhenSessionEnded, 1);
@@ -165,15 +193,15 @@ TEST_F(BocaMetricsManagerProducerTest,
        RecordMaxNumOfTabsDuringSessionMetricsForProducerCorrectly) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle_1;
   bundle_1.add_content_configs()->set_url(kTestUrl1);
   bundle_1.add_content_configs()->set_url(kTestUrl2);
-  metrics_manager_.OnBundleUpdated(bundle_1);
+  metrics_manager_->OnBundleUpdated(bundle_1);
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
-  metrics_manager_.OnBundleUpdated(bundle_2);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnBundleUpdated(bundle_2);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   const int expected_max_num_of_tabs = 2;
   histograms.ExpectTotalCount(kBocaOnTaskMaxNumOfTabsDuringSession, 1);
@@ -185,28 +213,38 @@ TEST_F(BocaMetricsManagerProducerTest,
        DoNotRecordStudentJoinedSessionActionMetricsForProducer) {
   base::UserActionTester actions;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   EXPECT_EQ(actions.GetActionCount(kBocaActionOfStudentJoinedSession), 0);
 }
 
 class BocaMetricsManagerConsumerTest : public BocaMetricsManagerTest {
  protected:
-  BocaMetricsManager metrics_manager_{&session_manager_,
-                                      /*is_producer*/ false};
+  void SetUp() override {
+    BocaMetricsManagerTest::SetUp();
+    metrics_manager_ = std::make_unique<BocaMetricsManager>(
+        session_manager_.get(), /*is_producer=*/false);
+  }
+
+  void TearDown() override {
+    metrics_manager_.reset();
+    BocaMetricsManagerTest::TearDown();
+  }
+
+  std::unique_ptr<BocaMetricsManager> metrics_manager_;
 };
 
 TEST_F(BocaMetricsManagerConsumerTest,
        DoNotRecordLockedAndUnlockedStateDurationPercentageMetricsForConsumer) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle;
   bundle.set_locked(true);
-  metrics_manager_.OnBundleUpdated(bundle);
+  metrics_manager_->OnBundleUpdated(bundle);
   task_environment_.FastForwardBy(fast_forward_timeskip);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDurationPercentage, 0);
   histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 0);
@@ -216,14 +254,14 @@ TEST_F(BocaMetricsManagerConsumerTest,
        DoNotRecordNumOfStudentsJoinedViaCodeDuringSessionMetricsForConsumer) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Roster roster;
   auto* student_groups = roster.mutable_student_groups()->Add();
   student_groups->set_group_source(::boca::StudentGroup::JOIN_CODE);
   student_groups->add_students()->set_email(kTestEmail1);
   student_groups->add_students()->set_email(kTestEmail2);
-  metrics_manager_.OnSessionRosterUpdated(roster);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionRosterUpdated(roster);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   histograms.ExpectTotalCount(kBocaNumOfStudentsJoinedViaCodeDuringSession, 0);
 }
@@ -241,7 +279,7 @@ TEST_F(BocaMetricsManagerConsumerTest,
   status_2.set_state(::boca::StudentStatus::ACTIVE);
   session.mutable_student_statuses()->emplace("student_1", std::move(status_1));
   session.mutable_student_statuses()->emplace("student_2", std::move(status_2));
-  ON_CALL(session_manager_, GetPreviousSession())
+  ON_CALL(*session_manager_, GetPreviousSession())
       .WillByDefault(Return(&session));
 
   histograms.ExpectTotalCount(kBocaNumOfActiveStudentsWhenSessionEnded, 0);
@@ -251,12 +289,12 @@ TEST_F(BocaMetricsManagerConsumerTest,
        DoNotRecordNumOfTabsWhenSessionEndedMetricsForConsumer) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
   bundle.add_content_configs()->set_url(kTestUrl2);
-  metrics_manager_.OnBundleUpdated(bundle);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnBundleUpdated(bundle);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   histograms.ExpectTotalCount(kBocaOnTaskNumOfTabsWhenSessionEnded, 0);
 }
@@ -265,12 +303,12 @@ TEST_F(BocaMetricsManagerConsumerTest,
        DoNotRecordMaxNumOfTabsDuringSessionMetricsForConsumer) {
   base::HistogramTester histograms;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
   bundle.add_content_configs()->set_url(kTestUrl2);
-  metrics_manager_.OnBundleUpdated(bundle);
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnBundleUpdated(bundle);
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   histograms.ExpectTotalCount(kBocaOnTaskMaxNumOfTabsDuringSession, 0);
 }
@@ -279,10 +317,10 @@ TEST_F(BocaMetricsManagerConsumerTest,
        RecordStudentJoinedSessionActionMetricsForConsumerCorrectly) {
   base::UserActionTester actions;
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  metrics_manager_.OnSessionEnded("test_session_id");
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionEnded("test_session_id");
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionEnded("test_session_id");
 
   const int expected_number_of_students = 2;
   EXPECT_EQ(actions.GetActionCount(kBocaActionOfStudentJoinedSession),
@@ -311,9 +349,10 @@ TEST_P(BocaMetricsManagerConsumerGeminiStatusTest,
   status.set_gemini_enablement_state(param.state);
   session.mutable_student_statuses()->emplace("test_gaia_id",
                                               std::move(status));
-  EXPECT_CALL(session_manager_, GetCurrentSession()).WillOnce(Return(&session));
+  EXPECT_CALL(*session_manager_, GetCurrentSession())
+      .WillOnce(Return(&session));
 
-  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 
   histograms.ExpectTotalCount("Ash.Boca.StudentGeminiStatus.Enabled", 1);
   histograms.ExpectBucketCount("Ash.Boca.StudentGeminiStatus.Enabled",
