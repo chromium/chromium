@@ -72,6 +72,8 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -82,6 +84,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -97,6 +100,7 @@
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -114,6 +118,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
@@ -4232,6 +4237,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
     TabStripModelObserver::ChangeReason reason,
     bool triggered_by_other_operation) {
   bool exited_focus = false;
+  std::optional<size_t> exited_ephemeral_group_tab_count;
   if (std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
       focused_group.has_value()) {
     if (!new_model.focused_group().has_value() ||
@@ -4241,6 +4247,10 @@ TabStripSelectionChange TabStripModel::SetSelection(
           !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
               new_model.active_tab(), focused_group);
       if (exited_focus) {
+        if (IsEphemeralTabGroup(*focused_group)) {
+          exited_ephemeral_group_tab_count =
+              group_model_->GetTabGroup(*focused_group)->tab_count();
+        }
         ExitFocusMode(TabGroupFocusExitReason::kActiveTabGroupOperation);
       }
     }
@@ -4328,6 +4338,19 @@ TabStripSelectionChange TabStripModel::SetSelection(
 
     OnChange(TabStripModelChange(TabStripModelChange::SelectionOnly()),
              selection);
+
+    if (exited_focus) {
+      if (ToastController* const toast_controller =
+              ToastController::From(delegate_->GetBrowserWindowInterface())) {
+        ToastParams params(ToastId::kTabGroupFocusExited);
+        if (exited_ephemeral_group_tab_count.has_value()) {
+          params.body_string_override = l10n_util::GetPluralStringFUTF16(
+              IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY,
+              exited_ephemeral_group_tab_count.value());
+        }
+        toast_controller->MaybeShowToast(std::move(params));
+      }
+    }
   }
 
   return selection;

@@ -404,6 +404,8 @@ if (!is_android) {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/thumbnails",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/vertical",

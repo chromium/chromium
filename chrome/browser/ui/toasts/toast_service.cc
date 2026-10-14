@@ -802,4 +802,13 @@ void ToastService::RegisterToasts() {
             .AddGlobalScoped()
             .Build());
   }
+
+  toast_registry_->RegisterToast(
+      ToastId::kTabGroupFocusExited,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? kZoomOutMapIcon
+                                      : kZoomOutMapOldIcon,
+                                  IDS_TAB_GROUP_FOCUS_EXITED_TOAST_BODY)
+          .AddGlobalScoped()
+          .Build());
 }  // RegisterToasts() end.

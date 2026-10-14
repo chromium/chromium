@@ -13040,13 +13040,19 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Ungroup
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP" desc="The label for focus group in the tab group editor bubble.">
-        Focus on Tab Group
+        Focus on group
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
-        Unfocus Tab Group
+        Unfocus group
       </message>
       <message name="IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON" desc="The label for the unfocus button header attached to a focused tab group.">
         Unfocus
+      </message>
+      <message name="IDS_TAB_GROUP_FOCUS_EXITED_TOAST_BODY" desc="Text shown in a toast when focus mode is exited because a tab outside of the focused tab group was activated.">
+        Unfocused tab group
+      </message>
+      <message name="IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY" desc="Text shown in a toast when non-group focus mode is exited because a tab outside of focus mode was activated. [ICU Syntax]">
+        {NUM_TABS, plural, =1 {Unfocused tab} other {Unfocused tabs}}
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP" desc="The label for create button in the tab group editor bubble when creating a permanent tab group from an ephemeral one.">
         Create
