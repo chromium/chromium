@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/zucchini/buffer_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -85,8 +84,14 @@ TEST(BinaryDataHistogramTest, Basic) {
   std::vector<BinaryDataHistogram> suffix_histograms(n + 1);  // Long to short.
 
   for (size_t i = 0; i <= n; ++i) {
-    ConstBufferView prefix(region.begin(), i);
-    ConstBufferView suffix(UNSAFE_TODO(region.begin() + i), n - i);
+    ConstBufferView prefix = region[{0, i}];
+    ConstBufferView suffix = region[{i, n - i}];
+    // |prefix| and |suffix| split |region| at offset |i|.
+    EXPECT_EQ(i, prefix.size());
+    EXPECT_EQ(n - i, suffix.size());
+    EXPECT_EQ(region.begin(), prefix.begin());
+    EXPECT_EQ(prefix.end(), suffix.begin());
+    EXPECT_EQ(region.end(), suffix.end());
     // If regions are smaller than 2 bytes then it is invalid. Else valid.
     EXPECT_EQ(prefix.size() >= 2, prefix_histograms[i].Compute(prefix));
     EXPECT_EQ(suffix.size() >= 2, suffix_histograms[i].Compute(suffix));
