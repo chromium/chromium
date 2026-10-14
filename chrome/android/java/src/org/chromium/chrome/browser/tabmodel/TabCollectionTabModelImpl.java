@@ -1205,7 +1205,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
         assertOnUiThread();
-        if (tabGroupId == null) return Collections.emptyList();
+        if (mNativeTabCollectionTabModelImplPtr == 0 || tabGroupId == null) {
+            return Collections.emptyList();
+        }
 
         return TabCollectionTabModelImplJni.get()
                 .getTabsInGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
@@ -1346,7 +1348,21 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                     destinationTab,
                     notify,
                     /* indexInGroup= */ indexInGroup,
-                    /* tabGroupIdForNewGroup= */ null);
+                    /* targetTabGroupId= */ null);
+        }
+    }
+
+    @Override
+    public void mergeListOfTabsToExistingGroup(
+            List<Tab> tabs,
+            Token destinationGroupId,
+            @Nullable Integer indexInGroup,
+            @TabGroupMergeNotificationType int notify) {
+        if (tabs.isEmpty() || !containsTabGroup(destinationGroupId)) return;
+
+        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
+            mergeListOfTabsToGroupInternal(
+                    tabs, /* destinationTab= */ null, notify, indexInGroup, destinationGroupId);
         }
     }
 
@@ -2134,84 +2150,87 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * Merges a list of tabs into a destination group at a specified position.
      *
      * @param tabs The list of {@link Tab}s to merge.
-     * @param destinationTab The destination {@link Tab} identifying the target group.
+     * @param destinationTab The destination {@link Tab} identifying the target group, or null if
+     *     merging directly into an existing group identified by {@code targetTabGroupId}.
      * @param notify Whether to notify observers to show UI like snackbars.
      * @param indexInGroup The index within the destination group to insert the tabs. Null appends
      *     to the end.
-     * @param tabGroupIdForNewGroup A specific {@link Token} to use if a new group is created. Null
-     *     will generate a random one.
+     * @param targetTabGroupId A specific {@link Token} to use if a new group is created or when
+     *     {@code destinationTab} is null. Null will generate a random one for a new group.
      */
     @VisibleForTesting
     void mergeListOfTabsToGroupInternal(
             List<Tab> tabs,
-            Tab destinationTab,
+            @Nullable Tab destinationTab,
             @TabGroupMergeNotificationType int notify,
             @Nullable Integer indexInGroup,
-            @Nullable Token tabGroupIdForNewGroup) {
+            @Nullable Token targetTabGroupId) {
         assertOnUiThread();
 
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
 
-        Token maybeDestinationTabGroupId = destinationTab.getTabGroupId();
-        if (areAnyTabsPartOfSharedGroup(this, tabs, maybeDestinationTabGroupId)) return;
+        assert destinationTab != null || targetTabGroupId != null;
+        Token destinationTabGroupId =
+                destinationTab != null ? destinationTab.getTabGroupId() : targetTabGroupId;
+        if (areAnyTabsPartOfSharedGroup(this, tabs, destinationTabGroupId)) return;
 
         List<Token> candidateTabGroupIds = getCandidateTabGroupIdsForMerge(tabs);
-        boolean wasDestinationTabInGroup = maybeDestinationTabGroupId != null;
-        boolean willCreateNewGroup = candidateTabGroupIds.isEmpty() && !wasDestinationTabInGroup;
-        assert tabGroupIdForNewGroup == null
+        boolean willCreateNewGroup =
+                candidateTabGroupIds.isEmpty() && destinationTabGroupId == null;
+        assert targetTabGroupId == null
                         || willCreateNewGroup
-                        || tabGroupIdForNewGroup.equals(maybeDestinationTabGroupId)
+                        || targetTabGroupId.equals(destinationTabGroupId)
                         || (!candidateTabGroupIds.isEmpty()
-                                && tabGroupIdForNewGroup.equals(candidateTabGroupIds.get(0)))
-                : "A new tab group ID should not be provided if the merge contains a tab group"
+                                && targetTabGroupId.equals(candidateTabGroupIds.get(0)))
+                : "A target tab group ID should not be provided if the merge contains a tab group"
                         + " unless it matches the destination tab's group ID or the candidate"
                         + " group ID.";
 
-        // Find a destination tab group ID.
-        final Token destinationTabGroupId;
-        final boolean adoptCandidateGroupId;
-        if (wasDestinationTabInGroup) {
-            // Case 1: The destination tab is already part of a group we will reuse it.
-            destinationTabGroupId = maybeDestinationTabGroupId;
-            adoptCandidateGroupId = false;
-        } else if (willCreateNewGroup) {
-            // Case 2: None of the tabs are part of a group and we will create a new group.
-            destinationTabGroupId =
-                    tabGroupIdForNewGroup == null ? Token.createRandom() : tabGroupIdForNewGroup;
-            createDetachedTabGroup(destinationTabGroupId);
-            adoptCandidateGroupId = false;
-        } else {
-            // Case 3: At least one of the tabs being merged is part of a group. Reuse the first
-            // group found's metadata.
-            destinationTabGroupId = candidateTabGroupIds.get(0);
-            adoptCandidateGroupId = true;
+        // Find a destination tab group ID if the destination tab is not already in a group.
+        boolean adoptCandidateGroupId = false;
+        if (destinationTabGroupId == null) {
+            if (willCreateNewGroup) {
+                // None of the tabs are part of a group and we will create a new group.
+                destinationTabGroupId =
+                        targetTabGroupId == null ? Token.createRandom() : targetTabGroupId;
+                createDetachedTabGroup(destinationTabGroupId);
+            } else {
+                // At least one of the tabs being merged is part of a group. Reuse the first
+                // group found's metadata.
+                destinationTabGroupId = candidateTabGroupIds.get(0);
+                adoptCandidateGroupId = true;
+            }
         }
         assert destinationTabGroupId != null;
         // All other candidate groups will be consumed/deleted. Ensure the destinationTabGroupId is
         // kept if it came from the list of candidateTabGroupIds.
         candidateTabGroupIds.remove(destinationTabGroupId);
 
-        // If we are using an existing group that the destination tab is not part of we need to
-        // move the group to the index of the destination tab.
         int adoptedTabGroupIndex = INVALID_TAB_INDEX;
-        int originalDestinationIndex = indexOf(destinationTab);
-        if (adoptCandidateGroupId) {
-            List<Tab> tabsInAdoptedGroup = getTabsInGroup(destinationTabGroupId);
-            adoptedTabGroupIndex = indexOf(tabsInAdoptedGroup.get(0));
-            // If the undo operation will move the adopted group to a higher index, we need to
-            // offset the restored index of the adopted group to account for its size.
-            if (originalDestinationIndex < adoptedTabGroupIndex) {
-                adoptedTabGroupIndex += tabsInAdoptedGroup.size() - 1;
-            }
-            assert indexInGroup == null
-                    : "indexInGroup should not be set when adopting a candidate group.";
-            moveGroupToIndex(destinationTabGroupId, originalDestinationIndex);
-        }
-
-        // Move the destination tab into the group if it is not already part of the group.
-        int destinationTabIndex = indexOf(destinationTab);
+        int destinationTabIndex = INVALID_TAB_INDEX;
         UndoGroupTabData undoGroupDestinationTabData = null;
-        if (!wasDestinationTabInGroup) {
+        // Move destinationTab into the group only for new or adopted groups. For existing
+        // groups, destinationTab is already in the group or null.
+        if (destinationTab != null && (willCreateNewGroup || adoptCandidateGroupId)) {
+            int originalDestinationIndex = indexOf(destinationTab);
+            if (adoptCandidateGroupId) {
+                // If we are using an existing group that the destination tab is not part of we need
+                // to move the group to the index of the destination tab.
+                List<Tab> tabsInAdoptedGroup = getTabsInGroup(destinationTabGroupId);
+                adoptedTabGroupIndex = indexOf(tabsInAdoptedGroup.get(0));
+                // If the undo operation will move the adopted group to a higher index, we need to
+                // offset the restored index of the adopted group to account for its size.
+                if (originalDestinationIndex < adoptedTabGroupIndex) {
+                    adoptedTabGroupIndex += tabsInAdoptedGroup.size() - 1;
+                }
+                assert indexInGroup == null
+                        : "indexInGroup should not be set when adopting a candidate group.";
+                moveGroupToIndex(destinationTabGroupId, originalDestinationIndex);
+            }
+
+            // Move the destination tab into the group if it is not already part of the group.
+            destinationTabIndex =
+                    adoptCandidateGroupId ? indexOf(destinationTab) : originalDestinationIndex;
             undoGroupDestinationTabData =
                     new UndoGroupTabData(
                             destinationTab,
@@ -2249,9 +2268,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         // Calculate the initial insertion point in the tab model.
         int destinationIndexInTabModel;
-        if (wasDestinationTabInGroup || adoptCandidateGroupId) {
-            // If we adopt a candidate group, indexInGroup should be null. ie, add all tabs to
-            // after destination tab.
+        if (!willCreateNewGroup) {
+            // For existing or adopted groups, insert relative to existing tabs in that group.
             List<Tab> tabsInDestGroup = getTabsInGroup(destinationTabGroupId);
             int groupSize = tabsInDestGroup.size();
             int insertionIndexInGroup =

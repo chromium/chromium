@@ -2717,6 +2717,55 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testMergeListOfTabsToExistingGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3),
+                            tab2,
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
+                    Token groupId = tab2.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    // Merging into a non-existent group should no-op.
+                    mCollectionModel.mergeListOfTabsToExistingGroup(
+                            List.of(tab1),
+                            Token.createRandom(),
+                            /* indexInGroup= */ null,
+                            TabGroupMergeNotificationType.DONT_NOTIFY);
+                    assertNull(tab1.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+                    // Append tab5 to the end of the existing group.
+                    mCollectionModel.mergeListOfTabsToExistingGroup(
+                            List.of(tab5),
+                            groupId,
+                            /* indexInGroup= */ null,
+                            TabGroupMergeNotificationType.DONT_NOTIFY);
+                    assertEquals(groupId, tab5.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab5, tab4));
+
+                    // Insert tab1 at index 1 in the existing group.
+                    mCollectionModel.mergeListOfTabsToExistingGroup(
+                            List.of(tab1),
+                            groupId,
+                            /* indexInGroup= */ 1,
+                            TabGroupMergeNotificationType.DONT_NOTIFY);
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab3, tab5, tab4));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testMergeListOfTabsToGroupInternal_MergeTabsWhereTheyAre() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -3017,6 +3066,78 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupOperation_MergeListOfTabsToExistingGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
+        CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group with tab2, tab3.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3),
+                            tab2,
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
+                    Token groupId = tab2.getTabGroupId();
+                    assertNotNull(groupId);
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
+                                @Override
+                                public void showUndoGroupSnackbar(
+                                        UndoGroupMetadata undoGroupMetadata) {
+                                    undoGroupMetadataRef.set(undoGroupMetadata);
+                                    showUndoSnackbarHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge tab1 and tab4 into the existing group at index 1.
+                    mCollectionModel.mergeListOfTabsToExistingGroup(
+                            List.of(tab1, tab4),
+                            groupId,
+                            /* indexInGroup= */ 1,
+                            /* notify= */ TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(groupId, tab4.getTabGroupId());
+                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab4, tab3, tab5));
+                });
+
+        showUndoSnackbarHelper.waitForOnly();
+        assertNotNull(undoGroupMetadataRef.get());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.performUndoGroupOperation(undoGroupMetadataRef.get());
+
+                    // State should be restored: tab1 and tab4 are ungrouped, tab2 and tab3 remain
+                    // grouped.
+                    Token groupId = tab2.getTabGroupId();
+                    assertNull(tab0.getTabGroupId());
+                    assertNull(tab1.getTabGroupId());
+                    assertNotNull(groupId);
+                    assertEquals(groupId, tab3.getTabGroupId());
+                    assertNull(tab4.getTabGroupId());
+                    assertNull(tab5.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
                 });
     }
 

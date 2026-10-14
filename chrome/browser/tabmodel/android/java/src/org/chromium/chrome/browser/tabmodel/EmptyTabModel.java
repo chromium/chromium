@@ -421,6 +421,13 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
             List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, int notify) {}
 
     @Override
+    public void mergeListOfTabsToExistingGroup(
+            List<Tab> tabs,
+            Token destinationGroupId,
+            @Nullable Integer indexInGroup,
+            @TabGroupMergeNotificationType int notify) {}
+
+    @Override
     public TabUngrouper getTabUngrouper() {
         return new EmptyTabUngrouper();
     }

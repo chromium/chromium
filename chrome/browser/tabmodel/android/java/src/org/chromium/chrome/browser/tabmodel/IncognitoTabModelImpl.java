@@ -606,6 +606,16 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void mergeListOfTabsToExistingGroup(
+            List<Tab> tabs,
+            Token destinationGroupId,
+            @Nullable Integer indexInGroup,
+            @TabGroupMergeNotificationType int notify) {
+        mDelegateModel.mergeListOfTabsToExistingGroup(
+                tabs, destinationGroupId, indexInGroup, notify);
+    }
+
+    @Override
     public TabUngrouper getTabUngrouper() {
         return new TabUngrouper() {
             @Override
