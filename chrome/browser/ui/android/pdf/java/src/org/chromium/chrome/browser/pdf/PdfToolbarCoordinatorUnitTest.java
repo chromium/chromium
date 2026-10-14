@@ -9,11 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -868,6 +870,262 @@ public class PdfToolbarCoordinatorUnitTest {
                         "Android.Pdf.ToolbarAction", PdfToolbarAction.DOCUMENT_PROPERTIES);
         propertiesItemView.performClick();
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCustomZoom_validInRange() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("150");
+        zoomValue.clearFocus();
+
+        assertEquals("150%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(1.5f, 0.001f));
+        assertEquals(1.75f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_percentSuffixAccepted() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("150%");
+        zoomValue.clearFocus();
+
+        assertEquals("150%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(1.5f, 0.001f));
+        assertEquals(1.75f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_clampedToMax() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("900");
+        zoomValue.clearFocus();
+
+        assertEquals("500%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(5.0f, 0.001f));
+        assertNull(mPdfToolbarCoordinator.getNextEngineZoomLevel(true));
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertFalse(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_clampedToMin() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("10");
+        zoomValue.clearFocus();
+
+        assertEquals("25%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(0.25f, 0.001f));
+        assertNull(mPdfToolbarCoordinator.getNextEngineZoomLevel(false));
+        assertFalse(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_nonNumericReverts() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("abc");
+        zoomValue.clearFocus();
+
+        assertEquals("100%", zoomValue.getText().toString());
+        verify(mDelegate, never()).changeZoomLevel(anyFloat());
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_overflowReverts() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("99999999999");
+        zoomValue.clearFocus();
+
+        assertEquals("100%", zoomValue.getText().toString());
+        verify(mDelegate, never()).changeZoomLevel(anyFloat());
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_negativeIgnored() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("-5");
+        zoomValue.clearFocus();
+
+        assertEquals("100%", zoomValue.getText().toString());
+        verify(mDelegate, never()).changeZoomLevel(anyFloat());
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_scalesWithNonDefaultZoomLevel() {
+        mPdfToolbarCoordinator.setDefaultZoomLevel(1.5f);
+        mPdfToolbarCoordinator.onViewportChanged(0, 1.5f);
+
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("200");
+        zoomValue.clearFocus();
+
+        assertEquals("200%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(2.0f * 1.5f, 0.001f));
+        assertEquals(2.5f * 1.5f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_textNotUpdatedWhileFocused() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+
+        assertTrue(zoomValue.requestFocus());
+        mPdfToolbarCoordinator.onViewportChanged(0, 1.5f);
+        assertEquals("100%", zoomValue.getText().toString());
+
+        zoomValue.clearFocus();
+        assertEquals("150%", zoomValue.getText().toString());
+        verify(mDelegate, never()).changeZoomLevel(anyFloat());
+    }
+
+    @Test
+    public void testCustomZoom_imeActionGoSubmits() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("150");
+        zoomValue.onEditorAction(EditorInfo.IME_ACTION_GO);
+
+        assertEquals("150%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(1.5f, 0.001f));
+        assertEquals(1.75f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+    }
+
+    @Test
+    public void testCustomZoom_numpadEnterSubmits() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("150");
+        zoomValue.dispatchKeyEvent(
+                new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_NUMPAD_ENTER));
+
+        assertFalse(zoomValue.isFocused());
+        assertEquals("150%", zoomValue.getText().toString());
+        verify(mDelegate).changeZoomLevel(AdditionalMatchers.eq(1.5f, 0.001f));
+    }
+
+    @Test
+    public void testZoomValueAccessibilityNodeInfo() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(zoomValue);
+        assertNotNull(delegate);
+        AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(zoomValue, info);
+        assertEquals(
+                mActivity.getString(R.string.page_zoom_level_label, 100),
+                info.getStateDescription().toString());
+
+        mPdfToolbarCoordinator.onViewportChanged(0, 1.5f);
+        info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(zoomValue, info);
+        assertEquals(
+                mActivity.getString(R.string.page_zoom_level_label, 150),
+                info.getStateDescription().toString());
+    }
+
+    @Test
+    public void testCustomZoom_emptyReverts() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+
+        zoomValue.requestFocus();
+        zoomValue.setText("");
+        zoomValue.clearFocus();
+
+        assertEquals("100%", zoomValue.getText().toString());
+        verify(mDelegate, never()).changeZoomLevel(anyFloat());
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+        assertTrue(zoomDecreaseButton.isEnabled());
+        assertTrue(zoomIncreaseButton.isEnabled());
+    }
+
+    @Test
+    public void testCustomZoom_recordsMetric() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+
+        var zoomInWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.ZOOM_IN);
+        zoomValue.requestFocus();
+        zoomValue.setText("150");
+        zoomValue.clearFocus();
+        zoomInWatcher.assertExpected();
+
+        var zoomOutWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.ZOOM_OUT);
+        zoomValue.requestFocus();
+        zoomValue.setText("75");
+        zoomValue.clearFocus();
+        zoomOutWatcher.assertExpected();
+
+        var noOpWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords("Android.Pdf.ToolbarAction").build();
+        zoomValue.requestFocus();
+        zoomValue.setText("75");
+        zoomValue.clearFocus();
+        noOpWatcher.assertExpected();
+    }
+
+    @Test
+    public void testZoomValueFixedWidth() {
+        EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
+        int expectedWidth =
+                (int) Math.ceil(zoomValue.getPaint().measureText("100%"))
+                        + zoomValue.getPaddingStart()
+                        + zoomValue.getPaddingEnd();
+        assertEquals(expectedWidth, zoomValue.getMinWidth());
+        assertEquals(expectedWidth, zoomValue.getMaxWidth());
+        assertTrue(zoomValue.isSingleLine());
+        assertTrue(zoomValue.isHorizontallyScrollable());
     }
 
     private ListView openMoreMenu() {

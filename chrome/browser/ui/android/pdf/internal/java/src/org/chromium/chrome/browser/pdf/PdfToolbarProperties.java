@@ -54,6 +54,10 @@ class PdfToolbarProperties {
     static final WritableObjectPropertyKey<Callback<Integer>> PAGE_NUMBER_EDIT_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Invoked with the integer zoom percentage the user submitted via the zoom input field. */
+    static final WritableObjectPropertyKey<Callback<Integer>> ZOOM_EDIT_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the download button is visible. */
     static final WritableBooleanPropertyKey DOWNLOAD_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -97,6 +101,7 @@ class PdfToolbarProperties {
         DONE_BUTTON_VISIBLE,
         ZOOM_CONTROLS_VISIBLE,
         PAGE_NAV_AND_EDIT_VISIBLE,
-        MENU_BUTTON_DELEGATE
+        MENU_BUTTON_DELEGATE,
+        ZOOM_EDIT_LISTENER
     };
 }

@@ -62,6 +62,8 @@ public class PdfToolbar extends Toolbar {
         super.onFinishInflate();
         EditText currentPage = findViewById(R.id.current_page);
         currentPage.setFocusableInTouchMode(true);
+        EditText zoomValue = findViewById(R.id.zoom_value);
+        zoomValue.setFocusableInTouchMode(true);
 
         mDownloadButton = findViewById(R.id.download_button);
         mDoneButton = findViewById(R.id.done_button);
@@ -70,7 +72,7 @@ public class PdfToolbar extends Toolbar {
         mZoomControls =
                 Arrays.asList(
                         findViewById(R.id.zoom_decrease_button),
-                        findViewById(R.id.zoom_value),
+                        zoomValue,
                         findViewById(R.id.zoom_increase_button));
 
         mPageNav =

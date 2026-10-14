@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.pdf;
 
+import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -16,10 +18,12 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.Locale;
 
@@ -44,12 +48,23 @@ class PdfToolbarViewBinder {
             TextView pageCount = view.findViewById(R.id.page_count);
             pageCount.setText(String.valueOf(model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT)));
         } else if (PdfToolbarProperties.ZOOM_LEVEL == key) {
-            TextView zoomValue = view.findViewById(R.id.zoom_value);
-            zoomValue.setText(
-                    String.format(
-                            Locale.ENGLISH,
-                            "%.0f%%",
-                            model.get(PdfToolbarProperties.ZOOM_LEVEL) * 100));
+            EditText zoomValue = view.findViewById(R.id.zoom_value);
+            if (!zoomValue.isFocused()) {
+                zoomValue.setText(formatZoomPercentage(model));
+                // Lock the EditText width once on the initial bind (before a layout pass has
+                // measured the view) by measuring the default zoom text ("100%") plus horizontal
+                // padding, preventing the input field from resizing as the text changes.
+                if (zoomValue.getMinWidth() <= 0) {
+                    int textWidth =
+                            (int)
+                                    Math.ceil(
+                                            zoomValue
+                                                    .getPaint()
+                                                    .measureText(zoomValue.getText().toString()));
+                    zoomValue.setWidth(
+                            textWidth + zoomValue.getPaddingStart() + zoomValue.getPaddingEnd());
+                }
+            }
         } else if (PdfToolbarProperties.ON_CLICK_LISTENER == key) {
             View.OnClickListener listener = model.get(PdfToolbarProperties.ON_CLICK_LISTENER);
             view.findViewById(R.id.zoom_increase_button).setOnClickListener(listener);
@@ -115,21 +130,54 @@ class PdfToolbarViewBinder {
                         }
                     });
 
-            currentPage.setOnEditorActionListener(
-                    (v, actionId, event) -> {
-                        if (actionId == EditorInfo.IME_ACTION_GO
-                                || actionId == EditorInfo.IME_ACTION_DONE
-                                // Physical keyboard enter key returns IME_NULL.
-                                || (actionId == EditorInfo.IME_NULL
-                                        && event != null
-                                        && KeyNavigationUtil.isActionDown(event)
-                                        && KeyNavigationUtil.isEnter(event))) {
-                            // Clear focus.
-                            currentPage.clearFocus();
-                            return true;
+            bindSubmitActions(currentPage);
+        } else if (PdfToolbarProperties.ZOOM_EDIT_LISTENER == key) {
+            EditText zoomValue = view.findViewById(R.id.zoom_value);
+            ViewCompat.setAccessibilityDelegate(
+                    zoomValue,
+                    new AccessibilityDelegateCompat() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfoCompat info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            int zoomPercentage =
+                                    Math.round(model.get(PdfToolbarProperties.ZOOM_LEVEL) * 100);
+                            String desc =
+                                    host.getContext()
+                                            .getString(
+                                                    R.string.page_zoom_level_label, zoomPercentage);
+                            info.setStateDescription(desc);
                         }
-                        return false;
                     });
+            Callback<Integer> listener = model.get(PdfToolbarProperties.ZOOM_EDIT_LISTENER);
+            boolean[] isEditedWhileFocused = new boolean[1];
+            zoomValue.addTextChangedListener(
+                    new EmptyTextWatcher() {
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if (zoomValue.isFocused()) {
+                                isEditedWhileFocused[0] = true;
+                            }
+                        }
+                    });
+            zoomValue.setOnFocusChangeListener(
+                    (v, hasFocus) -> {
+                        if (hasFocus) {
+                            isEditedWhileFocused[0] = false;
+                            return;
+                        }
+                        if (isEditedWhileFocused[0]) {
+                            isEditedWhileFocused[0] = false;
+                            int zoomPercentage =
+                                    parseZoomPercentage(zoomValue.getText().toString());
+                            if (zoomPercentage >= 0 && listener != null) {
+                                listener.onResult(zoomPercentage);
+                            }
+                        }
+                        zoomValue.setText(formatZoomPercentage(model));
+                        KeyboardUtils.hideAndroidSoftKeyboard(zoomValue);
+                    });
+            bindSubmitActions(zoomValue);
         } else if (PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON == key) {
             ImageView fitToPageButton = view.findViewById(R.id.fit_to_page_button);
             if (model.get(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON)) {
@@ -162,6 +210,55 @@ class PdfToolbarViewBinder {
             moreMenuButton.setDelegate(
                     model.get(PdfToolbarProperties.MENU_BUTTON_DELEGATE),
                     /* overrideOnClickListener= */ true);
+        }
+    }
+
+    private static String formatZoomPercentage(PropertyModel model) {
+        return String.format(
+                Locale.ENGLISH, "%.0f%%", model.get(PdfToolbarProperties.ZOOM_LEVEL) * 100);
+    }
+
+    private static void bindSubmitActions(EditText editText) {
+        editText.setOnEditorActionListener(
+                (v, actionId, event) -> {
+                    if (isSubmitEditorAction(actionId, event)) {
+                        editText.clearFocus();
+                        return true;
+                    }
+                    return false;
+                });
+        // On Android 10 (API 29), TextView.doKeyDown does not dispatch KEYCODE_NUMPAD_ENTER to
+        // OnEditorActionListener, so also listen for Enter key events directly.
+        editText.setOnKeyListener(
+                (v, keyCode, event) -> {
+                    if (KeyNavigationUtil.isActionDown(event) && KeyNavigationUtil.isEnter(event)) {
+                        editText.clearFocus();
+                        return true;
+                    }
+                    return false;
+                });
+    }
+
+    private static boolean isSubmitEditorAction(int actionId, @Nullable KeyEvent event) {
+        return actionId == EditorInfo.IME_ACTION_GO
+                || actionId == EditorInfo.IME_ACTION_DONE
+                // Physical keyboard enter key returns IME_NULL.
+                || (actionId == EditorInfo.IME_NULL
+                        && event != null
+                        && KeyNavigationUtil.isActionDown(event)
+                        && KeyNavigationUtil.isEnter(event));
+    }
+
+    /** Returns the zoom percentage parsed from {@code text}, or -1 if it is not a valid integer. */
+    private static int parseZoomPercentage(String text) {
+        String trimmed = text.trim();
+        if (trimmed.endsWith("%")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1).trim();
+        }
+        try {
+            return Integer.parseInt(trimmed);
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 }

@@ -110,12 +110,23 @@ found in the LICENSE file.
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/zoom_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+                android:background="@drawable/modern_toolbar_input_field_background"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:imeOptions="actionGo"
+                android:cursorVisible="true"
+                android:selectAllOnFocus="true"
+                android:importantForAutofill="no"
+                android:textAlignment="center"
+                tools:ignore="LabelFor"/>
 
             <org.chromium.ui.widget.ChromeImageButton
                 android:id="@+id/zoom_increase_button"
