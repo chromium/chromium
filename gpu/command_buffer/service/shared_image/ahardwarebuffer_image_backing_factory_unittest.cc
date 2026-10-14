@@ -6,6 +6,7 @@
 
 #include <android/hardware_buffer.h>
 
+#include <thread>
 #include <vector>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
@@ -40,9 +41,17 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 #include "ui/gl/scoped_gl_framebuffer.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include <dawn/native/DawnNative.h>
@@ -353,6 +362,123 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   VerifyPixelsWithReadback(mailbox, {expected_bitmap});
 
   factory_ref.reset();
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest, UploadAndReadback) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(4, 4);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  std::vector<uint8_t> src_pixels(size.width() * size.height() * 4);
+  for (size_t i = 0; i < src_pixels.size(); ++i) {
+    src_pixels[i] = static_cast<uint8_t>(i % 256);
+  }
+
+  SkImageInfo info = backing->AsSkImageInfo();
+  SkPixmap src_pixmap(info, src_pixels.data(), info.minRowBytes());
+
+  std::vector<uint8_t> dst_pixels(src_pixels.size(), 0);
+  SkPixmap dst_pixmap(info, dst_pixels.data(), info.minRowBytes());
+
+  ASSERT_TRUE(backing->UploadFromMemory({src_pixmap}));
+  ASSERT_TRUE(backing->ReadbackToMemory({dst_pixmap}));
+  EXPECT_EQ(src_pixels, dst_pixels);
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       UploadReadbackCrossThreadWithTLS) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(4, 4);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/true);
+  ASSERT_TRUE(backing);
+
+  std::vector<uint8_t> src_pixels(size.width() * size.height() * 4);
+  for (size_t i = 0; i < src_pixels.size(); ++i) {
+    src_pixels[i] = static_cast<uint8_t>(i % 256);
+  }
+
+  SkImageInfo info = backing->AsSkImageInfo();
+  SkPixmap src_pixmap(info, src_pixels.data(), info.minRowBytes());
+
+  std::vector<uint8_t> dst_pixels(src_pixels.size(), 0);
+  SkPixmap dst_pixmap(info, dst_pixels.data(), info.minRowBytes());
+
+  // Perform UploadFromMemory and ReadbackToMemory on a second thread using its
+  // thread-local SharedContextState.
+  std::thread second_thread([&]() {
+    auto surface2 = gl::init::CreateOffscreenGLSurface(
+        gl::GetDefaultDisplayEGL(), gfx::Size());
+    ASSERT_TRUE(surface2);
+    gl::GLContextAttribs attribs;
+    attribs.angle_context_virtualization_group_number =
+        gl::AngleContextVirtualizationGroup::kDrDc;
+    auto context2 = gl::init::CreateGLContext(nullptr, surface2.get(), attribs);
+    ASSERT_TRUE(context2);
+    ASSERT_TRUE(context2->MakeCurrent(surface2.get()));
+
+    DawnContextProvider* dawn_context_provider2 = nullptr;
+#if BUILDFLAG(SKIA_USE_DAWN)
+    std::unique_ptr<DawnContextProvider> owned_dawn_context_provider2;
+    if (IsGraphiteDawn()) {
+      owned_dawn_context_provider2 =
+          DawnContextProvider::CreateWithSharedDevice(
+              context_state_->dawn_context_provider());
+      dawn_context_provider2 = owned_dawn_context_provider2.get();
+    }
+#endif
+
+    auto context_state2 = base::MakeRefCounted<SharedContextState>(
+        base::MakeRefCounted<gl::GLShareGroup>(), surface2, context2,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        GrContextType(), context_state_->vk_context_provider(),
+        dawn_context_provider2);
+    ASSERT_TRUE(context_state2->InitializeGL(gpu_preferences_, gpu_workarounds_,
+                                             GpuFeatureInfo()));
+    ASSERT_TRUE(
+        context_state2->InitializeSkia(gpu_preferences_, gpu_workarounds_));
+    SharedContextState::SetForCurrentThread(context_state2.get());
+
+    // Release the GL context so UploadFromMemory and ReadbackToMemory must
+    // make it current via TLS when using GL and restore it to nullptr after.
+    context2->ReleaseCurrent(surface2.get());
+    EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+    EXPECT_TRUE(backing->UploadFromMemory({src_pixmap}));
+    EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+    EXPECT_TRUE(backing->ReadbackToMemory({dst_pixmap}));
+    EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+
+    SharedContextState::ClearForCurrentThread();
+    context_state2->MakeCurrent(surface2.get(), /*needs_gl=*/true);
+    context_state2.reset();
+    context2.reset();
+    surface2.reset();
+  });
+
+  second_thread.join();
+  EXPECT_EQ(src_pixels, dst_pixels);
 }
 
 // Test to check invalid format support.

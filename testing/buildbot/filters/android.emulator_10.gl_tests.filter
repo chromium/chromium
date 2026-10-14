@@ -21,3 +21,5 @@
 -AHardwareBufferImageBackingFactoryTest.GLWriteSkiaRead/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.OnlyOneWriter/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.Overlay/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.UploadAndReadback/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.UploadReadbackCrossThreadWithTLS/GaneshGL
