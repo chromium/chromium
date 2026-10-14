@@ -115,7 +115,7 @@ suite('RecentTabsDelegateTest', () => {
       noRecentlyClosedTabs: 'No recently closed tabs',
       recentlyClosed: 'Recently Closed',
       oneTab: '1 tab',
-      splitView: 'Split View',
+      splitView: 'Split view',
       tabCount: '$1 tabs',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);

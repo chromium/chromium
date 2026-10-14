@@ -36,9 +36,9 @@ suite('OrganizerPanelAppTest', () => {
       isIncognitoMode: false,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
-      openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',
-      searchTabs: 'Search Tabs',
+      recentlyVisited: 'Recently visited',
+      searchTabsAndGroups: 'Search tabs and groups',
       shortcutText: 'Ctrl+Shift+A',
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
@@ -87,7 +87,7 @@ suite('OrganizerPanelAppTest', () => {
 
   test('renders search field with correct label and shortcut', () => {
     const searchField = app.$.searchField;
-    assertEquals('Search Tabs', searchField.getAttribute('label'));
+    assertEquals('Search tabs and groups', searchField.getAttribute('label'));
     assertEquals('Clear search', searchField.getAttribute('clear-label'));
 
     const shortcut = searchField.querySelector('#shortcut');

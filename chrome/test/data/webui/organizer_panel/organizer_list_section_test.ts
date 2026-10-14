@@ -499,7 +499,7 @@ suite('OrganizerListSectionTest', () => {
         extraSearchTerms: ['www.google.com'],
       },
       {
-        title: ['Split View'],
+        title: ['Split view'],
         description: [{text: 'Docs'}, {text: 'Sheets'}],
         extraSearchTerms: ['docs.google.com', 'sheets.google.com'],
       },
@@ -513,7 +513,7 @@ suite('OrganizerListSectionTest', () => {
     let listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(1, listItems.length);
-    assertDeepEquals(['Split View'], listItems[0]!.item.title);
+    assertDeepEquals(['Split view'], listItems[0]!.item.title);
     assertDeepEquals([[]], listItems[0]!.$.title.highlightRanges);
     assertDeepEquals([[], []], listItems[0]!.$.description.highlightRanges);
 

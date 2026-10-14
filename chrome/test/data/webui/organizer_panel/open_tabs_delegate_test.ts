@@ -156,10 +156,10 @@ suite('OpenTabsDelegateTest', () => {
 
   setup(() => {
     loadTimeData.resetForTesting({
-      openTabs: 'Open Tabs',
+      recentlyVisited: 'Recently visited',
       closeTab: 'Close tab',
       oneTab: '1 tab',
-      splitView: 'Split View',
+      splitView: 'Split view',
       tabCount: '$1 tabs',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
@@ -176,7 +176,7 @@ suite('OpenTabsDelegateTest', () => {
 
   test('returns id and header', () => {
     assertEquals('open-tabs', delegate.getId());
-    assertEquals('Open Tabs', delegate.getHeader());
+    assertEquals('Recently visited', delegate.getHeader());
   });
 
   test('returns tabs sorted by MRU across windows', async () => {

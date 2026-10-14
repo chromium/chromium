@@ -10695,13 +10695,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VIEW_ORGANIZER_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the organizer panel.">
             View Organizer
           </message>
-          <message name="IDS_HIDE_ORGANIZER_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the organizer panel.">
-            Hide Organizer
-          </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
-          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="In Title Case: The label for the context menu item in the organizer panel to close tab search.">
+          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="In Title Case: The label for the close button and context menu item in the organizer panel to close tab search.">
             Close Tab Search
           </message>
           <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="In Title Case: The label for the context menu item in the organizer panel that expands all sections.">
@@ -10715,13 +10712,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VIEW_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that shows the organizer panel.">
             View organizer
           </message>
-          <message name="IDS_HIDE_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that hides the organizer panel.">
-            Hide organizer
-          </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
-          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="The label for the context menu item in the organizer panel to close tab search.">
+          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="The label for the close button and context menu item in the organizer panel to close tab search.">
             Close tab search
           </message>
           <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="The label for the context menu item in the organizer panel that expands all sections.">
@@ -10748,7 +10742,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Show some
       </message>
       <message name="IDS_ORGANIZER_PANEL_SPLIT_VIEW" desc="The title for a split view item in an organizer panel list section.">
-        Split View
+        Split view
       </message>
       <message name="IDS_ORGANIZER_PANEL_TAB_GROUPS" desc="The label on the organizer panel list section corresponding to tab groups.">
         Tab Groups
@@ -10758,6 +10752,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ORGANIZER_PANEL_CROSS_DEVICE_TABS" desc="The label on the organizer panel list section corresponding to tabs on other devices.">
         Tabs on other devices
+      </message>
+      <message name="IDS_ORGANIZER_PANEL_SEARCH_TABS_AND_GROUPS" desc="The placeholder text in the search box of the organizer panel.">
+        Search tabs and groups
+      </message>
+      <message name="IDS_ORGANIZER_PANEL_RECENTLY_VISITED" desc="The label on the organizer panel list section corresponding to recently visited tabs.">
+        Recently visited
       </message>
       <message name="IDS_TAB_STRIP_BUTTON_TOOLTIP" desc="The tooltip for the tab strip button.">
         Tab strip

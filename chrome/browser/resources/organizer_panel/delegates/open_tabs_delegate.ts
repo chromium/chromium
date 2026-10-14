@@ -97,7 +97,7 @@ export class OpenTabsDelegate implements
   }
 
   getHeader(): string {
-    return loadTimeData.getString('openTabs');
+    return loadTimeData.getString('recentlyVisited');
   }
 
   async getItems(): Promise<Array<OrganizerListSectionItem<OpenTabsItem>>> {

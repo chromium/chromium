@@ -309,8 +309,9 @@ void OrganizerPanelController::UpdateOrganizerActionItem() {
     return;
   }
 
-  const auto& text = IsOrganizerPanelVisible() ? IDS_HIDE_ORGANIZER_PANEL
-                                               : IDS_VIEW_ORGANIZER_PANEL;
+  const auto& text = IsOrganizerPanelVisible()
+                         ? IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH
+                         : IDS_VIEW_ORGANIZER_PANEL;
   const std::u16string title_and_tooltip =
       chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text));
   organizer_action->SetText(title_and_tooltip);

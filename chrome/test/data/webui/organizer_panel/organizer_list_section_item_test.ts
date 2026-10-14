@@ -333,7 +333,7 @@ suite('OrganizerListSectionItemTest', () => {
       'renders prefix icon with multiple URLs as stacked favicons',
       async () => {
         listItem.item = {
-          title: ['Split View'],
+          title: ['Split view'],
           prefixIcon: {
             stackedFavicons: {
               urls: [TEST_URL_1, TEST_URL_2],
@@ -365,7 +365,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('forwards stacking orientation to stacked favicons', async () => {
     listItem.item = {
-      title: ['Split View Vertical'],
+      title: ['Split view vertical'],
       prefixIcon: {
         stackedFavicons: {
           urls: [TEST_URL_1, TEST_URL_2],

@@ -202,7 +202,7 @@ export function getHtml(this: SettingsAppearancePageElement) {
     ${this.showOrganizerPanelEnabled_ ? html`
       <settings-toggle-button id="showOrganizerPanelButton"
           pref-key="tab_search.pinned_to_tabstrip"
-          label="$i18n{showOrganizerPanelButton}"
+          label="$i18n{showTabSearchButton}"
           @change="${this.onShowOrganizerPanelButtonChange_}">
       </settings-toggle-button>
     ` : html`
