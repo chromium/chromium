@@ -57,7 +57,7 @@ scoped_refptr<AwOriginMatchedHeader> AwOriginMatchedHeader::MergedWithMatcher(
 // static
 std::vector<std::pair<std::string_view, std::string>>
 AwOriginMatchedHeader::GetCombinedMatchingHeaders(
-    base::span<scoped_refptr<AwOriginMatchedHeader>> headers,
+    base::span<const scoped_refptr<AwOriginMatchedHeader>> headers,
     const url::Origin& origin) {
   // Comparator for case-insensitive header name comparison.
   // This is used to coalesce headers with different casing into a single

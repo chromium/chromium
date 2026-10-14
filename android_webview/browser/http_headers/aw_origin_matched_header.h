@@ -74,7 +74,7 @@ class AwOriginMatchedHeader
   // header.
   static std::vector<std::pair<std::string_view, std::string>>
   GetCombinedMatchingHeaders(
-      base::span<scoped_refptr<AwOriginMatchedHeader>> headers,
+      base::span<const scoped_refptr<AwOriginMatchedHeader>> headers,
       const url::Origin& origin);
 
  private:

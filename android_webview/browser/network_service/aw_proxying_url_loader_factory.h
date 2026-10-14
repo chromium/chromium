@@ -69,6 +69,30 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       embedder_support::AndroidStreamReaderURLLoader::SecurityOptions;
   using InterceptorEntryPtr = AwHeaderInterceptorStore::InterceptorEntryPtr;
 
+  // State shared by all requests started by this proxy.
+  // This helps reduce the number of copies of data that is stable for the
+  // lifetime of this proxy.
+  class ProxySharedState : public base::RefCountedThreadSafe<ProxySharedState> {
+   public:
+    ProxySharedState(
+        std::vector<scoped_refptr<AwOriginMatchedHeader>>
+            origin_matched_headers,
+        std::vector<InterceptorEntryPtr> profile_header_interceptors,
+        std::vector<InterceptorEntryPtr> web_contents_header_interceptors);
+
+    // These vectors are const since they are not meant to be modified after
+    // initialization. Making them `const` makes it easier to see that they
+    // can be safely read from other threads after being initialized.
+    const std::vector<scoped_refptr<AwOriginMatchedHeader>>
+        origin_matched_headers;
+    const std::vector<InterceptorEntryPtr> profile_header_interceptors;
+    const std::vector<InterceptorEntryPtr> web_contents_header_interceptors;
+
+   private:
+    friend class base::RefCountedThreadSafe<ProxySharedState>;
+    ~ProxySharedState();
+  };
+
   // Create a factory that will create specialized URLLoaders for Android
   // WebView. If |intercept_only| parameter is true the loader created by
   // this factory will only execute the intercept callback
@@ -142,6 +166,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
                  loader_receiver) override;
 
  private:
+  scoped_refptr<ProxySharedState> proxy_shared_state_;
+
   void OnTargetFactoryError();
   void OnProxyBindingError();
   void GetCookieHeader(bool is_3pc_allowed,
@@ -168,10 +194,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   bool intercept_only_;
 
   std::optional<SecurityOptions> security_options_;
-
-  std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
-  std::vector<InterceptorEntryPtr> profile_header_interceptors_;
-  std::vector<InterceptorEntryPtr> web_contents_header_interceptors_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 
