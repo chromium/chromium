@@ -45,8 +45,25 @@ public final class ChromeItemPickerUtils {
      */
     public static @Nullable Intent createChromeItemPickerIntent(
             Context context, @Nullable List<Integer> preselectedTabIds) {
+        return createChromeItemPickerIntent(
+                context, preselectedTabIds, /* includePdfTabs= */ false);
+    }
+
+    /**
+     * Creates an Intent to launch the Chrome Item Picker with preselected tab IDs.
+     *
+     * @param context The context used to start the intent.
+     * @param preselectedTabIds The list of tab IDs that should be preselected on startup.
+     * @param includePdfTabs Whether tabs displaying a native PDF page should be selectable.
+     * @return An intent to launch the Chrome Item Picker or null if it cannot be found.
+     */
+    public static @Nullable Intent createChromeItemPickerIntent(
+            Context context, @Nullable List<Integer> preselectedTabIds, boolean includePdfTabs) {
         Intent intent = createChromeItemPickerIntent(context);
         if (intent == null) return null;
+        if (includePdfTabs) {
+            intent.putExtra(ChromeItemPickerExtras.EXTRA_INCLUDE_PDF_TABS, true);
+        }
         if (preselectedTabIds != null && !preselectedTabIds.isEmpty()) {
             intent.putIntegerArrayListExtra(
                     ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS,

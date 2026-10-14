@@ -24,6 +24,9 @@ public final class ChromeItemPickerExtras {
     /** Intent extra defining the maximum number of items a user can select. */
     public static final String EXTRA_ALLOWED_SELECTION_COUNT = "EXTRA_ALLOWED_SELECTION_COUNT";
 
+    /** Intent extra indicating if the picker should include tabs showing a PDF. */
+    public static final String EXTRA_INCLUDE_PDF_TABS = "EXTRA_INCLUDE_PDF_TABS";
+
     /** Intent extra for an error message when an item picker action fails. */
     public static final String EXTRA_ITEM_PICKER_ERROR = "EXTRA_ITEM_PICKER_ERROR";
 }

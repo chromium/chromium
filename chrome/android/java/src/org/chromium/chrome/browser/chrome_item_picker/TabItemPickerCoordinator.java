@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelecti
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -90,6 +91,7 @@ public class TabItemPickerCoordinator {
     private final ArrayList<Integer> mPreselectedTabIds;
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
     private final int mAllowedSelectionCount;
+    private final boolean mIncludePdfTabs;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
     private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
@@ -106,7 +108,8 @@ public class TabItemPickerCoordinator {
             ViewGroup rootView,
             ViewGroup containerView,
             ArrayList<Integer> preselectedTabIds,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            boolean includePdfTabs) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -116,6 +119,7 @@ public class TabItemPickerCoordinator {
         mContainerView = containerView;
         mPreselectedTabIds = preselectedTabIds;
         mAllowedSelectionCount = allowedSelectionCount;
+        mIncludePdfTabs = includePdfTabs;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -283,7 +287,7 @@ public class TabItemPickerCoordinator {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActive = FuseboxTabUtils.isTabActive(tab);
             boolean isCached = mCachedTabIdsSet.contains(tab.getId());
-            if (FuseboxTabUtils.isTabEligibleForAttachment(tab)
+            if (isTabEligibleForPicker(tab)
                     && (allowBackgroundTabContextCapture || isActive || isCached)) {
                 tabsToShow.add(tab);
                 if (isActive) activeTabCount++;
@@ -298,6 +302,20 @@ public class TabItemPickerCoordinator {
         RecordHistogram.recordCount100Histogram(
                 "Android.TabItemPicker.BackgroundTabs.Count", backgroundTabCount);
         showEditorUi(tabsToShow);
+    }
+
+    /** Returns whether the given tab can be shown in the picker. */
+    private boolean isTabEligibleForPicker(@Nullable Tab tab) {
+        if (tab == null) return false;
+        if (FuseboxTabUtils.isTabEligibleForAttachment(tab)) return true;
+        // Local PDFs have a chrome-native:// URL, so they are not eligible above.
+        return mIncludePdfTabs && !tab.isIncognitoBranded() && isPdfTab(tab);
+    }
+
+    /** Returns whether the given tab is displaying a native PDF page. */
+    private static boolean isPdfTab(Tab tab) {
+        NativePage nativePage = tab.getNativePage();
+        return nativePage != null && nativePage.isPdf();
     }
 
     private void showEditorUi(List<Tab> tabs) {
@@ -530,7 +548,10 @@ public class TabItemPickerCoordinator {
             }
 
             Tab tab = mTabModelSelector.getTabById(tabId);
+            // PDF tabs are not reloaded here. Their content is read from the PDF file rather
+            // than from a renderer, so no on-demand load is needed.
             if (tab == null
+                    || isPdfTab(tab)
                     || !FuseboxTabUtils.isTabEligibleForAttachment(tab)
                     || FuseboxTabUtils.hasLoadedContent(tab)) {
                 return;

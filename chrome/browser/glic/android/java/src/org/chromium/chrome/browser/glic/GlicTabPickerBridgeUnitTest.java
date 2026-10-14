@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
@@ -106,6 +107,9 @@ public class GlicTabPickerBridgeUnitTest {
                         ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS);
 
         assertArrayEquals(new Integer[] {30, 40}, capturedPreselected.toArray(new Integer[0]));
+        assertTrue(
+                launchedIntent.getBooleanExtra(
+                        ChromeItemPickerExtras.EXTRA_INCLUDE_PDF_TABS, false));
 
         // Simulate successful tab selection result
         Intent resultIntent = new Intent();

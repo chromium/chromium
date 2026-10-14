@@ -66,8 +66,11 @@ class GlicTabPickerBridge {
             preselectedTabIds.add(tab.getId());
         }
 
+        // Glic can share PDF tabs (including local PDFs that have a chrome-native:// URL), so
+        // allow them to be picked.
         Intent intent =
-                ChromeItemPickerUtils.createChromeItemPickerIntent(activity, preselectedTabIds);
+                ChromeItemPickerUtils.createChromeItemPickerIntent(
+                        activity, preselectedTabIds, /* includePdfTabs= */ true);
         if (intent == null) {
             callback.onResult(null);
             return;
