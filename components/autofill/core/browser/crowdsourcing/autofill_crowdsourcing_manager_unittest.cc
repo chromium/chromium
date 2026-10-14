@@ -994,6 +994,133 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   EXPECT_EQ(response_contents[0], responses().front().response);
 }
 
+// Tests that two queries whose forms share the same `FormSignature` (because
+// `StripDigitsIfRequired` strips 5+ digit runs from field names in
+// `CalculateFormSignature`) but have different `FieldSignature`s do not collide
+// in the in-memory query cache.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       CacheQueryTest_DifferentFieldSignaturesWithSameFormSignature) {
+  std::vector<FormData> forms0 = {test::GetFormData(
+      {.fields = {{.name = u"tracking_number_0_397947770635"}}})};
+  std::vector<FormData> forms1 = {test::GetFormData(
+      {.fields = {{.name = u"tracking_number_0_383157324618"}}})};
+
+  ASSERT_EQ(CalculateFormSignature(forms0[0]),
+            CalculateFormSignature(forms1[0]));
+  ASSERT_NE(CalculateFieldSignatureForField(forms0[0].fields()[0]),
+            CalculateFieldSignatureForField(forms1[0].fields()[0]));
+
+  EXPECT_TRUE(StartQueryRequest(forms0));
+  EXPECT_THAT(responses(), IsEmpty());
+
+  network::TestURLLoaderFactory::PendingRequest* request0 =
+      url_loader_factory().GetPendingRequest(0);
+  ASSERT_NE(request0, nullptr);
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+      request0, "response_0");
+  ASSERT_THAT(responses(), SizeIs(1));
+  EXPECT_EQ(responses().front().response, "response_0");
+  responses().clear();
+
+  // Querying `forms1` must miss the cache because the serialized request
+  // payload differs (different `FieldSignature`).
+  EXPECT_TRUE(StartQueryRequest(forms1));
+  EXPECT_THAT(responses(), IsEmpty());
+
+  network::TestURLLoaderFactory::PendingRequest* request1 =
+      url_loader_factory().GetPendingRequest(1);
+  ASSERT_NE(request1, nullptr);
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+      request1, "response_1");
+  ASSERT_THAT(responses(), SizeIs(1));
+  EXPECT_EQ(responses().front().response, "response_1");
+  responses().clear();
+
+  // Re-querying `forms0` and `forms1` hits the cache for each distinct payload.
+  EXPECT_TRUE(StartQueryRequest(forms0));
+  EXPECT_TRUE(StartQueryRequest(forms1));
+  EXPECT_EQ(url_loader_factory().total_requests(), 2u);
+  ASSERT_THAT(responses(), SizeIs(2));
+  EXPECT_EQ(responses().front().response, "response_0");
+  EXPECT_EQ(responses().back().response, "response_1");
+}
+
+// Tests that for two forms with identical `FormSignature` and `FieldSignature`
+// values (e.g. unnamed inputs) but different field labels:
+// - When `kAutofillServerExperimentalSignatures` is disabled, the two queries
+//   have identical payloads (no 3-bit hashed field metadata), so the second
+//   query should be served from the cache.
+// - When `kAutofillServerExperimentalSignatures` is enabled, the two queries
+//   have different payloads (different 3-bit hashed field metadata), so the
+//   second query must not be served from the cache and must trigger a new
+//   network request.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       CacheQueryTest_DifferentThreeBitMetadataWithSameSignatures) {
+  std::vector<FormData> forms0 = {
+      test::GetFormData({.fields = {{.label = u""}}})};
+  std::vector<FormData> forms1 = {
+      test::GetFormData({.fields = {{.label = u"Confirmation code"}}})};
+
+  ASSERT_EQ(CalculateFormSignature(forms0[0]),
+            CalculateFormSignature(forms1[0]));
+  ASSERT_EQ(CalculateFieldSignatureForField(forms0[0].fields()[0]),
+            CalculateFieldSignatureForField(forms1[0].fields()[0]));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillServerExperimentalSignatures);
+
+    EXPECT_TRUE(StartQueryRequest(forms0));
+    network::TestURLLoaderFactory::PendingRequest* request0 =
+        url_loader_factory().GetPendingRequest(0);
+    ASSERT_NE(request0, nullptr);
+    url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+        request0, "response_1");
+    ASSERT_THAT(responses(), SizeIs(1));
+    EXPECT_EQ(responses().front().response, "response_1");
+    responses().clear();
+
+    // Without 3-bit metadata, `forms1` serializes to the exact same payload as
+    // `forms0` and is served from the cache without a new network request.
+    EXPECT_TRUE(StartQueryRequest(forms1));
+    EXPECT_THAT(*url_loader_factory().pending_requests(), SizeIs(1));
+    ASSERT_THAT(responses(), SizeIs(1));
+    EXPECT_EQ(responses().front().response, "response_1");
+    responses().clear();
+    url_loader_factory().pending_requests()->clear();
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list{
+        features::kAutofillServerExperimentalSignatures};
+
+    EXPECT_TRUE(StartQueryRequest(forms0));
+    network::TestURLLoaderFactory::PendingRequest* request0 =
+        url_loader_factory().GetPendingRequest(0);
+    ASSERT_NE(request0, nullptr);
+    url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+        request0, "response_2");
+    ASSERT_THAT(responses(), SizeIs(1));
+    EXPECT_EQ(responses().front().response, "response_2");
+    responses().clear();
+
+    // With 3-bit metadata enabled, `forms1` has a different payload and must
+    // not be served from the cache.
+    EXPECT_TRUE(StartQueryRequest(forms1));
+    EXPECT_THAT(responses(), IsEmpty());
+
+    network::TestURLLoaderFactory::PendingRequest* request1 =
+        url_loader_factory().GetPendingRequest(1);
+    ASSERT_NE(request1, nullptr);
+    url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+        request1, "response_3");
+    EXPECT_THAT(*url_loader_factory().pending_requests(), SizeIs(2));
+    ASSERT_THAT(responses(), SizeIs(1));
+    EXPECT_EQ(responses().front().response, "response_3");
+  }
+}
+
 namespace {
 
 enum ServerCommunicationMode {

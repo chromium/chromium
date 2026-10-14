@@ -767,15 +767,15 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
     return false;
   }
 
-  std::string query_data;
-  if (CheckCacheForQueryRequest(queried_form_signatures, &query_data)) {
+  if (std::optional<std::string> query_data =
+          CheckCacheForQueryRequest(*payload)) {
     LOG_AF(client_->GetCurrentLogManager())
         << LoggingScope::kAutofillServer << LogMessage::kCachedAutofillQuery
         << Br{} << query;
     if (scoped_callback_runner) {
       std::move(scoped_callback_runner)
           .Release()
-          .Run(QueryResponse(std::move(query_data),
+          .Run(QueryResponse(std::move(*query_data),
                              std::move(queried_form_signatures)));
     }
     return true;
@@ -1030,33 +1030,31 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
 }
 
 void AutofillCrowdsourcingManager::CacheQueryRequest(
-    const std::vector<FormSignature>& forms_in_query,
-    const std::string& query_data) {
+    std::string payload,
+    std::string_view query_data) {
   for (auto it = cached_forms_.begin(); it != cached_forms_.end(); ++it) {
-    if (it->first == forms_in_query) {
+    if (it->payload == payload) {
       // We hit the cache, move to the first position and return.
-      auto data = *it;
-      cached_forms_.erase(it);
-      cached_forms_.push_front(data);
+      cached_forms_.splice(cached_forms_.begin(), cached_forms_, it);
       return;
     }
   }
-  cached_forms_.emplace_front(forms_in_query, query_data);
+  cached_forms_.push_front(
+      CachedQuery{.payload = std::move(payload),
+                  .response = std::string(query_data)});
   while (cached_forms_.size() > max_form_cache_size_)
     cached_forms_.pop_back();
 }
 
-bool AutofillCrowdsourcingManager::CheckCacheForQueryRequest(
-    const std::vector<FormSignature>& forms_in_query,
-    std::string* query_data) const {
-  for (const auto& [signatures, cached_data] : cached_forms_) {
-    if (signatures == forms_in_query) {
-      // We hit the cache, fill the data and return.
-      *query_data = cached_data;
-      return true;
+std::optional<std::string>
+AutofillCrowdsourcingManager::CheckCacheForQueryRequest(
+    std::string_view payload) const {
+  for (const CachedQuery& entry : cached_forms_) {
+    if (entry.payload == payload) {
+      return entry.response;
     }
   }
-  return false;
+  return std::nullopt;
 }
 
 // static
@@ -1155,7 +1153,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     return;
   }
 
-  CacheQueryRequest(request_data.form_signatures, *response_body);
+  CacheQueryRequest(std::move(request_data.payload), *response_body);
   base::UmaHistogramBoolean(kUmaWasInCache, simple_loader->LoadedFromCache());
   if (request_data.callback) {
     std::move(request_data.callback)
