@@ -97,6 +97,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_SidePanelZeroStateVisibleBeforeDomContentLoads) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'side panel zero state is visible before DOM content loads')");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App_Composebox_BasicMode) {
   RunTest("contextual_tasks/app_composebox_basic_mode_test.js", "mocha.run();");
 }
@@ -110,6 +117,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_Composebox) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Smoke) {
   RunTest("contextual_tasks/composebox_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkSmokeTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_HiddenDuringNavigationToZeroState) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaTest('ContextualTasksComposeboxTest', "
+          "'composebox is hidden during subsequent navigation to zero-state "
+          "until DOM loads')");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_BasicInput) {

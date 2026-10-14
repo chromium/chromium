@@ -75,6 +75,8 @@ suite('ContextualTasksAppTest', function() {
     // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
     const mockComposeboxPageHandler =
         TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
     const mockSearchboxPageHandler =
         TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
@@ -1042,6 +1044,7 @@ suite('ContextualTasksAppTest', function() {
         await topLevelNavigationPromise;
 
         assertTrue(appElement.getHasFinishedTopLevelNavigationForTesting());
+        assertFalse((appElement as any).isInitialFrameLoad_);
       });
 
   test('sets isFrameLoading to false when load aborts', async () => {
@@ -1320,10 +1323,12 @@ suite('ContextualTasksAppTest', function() {
         await microtasksFinished();
 
         assertFalse(appElement.$.composebox.hidden);
+        assertStyle(appElement.$.composebox, 'visibility', 'visible');
 
         const wrapper =
             appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
         assertFalse(wrapper.hasAttribute('hidden'));
+        assertStyle(wrapper, 'visibility', 'visible');
       });
 
   test('side panel navigation to zero state plays animations', async () => {
