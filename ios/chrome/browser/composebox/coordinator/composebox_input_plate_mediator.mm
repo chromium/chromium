@@ -264,8 +264,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // Cached current tab favicon.
   UIImage* _currentTabFavicon;
 
-  // Stores the page context wrappers for the duration of the APC retrieval.
-  std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
+  // Owns the in-flight page context extractions, keyed by the identifier of
+  // the item whose tab is being extracted. A wrapper doesn't retain itself
+  // while extracting, so erasing its entry cancels its extraction.
+  std::unordered_map<base::UnguessableToken,
+                     PageContextWrapper*,
+                     base::UnguessableTokenHash>
+      _pageContextWrappers;
   std::unordered_map<base::UnguessableToken,
                      web::WebStateID,
                      base::UnguessableTokenHash>
@@ -760,6 +765,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
+  // Cancels the page context extraction of the item's tab, if in flight.
+  _pageContextWrappers.erase(item.identifier);
+
   [self.debugLogger
       logEvent:[ComposeboxDebuggerEvent
                    queryAttachmentEvent:composebox_debugger::event::
@@ -1240,12 +1248,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
   pageContextWrapper.shouldGetSnapshot = YES;
+  // Store the wrapper before starting it, as its extraction can complete
+  // synchronously.
+  _pageContextWrappers[identifier] = pageContextWrapper;
   // The Page Context execution can take more than the default 1 second on slow
   // devices or bots.
   [pageContextWrapper
       populatePageContextFieldsAsyncWithTimeout:kPageContextTimeout];
-
-  _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
 }
 
 // Handles the result of fetching cached page context for `webState`.
@@ -1315,13 +1324,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                          webState:(web::WebState*)webState
                        identifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _pageContextWrappers.erase(identifier);
 
   if (!webState || !page_context) {
     [self handleFailedAttachment:identifier];
     return;
   }
-
-  _pageContextWrappers.erase(webState->GetUniqueIdentifier());
 
   __block std::unique_ptr<lens::ContextualInputData> input_data =
       CreateInputDataFromAnnotatedPageContent(
@@ -1720,8 +1728,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                      fromExternalWebState:(web::WebState*)externalWebState
                                    source:(ComposeboxInputItemSource)source
                                 autoAdded:(BOOL)autoAdded {
-  _pageContextWrappers.clear();
-
   // Remove tabs from context that were deselected in the tab picker.
   std::set<web::WebStateID> alreadyProcessedIDsFromCurrentWebState =
       [self attachedWebStateIDsInCurrentContext];
@@ -2336,6 +2342,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
+  _pageContextWrappers.erase(identifier);
   _latestTabSelectionMapping.erase(identifier);
   ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   // `item` can be nil if the user deleted the shared tab or closed the sheet
@@ -2507,6 +2514,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   for (ComposeboxInputItem* item in invalidatedItems) {
+    _pageContextWrappers.erase(item.identifier);
     if (_contextualSearchSession && !item.serverToken.is_empty()) {
       _contextualSearchSession->DeleteFile(item.serverToken);
     }

@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 
+#import <memory>
+#import <string>
+#import <string_view>
 #import <unordered_set>
+#import <vector>
 
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
@@ -15,7 +19,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/contextual_search/contextual_search_context_controller.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_types.h"
@@ -48,6 +52,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -59,8 +64,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -222,6 +229,12 @@
 
 namespace {
 
+// The URL of a page whose context can be extracted.
+constexpr std::string_view kExtractablePageURL = "https://www.example.com/";
+
+// The MIME type of an HTML page.
+constexpr std::string_view kHTMLMimeType = "text/html";
+
 class TestContextualSearchSessionHandle
     : public contextual_search::MockContextualSearchSessionHandle {
  public:
@@ -361,6 +374,38 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     web_state->SetLoading(true);
   }
 
+  // Stubs page context extraction so that each `PageContextWrapper` created by
+  // the mediator stays in flight for as long as the mediator owns it. Records
+  // the wrappers weakly, in creation order, in `started_page_context_wrappers_`
+  // so that tests can check whether the mediator still owns them.
+  // TODO(crbug.com/568219593): Inject page context extraction into the
+  // mediator and use a fake instead of swizzling `PageContextWrapper`.
+  void StubPageContextExtraction() {
+    page_context_extraction_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
+        [PageContextWrapper class],
+        @selector(populatePageContextFieldsAsyncWithTimeout:),
+        ^(PageContextWrapper* wrapper, base::TimeDelta timeout) {
+          started_page_context_wrappers_.push_back(wrapper);
+        });
+  }
+
+  // Returns whether the `index`-th `PageContextWrapper` recorded by
+  // `StubPageContextExtraction()` is still alive.
+  bool IsPageContextWrapperAlive(size_t index) const {
+    return started_page_context_wrappers_[index] != nil;
+  }
+
+  // Inserts a new tab after the existing ones, without activating it, and
+  // returns it.
+  web::FakeWebState* InsertBackgroundWebState() {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* web_state_ptr = web_state.get();
+    web_state_list_->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(web_state_list_->count()));
+    return web_state_ptr;
+  }
+
   // Creates a `ComposeboxInputPlateMediator` configured with `session`,
   // `entrypoint`, and `mode`. The caller is responsible for calling
   // `-disconnect` on the returned mediator before teardown.
@@ -487,7 +532,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   base::RepeatingClosure aim_eligibility_callback_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -505,6 +550,11 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   omnibox::SearchboxConfig searchbox_config_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
+  // Stubs page context extraction. See `StubPageContextExtraction()`.
+  std::unique_ptr<ScopedBlockSwizzler> page_context_extraction_swizzler_;
+  // The `PageContextWrapper`s whose extraction started, in creation order.
+  // Weak, so that they only stay alive while the mediator owns them.
+  std::vector<__weak PageContextWrapper*> started_page_context_wrappers_;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
@@ -1920,6 +1970,196 @@ TEST_F(ComposeboxInputPlateMediatorTest, SendTextPromotesAutoAddedTab) {
   [mediator setOmniboxFocused:NO];
   active_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_EQ(consumer.items.count, 1U);
+}
+
+#pragma mark - In-flight tab extractions
+
+// Tests that re-applying the current attachment selection, as the plus menu
+// does when the user picks another attachment (e.g. a photo), keeps the
+// in-flight page context extraction of an attached tab.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ReapplyingSelectionKeepsInFlightTabExtraction) {
+  StubPageContextExtraction();
+  web::WebStateID tab_id =
+      web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
+  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer_.items.count, 1U);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+
+  @autoreleasepool {
+    [mediator_ updateAttachments:mediator_.currentAttachmentSelection];
+  }
+
+  // The tab's extraction is still in flight, and no other one started.
+  EXPECT_EQ(started_page_context_wrappers_.size(), 1U);
+  EXPECT_TRUE(IsPageContextWrapperAlive(0));
+  ASSERT_EQ(consumer_.items.count, 1U);
+  EXPECT_EQ(consumer_.items.firstObject.state,
+            ComposeboxInputItemState::kLoading);
+}
+
+// Tests that attaching another tab from the tab picker keeps the in-flight page
+// context extraction of an already attached tab.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AttachingAnotherTabKeepsInFlightTabExtraction) {
+  StubPageContextExtraction();
+  web::WebStateID first_tab_id =
+      web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
+  web::WebStateID second_tab_id =
+      InsertBackgroundWebState()->GetUniqueIdentifier();
+  [mediator_ attachSelectedTabsWithWebStateIDs:{first_tab_id}
+                             cachedWebStateIDs:{}];
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+
+  @autoreleasepool {
+    [mediator_ attachSelectedTabsWithWebStateIDs:{first_tab_id, second_tab_id}
+                               cachedWebStateIDs:{}];
+  }
+
+  ASSERT_EQ(started_page_context_wrappers_.size(), 2U);
+  EXPECT_TRUE(IsPageContextWrapperAlive(0));
+  EXPECT_TRUE(IsPageContextWrapperAlive(1));
+  ASSERT_EQ(consumer_.items.count, 2U);
+  EXPECT_EQ(consumer_.items[0].state, ComposeboxInputItemState::kLoading);
+  EXPECT_EQ(consumer_.items[1].state, ComposeboxInputItemState::kLoading);
+}
+
+// Tests that refreshing the auto-attached active tab in Co-browse, as focusing
+// the omnibox again does, keeps the in-flight page context extraction of a tab
+// attached from the tab picker, and cancels the one of the replaced
+// auto-attached item.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       CobrowseAutoAttachRefreshKeepsInFlightTabExtraction) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  StubPageContextExtraction();
+
+  // Makes the active tab eligible for auto-attachment.
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  active_web_state->SetVisibleURL(GURL(kExtractablePageURL));
+  active_web_state->SetContentsMimeType(std::string(kHTMLMimeType));
+  web::WebStateID active_id = active_web_state->GetUniqueIdentifier();
+  web::WebStateID background_id =
+      InsertBackgroundWebState()->GetUniqueIdentifier();
+
+  // Tabs are only auto-attached when content sharing is enabled, which is
+  // checked through the contextual search session.
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  // Focusing the omnibox auto-attaches the active tab.
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ASSERT_TRUE(consumer.items.firstObject.isAutoAdded);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+
+  // Attaches a background tab from the tab picker, where the auto-attached
+  // active tab is preselected.
+  [mediator attachSelectedTabsWithWebStateIDs:{active_id, background_id}
+                            cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer.items.count, 2U);
+  ComposeboxInputItem* background_item = consumer.items[1];
+  ASSERT_FALSE(background_item.isAutoAdded);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 2U);
+
+  // Dismissing the keyboard and focusing the omnibox again replaces the
+  // auto-attached item.
+  @autoreleasepool {
+    [mediator setOmniboxFocused:NO];
+    [mediator setOmniboxFocused:YES];
+  }
+
+  ASSERT_EQ(started_page_context_wrappers_.size(), 3U);
+  EXPECT_FALSE(IsPageContextWrapperAlive(0));
+  EXPECT_TRUE(IsPageContextWrapperAlive(1));
+  EXPECT_TRUE(IsPageContextWrapperAlive(2));
+  ASSERT_EQ(consumer.items.count, 2U);
+  EXPECT_TRUE([consumer.items containsObject:background_item]);
+  EXPECT_EQ(background_item.state, ComposeboxInputItemState::kLoading);
+}
+
+// Tests that removing a tab item cancels its in-flight page context extraction.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemovingTabCancelsInFlightTabExtraction) {
+  StubPageContextExtraction();
+  web::WebStateID tab_id =
+      web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
+  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer_.items.count, 1U);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+  ASSERT_TRUE(IsPageContextWrapperAlive(0));
+  base::UnguessableToken tab_item_identifier =
+      consumer_.items.firstObject.identifier;
+
+  @autoreleasepool {
+    [mediator_ removeSharedTabWithInputItemIdentifier:tab_item_identifier];
+  }
+
+  EXPECT_EQ(consumer_.items.count, 0U);
+  EXPECT_FALSE(IsPageContextWrapperAlive(0));
+}
+
+// Tests that a mode change invalidating a tab item cancels its in-flight page
+// context extraction.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ModeChangeInvalidatingTabCancelsInFlightTabExtraction) {
+  StubPageContextExtraction();
+  web::WebStateID tab_id =
+      web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
+  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer_.items.count, 1U);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+  ASSERT_TRUE(IsPageContextWrapperAlive(0));
+  ComposeboxInputItem* tab_item = consumer_.items.firstObject;
+
+  @autoreleasepool {
+    [mediator_ inputStateManager:nil
+                   didChangeMode:ComposeboxMode::kImageGeneration
+          invalidatedAttachments:@[ tab_item ]];
+  }
+
+  EXPECT_EQ(consumer_.items.count, 0U);
+  EXPECT_FALSE(IsPageContextWrapperAlive(0));
+}
+
+// Tests that a failed page context response releases the tab's in-flight
+// extraction.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       FailedPageContextResponseReleasesInFlightTabExtraction) {
+  StubPageContextExtraction();
+  web::WebState* web_state = web_state_list_->GetActiveWebState();
+  [mediator_
+      attachSelectedTabsWithWebStateIDs:{web_state->GetUniqueIdentifier()}
+                      cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer_.items.count, 1U);
+  ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
+  ASSERT_TRUE(IsPageContextWrapperAlive(0));
+  base::UnguessableToken tab_item_identifier =
+      consumer_.items.firstObject.identifier;
+
+  @autoreleasepool {
+    [mediator_ handlePageContextResponse:nullptr
+                                webState:web_state
+                              identifier:tab_item_identifier];
+  }
+
+  EXPECT_EQ(consumer_.items.count, 0U);
+  EXPECT_FALSE(IsPageContextWrapperAlive(0));
 }
 
 }  // namespace
