@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
@@ -28,9 +28,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;

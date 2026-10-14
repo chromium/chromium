@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 
-#include "build/build_config.h"
-
 namespace profile_management::features {
 
 BASE_FEATURE(kEnableProfileTokenManagement, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -945,20 +944,44 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
                        InterceptionAlreadyInProgress) {
-  base::HistogramTester histogram_tester;
   AddTabToCurrentBrowser(GURL("about:blank"));
 
   EXPECT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
       web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
       kExampleSubjectIdentifier, std::string(), base::DoNothing()));
 
+  bool second_callback_called = false;
   EXPECT_FALSE(interceptor_->MaybeInterceptOidcAuthentication(
       web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
-      kExampleSubjectIdentifier, std::string(), base::DoNothing()));
+      kExampleSubjectIdentifier, std::string(),
+      base::BindOnce([](bool* called) { *called = true; },
+                     &second_callback_called)));
+  EXPECT_FALSE(second_callback_called);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Enterprise.OidcEnrollment.Interception.Result",
       OidcInterceptionResult::kInterceptionInProgress, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       InvalidOidcTokensSkipsInterception) {
+  AddTabToCurrentBrowser(GURL("about:blank"));
+  bool callback_called = false;
+  EXPECT_FALSE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), ProfileManagementOidcTokens(), kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(),
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called)));
+  EXPECT_FALSE(callback_called);
+}
+
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       NullWebContentsSkipsInterception) {
+  bool callback_called = false;
+  EXPECT_FALSE(interceptor_->MaybeInterceptOidcAuthentication(
+      nullptr, kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(),
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called)));
+  EXPECT_FALSE(callback_called);
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
@@ -971,7 +994,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
   EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
       .WillOnce(testing::Return(nullptr));
 
-  EXPECT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+  ASSERT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
       web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
       kExampleSubjectIdentifier, std::string(),
       base::BindOnce([](bool* called) { *called = true; }, &callback_called)));

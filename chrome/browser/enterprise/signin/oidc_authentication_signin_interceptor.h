@@ -75,8 +75,11 @@ class OidcAuthenticationSigninInterceptor
   OidcAuthenticationSigninInterceptor& operator=(
       const OidcAuthenticationSigninInterceptor&) = delete;
 
-  // Intercept and kick off OIDC registration process if the tokens we received
-  // are valid. Returns true if interception started.
+  // Intercepts and kicks off OIDC registration process if the tokens are valid.
+  // Returns true if interception started and navigation is deferred; in this
+  // case, `oidc_callback` will be invoked once interception completes (or is
+  // aborted). Returns false if interception is skipped or cannot proceed;
+  // `oidc_callback` is not invoked and navigation can proceed immediately.
   virtual bool MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       const ProfileManagementOidcTokens& oidc_tokens,
