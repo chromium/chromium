@@ -17,6 +17,7 @@ class ChromeAccountManagerService;
 @protocol FullscreenSigninScreenMediatorDelegate;
 class PrefService;
 namespace signin {
+class AccountPreviewDataService;
 class IdentityManager;
 }  // namespace signin
 namespace signin_metrics {
@@ -54,17 +55,20 @@ class SyncService;
 @property(nonatomic, assign, readonly) BOOL signinInProgress;
 
 // The designated initializer.
-// `accountManagerService` account manager service.
-// `authenticationService` authentication service.
-// `localPrefService` application local pref.
-// `prefService` user pref.
-// `syncService` sync service.
+// - `accountManagerService` account manager service.
+// - `authenticationService` authentication service.
+// - `accountPreviewDataService` for fetching the preferred account preference.
+// May be `nullptr`.
+// - `localPrefService` application local pref.
+// - `prefService` user pref. `syncService` sync service.
 - (instancetype)
         initWithAccountManagerService:
             (ChromeAccountManagerService*)accountManagerService
                 authenticationService:
                     (AuthenticationService*)authenticationService
                       identityManager:(signin::IdentityManager*)identityManager
+            accountPreviewDataService:
+                (signin::AccountPreviewDataService*)accountPreviewDataService
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService

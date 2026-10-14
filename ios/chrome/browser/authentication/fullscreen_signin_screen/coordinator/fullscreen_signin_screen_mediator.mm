@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 
 #import <algorithm>
+#import <optional>
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -13,7 +15,9 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
@@ -36,6 +40,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -85,6 +90,8 @@ enum class SigninScreenState {
   raw_ptr<AuthenticationService> _authenticationService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  // Account preview data service to retrieve account preference.
+  raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // State of the sign-in screen.
@@ -102,6 +109,8 @@ enum class SigninScreenState {
                 authenticationService:
                     (AuthenticationService*)authenticationService
                       identityManager:(signin::IdentityManager*)identityManager
+            accountPreviewDataService:
+                (signin::AccountPreviewDataService*)accountPreviewDataService
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
@@ -127,6 +136,7 @@ enum class SigninScreenState {
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
+    _accountPreviewDataService = accountPreviewDataService;
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
@@ -182,6 +192,7 @@ enum class SigninScreenState {
   CHECK(!_accountManagerService);
   CHECK(!_authenticationService);
   CHECK(!_identityManager);
+  CHECK(!_accountPreviewDataService);
   CHECK(!self.localPrefService);
   CHECK(!self.prefService);
   CHECK(!self.syncService);
@@ -194,6 +205,7 @@ enum class SigninScreenState {
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
+  _accountPreviewDataService = nullptr;
   self.localPrefService = nullptr;
   self.prefService = nullptr;
   self.syncService = nullptr;
@@ -322,8 +334,7 @@ enum class SigninScreenState {
     _consumer.currentPrimaryIdentityEmail = signedInIdentity.userEmail;
     [self updateConsumerIdentity];
   } else if (signinForcedOrAvailable) {
-    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
-        _identityManager, _accountManagerService);
+    self.selectedIdentity = [self calculateSelectedIdentity];
   }
 }
 
@@ -375,6 +386,31 @@ enum class SigninScreenState {
 }
 
 #pragma mark - Private
+
+// For non-fre flow selected identity is either:
+// - The preferred account if one exists, or
+// - The default identity on the device.
+// For fre flow it's always the default identity on the device for now. This
+// will change in M158.
+- (id<SystemIdentity>)calculateSelectedIdentity {
+  if (_screenState == SigninScreenState::kOther && _accountPreviewDataService &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    // Only use preferred account for non-fre flow.
+    if (std::optional<
+            signin::AccountPreviewDataService::AccountPreviewPreference>
+            preference =
+                _accountPreviewDataService->GetPreferredAccountForPromo()) {
+      id<SystemIdentity> identity =
+          _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
+      if (identity) {
+        return identity;
+      }
+    }
+  }
+  return signin::GetDefaultIdentityOnDevice(_identityManager,
+                                            _accountManagerService);
+}
 
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
@@ -439,8 +475,7 @@ enum class SigninScreenState {
 
 - (void)accountsOnDeviceDidChange {
   if (![self selectedIdentityIsValid]) {
-    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
-        _identityManager, _accountManagerService);
+    self.selectedIdentity = [self calculateSelectedIdentity];
   }
 }
 
