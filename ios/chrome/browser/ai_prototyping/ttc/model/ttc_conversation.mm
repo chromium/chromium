@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 
+#import <stddef.h>
 #import <stdint.h>
 
 #import <memory>
 #import <string>
 #import <utility>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -30,6 +32,33 @@ ttc::ErrorCode ExtractTTCErrorCode(NSError* error) {
     return static_cast<ttc::ErrorCode>(error.code);
   }
   return ttc::ErrorCode::kAudioUnknownError;
+}
+
+// Appends `chunk` to `accumulated` and logs or updates the coalesced
+// `kConversation` transcription entry in `journal`.
+void LogOrUpdateTranscriptionEntry(TTCJournal* journal,
+                                   const std::string& chunk,
+                                   const std::string& event_name,
+                                   const std::string& prefix,
+                                   std::string& accumulated,
+                                   size_t& chunks,
+                                   uint64_t& entry_id) {
+  if (!journal) {
+    return;
+  }
+  accumulated.append(chunk);
+  chunks++;
+  std::vector<TTCJournalDetail> details =
+      TTCJournalDetailsBuilder()
+          .SetSummary(base::StrCat({prefix, accumulated}))
+          .Add("text", accumulated)
+          .Add("chunks", chunks)
+          .Add("length", accumulated.size())
+          .Build();
+  if (entry_id == 0 || !journal->UpdateEntry(entry_id, details)) {
+    entry_id = journal->Log(TTCJournalComponent::kConversation, event_name,
+                            std::move(details));
+  }
 }
 
 }  // namespace
@@ -119,6 +148,7 @@ void TtcConversation::set_journal(TTCJournal* journal) {
 void TtcConversation::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const uint64_t current_generation = ++session_generation_;
+  ResetTurnJournalState();
 
   if (backend_) {
     LogBackendSetupStarted();
@@ -149,6 +179,7 @@ void TtcConversation::Stop() {
 
   // Invalidate any pending in-flight start completions.
   session_generation_++;
+  ResetTurnJournalState();
 
   [audio_controller_ stopCapture];
   [audio_controller_ stopPlayback];
@@ -256,6 +287,9 @@ void TtcConversation::OnGenerationStateChanged(bool started,
                                                bool interrupted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LogGenerationStateChanged(started, completed, interrupted);
+  if (completed || interrupted) {
+    ResetTurnJournalState();
+  }
   if (interrupted) {
     [audio_controller_ clearPlaybackQueue];
     [audio_controller_ stopPlayback];
@@ -266,6 +300,12 @@ void TtcConversation::OnTranscriptions(
     const std::string& input_transcription,
     const std::string& output_transcription) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!input_transcription.empty()) {
+    LogOrUpdateInputTranscription(input_transcription);
+  }
+  if (!output_transcription.empty()) {
+    LogOrUpdateOutputTranscription(output_transcription);
+  }
   // Transcriptions will be forwarded to observers in a subsequent CL.
 }
 
@@ -367,6 +407,20 @@ void TtcConversation::LogGenerationStateChanged(bool started,
                 std::move(details).Build());
 }
 
+void TtcConversation::LogOrUpdateInputTranscription(const std::string& chunk) {
+  LogOrUpdateTranscriptionEntry(journal_.get(), chunk, "TtcInputTranscription",
+                                "Input: ", input_transcription_.text,
+                                input_transcription_.chunks,
+                                input_transcription_.entry_id);
+}
+
+void TtcConversation::LogOrUpdateOutputTranscription(const std::string& chunk) {
+  LogOrUpdateTranscriptionEntry(journal_.get(), chunk, "TtcOutputTranscription",
+                                "Output: ", output_transcription_.text,
+                                output_transcription_.chunks,
+                                output_transcription_.entry_id);
+}
+
 void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
   if (!journal_) {
     return;
@@ -376,4 +430,10 @@ void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
                     .SetSummary(base::StrCat({"Tool: ", tool_name}))
                     .Add("tool_name", tool_name)
                     .Build());
+}
+
+void TtcConversation::ResetTurnJournalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  input_transcription_ = {};
+  output_transcription_ = {};
 }

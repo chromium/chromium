@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_CONVERSATION_H_
 
 #import <Foundation/Foundation.h>
+#import <stddef.h>
 #import <stdint.h>
 
 #import <memory>
@@ -137,7 +138,10 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   void LogGenerationStateChanged(bool started,
                                  bool completed,
                                  bool interrupted);
+  void LogOrUpdateInputTranscription(const std::string& chunk);
+  void LogOrUpdateOutputTranscription(const std::string& chunk);
   void LogToolCallReceived(const std::string& tool_name);
+  void ResetTurnJournalState();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -163,6 +167,17 @@ class TtcConversation : public ttc::TtcBackend::Observer {
 
   // Optional session journal for structured event logging.
   base::WeakPtr<TTCJournal> journal_;
+
+  // Per-turn coalesced transcription state for one direction (input or output).
+  struct TranscriptionJournalState {
+    std::string text;
+    size_t chunks = 0;
+    uint64_t entry_id = 0;
+  };
+
+  // Per-turn coalesced transcription state.
+  TranscriptionJournalState input_transcription_;
+  TranscriptionJournalState output_transcription_;
 
   base::WeakPtrFactory<TtcConversation> weak_ptr_factory_{this};
 };
