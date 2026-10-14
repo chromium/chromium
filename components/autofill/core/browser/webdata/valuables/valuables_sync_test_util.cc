@@ -40,38 +40,22 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
 
 sync_pb::AutofillValuableSpecifics TestOfferSpecifics(
     std::string_view id,
-    std::string_view offer_code,
-    std::string_view description,
-    std::string_view pass_view_url,
-    std::string_view offer_title_image_url,
-    std::string_view offer_short_title,
-    int64_t expiration_time_unix_epoch_micros,
-    int64_t issue_time_unix_epoch_micros) {
+    const TestOfferOptions& options) {
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id(id);
 
   sync_pb::Offer* offer = specifics.mutable_offer();
   offer->set_issuer_name("Safeway");
   offer->set_provider_name("coupon.com");
-  if (!offer_short_title.empty()) {
-    offer->set_offer_short_title(offer_short_title);
-  }
-  if (expiration_time_unix_epoch_micros > 0) {
-    offer->set_expiration_time_unix_epoch_micros(
-        expiration_time_unix_epoch_micros);
-  }
-  if (issue_time_unix_epoch_micros > 0) {
-    offer->set_issue_time_unix_epoch_micros(issue_time_unix_epoch_micros);
-  }
-  offer->set_offer_code(offer_code);
-  if (!offer_title_image_url.empty()) {
-    offer->set_offer_title_image_url(offer_title_image_url);
-  }
+  offer->set_offer_short_title(options.offer_short_title);
+  offer->set_expiration_time_unix_epoch_micros(
+      options.expiration_time_unix_epoch_micros);
+  offer->set_issue_time_unix_epoch_micros(options.issue_time_unix_epoch_micros);
+  offer->set_offer_code(options.offer_code);
+  offer->set_offer_title_image_url(options.offer_title_image_url);
   *offer->add_issuer_domains() = "https://safeway.com";
-  offer->set_description(description);
-  if (!pass_view_url.empty()) {
-    specifics.set_pass_view_url(pass_view_url);
-  }
+  offer->set_description(options.description);
+  specifics.set_pass_view_url(options.pass_view_url);
   return specifics;
 }
 

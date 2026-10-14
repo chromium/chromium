@@ -436,25 +436,16 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid) {
   EXPECT_TRUE(
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
   EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/"https://safeway.com/offer-details",
-                         /*offer_title_image_url=*/""))));
+      TestOfferSpecifics(kId1, {.offer_title_image_url = ""}))));
   EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/"https://safeway.com/offer-details",
-                         /*offer_title_image_url=*/"invalid_url"))));
+      TestOfferSpecifics(kId1, {.offer_title_image_url = "invalid_url"}))));
 
   // Description is optional and does not affect validity.
   specifics.mutable_offer()->clear_description();
   EXPECT_TRUE(
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
-  EXPECT_TRUE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
-          kId1, /*offer_code=*/"SAFEWAY50",
-          /*description=*/"",
-          /*pass_view_url=*/"https://safeway.com/offer-details"))));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, {.description = ""}))));
 }
 
 // The server is not required to send numeric offer ids, so ids that cannot be
@@ -482,11 +473,8 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferCode) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDirectOffers};
   // Invalid offer code.
-  EXPECT_FALSE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
-          kId1, /*offer_code=*/"",
-          /*description=*/"50% off your next purchase",
-          /*pass_view_url=*/"https://safeway.com/offer-details"))));
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, {.offer_code = ""}))));
 }
 
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferDetailsUrl) {
@@ -494,15 +482,11 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferDetailsUrl) {
       features::kAutofillEnableWalletDirectOffers};
   // Invalid offer details url.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/"invalid_url"))));
+      TestOfferSpecifics(kId1, {.pass_view_url = "invalid_url"}))));
 
   // Empty offer details url.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/""))));
+      TestOfferSpecifics(kId1, {.pass_view_url = ""}))));
 
   // Missing offer details url.
   sync_pb::AutofillValuableSpecifics missing_pass_view_url_specifics =
@@ -543,11 +527,7 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferShortTitle) {
       features::kAutofillEnableWalletDirectOffers};
   // Invalid offer short title.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/"https://safeway.com/offer-details",
-                         /*offer_title_image_url=*/"https://image.com/logo.png",
-                         /*offer_short_title=*/""))));
+      TestOfferSpecifics(kId1, {.offer_short_title = ""}))));
 
   // Missing offer short title.
   sync_pb::AutofillValuableSpecifics empty_short_title_specifics =
@@ -562,12 +542,7 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_Expiry) {
       features::kAutofillEnableWalletDirectOffers};
   // Invalid expiry (<= 0).
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
-      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
-                         /*description=*/"50% off your next purchase",
-                         /*pass_view_url=*/"https://safeway.com/offer-details",
-                         /*offer_title_image_url=*/"https://image.com/logo.png",
-                         /*offer_short_title=*/"50% off",
-                         /*expiration_time_unix_epoch_micros=*/0))));
+      TestOfferSpecifics(kId1, {.expiration_time_unix_epoch_micros = 0}))));
 
   // Missing expiry.
   sync_pb::AutofillValuableSpecifics missing_expiry_specifics =
@@ -1402,9 +1377,8 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
       kId1, std::move(*CreateEntityDataFromSpecifics(TestOfferSpecifics(
-                kId1, /*offer_code=*/"SAFEWAY75",
-                /*description=*/"75% off your next purchase",
-                /*pass_view_url=*/"https://safeway.com/offer-details")))));
+                kId1, {.offer_code = "SAFEWAY75",
+                       .description = "75% off your next purchase"})))));
 
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
