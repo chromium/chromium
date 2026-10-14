@@ -16,6 +16,7 @@ ci/android-desktop-x64-asan-rel
 ci/android-desktop-x64-libfuzzer-asan
 ci/chromeos-x64-libfuzzer-asan-rel-tests
 ci/linux-centipede-fuzz-coverage
+ci/linux-fuzz-coverage
 ci/linux-x64-centipede-asan-rel-tests
 ci/linux-x64-libfuzzer-asan-dbg-tests
 ci/linux-x64-libfuzzer-asan-rel-tests

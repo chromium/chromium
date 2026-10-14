@@ -7,6 +7,7 @@
     "is_debug": false,
     "pdf_enable_xfa": true,
     "proprietary_codecs": true,
+    "symbol_level": 0,
     "target_cpu": "x64",
     "target_os": "mac",
     "use_clang_coverage": true,

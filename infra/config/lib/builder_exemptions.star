@@ -67,7 +67,6 @@ exempted_from_contact_builders = {
         "linux-chromeos-code-coverage",
         "linux-code-coverage",
         "linux-fieldtrial-rel",
-        "linux-fuzz-coverage",
         "linux-headless-shell-rel",
         "linux-js-code-coverage",
         "linux-local-ssd-rel-dev",

@@ -44,7 +44,6 @@ ci/linux-chromeos-archive-rel
 ci/linux-chromeos-code-coverage
 ci/linux-code-coverage
 ci/linux-fieldtrial-rel
-ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
 ci/linux-perfetto-rel

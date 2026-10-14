@@ -10218,6 +10218,7 @@
         ]
       },
       "linux-fuzz-coverage": {
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
