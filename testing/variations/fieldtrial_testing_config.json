@@ -7833,13 +7833,26 @@
                 "chromeos",
                 "ios",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
                     "name": "Enabled_20260925",
                     "enable_features": [
+                        "FlushPersistentSystemProfileOnWrite"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithFileBuffers_20261014",
+                    "enable_features": [
+                        "FlushFileBuffersOnSyncFlush",
                         "FlushPersistentSystemProfileOnWrite"
                     ]
                 }
