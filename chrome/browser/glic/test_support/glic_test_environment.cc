@@ -499,6 +499,18 @@ internal::GlicTestEnvironmentShared::GlicTestEnvironmentShared(
     std::vector<base::test::FeatureRef> enabled_features,
     std::vector<base::test::FeatureRef> disabled_features) {
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+  // The enabled list above includes chromeos::features::kFeatureManagementGlic
+  // so that the system requirement is met, but
+  // GlicGlobalEnabling::IsSystemRequirementMet() reads it into a
+  // function-local static. That static is settled by whichever test in the
+  // process asks first, so without pinning it here the features set up above
+  // may have no effect.
+  GlicEnabling::SetSystemRequirementMetForTesting(true);
+}
+
+internal::GlicTestEnvironmentShared::~GlicTestEnvironmentShared() {
+  GlicEnabling::SetSystemRequirementMetForTesting(std::nullopt);
 }
 
 }  // namespace glic

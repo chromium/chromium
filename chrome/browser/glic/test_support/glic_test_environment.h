@@ -58,6 +58,7 @@ class GlicTestEnvironmentShared {
   GlicTestEnvironmentShared(
       std::vector<base::test::FeatureRef> enabled_features,
       std::vector<base::test::FeatureRef> disabled_features);
+  ~GlicTestEnvironmentShared();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
