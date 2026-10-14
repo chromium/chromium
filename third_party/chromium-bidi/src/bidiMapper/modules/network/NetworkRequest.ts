@@ -66,6 +66,13 @@ export class NetworkRequest {
 
   #fetchId?: Protocol.Fetch.RequestId;
 
+  // Tracks if the request has finished loading or failed, preventing premature disposal.
+  #isFinished = false;
+
+  get isFinished(): boolean {
+    return this.#isFinished;
+  }
+
   /**
    * Indicates the network intercept phase, if the request is currently blocked.
    * Undefined necessarily implies that the request is not blocked.
@@ -482,6 +489,7 @@ export class NetworkRequest {
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
+    this.#isFinished = true;
     // TODO: use event.redirectResponse;
     // Temporary workaround to emit ResponseCompleted event for redirects
     this.#response.hasExtraInfo = false;
@@ -619,6 +627,7 @@ export class NetworkRequest {
   }
 
   onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent): void {
+    this.#isFinished = true;
     this.#response.loadingFinished = event;
     this.#responseBytesReceived = event.encodedDataLength;
     this.#encodedResponseBodySize = event.encodedBodyLength ?? null;
@@ -632,6 +641,7 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent): void {
+    this.#isFinished = true;
     this.#response.loadingFailed = event;
     this.#emitEventsIfReady();
 

@@ -500,9 +500,17 @@ export class NetworkStorage {
    * Disposes the given request, if no collectors targeting it are left.
    */
   disposeRequest(id: Network.Request): void {
+    const request = this.#requests.get(id);
+    if (!request) {
+      return;
+    }
     if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
-      this.#requests.get(id)?.disposeData();
+      request.disposeData();
+      return;
+    }
+    if (!request.isFinished) {
+      // Keep request if it's still active (e.g. intercepted), to allow subsequent provideResponse or continueRequest.
       return;
     }
     // TODO: dispose Network data from Chromium once there is a CDP command for that.
