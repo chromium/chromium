@@ -15,3 +15,9 @@ stages {
     update { git {} }
   }
 }
+latest {
+  git {
+    repository: "https://github.com/memononen/libtess2"
+    branch: "HEAD"
+  }
+}
