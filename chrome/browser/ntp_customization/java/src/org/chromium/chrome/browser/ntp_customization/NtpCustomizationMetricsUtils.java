@@ -96,6 +96,10 @@ public class NtpCustomizationMetricsUtils {
     static final String HISTOGRAM_THEME_TIP_BOTTOM_SHEET_CLICK =
             HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".ThemeTip.BottomSheet.Click";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_HISTORY_MORE_OPTION_BUTTON_CLICK =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".ThemeHistory.MoreOptionButton.Click";
+
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
      * cold startup.
@@ -275,5 +279,11 @@ public class NtpCustomizationMetricsUtils {
     public static void recordThemeTipBottomSheetClick(@ThemeTipButtonType int buttonType) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_THEME_TIP_BOTTOM_SHEET_CLICK, buttonType, ThemeTipButtonType.NUM_ENTRIES);
+    }
+
+    /** Records a click on the "More options" button in the theme history section. */
+    public static void recordThemeHistoryMoreOptionButtonClick() {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_THEME_HISTORY_MORE_OPTION_BUTTON_CLICK, true);
     }
 }

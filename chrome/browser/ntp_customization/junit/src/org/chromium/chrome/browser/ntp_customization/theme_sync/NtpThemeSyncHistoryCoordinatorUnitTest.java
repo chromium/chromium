@@ -189,9 +189,21 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertTrue(mPropertyModel.get(NtpThemeSyncHistoryProperties.IS_VISIBLE));
         assertNotNull(
                 mPropertyModel.get(NtpThemeSyncHistoryProperties.RECYCLER_VIEW_LAYOUT_MANAGER));
-        assertEquals(
-                mMoreOptionsClickListener,
+        assertNotNull(
                 mPropertyModel.get(NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testMoreOptionsClick_RecordsMetricsAndInvokesListener() {
+        View view = new View(mContext);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.ThemeHistory.MoreOptionButton.Click", true);
+
+        mPropertyModel.get(NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER).onClick(view);
+
+        histogramWatcher.assertExpected();
+        verify(mMoreOptionsClickListener).onClick(view);
     }
 
     @Test

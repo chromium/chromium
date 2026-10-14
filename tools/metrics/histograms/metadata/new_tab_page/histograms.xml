@@ -719,6 +719,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.ThemeHistory.MoreOptionButton.Click"
+    enum="BooleanClicked" expires_after="2027-04-14">
+  <owner>hanxi@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the number of clicks on the &quot;More options&quot; button in the
+    theme history section of the NTP customization main bottom sheet. Logged
+    every time the button is clicked. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.ThemeTip.BottomSheet.Click"
     enum="NtpCustomizationThemeTipButtonType" expires_after="2027-05-10">
   <owner>yanlinghu@google.com</owner>

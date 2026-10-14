@@ -130,7 +130,10 @@ public class NtpThemeSyncHistoryCoordinator {
                 NtpThemeSyncHistoryProperties.RECYCLER_VIEW_LAYOUT_MANAGER, layoutManager);
         mPropertyModel.set(
                 NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER,
-                moreOptionsClickListener);
+                (view) -> {
+                    moreOptionsClickListener.onClick(view);
+                    NtpCustomizationMetricsUtils.recordThemeHistoryMoreOptionButtonClick();
+                });
 
         mDefaultOptions = new ArrayList<>();
         mDefaultThemeCollections = new ArrayList<>();
