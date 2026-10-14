@@ -242,6 +242,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   void TearDown() override {
+    // KioskAppLaunchError caches the last error in a process-global, which
+    // OnLaunchFailed() consults before saving. Clear it so the next test in
+    // this process does not inherit it along with a fresh local state.
+    KioskAppLaunchError::RecordMetricAndClear(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+
     app_launcher_ = nullptr;
     network_monitor_.reset();
     accelerator_controller_ = nullptr;
