@@ -521,6 +521,7 @@ data/tiny-clip.mp4
 data/tos-h264-opus.mp4
 data/track-disabled.mp4
 data/trailing-garbage.mp3
+data/trun_overflow.mp4
 data/tulip2.webm
 data/vorbis-extradata
 data/vorbis-packet-0

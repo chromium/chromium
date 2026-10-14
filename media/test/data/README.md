@@ -2063,3 +2063,6 @@ Spherical video in fragmented MP4, generated with bento4 by the following comman
 ```
 mp4fragment spherical.mp4 spherical_frag.mp4
 ```
+
+#### trun_overflow.mp4
+Fragmented MP4 whose trun sample count exceeds index entries, from https://crbug.com/573128234.

@@ -1295,6 +1295,15 @@ TEST_F(FFmpegDemuxerTest, MP4_ZeroStszEntry) {
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+// Fragmented MP4 whose trun sample count exceeds index entries must not
+// overflow tts_data buffer. http://crbug.com/573128234
+TEST_F(FFmpegDemuxerTest, TrunBufferOverflow_Crbug573128234) {
+  CreateDemuxer("trun_overflow.mp4");
+  WaitableMessageLoopEvent event;
+  demuxer_->Initialize(&host_, event.GetPipelineStatusCB());
+  event.RunAndWaitForStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
+}
+
 class Mp3SeekFFmpegDemuxerTest
     : public FFmpegDemuxerTest,
       public testing::WithParamInterface<const char*> {};

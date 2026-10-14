@@ -533,6 +533,7 @@
 //media/test/data/tos-h264-opus.mp4
 //media/test/data/track-disabled.mp4
 //media/test/data/trailing-garbage.mp3
+//media/test/data/trun_overflow.mp4
 //media/test/data/tulip2.webm
 //media/test/data/vorbis-extradata
 //media/test/data/vorbis-packet-0
