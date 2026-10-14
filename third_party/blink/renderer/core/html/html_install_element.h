@@ -58,7 +58,7 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 
   // HTMLElement:
   bool IsURLAttribute(const Attribute&) const override;
-  void DidChangeIsInCanvasSubtree() override;
+  void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) override;
 
   // HTMLCapabilityElementBase:
   void UpdateAppearance() override;

@@ -1170,8 +1170,16 @@ class CORE_EXPORT Element : public ContainerNode {
     SetElementFlag(ElementFlags::kStyleAffectedByEmpty);
   }
 
+  enum class CanvasSubtreePropagation { kOnlyIfChanged, kAlways };
+
   // Recursively sets the IsInCanvasSubtree bit for the element and its subtree.
-  void SetIsInCanvasSubtree(bool value);
+  // If propagation_behavior is kOnlyIfChanged, the recursion stops when it
+  // reaches a Node where `value` is the same as the Node's current state. If
+  // the behavior is kAlways, the recursion forcibly continues all the way down
+  // the tree regardless of the previous value.
+  void SetIsInCanvasSubtree(bool value,
+                            CanvasSubtreePropagation propagation_behavior =
+                                CanvasSubtreePropagation::kOnlyIfChanged);
   // True if this element has a flat-tree DOM ancestor <canvas> (including
   // across local frame boundaries).
   // Warning: This is a pure DOM check; it is true regardless of
@@ -1183,8 +1191,10 @@ class CORE_EXPORT Element : public ContainerNode {
   }
   // Like `IsInCanvasSubtree()`, but includes <canvas> elements.
   bool IsCanvasOrInCanvasSubtree() const;
-  // Called when `IsInCanvasSubtree()` changes.
-  virtual void DidChangeIsInCanvasSubtree();
+  // Called when `IsInCanvasSubtree()` changes, or when content should be
+  // invalidated *as if* `IsInCanvasSubtree()` changed (e.g., when showing
+  // or hiding a popover).
+  virtual void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation);
 #if DCHECK_IS_ON()
   void VerifySubtreeIsInCanvas(bool value);
 #endif

@@ -161,8 +161,9 @@ bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
          HTMLElement::IsURLAttribute(attr);
 }
 
-void HTMLInstallElement::DidChangeIsInCanvasSubtree() {
-  HTMLCapabilityElementBase::DidChangeIsInCanvasSubtree();
+void HTMLInstallElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  HTMLCapabilityElementBase::DidChangeIsInCanvasSubtree(propagation_behavior);
   UpdateAppearance();
 }
 

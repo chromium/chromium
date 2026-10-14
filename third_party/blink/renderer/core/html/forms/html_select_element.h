@@ -540,7 +540,7 @@ class CORE_EXPORT HTMLSelectElement final
   // Helper to update the select descendants' mutation observer.
   void UpdateMutationObserver();
 
-  void DidChangeIsInCanvasSubtree() final;
+  void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
 
   // last_on_change_option_ is the currently selected option. It provides faster
   // access to the currently selected option than iterating through each option

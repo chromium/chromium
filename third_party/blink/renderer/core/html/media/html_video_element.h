@@ -252,7 +252,7 @@ class CORE_EXPORT HTMLVideoElement final
   void RequestVisibility(RequestVisibilityCallback request_visibility_cb) final;
 
   void DidMoveToNewDocument(Document& old_document) override;
-  void DidChangeIsInCanvasSubtree() override;
+  void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) override;
 
   void UpdatePictureInPictureAvailability();
   void UpdateVideoFrameAvailability() override;

@@ -742,8 +742,9 @@ void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
-void HTMLTextAreaElement::DidChangeIsInCanvasSubtree() {
-  TextControlElement::DidChangeIsInCanvasSubtree();
+void HTMLTextAreaElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  TextControlElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.

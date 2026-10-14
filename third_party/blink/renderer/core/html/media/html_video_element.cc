@@ -898,8 +898,9 @@ unsigned HTMLVideoElement::webkitDecodedFrameCount() const {
   return 0;
 }
 
-void HTMLVideoElement::DidChangeIsInCanvasSubtree() {
-  HTMLMediaElement::DidChangeIsInCanvasSubtree();
+void HTMLVideoElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  HTMLMediaElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (IsInCanvasSubtree()) {
     UpdateLayoutObject();
     if (auto* wmp = GetWebMediaPlayer()) {

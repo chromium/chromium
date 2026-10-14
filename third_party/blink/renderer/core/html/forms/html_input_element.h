@@ -545,7 +545,7 @@ class CORE_EXPORT HTMLInputElement
 
   void MaybeReportPiiMetrics();
 
-  void DidChangeIsInCanvasSubtree() final;
+  void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
 
   AtomicString name_;
   // The value string in |value| value mode.

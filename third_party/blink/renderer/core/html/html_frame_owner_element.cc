@@ -217,11 +217,12 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   return result;
 }
 
-void HTMLFrameOwnerElement::DidChangeIsInCanvasSubtree() {
-  HTMLElement::DidChangeIsInCanvasSubtree();
+void HTMLFrameOwnerElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  HTMLElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (Document* inner_document = contentDocument()) {
     if (Element* root = inner_document->documentElement()) {
-      root->SetIsInCanvasSubtree(IsInCanvasSubtree());
+      root->SetIsInCanvasSubtree(IsInCanvasSubtree(), propagation_behavior);
       if (auto* layout_view = inner_document->GetLayoutView()) {
         layout_view->SetNeedsPaintPropertyUpdate();
         layout_view->SetSubtreeShouldDoFullPaintInvalidation();

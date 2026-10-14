@@ -829,6 +829,74 @@ TEST_P(HTMLCanvasElementTest, PseudoElementChildOfShadowHost) {
   EXPECT_TRUE(host->GetPseudoElement(kPseudoIdAfter)->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, TopLayerRemovalInvalidatesSubtreeAcrossFrames) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      [popover] {
+        display: block !important;
+      }
+    </style>
+    <canvas id="canvas" content="drawable">
+      <div id="drawable" drawable>
+        <div id="popover" popover="manual">
+          <div id="child"></div>
+          <iframe id="iframe"></iframe>
+        </div>
+      </div>
+    </canvas>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="inner_target">Hello</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  auto* inner_target =
+      ChildDocument().getElementById(AtomicString("inner_target"));
+
+  popover->ShowPopoverInternal(nullptr, nullptr);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(popover->IsInTopLayer());
+
+  EXPECT_FALSE(
+      popover->GetLayoutObject()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(
+      child->GetLayoutObject()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(child->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(
+      iframe->GetLayoutObject()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(iframe->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(
+      ChildDocument().GetLayoutView()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(ChildDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(
+      inner_target->GetLayoutObject()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(inner_target->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  popover->HidePopoverInternal(
+      /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+      /*exception_state=*/nullptr);
+  GetDocument().UpdateStyleAndLayoutTree();
+  ASSERT_FALSE(popover->IsInTopLayer());
+
+  EXPECT_TRUE(popover->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(popover->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(child->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(child->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(iframe->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(
+      ChildDocument().GetLayoutView()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(ChildDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(
+      inner_target->GetLayoutObject()->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(inner_target->GetLayoutObject()->NeedsPaintPropertyUpdate());
+}
+
 TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
   class GCOnFocusChangeObserver final
       : public GarbageCollected<GCOnFocusChangeObserver>,
