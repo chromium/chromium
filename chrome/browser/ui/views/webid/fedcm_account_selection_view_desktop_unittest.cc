@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
@@ -32,7 +31,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
-#include "components/permissions/switches.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -3456,10 +3454,10 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
        RejectedAmbientRequestFallsBackToRegularUi) {
-  // PermissionRequestManager rejects all requests with this switch.
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      permissions::switches::kDenyPermissionPrompts);
+  // PermissionRequestManager rejects all requests when the WebContents does not
+  // support permission requests.
+  permission_request_manager()->set_web_contents_supports_permission_requests(
+      false);
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
