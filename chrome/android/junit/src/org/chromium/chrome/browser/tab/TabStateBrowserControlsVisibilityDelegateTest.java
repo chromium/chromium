@@ -23,7 +23,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
@@ -33,7 +32,6 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.NetError;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -60,9 +58,9 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisableFeatures("ControlsVisibilityFromNavigations")
-    public void testOnPageLoadFailedDuringNavigation() {
-        // Inspired by https://crbug.com/40064686.
+    public void testAbortedNavigationFinishesAfterNewerNavigationStarts() {
+        // Inspired by https://crbug.com/40064686. Navigation 2 is aborted after navigation 3 has
+        // already started, so the lock must be held until navigation 3 finishes too.
         GURL blueGurl = JUnitTestGURLs.BLUE_1;
         GURL redGurl = JUnitTestGURLs.RED_1;
         when(mTabImpl.getUrl()).thenReturn(blueGurl);
@@ -86,17 +84,20 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
                 BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
 
-        tabObserver.onPageLoadStarted(mTabImpl, blueGurl);
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
-        tabObserver.onPageLoadStarted(mTabImpl, blueGurl);
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
-        tabObserver.onPageLoadStarted(mTabImpl, redGurl);
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle3);
-        tabObserver.onPageLoadFailed(mTabImpl, NetError.ERR_ABORTED);
-        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
-        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle3);
 
+        // Navigation 2 finishes (aborted) while navigation 3 is still in flight.
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle3);
         assertEquals(
                 BrowserControlsState.SHOWN,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
@@ -129,14 +130,12 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
 
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
-        tabObserver.onPageLoadStarted(mTabImpl, JUnitTestGURLs.BLUE_1);
 
         assertEquals(
                 BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
 
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
-        tabObserver.onPageLoadFinished(mTabImpl, JUnitTestGURLs.BLUE_1);
 
         assertEquals(
                 BrowserControlsState.BOTH,
@@ -169,15 +168,12 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
         // Start navigation 1.
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
-        tabObserver.onPageLoadStarted(mTabImpl, blueGurl);
 
         // Start navigation 2 before navigation 1 finishes.
         tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
-        tabObserver.onPageLoadStarted(mTabImpl, redGurl);
 
         // Finish navigation 1.
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
-        tabObserver.onPageLoadFinished(mTabImpl, blueGurl);
 
         // Wait for 3 seconds, giving the timers a chance to run.
         ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
@@ -190,7 +186,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
         // Now finish navigation 2 and wait 3 seconds, should unlock.
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
-        tabObserver.onPageLoadFinished(mTabImpl, redGurl);
         ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
         ShadowLooper.runUiThreadTasks();
         assertEquals(

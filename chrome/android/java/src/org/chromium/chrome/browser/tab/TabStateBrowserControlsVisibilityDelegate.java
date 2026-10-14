@@ -119,14 +119,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         updateWaitingForLoad(false);
                     }
 
-                    private void scheduleEnableFullscreenLoadDelayIfNecessary() {
-                        if (mIsFullscreenWaitingForLoad
-                                && !mHandler.hasMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD)) {
-                            mHandler.sendEmptyMessageDelayed(
-                                    MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD, getLoadDelayMs());
-                        }
-                    }
-
                     @Override
                     public void onContentChanged(Tab tab) {
                         onWebContentsUpdated(tab.getWebContents());
@@ -135,10 +127,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
-                        if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
-                            return;
-                        }
-
                         if (navigation.isSameDocument()) return;
 
                         boolean changed = mOutstandingNavigations.add(navigation.getNavigationId());
@@ -153,56 +141,21 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
-                        if (ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
-                            if (navigation.isSameDocument()) return;
+                        if (navigation.isSameDocument()) return;
 
-                            boolean changed =
-                                    mOutstandingNavigations.remove(navigation.getNavigationId());
-                            RecordHistogram.recordBooleanHistogram(
-                                    "Android.BrowserControls.OutstandingChangedOnFinish", changed);
+                        boolean changed =
+                                mOutstandingNavigations.remove(navigation.getNavigationId());
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.BrowserControls.OutstandingChangedOnFinish", changed);
 
-                            if (mOutstandingNavigations.isEmpty()) {
-                                mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
-                                mHandler.sendEmptyMessageDelayed(
-                                        MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD, getLoadDelayMs());
-                            }
-                            RecordHistogram.recordCount100Histogram(
-                                    "Android.BrowserControls.OutstandingNavigationsOnFinish",
-                                    mOutstandingNavigations.size());
-                        } else {
-                            if (!navigation.hasCommitted()) return;
+                        if (mOutstandingNavigations.isEmpty()) {
                             mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
                             mHandler.sendEmptyMessageDelayed(
                                     MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD, getLoadDelayMs());
                         }
-                    }
-
-                    @Override
-                    public void onPageLoadStarted(Tab tab, GURL url) {
-                        if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
-                            mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
-                            updateWaitingForLoad(!DomDistillerUrlUtils.isDistilledPage(url));
-                        }
-                    }
-
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        // Handle the case where a commit or prerender swap notification failed to
-                        // arrive and the enable fullscreen message was never enqueued.
-                        if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
-                            scheduleEnableFullscreenLoadDelayIfNecessary();
-                        }
-                    }
-
-                    @Override
-                    public void onPageLoadFailed(Tab tab, int errorCode) {
-                        // TODO(crbug.com/40926082): Associate events with navigation ids or
-                        // urls, so that we can fully unlock controls here possible here.
-                        // May have already received the start of a different navigation. Do not
-                        // cancel the outstanding delay. See https://crbug.com/40064686.
-                        if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
-                            scheduleEnableFullscreenLoadDelayIfNecessary();
-                        }
+                        RecordHistogram.recordCount100Histogram(
+                                "Android.BrowserControls.OutstandingNavigationsOnFinish",
+                                mOutstandingNavigations.size());
                     }
 
                     @Override

@@ -171,7 +171,6 @@ BASE_DECLARE_FEATURE(kContextualPanelCloseButton);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kControlsInBrowserToolbarSwipeMock);
-BASE_DECLARE_FEATURE(kControlsVisibilityFromNavigations);
 BASE_DECLARE_FEATURE(kCopyLinkToHighlight);
 BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kCrossDeviceTaskHandoff);
