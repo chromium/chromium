@@ -393,6 +393,10 @@ async def test_move_to_position_in_viewport(
 ):
     await load_static_test_page(page="test_actions.html")
 
+    # A new pointer input source is at (0, 0), so moving there dispatches no
+    # event: https://w3c.github.io/webdriver/#dfn-perform-a-pointer-move
+    expected_count = 0 if (x, y) == (0, 0) else 1
+
     actions = Actions()
     actions.add_pointer().pointer_move(x=x, y=y)
 
@@ -401,7 +405,7 @@ async def test_move_to_position_in_viewport(
     )
 
     events = await get_events(bidi_session, top_context["context"])
-    assert len(events) == 1
+    assert len(events) == expected_count
 
     # Move again to check that no further mouse move event is emitted.
     actions = Actions()
@@ -412,7 +416,7 @@ async def test_move_to_position_in_viewport(
     )
 
     events = await get_events(bidi_session, top_context["context"])
-    assert len(events) == 1
+    assert len(events) == expected_count
 
 
 @pytest.mark.parametrize("origin", ["viewport", "pointer", "element"])

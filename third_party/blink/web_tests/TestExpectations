@@ -2557,7 +2557,7 @@ crbug.com/555949816 external/wpt/svg/styling/css-linked-parameters/link-paramete
 crbug.com/555949816 external/wpt/svg/styling/css-linked-parameters/link-parameters-fallback.html [ Failure ]
 crbug.com/555949816 external/wpt/svg/styling/css-linked-parameters/link-parameters-geometry.html [ Failure ]
 crbug.com/555949816 external/wpt/svg/styling/css-linked-parameters/link-parameters-per-container.html [ Failure ]
-crbug.com/555895001 external/wpt/webdriver/tests/bidi/input/release_actions/sequence.py [ Failure ]
+crbug.com/555895001 [ Android ] external/wpt/webdriver/tests/bidi/input/release_actions/sequence.py [ Failure ]
 crbug.com/555895001 external/wpt/webdriver/tests/classic/release_actions/sequence.py [ Failure ]
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/phrasing-elements.html [ Pass Timeout ]
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/section-and-grouping-elements.html [ Pass Timeout ]
@@ -7440,7 +7440,7 @@ crbug.com/455194902 [ Mac15-arm64 ] wpt_internal/speculation-rules/prefetch/no-v
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
-external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
+[ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
 [ Fuchsia ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Mac ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Win ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
@@ -8792,7 +8792,7 @@ crbug.com/571887196 external/wpt/webdriver/tests/bidi/browsing_context/print/fra
 crbug.com/365046210 external/wpt/webdriver/tests/bidi/browsing_context/print/shrink_to_fit.py [ Failure ]
 crbug.com/42323841 [ Linux ] external/wpt/webdriver/tests/bidi/session/capabilities/unhandled_prompt_behavior/file/ignore.py [ Failure ]
 crbug.com/552881783 [ Android ] external/wpt/webdriver/tests/bidi/web_extension/install/install.py [ Failure ]
-crbug.com/573053648 external/wpt/webdriver/tests/bidi/web_extension/uninstall/uninstall.py [ Failure ]
+crbug.com/573053648 [ Android ] external/wpt/webdriver/tests/bidi/web_extension/uninstall/uninstall.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
 
