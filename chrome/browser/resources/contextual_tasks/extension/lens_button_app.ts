@@ -44,12 +44,17 @@ export class LensButtonAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      darkMode: {
+        type: Boolean,
+        reflect: true,
+      },
       label_: {type: String},
     };
   }
 
   accessor active: boolean = false;
   accessor disabled: boolean = false;
+  accessor darkMode: boolean = false;
   protected accessor label_: string = loadTimeData.isInitialized() &&
           loadTimeData.valueExists('lensSearchButtonLabel') ?
       loadTimeData.getString('lensSearchButtonLabel') :
@@ -60,6 +65,7 @@ export class LensButtonAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.darkMode = this.isDarkModeEnabled_();
 
     const browserProxy = ExtensionBrowserProxyImpl.getInstance();
     if (this.overlayStateListenerId_ === null) {
@@ -79,6 +85,11 @@ export class LensButtonAppElement extends CrLitElement {
       browserProxy.callbackRouter.removeListener(this.overlayStateListenerId_);
       this.overlayStateListenerId_ = null;
     }
+  }
+
+  protected isDarkModeEnabled_(): boolean {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('cs') === '1';
   }
 
   setPageHandlerForTesting(handler: PageHandlerInterface|null) {

@@ -147,4 +147,36 @@ suite('LensButtonTest', () => {
     await microtasksFinished();
     assertFalse(app.active);
   });
+
+  test('Dark mode reflects attribute correctly', async () => {
+    assertFalse(app.darkMode);
+    assertFalse(app.hasAttribute('dark-mode'));
+
+    app.darkMode = true;
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('dark-mode'));
+
+    app.darkMode = false;
+    await microtasksFinished();
+    assertFalse(app.hasAttribute('dark-mode'));
+  });
+
+  test('Initializes darkMode from cs=1 URL query param', async () => {
+    const originalUrl = window.location.href;
+    let darkApp;
+    try {
+      window.history.replaceState({}, '', '?cs=1');
+      darkApp = document.createElement('lens-button-app');
+      document.body.appendChild(darkApp);
+      await microtasksFinished();
+
+      assertTrue(darkApp.darkMode);
+      assertTrue(darkApp.hasAttribute('dark-mode'));
+    } finally {
+      if (darkApp && darkApp.parentNode) {
+        darkApp.remove();
+      }
+      window.history.replaceState({}, '', originalUrl);
+    }
+  });
 });
