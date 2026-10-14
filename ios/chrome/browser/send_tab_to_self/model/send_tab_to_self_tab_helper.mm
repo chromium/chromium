@@ -42,11 +42,9 @@ const send_tab_to_self::SendTabToSelfEntry* GetEntry(web::WebState* web_state,
   return model ? model->GetEntryByGUID(std::string(guid)) : nullptr;
 }
 
-// Attempts to perform scroll restoration for the given `entry` if a text
-// fragment is present.
-void MaybeRestoreScrollPosition(
-    web::WebState* web_state,
-    const send_tab_to_self::SendTabToSelfEntry* entry) {
+// Restores the scroll position for `entry` if a text fragment is present.
+void RestoreScrollPosition(web::WebState* web_state,
+                           const send_tab_to_self::SendTabToSelfEntry* entry) {
   const send_tab_to_self::TextFragmentData& fragment_data =
       entry->GetPageContext().scroll_position.text_fragment;
   if (fragment_data.IsEmpty()) {
@@ -61,15 +59,6 @@ void MaybeRestoreScrollPosition(
     SendTabToSelfTextFragmentSelectorGenerator::GetInstance()
         ->ScrollToTextFragment(web_state, fragment_string);
   }
-}
-
-// Attempts to perform form filling for the given `entry` if it contains
-// form data.
-void MaybePerformFormFilling(
-    web::WebState* web_state,
-    const send_tab_to_self::SendTabToSelfEntry* entry) {
-  send_tab_to_self::FillWebState(
-      web_state, url::Origin::Create(entry->GetURL()), entry->GetPageContext());
 }
 
 }  // namespace
@@ -92,7 +81,7 @@ void SendTabToSelfTabHelper::WasShown(web::WebState* web_state) {
 
   const send_tab_to_self::SendTabToSelfEntry* entry = GetEntry(web_state, guid);
   if (entry) {
-    MaybeRestoreScrollPosition(web_state, entry);
+    RestoreScrollPosition(web_state, entry);
   }
 }
 
@@ -126,7 +115,8 @@ void SendTabToSelfTabHelper::PageLoaded(
     return;
   }
 
-  MaybePerformFormFilling(web_state, entry);
+  send_tab_to_self::FillWebState(
+      web_state, url::Origin::Create(entry->GetURL()), entry->GetPageContext());
 
   // Defer scroll restoration if the tab is hidden, as WKWebView lacks an
   // active visual geometry in the background and resets scroll offset upon
@@ -136,7 +126,7 @@ void SendTabToSelfTabHelper::PageLoaded(
     return;
   }
 
-  MaybeRestoreScrollPosition(web_state, entry);
+  RestoreScrollPosition(web_state, entry);
 }
 
 void SendTabToSelfTabHelper::WebStateDestroyed(web::WebState* web_state) {
