@@ -534,7 +534,16 @@ class PageStabilityMetricsMinWaitTest : public PageStabilityMetricsTestBase {
   PageStabilityMetricsMinWaitTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kGlicActor, {}},
-         {kActorPageStability, {{kActorPageStabilityMinWait.name, "3s"}}}},
+         {kActorPageStability,
+          {// Effectively disable the timeout to prevent flakes.
+           {kActorPageStabilityTimeout.name, "30s"},
+           // Blink's IdlenessDetector checks network quiet (500ms) using a 2s
+           // watchdog timer when no other tasks run on the renderer main
+           // thread, which can take up to 4s to report idle. Use a 6s min-wait
+           // and a 100ms subsequent paint timeout so the initial stability
+           // signal reliably completes while still waiting for min-wait.
+           {kActorPageStabilityMinWait.name, "6s"},
+           {kActorPaintStabilitySubsequentPaintTimeout.name, "100ms"}}}},
         {});
   }
 
@@ -583,6 +592,9 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
   // Verify that paint stability metric was still recorded when paint stability
   // was reached while waiting for minimum wait.
   ClickAndWaitForFrameReady("btnPaint");
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName}));
 
   ASSERT_TRUE(result.Wait());
 
@@ -609,6 +621,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
   mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -640,6 +653,9 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
   // Verify that the network/main thread metric was still recorded when the
   // network/main thread became idle while waiting for minimum wait.
   Respond("NETWORK DONE");
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
 
   ASSERT_TRUE(result.Wait());
 
