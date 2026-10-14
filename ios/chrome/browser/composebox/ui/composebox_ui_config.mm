@@ -321,6 +321,7 @@
     case kNone:
       return nil;
     case kRegular:
+      return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
     case kFlash:
       return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
     case kAuto:
