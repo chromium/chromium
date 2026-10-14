@@ -156,6 +156,7 @@
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -1375,8 +1376,13 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
         *this, GetOneTimeTokenService(), *GetProfile());
   }
   if (OtpMetricsTracker::IsEligibleForGmailOtps(GetIdentityManager())) {
-    otp_metrics_tracker_ =
-        std::make_unique<OtpMetricsTracker>(GetOneTimeTokenService(), *this);
+    // Gmail OTP tickles are only observed if Gmail OTP retrieval is enabled.
+    otp_metrics_tracker_ = std::make_unique<OtpMetricsTracker>(
+        base::FeatureList::IsEnabled(
+            one_time_tokens::features::kGmailOtpRetrievalService)
+            ? GetGmailOtpBackend()
+            : nullptr,
+        *this);
   }
 #endif
 

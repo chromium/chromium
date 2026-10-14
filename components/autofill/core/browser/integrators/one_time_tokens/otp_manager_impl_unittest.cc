@@ -36,6 +36,7 @@
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
@@ -258,19 +259,17 @@ TEST_F(OtpManagerImplTest, FieldDetectionToTickleLatency_OtpFormLogsMetric) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillGmailOtpPreLaunchMetrics);
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
+  one_time_tokens::FakeGmailOtpBackend gmail_otp_backend;
 
   autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
+      &gmail_otp_backend, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithOtpField();
 
   task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+  gmail_otp_backend.OnIncomingOneTimeTokenBackendNotification(
+      one_time_tokens::OneTimeTokenBackendNotification());
 
   histogram_tester_.ExpectUniqueTimeSample(
       OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram,
@@ -282,19 +281,17 @@ TEST_F(OtpManagerImplTest, FieldDetectionToTickleLatency_OtpFormLogsMetric) {
 TEST_F(OtpManagerImplTest,
        FieldDetectionToTickleLatency_NonOtpFormDoesNotLogMetric) {
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
+  one_time_tokens::FakeGmailOtpBackend gmail_otp_backend;
 
   autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
+      &gmail_otp_backend, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithFirstNameField();
 
   task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+  gmail_otp_backend.OnIncomingOneTimeTokenBackendNotification(
+      one_time_tokens::OneTimeTokenBackendNotification());
 
   histogram_tester_.ExpectTotalCount(
       OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram, 0);
@@ -307,17 +304,15 @@ TEST_F(OtpManagerImplTest,
   base::test::ScopedFeatureList feature_list(
       features::kAutofillGmailOtpPreLaunchMetrics);
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
+  one_time_tokens::FakeGmailOtpBackend gmail_otp_backend;
 
   autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
+      &gmail_otp_backend, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
 
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+  gmail_otp_backend.OnIncomingOneTimeTokenBackendNotification(
+      one_time_tokens::OneTimeTokenBackendNotification());
   task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
 
   AddFormWithOtpField();

@@ -15,10 +15,13 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace one_time_tokens {
+class GmailOtpBackend;
+}
 
 namespace signin {
 class IdentityManager;
@@ -61,9 +64,10 @@ class OtpMetricsTracker {
   static bool IsEligibleForGmailOtps(
       const signin::IdentityManager* identity_manager);
 
-  OtpMetricsTracker(
-      one_time_tokens::OneTimeTokenService* one_time_token_service,
-      AutofillClient& autofill_client);
+  // Subscribes to tickles from `gmail_otp_backend`. If `gmail_otp_backend` is
+  // null, no tickles are received.
+  OtpMetricsTracker(one_time_tokens::GmailOtpBackend* gmail_otp_backend,
+                    AutofillClient& autofill_client);
   OtpMetricsTracker(const OtpMetricsTracker&) = delete;
   OtpMetricsTracker& operator=(const OtpMetricsTracker&) = delete;
   virtual ~OtpMetricsTracker();
@@ -83,7 +87,7 @@ class OtpMetricsTracker {
 #endif
 
  private:
-  void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
+  void OnTickleReceived();
   void OnTickleTimeout();
   void OnFormOutcomeTimeout();
   void RecordFormOutcomeMetrics(
@@ -97,7 +101,7 @@ class OtpMetricsTracker {
   bool IsOtpFieldEmptyAndUnedited() const;
   void ResetPendingFormState();
 
-  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_;
+  const raw_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend_;
   // The owning `AutofillClient`, guaranteed to outlive this class.
   const raw_ref<AutofillClient> autofill_client_;
   one_time_tokens::ExpiringSubscription tickle_subscription_;

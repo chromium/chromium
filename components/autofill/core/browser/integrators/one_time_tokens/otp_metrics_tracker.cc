@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/language_state.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -102,13 +101,12 @@ bool OtpMetricsTracker::IsEligibleForGmailOtps(
 }
 
 OtpMetricsTracker::OtpMetricsTracker(
-    one_time_tokens::OneTimeTokenService* one_time_token_service,
+    one_time_tokens::GmailOtpBackend* gmail_otp_backend,
     AutofillClient& autofill_client)
-    : one_time_token_service_(one_time_token_service),
-      autofill_client_(autofill_client) {
-  if (one_time_token_service_) {
-    tickle_subscription_ = one_time_token_service_->SubscribeToTickles(
-        one_time_tokens::OneTimeTokenSource::kGmail, base::Time::Max(),
+    : gmail_otp_backend_(gmail_otp_backend), autofill_client_(autofill_client) {
+  if (gmail_otp_backend_) {
+    tickle_subscription_ = gmail_otp_backend_->SubscribeToTickles(
+        base::Time::Max(),
         base::BindRepeating(&OtpMetricsTracker::OnTickleReceived,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -159,8 +157,7 @@ void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
   }
 }
 
-void OtpMetricsTracker::OnTickleReceived(
-    one_time_tokens::OneTimeTokenSource source) {
+void OtpMetricsTracker::OnTickleReceived() {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGmailOtpPreLaunchMetrics)) {
     return;
