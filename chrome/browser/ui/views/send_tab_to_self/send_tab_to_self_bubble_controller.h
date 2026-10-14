@@ -19,7 +19,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget_observer.h"
-#include "url/gurl.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -120,8 +119,7 @@ class SendTabToSelfBubbleController
                             base::WeakPtr<BrowserWindowInterface> browser,
                             BubbleAnchorResult anchor);
 
-  void HandleSendTabToDeviceResult(const GURL& url,
-                                   std::string_view device_name,
+  void HandleSendTabToDeviceResult(std::string_view device_name,
                                    syncer::DeviceInfo::FormFactor form_factor,
                                    SendTabToSelfResult result);
 

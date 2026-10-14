@@ -59,7 +59,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/copy_warning_delegate_tracker.h"

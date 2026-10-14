@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -98,35 +97,23 @@ const send_tab_to_self::SendTabToSelfEntry* GetMostRecentlySharedEntry(
 }
 
 // Displays the appropriate post-send snackbar or toast based on `result`.
-void ShowPostSendSnackbar(
-    id<SnackbarCommands> snackbar_commands,
-    const std::string& target_device_name,
-    NSString* email,
-    send_tab_to_self::SendTabToSelfResult result) {
+void ShowPostSendSnackbar(id<SnackbarCommands> snackbar_commands,
+                          const std::string& target_device_name,
+                          NSString* email,
+                          send_tab_to_self::SendTabToSelfResult result) {
   if (!snackbar_commands) {
     return;
   }
-
-  bool post_send_toast_enabled = base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast);
 
   NSString* message_text = nil;
   switch (result) {
     case send_tab_to_self::SendTabToSelfResult::kSuccess: {
       TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-      NSString* text = nil;
-      if (!post_send_toast_enabled) {
-        text = l10n_util::GetNSStringF(
-            IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
-            base::UTF8ToUTF16(target_device_name));
-      } else {
-        text = l10n_util::GetNSStringF(
-            IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-            base::UTF8ToUTF16(target_device_name));
-      }
-      SnackbarMessage* message =
-          [[SnackbarMessage alloc] initWithTitle:text];
-      if (post_send_toast_enabled && email.length > 0) {
+      NSString* text =
+          l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                                  base::UTF8ToUTF16(target_device_name));
+      SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+      if (email.length > 0) {
         message.subtitle = email;
       }
       [snackbar_commands showSnackbarMessage:message];
@@ -134,26 +121,15 @@ void ShowPostSendSnackbar(
     }
     case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
       TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-      NSString* text = nil;
-      if (!post_send_toast_enabled) {
-        text = l10n_util::GetNSStringF(
-            IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
-            base::UTF8ToUTF16(target_device_name));
-      } else {
-        text = l10n_util::GetNSStringF(
-            IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
-            base::UTF8ToUTF16(target_device_name));
-      }
-      SnackbarMessage* message =
-          [[SnackbarMessage alloc] initWithTitle:text];
+      NSString* text = l10n_util::GetNSStringF(
+          IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
+          base::UTF8ToUTF16(target_device_name));
+      SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
       [snackbar_commands showSnackbarMessage:message];
       return;
     }
     case send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection:
     case send_tab_to_self::SendTabToSelfResult::kFailureCommitTimeout: {
-      if (!post_send_toast_enabled) {
-        return;
-      }
       TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
       message_text = l10n_util::GetNSString(
           IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST);
@@ -165,9 +141,6 @@ void ShowPostSendSnackbar(
     case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
     case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
     case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved: {
-      if (!post_send_toast_enabled) {
-        return;
-      }
       TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
       message_text =
           l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
@@ -755,13 +728,12 @@ void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
         HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
   }
 
-  if (fragment &&
-      fragment->status == TextFragmentGenerationStatus::kSuccess &&
+  if (fragment && fragment->status == TextFragmentGenerationStatus::kSuccess &&
       !fragment->text_start.empty()) {
     page_context.scroll_position.text_fragment =
-        send_tab_to_self::TextFragmentData(
-            fragment->text_start, fragment->text_end,
-            fragment->prefix, fragment->suffix);
+        send_tab_to_self::TextFragmentData(fragment->text_start,
+                                           fragment->text_end, fragment->prefix,
+                                           fragment->suffix);
   }
 
   service->GetSendTabToSelfModel()->SendEntry(

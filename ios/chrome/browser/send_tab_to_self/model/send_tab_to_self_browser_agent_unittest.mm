@@ -1041,27 +1041,9 @@ TEST_F(SendTabToSelfBrowserAgentTest,
   EXPECT_EQ(SendTabToSelfResult::kSuccess, result_future.Get());
 }
 
-class SendTabToSelfBrowserAgentToastEnabledTest
-    : public SendTabToSelfBrowserAgentTest {
- public:
-  SendTabToSelfBrowserAgentToastEnabledTest()
-      : SendTabToSelfBrowserAgentTest(
-            {send_tab_to_self::kSendTabToSelfPostSendToast}) {}
-};
-
-class SendTabToSelfBrowserAgentToastDisabledTest
-    : public SendTabToSelfBrowserAgentTest {
- public:
-  SendTabToSelfBrowserAgentToastDisabledTest()
-      : SendTabToSelfBrowserAgentTest(
-            {},
-            {send_tab_to_self::kSendTabToSelfPostSendToast}) {}
-};
-
-// Tests that invoking HandleEntrySentForTest with kSuccess displays the
-// success toast when toast feature is enabled.
-TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
-       HandleEntrySent_SuccessShowsToast) {
+// Tests that invoking `HandleEntrySentForTest` with `kSuccess` displays the
+// success toast.
+TEST_F(SendTabToSelfBrowserAgentTest, HandleEntrySent_SuccessShowsToast) {
   id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
 
@@ -1072,9 +1054,9 @@ TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
-// Tests that invoking HandleEntrySentForTest with kSuccessThrottled displays
-// the throttled toast when toast feature is enabled.
-TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
+// Tests that invoking `HandleEntrySentForTest` with `kSuccessThrottled`
+// displays the throttled toast.
+TEST_F(SendTabToSelfBrowserAgentTest,
        HandleEntrySent_SuccessThrottledShowsToast) {
   id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
@@ -1086,10 +1068,9 @@ TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
-// Tests that invoking HandleEntrySentForTest with a failure result displays
-// the failure toast when toast feature is enabled.
-TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
-       HandleEntrySent_FailureShowsErrorToast) {
+// Tests that invoking `HandleEntrySentForTest` with a network failure result
+// displays the offline error toast.
+TEST_F(SendTabToSelfBrowserAgentTest, HandleEntrySent_FailureShowsErrorToast) {
   id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
 
@@ -1100,16 +1081,16 @@ TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
-// Tests that invoking HandleEntrySentForTest with kSuccess displays the
-// legacy snackbar when toast feature is disabled.
-TEST_F(SendTabToSelfBrowserAgentToastDisabledTest,
-       HandleEntrySent_LegacySnackbarDisplayedOnlyOnSuccess) {
+// Tests that invoking `HandleEntrySentForTest` with a generic failure result
+// displays the generic failure toast.
+TEST_F(SendTabToSelfBrowserAgentTest,
+       HandleEntrySent_GenericFailureShowsErrorToast) {
   id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
 
   agent_->HandleEntrySentForTest(
-      mock_snackbar_commands, "My Phone",
-      send_tab_to_self::SendTabToSelfResult::kSuccess);
+      mock_snackbar_commands, "",
+      send_tab_to_self::SendTabToSelfResult::kFailureInvalidUrl);
 
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }

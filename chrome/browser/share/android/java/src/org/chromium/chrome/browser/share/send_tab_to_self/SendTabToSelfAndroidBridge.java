@@ -133,10 +133,6 @@ public class SendTabToSelfAndroidBridge {
             @Nullable WebContents webContents,
             @SendTabToSelfResult int result,
             String targetDeviceName) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
-            return;
-        }
-
         String userEmail = getUserEmail(profile);
 
         if (!maybeShowPostSendSnackbar(webContents, result, targetDeviceName, userEmail)) {

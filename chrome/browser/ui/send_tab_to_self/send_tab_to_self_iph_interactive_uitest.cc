@@ -433,7 +433,6 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
             {feature_engagement::kIPHSendTabToSelfTutorialFeature})) {
     scoped_feature_list_.InitWithFeatures(
         {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfPostSendToast,
          user_education::features::kRaiseMacHelpBubbleAboveMenus},
         {});
   }

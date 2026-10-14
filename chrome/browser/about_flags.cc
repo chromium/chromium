@@ -2905,7 +2905,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
-     "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet"},
     {"Enabled with fast-follows", switches::kEnableFeatures,
      "IPH_SendTabToSelfOmnibox,"
@@ -2916,7 +2915,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
-     "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"
@@ -2931,7 +2929,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
-     "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"

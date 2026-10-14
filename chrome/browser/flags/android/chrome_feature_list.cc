@@ -619,7 +619,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfGesture,
     &send_tab_to_self::kSendTabToSelfMultiTabShare,
     &send_tab_to_self::kSendTabToSelfOpenNativeApp,
-    &send_tab_to_self::kSendTabToSelfPostSendToast,
     &send_tab_to_self::kSendTabToSelfPropagateFormFields,
     &send_tab_to_self::kSendTabToSelfPropagateScrollPosition,
     &send_tab_to_self::kSendTabToSelfRecordSnackbarActivation,

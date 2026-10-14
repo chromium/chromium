@@ -269,7 +269,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
       target_device_guid, url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
       base::BindOnce(
           &SendTabToSelfBubbleController::HandleSendTabToDeviceResult,
-          weak_ptr_factory_.GetWeakPtr(), url, std::string(device_name),
+          weak_ptr_factory_.GetWeakPtr(), std::string(device_name),
           form_factor),
       entry_point_.value_or(ShareEntryPoint::kShareSheet));
 }
@@ -347,20 +347,15 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
 }
 
 void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
-    const GURL& url,
     std::string_view device_name,
     syncer::DeviceInfo::FormFactor form_factor,
     SendTabToSelfResult result) {
   switch (result) {
     case SendTabToSelfResult::kSuccess:
-      if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
-        ShowTabSentSuccessToast(&GetWebContents(), device_name, form_factor);
-      }
+      ShowTabSentSuccessToast(&GetWebContents(), device_name, form_factor);
       break;
     case SendTabToSelfResult::kSuccessThrottled:
-      if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
-        ShowTabSentThrottledToast(&GetWebContents(), device_name, form_factor);
-      }
+      ShowTabSentThrottledToast(&GetWebContents(), device_name, form_factor);
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:
     case SendTabToSelfResult::kFailureNotTrackingMetadata:
@@ -370,7 +365,7 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     case SendTabToSelfResult::kFailureEntryRemoved:
     case SendTabToSelfResult::kFailureCommitTimeout:
     case SendTabToSelfResult::kFailureNoInternetConnection:
-      ShowTabSentFailure(&GetWebContents(), result, url);
+      ShowTabSentFailure(&GetWebContents(), result);
       break;
   }
 }

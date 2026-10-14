@@ -22,9 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -83,8 +81,9 @@ public class DevicePickerBottomSheetContentTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
     }
 
+    // Verifies that clicking a device item hides the bottom sheet and sends the tab to the
+    // selected device.
     @Test
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testOnItemClick() {
         DevicePickerBottomSheetContent content =
                 new DevicePickerBottomSheetContent(

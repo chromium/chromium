@@ -203,8 +203,6 @@ void DismissSendTabToSelfModal() {
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfEnhancedBottomsheet);
   config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfPostSendToast);
-  config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfIOSShareSheetDeviceList);
   return config;
 }
@@ -418,8 +416,7 @@ void DismissSendTabToSelfModal() {
                                    error:nil];
 }
 
-// Tests that when kSendTabToSelfPostSendToast is enabled, sending a tab to a
-// target device shows a success snackbar toast.
+// Tests that sending a tab to a target device shows a success snackbar toast.
 - (void)testSendTabToSelfAndVerifySuccessSnackbar {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName, fakeIdentity);
@@ -485,8 +482,7 @@ void DismissSendTabToSelfModal() {
       kPageText, textFragment);
 }
 
-// Tests that when kSendTabToSelfPostSendToast is enabled, a network failure
-// during send displays an error snackbar toast.
+// Tests that a network failure during send displays an error snackbar toast.
 - (void)testSendTabToSelfAndVerifyErrorSnackbar {
   SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
                               [FakeSystemIdentity fakeIdentity1]);
@@ -1014,66 +1010,6 @@ void DismissSendTabToSelfModal() {
 
   // Clean up.
   DismissSendTabToSelfModal();
-}
-
-@end
-
-@interface SendTabToSelfCoordinatorPostSendToastDisabledTestCase
-    : ChromeTestCase
-@end
-
-@implementation SendTabToSelfCoordinatorPostSendToastDisabledTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfPropagateScrollPosition);
-  config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfPropagateFormFields);
-  config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
-  config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfEnhancedBottomsheet);
-  config.features_disabled.push_back(
-      send_tab_to_self::kSendTabToSelfPostSendToast);
-  return config;
-}
-
-- (void)setUp {
-  [super setUp];
-
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-}
-
-// Tests that when kSendTabToSelfPostSendToast is disabled, sending a tab to a
-// target device displays the legacy snackbar message.
-- (void)testSendTabToSelfShowsLegacySnackbarWhenPostSendToastDisabled {
-  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
-                              [FakeSystemIdentity fakeIdentity1]);
-
-  // Verify the device is shown in the device picker.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
-                                                       kTargetDeviceName)];
-
-  // Tap "Send".
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalSendButton)]
-      performAction:grey_tap()];
-
-  // Verify that the bottom sheet is dismissed.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalSendButton)];
-
-  // Wait for and verify the legacy snackbar message.
-  NSString* snackbarMessage =
-      l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
-                              base::SysNSStringToUTF16(kTargetDeviceName));
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
-                                                       snackbarMessage)];
-
-  DismissSnackbar();
 }
 
 @end

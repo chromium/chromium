@@ -51,8 +51,7 @@ constexpr char kScreenshotBaselineCL[] = "7819337";
 class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
  public:
   SendTabToSelfInteractiveUiTest() {
-    feature_list_.InitWithFeatures({kSendTabToSelfPostSendToast},
-                                   {kSendTabToSelfPropagateScrollPosition});
+    feature_list_.InitAndDisableFeature(kSendTabToSelfPropagateScrollPosition);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

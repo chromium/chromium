@@ -673,12 +673,13 @@ public class SendTabToSelfCoordinatorTest {
                 hasDescendant(allOf(withId(R.id.device_name), withText(deviceName))));
     }
 
+    // Verifies that sending a tab from the device picker bottom sheet displays the post-send
+    // snackbar and records the snackbar shown histogram.
     @Test
     @LargeTest
     @EnableFeatures({
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET,
-        ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
+        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
     @DisabledTest(message = "crbug.com/555079457")
     public void testSnackbarShownAfterSend() {
@@ -727,12 +728,11 @@ public class SendTabToSelfCoordinatorTest {
         histogramWatcher.assertExpected();
     }
 
+    // Verifies that sending a tab when `WebContents` is null displays the post-send snackbar on the
+    // focused activity.
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testSnackbarShownAfterSend_WebContentsNull() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -776,14 +776,12 @@ public class SendTabToSelfCoordinatorTest {
                 });
     }
 
+    // Verifies that a fallback `Toast` is displayed when no `SnackbarManager` is available.
     @Test
     @LargeTest
     // On Automotive, the way this test detects the Toast (via a11y APIs) doesn't work.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testToastShownAfterSend_SnackbarManagerUnavailable() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();

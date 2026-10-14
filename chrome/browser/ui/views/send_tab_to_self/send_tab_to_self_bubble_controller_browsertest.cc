@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -45,7 +44,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -194,18 +192,9 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-class SendTabToSelfPostSendToastBrowserTest
-    : public SendTabToSelfBubbleControllerBrowserTest {
- public:
-  SendTabToSelfPostSendToastBrowserTest() {
-    feature_list_.InitWithFeatures({kSendTabToSelfPostSendToast}, {});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that sending a tab to a desktop device displays the success toast
+// with the desktop icon.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        BubbleShowsToast_Desktop) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
@@ -233,7 +222,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    kTargetDeviceNameUtf16, &expected_icon);
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that sending a tab to a phone device displays the success toast
+// with the phone icon.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        BubbleShowsToast_Phone) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
@@ -261,7 +252,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    kTargetDeviceNameUtf16, &expected_icon);
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that sending a tab to a tablet device displays the success toast
+// with the tablet icon.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        BubbleShowsToast_Tablet) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
@@ -288,7 +281,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    kTargetDeviceNameUtf16, &expected_icon);
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that a throttled send result displays the throttled toast.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        BubbleShowsThrottledToast) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
@@ -318,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    kTargetDeviceNameUtf16, &expected_icon);
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that sending a tab from the context menu displays the success toast.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ContextMenuShowsToast) {
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
@@ -350,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    kTargetDeviceNameUtf16, &expected_icon);
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+// Verifies that a generic send failure displays the failure toast.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        BubbleShowsFailureToast) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
@@ -380,19 +376,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                    &expected_icon);
 }
 
-class SendTabToSelfPostSendToastDisabledBrowserTest
-    : public SendTabToSelfBubbleControllerBrowserTest {
- public:
-  SendTabToSelfPostSendToastDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(kSendTabToSelfPostSendToast);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
-                       BubbleShowsFailureNotification) {
+// Verifies that a no-internet send failure displays the offline failure toast.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
+                       BubbleShowsNoInternetToast) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
@@ -400,11 +386,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
 
-  // Simulate failure by making the model not ready.
-  sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
-
-  // Use NotificationDisplayServiceTester to monitor notifications.
-  NotificationDisplayServiceTester notification_tester(browser()->GetProfile());
+  sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
+      SendTabToSelfResult::kFailureNoInternetConnection);
 
   // `OnDeviceSelected()` asynchronously queries the renderer for scroll
   // position before calling `SendEntry()`, so wait for `SendEntry()` to run.
@@ -413,17 +396,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
       future.GetRepeatingCallback());
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
-  EXPECT_EQ(future.Get(), nullptr);
+  EXPECT_NE(future.Get(), nullptr);
 
-  // Verify that a notification is shown.
-  std::vector<message_center::Notification> notifications =
-      notification_tester.GetDisplayedNotificationsForType(
-          NotificationHandler::Type::SHARING);
-  ASSERT_EQ(notifications.size(), 1u);
-  EXPECT_EQ(
-      notifications[0].title(),
-      l10n_util::GetStringUTF16(
-          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE));
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kErrorIcon
+                                             : vector_icons::kErrorOldIcon;
+  ExpectToastShown(ToastId::kSendTabToSelfNoInternetConnection,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST, u"",
+                   &expected_icon);
 }
 
 class SendTabToSelfScrollPositionBrowserTest
@@ -854,6 +834,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
   ASSERT_TRUE(controller);
 
   controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
 }
@@ -868,9 +849,8 @@ class SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest
 
 // Verifies that when `kSendTabToSelfNoTargetDeviceQrCode` is disabled,
 // `ShowBubble()` falls back to `SendTabToSelfNoTargetDeviceBubbleView`.
-IN_PROC_BROWSER_TEST_F(
-    SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
-    FallsBackToNoTargetDeviceBubbleWhenFeatureDisabled) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
+                       FallsBackToNoTargetDeviceBubbleWhenFeatureDisabled) {
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);

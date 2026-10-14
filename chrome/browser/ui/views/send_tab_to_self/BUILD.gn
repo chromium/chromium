@@ -88,7 +88,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/app:command_ids",
     "//chrome/app/vector_icons",
-    "//chrome/browser/notifications:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/renderer_context_menu",
     "//chrome/browser/send_tab_to_self",
@@ -128,7 +127,6 @@ source_set("browser_tests") {
     "//ui/events:events_base",
     "//ui/gfx",
     "//ui/gfx:test_support",
-    "//ui/strings:ui_strings",
     "//ui/views",
     "//ui/views:test_support",
   ]

@@ -64,7 +64,6 @@ source_set("impl") {
     "//components/vector_icons",
     "//ui/base",
     "//ui/color:color_headers",
-    "//ui/strings:ui_strings_grit",
   ]
 }
 

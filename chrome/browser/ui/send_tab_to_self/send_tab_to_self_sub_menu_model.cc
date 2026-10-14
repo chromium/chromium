@@ -55,8 +55,7 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
                                std::string_view device_name,
                                syncer::DeviceInfo::FormFactor form_factor,
                                SendTabToSelfResult result) {
-  if (!web_contents ||
-      !base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+  if (!web_contents) {
     return;
   }
 
@@ -75,7 +74,7 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
     case SendTabToSelfResult::kFailureEntryRemoved:
     case SendTabToSelfResult::kFailureCommitTimeout:
     case SendTabToSelfResult::kFailureNoInternetConnection:
-      ShowTabSentFailure(web_contents.get(), result, GURL());
+      ShowTabSentFailure(web_contents.get(), result);
       break;
   }
 }

@@ -47,10 +47,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
 // flow, and the visually enhanced STTS target device picker bubble.
 BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUI);
 
-// If this feature is enabled, a toast will be shown after a tab is successfully
-// sent.
-BASE_DECLARE_FEATURE(kSendTabToSelfPostSendToast);
-
 // If this feature is enabled, "Send to your device" entry points will be added
 // to the Omnibox context menu.
 BASE_DECLARE_FEATURE(kSendTabToSelfExtraEntryPoints);

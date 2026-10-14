@@ -12,10 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "components/sync_device_info/remote_device_info.h"
@@ -61,9 +59,6 @@ constexpr char kTargetDeviceName[] = "My Target Device";
 class SendTabToSelfCoordinatorTest : public PlatformTest {
  protected:
   SendTabToSelfCoordinatorTest() {
-    feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfPostSendToast);
-
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -178,7 +173,6 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     return coordinator_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;

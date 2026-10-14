@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/window_open_disposition.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -46,23 +45,20 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     Profile* profile,
     const SendTabToSelfEntry& entry);
 
-// Shows a success toast confirming that the tab was successfully sent, if
-// `kSendTabToSelfPostSendToast` is enabled.
+// Shows a success toast confirming that the tab was successfully sent.
 void ShowTabSentSuccessToast(content::WebContents* web_contents,
                              std::string_view device_name,
                              syncer::DeviceInfo::FormFactor form_factor);
 
 // Shows a toast confirming that the tab was already sent to the device
-// recently, if `kSendTabToSelfPostSendToast` is enabled.
+// recently.
 void ShowTabSentThrottledToast(content::WebContents* web_contents,
                                std::string_view device_name,
                                syncer::DeviceInfo::FormFactor form_factor);
 
-// Shows a failure toast (or notification if the feature flag is disabled)
-// when the tab failed to send.
+// Shows a failure toast when the tab failed to send.
 void ShowTabSentFailure(content::WebContents* web_contents,
-                        SendTabToSelfResult result,
-                        const GURL& url = GURL());
+                        SendTabToSelfResult result);
 
 // Opens the "Manage account devices" page for `profile` with `disposition`.
 void OpenManageDevicesPage(Profile* profile,
