@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -678,8 +680,16 @@ void GpuDiskCache::Init(disk_cache::ResetHandling reset_handling) {
   }
   is_initialized_ = true;
 
+  net::BackendType backend_type = net::CACHE_BACKEND_DEFAULT;
+  if (base::FeatureList::IsEnabled(
+          net::features::kShaderDiskCacheBackendExperiment) &&
+      net::features::kShaderDiskCacheBackendType.Get() ==
+          net::features::DiskCacheBackend::kSimple) {
+    backend_type = net::CACHE_BACKEND_SIMPLE;
+  }
+
   disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
-      net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
+      net::SHADER_CACHE, backend_type,
       /*file_operations=*/nullptr, cache_path_, GetDefaultGpuDiskCacheSize(),
       reset_handling,
       /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,

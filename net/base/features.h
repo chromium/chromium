@@ -1068,6 +1068,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWindowsTcpLoopbackFastFail);
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicSocketSendBufferSize);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kQuicSocketSendBufferSizeParam);
 
+// Controls the disk cache backend experiment for the GPU shader cache
+// (`net::SHADER_CACHE`). When enabled, each shader cache directory is wiped
+// once on first open (tracked in the cache index header) and recreated using
+// the backend specified by `kShaderDiskCacheBackendType`.
+NET_EXPORT BASE_DECLARE_FEATURE(kShaderDiskCacheBackendExperiment);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(DiskCacheBackend,
+                                      kShaderDiskCacheBackendType);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

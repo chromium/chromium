@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/pickle.h"
+#include "net/base/features.h"
 #include "net/disk_cache/cache_file.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
@@ -30,12 +32,27 @@ constexpr char kFakeIndexFileName[] = "index";
 constexpr char kIndexDirName[] = "index-dir";
 constexpr char kIndexFileName[] = "the-real-index";
 
+// Value stored in `FakeIndexData::experiment_type` to record that a
+// `net::SHADER_CACHE` directory has already been wiped for
+// `kShaderDiskCacheBackendExperiment`.
+constexpr uint32_t kSimpleShaderCacheExperimentWiped = 3;
+
+uint32_t GetExpectedExperimentValue(net::CacheType cache_type) {
+  if (cache_type == net::SHADER_CACHE &&
+      base::FeatureList::IsEnabled(
+          net::features::kShaderDiskCacheBackendExperiment)) {
+    return kSimpleShaderCacheExperimentWiped;
+  }
+  return 0;
+}
+
 void LogMessageFailedUpgradeFromVersion(int version) {
   LOG(ERROR) << "Failed to upgrade Simple Cache from version: " << version;
 }
 
 bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
-                        const base::FilePath& file_name) {
+                        const base::FilePath& file_name,
+                        uint32_t experiment_value) {
   std::unique_ptr<disk_cache::CacheFile> file = file_operations->OpenFile(
       file_name, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!file->IsValid()) {
@@ -45,7 +62,7 @@ bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
   disk_cache::FakeIndexData file_contents;
   file_contents.initial_magic_number = disk_cache::kSimpleInitialMagicNumber;
   file_contents.version = disk_cache::kSimpleVersion;
-  file_contents.zero = 0;
+  file_contents.experiment_type = experiment_value;
   file_contents.zero2 = 0;
   file_contents.encryption_status = file_operations->IsEncrypted() ? 1 : 0;
 
@@ -86,7 +103,8 @@ FakeIndexData::FakeIndexData() {
 //    (entry cache file nor sparse entry file) on Version 9.
 SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     BackendFileOperations* file_operations,
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    net::CacheType cache_type) {
   // There is a convention among disk cache backends: looking at the magic in
   // the file "index" it should be sufficient to determine if the cache belongs
   // to the currently running backend. The Simple Backend stores its index in
@@ -99,10 +117,12 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   const base::FilePath fake_index = path.AppendASCII(kFakeIndexFileName);
   std::unique_ptr<CacheFile> fake_index_file = file_operations->OpenFile(
       fake_index, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  const uint32_t expected_experiment = GetExpectedExperimentValue(cache_type);
 
   if (!fake_index_file->IsValid()) {
     if (fake_index_file->error_details() == base::File::FILE_ERROR_NOT_FOUND) {
-      if (!WriteFakeIndexFile(file_operations, fake_index)) {
+      if (!WriteFakeIndexFile(file_operations, fake_index,
+                              expected_experiment)) {
         file_operations->DeleteFile(fake_index);
         LOG(ERROR) << "Failed to write a new fake index.";
         return SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed;
@@ -135,7 +155,8 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     return SimpleCacheConsistencyResult::kVersionFromTheFuture;
   }
 
-  if (file_header.zero != 0 && file_header.zero2 != 0) {
+  if (file_header.experiment_type != expected_experiment ||
+      file_header.zero2 != 0) {
     LOG(WARNING) << "Rebuilding cache due to experiment change";
     return SimpleCacheConsistencyResult::kBadZeroCheck;
   }
@@ -162,7 +183,8 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     return SimpleCacheConsistencyResult::kOKNoUpgrade;
 
   const base::FilePath temp_fake_index = path.AppendASCII("upgrade-index");
-  if (!WriteFakeIndexFile(file_operations, temp_fake_index)) {
+  if (!WriteFakeIndexFile(file_operations, temp_fake_index,
+                          expected_experiment)) {
     file_operations->DeleteFile(temp_fake_index);
     LOG(ERROR) << "Failed to write a new fake index.";
     LogMessageFailedUpgradeFromVersion(file_header.version);

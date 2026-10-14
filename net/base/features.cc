@@ -1084,5 +1084,21 @@ BASE_FEATURE_PARAM(int,
                    &kQuicSocketSendBufferSize,
                    -1);
 
+BASE_FEATURE(kShaderDiskCacheBackendExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<DiskCacheBackend>::Option
+    kShaderDiskCacheBackendTypeOptions[] = {
+        {DiskCacheBackend::kDefault, "default"},
+        {DiskCacheBackend::kSimple, "simple"},
+};
+
+BASE_FEATURE_ENUM_PARAM(DiskCacheBackend,
+                        kShaderDiskCacheBackendType,
+                        &kShaderDiskCacheBackendExperiment,
+                        "type",
+                        DiskCacheBackend::kSimple,
+                        &kShaderDiskCacheBackendTypeOptions);
+
 }  // namespace net::features
 

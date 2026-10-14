@@ -36,7 +36,7 @@ bool WriteFakeIndexFileV8(const base::FilePath& cache_path) {
   disk_cache::FakeIndexData data;
   data.version = 8;
   data.initial_magic_number = kSimpleInitialMagicNumber;
-  data.zero = 0;
+  data.experiment_type = 0;
   data.zero2 = 0;
   const base::FilePath file_name = cache_path.AppendASCII("index");
   return base::WriteFile(file_name, base::byte_span_from_ref(data));
@@ -48,7 +48,7 @@ bool WriteFakeIndexFile(const base::FilePath& cache_path,
   disk_cache::FakeIndexData data;
   data.version = version;
   data.initial_magic_number = kSimpleInitialMagicNumber;
-  data.zero = 0;
+  data.experiment_type = 0;
   data.zero2 = 0;
   data.encryption_status = encryption_status;
   const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
@@ -76,7 +76,7 @@ TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
   disk_cache::FakeIndexData data;
   data.version = 100500;
   data.initial_magic_number = kSimpleInitialMagicNumber;
-  data.zero = 0;
+  data.experiment_type = 0;
   data.zero2 = 0;
   const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
   ASSERT_TRUE(base::WriteFile(file_name, base::byte_span_from_ref(data)));
@@ -94,7 +94,7 @@ TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
   disk_cache::FakeIndexData data;
   data.version = disk_cache::kSimpleVersion;
   data.initial_magic_number = kSimpleInitialMagicNumber;
-  data.zero = 2;
+  data.experiment_type = 2;
   data.zero2 = 4;
   const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
   ASSERT_TRUE(base::WriteFile(file_name, base::byte_span_from_ref(data)));

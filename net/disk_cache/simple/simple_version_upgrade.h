@@ -75,7 +75,8 @@ inline bool IsOK(SimpleCacheConsistencyResult result) {
 // left to do other than dropping the whole cache directory.
 NET_EXPORT_PRIVATE SimpleCacheConsistencyResult
 UpgradeSimpleCacheOnDisk(BackendFileOperations* file_operations,
-                         const base::FilePath& path);
+                         const base::FilePath& path,
+                         net::CacheType cache_type = net::DISK_CACHE);
 
 // Check if the cache structure at the given path is empty except for index
 // files.  If so, then delete the index files.  Returns true if any files
@@ -92,9 +93,11 @@ struct NET_EXPORT_PRIVATE FakeIndexData {
   // Must be equal kSimpleVersion when the cache backend is instantiated.
   uint32_t version = 0;
 
-  // These must be zero. The first was used for experiment type (With a max
-  // valid value of 2), and the second was used for an experiment parameter.
-  uint32_t zero = 0;
+  // `experiment_type` is used for experiment type. Completed experiments used
+  // values up to 2. The only active experiment is
+  // `kShaderDiskCacheBackendExperiment` (for `net::SHADER_CACHE`), which uses
+  // value 3. `zero2` was used for an experiment parameter and must be 0.
+  uint32_t experiment_type = 0;
   uint32_t zero2 = 0;
 
   // Whether cache entries are stored encrypted on disk.

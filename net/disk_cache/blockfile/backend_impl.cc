@@ -42,6 +42,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/disk_format.h"
@@ -111,10 +112,26 @@ size_t GetIndexSize(int table_len) {
 
 // Sets group for the current experiment. Returns false if the files should be
 // discarded.
-bool InitExperiment(disk_cache::IndexHeader* header, bool cache_created) {
+bool InitExperiment(disk_cache::IndexHeader* header,
+                    bool cache_created,
+                    net::CacheType cache_type) {
+  // Shader cache experiment.
+  if (cache_type == net::SHADER_CACHE &&
+      base::FeatureList::IsEnabled(
+          net::features::kShaderDiskCacheBackendExperiment)) {
+    if (cache_created) {
+      header->experiment = disk_cache::EXPERIMENT_SHADER_CACHE_BACKEND_WIPED;
+      return true;
+    }
+    return header->experiment ==
+           disk_cache::EXPERIMENT_SHADER_CACHE_BACKEND_WIPED;
+  }
+
+  // No active experiment: Discard the cache if it is associated with an
+  // experiment.
   if (header->experiment == disk_cache::EXPERIMENT_OLD_FILE1 ||
-      header->experiment == disk_cache::EXPERIMENT_OLD_FILE2) {
-    // Discard current cache.
+      header->experiment == disk_cache::EXPERIMENT_OLD_FILE2 ||
+      header->experiment == disk_cache::EXPERIMENT_SHADER_CACHE_BACKEND_WIPED) {
     return false;
   }
 
@@ -256,7 +273,8 @@ int BackendImpl::SyncInit() {
   init_ = true;
 
   if (data_->header.experiment != NO_EXPERIMENT &&
-      GetCacheType() != net::DISK_CACHE) {
+      GetCacheType() != net::DISK_CACHE &&
+      GetCacheType() != net::SHADER_CACHE) {
     // No experiment for other caches.
     return net::ERR_FAILED;
   }
@@ -291,8 +309,10 @@ int BackendImpl::SyncInit() {
   if (!restarted_ && (create_files || !data_->header.num_entries))
     ReportError(ERR_CACHE_CREATED);
 
-  if (!(user_flags_ & kNoRandom) && GetCacheType() == net::DISK_CACHE &&
-      !InitExperiment(&data_->header, create_files)) {
+  if (!(user_flags_ & kNoRandom) &&
+      (GetCacheType() == net::DISK_CACHE ||
+       GetCacheType() == net::SHADER_CACHE) &&
+      !InitExperiment(&data_->header, create_files, GetCacheType())) {
     return net::ERR_FAILED;
   }
 

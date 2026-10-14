@@ -20,6 +20,7 @@ enum {
   // There is no EXPERIMENT_SIMPLE_YES since this enum is used in the standard
   // backend only.
   EXPERIMENT_SIMPLE_CONTROL = 15,
+  EXPERIMENT_SHADER_CACHE_BACKEND_WIPED = 16,
 };
 
 }  // namespace disk_cache
