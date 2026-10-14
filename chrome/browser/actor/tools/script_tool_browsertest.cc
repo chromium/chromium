@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
@@ -964,9 +965,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DefaultVoting) {
   ExpectOkResult(result);
 
   const TabObservationStrategy& strategy = result.GetStrategy();
-  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+  EXPECT_EQ(strategy.GetScreenshotPolicy(
+                ActorSurfaceHandle::From(active_tab()->GetHandle())),
             ScreenshotPolicy::kRequested);
-  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(
+                ActorSurfaceHandle::From(active_tab()->GetHandle())),
             PageContentExtractionPolicy::kRequired);
 }
 
@@ -995,9 +998,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
   ExpectOkResult(result);
 
   const TabObservationStrategy& strategy = result.GetStrategy();
-  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+  EXPECT_EQ(strategy.GetScreenshotPolicy(
+                ActorSurfaceHandle::From(active_tab()->GetHandle())),
             ScreenshotPolicy::kSkipped);
-  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(
+                ActorSurfaceHandle::From(active_tab()->GetHandle())),
             PageContentExtractionPolicy::kSkipped);
 }
 

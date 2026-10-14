@@ -121,7 +121,6 @@ using origin_gating::CustomPredicate;
 using origin_gating::DecisionSource;
 using origin_gating::GateableEvent;
 using origin_gating::GateableEventSet;
-using tabs::TabInterface;
 
 namespace actor {
 
@@ -1618,10 +1617,13 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
   // critical action under the correct pre-navigation page context.
   pre_invoke_navigation_id_ = 0;
   const ToolRequest& current_action = GetInProgressAction();
-  tabs::TabInterface* tab = current_action.GetTabForValidation().Get();
-  if (tab && tab->GetContents() && tab->GetContents()->GetPrimaryMainFrame()) {
+  ActorSurface* actor_surface =
+      current_action.GetActorSurfaceForValidation().Get();
+  content::WebContents* contents =
+      actor_surface ? actor_surface->GetWebContents() : nullptr;
+  if (contents && contents->GetPrimaryMainFrame()) {
     pre_invoke_navigation_id_ =
-        tab->GetContents()->GetPrimaryMainFrame()->GetNavigationId();
+        contents->GetPrimaryMainFrame()->GetNavigationId();
   }
 
   SetState(State::kToolInvoke);
@@ -1682,12 +1684,14 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
                     end_time - *result->execution_end_time);
 
-  if (GetInProgressAction().GetTabForValidation() != tabs::TabHandle::Null()) {
+  if (ActorSurfaceHandle actor_surface_handle =
+          GetInProgressAction().GetActorSurfaceForValidation();
+      !actor_surface_handle.is_null()) {
     observation_strategy_.VoteForScreenshot(
-        GetInProgressAction().GetTabForValidation(),
+        actor_surface_handle,
         static_cast<ScreenshotPolicy>(result->screenshot_policy));
     observation_strategy_.VoteForPageContentExtraction(
-        GetInProgressAction().GetTabForValidation(),
+        actor_surface_handle,
         static_cast<PageContentExtractionPolicy>(result->page_content_policy));
   }
 

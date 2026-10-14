@@ -21,20 +21,21 @@ TabObservationStrategy& TabObservationStrategy::operator=(
 
 TabObservationStrategy::~TabObservationStrategy() = default;
 
-void TabObservationStrategy::VoteForScreenshot(tabs::TabHandle tab,
-                                               ScreenshotPolicy policy) {
+void TabObservationStrategy::VoteForScreenshot(
+    ActorSurfaceHandle actor_surface_handle,
+    ScreenshotPolicy policy) {
   CHECK(!locked_);
-  auto [it, inserted] = screenshot_votes_.emplace(tab, policy);
+  auto [it, inserted] = screenshot_votes_.emplace(actor_surface_handle, policy);
   if (!inserted) {
     it->second = std::max(it->second, policy);
   }
 }
 
 void TabObservationStrategy::VoteForPageContentExtraction(
-    tabs::TabHandle tab,
+    ActorSurfaceHandle actor_surface_handle,
     PageContentExtractionPolicy policy) {
   CHECK(!locked_);
-  auto [it, inserted] = extraction_votes_.emplace(tab, policy);
+  auto [it, inserted] = extraction_votes_.emplace(actor_surface_handle, policy);
   if (!inserted) {
     it->second = std::max(it->second, policy);
   }
@@ -45,9 +46,9 @@ void TabObservationStrategy::Lock() {
 }
 
 ScreenshotPolicy TabObservationStrategy::GetScreenshotPolicy(
-    tabs::TabHandle tab) const {
+    ActorSurfaceHandle actor_surface_handle) const {
   CHECK(locked_);
-  auto it = screenshot_votes_.find(tab);
+  auto it = screenshot_votes_.find(actor_surface_handle);
   if (it != screenshot_votes_.end()) {
     return it->second;
   }
@@ -56,9 +57,9 @@ ScreenshotPolicy TabObservationStrategy::GetScreenshotPolicy(
 
 PageContentExtractionPolicy
 TabObservationStrategy::GetPageContentExtractionPolicy(
-    tabs::TabHandle tab) const {
+    ActorSurfaceHandle actor_surface_handle) const {
   CHECK(locked_);
-  auto it = extraction_votes_.find(tab);
+  auto it = extraction_votes_.find(actor_surface_handle);
   if (it != extraction_votes_.end()) {
     return it->second;
   }

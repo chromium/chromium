@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -537,7 +538,10 @@ ActorTask* TabObservationController::GetActorTask() const {
 
 bool TabObservationController::ShouldTakeScreenshot(
     tabs::TabHandle tab_handle) const {
-  switch (observation_strategy_.GetScreenshotPolicy(tab_handle)) {
+  // Callers only pass live tabs, so From() resolves to the tab's surface.
+  // TODO(b/567721071): Pass the surface once observations iterate surfaces.
+  switch (observation_strategy_.GetScreenshotPolicy(
+      ActorSurfaceHandle::From(tab_handle))) {
     case ScreenshotPolicy::kSkipped:
       return false;
     case ScreenshotPolicy::kRequested:
@@ -550,7 +554,10 @@ bool TabObservationController::ShouldTakeScreenshot(
 
 bool TabObservationController::ShouldExtractPageContent(
     tabs::TabHandle tab_handle) const {
-  switch (observation_strategy_.GetPageContentExtractionPolicy(tab_handle)) {
+  // Callers only pass live tabs, so From() resolves to the tab's surface.
+  // TODO(b/567721071): Pass the surface once observations iterate surfaces.
+  switch (observation_strategy_.GetPageContentExtractionPolicy(
+      ActorSurfaceHandle::From(tab_handle))) {
     case PageContentExtractionPolicy::kSkipped:
       return false;
     case PageContentExtractionPolicy::kRequested:

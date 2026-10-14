@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -211,9 +212,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kSkipped);
   strategy.VoteForPageContentExtraction(
-      tab->GetHandle(), PageContentExtractionPolicy::kRequested);
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kRequested);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -247,9 +250,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kRequested);
-  strategy.VoteForPageContentExtraction(tab->GetHandle(),
-                                        PageContentExtractionPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kRequested);
+  strategy.VoteForPageContentExtraction(
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kSkipped);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -283,9 +288,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
-  strategy.VoteForPageContentExtraction(tab->GetHandle(),
-                                        PageContentExtractionPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kSkipped);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -319,9 +326,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kRequested);
-  strategy.VoteForPageContentExtraction(tab->GetHandle(),
-                                        PageContentExtractionPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kRequested);
+  strategy.VoteForPageContentExtraction(
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kSkipped);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -371,9 +380,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kSkipped);
   strategy.VoteForPageContentExtraction(
-      tab->GetHandle(), PageContentExtractionPolicy::kRequested);
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kRequested);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -426,9 +437,11 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   TabObservationStrategy strategy;
-  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
-  strategy.VoteForPageContentExtraction(tab->GetHandle(),
-                                        PageContentExtractionPolicy::kSkipped);
+  strategy.VoteForScreenshot(ActorSurfaceHandle::From(tab->GetHandle()),
+                             ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(
+      ActorSurfaceHandle::From(tab->GetHandle()),
+      PageContentExtractionPolicy::kSkipped);
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
