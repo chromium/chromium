@@ -726,6 +726,12 @@ inline constexpr char kEditPasswordsInSettingsName[] =
 inline constexpr char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
+inline constexpr char kEnableAccountPreviewPreferredAccountFREName[] =
+    "Enable Account Preview Preferred Account in FRE";
+inline constexpr char kEnableAccountPreviewPreferredAccountFREDescription[] =
+    "Controls whether preferred account preview is enabled in the First "
+    "Run Experience (FRE).";
+
 inline constexpr char kEnableAccountPreviewPreferredAccountFollowupName[] =
     "Enable Account Preview Preferred Account Followup";
 inline constexpr char

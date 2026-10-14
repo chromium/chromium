@@ -11755,6 +11755,8 @@ from previous Chrome versions.
   <int value="-980260396" label="ShopCardImpressionLimits:disabled"/>
   <int value="-980202554" label="BluetoothRfcommAndroid:disabled"/>
   <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>
+  <int value="-979998869"
+      label="EnableAccountPreviewPreferredAccountFRE:disabled"/>
   <int value="-979438173" label="EcheSWAMeasureLatency:disabled"/>
   <int value="-979313250" label="enable-google-branded-context-menu"/>
   <int value="-979057409" label="enable-seccomp-filter-sandbox"/>
@@ -17218,6 +17220,8 @@ from previous Chrome versions.
   <int value="684690779" label="VideoEncodeUseMappableSI:disabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
+  <int value="685496739"
+      label="EnableAccountPreviewPreferredAccountFRE:enabled"/>
   <int value="685571935"
       label="FencedFramesCrossOriginAutomaticBeacons:disabled"/>
   <int value="685861269" label="CSSGridLanesLayout:enabled"/>

@@ -3439,6 +3439,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-account-preview-preferred-account-fre",
+    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "enable-account-preview-switching-account",
     "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160

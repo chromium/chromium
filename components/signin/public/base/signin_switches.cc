@@ -424,6 +424,11 @@ BASE_FEATURE_PARAM(
 BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnableAccountPreviewPreferredAccountFRE,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Controls whether storing and exposing the preferred account for switching is
 // enabled. This flag has no effect if `kEnableAccountPreviewData` is not
 // enabled.

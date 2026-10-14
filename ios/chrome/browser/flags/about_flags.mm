@@ -2961,6 +2961,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillEnableOAuth2TokenFixDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOAuth2TokenFix)},
+    {"enable-account-preview-preferred-account-fre",
+     flag_descriptions::kEnableAccountPreviewPreferredAccountFREName,
+     flag_descriptions::kEnableAccountPreviewPreferredAccountFREDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewPreferredAccountFRE)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

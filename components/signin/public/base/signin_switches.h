@@ -369,6 +369,13 @@ BASE_DECLARE_FEATURE_PARAM(
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup);
 
+#if BUILDFLAG(IS_IOS)
+// Controls whether preferred account selection is enabled in the First Run
+// Experience (FRE).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFRE);
+#endif
+
 // Controls whether storing and exposing the preferred account for switching is
 // enabled. This flag has no effect if `kEnableAccountPreviewData` is not
 // enabled.
