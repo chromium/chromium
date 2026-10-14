@@ -211,7 +211,9 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
     return;
   }
 
-  CHECK(IsLastVisibleWebContents(web_contents()), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572186162): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLastVisibleWebContents(web_contents()));
   if (near_oom_detected_time_) {
     ResetInterventionState();
   }
