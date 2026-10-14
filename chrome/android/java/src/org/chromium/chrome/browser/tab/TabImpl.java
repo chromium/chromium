@@ -511,82 +511,96 @@ class TabImpl implements Tab, TabInternal {
         unregisterAndClearDetachedNativePageFreezeListener();
 
         if (window != null) {
-            // Firstly updating the delegates as the fullscreen state is now checked by the delegate
-            if (tabDelegateFactory != null) setDelegateFactory(tabDelegateFactory);
-
-            // Updating window as the WebContentsDelegate is now set and delegate can validate the
-            // full screen state.
-            updateWindowAndroid(window);
-
-            // Reload the NativePage (if any), since the old NativePage has a reference to the old
-            // activity. If hidden, detach its view and freeze the native page to avoid eager
-            // instantiation of background native pages. Unfrozen PDF pages are exempted from
-            // freezing because freezing destroys the PdfPage and removes the
-            // ChromePdfViewerFragment from FragmentManager, losing unsaved annotations. Instead,
-            // reloading via maybeShowNativePage() allows the new PdfCoordinator to reclaim the
-            // restored fragment by tag and relocate misplaced fragment views before destroying
-            // the old page. Already-frozen PDF pages remain frozen.
-            if (isNativePage()) {
-                if (isHidden() && (!mNativePage.isPdf() || mNativePage.isFrozen())) {
-                    detachAndFreezeNativePage();
-                } else {
-                    detachNativePageView();
-                    maybeShowNativePage(
-                            getUrl().getSpec(),
-                            /* forceReload= */ true,
-                            PdfUtils.getPdfInfo(getNativePage()));
-                }
-            }
+            attachToWindow(window, tabDelegateFactory);
         } else {
-            updateIsDetachedFromActivity(window);
-            if (isNativePage() && !mNativePage.isFrozen()) {
-                Activity activity = getActivity(mWindowAndroid);
-                if (ChromeFeatureList.sDeferDetachedNativePageFreeze.isEnabled()
-                        && activity != null
-                        && ApplicationStatus.isInitialized()
-                        && ApplicationStatus.getStateForActivity(activity) < ActivityState.STOPPED
-                        && !isHidden()) {
-                    // Defer freezing the NativePage until the old Activity is stopped. This
-                    // prevents visual glitches (e.g. blank NTP or misdrawn ToolbarPhone) while the
-                    // old Activity is still visible before being torn down or paused.
-                    mDetachedNativePageFreezeListener =
-                            (listenerActivity, newState) -> {
-                                if (newState >= ActivityState.STOPPED) {
-                                    unregisterAndClearDetachedNativePageFreezeListener();
-                                    if (mIsDestroyed) return;
-                                    if (mIsDetachedFromActivity
-                                            && isNativePage()
-                                            && !mNativePage.isFrozen()) {
-                                        freezeDetachedNativePage();
-                                    }
-                                }
-                            };
-                    ApplicationStatus.registerStateListenerForActivity(
-                            mDetachedNativePageFreezeListener, activity);
-                } else {
-                    freezeDetachedNativePage();
-                }
-            }
-
-            // Clear the current tab supplier during detachment/reparenting to indicate that the
-            // tab is not held by another tab model. For unclear reasons, removeTab() doesn't
-            // always get invoked on the previous tab model before the tab is attached to the new
-            // tab model (at least in tests).
-            clearCurrentTabSupplier(DetachReason.INSERT_INTO_OTHER_WINDOW);
+            detachFromWindow();
         }
 
-        // Notify the event to observers only when we do the reparenting task, not when we simply
-        // switch window in which case a new window is non-null but delegate is null.
-        boolean notify =
-                (window != null && tabDelegateFactory != null)
-                        || (window == null && tabDelegateFactory == null);
-        if (notify) {
+        updateInteractableState();
+    }
+
+    private void attachToWindow(
+            WindowAndroid window, @Nullable TabDelegateFactory tabDelegateFactory) {
+        // Set delegates before updateWindowAndroid() so the new WebContentsDelegate can validate
+        // fullscreen state when the window changes.
+        if (tabDelegateFactory != null) {
+            setDelegateFactory(tabDelegateFactory);
+        }
+
+        updateWindowAndroid(window);
+
+        // Reload or freeze the NativePage (if any), since the old NativePage holds a reference to
+        // the old Activity. If hidden, detach its view and freeze the native page to avoid eager
+        // instantiation of background native pages. Unfrozen PDF pages are exempted from freezing
+        // because freezing destroys the PdfPage and removes the ChromePdfViewerFragment from
+        // FragmentManager, losing unsaved annotations. Instead, reloading via
+        // maybeShowNativePage() allows the new PdfCoordinator to reclaim the restored fragment by
+        // tag and relocate misplaced fragment views before destroying the old page. Already-frozen
+        // PDF pages remain frozen.
+        if (isNativePage()) {
+            if (isHidden() && (!mNativePage.isPdf() || mNativePage.isFrozen())) {
+                detachAndFreezeNativePage();
+            } else {
+                detachNativePageView();
+                maybeShowNativePage(
+                        getUrl().getSpec(),
+                        /* forceReload= */ true,
+                        PdfUtils.getPdfInfo(getNativePage()));
+            }
+        }
+
+        // Notify observers only on a full re-attachment (reparenting), not on a window-only swap
+        // where tabDelegateFactory is null.
+        if (tabDelegateFactory != null) {
             for (TabObserver observer : mObservers) {
                 observer.onActivityAttachmentChanged(this, window);
             }
         }
+    }
 
-        updateInteractableState();
+    private void detachFromWindow() {
+        // Intentionally do NOT call updateWindowAndroid(null): mWindowAndroid is preserved while
+        // detached so callers of getWindowAndroid() do not crash with NullPointerException, while
+        // callers (e.g. ReparentingTask#detach()) clear webContents.setTopLevelNativeWindow(null).
+        updateIsDetachedFromActivity(/* window= */ null);
+        if (isNativePage() && !mNativePage.isFrozen()) {
+            Activity activity = getActivity(mWindowAndroid);
+            if (ChromeFeatureList.sDeferDetachedNativePageFreeze.isEnabled()
+                    && activity != null
+                    && ApplicationStatus.isInitialized()
+                    && ApplicationStatus.getStateForActivity(activity) < ActivityState.STOPPED
+                    && !isHidden()) {
+                // Defer freezing the NativePage until the old Activity is stopped. This prevents
+                // visual glitches (e.g. blank NTP or misdrawn ToolbarPhone) while the old Activity
+                // is still visible before being torn down or paused.
+                mDetachedNativePageFreezeListener =
+                        (listenerActivity, newState) -> {
+                            if (newState >= ActivityState.STOPPED) {
+                                unregisterAndClearDetachedNativePageFreezeListener();
+                                if (mIsDestroyed) return;
+                                if (mIsDetachedFromActivity
+                                        && isNativePage()
+                                        && !mNativePage.isFrozen()) {
+                                    freezeDetachedNativePage();
+                                }
+                            }
+                        };
+                ApplicationStatus.registerStateListenerForActivity(
+                        mDetachedNativePageFreezeListener, activity);
+            } else {
+                freezeDetachedNativePage();
+            }
+        }
+
+        // Clear the current tab supplier during detachment/reparenting to indicate that the
+        // tab is not held by another tab model. For unclear reasons, removeTab() doesn't
+        // always get invoked on the previous tab model before the tab is attached to the new
+        // tab model (at least in tests).
+        clearCurrentTabSupplier(DetachReason.INSERT_INTO_OTHER_WINDOW);
+
+        for (TabObserver observer : mObservers) {
+            observer.onActivityAttachmentChanged(this, /* window= */ null);
+        }
     }
 
     private void freezeDetachedNativePage() {
@@ -1493,23 +1507,7 @@ class TabImpl implements Tab, TabInternal {
 
             TraceEvent.begin("Tab.show");
             if (!isHidden()) {
-                var wc = getWebContents();
-                if (wc == null) {
-                    Log.i(TAG, "TabImpl.show early return: WebContents is null.");
-                } else {
-                    Log.i(
-                            TAG,
-                            "TabImpl.show early return: WebContents visibility=%d",
-                            wc.getVisibility());
-                }
-
-                if (maybeUnfreezeNativePage()) {
-                    // Native page was unfrozen.
-                    Log.i(TAG, "show: Tab was not hidden, but native page needed to be unfrozen.");
-                } else if (isFrozen() || needsReload()) {
-                    loadIfNeeded(/* forceBackingSize= */ false);
-                    Log.i(TAG, "show: Tab was not hidden, but loadIfNeeded() had to be called.");
-                }
+                handleShowWhenAlreadyVisible();
                 return;
             }
 
@@ -1560,6 +1558,23 @@ class TabImpl implements Tab, TabInternal {
             setTimestampMillis(System.currentTimeMillis());
         } finally {
             TraceEvent.end("Tab.show");
+        }
+    }
+
+    private void handleShowWhenAlreadyVisible() {
+        var wc = getWebContents();
+        if (wc == null) {
+            Log.i(TAG, "TabImpl.show early return: WebContents is null.");
+        } else {
+            Log.i(TAG, "TabImpl.show early return: WebContents visibility=%d", wc.getVisibility());
+        }
+
+        if (maybeUnfreezeNativePage()) {
+            // Native page was unfrozen.
+            Log.i(TAG, "show: Tab was not hidden, but native page needed to be unfrozen.");
+        } else if (isFrozen() || needsReload()) {
+            loadIfNeeded(/* forceBackingSize= */ false);
+            Log.i(TAG, "show: Tab was not hidden, but loadIfNeeded() had to be called.");
         }
     }
 
