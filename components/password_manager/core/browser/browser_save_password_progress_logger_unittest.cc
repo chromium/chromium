@@ -92,6 +92,12 @@ TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormData) {
   logger.LogFormData(Logger::STRING_FORM_PARSING_INPUT, form_);
   SCOPED_TRACE(testing::Message()
                << "Log string = [" << logger.accumulated_log() << "]");
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Signature of form: 3370253896397449141 - 503"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Alternative signature of form: 17762915768143057786 - 169"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Structural signature of form: 6439815544192158303 - 599"));
   EXPECT_TRUE(logger.LogsContainSubstring("Origin: http://myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Action: http://m.myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form name: form_name"));
@@ -120,6 +126,10 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
   EXPECT_TRUE(logger.LogsContainSubstring("Server predictions:"));
   EXPECT_TRUE(logger.LogsContainSubstring(
       "Signature of form: 3370253896397449141 - 503"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Alternative signature of form: 17762915768143057786 - 169"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Structural signature of form: 6439815544192158303 - 599"));
   EXPECT_TRUE(logger.LogsContainSubstring("Origin: http://myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Action: http://m.myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form fields:"));
@@ -143,6 +153,10 @@ TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormDataWithModelPredictions) {
   EXPECT_TRUE(logger.LogsContainSubstring("Model predictions:"));
   EXPECT_TRUE(logger.LogsContainSubstring(
       "Signature of form: 3370253896397449141 - 503"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Alternative signature of form: 17762915768143057786 - 169"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Structural signature of form: 6439815544192158303 - 599"));
   EXPECT_TRUE(logger.LogsContainSubstring("Origin: http://myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Action: http://m.myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form fields:"));
@@ -151,6 +165,23 @@ TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormDataWithModelPredictions) {
       "visible, empty, autocomplete=new-password, Model Type= NEW_PASSWORD"));
   EXPECT_TRUE(logger.LogsContainSubstring(
       "email: signature=420638584, type=text, renderer_id=42"));
+}
+
+TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormStructure) {
+  StubLogManager log_manager;
+  TestLogger logger(&log_manager);
+  autofill::FormStructure form_structure(form_);
+  logger.LogFormStructure(Logger::STRING_PASSWORD_FORM_VOTE, form_structure,
+                          autofill::EncodeUploadRequestOptions(), std::nullopt);
+
+  SCOPED_TRACE(testing::Message()
+               << "Log string = [" << logger.accumulated_log() << "]");
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Signature of form: 3370253896397449141 - 503"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Alternative signature of form: 17762915768143057786 - 169"));
+  EXPECT_TRUE(logger.LogsContainSubstring(
+      "Structural signature of form: 6439815544192158303 - 599"));
 }
 
 TEST(SavePasswordProgressLoggerTest, LogPasswordForm) {
