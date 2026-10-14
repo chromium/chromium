@@ -17,8 +17,8 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
+#include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
-#include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -161,9 +161,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when Toggle is called on the instance.
   void OnToggle(glic::mojom::InvocationSource source,
                 const EmbedderKey& embedder_key,
-                bool is_showing,
-                std::unique_ptr<GlicWindowInvocationTracker>
-                    invocation_tracker = nullptr);
+                bool is_showing);
 
   // Sets `initial_invocation_source_` if it has not been set yet.
   void MaybeSetInitialInvocationSource(mojom::InvocationSource source);

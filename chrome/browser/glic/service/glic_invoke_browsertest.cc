@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
+#include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -1056,6 +1057,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
 
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.TopChromeButton",
                                       GlicInvokeError::kPanelClosed, 1);
+  // CUI 1 is resolved from the invocation, so it says the same thing.
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CUI.WindowEntryPointInvocation.Outcome", GlicCuiOutcome::kAbandoned,
+      1);
 }
 
 // Show-only invocations from other entry points are abandoned the same way

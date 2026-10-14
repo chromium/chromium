@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
@@ -237,11 +238,13 @@ class GlicInstanceCoordinatorImpl
   // `entry_path` says which public entry point this came from. It is
   // recorded on the invocation's structured metrics, and the toggle path
   // skips the check for a conflicting in-progress client invoke.
+  // `cui_tracker`, if any, is resolved with the invocation's outcome.
   base::WeakPtr<GlicInstanceImpl> InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options,
-      GlicInvokeEntryPath entry_path);
+      GlicInvokeEntryPath entry_path,
+      std::unique_ptr<GlicCuiTracker> cui_tracker = nullptr);
 
   void OnTabEvent(const GlicTabEvent& event);
   // Returns a pointer to an instance with the given conversation id or nullptr

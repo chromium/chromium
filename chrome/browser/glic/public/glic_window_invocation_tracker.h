@@ -5,11 +5,19 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_WINDOW_INVOCATION_TRACKER_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_WINDOW_INVOCATION_TRACKER_H_
 
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 
 namespace glic {
 
+// CUI 1: a window entry point (toolbar or tab strip button, OS hotkey or
+// icon, 3-dot menu, ...) opening the panel. Records
+// Glic.CUI.WindowEntryPointInvocation.*.
+//
+// Created by GlicInstanceCoordinatorImpl::Show() and handed to the
+// invocation's GlicInvokeMetrics, which resolves it with the invocation's
+// outcome (see GlicInvokeMetrics::SetCuiTracker()). It therefore agrees with
+// the structured InvokeTerminated event by construction, rather than
+// inferring an outcome from instance events.
 class GlicWindowInvocationTracker : public GlicCuiTracker {
  public:
   GlicWindowInvocationTracker();
@@ -18,10 +26,6 @@ class GlicWindowInvocationTracker : public GlicCuiTracker {
   GlicWindowInvocationTracker(const GlicWindowInvocationTracker&) = delete;
   GlicWindowInvocationTracker& operator=(const GlicWindowInvocationTracker&) =
       delete;
-
- protected:
-  std::optional<GlicCuiOutcome> GetEventOutcome(
-      GlicInstanceEvent event) const override;
 };
 
 }  // namespace glic

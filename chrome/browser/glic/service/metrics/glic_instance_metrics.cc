@@ -860,14 +860,9 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   }
 }
 
-void GlicInstanceMetrics::OnToggle(
-    glic::mojom::InvocationSource source,
-    const EmbedderKey& embedder_key,
-    bool is_showing,
-    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
-  if (invocation_tracker) {
-    cui_trackers_.push_back(std::move(invocation_tracker));
-  }
+void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
+                                   const EmbedderKey& embedder_key,
+                                   bool is_showing) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingEmbedderKey>(embedder_key)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.ToggleSource", source);

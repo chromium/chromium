@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,6 +15,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_cui_tracker.h"
+#include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -396,6 +399,67 @@ TEST(GlicInvokeMetricsTest, ClientLoadErrorIsFailed) {
 }
 
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+
+// The CUI tracker handed to the metrics resolves with the invocation's
+// outcome, so Glic.CUI.WindowEntryPointInvocation.Outcome always agrees with
+// InvokeTerminated.Outcome.
+class GlicInvokeMetricsCuiTrackerTest : public testing::Test {
+ protected:
+  static constexpr char kOutcome[] =
+      "Glic.CUI.WindowEntryPointInvocation.Outcome";
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(GlicInvokeMetricsCuiTrackerTest, SuccessResolvesSuccess) {
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.SetCuiTracker(std::make_unique<GlicWindowInvocationTracker>());
+  metrics.RecordStarted();
+  metrics.RecordSuccess();
+  histogram_tester_.ExpectUniqueSample(kOutcome, GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.CUI.WindowEntryPointInvocation.Latency.Success", 1);
+}
+
+TEST_F(GlicInvokeMetricsCuiTrackerTest, ErrorsResolveTheMappedOutcome) {
+  const struct {
+    GlicInvokeError error;
+    GlicCuiOutcome outcome;
+  } kCases[] = {
+      {GlicInvokeError::kTimeout, GlicCuiOutcome::kFailedLatency},
+      {GlicInvokeError::kCancelled, GlicCuiOutcome::kUnknownCancel},
+      {GlicInvokeError::kPanelClosed, GlicCuiOutcome::kAbandoned},
+      {GlicInvokeError::kTabClosed, GlicCuiOutcome::kAbandoned},
+      {GlicInvokeError::kInstanceDestroyedBlankInstanceClosed,
+       GlicCuiOutcome::kAbandoned},
+      {GlicInvokeError::kClientLoadError, GlicCuiOutcome::kFailed},
+      {GlicInvokeError::kProfileNotEnabled, GlicCuiOutcome::kFailed},
+  };
+  for (const auto& c : kCases) {
+    SCOPED_TRACE(GlicInvokeErrorToString(c.error));
+    base::HistogramTester histogram_tester;
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+    metrics.SetCuiTracker(std::make_unique<GlicWindowInvocationTracker>());
+    metrics.RecordError(c.error);
+    histogram_tester.ExpectUniqueSample(kOutcome, c.outcome, 1);
+  }
+}
+
+// A rejected toggle (no InvokeStarted) still resolves the tracker, so it is
+// no longer counted as kUnknownCancel when the tracker is dropped.
+TEST_F(GlicInvokeMetricsCuiTrackerTest, RejectionResolvesBeforeDestruction) {
+  {
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+    metrics.SetCuiTracker(std::make_unique<GlicWindowInvocationTracker>());
+    metrics.RecordError(GlicInvokeError::kInvalidTab);
+  }
+  histogram_tester_.ExpectUniqueSample(kOutcome, GlicCuiOutcome::kFailed, 1);
+}
+
+TEST_F(GlicInvokeMetricsCuiTrackerTest, NoTrackerRecordsNothing) {
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.RecordSuccess();
+  histogram_tester_.ExpectTotalCount(kOutcome, 0);
+}
 
 }  // namespace
 }  // namespace glic

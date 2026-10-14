@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include "base/time/time.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
 namespace glic {
+
+class GlicCuiTracker;
 
 // This enum works around needing to add a kSuccess to GlicInvokeError solely
 // for metrics, which would add confusion. The `0` entry of GlicInvokeError is
@@ -50,7 +53,7 @@ enum class GlicInvokeEntryPath {
 class GlicInvokeMetrics {
  public:
   explicit GlicInvokeMetrics(mojom::InvocationSource source);
-  ~GlicInvokeMetrics() = default;
+  ~GlicInvokeMetrics();
 
   GlicInvokeMetrics(const GlicInvokeMetrics&) = delete;
   GlicInvokeMetrics& operator=(const GlicInvokeMetrics&) = delete;
@@ -75,6 +78,15 @@ class GlicInvokeMetrics {
   void SetClientLoadStateAtStart(ClientLoadState state) {
     client_load_state_at_start_ = state;
   }
+
+  // A CUI tracker to resolve with the invocation's outcome: kSuccess on
+  // RecordSuccess() (the tracker itself turns that into kFailedLatency when
+  // it took too long) and MapInvokeErrorToCuiOutcome() of the error on
+  // RecordError(). This makes the CUI histogram and the InvokeTerminated
+  // Outcome agree by construction. An unresolved tracker records
+  // kUnknownCancel when `this` is destroyed, which cannot happen for an
+  // invocation that terminated.
+  void SetCuiTracker(std::unique_ptr<GlicCuiTracker> cui_tracker);
 
   // Called when the invocation orchestrator starts execution.
   void RecordStarted() const;
@@ -114,6 +126,7 @@ class GlicInvokeMetrics {
   std::optional<EmbedderType> embedder_type_;
   std::optional<ClientLoadState> client_load_state_at_start_;
   GlicInvokeEntryPath entry_path_ = GlicInvokeEntryPath::kUnknown;
+  std::unique_ptr<GlicCuiTracker> cui_tracker_;
 };
 
 }  // namespace glic

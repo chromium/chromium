@@ -108,6 +108,13 @@ GlicInvokeMetrics::GlicInvokeMetrics(mojom::InvocationSource source)
   base::UmaHistogramEnumeration(kInvokeSourceHistogramName, source_);
 }
 
+GlicInvokeMetrics::~GlicInvokeMetrics() = default;
+
+void GlicInvokeMetrics::SetCuiTracker(
+    std::unique_ptr<GlicCuiTracker> cui_tracker) {
+  cui_tracker_ = std::move(cui_tracker);
+}
+
 void GlicInvokeMetrics::RecordStarted() const {
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
   metrics::structured::events::v2::glic::InvokeStarted event;
@@ -153,6 +160,9 @@ void GlicInvokeMetrics::RecordSuccess(
                          GetInvocationSourceString(source_)),
       duration);
 
+  if (cui_tracker_) {
+    cui_tracker_->Resolve(glic::GlicCuiOutcome::kSuccess);
+  }
   RecordTerminated(/*error=*/std::nullopt, final_task_type, duration,
                    /*in_progress_invocation_id=*/std::nullopt);
 }
@@ -190,6 +200,9 @@ void GlicInvokeMetrics::RecordErrorInternal(
     RecordTimeoutStage(stopped_task);
   }
 
+  if (cui_tracker_) {
+    cui_tracker_->Resolve(MapInvokeErrorToCuiOutcome(result));
+  }
   RecordTerminated(result, stopped_task, duration, in_progress_invocation_id);
 }
 

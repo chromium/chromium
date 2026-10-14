@@ -710,10 +710,12 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options,
-    GlicInvokeEntryPath entry_path) {
+    GlicInvokeEntryPath entry_path,
+    std::unique_ptr<GlicCuiTracker> cui_tracker) {
   auto metrics =
       std::make_unique<GlicInvokeMetrics>(options.GetInvocationSource());
   metrics->SetEntryPath(entry_path);
+  metrics->SetCuiTracker(std::move(cui_tracker));
   metrics->SetFeatureMode(
       options.feature_mode.value_or(mojom::FeatureMode::kUnspecified));
 
@@ -1293,10 +1295,11 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   }
   auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),
                                       GlicInvokeWithAutoSubmitOptions(),
-                                      GlicInvokeEntryPath::kToggle);
+                                      GlicInvokeEntryPath::kToggle,
+                                      std::move(invocation_tracker));
   if (weak_instance) {
-    weak_instance->instance_metrics().OnToggle(
-        source, key, /*is_showing=*/false, std::move(invocation_tracker));
+    weak_instance->instance_metrics().OnToggle(source, key,
+                                               /*is_showing=*/false);
   }
 }
 

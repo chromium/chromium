@@ -37,6 +37,11 @@ enum class GlicInstanceEvent;
 // power the top-level Critical User Journeys (CUJs). Examples of CUIs include
 // clicking the entry point, typing the first character, submitting a query,
 // or accepting an opt-in.
+//
+// A tracker is resolved either explicitly with Resolve(), by whoever owns the
+// outcome (e.g. GlicInvokeMetrics for the window entry point invocation), or
+// from GlicInstanceMetrics events through GetEventOutcome(). An unresolved
+// tracker records kUnknownCancel when destroyed.
 class GlicCuiTracker {
  public:
   explicit GlicCuiTracker(const char* metric_prefix);
