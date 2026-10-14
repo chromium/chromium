@@ -246,9 +246,11 @@ void ModuleMap::FetchSingleModuleScript(
       }
     }
 
-    // TODO(crbug.com/515948871): Cancel the load in case the check below
-    // returns false. For now, just count when it happens to help us understand
-    // how to release the fix.
+    // Module preload does not pass the correct parser state to the CSP check it
+    // performs. Because of this, it may bypass CSP script-src policies when
+    // strict-dynamic is enabled. To avoid a CSP bypass by a preloaded module,
+    // double check that CSP allows the script load now that we have the correct
+    // parser state. If not, abort the load.
     bool csp_allows_load =
         ExecutionContext::From(modulator_->GetScriptState())
             ->GetContentSecurityPolicy()
@@ -256,11 +258,18 @@ void ModuleMap::FetchSingleModuleScript(
                 request.Url(), request.Options().Nonce(),
                 request.Options().GetIntegrityMetadata(),
                 request.Options().ParserState(), request.Url(),
-                ResourceRequestHead::RedirectStatus::kNoRedirect,
-                ReportingDisposition::kSuppressReporting);
+                ResourceRequestHead::RedirectStatus::kNoRedirect);
     if (!csp_allows_load) {
       UseCounter::Count(ExecutionContext::From(modulator_->GetScriptState()),
                         WebFeature::kCSPModuleMapMismatch);
+      if (client) {
+        modulator_->TaskRunner()->PostTask(
+            FROM_HERE,
+            blink::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
+                            WrapPersistent(client), nullptr,
+                            request.GetModuleImportPhase()));
+      }
+      return;
     }
   }
   DCHECK(entry);
