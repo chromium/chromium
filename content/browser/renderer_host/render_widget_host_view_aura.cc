@@ -118,7 +118,6 @@
 #include <windows.h>
 
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
@@ -428,17 +427,15 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   // This will fetch and set the display features.
   ObserveDevicePosturePlatformProvider();
 
-  // We want to set input scope once after the window is created
-  // and before any focus change happens. We want to set it only
-  // once for each hwnd.
-  if (window_->GetHost() && GetInputMethod()) {
+  // Set input scope once after the window is created and before any focus
+  // change happens.
+  if (aura::WindowTreeHost* host = window_->GetHost();
+      host && GetInputMethod()) {
     InputScope input_scope = ShouldDoLearning() ? IS_DEFAULT : IS_PRIVATE;
-    aura::WindowTreeHost* host = window_->GetHost();
     InputScope last_input_scope =
         host->window()->GetProperty(kLastInputScopeKey);
     if (last_input_scope != input_scope) {
-      ui::tsf_inputscope::SetInputScope(
-          RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
+      ui::tsf_inputscope::SetInputScope(GetHostWindowHWND(), input_scope);
       host->window()->SetProperty(kLastInputScopeKey, input_scope);
     }
   }
