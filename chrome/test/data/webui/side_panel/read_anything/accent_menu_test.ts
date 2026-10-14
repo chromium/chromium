@@ -215,4 +215,152 @@ suite('AccentMenu', () => {
     assertTrue(shiftTabEvent.defaultPrevented);
     assertEquals(lastButton, accentMenu.shadowRoot.activeElement);
   });
+
+  test('sets roving tabindex on selected accent or first visible item',
+      async () => {
+        const buttons = getAccentButtons();
+        assertEquals(2, buttons.length);
+        // en-gb is index 0 (unselected), en-us is index 1 (selected).
+        assertEquals(-1, buttons[0]!.tabIndex);
+        assertEquals(0, buttons[1]!.tabIndex);
+
+        // When search filters out the selected accent, fallback to index 0.
+        getSearchField().value = 'United Kingdom';
+        await microtasksFinished();
+
+        const filteredButtons = getAccentButtons();
+        assertEquals(1, filteredButtons.length);
+        assertEquals(0, filteredButtons[0]!.tabIndex);
+      });
+
+  test('arrow keys navigate accent items and update roving tabindex', () => {
+    const buttons = getAccentButtons();
+    const enGbButton = buttons[0]!;
+    const enUsButton = buttons[1]!;
+
+    enUsButton.focus();
+    assertEquals(enUsButton, accentMenu.shadowRoot.activeElement);
+
+    const upEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    enUsButton.dispatchEvent(upEvent);
+
+    assertTrue(upEvent.defaultPrevented);
+    assertEquals(enGbButton, accentMenu.shadowRoot.activeElement);
+    assertEquals(0, enGbButton.tabIndex);
+    assertEquals(-1, enUsButton.tabIndex);
+
+    const downEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    enGbButton.dispatchEvent(downEvent);
+
+    assertTrue(downEvent.defaultPrevented);
+    assertEquals(enUsButton, accentMenu.shadowRoot.activeElement);
+    assertEquals(-1, enGbButton.tabIndex);
+    assertEquals(0, enUsButton.tabIndex);
+  });
+
+  test('arrow keys wrap around at first and last accent items', () => {
+    const buttons = getAccentButtons();
+    const enGbButton = buttons[0]!;
+    const enUsButton = buttons[1]!;
+
+    enGbButton.focus();
+    assertEquals(enGbButton, accentMenu.shadowRoot.activeElement);
+
+    // ArrowUp on first item wraps around to last item.
+    const wrapUpEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    enGbButton.dispatchEvent(wrapUpEvent);
+
+    assertTrue(wrapUpEvent.defaultPrevented);
+    assertEquals(enUsButton, accentMenu.shadowRoot.activeElement);
+    assertEquals(-1, enGbButton.tabIndex);
+    assertEquals(0, enUsButton.tabIndex);
+
+    // ArrowDown on last item wraps around to first item.
+    const wrapDownEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    enUsButton.dispatchEvent(wrapDownEvent);
+
+    assertTrue(wrapDownEvent.defaultPrevented);
+    assertEquals(enGbButton, accentMenu.shadowRoot.activeElement);
+    assertEquals(0, enGbButton.tabIndex);
+    assertEquals(-1, enUsButton.tabIndex);
+  });
+
+  test('arrow keys on search field are not intercepted', () => {
+    const searchField = getSearchField();
+    searchField.focus();
+    assertEquals(searchField, accentMenu.shadowRoot.activeElement);
+
+    const searchArrowEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowLeft',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    searchField.dispatchEvent(searchArrowEvent);
+
+    assertFalse(searchArrowEvent.defaultPrevented);
+    assertEquals(searchField, accentMenu.shadowRoot.activeElement);
+  });
+
+  test('Tab and Shift+Tab wrap to active roving tabindex item', async () => {
+    accentMenu.selectedLang = 'en-gb';
+    await microtasksFinished();
+
+    const buttons = getAccentButtons();
+    const enGbButton = buttons[0]!;
+    const enUsButton = buttons[1]!;
+    const closeButton =
+        accentMenu.$.accentMenu.shadowRoot.querySelector<HTMLElement>('#close')!
+        ;
+
+    assertEquals(0, enGbButton.tabIndex);
+    assertEquals(-1, enUsButton.tabIndex);
+
+    enGbButton.focus();
+    assertEquals(enGbButton, accentMenu.shadowRoot.activeElement);
+
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    enGbButton.dispatchEvent(tabEvent);
+
+    assertTrue(tabEvent.defaultPrevented);
+    assertEquals(accentMenu.$.accentMenu, accentMenu.shadowRoot.activeElement);
+    assertEquals(closeButton, accentMenu.$.accentMenu.shadowRoot.activeElement);
+
+    const shiftTabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    closeButton.dispatchEvent(shiftTabEvent);
+
+    assertTrue(shiftTabEvent.defaultPrevented);
+    assertEquals(enGbButton, accentMenu.shadowRoot.activeElement);
+  });
 });

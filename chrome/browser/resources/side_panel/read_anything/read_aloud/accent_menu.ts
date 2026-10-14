@@ -20,6 +20,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {LanguageDropdownItem} from '../menus/menu_util.js';
+import {getNewIndex, isArrow} from '../shared/keyboard_util.js';
 
 import {getCss} from './accent_menu.css.js';
 import {getHtml} from './accent_menu.html.js';
@@ -62,6 +63,7 @@ export class AccentMenuElement extends AccentMenuElementBase implements
       languageSearchValue_: {type: String},
       currentNotifications_: {type: Object},
       availableLanguages_: {type: Array},
+      focusedIndex_: {type: Number},
       webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
@@ -87,13 +89,20 @@ export class AccentMenuElement extends AccentMenuElementBase implements
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedProperties.has('selectedLang') ||
+    const languagesChanged = changedProperties.has('selectedLang') ||
         changedProperties.has('availableVoices') ||
         changedProperties.has('enabledLangs') ||
         changedProperties.has('localeToDisplayName') ||
-        changedPrivateProperties.has('currentNotifications_') ||
-        changedPrivateProperties.has('languageSearchValue_')) {
+        changedPrivateProperties.has('languageSearchValue_');
+    if (languagesChanged ||
+        changedPrivateProperties.has('currentNotifications_')) {
       this.availableLanguages_ = this.computeAvailableLanguages_();
+      if (languagesChanged || this.focusedIndex_ < 0 ||
+          this.focusedIndex_ >= this.availableLanguages_.length) {
+        const selectedIndex =
+            this.availableLanguages_.findIndex(item => item.selected);
+        this.focusedIndex_ = selectedIndex !== -1 ? selectedIndex : 0;
+      }
     }
   }
 
@@ -113,6 +122,7 @@ export class AccentMenuElement extends AccentMenuElementBase implements
   accessor availableVoices: SpeechSynthesisVoice[] = [];
   protected accessor languageSearchValue_: string = '';
   protected accessor availableLanguages_: LanguageDropdownItem[] = [];
+  protected accessor focusedIndex_: number = 0;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   localesOfLangPackVoices: Set<string> = AVAILABLE_GOOGLE_TTS_LOCALES;
@@ -147,6 +157,10 @@ export class AccentMenuElement extends AccentMenuElementBase implements
 
   protected getItemAriaChecked_(item: LanguageDropdownItem): boolean {
     return item.selected ?? false;
+  }
+
+  protected getTabIndex_(index: number): number {
+    return index === this.focusedIndex_ ? 0 : -1;
   }
 
   private getToast_(): LanguageToastElement {
@@ -196,6 +210,22 @@ export class AccentMenuElement extends AccentMenuElementBase implements
 
   protected onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
+    if (isArrow(e.key)) {
+      const buttons = Array.from(
+          this.$.accentMenu.querySelectorAll<HTMLElement>('.dropdown-item'));
+      if (!buttons.includes(e.target as HTMLElement)) {
+        return;
+      }
+      e.preventDefault();
+      const newIndex = getNewIndex(e.key, e.target as HTMLElement, buttons);
+      this.focusedIndex_ = newIndex;
+      buttons.forEach((btn, idx) => {
+        btn.tabIndex = idx === newIndex ? 0 : -1;
+      });
+      buttons[newIndex]!.focus();
+      return;
+    }
+
     if (e.key !== 'Tab' || e.ctrlKey || e.altKey || e.metaKey) {
       return;
     }
@@ -203,13 +233,11 @@ export class AccentMenuElement extends AccentMenuElementBase implements
     const closeButton =
         this.$.accentMenu.shadowRoot.querySelector<HTMLElement>('#close');
     const firstFocusable = closeButton ?? this.$.searchField;
-    const buttons =
-        this.$.accentMenu.querySelectorAll<HTMLElement>('.dropdown-item');
     const clearButton =
         this.$.accentMenu.querySelector<HTMLElement>('#clearLanguageSearch');
-    const lastFocusable = buttons.length > 0 ?
-        buttons[buttons.length - 1]! :
-        (clearButton ?? this.$.searchField);
+    const lastFocusable = this.$.accentMenu.querySelector<HTMLElement>(
+                              '.dropdown-item[tabindex="0"]') ??
+        clearButton ?? this.$.searchField;
     const activeElement = this.shadowRoot.activeElement;
 
     if (e.shiftKey) {
