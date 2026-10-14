@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -413,23 +412,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
             send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
 }
 
-class SingleClientSendTabToSelfTextFragmentSyncTest
-    : public SingleClientSendTabToSelfSyncTest {
- public:
-  SingleClientSendTabToSelfTextFragmentSyncTest() {
-    text_fragment_feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfPropagateScrollPosition);
-  }
-
- private:
-  base::test::ScopedFeatureList text_fragment_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientSendTabToSelfTextFragmentSyncTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
 void SimulateOpeningReceivedTab(
     BrowserWindowInterface* browser,
     const send_tab_to_self::SendTabToSelfEntry& entry) {
@@ -449,9 +431,9 @@ void SimulateOpeningReceivedTab(
   controller->bubble()->OpenInNewTab();
 }
 
-// Tests that text fragment directives attached to an encrypted SendTabToSelf
+// Tests that text fragment directives attached to an encrypted `SendTabToSelf`
 // entry are received and trigger scrolling on page load.
-IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldReceiveTextFragment) {
   ASSERT_TRUE(SetupSync());
 
@@ -499,7 +481,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
+// Tests that sharing a scrolled page generates a text fragment selector and
+// commits it in the encrypted `PageContext` on the sync server.
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldSendTextFragment) {
   ASSERT_TRUE(SetupSync());
 
@@ -563,8 +547,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
               AnyOf(HasSubstr("fox"), HasSubstr("jumps"), HasSubstr("dog")));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       ShouldSendEmptyPage) {
+// Tests that sharing an empty page commits the `SendTabToSelf` entry without
+// attaching any scroll position data.
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest, ShouldSendEmptyPage) {
   ASSERT_TRUE(SetupSync());
 
   GURL test_url = embedded_test_server()->GetURL(kEmptyPagePath);

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -20,7 +19,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
@@ -50,9 +48,7 @@ constexpr char kScreenshotBaselineCL[] = "7819337";
 
 class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  SendTabToSelfInteractiveUiTest() {
-    feature_list_.InitAndDisableFeature(kSendTabToSelfPropagateScrollPosition);
-  }
+  SendTabToSelfInteractiveUiTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
@@ -144,7 +140,6 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

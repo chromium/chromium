@@ -406,20 +406,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                    &expected_icon);
 }
 
-class SendTabToSelfScrollPositionBrowserTest
-    : public SendTabToSelfBubbleControllerBrowserTest {
- public:
-  SendTabToSelfScrollPositionBrowserTest() {
-    feature_list_.InitWithFeatures({kSendTabToSelfPropagateScrollPosition}, {});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that the scroll position is successfully generated and propagated
 // when sending a tab from a scrolled page.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ScrollPositionPropagated_HappyPath) {
   // Using a page with significant content ensures the renderer can generate
   // a selector for the center of the viewport.
@@ -463,8 +452,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 }
 
 // Tests that when sending a tab on an empty page, no scroll position is
-// attached and the kPageNotScrolled outcome is recorded.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+// attached and the `kPageNotScrolled` outcome is recorded.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ScrollPositionPropagated_EmptyPage) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
@@ -500,8 +489,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 }
 
 // Tests that when sending a tab on an unscrolled page, no scroll position is
-// attached and the kPageNotScrolled outcome is recorded.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+// attached and the `kPageNotScrolled` outcome is recorded.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ScrollPositionPropagated_UnscrolledPage) {
   GURL test_url =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
@@ -537,7 +526,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   EXPECT_TRUE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+// Tests that scrolling to a specific target element generates a matching text
+// fragment selector and records the `kSuccess` generation outcome.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ScrollPositionPropagated_ScrolledPage) {
   GURL test_url =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
@@ -596,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 // Tests that when sending a tab on a scrolled page where the reading position
 // has no text content (resulting in a link generation error), no scroll
 // position is attached and the `kLinkGenerationError` outcome is recorded.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ScrollPositionPropagated_LinkGenerationError) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 

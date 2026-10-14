@@ -16,7 +16,6 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/outgoing_tab_form_field_extractor.h"
 #include "components/send_tab_to_self/page_context.h"
@@ -127,8 +126,7 @@ void FillWebContents(content::WebContents* web_contents,
 
 std::optional<std::string> GetScrollPositionAsTextFragment(
     const SendTabToSelfEntry* entry) {
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) ||
-      !entry || entry->GetPageContext().scroll_position.IsEmpty()) {
+  if (!entry || entry->GetPageContext().scroll_position.IsEmpty()) {
     return std::nullopt;
   }
 

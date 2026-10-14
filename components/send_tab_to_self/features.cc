@@ -27,9 +27,6 @@ BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
 BASE_FEATURE(kSendTabToSelfPropagateFormFields,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfPropagateScrollPosition,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSendTabToSelfPropagateNavigationHistory,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

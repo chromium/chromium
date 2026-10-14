@@ -64,7 +64,6 @@ source_set("tabs_internal") {
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/saved_tab_groups/public",
     "//components/security_state/ios",
-    "//components/send_tab_to_self:features",
     "//components/sessions",
     "//components/strings",
     "//components/supervised_user/core/common",

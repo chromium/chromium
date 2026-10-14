@@ -24,10 +24,8 @@
 class SendTabToSelfTabHelperTest : public PlatformTest {
  protected:
   SendTabToSelfTabHelperTest() {
-    feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfPropagateScrollPosition,
-         send_tab_to_self::kSendTabToSelfPropagateFormFields},
-        {});
+    feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfPropagateFormFields);
 
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(

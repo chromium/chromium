@@ -45,10 +45,9 @@ void SendTabToSelfPageHandler::SendTabToDevice(
   MaybeExtractFormFields(request);
   MaybeExtractNavigationHistory(request);
 
-  // If the URL has changed or the scroll position feature is not enabled, send
-  // the request without the scroll position information.
-  if (request.url != web_contents()->GetLastCommittedURL() ||
-      !base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition)) {
+  // If the URL has changed, send the request without the scroll position
+  // information.
+  if (request.url != web_contents()->GetLastCommittedURL()) {
     SendFinalizedRequest(std::move(request), std::nullopt);
     return;
   }

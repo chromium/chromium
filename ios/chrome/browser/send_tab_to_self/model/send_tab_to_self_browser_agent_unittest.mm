@@ -525,8 +525,7 @@ class SendTabToSelfBrowserAgentAutoOpenTest
  public:
   SendTabToSelfBrowserAgentAutoOpenTest()
       : SendTabToSelfBrowserAgentTest(
-            {send_tab_to_self::kSendTabToSelfAutoOpen,
-             send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {
+            {send_tab_to_self::kSendTabToSelfAutoOpen}) {
     model_->SetLocalCacheGuid(kDeviceID);
   }
 };
@@ -878,8 +877,7 @@ class SendTabToSelfBrowserAgentAutoOpenInTabGridTest
   SendTabToSelfBrowserAgentAutoOpenInTabGridTest()
       : SendTabToSelfBrowserAgentTest(
             {send_tab_to_self::kSendTabToSelfAutoOpen,
-             send_tab_to_self::kSendTabToSelfSupportAutoOpenInTabGrid,
-             send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {
+             send_tab_to_self::kSendTabToSelfSupportAutoOpenInTabGrid}) {
     model_->SetLocalCacheGuid(kDeviceID);
   }
 };
@@ -1175,7 +1173,7 @@ TEST_F(SendTabToSelfBrowserAgentWithoutAutoOpenTest,
   EXPECT_EQ(pending_guid, delegate->GetGUID());
 }
 
-class SendTabToSelfBrowserAgentScrollPositionTestBase
+class SendTabToSelfBrowserAgentScrollPositionTest
     : public SendTabToSelfBrowserAgentTest {
  public:
   using SendTabToSelfBrowserAgentTest::SendTabToSelfBrowserAgentTest;
@@ -1201,37 +1199,6 @@ class SendTabToSelfBrowserAgentScrollPositionTestBase
   const GURL other_url_{kOtherURL};
   base::HistogramTester histogram_tester_;
 };
-
-class SendTabToSelfBrowserAgentScrollPositionDisabledTest
-    : public SendTabToSelfBrowserAgentScrollPositionTestBase {
- public:
-  SendTabToSelfBrowserAgentScrollPositionDisabledTest()
-      : SendTabToSelfBrowserAgentScrollPositionTestBase(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{
-                send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {}
-};
-
-class SendTabToSelfBrowserAgentScrollPositionTest
-    : public SendTabToSelfBrowserAgentScrollPositionTestBase {
- public:
-  SendTabToSelfBrowserAgentScrollPositionTest()
-      : SendTabToSelfBrowserAgentScrollPositionTestBase(
-            {send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {}
-};
-
-// Tests that no scroll position metrics are recorded when the feature flag is
-// disabled.
-TEST_F(SendTabToSelfBrowserAgentScrollPositionDisabledTest,
-       FeatureDisabledDoesNotRecordMetrics) {
-  AppendNewWebState(url_);
-
-  agent_->SendTabToTargetDevice(url_, kTitle, kDeviceID, kDeviceName,
-                                ShareEntryPoint::kShareSheet);
-
-  histogram_tester_.ExpectTotalCount(kGenerationOutcomeHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 0);
-}
 
 // Tests that `kMainFrameUnavailable` is recorded when there is no active
 // WebState.

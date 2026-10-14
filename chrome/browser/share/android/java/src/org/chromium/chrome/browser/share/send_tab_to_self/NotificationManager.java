@@ -21,8 +21,6 @@ import android.provider.Browser;
 
 import androidx.annotation.VisibleForTesting;
 
-import java.util.Collections;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -50,6 +48,8 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+
+import java.util.Collections;
 
 /**
  * Manages all SendTabToSelf related notifications for Android. This includes displaying, handling
@@ -173,9 +173,7 @@ public class NotificationManager {
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true)
                         .putExtra(IntentHandler.EXTRA_FROM_SEND_TAB_TO_SELF, true);
 
-        if (scrollToTextFragment != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
+        if (scrollToTextFragment != null) {
             intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
         }
 
@@ -296,9 +294,7 @@ public class NotificationManager {
                         .setData(uri)
                         .setAction(NOTIFICATION_ACTION_TAP)
                         .putExtra(NOTIFICATION_GUID_EXTRA, guid);
-        if (scrollToTextFragment != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
+        if (scrollToTextFragment != null) {
             tapIntent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
         }
         if (pageContext != null

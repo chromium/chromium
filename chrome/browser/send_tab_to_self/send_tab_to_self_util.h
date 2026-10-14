@@ -53,9 +53,8 @@ void FillWebContents(content::WebContents* web_contents,
                      const url::Origin& origin,
                      const PageContext& page_context);
 
-// Returns the scroll position from `entry` as a text fragment string if
-// `kSendTabToSelfPropagateScrollPosition` is enabled and `entry` has a
-// scroll position.
+// Returns the scroll position from `entry` as a text fragment string if `entry`
+// has a scroll position.
 // See https://wicg.github.io/scroll-to-text-fragment/
 std::optional<std::string> GetScrollPositionAsTextFragment(
     const SendTabToSelfEntry* entry);

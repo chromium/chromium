@@ -49,11 +49,6 @@ const send_tab_to_self::SendTabToSelfEntry* GetEntry(web::WebState* web_state,
 void MaybeRestoreScrollPosition(
     web::WebState* web_state,
     const send_tab_to_self::SendTabToSelfEntry* entry) {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
-    return;
-  }
-
   const send_tab_to_self::TextFragmentData& fragment_data =
       entry->GetPageContext().scroll_position.text_fragment;
   if (fragment_data.IsEmpty()) {
@@ -86,10 +81,6 @@ void MaybePerformFormFilling(
 }  // namespace
 
 SendTabToSelfTabHelper::SendTabToSelfTabHelper(web::WebState* web_state) {
-  CHECK(base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfPropagateScrollPosition) ||
-        base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfPropagateFormFields));
   web_state_observation_.Observe(web_state);
 }
 

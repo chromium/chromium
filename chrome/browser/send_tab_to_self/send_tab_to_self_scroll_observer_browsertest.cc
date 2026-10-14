@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -65,9 +63,7 @@ std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
 
 class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
  public:
-  SendTabToSelfScrollObserverBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSendTabToSelfPropagateScrollPosition);
-  }
+  SendTabToSelfScrollObserverBrowserTest() = default;
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -90,7 +86,6 @@ class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
 
  protected:
   raw_ptr<SendTabToSelfModel> model_fake_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,

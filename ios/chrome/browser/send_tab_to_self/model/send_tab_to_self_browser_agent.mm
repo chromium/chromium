@@ -652,15 +652,6 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
     page_context = send_tab_to_self::ExtractFormFieldsFromWebState(web_state);
   }
 
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
-    HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
-                                entry_point, std::move(page_context),
-                                std::move(send_result_callback),
-                                /*start_time=*/std::nullopt, std::nullopt);
-    return;
-  }
-
   std::optional<send_tab_to_self::ScrollPositionGenerationOutcome>
       failure_outcome;
   if (!web_state) {

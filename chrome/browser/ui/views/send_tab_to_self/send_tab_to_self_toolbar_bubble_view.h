@@ -40,14 +40,10 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   friend class SendTabToSelfToolbarBubbleViewTest;
-  friend class SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest;
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesToPage);
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesWithScrollPosition);
-  FRIEND_TEST_ALL_PREFIXES(
-      SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
-      ButtonNavigatesWithoutScrollPositionIfFeatureDisabled);
 
   void Timeout();
 

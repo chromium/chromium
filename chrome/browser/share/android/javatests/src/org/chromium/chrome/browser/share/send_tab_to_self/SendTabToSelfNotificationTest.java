@@ -119,9 +119,12 @@ public class SendTabToSelfNotificationTest {
         return createTapIntent(GUID, URL, null, null);
     }
 
+    /**
+     * Verifies that tapping a notification with a scroll-to-text fragment attaches the fragment
+     * extra to the launcher intent and marks the entry opened.
+     */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNotificationTap_WithScrollToTextFragment() {
         Intent intent = createTapIntent(TEXT_FRAGMENT, /* pageContextBytes= */ null);
 
@@ -133,25 +136,14 @@ public class SendTabToSelfNotificationTest {
         verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
     }
 
+    /**
+     * Verifies that tapping a notification without a scroll-to-text fragment does not attach the
+     * fragment extra to the launcher intent and marks the entry opened.
+     */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNotificationTap_WithoutScrollToTextFragment() {
         Intent intent = createTapIntent();
-
-        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
-
-        intended(hasComponent(ChromeLauncherActivity.class.getName()));
-        intended(hasData(URL));
-        intended(not(hasExtraWithKey(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT)));
-        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
-    public void testNotificationTap_FeatureDisabled() {
-        Intent intent = createTapIntent(TEXT_FRAGMENT, /* pageContextBytes= */ null);
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 

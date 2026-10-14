@@ -18,7 +18,6 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/webauthn/ios/features.h"
@@ -239,11 +238,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState()));
 
   attacher.Create<AnnotationsTabHelper>();
-  attacher.CreateWhen<SendTabToSelfTabHelper>(
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateScrollPosition) ||
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateFormFields));
+  attacher.Create<SendTabToSelfTabHelper>();
 
   attacher.Create<ImageFetchTabHelper>();
   attacher.Create<NewTabPageTabHelper>();

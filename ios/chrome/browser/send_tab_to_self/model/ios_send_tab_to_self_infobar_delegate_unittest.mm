@@ -42,9 +42,7 @@ namespace {
 class IOSSendTabToSelfInfoBarDelegateTest : public PlatformTest {
  public:
   IOSSendTabToSelfInfoBarDelegateTest() {
-    feature_list_.InitWithFeatures({kSendTabToSelfPropagateScrollPosition,
-                                    kSendTabToSelfPropagateFormFields},
-                                   {});
+    feature_list_.InitAndEnableFeature(kSendTabToSelfPropagateFormFields);
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web_state_ptr_ = fake_web_state.get();
     web_state_ptr_->SetBrowserState(&browser_state_);
@@ -198,13 +196,11 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Accept) {
   [(id)mock_scene_commands_ verify];
 }
 
-// Tests that Accept() correctly passes the text fragment if a scroll position
-// is present when auto-open is disabled.
+// Tests that `Accept()` correctly passes the entry GUID when a scroll position
+// is present and auto-open is disabled.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithScrollPosition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kSendTabToSelfPropagateScrollPosition},
-      /*disabled_features=*/{send_tab_to_self::kSendTabToSelfAutoOpen});
+  feature_list.InitAndDisableFeature(send_tab_to_self::kSendTabToSelfAutoOpen);
 
   PageContext page_context;
   page_context.scroll_position.text_fragment.text_start = "start";

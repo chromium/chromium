@@ -6,12 +6,10 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
@@ -21,7 +19,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -85,14 +82,10 @@ class NavigationTextFragmentObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-class SendTabToSelfToolbarBubbleViewTestBase : public InProcessBrowserTest {
+class SendTabToSelfToolbarBubbleViewTest : public InProcessBrowserTest {
  public:
-  explicit SendTabToSelfToolbarBubbleViewTestBase(
-      const std::vector<base::test::FeatureRef>& enabled_features = {},
-      const std::vector<base::test::FeatureRef>& disabled_features = {}) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-  ~SendTabToSelfToolbarBubbleViewTestBase() override = default;
+  SendTabToSelfToolbarBubbleViewTest() = default;
+  ~SendTabToSelfToolbarBubbleViewTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -153,28 +146,12 @@ class SendTabToSelfToolbarBubbleViewTestBase : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<views::Widget> anchor_widget_;
 };
 
-class SendTabToSelfToolbarBubbleViewTest
-    : public SendTabToSelfToolbarBubbleViewTestBase {
- public:
-  SendTabToSelfToolbarBubbleViewTest()
-      : SendTabToSelfToolbarBubbleViewTestBase(
-            {kSendTabToSelfPropagateScrollPosition}) {}
-};
-
-class SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest
-    : public SendTabToSelfToolbarBubbleViewTestBase {
- public:
-  SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest()
-      : SendTabToSelfToolbarBubbleViewTestBase(
-            {},
-            {kSendTabToSelfPropagateScrollPosition}) {}
-};
-
+// Tests that clicking the toolbar bubble button opens the shared URL in a new
+// tab and records activation in the model.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarBubbleViewTest,
                        ButtonNavigatesToPage) {
   GURL url("https://www.example.com");
@@ -201,6 +178,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarBubbleViewTest,
   EXPECT_EQ(test_model()->activated_call_count(), 1);
 }
 
+// Tests that clicking the toolbar bubble button for an entry with a scroll
+// position navigates with the internal scroll-to-text fragment attached.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarBubbleViewTest,
                        ButtonNavigatesWithScrollPosition) {
   GURL url("https://www.example.com");
@@ -229,33 +208,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarBubbleViewTest,
   // Fragment Text Directive spec
   // (https://wicg.github.io/scroll-to-text-fragment/).
   EXPECT_EQ("target%20text", observer.text_fragment());
-}
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
-                       ButtonNavigatesWithoutScrollPositionIfFeatureDisabled) {
-  GURL url("https://www.example.com");
-  PageContext page_context;
-  page_context.scroll_position.text_fragment.text_start = "target text";
-  SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           "Example Device", "sync_guid", page_context,
-                           NavigationHistory());
-
-  NavigationTextFragmentObserver observer;
-
-  SendTabToSelfToolbarBubbleView* bubble =
-      SendTabToSelfToolbarBubbleView::CreateBubble(
-          *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
-          entry);
-  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
-  bubble->OpenInNewTab();
-  waiter.Wait();
-
-  TabStripModel* tab_strip = browser()->GetTabStripModel();
-  ASSERT_GE(tab_strip->count(), 1);
-  content::WebContents* web_contents = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(url, web_contents->GetVisibleURL());
-
-  EXPECT_FALSE(observer.text_fragment().has_value());
 }
 
 }  // namespace send_tab_to_self

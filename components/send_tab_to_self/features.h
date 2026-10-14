@@ -24,10 +24,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
 // tab and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateFormFields);
 
-// If this feature is enabled, the scroll position will be captured and
-// propagated to the target device using a text fragment selector.
-BASE_DECLARE_FEATURE(kSendTabToSelfPropagateScrollPosition);
-
 // If this feature is enabled, the back/forward history of the shared tab will
 // be captured and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);

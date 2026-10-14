@@ -143,15 +143,8 @@ class MockTextFragmentReceiver : public blink::mojom::TextFragmentReceiver {
 class SendTabToSelfPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   SendTabToSelfPageHandlerTest()
-      : SendTabToSelfPageHandlerTest(std::vector<base::test::FeatureRef>{
-            kSendTabToSelfPropagateScrollPosition}) {}
-
-  explicit SendTabToSelfPageHandlerTest(
-      const std::vector<base::test::FeatureRef>& enabled_features)
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~SendTabToSelfPageHandlerTest() override = default;
 
   void SetUp() override {
@@ -192,7 +185,6 @@ class SendTabToSelfPageHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  ScopedFeatureList scoped_feature_list_;
   MockTextFragmentReceiver mock_receiver_;
 
  private:
@@ -400,10 +392,9 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 class SendTabToSelfPageHandlerWithNavigationHistoryTest
     : public SendTabToSelfPageHandlerTest {
- public:
-  SendTabToSelfPageHandlerWithNavigationHistoryTest()
-      : SendTabToSelfPageHandlerTest(std::vector<base::test::FeatureRef>{
-            kSendTabToSelfPropagateNavigationHistory}) {}
+ private:
+  ScopedFeatureList scoped_feature_list_{
+      kSendTabToSelfPropagateNavigationHistory};
 };
 
 TEST_F(SendTabToSelfPageHandlerWithNavigationHistoryTest,
