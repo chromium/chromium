@@ -208,7 +208,8 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
 
   [page_context_wrapper setShouldGetAnnotatedPageContent:YES];
   [page_context_wrapper setShouldGetSnapshot:YES];
-  [page_context_wrapper populatePageContextFieldsAsync];
+  [page_context_wrapper populatePageContextFieldsAsyncWithTimeout:
+                            GetActorTabObservationPageContextTimeout()];
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {

@@ -54,6 +54,17 @@ TEST_F(ActorFeaturesTest, IsToolDisabled_ToolNotSet) {
       IsToolDisabled(optimization_guide::proto::Action::ACTION_NOT_SET));
 }
 
+// Tests that the tab observation PageContext timeout honors the feature
+// parameter override.
+TEST_F(ActorFeaturesTest, TabObservationPageContextTimeout_ParamOverride) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  base::FieldTrialParams params;
+  params["ActorTabObservationPageContextTimeout"] = "7s";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiActor, params);
+  EXPECT_EQ(base::Seconds(7), GetActorTabObservationPageContextTimeout());
+}
+
 TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_Default) {
   EXPECT_FALSE(IsPageActionMenuEnabled());
 }

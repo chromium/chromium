@@ -348,6 +348,49 @@ TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
   EXPECT_TRUE(apc_extracted);
 }
 
+// Tests that requesting tab observation times out after the configured
+// `ActorTabObservationPageContextTimeout` duration.
+TEST_F(ActorServiceMockTimeTest, RequestTabObservation_Timeout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiActor, {{"ActorTabObservationPageContextTimeout", "500ms"}});
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+
+  web::test::OverrideJavaScriptFeatures(
+      profile_.get(), {PageContextExtractorJavaScriptFeature::GetInstance()});
+
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(profile_.get());
+  fake_web_state.SetCurrentURL(GURL("https://example.com"));
+  fake_web_state.SetContentsMimeType("text/html");
+
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  auto main_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
+  main_frame->set_browser_state(profile_.get());
+  main_frame->set_force_timeout(true);
+  frames_manager->AddWebFrame(std::move(main_frame));
+  fake_web_state.SetWebFramesManager(
+      PageContextExtractorJavaScriptFeature::GetInstance()
+          ->GetSupportedContentWorld(),
+      std::move(frames_manager));
+
+  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
+  service->RequestTabObservation(task_id, &fake_web_state,
+                                 future.GetCallback());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(base::unexpected(PageContextWrapperError::kTimeout), future.Get());
+}
+
 // Tests that GetWebStateForID returns nullptr for a tab that is not controlled
 // by the task.
 TEST_F(ActorServiceTest, GetWebStateForID_NotControlled) {

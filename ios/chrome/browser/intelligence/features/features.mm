@@ -676,6 +676,11 @@ BASE_FEATURE_PARAM(
     kGeminiActorBackgroundWebStateKeepAliveHeartbeatIntervalParam,
     base::Milliseconds(400));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorTabObservationPageContextTimeout,
+                   &kGeminiActor,
+                   base::Seconds(4));
+
 bool IsGeminiActorEnabled() {
   if (!IsPageActionMenuEnabled() || !IsActorEnabled() ||
       !IsGeminiClientMigrationEnabled()) {
@@ -693,6 +698,10 @@ bool IsGeminiActorBackgroundingEnabled() {
 
 base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval() {
   return kGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval.Get();
+}
+
+base::TimeDelta GetActorTabObservationPageContextTimeout() {
+  return kActorTabObservationPageContextTimeout.Get();
 }
 
 BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_ENABLED_BY_DEFAULT);

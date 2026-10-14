@@ -323,6 +323,10 @@ extern const char
 // WebContent processes alive in the background.
 base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval();
 
+// The timeout for Page Context extraction during an Actor tab observation,
+// the "ActorTabObservationPageContextTimeout" parameter of `kGeminiActor`.
+base::TimeDelta GetActorTabObservationPageContextTimeout();
+
 // Enables the GeminiUnaryMigration feature.
 BASE_DECLARE_FEATURE(kGeminiUnaryMigration);
 
