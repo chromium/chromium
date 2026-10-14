@@ -8501,7 +8501,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Don't allow sites to use your microphone
       </message>
       <message name="IDS_IOS_SITE_SETTINGS_NOT_ALLOWED" desc="Title for the section header and popup menu option in Site Settings for sites that are blocked from using a permission. [iOS only]">
-        Not Allowed
+        Not allowed
       </message>
       <message name="IDS_IOS_SITE_SETTINGS_PERMISSIONS_HEADER" desc="Header text for the Permissions section in Site Settings. [iOS only]">
         Permissions
