@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
 
 @interface SuggestionsFromGeminiCoordinator () <
@@ -73,6 +72,7 @@
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
+  _viewController.delegate = nil;
   _viewController.mutator = nil;
   _viewController = nil;
   [_helpImproveCoordinator stop];
@@ -84,11 +84,7 @@
 - (void)suggestionsFromGeminiMediatorDidSelectConnectedApps:
     (SuggestionsFromGeminiMediator*)mediator {
   OpenNewTabCommand* command =
-      [[OpenNewTabCommand alloc] initWithURL:GURL(kGeminiExtensionsURL)
-                                    referrer:web::Referrer()
-                                 inIncognito:NO
-                                inBackground:NO
-                                    appendTo:OpenPosition::kLastTab];
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kGeminiExtensionsURL)];
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler closePresentedViewsAndOpenURL:command];

@@ -69,7 +69,7 @@ TEST_F(SuggestionsFromGeminiCoordinatorTest, TestManageConnectedAppsOpensUrl) {
   OCMExpect([mockSceneCommandsHandler
       closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
                                                 OpenNewTabCommand* cmd) {
-        return cmd.URL == GURL(kGeminiExtensionsURL);
+        return cmd.URL == GURL(kGeminiExtensionsURL) && cmd.fromChrome;
       }]]);
 
   [coordinator_ suggestionsFromGeminiMediatorDidSelectConnectedApps:nil];
