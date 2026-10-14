@@ -278,6 +278,13 @@ void TextInputManager::UpdateTextInputState(
     }
   }
 
+  // Observers can run nested message loops (e.g. a third-party IME pumping
+  // messages inside InputMethod::OnTextInputTypeChanged()). Those can destroy
+  // the WebContents, and with it |this|, or unregister |view|. Re-validate
+  // both after every notification below before touching any state.
+  base::WeakPtr<TextInputManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostViewBase> weak_view = view->GetWeakPtr();
+
   // If |view| is different from |active_view| and its |TextInputState.type| is
   // not NONE, |active_view_| should change to |view| only if |view| has focus.
   if (text_input_state.type != ui::TEXT_INPUT_TYPE_NONE &&
@@ -294,6 +301,11 @@ void TextInputManager::UpdateTextInputState(
       RenderWidgetHostViewBase* active_view = active_view_;
       active_view_ = nullptr;
       NotifyObserversAboutInputStateUpdate(active_view, true);
+      // |view| may also have been unregistered without being destroyed (e.g.
+      // moved to another TextInputManager); it must not become |active_view_|.
+      if (!weak_this || !weak_view || !IsRegistered(view)) {
+        return;
+      }
     }
     active_view_ = view;
   }
