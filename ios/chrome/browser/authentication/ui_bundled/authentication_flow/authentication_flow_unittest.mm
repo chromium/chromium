@@ -49,13 +49,13 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -79,32 +79,27 @@ class AuthenticationFlowTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    personal_profile_ = CreateProfile();
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
     personal_browser_ = std::make_unique<TestBrowser>(personal_profile_.get());
 
     identity1_ = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentity(identity1_);
     identity2_ = [FakeSystemIdentity fakeIdentity2];
     fake_system_identity_manager()->AddIdentity(identity2_);
-    managed_identity1_ = [FakeSystemIdentity fakeManagedIdentity];
-    fake_system_identity_manager()->AddIdentity(managed_identity1_);
-    managed_identity2_ = [FakeSystemIdentity identityWithEmail:@"bar@foo.com"];
-    fake_system_identity_manager()->AddIdentity(managed_identity2_);
 
     // Force explicit instantiation of the AuthenticationService, to ensure
     // accounts get synced over to IdentityManager.
     std::ignore =
         AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
 
-    managed_profile1_ = CreateProfile(
-        *GetApplicationContext()
-             ->GetAccountProfileMapper()
-             ->FindProfileNameForGaiaID(managed_identity1_.gaiaId));
+    managed_identity1_ = [FakeSystemIdentity fakeManagedIdentity];
+    managed_profile1_ = AddManagedProfileWithBuilder(
+        profile_manager_, managed_identity1_, CreateProfileBuilder());
     managed_browser1_ = std::make_unique<TestBrowser>(managed_profile1_.get());
-    managed_profile2_ = CreateProfile(
-        *GetApplicationContext()
-             ->GetAccountProfileMapper()
-             ->FindProfileNameForGaiaID(managed_identity2_.gaiaId));
+    managed_identity2_ = [FakeSystemIdentity identityWithEmail:@"bar@foo.com"];
+    managed_profile2_ = AddManagedProfileWithBuilder(
+        profile_manager_, managed_identity2_, CreateProfileBuilder());
     managed_browser2_ = std::make_unique<TestBrowser>(managed_profile2_.get());
 
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -117,19 +112,15 @@ class AuthenticationFlowTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)performer_mock_);
   }
 
-  TestProfileIOS* CreateProfile(
-      std::optional<std::string> name = std::nullopt) {
+  TestProfileIOS::Builder CreateProfileBuilder() {
     TestProfileIOS::Builder builder;
-    if (name.has_value()) {
-      builder.SetName(*name);
-    }
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.SetPrefService(CreatePrefService());
-    return profile_manager_.AddProfileWithBuilder(std::move(builder));
+    return builder;
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
