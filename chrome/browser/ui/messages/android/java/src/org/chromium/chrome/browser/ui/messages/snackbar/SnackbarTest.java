@@ -120,15 +120,15 @@ public class SnackbarTest {
                     sMainParent = sActivity.findViewById(android.R.id.content);
                     sAlternateParent1 = sActivity.findViewById(R.id.alternate_parent_1);
                     sAlternateParent2 = sActivity.findViewById(R.id.alternate_parent_2);
-                    SnackbarManager.setDurationForTesting(1000);
                 });
+        CriteriaHelper.pollUiThread(
+                () -> sAlternateParent1.getWidth() > 0, "Activity layout did not complete");
     }
 
     @AfterClass
     public static void teardownSuite() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SnackbarManager.resetDurationForTesting();
                     sActivity = null;
                     sMainParent = null;
                     sAlternateParent1 = null;
@@ -1021,7 +1021,9 @@ public class SnackbarTest {
                     mManager.pushParentViewOverride(
                             ParentOverrideSlot.ONE_OFF, sAlternateParent1, null);
                 });
-        pollSnackbarCondition("Snackbar not shown", () -> mManager.isShowing());
+        pollSnackbarCondition(
+                "Snackbar not shown",
+                () -> mManager.isShowing() && sAlternateParent1.getWidth() > 0);
 
         // Get initial width of alternate parent
         final int[] originalWidth = new int[1];
@@ -1030,52 +1032,54 @@ public class SnackbarTest {
                     originalWidth[0] = sAlternateParent1.getWidth();
                 });
 
-        // Simulate resize of alternate parent
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
-                    lp.width = originalWidth[0] / 2;
-                    sAlternateParent1.setLayoutParams(lp);
-                });
+        try {
+            // Simulate resize of alternate parent
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
+                        lp.width = originalWidth[0] / 2;
+                        sAlternateParent1.setLayoutParams(lp);
+                    });
 
-        // Wait for layout and verify snackbar width matches the new parent width (minus margins)
-        pollSnackbarCondition(
-                "Snackbar did not resize to fit new parent width",
-                () -> {
-                    SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
-                    if (view == null) return false;
-                    View containerView = view.getContainerViewForTesting();
-                    if (containerView == null) return false;
+            // Wait for layout and verify snackbar width matches the new parent width (minus
+            // margins)
+            pollSnackbarCondition(
+                    "Snackbar did not resize to fit new parent width",
+                    () -> {
+                        SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
+                        if (view == null) return false;
+                        View containerView = view.getContainerViewForTesting();
+                        if (containerView == null) return false;
 
-                    int maxSnackbarWidth =
-                            sActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            org.chromium.chrome.ui.messages.R.dimen
-                                                    .snackbar_width_max);
-                    int floatingMargin =
-                            sActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            org.chromium.chrome.ui.messages.R.dimen
-                                                    .snackbar_floating_margin);
-                    int expectedWidth =
-                            Math.min(
-                                    maxSnackbarWidth,
-                                    sAlternateParent1.getWidth() - 2 * floatingMargin);
-                    return containerView.getWidth() == expectedWidth;
-                });
-
-        // Clean up: restore alternate parent width
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
-                    lp.width = originalWidth[0];
-                    sAlternateParent1.setLayoutParams(lp);
-                    mManager.popParentViewOverride(ParentOverrideSlot.ONE_OFF);
-                });
+                        int maxSnackbarWidth =
+                                sActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                org.chromium.chrome.ui.messages.R.dimen
+                                                        .snackbar_width_max);
+                        int floatingMargin =
+                                sActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                org.chromium.chrome.ui.messages.R.dimen
+                                                        .snackbar_floating_margin);
+                        int expectedWidth =
+                                Math.min(
+                                        maxSnackbarWidth,
+                                        sAlternateParent1.getWidth() - 2 * floatingMargin);
+                        return containerView.getWidth() == expectedWidth;
+                    });
+        } finally {
+            // Clean up: restore alternate parent width
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
+                        lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                        sAlternateParent1.setLayoutParams(lp);
+                        mManager.popParentViewOverride(ParentOverrideSlot.ONE_OFF);
+                    });
+        }
     }
 
     @Test
