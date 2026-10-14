@@ -105,10 +105,6 @@ wayland_protocol("session_management_protocol") {
   sources = [ "src/src/wayland/protocol/session-management-v1.xml" ]
 }
 
-wayland_protocol("color_management_protocol") {
-  sources = [ "src/src/wayland/protocol/color-management-v1.xml" ]
-}
-
 # TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
 wayland_protocol("xdg_system_bell_protocol") {
   sources = [ "wayland_protocols/xdg-system-bell-v1.xml" ]
@@ -794,6 +790,52 @@ source_set("xcursor") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+# Dependencies of libmutter. Code built against mutter's private headers
+# (see ":ui_controls") needs the same set, since those headers transitively
+# include headers from most of these.
+# TODO(crbug.com/396647882): Remove the gtk_shell, linux_dmabuf and
+# xdg_system_bell protocol targets once wayland-protocols is rolled.
+_libmutter_deps = [
+  ":clutter",
+  ":commit_timing_protocol",
+  ":fifo_protocol",
+  ":gtk_shell_protocol",
+  ":linux_dmabuf_protocol",
+  ":session_management_protocol",
+  ":xcursor",
+  ":xdg_system_bell_protocol",
+  "//build/config/linux/libdrm",
+  "//third_party/gsettings-desktop-schemas",
+  "//third_party/gvdb",
+  "//third_party/libdisplay-info:libdisplay_info",
+  "//third_party/libei:libeis",
+  "//third_party/libgudev",
+  "//third_party/libinput",
+  "//third_party/wayland:wayland_server_lib",
+  "//third_party/wayland-protocols:color_management_protocol",
+  "//third_party/wayland-protocols:cursor_shape_protocol",
+  "//third_party/wayland-protocols:drm_lease_protocol",
+  "//third_party/wayland-protocols:fractional_scale_protocol",
+  "//third_party/wayland-protocols:idle_inhibit_protocol",
+  "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
+  "//third_party/wayland-protocols:linux_drm_syncobj_protocol",
+  "//third_party/wayland-protocols:pointer_constraints_protocol",
+  "//third_party/wayland-protocols:pointer_gestures_protocol",
+  "//third_party/wayland-protocols:presentation_time_protocol",
+  "//third_party/wayland-protocols:primary_selection_protocol",
+  "//third_party/wayland-protocols:relative_pointer_protocol",
+  "//third_party/wayland-protocols:single_pixel_buffer",
+  "//third_party/wayland-protocols:tablet_protocol",
+  "//third_party/wayland-protocols:text_input_protocol",
+  "//third_party/wayland-protocols:viewporter_protocol",
+  "//third_party/wayland-protocols:xdg_activation",
+  "//third_party/wayland-protocols:xdg_dialog_protocol",
+  "//third_party/wayland-protocols:xdg_foreign",
+  "//third_party/wayland-protocols:xdg_output_protocol",
+  "//third_party/wayland-protocols:xdg_shell_protocol",
+  "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
+]
+
 source_set("libmutter") {
   testonly = true
 
@@ -1273,8 +1315,6 @@ source_set("libmutter") {
     "src/src/wayland/meta-wayland-transaction.c",
     "src/src/wayland/meta-wayland-transaction.h",
     "src/src/wayland/meta-wayland-types.h",
-    "src/src/wayland/meta-wayland-ui-controls.c",
-    "src/src/wayland/meta-wayland-ui-controls.h",
     "src/src/wayland/meta-wayland-versions.h",
     "src/src/wayland/meta-wayland-viewporter.c",
     "src/src/wayland/meta-wayland-viewporter.h",
@@ -1461,47 +1501,35 @@ source_set("libmutter") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  deps = [
-    ":clutter",
-    ":color_management_protocol",
-    ":commit_timing_protocol",
-    ":fifo_protocol",
-    ":gtk_shell_protocol",  # Remove once wayland-protocols is rolled
-    ":linux_dmabuf_protocol",  # Remove once wayland-protocols is rolled
-    ":session_management_protocol",
-    ":xcursor",
-    ":xdg_system_bell_protocol",  # Remove once wayland-protocols is rolled
-    "//build/config/linux/libdrm",
-    "//third_party/gsettings-desktop-schemas",
-    "//third_party/gvdb",
-    "//third_party/libdisplay-info:libdisplay_info",
-    "//third_party/libei:libeis",
-    "//third_party/libgudev",
-    "//third_party/libinput",
-    "//third_party/wayland:wayland_server_lib",
-    "//third_party/wayland-protocols:cursor_shape_protocol",
-    "//third_party/wayland-protocols:drm_lease_protocol",
-    "//third_party/wayland-protocols:fractional_scale_protocol",
-    "//third_party/wayland-protocols:idle_inhibit_protocol",
-    "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
-    "//third_party/wayland-protocols:linux_drm_syncobj_protocol",
-    "//third_party/wayland-protocols:pointer_constraints_protocol",
-    "//third_party/wayland-protocols:pointer_gestures_protocol",
-    "//third_party/wayland-protocols:presentation_time_protocol",
-    "//third_party/wayland-protocols:primary_selection_protocol",
-    "//third_party/wayland-protocols:relative_pointer_protocol",
-    "//third_party/wayland-protocols:single_pixel_buffer",
-    "//third_party/wayland-protocols:tablet_protocol",
-    "//third_party/wayland-protocols:text_input_protocol",
-    "//third_party/wayland-protocols:ui_controls_protocol",
-    "//third_party/wayland-protocols:viewporter_protocol",
-    "//third_party/wayland-protocols:xdg_activation",
-    "//third_party/wayland-protocols:xdg_dialog_protocol",
-    "//third_party/wayland-protocols:xdg_foreign",
-    "//third_party/wayland-protocols:xdg_output_protocol",
-    "//third_party/wayland-protocols:xdg_shell_protocol",
-    "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
+  deps = _libmutter_deps
+}
+
+# Chromium's implementation of the zcr_ui_controls_v2 protocol, used by
+# interactive_ui_tests. It is kept outside of the upstream mutter tree so that
+# src/ can track a pristine upstream release, and is hooked into the compositor
+# by wrapping meta_wayland_compositor_new() at link time (see the
+# executable("mutter") target below).
+source_set("ui_controls") {
+  testonly = true
+
+  defines = [ "G_LOG_DOMAIN=\"libmutter\"" ]
+
+  sources = [ "chromium/meta-wayland-ui-controls.c" ]
+
+  configs += [
+    ":gbm",
+    ":libmutter_config",
+    ":mtk_public_config",
+    "//third_party/libei:libei_include_dirs",
   ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = _libmutter_deps + [
+           ":libmutter",
+           "//third_party/wayland-protocols:ui_controls_protocol",
+         ]
 }
 
 shared_library("libdefault") {
@@ -1640,11 +1668,18 @@ executable("mutter") {
     ":clutter",
     ":compile_schemas",
     ":libmutter",
+    ":ui_controls",
   ]
 
   data_deps = [ ":libdefault" ]
 
-  ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
+  ldflags = [
+    "-Wl,-rpath=\$ORIGIN",
+
+    # Hook ui_controls initialization into Wayland compositor creation. See
+    # chromium/meta-wayland-ui-controls.c.
+    "-Wl,--wrap=meta_wayland_compositor_new",
+  ]
 
   # TODO(crbug.com/396647882) remove this temporary measure to build with
   # missing gbm functions in sysroot gbm package.

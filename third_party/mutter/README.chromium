@@ -1,7 +1,7 @@
 Name: mutter
 URL: https://gitlab.gnome.org/GNOME/mutter
 Version: 48.4
-Revision: 7c88672bfc702f7d47c6b3755147fbeb859391af
+Revision: d7dc2308e095f4267c7e5994b4d66b5f991b7afc
 Update Mechanism: Manual (https://crbug.com/503546519)
 License: GPL-2.0
 License File: LICENSE
@@ -14,13 +14,17 @@ A Wayland display server and X11 window manager and compositor library.
 This is only used in tests.
 
 Local Modifications:
-- Implement chromium ui-controls protocol in forked chromium branch.
+None. src/ is a pristine upstream release.
+
+The Chromium ui-controls Wayland protocol (used by interactive_ui_tests) is
+implemented in chromium/meta-wayland-ui-controls.c, outside of src/. It is
+built against mutter's private headers and hooked into the compositor by
+wrapping meta_wayland_compositor_new() at link time
+(-Wl,--wrap=meta_wayland_compositor_new in BUILD.gn).
 
 When updating to a new version, update the Revision above with the new commit hash,
 and perform the following steps:
 1. Run on_update.sh
 2. Check in the generated files along with the changes for the update.
-
-When making local modifications to the third party repo, no CQ bots are run.
-So make sure to run tests locally and/or using a draft chromium CL with updated
-DEPS pointing to the new SHA before submitting changes there.
+3. Make sure chromium/meta-wayland-ui-controls.c still builds against the new
+   private headers.
