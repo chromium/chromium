@@ -96,8 +96,9 @@ public class ComposeboxQueryControllerBridge {
     /**
      * Set the current context upload observer. If non-null, the observer will be notified of
      * context upload status changes for all contexts, identified by token. Note that there are
-     * intermediate statuses (neither success nor failure), there is no guarantee of ordering
-     * between contexts, but a context upload will either succeed/fail at most once.
+     * intermediate statuses (neither success nor failure) and no guarantee of ordering between
+     * contexts. A context reports success at most once, but may later report UPLOAD_EXPIRED when
+     * the session's uploaded contexts are discarded.
      */
     void setContextUploadObserver(@Nullable ContextUploadObserver observer) {
         mContextUploadObserver = observer;

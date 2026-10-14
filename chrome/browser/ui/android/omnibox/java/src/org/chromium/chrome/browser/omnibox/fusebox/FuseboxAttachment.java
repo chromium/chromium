@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxTabAttachStartFailureReason;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
@@ -47,6 +48,7 @@ public final class FuseboxAttachment extends ListItem {
     private boolean mIsFetchingTabDataFromCache;
     private boolean mIsPartOfMultiTabSelection;
     private @Nullable String mToken;
+    private boolean mUploadSucceeded;
 
     private FuseboxAttachment(
             @FuseboxAttachmentType int itemType,
@@ -243,54 +245,127 @@ public final class FuseboxAttachment extends ListItem {
     /**
      * Uploads this attachment using the provided bridge and sets its token.
      *
+     * <p>A started upload, including a retry of one that already completed, leaves this attachment
+     * incomplete until the backend reports a terminal status for it.
+     *
      * @param bridge The bridge to use for uploading
      * @param bypassTabCacheThisTime Whether to bypass the tab cache.
-     * @return true if upload succeeded, false otherwise
+     * @return Whether the upload started.
      */
     /* package */ boolean uploadToBackend(
             ComposeboxQueryControllerBridge bridge, boolean bypassTabCacheThisTime) {
         assert !hasToken() || bypassTabCacheThisTime
                 : "Attachment should not have a token when uploaded except for tab data retries";
 
+        boolean started;
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            mIsFetchingTabDataFromCache = false;
-            // We must fetch fresh tab content for the active tab, incognito tabs (not in cache), or
-            // if it is forced.
-            boolean mustFetchFreshTabContent =
-                    (bypassTabCache
-                            || assumeNonNull(tab).isIncognitoBranded()
-                            || bypassTabCacheThisTime);
-
-            // We can fetch fresh tab content for active tabs.
-            boolean canFetchFreshTabContent = FuseboxTabUtils.isTabActive(tab);
-
-            if (mustFetchFreshTabContent && canFetchFreshTabContent) {
-                mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
-            } else if (mustFetchFreshTabContent && !canFetchFreshTabContent) {
-                // We must do a fresh fetch and cannot rely on the cache, but it is not possible to
-                // perform a fresh fetch. The upload will fail.
-                return false;
-            } else {
-                // Try the cache first.
-                mIsFetchingTabDataFromCache = true;
-                mToken = bridge.addTabContextFromCache(getTabId(), isSuggestedTab);
-
-                // If cache fetch fails, try to fetch fresh data if possible.
-                if (TextUtils.isEmpty(mToken) && canFetchFreshTabContent) {
-                    // We are not trying to fetch from the cache anymore we are doing a fresh fetch
-                    // instead.
-                    mIsFetchingTabDataFromCache = false;
-
-                    mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
-                }
-            }
-        } else if (type == FuseboxAttachmentType.ATTACHMENT_DRIVE) {
-            mToken = bridge.addDriveFile(assumeNonNull(driveId), resourceKey, title, mimeType);
+            started = startTabUpload(bridge, bypassTabCacheThisTime);
         } else {
-            mToken = bridge.addFile(title, mimeType, data);
+            mToken =
+                    type == FuseboxAttachmentType.ATTACHMENT_DRIVE
+                            ? bridge.addDriveFile(
+                                    assumeNonNull(driveId), resourceKey, title, mimeType)
+                            : bridge.addFile(title, mimeType, data);
+            started = hasToken();
+        }
+        if (started) mIsUploadComplete = false;
+        return started;
+    }
+
+    /**
+     * Starts the upload of this tab attachment, recording why it could not start when it did not.
+     *
+     * @param bridge The bridge to use for uploading
+     * @param bypassTabCacheThisTime Whether to bypass the tab cache.
+     * @return Whether the upload started.
+     */
+    private boolean startTabUpload(
+            ComposeboxQueryControllerBridge bridge, boolean bypassTabCacheThisTime) {
+        boolean isRetry = hasToken();
+        mIsFetchingTabDataFromCache = false;
+
+        // We must fetch fresh tab content for the active tab, incognito tabs (not in cache), or
+        // if it is forced.
+        boolean mustFetchFreshTabContent =
+                (bypassTabCache
+                        || assumeNonNull(tab).isIncognitoBranded()
+                        || bypassTabCacheThisTime);
+
+        // We can fetch fresh tab content for active tabs.
+        boolean canFetchFreshTabContent = FuseboxTabUtils.isTabActive(tab);
+
+        if (mustFetchFreshTabContent && canFetchFreshTabContent) {
+            mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
+        } else if (mustFetchFreshTabContent && !canFetchFreshTabContent) {
+            // We must do a fresh fetch and cannot rely on the cache, but it is not possible to
+            // perform a fresh fetch. The upload will fail.
+            recordStartFailureUnlessRetry(
+                    FuseboxTabAttachStartFailureReason.FRESH_REQUIRED_TAB_NOT_LIVE, isRetry);
+            return false;
+        } else {
+            // Try the cache first.
+            mIsFetchingTabDataFromCache = true;
+            mToken = bridge.addTabContextFromCache(getTabId(), isSuggestedTab);
+
+            // If cache fetch fails, try to fetch fresh data if possible.
+            if (TextUtils.isEmpty(mToken) && canFetchFreshTabContent) {
+                // We are not trying to fetch from the cache anymore we are doing a fresh fetch
+                // instead.
+                mIsFetchingTabDataFromCache = false;
+
+                mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
+            } else if (TextUtils.isEmpty(mToken)) {
+                recordStartFailureUnlessRetry(
+                        FuseboxTabAttachStartFailureReason.CACHE_UNAVAILABLE_TAB_NOT_LIVE, isRetry);
+                return false;
+            }
         }
 
-        return !TextUtils.isEmpty(mToken);
+        if (!hasToken()) {
+            recordStartFailureUnlessRetry(
+                    FuseboxTabAttachStartFailureReason.UPLOAD_REJECTED, isRetry);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Records a tab attach start failure unless the attempt was a retry. A retry re-enters with the
+     * token of its earlier upload; it is not a new attach attempt, so its rejection is not a start
+     * failure.
+     */
+    private void recordStartFailureUnlessRetry(
+            @FuseboxTabAttachStartFailureReason int reason, boolean isRetry) {
+        if (isRetry) return;
+        FuseboxMetrics.recordTabAttachStartFailure(reason, buttonType);
+    }
+
+    /** Returns whether the backend has ever reported a successful upload for this attachment. */
+    /* package */ boolean hasUploadSucceeded() {
+        return mUploadSucceeded;
+    }
+
+    /** Marks the current upload as successful and complete. */
+    /* package */ void markUploadSucceeded() {
+        mUploadSucceeded = true;
+        mIsUploadComplete = true;
+    }
+
+    /**
+     * Returns whether the user is still waiting on this attachment's upload. Suggested tabs are
+     * attached automatically and upload in the background, so they are never reported as awaited.
+     */
+    /* package */ boolean isAwaitingUpload() {
+        return !mIsUploadComplete && !isSuggestedTab;
+    }
+
+    /**
+     * Returns whether removing this attachment now, other than for a failure, abandons it: the user
+     * attached it and its upload never succeeded. Suggested tabs are added and swapped out
+     * automatically, so discarding one is not abandonment.
+     */
+    /* package */ boolean isAbandonedIfRemoved() {
+        return !mUploadSucceeded && !isSuggestedTab;
     }
 
     /**
