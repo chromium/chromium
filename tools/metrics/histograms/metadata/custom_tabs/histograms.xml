@@ -175,23 +175,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Branding.AppIdType"
-    enum="CustomTabsBrandingAppIdType" expires_after="2025-07-06">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Each client app
-    is identified with a unique string. It was initially (and preferably) its
-    package name but is extended to be of any text string from the intent's
-    referrer if the package name is unavailable. An empty string is regarded as
-    invalid id.
-
-    Record the type of the id for a given CCT when the async task is finished.
-    Record for Android CCT only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
     expires_after="2027-04-04">
   <owner>yusufo@chromium.org</owner>

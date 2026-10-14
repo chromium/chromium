@@ -28,8 +28,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingAppIdType;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingLaunchTimeStorage;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 
@@ -81,7 +79,6 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(PACKAGE_1, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher();
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Branding is checked after cadence, BrandingDecision should be TOOLBAR. ",
@@ -89,7 +86,6 @@ public class BrandingCheckerUnitTest {
                 callbackDelegate.getBrandingDecision());
 
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
-        watcher.assertExpected();
     }
 
     @Test
@@ -98,7 +94,6 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(NEW_APPLICATION, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher();
         RobolectricUtil.runAllBackgroundAndUi();
         long showBrandingTime = SystemClock.elapsedRealtime();
         assertEquals(
@@ -109,7 +104,6 @@ public class BrandingCheckerUnitTest {
                 "Show branding time is different.",
                 showBrandingTime,
                 mStorage.get(NEW_APPLICATION));
-        watcher.assertExpected();
     }
 
     @Test
@@ -120,7 +114,6 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(PACKAGE_1, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher();
         // Run looper for #doInBackground
         RobolectricUtil.runOneBackgroundTask();
         assertEquals("BrandingDecision is not set yet.", 0, callbackDelegate.getCallCount());
@@ -135,7 +128,6 @@ public class BrandingCheckerUnitTest {
                 callbackDelegate.getBrandingDecision());
         assertNull("MIM data should be null", callbackDelegate.getMimData());
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
-        watcher.assertExpected();
     }
 
     @Test
@@ -144,7 +136,6 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(INVALID_ID, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher();
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Package is invalid, BrandingDecision should be the test default. ",
@@ -152,19 +143,6 @@ public class BrandingCheckerUnitTest {
                 callbackDelegate.getBrandingDecision());
         assertEquals(
                 "Branding time should not record for invalid id.", -1, mStorage.get(INVALID_ID));
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void testBrandingAppIdType() {
-        assertEquals(BrandingAppIdType.PACKAGE_NAME, BrandingChecker.getAppIdType(PACKAGE_1));
-        assertEquals(BrandingAppIdType.PACKAGE_NAME, BrandingChecker.getAppIdType(PACKAGE_2));
-
-        assertEquals(BrandingAppIdType.INVALID, BrandingChecker.getAppIdType(""));
-
-        // Package not installed. Regarded as referrer string.
-        assertEquals(BrandingAppIdType.REFERRER, BrandingChecker.getAppIdType("com.not.installed"));
-        assertEquals(BrandingAppIdType.REFERRER, BrandingChecker.getAppIdType("2//com.seedly"));
     }
 
     @Test
@@ -237,12 +215,6 @@ public class BrandingCheckerUnitTest {
 
     private void advanceTimeMs(long increments) {
         ShadowSystemClock.advanceBy(increments, TimeUnit.MILLISECONDS);
-    }
-
-    private HistogramWatcher newHistogramWatcher() {
-        return HistogramWatcher.newBuilder()
-                .expectAnyRecord("CustomTabs.Branding.AppIdType")
-                .build();
     }
 
     private static class CallbackDelegate extends CallbackHelper {

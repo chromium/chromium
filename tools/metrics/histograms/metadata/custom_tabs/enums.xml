@@ -35,13 +35,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextualCustomActionType) -->
 
-<enum name="CustomTabsBrandingAppIdType">
-  <summary>Used by CustomTabs.Branding.AppIdType</summary>
-  <int value="0" label="INVALID"/>
-  <int value="1" label="PACKAGE_NAME"/>
-  <int value="2" label="REFERRER"/>
-</enum>
-
 <enum name="CustomTabsCloseCause">
   <int value="0" label="User action in Chrome (back press, close button)"/>
   <int value="1" label="User action in Android (home)"/>

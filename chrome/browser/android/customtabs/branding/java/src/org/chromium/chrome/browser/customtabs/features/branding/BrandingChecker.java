@@ -9,14 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
-import org.chromium.base.PackageUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,23 +21,6 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 class BrandingChecker extends AsyncTask<BrandingInfo> {
     public static final int BRANDING_TIME_NOT_FOUND = -1;
-
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    @IntDef({
-        BrandingAppIdType.INVALID,
-        BrandingAppIdType.PACKAGE_NAME,
-        BrandingAppIdType.REFERRER,
-        BrandingAppIdType.NUM_ENTRIES
-    })
-    @interface BrandingAppIdType {
-        int INVALID = 0;
-        int PACKAGE_NAME = 1;
-        int REFERRER = 2;
-
-        // Must be the last one.
-        int NUM_ENTRIES = 3;
-    }
 
     /**
      * Interface BrandingChecked used to fetch branding information. If the storage involves any
@@ -142,12 +121,7 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
             mimData = mStorage.getMimData();
             brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, lastShowTime);
         }
-        BrandingInfo info = new BrandingInfo(brandingDecision, lastShowTimeGlobal, mimData);
-        @BrandingAppIdType int appIdType = getAppIdType(mAppId);
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.Branding.AppIdType", appIdType, BrandingAppIdType.NUM_ENTRIES);
-
-        return info;
+        return new BrandingInfo(brandingDecision, lastShowTimeGlobal, mimData);
     }
 
     @MainThread
@@ -160,13 +134,6 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
     @Override
     protected void onCancelled() {
         onTaskFinished(BrandingInfo.EMPTY);
-    }
-
-    @VisibleForTesting
-    static @BrandingAppIdType int getAppIdType(@Nullable String appId) {
-        if (TextUtils.isEmpty(appId)) return BrandingAppIdType.INVALID;
-        if (PackageUtils.isPackageInstalled(appId)) return BrandingAppIdType.PACKAGE_NAME;
-        return BrandingAppIdType.REFERRER;
     }
 
     private @BrandingDecision int makeBrandingDecisionFromLaunchTime(
