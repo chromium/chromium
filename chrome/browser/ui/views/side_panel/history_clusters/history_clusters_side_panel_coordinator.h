@@ -15,8 +15,8 @@ class BrowserWindowInterface;
 class GURL;
 class Profile;
 class HistoryClustersSidePanelUI;
+class SidePanelEntry;
 class SidePanelEntryScope;
-class SidePanelRegistry;
 
 namespace views {
 class View;
@@ -41,8 +41,6 @@ class HistoryClustersSidePanelCoordinator {
   // panel registry.
   static bool IsSupported(Profile* profile);
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
-
   // Shows the Journeys side panel with `query` pre-populated. Returns true if
   // this was successful.
   bool Show(const std::string& query);
@@ -59,6 +57,7 @@ class HistoryClustersSidePanelCoordinator {
   ui::ScopedUnownedUserData<HistoryClustersSidePanelCoordinator>
       scoped_unowned_user_data_;
 
+  std::unique_ptr<SidePanelEntry> CreateEntry();
   std::unique_ptr<views::View> CreateHistoryClustersWebView(
       SidePanelEntryScope& scope);
 

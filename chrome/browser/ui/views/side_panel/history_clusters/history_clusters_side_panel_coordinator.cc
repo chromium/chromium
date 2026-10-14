@@ -55,6 +55,10 @@ HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
     : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
       browser_(CHECK_DEREF(browser)),
       profile_(CHECK_DEREF(profile)) {
+  if (IsSupported(profile)) {
+    SidePanelRegistry::From(browser)->Register(CreateEntry());
+  }
+
   pref_change_registrar_.Init(profile_->GetPrefs());
   base::RepeatingClosure callback(base::BindRepeating(
       &HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged,
@@ -71,9 +75,9 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
       IsHistoryClustersSidePanelSupportedForProfile(profile);
 }
 
-void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+std::unique_ptr<SidePanelEntry>
+HistoryClustersSidePanelCoordinator::CreateEntry() {
+  return std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
@@ -82,7 +86,7 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
           &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
           base::Unretained(this)),
       /*more_info_callback=*/base::NullCallback(),
-      /*default_content_width_callback=*/base::NullCallback()));
+      /*default_content_width_callback=*/base::NullCallback());
 }
 
 std::unique_ptr<views::View>
@@ -128,7 +132,7 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
 void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
   auto* const global_registry = SidePanelRegistry::From(&browser_.get());
   if (IsSupported(profile())) {
-    CreateAndRegisterEntry(global_registry);
+    global_registry->Register(CreateEntry());
   } else {
     global_registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
