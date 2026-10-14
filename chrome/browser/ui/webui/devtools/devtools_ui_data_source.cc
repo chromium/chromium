@@ -192,7 +192,7 @@ void DevToolsDataSource::StartDataRequest(
     GURL remote_url(kRemoteFrontendBase +
                     path.substr(remote_path_prefix.length()));
 
-    CHECK_EQ(remote_url.GetHost(), kRemoteFrontendDomain);
+    CHECK_EQ(remote_url.host(), kRemoteFrontendDomain);
     if (remote_url.is_valid() &&
         DevToolsUIBindings::IsValidRemoteFrontendURL(remote_url)) {
       StartRemoteDataRequest(remote_url, std::move(callback));
