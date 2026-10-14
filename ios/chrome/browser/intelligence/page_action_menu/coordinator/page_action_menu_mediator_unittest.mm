@@ -447,7 +447,8 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
 }
 
 // Tests that permission rows are shown as dropdowns reflecting the persisted
-// content setting, and remain visible once the permission is blocked.
+// content setting while the permission is accessible, and hidden when the
+// permission is not accessible.
 TEST_F(PageActionMenuMediatorTest, PermissionFeatureDropdown) {
   scoped_feature_list_.InitWithFeatures(
       {kPageActionMenu, kDomainLevelSitePermissions}, {});
@@ -494,18 +495,15 @@ TEST_F(PageActionMenuMediatorTest, PermissionFeatureDropdown) {
   EXPECT_EQ(feature.permissionSetting,
             PageActionMenuPermissionSetting::kNeverAllow);
 
-  // 5. A blocked permission revokes WebState access and keeps its row so that
-  // it can be changed back.
+  // 5. Blocking a permission revokes WebState access (`NotAccessible`), so the
+  // row is no longer available on subsequent queries when not in use.
   [mediator_
       updatePermissionSetting:PageActionMenuPermissionSetting::kNeverAllow
                    forFeature:PageActionMenuCameraPermission];
   EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
             web::PermissionStateNotAccessible);
-  EXPECT_TRUE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
-  feature = CameraFeature([mediator_ activeFeatures]);
-  ASSERT_TRUE(feature);
-  EXPECT_EQ(feature.permissionSetting,
-            PageActionMenuPermissionSetting::kNeverAllow);
+  EXPECT_FALSE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
+  EXPECT_FALSE(CameraFeature([mediator_ activeFeatures]));
 }
 
 // Tests that permission rows keep using a toggle, and are hidden when the
