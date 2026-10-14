@@ -8456,6 +8456,7 @@ data/gpu/webgl1_conformance_android_runtimes.json
 data/gpu/webgl1_conformance_linux_runtimes.json
 data/gpu/webgl1_conformance_mac_runtimes.json
 data/gpu/webgl1_conformance_win_runtimes.json
+data/gpu/webgl2-transfer-cache-prune.html
 data/gpu/webgl2-unpack-image-height.html
 data/gpu/webgl2_conformance_android_runtimes.json
 data/gpu/webgl2_conformance_linux_runtimes.json

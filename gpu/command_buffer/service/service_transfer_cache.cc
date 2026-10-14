@@ -21,6 +21,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -198,8 +199,10 @@ ServiceTransferCache::CacheEntryInternal::operator=(
 
 ServiceTransferCache::ServiceTransferCache(
     const GpuPreferences& preferences,
-    base::RepeatingClosure flush_callback)
+    base::RepeatingClosure flush_callback,
+    SharedContextState* shared_context_state)
     : flush_callback_(std::move(flush_callback)),
+      shared_context_state_(shared_context_state),
       entries_(EntryCache::NO_AUTO_EVICT),
       max_cache_size_limit_(
           preferences.force_gpu_mem_discardable_limit_bytes
@@ -221,12 +224,39 @@ ServiceTransferCache::~ServiceTransferCache() {
       this);
 }
 
+bool ServiceTransferCache::EnsureContextCurrent() {
+  if (!shared_context_state_) {
+    return true;
+  }
+  if (shared_context_state_->context_lost()) {
+    return false;
+  }
+  if (!shared_context_state_->IsCurrent(nullptr)) {
+    if (!shared_context_state_->MakeCurrent(nullptr)) {
+      return false;
+    }
+  }
+  shared_context_state_->set_need_context_state_reset(true);
+  return true;
+}
+
+void ServiceTransferCache::AssertContextCurrentOrLost() const {
+  if (!shared_context_state_) {
+    return;
+  }
+  DCHECK(shared_context_state_->IsCurrent(nullptr) ||
+         shared_context_state_->context_lost());
+}
+
 bool ServiceTransferCache::CreateLockedEntry(
     const EntryKey& key,
     ServiceDiscardableHandle handle,
-    GrDirectContext* context,
-    skgpu::graphite::Recorder* graphite_recorder,
     base::span<uint8_t> data) {
+  AssertContextCurrentOrLost();
+  if (shared_context_state_ && shared_context_state_->context_lost()) {
+    return false;
+  }
+
   auto found = entries_.Peek(key);
   if (found != entries_.end()) {
     return false;
@@ -236,6 +266,17 @@ bool ServiceTransferCache::CreateLockedEntry(
       cc::ServiceTransferCacheEntry::Create(key.entry_type);
   if (!entry) {
     return false;
+  }
+
+  GrDirectContext* context = nullptr;
+  skgpu::graphite::Recorder* graphite_recorder = nullptr;
+  if (cc::ServiceTransferCacheEntry::UsesGpuContext(key.entry_type)) {
+    if (!shared_context_state_) {
+      return false;
+    }
+    shared_context_state_->set_need_context_state_reset(true);
+    context = shared_context_state_->gr_context();
+    graphite_recorder = shared_context_state_->gpu_main_graphite_recorder();
   }
 
   if (!entry->Deserialize(context, graphite_recorder, data)) {
@@ -258,6 +299,8 @@ void ServiceTransferCache::CreateLocalEntry(
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry) {
   if (!entry)
     return;
+
+  AssertContextCurrentOrLost();
 
   DCHECK_EQ(entry->Type(), key.entry_type);
   DeleteEntry(key);
@@ -287,6 +330,7 @@ bool ServiceTransferCache::UnlockEntry(const EntryKey& key) {
 
 template <typename Iterator>
 Iterator ServiceTransferCache::ForceDeleteEntry(Iterator it) {
+  AssertContextCurrentOrLost();
   if (it->second.handle)
     it->second.handle->ForceDelete();
 
@@ -295,6 +339,9 @@ Iterator ServiceTransferCache::ForceDeleteEntry(Iterator it) {
   if (it->first.entry_type == cc::TransferCacheEntryType::kImage) {
     total_image_count_--;
     total_image_size_ -= it->second.entry->CachedSize();
+  }
+  if (shared_context_state_) {
+    shared_context_state_->set_need_context_state_reset(true);
   }
   return entries_.Erase(it);
 }
@@ -310,6 +357,7 @@ bool ServiceTransferCache::DeleteEntry(const EntryKey& key) {
 
 cc::ServiceTransferCacheEntry* ServiceTransferCache::GetEntry(
     const EntryKey& key) {
+  AssertContextCurrentOrLost();
   auto entry = entries_.Get(key);
   bool found = entry != entries_.end();
   UMA_HISTOGRAM_BOOLEAN("GPU.TransferCache.EntryFound", found);
@@ -355,14 +403,16 @@ void ServiceTransferCache::MaybePostPruneOldEntries() {
 }
 
 void ServiceTransferCache::PruneOldEntries() {
-  base::TimeTicks now = base::TimeTicks::Now();
+  if (EnsureContextCurrent()) {
+    base::TimeTicks now = base::TimeTicks::Now();
 
-  int removed_count =
-      RemoveOldEntriesUntil([&](EntryCache::reverse_iterator it) {
-        return now - it->second.last_use < kOldEntryCutoffTimeDelta;
-      });
-  if (removed_count && flush_callback_) {
-    flush_callback_.Run();
+    int removed_count =
+        RemoveOldEntriesUntil([&](EntryCache::reverse_iterator it) {
+          return now - it->second.last_use < kOldEntryCutoffTimeDelta;
+        });
+    if (removed_count && flush_callback_) {
+      flush_callback_.Run();
+    }
   }
 
   if (request_post_prune_old_entries_while_pending_) {
@@ -373,6 +423,7 @@ void ServiceTransferCache::PruneOldEntries() {
 
 int ServiceTransferCache::RemoveOldEntriesUntil(
     base::FunctionRef<bool(EntryCache::reverse_iterator)> should_stop) {
+  AssertContextCurrentOrLost();
   int removed_count = 0;
   for (auto it = entries_.rbegin(); it != entries_.rend();) {
     if (should_stop(it)) {
@@ -386,6 +437,9 @@ int ServiceTransferCache::RemoveOldEntriesUntil(
     if (it->first.entry_type == cc::TransferCacheEntryType::kImage) {
       total_image_count_--;
       total_image_size_ -= it->second.entry->CachedSize();
+    }
+    if (shared_context_state_) {
+      shared_context_state_->set_need_context_state_reset(true);
     }
     it = entries_.Erase(it);
     removed_count++;
@@ -403,6 +457,7 @@ void ServiceTransferCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
 }
 
 void ServiceTransferCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
+  AssertContextCurrentOrLost();
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     // In OnUpdateMemoryLimit(), cache_size_limit_ is clamped to total_size_
     // to avoid unexpected eviction during subsequent CreateLocalEntry() calls.
@@ -420,6 +475,7 @@ void ServiceTransferCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
 }
 
 void ServiceTransferCache::DeleteAllEntriesForDecoder(int decoder_id) {
+  AssertContextCurrentOrLost();
   for (auto it = entries_.rbegin(); it != entries_.rend();) {
     if (it->first.decoder_id != decoder_id) {
       ++it;

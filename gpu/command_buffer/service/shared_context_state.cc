@@ -339,7 +339,7 @@ SharedContextState::~SharedContextState() {
   // The context should be current so that texture deletes that result from
   // destroying the cache happen in the right context (unless the context is
   // lost in which case we don't delete the textures).
-  DCHECK(IsCurrent(nullptr) || context_lost());
+  CHECK(IsCurrent(nullptr) || context_lost());
   transfer_cache_.reset();
 
   if (IsCurrent(nullptr, true) && feature_info_) {
@@ -609,7 +609,8 @@ bool SharedContextState::InitializeGanesh(
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
       base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      this);
   gr_cache_controller_ = std::make_unique<raster::GrCacheController>(this);
   return true;
 }
@@ -701,7 +702,8 @@ bool SharedContextState::InitializeGraphite(
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
       base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      this);
   return true;
 }
 
