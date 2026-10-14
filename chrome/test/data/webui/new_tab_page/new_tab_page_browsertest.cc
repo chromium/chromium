@@ -113,14 +113,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensUploadDialog) {
   RunTest("new_tab_page/lens_upload_dialog_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
-// position checks.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Logo DISABLED_Logo
-#else
-#define MAYBE_Logo Logo
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Logo) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Logo) {
   RunTest("new_tab_page/logo_test.js", "mocha.run()");
 }
 
@@ -384,9 +377,7 @@ class NewTabPageAppComposeboxInvariantTest
 };
 
 // TODO(crbug.com/564567296): Flaky timeout on Linux debug builds.
-// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
-// alignment checks.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_InvariantChecks DISABLED_InvariantChecks
 #else
 #define MAYBE_InvariantChecks InvariantChecks
@@ -461,39 +452,22 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
 // The VoiceSearchCoherence Mocha suite is split into several browser tests so
 // that each of them finishes well within the test launcher timeout on slower
 // (e.g. debug) bots.
-// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
-// size checks.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_VoiceSearchCoherenceDialog DISABLED_VoiceSearchCoherenceDialog
-#define MAYBE_VoiceSearchCoherenceEvents DISABLED_VoiceSearchCoherenceEvents
-#define MAYBE_VoiceSearchCoherenceAnimation \
-  DISABLED_VoiceSearchCoherenceAnimation
-#define MAYBE_VoiceSearchCoherenceLiveTranscript \
-  DISABLED_VoiceSearchCoherenceLiveTranscript
-#else
-#define MAYBE_VoiceSearchCoherenceDialog VoiceSearchCoherenceDialog
-#define MAYBE_VoiceSearchCoherenceEvents VoiceSearchCoherenceEvents
-#define MAYBE_VoiceSearchCoherenceAnimation VoiceSearchCoherenceAnimation
-#define MAYBE_VoiceSearchCoherenceLiveTranscript \
-  VoiceSearchCoherenceLiveTranscript
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceDialog) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceDialog) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Dialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceEvents) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceEvents) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Events')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherenceAnimation) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceAnimation) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Animation')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest,
-                       MAYBE_VoiceSearchCoherenceLiveTranscript) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceLiveTranscript) {
   RunTest(
       "new_tab_page/app_test.js",
       "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence LiveTranscript')");

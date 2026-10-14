@@ -24,13 +24,13 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createFuseboxAction, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, queryShadowPath} from './test_support.js';
+import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createFuseboxAction, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, LAYOUT_TOLERANCE_PX, queryShadowPath} from './test_support.js';
 
 const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
 
@@ -2094,15 +2094,17 @@ suite('NewTabPageAppTest', () => {
               const submitIcon = $$(submitElement, '#submitContainer');
               assertTrue(!!submitIcon);
 
-              assertEquals(
+              assertNear(
                   18,
                   toolChipButton.getBoundingClientRect().top -
                       fileCarousel.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Vertical distance between carousel and tool chip should be ' +
                       '18px');
-              assertEquals(
+              assertNear(
                   toolChipButton.getBoundingClientRect().bottom,
                   submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Tool chip button and submit button should be bottom aligned');
             });
 
@@ -2147,9 +2149,10 @@ suite('NewTabPageAppTest', () => {
               const submitIcon = $$(submitElement, '#submitContainer');
               assertTrue(!!submitIcon);
 
-              assertEquals(
+              assertNear(
                   toolChipButton.getBoundingClientRect().bottom,
                   submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Tool chip button and submit button should be bottom aligned');
             });
 
@@ -2205,15 +2208,17 @@ suite('NewTabPageAppTest', () => {
               const submitIcon = $$(submitElement, '#submitContainer');
               assertTrue(!!submitIcon);
 
-              assertEquals(
+              assertNear(
                   18,
                   entrypointButton.getBoundingClientRect().top -
                       fileCarousel.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Vertical distance between carousel and + button should be ' +
                       '18px');
-              assertEquals(
+              assertNear(
                   entrypointButton.getBoundingClientRect().bottom,
                   submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Entrypoint button and submit button should be bottom ' +
                       'aligned');
             });
@@ -2264,9 +2269,10 @@ suite('NewTabPageAppTest', () => {
               const submitIcon = $$(submitElement, '#submitContainer');
               assertTrue(!!submitIcon);
 
-              assertEquals(
+              assertNear(
                   entrypointButton.getBoundingClientRect().bottom,
                   submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Entrypoint button and submit button should be bottom ' +
                       'aligned');
             });
@@ -2311,9 +2317,10 @@ suite('NewTabPageAppTest', () => {
               const submitIcon = $$(submitElement, '#submitContainer');
               assertTrue(!!submitIcon, 'Submit icon should exist');
 
-              assertEquals(
+              assertNear(
                   chip.getBoundingClientRect().bottom,
                   submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
                   'Attachment chip and submit button should be bottom aligned');
             });
       });
@@ -3920,7 +3927,7 @@ suite('NewTabPageAppTest', () => {
 
         // Verify dialog height and box-shadow match Composebox specs.
         const dialogStyle = window.getComputedStyle(dialog);
-        assertEquals('128px', dialogStyle.height);
+        assertNear(128, parseFloat(dialogStyle.height), LAYOUT_TOLERANCE_PX);
         assertNotEquals(FAINT_SHADOW, dialogStyle.boxShadow);
 
         // Verify voice search element and bottom actions CSS variables.
@@ -3947,7 +3954,7 @@ suite('NewTabPageAppTest', () => {
 
         const stopButtonStyle = window.getComputedStyle(stopButton);
         assertEquals('relative', stopButtonStyle.position);
-        assertEquals('36px', stopButtonStyle.height);
+        assertNear(36, parseFloat(stopButtonStyle.height), LAYOUT_TOLERANCE_PX);
       });
 
       test(
@@ -4408,11 +4415,9 @@ suite('NewTabPageAppTest', () => {
             voiceSearch.toggleAttribute('has-multiline-transcript', true);
             voiceSearch.setAttribute('transcript-lines', '3');
             assertEquals('102px', window.getComputedStyle(waveOverlay).top);
-            assertEquals(
-                '214px',
-                window.getComputedStyle(dialog)
-                    .getPropertyValue('height')
-                    .trim());
+            assertNear(
+                214, parseFloat(window.getComputedStyle(dialog).height),
+                LAYOUT_TOLERANCE_PX);
             assertEquals(
                 '16px',
                 window.getComputedStyle(voiceSearch)
@@ -4422,30 +4427,24 @@ suite('NewTabPageAppTest', () => {
             // Verify 7 lines expands dialog to 310px and wave to 198px.
             voiceSearch.setAttribute('transcript-lines', '7');
             assertEquals('198px', window.getComputedStyle(waveOverlay).top);
-            assertEquals(
-                '310px',
-                window.getComputedStyle(dialog)
-                    .getPropertyValue('height')
-                    .trim());
+            assertNear(
+                310, parseFloat(window.getComputedStyle(dialog).height),
+                LAYOUT_TOLERANCE_PX);
 
             // Verify 2 lines expands dialog to 190px and wave to 78px.
             voiceSearch.setAttribute('transcript-lines', '2');
             assertEquals('78px', window.getComputedStyle(waveOverlay).top);
-            assertEquals(
-                '190px',
-                window.getComputedStyle(dialog)
-                    .getPropertyValue('height')
-                    .trim());
+            assertNear(
+                190, parseFloat(window.getComputedStyle(dialog).height),
+                LAYOUT_TOLERANCE_PX);
 
             // Reverting multiline restores single-line dimensions.
             voiceSearch.removeAttribute('transcript-lines');
             voiceSearch.toggleAttribute('has-multiline-transcript', false);
             assertEquals('49px', window.getComputedStyle(waveOverlay).top);
-            assertEquals(
-                '168px',
-                window.getComputedStyle(dialog)
-                    .getPropertyValue('height')
-                    .trim());
+            assertNear(
+                168, parseFloat(window.getComputedStyle(dialog).height),
+                LAYOUT_TOLERANCE_PX);
             assertEquals(
                 '16px',
                 window.getComputedStyle(voiceSearch)

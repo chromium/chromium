@@ -8,11 +8,11 @@ import {$$, DoodleImageType, DoodleShareChannel, NewTabPageProxy, PageCallbackRo
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertLE, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock, keydown} from './test_support.js';
+import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock, keydown, LAYOUT_TOLERANCE_PX} from './test_support.js';
 
 const imageOffsetHeight = 168;
 const imageOffsetWidth = 336;
@@ -224,7 +224,7 @@ suite('NewTabPageLogoTest', () => {
       assertGE(200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
       const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
       assertLE(0, pos.top);
-      assertEquals(0, pos.bottom);
+      assertNear(0, pos.bottom, LAYOUT_TOLERANCE_PX);
     });
 
     test(`${width}x${height} boxed doodle aligned correctly`, async () => {
@@ -239,7 +239,7 @@ suite('NewTabPageLogoTest', () => {
       assertGE(160, $$<HTMLElement>(logo, '#image')!.offsetHeight);
       const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
       assertGE(pos.top, 8);
-      assertEquals(0, pos.bottom);
+      assertNear(0, pos.bottom, LAYOUT_TOLERANCE_PX);
     });
   });
 
@@ -351,7 +351,7 @@ suite('NewTabPageLogoTest', () => {
 
       // Assert.
       const pos = getRelativePosition($$(logo, '#logo')!, logo);
-      assertEquals(0, pos.bottom);
+      assertNear(0, pos.bottom, LAYOUT_TOLERANCE_PX);
       assertEquals(
           useGoogleLogo26 ? 82 : 92,
           $$<HTMLElement>(logo, '#logo')!.offsetHeight);
@@ -368,7 +368,7 @@ suite('NewTabPageLogoTest', () => {
 
     // Assert.
     const pos = getRelativePosition($$(logo, '#doodle')!, logo);
-    assertEquals(0, pos.bottom);
+    assertNear(0, pos.bottom, LAYOUT_TOLERANCE_PX);
   });
 
   [true, false].forEach(hasUrl => {
