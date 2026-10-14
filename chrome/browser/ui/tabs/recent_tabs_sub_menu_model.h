@@ -201,7 +201,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // for all items whose parent is the RecentTabsSubMenuModel itself.
   int GetParentCommandId(int command_id) const;
 
-  // Add the favicon for a local or other devices' tab asynchronously,
+  // Add the favicon for a local tab asynchronously,
   // OnFaviconDataAvailable() will be invoked when the favicon is ready.
   void AddTabFavicon(int command_id,
                      ui::SimpleMenuModel* menu_model,

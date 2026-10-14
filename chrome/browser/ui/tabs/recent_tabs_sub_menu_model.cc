@@ -24,10 +24,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -40,12 +38,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -352,23 +348,12 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
           base::UserMetricsAction("WrenchMenu_OpenRecentTabFromLocal"));
       service->RestoreEntryById(context, item.tab_id, disposition);
     } else {  // Restore tab of session from other devices.
-      sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-      if (!open_tabs) {
+      if (!remote_tabs_menu_util::OpenForeignSessionTab(
+              browser_, GetOpenTabsUIDelegate(), item.session_tag, item.tab_id,
+              disposition,
+              base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"))) {
         return;
       }
-      const sessions::SessionTab* session_tab;
-      if (!open_tabs->GetForeignTab(item.session_tag, item.tab_id,
-                                    &session_tab)) {
-        return;
-      }
-      if (session_tab->navigations.empty()) {
-        return;
-      }
-      base::RecordAction(
-          base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
-      SessionRestore::RestoreForeignSessionTab(
-          browser_->tab_strip_model()->GetActiveWebContents(), *session_tab,
-          disposition);
     }
   } else if (IsCommandType(CommandType::Window, command_id)) {
     base::RecordAction(base::UserMetricsAction("WrenchMenu_OpenRecentWindow"));
@@ -704,7 +689,10 @@ void RecentTabsSubMenuModel::BuildOtherDevicesTabItem(
                                             ? base::UTF8ToUTF16(item.url.spec())
                                             : current_navigation.title());
   remote_tab_items_.emplace(command_id, item);
-  AddTabFavicon(command_id, containing_model, item.url);
+  remote_tabs_menu_util::AddRemoteTabFavicon(
+      browser_->GetProfile(),
+      weak_ptr_factory_for_other_devices_tab_.GetWeakPtr(), containing_model,
+      command_id, item.url);
 }
 
 std::unique_ptr<ui::SimpleMenuModel>
@@ -949,36 +937,20 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
   // Set default icon first.
   menu_model->SetIcon(index_in_menu, favicon::GetDefaultFaviconModel());
 
-  const bool is_local_tab = IsCommandType(CommandType::LocalTab, command_id);
-  if (is_local_tab) {
-    // Request only from local storage to avoid leaking user data.
-    favicon::FaviconService* favicon_service =
-        FaviconServiceFactory::GetForProfile(
-            browser_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
-    // Can be null for tests.
-    if (!favicon_service) {
-      return;
-    }
-    favicon_service->GetFaviconImageForPageURL(
-        url,
-        base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
-                       weak_ptr_factory_.GetWeakPtr(), command_id, menu_model),
-        &local_tab_cancelable_task_tracker_);
-  } else {
-    favicon::HistoryUiFaviconRequestHandler*
-        history_ui_favicon_request_handler =
-            HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(
-                browser_->GetProfile());
-    // Can be null for tests.
-    if (!history_ui_favicon_request_handler) {
-      return;
-    }
-    history_ui_favicon_request_handler->GetFaviconImageForPageURL(
-        url,
-        base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
-                       weak_ptr_factory_for_other_devices_tab_.GetWeakPtr(),
-                       command_id, menu_model));
+  CHECK(IsCommandType(CommandType::LocalTab, command_id));
+  // Request only from local storage to avoid leaking user data.
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(browser_->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  // Can be null for tests.
+  if (!favicon_service) {
+    return;
   }
+  favicon_service->GetFaviconImageForPageURL(
+      url,
+      base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), command_id, menu_model),
+      &local_tab_cancelable_task_tracker_);
 }
 
 void RecentTabsSubMenuModel::OnFaviconDataAvailable(
