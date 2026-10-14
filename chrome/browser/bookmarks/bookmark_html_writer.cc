@@ -550,7 +550,9 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
     const base::FilePath& path,
     bookmark_html_writer::BookmarksExportCallback callback)
     : profile_(profile), path_(path), callback_(std::move(callback)) {
-  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572628651): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile->IsOffTheRecord());
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {
