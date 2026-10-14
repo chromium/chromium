@@ -136,8 +136,13 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (!command_line->HasSwitch("in-process-gpu") &&
         !command_line->HasSwitch("single-process-tests")) {
+      auto update_vsync_displays_cb =
+          base::BindRepeating(&FrameSinkManagerImpl::UpdateVSyncDisplays,
+                              weak_factory_.GetWeakPtr());
+
       window_server_event_thread_ =
-          std::make_unique<ui::WindowServerEventPumpThread>();
+          std::make_unique<ui::WindowServerEventPumpThread>(
+              std::move(update_vsync_displays_cb));
     }
   }
 #endif

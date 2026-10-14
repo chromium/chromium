@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,10 +19,10 @@
 #include "ui/display/mac/screen_utils_mac.h"
 
 extern "C" {
-// SLSGetDisplayLink() is an undocumented private function (SPI) in the
-// SkyLight framework that creates a CADisplayLink directly from a
-// CGDirectDisplayID without requiring NSApplication or AppKit objects
-// (e.g., NSScreen, NSWindow, or NSView).
+// Undocumented SkyLight framework functions.
+// SLSGetDisplayLink() is a private function (SPI) that creates a CADisplayLink
+// directly from a CGDirectDisplayID without requiring NSApplication or AppKit
+// objects (e.g., NSScreen, NSWindow, or NSView).
 //
 // `framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]` is
 // added to //ui/display/BUILD.gn to link SkyLight.framework. Remove this
@@ -56,16 +57,37 @@ namespace ui {
 namespace {
 struct CADisplayLinkGlobals {
   CADisplayLinkGlobals() = default;
-  base::Lock lock;
-
-  // Indicates whether the display creation has been logged within the
-  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
-  absl::flat_hash_set<CGDirectDisplayID> recorded_displays GUARDED_BY(lock);
 
   static CADisplayLinkGlobals& Get() {
     static base::NoDestructor<CADisplayLinkGlobals> instance;
     return *instance;
   }
+
+  // Returns false once the WindowServerEventPumpThread has failed, after which
+  // CADisplayLinkMac can no longer rely on receiving display reconfiguration
+  // and wake events.
+  bool IsEventPumpReady() {
+    base::AutoLock auto_lock(lock);
+    return !event_pump_failed;
+  }
+
+  // Marks the WindowServerEventPumpThread as failed. This is permanent: all
+  // subsequent CADisplayLinkMac::GetForDisplay() calls return nullptr so that
+  // callers fall back to a timer-based VSync source.
+  void SetWindowServerEventPumpFailed() {
+    base::AutoLock auto_lock(lock);
+    event_pump_failed = true;
+  }
+
+  base::Lock lock;
+
+  // Set to true if WindowServerEventPumpThread fails to pump WindowServer
+  // events. See IsEventPumpReady().
+  bool event_pump_failed GUARDED_BY(lock) = false;
+
+  // Indicates whether the display creation has been logged within the
+  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
+  absl::flat_hash_set<CGDirectDisplayID> recorded_displays GUARDED_BY(lock);
 };
 
 API_AVAILABLE(macos(14.0))
@@ -140,8 +162,7 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
 // This function is called from both the GPU and the Browser process.
 void CADisplayLinkMac::TryRecordDisplayLinkCreation(
     CGDirectDisplayID display_id,
-    bool success,
-    bool in_gpu_process) {
+    bool success) {
   auto& globals = CADisplayLinkGlobals::Get();
   base::AutoLock lock(globals.lock);
 
@@ -160,28 +181,28 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
   if (@available(macos 14.0, *)) {
     TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay");
 
+    // Without a working WindowServer event pump, CADisplayLink may stop firing
+    // after display reconfiguration or power resume. Refuse to create one so
+    // the caller falls back to a timer.
+    if (!CADisplayLinkGlobals::Get().IsEventPumpReady()) {
+      TryRecordDisplayLinkCreation(display_id, /*success=*/false);
+      return nullptr;
+    }
+
     scoped_refptr<CADisplayLinkMac> display_link(
         new CADisplayLinkMac(display_id));
     auto* objc_state = display_link->objc_state_.get();
-
-    NSScreen* screen = display::GetNSScreenFromDisplayID(display_id);
-    if (!screen) {
-      TryRecordDisplayLinkCreation(display_id, /*success=*/false,
-                                   in_gpu_process);
-      return nullptr;
-    }
 
     objc_state->target = [[CADisplayLinkTarget alloc] init];
     objc_state->display_link =
         SLSGetDisplayLink(display_id, objc_state->target, @selector(step:));
 
     if (!objc_state->display_link) {
-      TryRecordDisplayLinkCreation(display_id, /*success=*/false,
-                                   in_gpu_process);
+      TryRecordDisplayLinkCreation(display_id, /*success=*/false);
       return nullptr;
     }
 
-    TryRecordDisplayLinkCreation(display_id, /*success=*/true, in_gpu_process);
+    TryRecordDisplayLinkCreation(display_id, /*success=*/true);
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;
@@ -254,14 +275,39 @@ void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
 
 // FrameSinkManagerImpl creates and owns WindowServerEventPumpThread when
 // the CADisplayLinkInGpu feature is enabled.
-WindowServerEventPumpThread::WindowServerEventPumpThread()
+WindowServerEventPumpThread::WindowServerEventPumpThread(
+    base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb)
     : base::Thread("WindowServerEventPumpThread"),
+      update_vsync_displays_cb_(std::move(update_vsync_displays_cb)),
       viz_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+  weak_ptr_ = weak_factory_.GetWeakPtr();
   // To be implemented.
 }
 
 WindowServerEventPumpThread::~WindowServerEventPumpThread() {
   // To be implemented.
+}
+
+void WindowServerEventPumpThread::DisableDisplayLink() {
+  // This may be called from the pump thread. Hop to the Viz thread, which owns
+  // FrameSinkManagerImpl and the root frame sinks.
+  if (!viz_task_runner_->BelongsToCurrentThread()) {
+    viz_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WindowServerEventPumpThread::DisableDisplayLink,
+                       weak_ptr_));
+    return;
+  }
+
+  // Make CADisplayLinkMac::GetForDisplay() fail all future creation requests.
+  CADisplayLinkGlobals::Get().SetWindowServerEventPumpFailed();
+
+  // Force every root frame sink to recreate its DisplayLinkMac. Since
+  // CADisplayLinkMac creation now fails, ExternalBeginFrameSourceMac and
+  // ImageTransportSurfaceOverlayMacEGL fall back to a timer. The display ID
+  // is ignored when the GPU process owns the display link, so pass 0 to
+  // update all displays.
+  update_vsync_displays_cb_.Run(0);
 }
 
 }  // namespace ui

@@ -457,10 +457,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   GpuServiceImpl* GetGpuService();
 
 #if BUILDFLAG(IS_MAC)
-  // This is called after SetSupportedDisplayLinkId() in the browser process.
-  // Forces every RootCompositorFrameSink associated with the specified display
-  // to update its DisplayLinkMac. This ensures that frame sinks stay in sync
-  // with the display configuration when displays are added or removed.
+  // Forces every RootCompositorFrameSink to update its DisplayLinkMac. Called
+  // when the browser-side CADisplayLink for `display_id` changes validity
+  // (e.g. a display is added or removed), or when the GPU-side
+  // WindowServerEventPumpThread fails and all frame sinks must fall back to a
+  // timer. In the latter case `display_id` is ignored.
   void UpdateVSyncDisplays(int64_t display_id);
 #endif
 
