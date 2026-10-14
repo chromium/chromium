@@ -457,6 +457,70 @@ TEST_F(TextInputManagerTest, SelectionRegionUsesEditContextSelectionBounds) {
   manager->RemoveObserver(&observer);
 }
 
+// Test that EditContext selection bounds in both GetSelectionRegion() and
+// GetTextSelectionBounds() are clamped to edit_context_control_bounds when
+// non-empty (e.g., when a caret in a scrollable EditContext container scrolls
+// behind a fixed top toolbar or below the editor surface), and fall back to
+// clamping against the viewport rect when edit_context_control_bounds is empty.
+TEST_F(TextInputManagerTest, EditContextSelectionBoundsClampedToControlBounds) {
+  RenderWidgetHostViewBase* view =
+      static_cast<RenderWidgetHostViewBase*>(rvh()->GetWidget()->GetView());
+  ASSERT_TRUE(view);
+  view->SetBounds(gfx::Rect(0, 0, 800, 600));
+  view->Focus();
+
+  TextInputManager* manager = view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  SelectionBoundsCountingObserver observer;
+  manager->AddObserver(&observer);
+
+  // Visible editor container sits below a 145px top toolbar: y in [145, 550].
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.edit_context_control_bounds = gfx::Rect(0, 145, 800, 405);
+
+  // 1. Caret scrolled above the editor container into the top toolbar (y=100).
+  state.edit_context_selection_bounds = gfx::Rect(300, 100, 2, 19);
+  manager->UpdateTextInputState(view, state);
+
+  const gfx::Rect expected_top_clamped(300, 145, 2, 19);
+  EXPECT_EQ(manager->GetTextSelectionBounds(), expected_top_clamped);
+  const TextInputManager::SelectionRegion* region =
+      manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, expected_top_clamped);
+  EXPECT_EQ(region->caret_rect, expected_top_clamped);
+  EXPECT_EQ(region->focus.edge_start(), gfx::PointF(302, 145));
+  EXPECT_EQ(region->focus.edge_end(), gfx::PointF(302, 164));
+
+  // 2. Caret scrolled below the bottom of the editor container (y=560 > 550).
+  const int count_before_bottom = observer.selection_bounds_changed_count_;
+  state.edit_context_selection_bounds = gfx::Rect(300, 560, 2, 19);
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.selection_bounds_changed_count_, count_before_bottom + 1);
+
+  const gfx::Rect expected_bottom_clamped(300, 531, 2, 19);
+  EXPECT_EQ(manager->GetTextSelectionBounds(), expected_bottom_clamped);
+  region = manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, expected_bottom_clamped);
+
+  // 3. When edit_context_control_bounds is empty, selection bounds fall back
+  // to clamping against the full viewport (0, 0, 800, 600).
+  state.edit_context_control_bounds = gfx::Rect();
+  state.edit_context_selection_bounds = gfx::Rect(300, 100, 2, 19);
+  manager->UpdateTextInputState(view, state);
+
+  const gfx::Rect expected_unclamped_in_toolbar(300, 100, 2, 19);
+  EXPECT_EQ(manager->GetTextSelectionBounds(), expected_unclamped_in_toolbar);
+  region = manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, expected_unclamped_in_toolbar);
+
+  manager->RemoveObserver(&observer);
+}
+
 // Runs |callback| the first time an observer is told about an update for
 // |target_view|, simulating a nested message loop (e.g. a third-party IME)
 // running arbitrary tasks from inside the notification.
