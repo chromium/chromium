@@ -540,40 +540,42 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_suggestion_icon_area_size);
     }
 
-    /**
-     * Get suggestion content height.
-     *
-     * @see #getSuggestionContentHeight(Context, ...)
-     */
+    /** Returns the height of the content of an Omnibox Suggestion. */
     public @Px int getSuggestionContentHeight() {
-        return getSuggestionContentHeight(mContext);
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_suggestion_content_height_desktop);
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_content_height);
     }
 
-    /**
-     * Get suggestion compact content height.
-     *
-     * @see #getSuggestionCompactContentHeight(Context, ...)
-     */
+    /** Returns the height of a single line Omnibox Suggestion. */
     public @Px int getSuggestionCompactContentHeight() {
-        return getSuggestionCompactContentHeight(mContext);
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_suggestion_content_height_desktop);
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_compact_content_height);
     }
 
-    /**
-     * Get suggestion min height.
-     *
-     * @see #getSuggestionMinHeight(Context, ...)
-     */
-    public int getSuggestionMinHeight(int lineCount) {
-        return getSuggestionMinHeight(mContext.getResources(), lineCount);
+    /** Returns the min height of an Omnibox Suggestion view. */
+    public @Px int getSuggestionMinHeight(int lineCount) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(
+                    lineCount > 1
+                            ? R.dimen.omnibox_suggestion_content_height_desktop_multiline
+                            : R.dimen.omnibox_suggestion_content_height_desktop);
+        }
+        return mCache.getDimen(
+                lineCount > 1
+                        ? R.dimen.omnibox_suggestion_minimum_content_height_multiline
+                        : R.dimen.omnibox_suggestion_minimum_content_height);
     }
 
-    /**
-     * Get suggestion content vertical padding.
-     *
-     * @see #getSuggestionContentVerticalPadding(Context, ...)
-     */
-    public int getSuggestionContentVerticalPadding() {
-        return getSuggestionContentVerticalPadding(mContext);
+    /** Returns the vertical padding for a suggestion. */
+    public @Px int getSuggestionContentVerticalPadding() {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return 0;
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_content_padding);
     }
 
     /**
@@ -1134,12 +1136,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return themeRes.resourceId;
     }
 
-    /** Returns the top padding for the Omnibox suggestions dropdown list. */
-    public static @Px int getDropdownTopPadding(Context context) {
-        return context.getResources()
-                .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
-    }
-
     /**
      * Returns the amount of pixels the location bar background should increase in height by when
      * the omnibox is focused.
@@ -1163,50 +1159,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
             return getToolbarSidePadding(context);
         }
         return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
-    }
-
-    /** Returns the height of the content of an Omnibox Suggestion. */
-    public static @Px int getSuggestionContentHeight(Context context) {
-        Resources resources = context.getResources();
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return resources.getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_content_height_desktop);
-        } else {
-            return resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-        }
-    }
-
-    /** Returns the height of a single line Omnibox Suggestion. */
-    public static @Px int getSuggestionCompactContentHeight(Context context) {
-        Resources resources = context.getResources();
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return resources.getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_content_height_desktop);
-        }
-        return resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_content_height);
-    }
-
-    /** Returns the min height of an Omnibox Suggestion view. */
-    public static int getSuggestionMinHeight(Resources resources, int lineCount) {
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return resources.getDimensionPixelSize(
-                    lineCount > 1
-                            ? R.dimen.omnibox_suggestion_content_height_desktop_multiline
-                            : R.dimen.omnibox_suggestion_content_height_desktop);
-        }
-        return resources.getDimensionPixelSize(
-                lineCount > 1
-                        ? R.dimen.omnibox_suggestion_minimum_content_height_multiline
-                        : R.dimen.omnibox_suggestion_minimum_content_height);
-    }
-
-    /** Returns the vertical padding for a suggestion. */
-    public static int getSuggestionContentVerticalPadding(Context context) {
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return 0;
-        }
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
     }
 
     /**
