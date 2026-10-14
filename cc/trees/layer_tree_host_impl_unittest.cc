@@ -273,13 +273,6 @@ class OccludedSurfaceThrottlingLayerTreeHostImplTest
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(
     OccludedSurfaceThrottlingLayerTreeHostImplTest);
 
-// A test fixture for new animation timelines tests.
-// TODO(487287578): Remove this once we've stabilized our use of
-// ScopedFeatureList on android-x86-rel.
-class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {};
-
-INSTANTIATE_ANIMATIONS_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
-
 // TODO(468470705): Switch this to use LayerTreeHostImplTest.
 class FluentOverlayScrollbarLayerTreeHostImplTest
     : public LayerTreeHostImplTestBase {
@@ -6855,7 +6848,7 @@ TEST_P(LayerTreeHostImplTest, ScrollChildBeyondLimit) {
   }
 }
 
-TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedLatchToChild) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedLatchToChild) {
   // Scroll a child layer beyond its maximum scroll range and make sure the
   // parent layer isn't scrolled.
   gfx::Size surface_size(100, 100);
@@ -12453,7 +12446,7 @@ TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
 
 // Test that a smooth scroll offset animation is aborted when followed by a
 // non-smooth scroll offset animation.
-TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedAborted) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedAborted) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(500, 500);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -12533,7 +12526,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedAborted) {
 }
 
 // Evolved from LayerTreeHostImplTest.ScrollAnimated.
-TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimated) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimated) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(500, 500);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -12608,7 +12601,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimated) {
 
 // Test that the scroll delta for an animated scroll is distributed correctly
 // between the inner and outer viewport.
-TEST_P(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
+TEST_P(AnimationsLayerTreeHostImplTest, ImplPinchZoomScrollAnimated) {
   const gfx::Size content_size(200, 200);
   const gfx::Size viewport_size(100, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -12702,7 +12695,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
 
 // Test that the correct viewport scroll layer is updated when the target offset
 // is updated.
-TEST_P(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimatedUpdate) {
+TEST_P(AnimationsLayerTreeHostImplTest, ImplPinchZoomScrollAnimatedUpdate) {
   const gfx::Size content_size(200, 200);
   const gfx::Size viewport_size(100, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -12766,7 +12759,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimatedUpdate) {
 
 // Test that smooth scroll offset animation doesn't happen for non user
 // scrollable layers.
-TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedNotUserScrollable) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedNotUserScrollable) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(500, 500);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -12849,7 +12842,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedNotUserScrollable) {
 }
 
 // Test that smooth scrolls clamp correctly when bounds change mid-animation.
-TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedChangingBounds) {
+TEST_P(AnimationsLayerTreeHostImplTest, ScrollAnimatedChangingBounds) {
   const gfx::Size old_content_size(1000, 1000);
   const gfx::Size new_content_size(750, 750);
   const gfx::Size viewport_size(500, 500);
