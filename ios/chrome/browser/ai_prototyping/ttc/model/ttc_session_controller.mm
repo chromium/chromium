@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <string>
 #import <utility>
 
 #import "base/check.h"
@@ -14,12 +15,29 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
+#import "base/strings/to_string.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+
+namespace {
+
+// Returns the string representation of `lifecycle`.
+std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
+  switch (lifecycle) {
+    case TTCSessionLifecycle::kInitializing:
+      return "initializing";
+    case TTCSessionLifecycle::kLive:
+      return "live";
+    case TTCSessionLifecycle::kFinished:
+      return "finished";
+  }
+}
+
+}  // namespace
 
 #pragma mark - TtcConversation::Delegate
 
@@ -115,6 +133,7 @@ void TtcSessionController::SetLifecycle(TTCSessionLifecycle lifecycle) {
   if (lifecycle_ == lifecycle || lifecycle_ == TTCSessionLifecycle::kFinished) {
     return;
   }
+  LogLifecycleTransition(lifecycle_, lifecycle);
   lifecycle_ = lifecycle;
   for (TtcSessionControllerObserver& observer : observers_) {
     observer.OnSessionLifecycleChanged(this, lifecycle_);
@@ -138,6 +157,7 @@ void TtcSessionController::FailWithError(ttc::ErrorCode error) {
   if (lifecycle_ == TTCSessionLifecycle::kFinished || fatal_error_reported_) {
     return;
   }
+  LogSessionError(error);
   const bool is_fatal = ttc::IsFatal(error);
   if (is_fatal) {
     fatal_error_reported_ = true;
@@ -182,11 +202,20 @@ void TtcSessionController::RegisterBackgroundObserver() {
       addObserverForName:UIApplicationDidEnterBackgroundNotification
                   object:nil
                    queue:nil
-              usingBlock:base::CallbackToBlock(
-                             base::IgnoreArgs<NSNotification*>(
-                                 base::BindRepeating(
-                                     &TtcSessionController::StopSession,
-                                     weak_ptr_factory_.GetWeakPtr())))];
+              usingBlock:
+                  base::CallbackToBlock(
+                      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+                          &TtcSessionController::ApplicationDidEnterBackground,
+                          weak_ptr_factory_.GetWeakPtr())))];
+}
+
+void TtcSessionController::ApplicationDidEnterBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
+    return;
+  }
+  LogAppDidEnterBackground();
+  StopSession();
 }
 
 void TtcSessionController::RemoveBackgroundObserver() {
@@ -195,4 +224,49 @@ void TtcSessionController::RemoveBackgroundObserver() {
     [[NSNotificationCenter defaultCenter] removeObserver:background_observer_];
     background_observer_ = nil;
   }
+}
+
+#pragma mark - Journal Logging
+
+void TtcSessionController::LogLifecycleTransition(
+    TTCSessionLifecycle current_lifecycle,
+    TTCSessionLifecycle new_lifecycle) {
+  if (!journal_) {
+    return;
+  }
+  std::string current_state = SessionLifecycleToString(current_lifecycle);
+  std::string new_state = SessionLifecycleToString(new_lifecycle);
+  journal_->Log(TTCJournalComponent::kSession, "TtcSessionLifecycle",
+                TTCJournalDetailsBuilder()
+                    .SetSummary("Session " + new_state)
+                    .Add("current_state", current_state)
+                    .Add("new_state", new_state)
+                    .Build());
+}
+
+void TtcSessionController::LogSessionError(ttc::ErrorCode error) {
+  if (!journal_) {
+    return;
+  }
+  const int error_code = static_cast<int>(error);
+  std::string desc = base::ToString(error);
+  std::string summary = "Session error";
+  if (!desc.empty()) {
+    summary += ": " + desc;
+  }
+  journal_->LogError(TTCJournalComponent::kSession, "TtcSessionError",
+                     TTCJournalDetailsBuilder()
+                         .SetSummary(summary)
+                         .AddError(desc)
+                         .Add("error_code", error_code)
+                         .Build());
+}
+
+void TtcSessionController::LogAppDidEnterBackground() {
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(
+      TTCJournalComponent::kSession, "TtcAppDidEnterBackground",
+      TTCJournalDetailsBuilder().SetSummary("App entered background").Build());
 }

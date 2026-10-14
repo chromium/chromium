@@ -102,8 +102,17 @@ class TtcSessionController : public TtcConversation::Delegate {
   // session when the app enters the background.
   void RegisterBackgroundObserver();
 
+  // Handles `UIApplicationDidEnterBackgroundNotification`.
+  void ApplicationDidEnterBackground();
+
   // Unregisters `background_observer_` from `NSNotificationCenter`.
   void RemoveBackgroundObserver();
+
+  // Journal logging helpers.
+  void LogLifecycleTransition(TTCSessionLifecycle current_lifecycle,
+                              TTCSessionLifecycle new_lifecycle);
+  void LogSessionError(ttc::ErrorCode error);
+  void LogAppDidEnterBackground();
 
   // Underlying conversation coordinator owned by this session controller.
   std::unique_ptr<TtcConversation> conversation_;
