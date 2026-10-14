@@ -23,6 +23,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -99,6 +100,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // This calls OnOneTimeTokenReceived() at least one time.
   void GetRecentOtpsAndRenewSubscription();
 
+  // Starts `gmail_otp_retriever_` if no Gmail OTP is currently cached and the
+  // user has opted into Gmail OTP filling.
+  void MaybeRetrieveGmailOtp();
+
+  // Called when `prefs::kAutofillGmailOtpFillingEnabled` changes.
+  void OnGmailOtpFillingEnabledPrefChanged();
+
   // Called when an incoming OTP tickle push notification arrives.
   //
   // Verifies preconditions before initiating retrieval:
@@ -174,6 +182,11 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Subscriptions to a `OneTimeTokenService`.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
   one_time_tokens::ExpiringSubscription gmail_otp_tickle_subscription_;
+
+  // Observes `prefs::kAutofillGmailOtpFillingEnabled` so that when the user
+  // accepts the opt-in bubble, `OtpManagerImpl` immediately retrieves the
+  // pending Gmail OTP and triggers suggestions on the current page.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Only the last call from the UI to generate suggestions is retained as such
   // a callback corresponds to the desire to show an autofill dropdown. A new

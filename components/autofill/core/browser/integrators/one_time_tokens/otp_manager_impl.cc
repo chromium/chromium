@@ -67,6 +67,14 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
                                OneTimeTokenService* one_time_token_service)
     : owner_(owner), one_time_token_service_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
+  if (PrefService* prefs = owner_->client().GetPrefs()) {
+    pref_change_registrar_.Init(prefs);
+    pref_change_registrar_.Add(
+        prefs::kAutofillGmailOtpFillingEnabled,
+        base::BindRepeating(
+            &OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 OtpManagerImpl::~OtpManagerImpl() {
@@ -125,33 +133,14 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
   }
 
   if (UserOptedIntoGmailOtpFilling()) {
-    affiliations::AffiliationService* affiliation_service =
-        owner_->client().GetAffiliationService();
-    one_time_tokens::GmailOtpBackend* gmail_otp_backend =
-        owner_->client().GetGmailOtpBackend();
     if (std::optional<OneTimeToken> token = SelectMostRecentToken();
         token && !token->value().empty()) {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens
           << "Delivering cached Gmail OTP suggestion.";
       OnOneTimeTokenReceived(OneTimeTokenSource::kGmail, std::move(*token));
-    } else if (!gmail_otp_retriever_ && affiliation_service &&
-               gmail_otp_backend) {
-      // If a Gmail OTP retrieval is already in flight (e.g. initiated upon
-      // tickle arrival while the field was focused), do not start a concurrent
-      // one. The in-flight retriever will deliver the token to any pending
-      // suggestions callback upon completion.
-      auto checker = std::make_unique<affiliations::DomainRelationChecker>(
-          *affiliation_service);
-      const url::Origin frame_origin =
-          owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
-      // TODO(crbug.com/571474857): Clarify security requirements for login flow
-      // classification in non-agentic OTP autofill.
-      gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
-          *gmail_otp_backend, std::move(checker), frame_origin,
-          /*is_login_flow=*/false,
-          base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
-                         weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      MaybeRetrieveGmailOtp();
     }
   }
 
@@ -202,6 +191,58 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void OtpManagerImpl::MaybeRetrieveGmailOtp() {
+  // If a Gmail OTP retrieval is already in flight (e.g. initiated upon tickle
+  // arrival while the field was focused), do not start a concurrent one. The
+  // in-flight retriever will deliver the token to any pending suggestions
+  // callback upon completion.
+  if (gmail_otp_retriever_) {
+    return;
+  }
+
+  affiliations::AffiliationService* affiliation_service =
+      owner_->client().GetAffiliationService();
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      owner_->client().GetGmailOtpBackend();
+  if (std::optional<OneTimeToken> token = SelectMostRecentToken();
+      affiliation_service && gmail_otp_backend &&
+      (!token || token->value().empty()) && UserOptedIntoGmailOtpFilling()) {
+    auto checker = std::make_unique<affiliations::DomainRelationChecker>(
+        *affiliation_service);
+    const url::Origin frame_origin =
+        owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
+    // TODO(crbug.com/571474857): Clarify security requirements for login flow
+    // classification in non-agentic OTP autofill.
+    gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
+        *gmail_otp_backend, std::move(checker), frame_origin,
+        /*is_login_flow=*/false,
+        base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
+  if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
+      !owner_->driver().IsActive() || !UserOptedIntoGmailOtpFilling() ||
+      !IsOtpFieldDetected() || AnyOtpFieldContainsTypedInput()) {
+    return;
+  }
+  bool has_otp_form_in_frame = false;
+  owner_->ForEachCachedForm(
+      [&has_otp_form_in_frame](const FormStructure& form) {
+        if (has_otp_form_in_frame) {
+          return;
+        }
+        if (OtpFieldDetector::IsOtpForm(form)) {
+          has_otp_form_in_frame = true;
+        }
+      });
+  if (!has_otp_form_in_frame) {
+    return;
+  }
+  MaybeRetrieveGmailOtp();
 }
 
 void OtpManagerImpl::OnFieldTypesDetermined(

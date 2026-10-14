@@ -3661,4 +3661,52 @@ TEST_F(
   autofill_client().set_affiliation_service(nullptr);
 }
 
+// Tests that enabling `kAutofillGmailOtpFillingEnabled` (e.g. when the user
+// accepts the opt-in bubble) immediately starts `GmailOtpRetriever` on a page
+// with an unedited OTP field.
+TEST_F(OtpManagerImplTest,
+       PrefChangeToEnabled_StartsGmailOtpRetrieverWhenOtpFieldPresent) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  // Enabling the pref reactive-fetches the Gmail OTP.
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  autofill_client().set_affiliation_service(nullptr);
+}
+
+// Tests that enabling `kAutofillGmailOtpFillingEnabled` does not start
+// `GmailOtpRetriever` if the OTP field already contains user-typed input.
+TEST_F(OtpManagerImplTest,
+       PrefChangeToEnabled_DoesNotStartRetrieverWhenOtpFieldHasTypedInput) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  FormStructure* cached_form =
+      test_api(autofill_manager()).FindCachedFormById(form->global_id());
+  ASSERT_TRUE(cached_form);
+  ASSERT_GT(cached_form->field_count(), 0u);
+  cached_form->field(0)->AddFieldModifier(FieldModifier::kUser);
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  autofill_client().set_affiliation_service(nullptr);
+}
+
 }  // namespace autofill
