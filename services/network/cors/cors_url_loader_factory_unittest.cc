@@ -543,6 +543,24 @@ TEST_F(CorsURLLoaderFactoryTest, UntrustedCorsPreflightRequestAreFailed) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(CorsURLLoaderFactoryTest,
+       ReadAndDiscardBodyAndSniffMimeTypeOptionsAreBadMessage) {
+  ResourceRequest request;
+  const GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = url;
+  request.request_initiator = url::Origin::Create(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request, mojom::kURLLoadOptionReadAndDiscardBody |
+                                    mojom::kURLLoadOptionSniffMimeType);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: kURLLoadOptionReadAndDiscardBody and "
+      "kURLLoadOptionSniffMimeType cannot be used together",
+      bad_message_observer.WaitForBadMessage());
+}
+
 class NetworkBoundCorsURLLoaderFactoryTest : public CorsURLLoaderFactoryTest {
   void SetUp() override {
     // Setting URLLoaderFactoryParams::bound_network requires

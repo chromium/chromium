@@ -990,6 +990,14 @@ bool CorsURLLoaderFactory::IsValidRequest(
     return false;
   }
 
+  if ((options & mojom::kURLLoadOptionReadAndDiscardBody) &&
+      (options & mojom::kURLLoadOptionSniffMimeType)) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: kURLLoadOptionReadAndDiscardBody and "
+        "kURLLoadOptionSniffMimeType cannot be used together");
+    return false;
+  }
+
   if (!VerifyTrustTokenParamsIntegrityIfPresent(
           request, context_, trust_token_issuance_policy_,
           trust_token_redemption_policy_)) {
