@@ -57,6 +57,25 @@
 
 namespace blink {
 
+namespace {
+
+#if !BUILDFLAG(IS_APPLE)
+void CopyGlyphIds(const ShapeResultRun::GlyphDataCollection& glyph_data,
+                  base::span<Glyph> glyphs) {
+  const unsigned num_glyphs = glyph_data.size();
+  CHECK_EQ(num_glyphs, glyphs.size());
+  if (glyph_data.IsCompact()) [[unlikely]] {
+    glyphs.copy_from(glyph_data.CompactGlyphs(0, num_glyphs));
+    return;
+  }
+  std::ranges::transform(
+      glyph_data.NonCompactGlyphs(), glyphs.begin(),
+      [](const HarfBuzzRunGlyphData& glyph) { return glyph.glyph; });
+}
+#endif
+
+}  // namespace
+
 constexpr wtf_size_t HarfBuzzRunGlyphData::kMaxCharacterIndex;
 constexpr wtf_size_t HarfBuzzRunGlyphData::kMaxGlyphs;
 
@@ -2658,9 +2677,7 @@ void ShapeResult::ComputeRunInkBoundsScalar(const ShapeResultRun& run,
   const GlyphDataRange::Reader reader(run);
 #if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
-  for (wtf_size_t i = 0; i < num_glyphs; ++i) {
-    glyphs[i] = reader[i].glyph;
-  }
+  CopyGlyphIds(run.glyph_data_, glyphs);
   Vector<SkRect, 256> bounds_list(num_glyphs);
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
@@ -2703,9 +2720,7 @@ void ShapeResult::ComputeRunInkBoundsVectorized(const ShapeResultRun& run,
   const GlyphDataRange::Reader reader(run);
 #if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
-  for (wtf_size_t i = 0; i < num_glyphs; ++i) {
-    glyphs[i] = reader[i].glyph;
-  }
+  CopyGlyphIds(run.glyph_data_, glyphs);
   Vector<SkRect, 256> bounds_list(num_glyphs);
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
