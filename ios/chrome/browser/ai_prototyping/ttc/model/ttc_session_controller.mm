@@ -14,7 +14,6 @@
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 
 namespace {
@@ -39,7 +38,7 @@ class TtcConversationDelegateBridge : public TtcConversation::Delegate {
   }
 
   void OnConversationError(ttc::ErrorCode error) override {
-    [controller_ failWithError:CreateTTCError(error)];
+    [controller_ failWithError:error];
   }
 
  private:
@@ -153,7 +152,7 @@ class TtcConversationDelegateBridge : public TtcConversation::Delegate {
   }
 }
 
-- (void)failWithError:(NSError*)error {
+- (void)failWithError:(ttc::ErrorCode)error {
   if (![NSThread isMainThread]) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self failWithError:error];
@@ -163,7 +162,7 @@ class TtcConversationDelegateBridge : public TtcConversation::Delegate {
   if (_lifecycle == TTCSessionLifecycle::kFinished || _fatalErrorReported) {
     return;
   }
-  const bool isFatal = IsFatalTTCError(error);
+  const bool isFatal = ttc::IsFatal(error);
   if (isFatal) {
     _fatalErrorReported = YES;
   }

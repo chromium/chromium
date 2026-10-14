@@ -7,7 +7,10 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/to_string.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
@@ -198,17 +201,12 @@ TEST_F(TTCMediatorTest, TestSessionErrorUpdatesConsumer) {
   TTCSessionController* sessionController = ttc_service_->session_controller();
   ASSERT_TRUE(sessionController != nil);
 
-  NSError* error =
-      [NSError errorWithDomain:@"org.chromium.ttc.test"
-                          code:-1
-                      userInfo:@{
-                        NSLocalizedDescriptionKey : @"Network connection lost"
-                      }];
-
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kError]);
-  OCMExpect([mock_consumer_ didEncounterError:@"Network connection lost"]);
+  OCMExpect([mock_consumer_
+      didEncounterError:base::SysUTF8ToNSString(base::ToString(
+                            ttc::ErrorCode::kInternalBackendError))]);
 
-  [sessionController failWithError:error];
+  [sessionController failWithError:ttc::ErrorCode::kInternalBackendError];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

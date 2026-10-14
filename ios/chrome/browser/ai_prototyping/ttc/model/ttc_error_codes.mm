@@ -9,19 +9,6 @@
 
 NSString* const kTTCErrorDomain = @"TTCErrorDomain";
 
-namespace {
-
-bool IsValidErrorCodeValue(NSInteger code) {
-  return (code >= static_cast<NSInteger>(ttc::ErrorCode::kUnknown) &&
-          code <=
-              static_cast<NSInteger>(ttc::ErrorCode::kMaxServerErrorCode)) ||
-         (code >= static_cast<NSInteger>(
-                      ttc::ErrorCode::kOptimizationGuideUnavailable) &&
-          code <= static_cast<NSInteger>(ttc::ErrorCode::kAudioUnknownError));
-}
-
-}  // namespace
-
 NSError* CreateTTCError(ttc::ErrorCode error_code) {
   NSString* description = base::SysUTF8ToNSString(base::ToString(error_code));
   return [NSError
@@ -29,15 +16,4 @@ NSError* CreateTTCError(ttc::ErrorCode error_code) {
                  code:static_cast<NSInteger>(error_code)
              userInfo:description ? @{NSLocalizedDescriptionKey : description}
                                   : nil];
-}
-
-bool IsFatalTTCError(NSError* error) {
-  if (!error) {
-    return false;
-  }
-  if ([error.domain isEqualToString:kTTCErrorDomain] &&
-      IsValidErrorCodeValue(error.code)) {
-    return ttc::IsFatal(static_cast<ttc::ErrorCode>(error.code));
-  }
-  return ttc::IsFatal(ttc::ErrorCode::kUnknown);
 }

@@ -10,6 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/to_string.h"
+#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
@@ -24,7 +26,7 @@ NSString* const kServiceUnavailableError = @"TTC service is unavailable";
 
 // Default error message displayed when a session error occurs without a
 // specific description.
-NSString* const kDefaultSessionError = @"Voice session encountered an error";
+NSString* const kDefaultSessionError = @"Session error occurred";
 
 // Converts a `TTCSessionLifecycle` to the corresponding `TTCSessionUIState`.
 TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
@@ -207,11 +209,13 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 }
 
 - (void)sessionController:(TTCSessionController*)controller
-         didFailWithError:(NSError*)error {
+         didFailWithError:(ttc::ErrorCode)error {
   _currentState = TTCSessionUIState::kError;
   [self.consumer setSessionState:_currentState];
-  [self.consumer
-      didEncounterError:error.localizedDescription ?: kDefaultSessionError];
+  NSString* errorMessage = base::SysUTF8ToNSString(base::ToString(error));
+  [self.consumer didEncounterError:errorMessage.length > 0
+                                       ? errorMessage
+                                       : kDefaultSessionError];
 }
 
 #pragma mark - Public

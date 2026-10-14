@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 namespace ttc {
@@ -60,7 +61,7 @@ class TtcConversation;
 - (void)userAudioLevelDidUpdate:(float)audioLevel;
 
 // Notifies observers that a session error occurred.
-- (void)failWithError:(NSError*)error;
+- (void)failWithError:(ttc::ErrorCode)error;
 
 #pragma mark - Observers
 

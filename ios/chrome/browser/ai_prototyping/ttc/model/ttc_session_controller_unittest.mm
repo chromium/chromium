@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <optional>
 #import <utility>
 
 #import "base/test/run_until.h"
@@ -15,7 +16,6 @@
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +86,7 @@
 @property(nonatomic, assign) NSInteger audioLevelUpdateCount;
 @property(nonatomic, assign) float lastAudioLevel;
 @property(nonatomic, assign) NSInteger errorCount;
-@property(nonatomic, strong) NSError* lastError;
+@property(nonatomic, assign) std::optional<ttc::ErrorCode> lastError;
 
 @end
 
@@ -105,7 +105,7 @@
 }
 
 - (void)sessionController:(TTCSessionController*)controller
-         didFailWithError:(NSError*)error {
+         didFailWithError:(ttc::ErrorCode)error {
   _errorCount++;
   _lastError = error;
 }
@@ -219,12 +219,9 @@ TEST_F(TTCSessionControllerTest, TestFailWithErrorForwardedToObserver) {
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
 
-  NSError* error = [NSError errorWithDomain:@"org.chromium.ttc"
-                                       code:42
-                                   userInfo:nil];
-  [controller failWithError:error];
+  [controller failWithError:ttc::ErrorCode::kInternalBackendError];
   EXPECT_EQ(observer.errorCount, 1);
-  EXPECT_EQ(observer.lastError, error);
+  EXPECT_EQ(observer.lastError, ttc::ErrorCode::kInternalBackendError);
   [controller disconnect];
 }
 
@@ -412,10 +409,7 @@ TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
       ttc::ErrorCode::kInternalBackendError);
 
   EXPECT_EQ(observer.errorCount, 1);
-  ASSERT_TRUE(observer.lastError != nil);
-  EXPECT_NSEQ(observer.lastError.domain, kTTCErrorDomain);
-  EXPECT_EQ(observer.lastError.code,
-            static_cast<NSInteger>(ttc::ErrorCode::kInternalBackendError));
+  EXPECT_EQ(observer.lastError, ttc::ErrorCode::kInternalBackendError);
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kFinished);
   EXPECT_TRUE(fake_audio.didStopCapture);
 

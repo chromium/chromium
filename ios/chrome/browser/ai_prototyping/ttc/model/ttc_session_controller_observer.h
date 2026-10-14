@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 @class TTCSessionController;
@@ -29,7 +30,7 @@
 
 // Invoked when a fatal or non-fatal session error occurs.
 - (void)sessionController:(TTCSessionController*)controller
-         didFailWithError:(NSError*)error;
+         didFailWithError:(ttc::ErrorCode)error;
 
 @end
 

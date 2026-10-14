@@ -15,7 +15,4 @@ extern NSString* const kTTCErrorDomain;
 // Creates an `NSError` in `kTTCErrorDomain` for `error_code`.
 NSError* CreateTTCError(ttc::ErrorCode error_code);
 
-// Returns whether `error` is fatal to the session and should terminate it.
-bool IsFatalTTCError(NSError* error);
-
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_ERROR_CODES_H_
