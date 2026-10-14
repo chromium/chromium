@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
@@ -34,12 +32,12 @@ import android.view.WindowMetrics;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
@@ -67,8 +65,116 @@ import java.util.Map;
 
 /** Supports Robolectric and native unit tests relevant to {@link ChromeAndroidTask}. */
 @NullMarked
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ChromeAndroidTaskUnitTestSupport {
+
+    static final class FakeDecorView extends View {
+        private int mAddOnLayoutChangeListenerCount;
+        private int mRemoveOnLayoutChangeListenerCount;
+
+        FakeDecorView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void getLocationOnScreen(int[] outLocation) {
+            outLocation[0] = getLeft();
+            outLocation[1] = getTop();
+        }
+
+        @Override
+        public void addOnLayoutChangeListener(OnLayoutChangeListener listener) {
+            super.addOnLayoutChangeListener(listener);
+            mAddOnLayoutChangeListenerCount++;
+        }
+
+        @Override
+        public void removeOnLayoutChangeListener(OnLayoutChangeListener listener) {
+            super.removeOnLayoutChangeListener(listener);
+            mRemoveOnLayoutChangeListenerCount++;
+        }
+
+        int getAddOnLayoutChangeListenerCount() {
+            return mAddOnLayoutChangeListenerCount;
+        }
+
+        int getRemoveOnLayoutChangeListenerCount() {
+            return mRemoveOnLayoutChangeListenerCount;
+        }
+    }
+
+    /**
+     * Fake {@link Activity} that implements {@link ActivityLifecycleDispatcherProvider} and
+     * supplies test task ID, window, and services without requiring Robolectric (as this support
+     * class is also used by native unit tests).
+     */
+    static final class FakeActivity extends Activity
+            implements ActivityLifecycleDispatcherProvider {
+        private final int mTaskId;
+        private final Window mMockWindow;
+        private final WindowManager mMockWindowManager;
+        private final ActivityManager mMockActivityManager;
+        private final ActivityLifecycleDispatcher mMockLifecycleDispatcher;
+        private boolean mIsInMultiWindowMode;
+
+        FakeActivity(
+                int taskId,
+                Window mockWindow,
+                FakeDecorView fakeDecorView,
+                WindowManager mockWindowManager,
+                ActivityManager mockActivityManager,
+                ActivityLifecycleDispatcher mockLifecycleDispatcher) {
+            assert mockingDetails(mockWindow).isMock();
+            assert mockingDetails(mockWindowManager).isMock();
+            assert mockingDetails(mockActivityManager).isMock();
+            assert mockingDetails(mockLifecycleDispatcher).isMock();
+
+            attachBaseContext(ContextUtils.getApplicationContext());
+            when(mockWindow.getDecorView()).thenReturn(fakeDecorView);
+
+            mTaskId = taskId;
+            mMockWindow = mockWindow;
+            mMockWindowManager = mockWindowManager;
+            mMockActivityManager = mockActivityManager;
+            mMockLifecycleDispatcher = mockLifecycleDispatcher;
+        }
+
+        @Override
+        public int getTaskId() {
+            return mTaskId;
+        }
+
+        @Override
+        public Window getWindow() {
+            return mMockWindow;
+        }
+
+        @Override
+        public WindowManager getWindowManager() {
+            return mMockWindowManager;
+        }
+
+        @Override
+        public @Nullable Object getSystemService(String name) {
+            if (Context.ACTIVITY_SERVICE.equals(name)) {
+                return mMockActivityManager;
+            }
+            return super.getSystemService(name);
+        }
+
+        @Override
+        public ActivityLifecycleDispatcher getLifecycleDispatcher() {
+            return mMockLifecycleDispatcher;
+        }
+
+        @Override
+        public boolean isInMultiWindowMode() {
+            return mIsInMultiWindowMode;
+        }
+
+        void setInMultiWindowModeForTesting(boolean isInMultiWindowMode) {
+            mIsInMultiWindowMode = isInMultiWindowMode;
+        }
+    }
 
     /**
      * Default bounds (in pixels) intended for {@link WindowManager#getCurrentWindowMetrics()}.
@@ -156,32 +262,32 @@ public final class ChromeAndroidTaskUnitTestSupport {
     /** Holds mocks relevant to {@link ActivityWindowAndroid}. */
     public static final class ActivityWindowAndroidMocks {
         public final ActivityWindowAndroid mMockActivityWindowAndroid;
-        public final Activity mMockActivity;
+        public final FakeActivity mFakeActivity;
         public final ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
         public final DisplayAndroid mMockDisplayAndroid;
 
-        /** Mock decor {@link View} for {@link #mMockActivity}. */
-        public final View mMockDecorView;
+        /** Decor {@link View} for {@link #mFakeActivity}. */
+        public final View mDecorView;
 
-        /** Mock {@link WindowManager} for {@link #mMockActivity}. */
+        /** Mock {@link WindowManager} for {@link #mFakeActivity}. */
         public final WindowManager mMockWindowManager;
 
-        /** Mock {@link Window} for {@link #mMockActivity}. */
+        /** Mock {@link Window} for {@link #mFakeActivity}. */
         public final Window mMockWindow;
 
         public ActivityWindowAndroidMocks(
                 ActivityWindowAndroid mockActivityWindowAndroid,
-                Activity mockActivity,
+                FakeActivity fakeActivity,
                 ActivityLifecycleDispatcher mockActivityLifecycleDispatcher,
                 DisplayAndroid mockDisplayAndroid,
-                View mockDecorView,
+                View decorView,
                 WindowManager mockWindowManager,
                 Window mockWindow) {
             mMockActivityWindowAndroid = mockActivityWindowAndroid;
-            mMockActivity = mockActivity;
+            mFakeActivity = fakeActivity;
             mMockActivityLifecycleDispatcher = mockActivityLifecycleDispatcher;
             mMockDisplayAndroid = mockDisplayAndroid;
-            mMockDecorView = mockDecorView;
+            mDecorView = decorView;
             mMockWindowManager = mockWindowManager;
             mMockWindow = mockWindow;
         }
@@ -391,43 +497,38 @@ public final class ChromeAndroidTaskUnitTestSupport {
     /**
      * Creates an instance of {@link ActivityWindowAndroidMocks}.
      *
-     * @param taskId Task ID for {@link ActivityWindowAndroidMocks#mMockActivity}.
+     * @param taskId Task ID for {@link ActivityWindowAndroidMocks#mFakeActivity}.
      */
     static ActivityWindowAndroidMocks createActivityWindowAndroidMocks(int taskId) {
         var mockActivityWindowAndroid = mock(ActivityWindowAndroid.class);
-        var mockActivity =
-                mock(
-                        Activity.class,
-                        withSettings().extraInterfaces(ActivityLifecycleDispatcherProvider.class));
         var mockActivityLifecycleDispatcher = mock(ActivityLifecycleDispatcher.class);
+        var mockWindow = mock(Window.class);
         var mockWindowManager = mock(WindowManager.class);
         var mockActivityManager = mock(ActivityManager.class);
         var mockDisplay = mock(DisplayAndroid.class);
-        var mockDecorView = mock(View.class);
 
-        var mockWindow = mock(Window.class);
-        when(mockWindow.getDecorView()).thenReturn(mockDecorView);
-        when(mockActivity.getWindow()).thenReturn(mockWindow);
-
-        when(mockActivity.getTaskId()).thenReturn(taskId);
-        when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
-        when(mockActivity.getSystemService(Context.ACTIVITY_SERVICE))
-                .thenReturn(mockActivityManager);
-        when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
-                .thenReturn(mockActivityLifecycleDispatcher);
+        var fakeDecorView = new FakeDecorView(ContextUtils.getApplicationContext());
+        var fakeActivity =
+                new FakeActivity(
+                        taskId,
+                        mockWindow,
+                        fakeDecorView,
+                        mockWindowManager,
+                        mockActivityManager,
+                        mockActivityLifecycleDispatcher);
 
         when(mockDisplay.getDipScale()).thenReturn(1.0f);
 
-        when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(fakeActivity));
         when(mockActivityWindowAndroid.getDisplay()).thenReturn(mockDisplay);
 
         var mocks =
                 new ActivityWindowAndroidMocks(
                         mockActivityWindowAndroid,
-                        mockActivity,
+                        fakeActivity,
                         mockActivityLifecycleDispatcher,
                         mockDisplay,
-                        mockDecorView,
+                        fakeDecorView,
                         mockWindowManager,
                         mockWindow);
         sActivityWindowAndroidMocks.put(taskId, mocks);
@@ -582,12 +683,12 @@ public final class ChromeAndroidTaskUnitTestSupport {
             Rect currentWindowBoundsInPx,
             Rect fullScreenWindowBoundsInPx,
             Insets maxTappableInsetsInPx) {
-        var mockActivity = activityWindowAndroidMocks.mMockActivity;
+        var activity = activityWindowAndroidMocks.mFakeActivity;
         var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
 
         // Activity should be in multi-window mode.
         // (Desktop windowing mode is a multi-window mode.)
-        when(mockActivity.isInMultiWindowMode()).thenReturn(true);
+        activity.setInMultiWindowModeForTesting(true);
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
 
         // Config system bars behavior.
@@ -597,52 +698,25 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(WindowInsetsControllerCompat.BEHAVIOR_DEFAULT);
         when(mockWindow.getInsetsController()).thenReturn(mockWindowInsetsController);
 
-        mockDecorViewBounds(activityWindowAndroidMocks, currentWindowBoundsInPx);
+        setDecorViewBounds(activityWindowAndroidMocks, currentWindowBoundsInPx);
         mockCurrentWindowMetrics(mockWindowManager, currentWindowBoundsInPx);
         mockMaxWindowMetrics(mockWindowManager, fullScreenWindowBoundsInPx, maxTappableInsetsInPx);
-
-        // Connect mock WindowManager to mock Activity.
-        when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
     }
 
     /**
-     * Mocks the decor {@link View} bounds for the provided {@link ActivityWindowAndroidMocks},
-     * based on the given {@code windowBoundsInPx}.
+     * Sets the decor {@link View} bounds for the provided {@link ActivityWindowAndroidMocks}, based
+     * on the given {@code windowBoundsInPx}.
      *
-     * @return The mock decor {@link View}.
+     * @return The decor {@link View}.
      */
-    static View mockDecorViewBounds(
+    static View setDecorViewBounds(
             ActivityWindowAndroidMocks activityWindowAndroidMocks, Rect windowBoundsInPx) {
-        View mockDecorView = activityWindowAndroidMocks.mMockDecorView;
-
-        // A View's left/top/right/bottom properties are relative to its parent, not the screen.
-        // For a decor View, its left and top properties are 0.
-        //
-        // View#get{Left|Top|Right|Bottom|Width|Height}() are final methods so we can only mock them
-        // in Robolectric tests. This class is also used by native unit tests run on emulators, and
-        // for those tests, the decor View bounds won't be correctly mocked. If your emulator tests
-        // rely on decor View bounds, please create Java integration tests or C++ browser tests.
-        if (BuildConfig.IS_ROBOLECTRIC) {
-            when(mockDecorView.getLeft()).thenReturn(0);
-            when(mockDecorView.getTop()).thenReturn(0);
-            when(mockDecorView.getRight()).thenReturn(windowBoundsInPx.width());
-            when(mockDecorView.getBottom()).thenReturn(windowBoundsInPx.height());
-            when(mockDecorView.getWidth()).thenReturn(windowBoundsInPx.width());
-            when(mockDecorView.getHeight()).thenReturn(windowBoundsInPx.height());
-        }
-
-        // View#getLocationOnScreen() gets the coordinates relative to the screen.
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = windowBoundsInPx.left;
-                            location[1] = windowBoundsInPx.top;
-                            return null;
-                        })
-                .when(mockDecorView)
-                .getLocationOnScreen(any(int[].class));
-
-        return mockDecorView;
+        View decorView = activityWindowAndroidMocks.mDecorView;
+        decorView.setLeft(windowBoundsInPx.left);
+        decorView.setTop(windowBoundsInPx.top);
+        decorView.setRight(windowBoundsInPx.right);
+        decorView.setBottom(windowBoundsInPx.bottom);
+        return decorView;
     }
 
     @RequiresApi(api = VERSION_CODES.R)
