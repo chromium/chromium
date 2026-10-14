@@ -13,7 +13,6 @@
 #include "ui/base/class_property.h"
 
 class BrowserWindowInterface;
-class SidePanelRegistry;
 class SidePanelContentProxy;
 
 namespace actions {
@@ -27,9 +26,6 @@ class View;
 class SidePanelHelper {
  public:
   using SidePanelContentState = ::SidePanelContentState;
-
-  static void PopulateGlobalEntries(BrowserWindowInterface* browser,
-                                    SidePanelRegistry* global_registry);
 
   static actions::ActionItem* GetActionItem(BrowserWindowInterface* browser,
                                             SidePanelEntryKey entry_key);

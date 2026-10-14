@@ -13,7 +13,6 @@
 
 class BrowserWindowInterface;
 class SidePanelEntryScope;
-class SidePanelRegistry;
 
 namespace views {
 class View;
@@ -33,8 +32,6 @@ class HistorySidePanelCoordinator {
   // If this returns false, it should not be registered with the side
   // panel registry.
   static bool IsSupported();
-
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
   std::unique_ptr<views::View> CreateHistoryWebView(SidePanelEntryScope& scope);
 

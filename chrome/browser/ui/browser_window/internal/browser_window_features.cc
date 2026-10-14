@@ -410,12 +410,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   find_bar_controller_ = GetUserDataFactory().CreateInstance<FindBarController>(
       *browser, *browser, browser_command_controller_.get());
 
-  if (HistorySidePanelCoordinator::IsSupported()) {
-    history_side_panel_coordinator_ =
-        GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(
-            *browser, browser);
-  }
-
   // Must be after window_feature_controller_.
   immersive_mode_controller_ =
       GetUserDataFactory()
@@ -910,7 +904,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
               *browser, browser);
     }
 
-    if (!HistorySidePanelCoordinator::IsSupported()) {
+    if (HistorySidePanelCoordinator::IsSupported()) {
+      history_side_panel_coordinator_ =
+          GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(
+              *browser, browser);
+    } else {
       history_clusters_side_panel_coordinator_ =
           GetUserDataFactory()
               .CreateInstance<HistoryClustersSidePanelCoordinator>(
@@ -1197,6 +1195,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   synced_window_delegate_.reset();
   skills_ui_window_controller_.reset();
   reading_list_side_panel_coordinator_.reset();
+  history_side_panel_coordinator_.reset();
   history_clusters_side_panel_coordinator_.reset();
   comments_side_panel_coordinator_.reset();
   bookmarks_side_panel_coordinator_.reset();
@@ -1267,7 +1266,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   lens_overlay_entry_point_controller_.reset();
   // Must be before window_feature_controller_ (raw pointer).
   immersive_mode_controller_.reset();
-  history_side_panel_coordinator_.reset();
   find_bar_controller_.reset();
   extension_installed_watcher_.reset();
   context_highlight_window_feature_.reset();

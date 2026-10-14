@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header_controller.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -58,8 +57,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserWindowInterface* browser)
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/40803038.
   side_panel_observation_.Observe(side_panel);
-  SidePanelHelper::PopulateGlobalEntries(browser,
-                                         SidePanelRegistry::From(browser));
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;

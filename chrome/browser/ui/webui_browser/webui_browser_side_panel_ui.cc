@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "content/public/browser/web_contents.h"
@@ -32,14 +31,7 @@ content::WebContents* GetContainingWebContents(views::View* view) {
 
 WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(
     BrowserWindowInterface* browser)
-    : SidePanelUIBase(browser) {
-  // TODO(webium): Currently only reading list and bookmarks side panel
-  // coordinators are constructed prior to this call. For the remaining
-  // global entries, we should either move construction to
-  // BrowserWindowFeatures::Init() or else explicitly disable support.
-  SidePanelHelper::PopulateGlobalEntries(browser,
-                                         SidePanelRegistry::From(browser));
-}
+    : SidePanelUIBase(browser) {}
 
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
 

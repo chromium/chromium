@@ -5,31 +5,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
-#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "ui/actions/actions.h"
-
-// static
-void SidePanelHelper::PopulateGlobalEntries(
-    BrowserWindowInterface* browser,
-    SidePanelRegistry* window_registry) {
-  if (webui_browser::IsWebUIBrowserEnabled()) {
-    // TODO(webium): Consider supporting additional side panels beyond reading
-    // list and bookmarks.
-    return;
-  }
-
-  // Add history.
-  if (HistorySidePanelCoordinator::IsSupported()) {
-    HistorySidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
-        window_registry);
-  }
-}
 
 // static
 actions::ActionItem* SidePanelHelper::GetActionItem(
