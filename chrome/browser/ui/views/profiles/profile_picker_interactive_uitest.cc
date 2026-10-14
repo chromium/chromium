@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -16,9 +17,11 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -297,6 +300,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
 // Checks that Chrome be closed with keyboard shortcut. Only MacOS has a
 // keyboard shortcut to exit Chrome.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
+  // Disable "Warn Before Quitting". Otherwise, as a browser window is open and
+  // the quit is triggered by a Cmd+Q key event, the confirm-to-quit panel would
+  // be shown and require Cmd+Q to be physically held down, which a synthesized
+  // key event cannot do, so the quit would be aborted.
+  g_browser_process->local_state()->SetBoolean(prefs::kConfirmToQuitEnabled,
+                                               false);
+
   // Open a new picker.
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
                      GURL("chrome://profile-picker"));
