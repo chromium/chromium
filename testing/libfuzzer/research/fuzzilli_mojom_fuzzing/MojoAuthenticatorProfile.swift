@@ -1269,6 +1269,7 @@ let mojoAuthenticatorProfile = Profile(
     maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
     codePrefix: """
+        // --- Begin program prefix ---
         let globalRemote = null;
         function getOrCreatePrimaryRemote() {
             if (!globalRemote) {
@@ -1276,8 +1277,13 @@ let mojoAuthenticatorProfile = Profile(
             }
             return globalRemote;
         }
+        // --- End program prefix ---
         """,
-    codeSuffix: "if (globalRemote) {globalRemote.$.close()}",
+    codeSuffix: """
+        // --- Begin program suffix ---
+        if (globalRemote) {globalRemote.$.close()}
+        // --- End program suffix ---
+        """,
     ecmaVersion: v8Profile.ecmaVersion,
     startupTests: [
         ("fuzzilli('FUZZILLI_PRINT', 'test')", .shouldSucceed),
