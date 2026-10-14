@@ -27,5 +27,6 @@ schema:
 supported_on:
 - chrome.*:25-
 - chrome_os:23-
+- android:157-
 tags: []
 type: main

@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,6 +29,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -53,6 +56,7 @@ public class VoiceRecognitionHandler {
     private final AutocompleteCoordinator mAutocompleteCoordinator;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private @Nullable WebContentsObserver mVoiceSearchWebContentsObserver;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private CallbackController mCallbackController = new CallbackController();
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final VoiceRecognitionIntentHandler mIntentHandler;
@@ -115,7 +119,7 @@ public class VoiceRecognitionHandler {
         mProfileSupplier = profileSupplier;
         mIntentHandler = intentHandler;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
-                mCallbackController.makeCancelable(profile -> notifyVoiceAvailabilityImpacted()));
+                mCallbackController.makeCancelable(this::onProfileUpdated));
     }
 
     public void addObserver(Observer observer) {
@@ -128,11 +132,25 @@ public class VoiceRecognitionHandler {
 
     @SuppressWarnings("NullAway")
     public void destroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
         }
         mIntentHandler.destroy();
+    }
+
+    private void onProfileUpdated(Profile profile) {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+        }
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+        mPrefChangeRegistrar.addObserver(
+                Pref.AUDIO_CAPTURE_ALLOWED, this::notifyVoiceAvailabilityImpacted);
+        notifyVoiceAvailabilityImpacted();
     }
 
     private void notifyVoiceAvailabilityImpacted() {
