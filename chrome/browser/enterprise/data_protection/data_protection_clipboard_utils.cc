@@ -67,6 +67,7 @@
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -345,7 +346,8 @@ void CopyIfAllowedByContentAnalysis(
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-  CHECK(web_contents, base::NotFatalUntil::M161);
+  // Only a service worker copy legitimately has no tab.
+  CHECK(web_contents || source.is_service_worker(), base::NotFatalUntil::M161);
   Profile* profile = Profile::FromBrowserContext(source.browser_context());
   if (!profile) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
@@ -358,6 +360,24 @@ void CopyIfAllowedByContentAnalysis(
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
   }
+
+  if (!web_contents) {
+    // ContentAnalysisDelegate needs a tab both to scan and to surface a block
+    // or warning verdict, so a service worker copy can't be scanned. When the
+    // policy gates the copy on the verdict, fail closed rather than let
+    // unscanned data through. An audit-only policy never gates the copy, so
+    // let it proceed.
+    if (delegate_data.settings.block_until_verdict ==
+        enterprise_connectors::BlockUntilVerdict::kBlock) {
+      std::move(callback).Run(metadata.format_type,
+                              content::ClipboardPasteData(),
+                              /*replacement_data=*/std::nullopt);
+    } else {
+      std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    }
+    return;
+  }
+
   delegate_data.reason =
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_COPY;
 
@@ -774,15 +794,10 @@ void IsCopyToOSClipboardRestricted(
   }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  // Content analysis needs a tab: ContentAnalysisDelegate is created from a
-  // WebContents and has no tab-free entry point, so a service worker copy is
-  // not scanned.
-  if (source.web_contents()) {
-    CopyIfAllowedByContentAnalysis(source.web_contents(), source, metadata,
-                                   data, std::move(callback));
-  } else {
-    std::move(callback).Run(metadata.format_type, data, std::nullopt);
-  }
+  // `source.web_contents()` is null for a service worker copy, which
+  // CopyIfAllowedByContentAnalysis() handles.
+  CopyIfAllowedByContentAnalysis(source.web_contents(), source, metadata, data,
+                                 std::move(callback));
 #else
   std::move(callback).Run(metadata.format_type, data, std::nullopt);
 #endif

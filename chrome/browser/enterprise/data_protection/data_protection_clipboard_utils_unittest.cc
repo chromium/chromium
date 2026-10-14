@@ -1378,6 +1378,116 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
   EXPECT_TRUE(future.Wait());
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysis_ServiceWorker_BlockUntilVerdict_FailsClosed) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      ServiceWorkerEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  // A worker has no tab to scan from or to show a verdict in, so a policy that
+  // waits for the verdict refuses the copy outright instead of letting
+  // unscanned data through.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_TRUE(future.Get<1>().text.empty());
+  EXPECT_FALSE(future.Get<2>().has_value());
+
+  // No scan was started, so the "scanning" placeholder was never written.
+  base::test::TestFuture<std::u16string> clipboard_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_future.GetCallback());
+  EXPECT_TRUE(clipboard_future.Get().empty());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysis_ServiceWorker_AuditOnly_Allowed) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 0
+        })");
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      ServiceWorkerEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  // An audit-only policy never gates the copy on the verdict, so the copy is
+  // let through rather than refused.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_EQ(future.Get<1>().text, std::u16string(100, 'a'));
+  EXPECT_FALSE(future.Get<2>().has_value());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysis_ServiceWorker_UrlNotCovered_Allowed) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["other.com"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      ServiceWorkerEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  // The policy doesn't cover the worker's URL, so there is nothing to fail
+  // closed on.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_EQ(future.Get<1>().text, std::u16string(100, 'a'));
+  EXPECT_FALSE(future.Get<2>().has_value());
+}
+
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST_F(DataProtectionClipboardTest, DragAllowed_NoRule) {
