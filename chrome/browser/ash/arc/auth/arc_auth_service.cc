@@ -125,7 +125,9 @@ mojom::ChromeAccountType GetAccountType(const Profile* profile) {
     // demo mode is an exception, as it is expected to work purely offline, with
     // a (fake) robot account not known to auth service - this means that it has
     // to go through different, offline provisioning flow.
-    CHECK(IsRobotOrOfflineDemoAccountMode(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/572959315): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(IsRobotOrOfflineDemoAccountMode());
     return mojom::ChromeAccountType::ROBOT_ACCOUNT;
   }
 
