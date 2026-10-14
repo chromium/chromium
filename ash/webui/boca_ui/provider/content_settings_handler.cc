@@ -5,8 +5,7 @@
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
 
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/check_deref.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -39,8 +38,9 @@ ContentSetting GetPermissionSettingType(
 }
 }  // namespace
 
-ContentSettingsHandler::ContentSettingsHandler(Profile* profile)
-    : profile_(profile) {}
+ContentSettingsHandler::ContentSettingsHandler(
+    HostContentSettingsMap* host_content_settings_map)
+    : host_content_settings_map_(CHECK_DEREF(host_content_settings_map)) {}
 
 ContentSettingsHandler::~ContentSettingsHandler() = default;
 
@@ -48,23 +48,17 @@ bool ContentSettingsHandler::SetContentSettingForOrigin(
     const std::string& url,
     mojom::Permission permission,
     mojom::PermissionSetting permission_setting) {
-  if (!profile_) {
-    return false;
-  }
-
   const GURL origin(url);
-  HostContentSettingsMap* const host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
   ContentSettingsType content_type = GetPermissionType(permission);
   ContentSetting setting = GetPermissionSettingType(permission_setting);
 
-  host_content_settings_map->SetContentSettingDefaultScope(
+  host_content_settings_map_->SetContentSettingDefaultScope(
       origin, origin, content_type, setting);
 
   // Reset the per-site embargo state
   if (setting != ContentSetting::CONTENT_SETTING_BLOCK) {
     auto blocker = std::make_unique<permissions::PermissionDecisionAutoBlocker>(
-        host_content_settings_map);
+        &host_content_settings_map_.get());
     blocker.get()->RemoveEmbargoAndResetCounts(origin, content_type);
   }
   return true;

@@ -50,10 +50,12 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 BocaUI::BocaUI(content::WebUI* web_ui,
                std::unique_ptr<BocaUIDelegate> delegate,
                BocaSessionManager* boca_session_manager,
-               bool is_producer)
+               bool is_producer,
+               HostContentSettingsMap* host_content_settings_map)
     : UntrustedWebUIController(web_ui),
       boca_session_manager_(CHECK_DEREF(boca_session_manager)),
       is_producer_(is_producer),
+      host_content_settings_map_(CHECK_DEREF(host_content_settings_map)),
       spotlight_service_(boca_session_manager) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -124,12 +126,12 @@ void BocaUI::Create(
   content::BrowserContext* context =
       web_ui()->GetWebContents()->GetBrowserContext();
   CHECK(context);
+  auto content_settings_handler = std::make_unique<ContentSettingsHandler>(
+      &host_content_settings_map_.get());
   // TODO: This is illegal dependency violating the restriction that any
   // //chrome code must not be depended by the code outside of //chrome.
   // We must fix this use.
   auto* const profile = Profile::FromWebUI(web_ui());
-  auto content_settings_handler =
-      std::make_unique<ContentSettingsHandler>(profile);
   auto* const boca_manager =
       ash::BocaManagerFactory::GetInstance()->GetForProfile(profile);
   auto* const on_task_session_manager = boca_manager->GetOnTaskSessionManager();

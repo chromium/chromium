@@ -39,7 +39,8 @@ class ContentSettingsHandlerTest
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  ContentSettingsHandler content_settings_handler_{&profile_};
+  ContentSettingsHandler content_settings_handler_{
+      HostContentSettingsMapFactory::GetForProfile(&profile_)};
 };
 
 TEST_P(ContentSettingsHandlerTest, SetSiteMicrophonePermission) {

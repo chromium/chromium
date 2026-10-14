@@ -6,15 +6,18 @@
 #define ASH_WEBUI_BOCA_UI_PROVIDER_CONTENT_SETTINGS_HANDLER_H_
 
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
-class Profile;
+class HostContentSettingsMap;
 
 namespace ash::boca {
 
 class ContentSettingsHandler {
  public:
-  explicit ContentSettingsHandler(Profile* profile);
+  // `host_content_settings_map` is the one belonging to the user's profile. It
+  // must be non-null and must outlive `this`.
+  explicit ContentSettingsHandler(
+      HostContentSettingsMap* host_content_settings_map);
   ContentSettingsHandler(const ContentSettingsHandler&) = delete;
   ContentSettingsHandler& operator=(const ContentSettingsHandler&) = delete;
   virtual ~ContentSettingsHandler();
@@ -24,7 +27,7 @@ class ContentSettingsHandler {
                                           mojom::PermissionSetting setting);
 
  private:
-  const raw_ptr<Profile> profile_;
+  const raw_ref<HostContentSettingsMap> host_content_settings_map_;
 };
 
 }  // namespace ash::boca

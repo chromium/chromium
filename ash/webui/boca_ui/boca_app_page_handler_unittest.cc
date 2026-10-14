@@ -62,6 +62,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
@@ -567,7 +568,9 @@ class FakePage : public mojom::Page {
 
 class MockContentSettingsHandler : public ContentSettingsHandler {
  public:
-  MockContentSettingsHandler() : ContentSettingsHandler(nullptr) {}
+  explicit MockContentSettingsHandler(
+      HostContentSettingsMap* host_content_settings_map)
+      : ContentSettingsHandler(host_content_settings_map) {}
   ~MockContentSettingsHandler() override = default;
 
   MOCK_METHOD(bool,
@@ -597,8 +600,12 @@ class BocaAppPageHandlerTest : public testing::Test {
     ash::boca_util::RegisterPrefs(local_state_.registry());
     local_state_.SetDict(ash::prefs::kClassManagementToolsKioskReceiverCodes,
                          base::DictValue().Set(kReceiverId, kReceiverName));
-    content_settings::PolicyProvider::RegisterProfilePrefs(
-        pref_service_.registry());
+    // Covers the PolicyProvider prefs too.
+    HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        &pref_service_, /*is_off_the_record=*/false,
+        /*store_last_modified=*/false, /*restore_session=*/false,
+        /*should_record_metrics=*/false);
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
 
@@ -648,7 +655,11 @@ class BocaAppPageHandlerTest : public testing::Test {
     VerifyEndSession();
     browser_context_ = nullptr;
     mock_content_settings_handler_ = nullptr;
+    // Must outlive `boca_app_handler_`, which owns the ContentSettingsHandler
+    // holding a raw_ref to it.
     boca_app_handler_.reset();
+    host_content_settings_map_->ShutdownOnUIThread();
+    host_content_settings_map_.reset();
     web_ui_.reset();
     web_contents_.reset();
     spotlight_service_.reset();
@@ -677,7 +688,8 @@ class BocaAppPageHandlerTest : public testing::Test {
     // `BocaAppClient::GetSessionManager` should be called exactly once on
     // construction.
     auto content_settings_handler =
-        std::make_unique<NiceMock<MockContentSettingsHandler>>();
+        std::make_unique<NiceMock<MockContentSettingsHandler>>(
+            host_content_settings_map_.get());
     mock_content_settings_handler_ = content_settings_handler.get();
     auto fake_tab_info_collector = std::make_unique<FakeTabInfoCollector>(
         base::BindOnce(&BocaAppPageHandlerTest::ResetTabInfoCollectorPtr,
@@ -803,6 +815,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;

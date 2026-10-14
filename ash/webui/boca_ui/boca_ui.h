@@ -24,6 +24,8 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+class HostContentSettingsMap;
+
 namespace ash::boca {
 class BocaUI;
 class BocaAppHandler;
@@ -43,10 +45,13 @@ class BocaUIDelegate {
 class BocaUI : public ui::UntrustedWebUIController,
                public boca::mojom::BocaPageHandlerFactory {
  public:
+  // `host_content_settings_map` is the one belonging to the user's profile,
+  // resolved by the caller. It must be non-null and must outlive `this`.
   BocaUI(content::WebUI* web_ui,
          std::unique_ptr<BocaUIDelegate> delegate,
          BocaSessionManager* boca_session_manager,
-         bool is_producer);
+         bool is_producer,
+         HostContentSettingsMap* host_content_settings_map);
   BocaUI(const BocaUI&) = delete;
   BocaUI& operator=(const BocaUI&) = delete;
   ~BocaUI() override;
@@ -60,6 +65,9 @@ class BocaUI : public ui::UntrustedWebUIController,
  private:
   const raw_ref<BocaSessionManager> boca_session_manager_;
   const bool is_producer_;
+  // Create() runs when the page binds, which is after construction, so this
+  // is kept until then to hand to the ContentSettingsHandler it builds.
+  const raw_ref<HostContentSettingsMap> host_content_settings_map_;
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;
   SpotlightService spotlight_service_;

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -132,6 +133,7 @@ std::unique_ptr<content::WebUIController> BocaUIConfig::CreateWebUIController(
       web_ui, std::move(delegate),
       BocaManagerFactory::GetForProfile(profile)->GetBocaSessionManager(),
       ash::boca_util::IsProducer(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }
 }  // namespace ash
