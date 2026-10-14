@@ -1,4 +1,0 @@
-{
-  "builder_group": "tryserver.chromium.fuchsia",
-  "recipe": "chromium/compilator"
-}

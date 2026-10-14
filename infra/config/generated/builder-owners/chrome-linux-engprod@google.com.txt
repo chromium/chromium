@@ -1,9 +1,0 @@
-ci/Linux Builder
-ci/Linux Builder (Wayland)
-ci/Linux Builder (dbg)
-ci/Linux Tests
-ci/Linux Tests (dbg)(1)
-ci/linux-wayland-mutter-rel-tests
-ci/linux-wayland-weston-rel-tests
-try/linux-wayland-mutter-rel
-try/linux-wayland-weston-rel

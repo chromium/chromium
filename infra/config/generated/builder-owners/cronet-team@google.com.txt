@@ -1,9 +1,0 @@
-ci/android-cronet-arm-dbg
-ci/android-cronet-arm-rel
-ci/android-cronet-x64-dbg
-ci/android-cronet-x86-dbg
-ci/android-cronet-x86-dbg-10-tests
-try/android-cronet-arm-dbg
-try/android-cronet-arm-rel
-try/android-cronet-x64-dbg
-try/android-cronet-x86-dbg-10-tests

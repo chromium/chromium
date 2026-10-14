@@ -1,7 +1,0 @@
-{
-  "win-arm64-dbg": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}
