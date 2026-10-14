@@ -166,6 +166,7 @@ source_set("unittests") {
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
     "x11_display_util_unittest.cc",
+    "x11_util_unittest.cc",
     "x11_whole_screen_move_loop_unittest.cc",
   ]
   deps = [
@@ -177,6 +178,7 @@ source_set("unittests") {
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/events/platform",
+    "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]

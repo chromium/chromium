@@ -25,6 +25,8 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +44,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
@@ -255,7 +258,8 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
   motif_hints.decorations = use_os_window_frame ? 1 : 0;
 
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
-  UNSAFE_TODO(memcpy(hints.data(), &motif_hints, sizeof(MotifWmHints)));
+  base::as_writable_byte_span(hints).copy_from(
+      base::byte_span_from_ref(motif_hints));
   x11::Atom hint_atom = x11::GetAtom("_MOTIF_WM_HINTS");
   x11::Connection::Get()->SetArrayProperty(window, hint_atom, hint_atom, hints);
 }
@@ -309,11 +313,11 @@ void SetWindowClassHint(x11::Connection* connection,
                         x11::Window window,
                         const std::string& res_name,
                         const std::string& res_class) {
-  auto str =
+  std::string str =
       base::StringPrintf("%s%c%s", res_name.c_str(), '\0', res_class.c_str());
-  std::vector<char> data(str.data(), UNSAFE_TODO(str.data() + str.size() + 1));
-  x11::Connection::Get()->SetArrayProperty(window, x11::Atom::WM_CLASS,
-                                           x11::Atom::STRING, data);
+  x11::Connection::Get()->SetArrayProperty(
+      window, x11::Atom::WM_CLASS, x11::Atom::STRING,
+      base::byte_span_with_nul_from_cstring_view(base::cstring_view(str)));
 }
 
 void SetWindowRole(x11::Window window, const std::string& role) {
@@ -690,14 +694,11 @@ gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
   SkImageInfo info = SkImageInfo::MakeN32(width, height, kUnpremul_SkAlphaType);
   result.allocPixels(info);
 
-  uint32_t* pixels_data = reinterpret_cast<uint32_t*>(result.getPixels());
-
-  for (long y = 0; y < height; ++y) {
-    for (long x = 0; x < width; ++x) {
-      UNSAFE_TODO(pixels_data[result.rowBytesAsPixels() * y + x]) =
-          static_cast<uint32_t>(data[start + width * y + x]);
-    }
-  }
+  base::span<const uint32_t> src_pixels = base::span(data).subspan(
+      base::checked_cast<size_t>(start),
+      base::checked_cast<size_t>(width) * base::checked_cast<size_t>(height));
+  gfx::SkPixmapToWritableSpan(result.pixmap())
+      .copy_from(base::as_byte_span(src_pixels));
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }
