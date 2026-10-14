@@ -962,9 +962,6 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-
-    // If the context is lost we don't want to re-create it here, the resulting
-    // resource provider would be invalid anyway
     if (!shared_context_wrapper ||
         !shared_context_wrapper->ContextProvider().RasterInterface() ||
         shared_context_wrapper->ContextProvider().IsContextLost()) {
@@ -1044,20 +1041,45 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     }
 #endif
 
-    // Create an accelerated CRP in order to produce an accelerated snapshot.
-    auto resource_provider = std::make_unique<CanvasNon2DResourceProvider>(
-        size, format, GetAlphaType(), GetColorSpace(),
-        drawing_buffer_tone_mapping_hdr_metadata_, shared_context_wrapper,
-        shared_image_usages, /*context_lost_callback=*/base::OnceClosure(),
-        /*create_initial_resource=*/false);
-    if (!resource_provider->IsValid()) {
-      return nullptr;
+    // These SharedImages are both read and written by the raster interface
+    // (both occur, for example, when copying canvas resources between
+    // canvases). Additionally, these SharedImages can be put into
+    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
+    // GL textures by WebGL (via
+    // AcceleratedStaticBitmapImage::CopyToTexture()).
+    shared_image_usages = shared_image_usages |
+                          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                          gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
+    if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
+      shared_image_usages |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
     }
 
-    if (!resource_provider->image_pool()) {
+    gpu::ImageInfo image_info(size, format, shared_image_usages,
+                              GetColorSpace(), kTopLeft_GrSurfaceOrigin,
+                              GetAlphaType(),
+                              /*buffer_usage=*/std::nullopt,
+                              /*is_software=*/false);
+
+    std::optional<base::TimeDelta> expiration_time =
+        (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
+            ? std::make_optional(
+                  Canvas2DResourceProvider::kUnusedResourceExpirationTime)
+            : std::nullopt;
+    bool is_single_buffered =
+        shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+    constexpr int kMaxRecycledCanvasResources = 3;
+
+    auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+        image_info,
+        shared_context_wrapper->ContextProvider().SharedImageInterface(),
+        "CanvasResourceRaster",
+        is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
+    if (!image_pool) {
       return nullptr;
     }
-    auto resource = resource_provider->image_pool()->GetImage();
+    auto resource = image_pool->GetImage();
     if (!resource) {
       return nullptr;
     }
