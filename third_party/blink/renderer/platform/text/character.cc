@@ -327,6 +327,16 @@ UScriptCode GetScriptBasedOnUnicodeBlock(int ucs4) {
       return USCRIPT_KATAKANA_OR_HIRAGANA;
     case UBLOCK_ARABIC:
       return USCRIPT_ARABIC;
+    case UBLOCK_ARABIC_SUPPLEMENT:
+    case UBLOCK_ARABIC_EXTENDED_A:
+    case UBLOCK_ARABIC_EXTENDED_B:
+    case UBLOCK_ARABIC_EXTENDED_C:
+    case UBLOCK_ARABIC_PRESENTATION_FORMS_A:
+    case UBLOCK_ARABIC_PRESENTATION_FORMS_B:
+      if (RuntimeEnabledFeatures::NastaliqScriptEnabled()) {
+        return USCRIPT_ARABIC;
+      }
+      break;
     case UBLOCK_THAI:
       return USCRIPT_THAI;
     case UBLOCK_GREEK:
@@ -345,8 +355,9 @@ UScriptCode GetScriptBasedOnUnicodeBlock(int ucs4) {
     case UBLOCK_GOTHIC:
       return USCRIPT_GOTHIC;
     default:
-      return USCRIPT_COMMON;
+      break;
   }
+  return USCRIPT_COMMON;
 }
 
 bool IsCursiveScript(UChar32 code_point) {
