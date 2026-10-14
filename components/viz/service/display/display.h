@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -199,6 +200,15 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   void PreserveChildSurfaceControls();
 
+  // Returns main thread ids of Renderers that should be included in the ADPF
+  // hint session even though they have not contributed a surface to the last
+  // drawn frame yet (e.g. the Renderer committing a page load). Runs on the
+  // viz compositor thread during DrawAndSwap.
+  using PendingRendererMainThreadsCallback =
+      base::RepeatingCallback<base::flat_set<base::PlatformThreadId>()>;
+  void SetPendingRendererMainThreadsCallback(
+      PendingRendererMainThreadsCallback callback);
+
 #if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb();
 #endif
@@ -302,6 +312,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   raw_ptr<DisplayClient> client_ = nullptr;
   base::ObserverList<DisplayObserver> observers_;
   raw_ptr<SurfaceManager> surface_manager_ = nullptr;
+  PendingRendererMainThreadsCallback pending_renderer_main_threads_callback_;
   const FrameSinkId frame_sink_id_;
   SurfaceId current_surface_id_;
   gfx::Size current_surface_size_;

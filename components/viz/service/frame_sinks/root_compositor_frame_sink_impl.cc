@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -27,6 +28,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/display_embedder/vsync_parameter_listener.h"
+#include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
@@ -283,6 +285,14 @@ RootCompositorFrameSinkImpl::Create(
       std::move(external_begin_frame_source), std::move(display),
       hw_support_for_multiple_refresh_rates,
       params->enable_video_conference_matcher));
+
+  if (hint_session_factory &&
+      base::FeatureList::IsEnabled(features::kEnableADPFPendingRendererMain)) {
+    // |impl| owns and outlives display, so unretained is safe.
+    impl->display_->SetPendingRendererMainThreadsCallback(base::BindRepeating(
+        &RootCompositorFrameSinkImpl::GetPendingRendererMainThreads,
+        base::Unretained(impl.get())));
+  }
 
   // Set up the callback for updating VSyncParameters.
 #if !BUILDFLAG(IS_APPLE)
@@ -625,6 +635,30 @@ void RootCompositorFrameSinkImpl::SetThreads(
   support_->SetThreads(/*from_untrusted_client=*/false, threads);
 }
 #endif
+
+base::flat_set<base::PlatformThreadId>
+RootCompositorFrameSinkImpl::GetPendingRendererMainThreads() const {
+  base::flat_set<base::PlatformThreadId> thread_ids;
+  FrameSinkManagerImpl* frame_sink_manager = support_->frame_sink_manager();
+  for (const FrameSinkId& child_id :
+       frame_sink_manager->GetChildrenByParent(support_->frame_sink_id())) {
+    CompositorFrameSinkSupport* child =
+        frame_sink_manager->GetFrameSinkForId(child_id);
+    // A child that has activated a surface is embedded in the drawn frame and
+    // picked up by Display through the regular per-surface path.
+    if (!child || child->last_activated_surface_id().is_valid()) {
+      continue;
+    }
+    for (const Thread& thread : child->GetThreads()) {
+      if (thread.type == Thread::Type::kMain) {
+        thread_ids.insert(thread.id);
+      }
+    }
+  }
+  TRACE_EVENT_INSTANT("android.adpf", "PendingRendererMainThreads", "count",
+                      thread_ids.size());
+  return thread_ids;
+}
 
 RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     FrameSinkManagerImpl* frame_sink_manager,

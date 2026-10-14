@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -171,6 +172,12 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void SetWideColorEnabled(bool enabled) override;
 
   void SetPreferredFrameInterval(base::TimeDelta interval);
+
+  // Main thread ids of frame sinks registered as children of this root (main
+  // frame Renderers) that have not activated a surface yet, i.e. Renderers
+  // committing a page load before their first frame. See
+  // Display::SetPendingRendererMainThreadsCallback.
+  base::flat_set<base::PlatformThreadId> GetPendingRendererMainThreads() const;
 
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();

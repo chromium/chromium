@@ -271,6 +271,14 @@ BASE_FEATURE(kEnableADPFScrollNoRendererMain,
 // instead of Viz. The goal is to prevent Viz from blocking on a binder call.
 BASE_FEATURE(kEnableADPFAsyncSetThreads, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome includes the main thread of a main frame Renderer into
+// the ADPF(Android Dynamic Performance Framework) hint session as soon as the
+// Renderer has registered its threads, instead of only after it contributed
+// to a drawn frame. This only affects Renderers whose frame sink has not
+// activated a surface yet, i.e. the Renderer committing a page load until it
+// produces its first frame.
+BASE_FEATURE(kEnableADPFPendingRendererMain, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.

@@ -359,6 +359,11 @@ Display::~Display() {
     damage_tracker_->RunDrawCallbacks();
 }
 
+void Display::SetPendingRendererMainThreadsCallback(
+    PendingRendererMainThreadsCallback callback) {
+  pending_renderer_main_threads_callback_ = std::move(callback);
+}
+
 void Display::Initialize(DisplayClient* client,
                          SurfaceManager* surface_manager) {
   DCHECK(client);
@@ -1055,6 +1060,16 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
             features::kEnableADPFScrollNoRendererMain)) {
       // Exclude renderer main thread(s) from the session during a scroll.
       renderer_main_thread_ids.clear();
+    }
+
+    // Added after the scroll exclusion on purpose: a navigation may commit
+    // while the previous page is still being scrolled, and the committing
+    // Renderer's main thread is on the page load critical path.
+    if (pending_renderer_main_threads_callback_) {
+      const base::flat_set<base::PlatformThreadId> pending_threads =
+          pending_renderer_main_threads_callback_.Run();
+      renderer_main_thread_ids.insert(pending_threads.begin(),
+                                      pending_threads.end());
     }
 
     presentation_group_timing.OnDraw(
