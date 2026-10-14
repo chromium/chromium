@@ -280,8 +280,9 @@ interface WebTestControlHost {
   [Sync]
   GetWritableDirectory() => (mojo_base.mojom.FilePath path);
 
-  // For the duration of the current test this causes all file choosers to
-  // return the passed in |path|.
+  // Causes the next file chooser to return the passed in |path|. The
+  // configured path is consumed on first use (one-shot), causing any
+  // subsequent file choosers to be canceled.
   SetFilePathForMockFileDialog(mojo_base.mojom.FilePath path);
 
   // Creates a subresource filter ruleset file that considers URLs with suffixes

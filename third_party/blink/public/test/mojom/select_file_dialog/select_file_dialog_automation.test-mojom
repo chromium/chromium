@@ -10,7 +10,9 @@ import "mojo/public/mojom/base/file_path.mojom";
 // content_shell test environment.
 // This interface is bound per RenderFrameHost.
 interface SelectFileDialogAutomation {
-  // Configures the mock result for subsequent file dialog requests.
+  // Configures the mock result for the next file dialog request. The
+  // configured result is consumed on first use (one-shot), causing any
+  // subsequent file dialog requests to be canceled.
   // Passing an array of paths simulates a user selecting those files.
   // Passing null simulates a user canceling the dialog.
   // Passing an empty array is invalid.
