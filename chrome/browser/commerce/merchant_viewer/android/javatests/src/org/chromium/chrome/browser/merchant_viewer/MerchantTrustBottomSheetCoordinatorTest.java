@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 
 import androidx.test.filters.SmallTest;
 
@@ -52,7 +53,6 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MerchantTrustBottomSheetCoordinatorTest {
     private static final GURL TEST_URL = new GURL("https://example.com");
 
@@ -63,8 +63,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mMockBottomSheetController;
-
-    @Mock private View mMockDecorView;
 
     @Mock private MerchantTrustMetrics mMockMetrics;
 
@@ -77,7 +75,9 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Captor private ArgumentCaptor<MerchantTrustBottomSheetContent> mSheetContentCaptor;
 
     private static final String TEST_SHEET_TITLE = "Test Title";
+    private static final int CONTAINER_HEIGHT = 1000;
 
+    private View mDecorView;
     private WindowAndroid mWindowAndroid;
     private MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
     private Profile mProfile;
@@ -94,6 +94,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
                     BlankUiTestActivity activity = sActivityTestRule.getActivity();
+                    mDecorView = new View(activity);
                     mWindowAndroid =
                             new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
                     mDetailsTabCoordinator =
@@ -101,7 +102,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                                     activity,
                                     mWindowAndroid,
                                     mMockBottomSheetController,
-                                    mMockDecorView,
+                                    mDecorView,
                                     mMockMetrics,
                                     IntentRequestTracker.createFromActivity(activity),
                                     ObservableSuppliers.createNonNull(mProfile));
@@ -129,11 +130,17 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                 .setupSheetWebContents(any(ThinWebView.class), any(PropertyModel.class));
         verify(mMockBottomSheetController, times(1))
                 .addObserver(mBottomSheetObserverCaptor.capture());
-        verify(mMockDecorView, times(1))
-                .addOnLayoutChangeListener(any(OnLayoutChangeListener.class));
         verify(mMockMediator, times(1)).navigateToUrl(eq(TEST_URL), eq(TEST_SHEET_TITLE));
         verify(mMockBottomSheetController, times(1))
                 .requestShowContent(mSheetContentCaptor.capture(), eq(true));
+
+        // A layout change of the decor view resizes the web view to the container.
+        View webView = mSheetContentCaptor.getValue().getContentView();
+        int height = webView.getLayoutParams().height;
+        int growth = (int) (CONTAINER_HEIGHT * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO);
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(CONTAINER_HEIGHT);
+        ThreadUtils.runOnUiThreadBlocking(() -> mDecorView.layout(0, 0, 1, 1));
+        assertEquals(height + growth, webView.getLayoutParams().height);
     }
 
     @Test
@@ -155,8 +162,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
         verify(mMockMetrics, times(1))
                 .recordMetricsForBottomSheetClosed(eq(StateChangeReason.BACK_PRESS));
         verify(mMockOnBottomSheetDismissed, times(1)).run();
-        verify(mMockDecorView, times(1))
-                .removeOnLayoutChangeListener(any(OnLayoutChangeListener.class));
         verify(mMockBottomSheetController, times(1))
                 .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
         verify(mMockBottomSheetController, times(1))

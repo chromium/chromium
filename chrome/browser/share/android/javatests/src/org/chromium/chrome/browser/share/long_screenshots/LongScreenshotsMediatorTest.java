@@ -49,7 +49,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LongScreenshotsMediatorTest {
     /** Some screenshot dimension that's supposed to be reasonable. */
     /**
@@ -59,6 +58,7 @@ public class LongScreenshotsMediatorTest {
      */
     private static final int MAX_ALLOWABLE_SCREENSHOT_DIMENSION = 4999;
 
+    private View mView;
     private Activity mActivity;
     private Bitmap mBitmap;
     private LongScreenshotsMediator mMediator;
@@ -68,8 +68,6 @@ public class LongScreenshotsMediatorTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Mock private View mView;
 
     @Mock private EntryManager mManager;
 
@@ -83,6 +81,7 @@ public class LongScreenshotsMediatorTest {
     public void setUp() {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
+        mView = new View(mActivity);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 

@@ -10,14 +10,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector.InitParams;
@@ -25,24 +24,33 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.List;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeFeedbackCollectorTest {
     private static final String FEEDBACK_URL = "https://google.com";
     private static final String FEEDBACK_CONSTANT = "feedbackContext";
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Activity mActivity;
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private Activity mActivity;
 
     ChromeFeedbackCollector mCollector;
+
+    @BeforeClass
+    public static void setUpClass() {
+        sActivityTestRule.launchActivity(null);
+    }
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+        mActivity = sActivityTestRule.getActivity();
     }
 
     @Test
