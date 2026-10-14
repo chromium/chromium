@@ -136,4 +136,18 @@ public class TouchToFillAutofillRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "touch_to_fill_autofill_personal_context_notice");
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsPrivateInferenceNotice() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showPrivateInferenceNotice();
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_autofill_private_inference_notice");
+    }
 }
