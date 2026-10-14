@@ -1026,6 +1026,11 @@ inline constexpr char kGlicActorAutofillDescription[] =
     "Enables autofill actions for the actor tools on iOS. Specific fillable "
     "types may also need to be enabled.";
 
+inline constexpr char kGreyImageCIFilterName[] = "Grey Image CIFilter";
+inline constexpr char kGreyImageCIFilterDescription[] =
+    "Uses Core Image CIFilter instead of UIGraphicsImageRenderer for "
+    "grayscale image rendering.";
+
 inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =

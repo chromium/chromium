@@ -1004,6 +1004,12 @@ BASE_DECLARE_FEATURE(kAppBarAssistantCustomization);
 // Returns true if the AppBarAssistantCustomization feature is enabled.
 bool IsAppBarAssistantCustomizationEnabled();
 
+// Feature flag to enable using CIFilter for grayscale image rendering.
+BASE_DECLARE_FEATURE(kGreyImageCIFilter);
+
+// Returns true if the `kGreyImageCIFilter` feature flag is enabled.
+bool IsGreyImageCIFilterEnabled();
+
 // Enables the LightAppBar feature.
 BASE_DECLARE_FEATURE(kLightAppBar);
 

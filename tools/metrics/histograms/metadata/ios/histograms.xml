@@ -8189,6 +8189,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Snapshots.GreyImageCIFilterSuccess" enum="BooleanSuccess"
+    expires_after="2027-02-14">
+  <owner>junov@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records whether CoreImage CIFilter grayscale image conversion succeeded
+    (true) or failed and fell back to CPU software rasterization (false).
+    Recorded whenever GreyImage is called with the GreyImageCIFilter feature
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
     expires_after="2027-02-14">
   <owner>asamidoi@chromium.org</owner>

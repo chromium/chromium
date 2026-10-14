@@ -71,6 +71,7 @@ source_set("util") {
   frameworks = [
     "Accelerate.framework",
     "CoreGraphics.framework",
+    "CoreImage.framework",
     "QuartzCore.framework",
     "UniformTypeIdentifiers.framework",
   ]
@@ -172,6 +173,7 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
+  frameworks = [ "CoreImage.framework" ]
 }
 
 source_set("eg2_tests") {

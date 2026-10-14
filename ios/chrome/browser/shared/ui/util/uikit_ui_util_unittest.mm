@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <CoreImage/CoreImage.h>
+
+#import <utility>
+#import <vector>
+
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -59,6 +65,80 @@ TEST_F(UIKitUIUtilTest, TestGreyImage) {
   EXPECT_EQ(kSize.width, greyImage.size.width);
   EXPECT_EQ(kSize.height, greyImage.size.height);
   EXPECT_EQ(1.0, greyImage.scale);
+}
+
+// Tests that GreyImage with kGreyImageCIFilter enabled returns a valid
+// grayscale image matching the source dimensions, and verifies that pixels in
+// black and white regions are rendered as expected.
+TEST_F(UIKitUIUtilTest, TestGreyImageWithCIFilter) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGreyImageCIFilter);
+
+  const CGSize kSize = CGSizeMake(100, 100);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = 2;
+  format.opaque = YES;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:kSize format:format];
+
+  // Create an image with a white left half and a black right half.
+  UIImage* image = [renderer imageWithActions:^(
+                                 UIGraphicsImageRendererContext* context) {
+    [[UIColor whiteColor] setFill];
+    UIRectFill(CGRectMake(0, 0, kSize.width / 2, kSize.height));
+    [[UIColor blackColor] setFill];
+    UIRectFill(CGRectMake(kSize.width / 2, 0, kSize.width / 2, kSize.height));
+  }];
+
+  // Convert to grey image and verify its properties.
+  UIImage* greyImage = GreyImage(image);
+  ASSERT_TRUE(greyImage);
+  EXPECT_EQ(kSize.width, greyImage.size.width);
+  EXPECT_EQ(kSize.height, greyImage.size.height);
+  EXPECT_EQ(image.scale, greyImage.scale);
+  EXPECT_TRUE(greyImage.CIImage != nil);
+  EXPECT_EQ(greyImage.CGImage, nil);
+
+  CIContext* testContext = [CIContext contextWithOptions:nil];
+  CGImageRef cgImage = [testContext createCGImage:greyImage.CIImage
+                                         fromRect:greyImage.CIImage.extent];
+  ASSERT_TRUE(cgImage);
+
+  const size_t width = CGImageGetWidth(cgImage);
+  const size_t height = CGImageGetHeight(cgImage);
+  const size_t bytesPerPixel = 4;
+  const size_t bytesPerRow = bytesPerPixel * width;
+
+  std::vector<uint8_t> pixelData(bytesPerRow * height);
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  CGContextRef context = CGBitmapContextCreate(
+      pixelData.data(), width, height, 8, bytesPerRow, colorSpace,
+      std::to_underlying(kCGImageAlphaPremultipliedLast) |
+          std::to_underlying(kCGImageByteOrder32Big));
+  CGContextDrawImage(context, CGRectMake(0, 0, width, height), cgImage);
+  CGColorSpaceRelease(colorSpace);
+  CGContextRelease(context);
+  CGImageRelease(cgImage);
+
+  // Inspect a pixel in the white area (left half).
+  const size_t whiteX = width / 4;
+  const size_t whiteY = height / 2;
+  const size_t whiteOffset = (whiteY * bytesPerRow) + (whiteX * bytesPerPixel);
+  EXPECT_NEAR(pixelData[whiteOffset], 255, 1);
+  EXPECT_EQ(pixelData[whiteOffset], pixelData[whiteOffset + 1]);
+  EXPECT_EQ(pixelData[whiteOffset], pixelData[whiteOffset + 2]);
+  EXPECT_EQ(pixelData[whiteOffset + 3], 255);
+
+  // Inspect a pixel in the black area (right half).
+  const size_t blackX = (3 * width) / 4;
+  const size_t blackY = height / 2;
+  const size_t blackOffset = (blackY * bytesPerRow) + (blackX * bytesPerPixel);
+  EXPECT_NEAR(pixelData[blackOffset], 0, 1);
+  EXPECT_EQ(pixelData[blackOffset], pixelData[blackOffset + 1]);
+  EXPECT_EQ(pixelData[blackOffset], pixelData[blackOffset + 2]);
+  EXPECT_EQ(pixelData[blackOffset + 3], 255);
 }
 
 TEST_F(UIKitUIUtilTest, ViewHierarchyRootForView) {

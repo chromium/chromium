@@ -1229,6 +1229,12 @@ bool IsAppBarAssistantCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kAppBarAssistantCustomization);
 }
 
+BASE_FEATURE(kGreyImageCIFilter, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGreyImageCIFilterEnabled() {
+  return base::FeatureList::IsEnabled(kGreyImageCIFilter);
+}
+
 BASE_FEATURE(kLightAppBar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLightAppBarEnabled() {
