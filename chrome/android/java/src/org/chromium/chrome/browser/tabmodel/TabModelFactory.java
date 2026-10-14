@@ -42,7 +42,7 @@ public class TabModelFactory {
             @TabModelType int tabModelType,
             TabUngrouperFactory tabUngrouperFactory,
             @SupportedProfileType int supportedProfileType) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+        if (ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()
                 && supportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
             return new StubTabModel(/* isIncognito= */ false, profile);
         }
@@ -82,7 +82,7 @@ public class TabModelFactory {
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory,
             @SupportedProfileType int supportedProfileType) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+        if (ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()
                 && supportedProfileType == SupportedProfileType.REGULAR) {
             return new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
         }

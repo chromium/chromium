@@ -1232,6 +1232,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
+    public static final CachedFlag sEnforceIncognitoIsolation =
+            newCachedFlag(ENFORCE_INCOGNITO_ISOLATION, /* defaultValue= */ false);
     public static final CachedFlag sFaviconDisableHostFallback =
             newCachedFlag(
                     FAVICON_DISABLE_HOST_FALLBACK,
@@ -1602,6 +1604,7 @@ public abstract class ChromeFeatureList {
                     sEnableBrowserWindowInterfaceForCustomTabActivity,
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,
+                    sEnforceIncognitoIsolation,
                     sFaviconDisableHostFallback,
                     sFluidResize,
                     sForceTranslucentNotificationTrampoline,

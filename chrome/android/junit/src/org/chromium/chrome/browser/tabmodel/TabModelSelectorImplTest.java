@@ -665,4 +665,27 @@ public class TabModelSelectorImplTest {
         verify(mMockTabContentManager)
                 .invalidateIfChanged(eq(1), eq(new GURL("https://example.com")));
     }
+
+    @Test
+    public void testMarkTabStateInitialized_WithStubRegularModel() {
+        mTabModelSelector.destroy();
+        mTabModelSelector =
+                new TabModelSelectorImpl(
+                        mContext,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mAsyncTabParamsManager,
+                        /* supportUndo= */ false,
+                        ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
+                        TabModelType.STANDARD,
+                        /* startIncognito= */ true,
+                        SupportedProfileType.OFF_THE_RECORD);
+        StubTabModel stubRegularModel = new StubTabModel(/* isIncognito= */ false, mProfile);
+        mTabModelSelector.initializeForTesting(stubRegularModel, mIncognitoTabModel);
+        mTabModelSelector.markTabStateInitialized();
+        assertTrue(mTabModelSelector.isTabStateInitialized());
+    }
 }

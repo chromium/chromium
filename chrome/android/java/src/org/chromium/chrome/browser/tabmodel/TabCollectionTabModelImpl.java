@@ -2051,7 +2051,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (updatePendingTabClosureManager) commitAllTabClosures();
 
         Tab nearbyTab = null;
-        boolean nextIsIncognito = nextTab != null && nextTab.isOffTheRecord();
+        boolean nextIsIncognito =
+                nextTab == null
+                        ? mModelDelegate.getModel(false) instanceof StubTabModel
+                        : nextTab.isOffTheRecord();
         boolean nextIsInOtherModel = nextIsIncognito != isIncognito();
         if ((nextTab == null || nextIsInOtherModel) && closeType != TabCloseType.ALL) {
             nearbyTab =

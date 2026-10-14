@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +27,8 @@ public class StubTabModel extends EmptyTabModel {
     private final boolean mIsIncognito;
     private final String mMessage;
     private final @Nullable Profile mProfile;
+    private final NonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.alwaysZero();
 
     public StubTabModel(boolean isIncognito, @Nullable Profile profile) {
         super();
@@ -57,6 +62,16 @@ public class StubTabModel extends EmptyTabModel {
     @Override
     public boolean isIncognitoBranded() {
         return mIsIncognito;
+    }
+
+    @Override
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
+        return ObservableSuppliers.alwaysNull();
+    }
+
+    @Override
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     // Mutating methods that must throw to enforce isolation

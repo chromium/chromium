@@ -122,11 +122,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         if (isTabStateInitialized()) return;
         super.markTabStateInitialized();
 
-        TabModelJniBridge model = (TabModelJniBridge) getModel(false);
-        if (model != null) {
+        if (getModel(false) instanceof TabModelJniBridge model) {
             model.completeInitialization();
         } else {
-            assert false : "Normal tab model is null after tab state loaded.";
+            assert getModel(false) instanceof StubTabModel
+                    : "Normal tab model is null or unexpected type after tab state loaded.";
         }
     }
 

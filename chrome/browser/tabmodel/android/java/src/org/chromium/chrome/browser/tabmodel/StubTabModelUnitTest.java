@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -80,9 +82,7 @@ public class StubTabModelUnitTest {
                             "removeObserver",
                             "addTabGroupObserver",
                             "removeTabGroupObserver",
-                            "getCurrentTabSupplier",
                             "getNextTabPolicySupplier",
-                            "getTabCountSupplier",
                             "getTabByIdChecked",
                             "getNextTabIfClosed",
                             "commitAllTabClosures",
@@ -140,5 +140,12 @@ public class StubTabModelUnitTest {
                             + "Please override them to throw error(), or add them to the safe"
                             + " read allowlist in this test.");
         }
+    }
+
+    @Test
+    public void testSuppliers() {
+        StubTabModel stubTabModel = new StubTabModel(/* isIncognito= */ false, /* profile= */ null);
+        assertNull(stubTabModel.getCurrentTabSupplier().get());
+        assertEquals(Integer.valueOf(0), stubTabModel.getTabCountSupplier().get());
     }
 }

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
@@ -651,14 +652,18 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         observer.onTabStateInitialized();
                     }
 
-                    TabModel model = tabModelSelectorList.get(0).getModel(/* incognito= */ false);
-
                     // TODO(https://crbug.com/420738506): Remove this post once the order is
                     // flipped.
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                model.broadcastSessionRestoreComplete();
+                                for (TabModelSelector s : tabModelSelectorList) {
+                                    TabModel model = s.getModel(/* incognito= */ false);
+                                    if (!(model instanceof StubTabModel)) {
+                                        model.broadcastSessionRestoreComplete();
+                                        break;
+                                    }
+                                }
                                 unmapOrphanedTabGroups(profile, tabModelSelectorList);
                                 deleteOrphanedTabGroupData(tabModelSelectorList);
                             });

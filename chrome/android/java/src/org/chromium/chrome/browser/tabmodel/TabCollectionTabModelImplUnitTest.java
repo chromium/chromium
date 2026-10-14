@@ -618,6 +618,47 @@ public class TabCollectionTabModelImplUnitTest {
     }
 
     @Test
+    public void testRemoveTabsAndSelectNext_closeLastIncognitoTabWithStubRegularModel() {
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+        doReturn(true).when(mOtrProfile).isIncognitoBranded();
+        when(mTabCollectionTabModelImplJni.init(eq(mOtrProfile)))
+                .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
+
+        TabCollectionTabModelImpl incognitoModel =
+                new TabCollectionTabModelImpl(
+                        mOtrProfile,
+                        ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
+                        TabModelType.STANDARD,
+                        mRegularTabCreator,
+                        mIncognitoTabCreator,
+                        mOrderController,
+                        mTabContentManager,
+                        mNextTabPolicySupplier,
+                        mTabModelDelegate,
+                        mAsyncTabParamsManager,
+                        mTabRemover,
+                        /* isIncognitoBranded= */ true,
+                        mTabUngrouperFactory,
+                        () -> mScopedStorageBatch,
+                        /* supportUndo= */ false);
+
+        MockTab tabToClose = createMockTab(123, mOtrProfile);
+        tabToClose.setIsInitialized(true);
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any())).thenReturn(0);
+        incognitoModel.addTab(
+                tabToClose, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
+
+        StubTabModel stubRegularModel = new StubTabModel(/* isIncognito= */ false, mProfile);
+        when(mTabModelDelegate.getModel(false)).thenReturn(stubRegularModel);
+        when(mTabModelDelegate.getModel(true)).thenReturn(incognitoModel);
+
+        incognitoModel.closeTabs(TabClosureParams.closeAllTabs().allowUndo(false).build());
+        verify(mTabModelDelegate).getModel(true);
+    }
+
+    @Test
     public void testAddTab_willOpenInForeground() {
         // Mock a profile that is incognito.
         doReturn(true).when(mOtrProfile).isOffTheRecord();
