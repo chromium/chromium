@@ -18,6 +18,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
@@ -29,6 +30,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -68,21 +70,46 @@ constexpr std::string_view kHtmlBody =
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 
-class IndigoInteractiveUiTest : public InteractiveBrowserTest {
+// Runs each test both in legacy mode, where Indigo shows its entry points
+// itself through its page action, and in contextual cues mode, where it
+// delegates them to Contextual Cueing (`features::kIndigoContextualCueingV2`).
+class IndigoInteractiveUiTest : public InteractiveBrowserTest,
+                                public testing::WithParamInterface<bool> {
  public:
   IndigoInteractiveUiTest() = default;
   ~IndigoInteractiveUiTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(fake_api_.InitializeAndListen());
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIndigo,
-          {{features::kIndigoGenerateUrl.name,
-            fake_api_.GetGenerateUrl().spec()},
-           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {blink::features::kImageReplacement, {}},
-         {contextual_cueing::kContextualCueingV2, {}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kIndigo,
+         {{features::kIndigoGenerateUrl.name,
+           fake_api_.GetGenerateUrl().spec()},
+          {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
+        {blink::features::kImageReplacement, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsContextualCuesMode()) {
+      // Makes Contextual Cueing ask its cue targets, including Indigo's, for a
+      // cue on every page, and show the cues without backing off.
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2,
+           {{contextual_cueing::kDisableCueBackoff.name, "true"}}});
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2MultiSource,
+           {{contextual_cueing::kAnnotationTimeout.name, "3s"}}});
+      enabled_features.push_back({features::kIndigoContextualCueingV2, {}});
+      // Lets Contextual Cueing show cues without checking whether the account
+      // is subject to age restrictions.
+      disabled_features.push_back(
+          contextual_cueing::kContextualCueingV2EnforceAgeRestriction);
+    } else {
+      // Indigo only shows its anchored message proactively when Contextual
+      // Cueing V2 is enabled, even though it doesn't delegate to it.
+      enabled_features.push_back({contextual_cueing::kContextualCueingV2, {}});
+      disabled_features.push_back(features::kIndigoContextualCueingV2);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
     InteractiveBrowserTest::SetUp();
   }
 
@@ -151,6 +178,15 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest {
     optimization_guide_keyed_service->AddHintForTesting(
         embedded_test_server()->GetURL("/image.html"),
         optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+
+    if (IsContextualCuesMode()) {
+      // Contextual Cueing only shows cues to users who sync their history.
+      auto* sync_service = static_cast<syncer::TestSyncService*>(
+          SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+      sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+      sync_service->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kHistory, true);
+    }
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -158,11 +194,38 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    if (IsContextualCuesMode()) {
+      SyncServiceFactory::GetInstance()->SetTestingFactory(
+          context, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
+    }
   }
 
   void TearDownOnMainThread() override {
     identity_test_env_adaptor_.reset();
     InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  // Whether Indigo delegates its entry points to Contextual Cueing instead of
+  // showing them itself (legacy mode).
+  bool IsContextualCuesMode() const { return GetParam(); }
+
+  // Waits for the anchored message shown proactively for an eligible page. In
+  // contextual cues mode, Indigo's own page action must not show.
+  auto WaitForProactiveAnchoredMessage() {
+    if (IsContextualCuesMode()) {
+      return Steps(
+          WaitForShow(
+              page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+          EnsureNotPresent(kIndigoPageActionIconElementId));
+    }
+    return Steps(
+        WaitForShow(kIndigoPageActionIconElementId),
+        WaitForShow(
+            page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
 
  private:
@@ -173,16 +236,21 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoInteractiveUiTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ContextualCues" : "Legacy";
+                         });
+
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(IndigoInteractiveUiTest, ToolbarKeyboardFocus) {
+IN_PROC_BROWSER_TEST_P(IndigoInteractiveUiTest, ToolbarKeyboardFocus) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForProactiveAnchoredMessage(),
       PressButton(
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId),

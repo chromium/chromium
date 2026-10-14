@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/metrics_hashes.h"
@@ -186,21 +189,46 @@ MATCHER_P(IsCloseToTopRightOf, image_bounds_ref, "") {
          arg.y() >= image_bounds.y();
 }
 
-class IndigoBrowserTest : public InteractiveBrowserTest {
+// Base fixture for the Indigo browser tests. Subclasses choose whether Indigo
+// shows its entry points itself, through its page action ("legacy mode"), or
+// delegates them to Contextual Cueing ("contextual cues mode", see
+// `features::kIndigoContextualCueingV2`).
+class IndigoBrowserTestBase : public InteractiveBrowserTest {
  public:
-  IndigoBrowserTest() = default;
-  ~IndigoBrowserTest() override = default;
+  IndigoBrowserTestBase() = default;
+  ~IndigoBrowserTestBase() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(fake_api_.InitializeAndListen());
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIndigo,
-          {{features::kIndigoGenerateUrl.name,
-            fake_api_.GetGenerateUrl().spec()},
-           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {blink::features::kImageReplacement, {}},
-         {contextual_cueing::kContextualCueingV2, {}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kIndigo,
+         {{features::kIndigoGenerateUrl.name,
+           fake_api_.GetGenerateUrl().spec()},
+          {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
+        {blink::features::kImageReplacement, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsContextualCuesMode()) {
+      // Makes Contextual Cueing ask its cue targets, including Indigo's, for a
+      // cue on every page, and show the cues without backing off.
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2,
+           {{contextual_cueing::kDisableCueBackoff.name, "true"}}});
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2MultiSource,
+           {{contextual_cueing::kAnnotationTimeout.name, "3s"}}});
+      enabled_features.push_back({features::kIndigoContextualCueingV2, {}});
+      // Lets Contextual Cueing show cues without checking whether the account
+      // is subject to age restrictions.
+      disabled_features.push_back(
+          contextual_cueing::kContextualCueingV2EnforceAgeRestriction);
+    } else {
+      // Indigo only shows its anchored message proactively when Contextual
+      // Cueing V2 is enabled, even though it doesn't delegate to it.
+      enabled_features.push_back({contextual_cueing::kContextualCueingV2, {}});
+      disabled_features.push_back(features::kIndigoContextualCueingV2);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
     InteractiveBrowserTest::SetUp();
   }
 
@@ -347,6 +375,15 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     optimization_guide_keyed_service->AddHintForTesting(
         embedded_test_server()->GetURL("/title1.html"),
         optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+
+    if (IsContextualCuesMode()) {
+      // Contextual Cueing only shows cues to users who sync their history.
+      auto* sync_service = static_cast<syncer::TestSyncService*>(
+          SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+      sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+      sync_service->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kHistory, true);
+    }
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -354,20 +391,44 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    if (IsContextualCuesMode()) {
+      SyncServiceFactory::GetInstance()->SetTestingFactory(
+          context, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
+    }
+  }
+
+  // Waits for the anchored message shown proactively for an eligible page. In
+  // contextual cues mode, Indigo's own page action must not show.
+  auto WaitForProactiveAnchoredMessage() {
+    if (IsContextualCuesMode()) {
+      return Steps(
+          WaitForShow(
+              page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+          EnsureNotPresent(kIndigoPageActionIconElementId));
+    }
+    return Steps(
+        WaitForShow(kIndigoPageActionIconElementId),
+        WaitForShow(
+            page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
 
   auto NavigateAndClickAnchoredMessage(const GURL& url) {
     return Steps(
         InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
         WaitForWebContentsReady(kWebContentsId, url),
-        WaitForShow(kIndigoPageActionIconElementId),
-        WaitForShow(
-            page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+        WaitForProactiveAnchoredMessage(),
         PressButton(
             page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
 
  protected:
+  // Whether Indigo delegates its entry points to Contextual Cueing instead of
+  // showing them itself (legacy mode).
+  virtual bool IsContextualCuesMode() const = 0;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeApi fake_api_;
 
@@ -377,7 +438,30 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
+std::string DescribeIndigoMode(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "ContextualCues" : "Legacy";
+}
+
+// Runs each test both in legacy mode and in contextual cues mode.
+class IndigoBrowserTest : public IndigoBrowserTestBase,
+                          public testing::WithParamInterface<bool> {
+ protected:
+  bool IsContextualCuesMode() const override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoBrowserTest,
+                         testing::Bool(),
+                         &DescribeIndigoMode);
+
+// Tests for the entry points that Indigo shows itself, which only happens in
+// legacy mode.
+class IndigoLegacyBrowserTest : public IndigoBrowserTestBase {
+ protected:
+  bool IsContextualCuesMode() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
   gfx::Rect image_bounds{50, 50, 200, 200};
@@ -403,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, CloseResetsReplacements) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
   class FakeImageReplacement : public blink::mojom::ImageReplacement {
@@ -449,7 +533,12 @@ class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoHighDsfBrowserTest,
+                         testing::Bool(),
+                         &DescribeIndigoMode);
+
+IN_PROC_BROWSER_TEST_P(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
   gfx::Rect image_bounds{50, 50, 200, 200};
@@ -489,7 +578,12 @@ class IndigoOnboardingBrowserTest : public IndigoBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoOnboardingBrowserTest,
+                         testing::Bool(),
+                         &DescribeIndigoMode);
+
+IN_PROC_BROWSER_TEST_P(IndigoOnboardingBrowserTest, OnboardingFlow) {
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   const GURL popup_url = net::AppendQueryParameter(
       embedded_test_server()->GetURL("/empty.html"), "toyut", "chrome-mi");
@@ -514,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
+IN_PROC_BROWSER_TEST_P(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   const GURL other_url = embedded_test_server()->GetURL("/title1.html");
   const GURL popup_url = net::AppendQueryParameter(
@@ -537,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/empty.html");
 
@@ -561,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
                   WaitForShow(IndigoToolbar::kExpandedContainerElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/empty.html");
 
@@ -595,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
       WaitForShow(IndigoToolbar::kToolbarElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningScroll) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioningScroll) {
   const GURL url = embedded_test_server()->GetURL("/scroll.html");
   raw_ptr<views::View> toolbar_view = nullptr;
   gfx::Rect image_bounds{50, 500, 512, 512};
@@ -644,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningScroll) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningFixedOcclusion) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioningFixedOcclusion) {
   const GURL url = embedded_test_server()->GetURL("/fixed_occlusion.html");
   raw_ptr<views::View> toolbar_view = nullptr;
   gfx::Rect image_bounds{50, 150, 200, 200};
@@ -696,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningFixedOcclusion) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningOOPIFOcclusion) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioningOOPIFOcclusion) {
   // Use a different host name for the parent page to make the iframe cross-site
   // (OOPIF)
   const GURL url =
@@ -748,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningOOPIFOcclusion) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioningTransform) {
   const GURL url = embedded_test_server()->GetURL("/transform.html");
   raw_ptr<views::View> toolbar_view = nullptr;
   gfx::Rect image_bounds{9, 59, 283, 283};
@@ -774,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, HideToolbarOnReload) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
   RunTestSequence(NavigateAndClickAnchoredMessage(url),
@@ -789,7 +883,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
                   WaitForHide(IndigoToolbar::kToolbarElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
+IN_PROC_BROWSER_TEST_F(IndigoLegacyBrowserTest,
+                       InvokeActionClickRecordsMetrics) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/transform.html");
   base::UserActionTester user_action_tester;
@@ -849,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   base::UserActionTester user_action_tester;
 
@@ -875,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
                   }));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
+IN_PROC_BROWSER_TEST_F(IndigoLegacyBrowserTest, SuggestionChipClickFlow) {
   IndigoService* service =
       IndigoServiceFactory::GetForProfile(browser()->GetProfile());
   // Set anchored message as already shown so the suggestion chip shows
@@ -897,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabDiscarding) {
+IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, TabDiscarding) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
   // Navigate first tab to a URL to initialize an IndigoPageActionController.
@@ -922,46 +1017,10 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabDiscarding) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
-class IndigoContextualCueingV2BrowserTest : public IndigoBrowserTest {
- public:
-  IndigoContextualCueingV2BrowserTest() = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(fake_api_.InitializeAndListen());
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIndigo,
-          {{features::kIndigoGenerateUrl.name,
-            fake_api_.GetGenerateUrl().spec()},
-           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {blink::features::kImageReplacement, {}},
-         {contextual_cueing::kContextualCueingV2,
-          {{contextual_cueing::kDisableCueBackoff.name, "true"}}},
-         {contextual_cueing::kContextualCueingV2MultiSource,
-          {{contextual_cueing::kAnnotationTimeout.name, "3s"}}},
-         {features::kIndigoContextualCueingV2, {}}},
-        /*disabled_features=*/{
-            contextual_cueing::kContextualCueingV2EnforceAgeRestriction});
-    InteractiveBrowserTest::SetUp();
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    IndigoBrowserTest::SetUpBrowserContextKeyedServices(context);
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::TestSyncService>();
-        }));
-  }
-
-  void SetUpOnMainThread() override {
-    IndigoBrowserTest::SetUpOnMainThread();
-    auto* sync_service = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
-    sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
-    sync_service->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kHistory, true);
-  }
+// Tests for delegating Indigo's entry points to Contextual Cueing.
+class IndigoContextualCueingV2BrowserTest : public IndigoBrowserTestBase {
+ protected:
+  bool IsContextualCuesMode() const override { return true; }
 };
 
 IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
