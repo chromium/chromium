@@ -222,35 +222,36 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                   completionIdentity:(id<SystemIdentity>)completionIdentity {
-  switch (signinResult) {
-    case SigninCoordinatorResultCanceledByUser:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_BottomSheet_ClosedByCancel"));
-      break;
-    case SigninCoordinatorResultSuccess:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
-      break;
-    case SigninCoordinatorProfileSwitch:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_BottomSheet_ClosedByProfileChange"));
-      break;
-    case SigninCoordinatorResultDisabled:
-    case SigninCoordinatorResultInterrupted:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));
-      break;
-    case SigninCoordinatorUINotAvailable:
-      // ConsistencyPromoSigninCoordinator presents its child coordinators
-      // directly and does not use `ShowSigninCommand`.
-      NOTREACHED();
+- (void)runCompletionWithSigninResult:
+    (const SigninCoordinatorResultOrIdentity&)signinResult {
+  if (signinResult.has_value()) {
+    base::RecordAction(
+        base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
+  } else {
+    switch (signinResult.error()) {
+      case SigninCoordinatorResultCanceledByUser:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_BottomSheet_ClosedByCancel"));
+        break;
+      case SigninCoordinatorProfileSwitch:
+        base::RecordAction(base::UserMetricsAction(
+            "Signin_BottomSheet_ClosedByProfileChange"));
+        break;
+      case SigninCoordinatorResultDisabled:
+      case SigninCoordinatorResultInterrupted:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));
+        break;
+      case SigninCoordinatorResultSuccess:
+      case SigninCoordinatorUINotAvailable:
+        // ConsistencyPromoSigninCoordinator presents its child coordinators
+        // directly and does not use `ShowSigninCommand`.
+        NOTREACHED();
+    }
   }
   DCHECK(!self.alertCoordinator);
   [self disconnectMediatorWithResult:signinResult];
-  [super runCompletionWithSigninResult:signinResult
-                    completionIdentity:completionIdentity];
+  [super runCompletionWithSigninResult:signinResult];
 }
 
 #pragma mark - BuggyAuthenticationViewOwner
@@ -277,7 +278,8 @@
   [self stopDefaultAccountCoordinator];
   // If the mediator was already disconnected, this second disconnect does
   // nothing.
-  [self disconnectMediatorWithResult:SigninCoordinatorResultInterrupted];
+  [self disconnectMediatorWithResult:base::unexpected(
+                                         SigninCoordinatorResultInterrupted)];
   [self stopAccountChooserCoordinator];
   [self stopReauthCoordinator];
   [super stopAnimated:animated];
@@ -301,7 +303,8 @@
   self.navigationController = nil;
 }
 
-- (void)disconnectMediatorWithResult:(SigninCoordinatorResult)signinResult {
+- (void)disconnectMediatorWithResult:
+    (SigninCoordinatorResultOrIdentity)signinResult {
   self.consistencyPromoSigninMediator.delegate = nil;
   [self.consistencyPromoSigninMediator disconnectWithResult:signinResult];
   self.consistencyPromoSigninMediator = nil;
@@ -366,11 +369,10 @@
 // finished. If `hasAccounts == NO` and `signinResult` is successful , the
 // function immediately signs in to Chrome with the identity acquired from the
 // add-account flow after the cleanup.
-- (void)
-    addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
-                           SigninResult:(SigninCoordinatorResult)signinResult
-                     completionIdentity:(id<SystemIdentity>)completionIdentity
-                            hasAccounts:(BOOL)hasAccounts {
+- (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                               SigninResult:(SigninCoordinatorResultOrIdentity)
+                                                signinResult
+                                hasAccounts:(BOOL)hasAccounts {
   CHECK_EQ(self.addAccountCoordinator, coordinator);
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
@@ -385,9 +387,10 @@
 
   [self stopAddAccountCoordinatorAnimated:NO];
 
-  if (signinResult != SigninCoordinatorResultSuccess) {
+  if (!signinResult.has_value()) {
     return;
   }
+  id<SystemIdentity> completionIdentity = signinResult.value();
   DCHECK(completionIdentity);
   [self.consistencyPromoSigninMediator systemIdentityAdded:completionIdentity];
   self.defaultAccountCoordinator.selectedIdentity = completionIdentity;
@@ -426,17 +429,13 @@
                                    prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
-  self.addAccountCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf addAccountCompletionWithCoordinator:coordinator
-                                     SigninResult:signinResult
-                               completionIdentity:result.value_or(nil)
-                                      hasAccounts:hasAccounts];
-  };
+  self.addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                         SigninResult:result
+                                          hasAccounts:hasAccounts];
+      };
   [self.addAccountCoordinator start];
 }
 
@@ -492,12 +491,14 @@
                                 skipCounter);
   }
   __weak __typeof(self) weakSelf = self;
-  [self dismissViewControllerAnimated:YES
-                           completion:^{
-                             [weakSelf runCompletionWithSigninResult:
-                                           SigninCoordinatorResultCanceledByUser
-                                                  completionIdentity:nil];
-                           }];
+  [self
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf
+                               runCompletionWithSigninResult:
+                                   base::unexpected(
+                                       SigninCoordinatorResultCanceledByUser)];
+                         }];
 }
 
 - (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
@@ -638,9 +639,7 @@
   [self dismissViewControllerAnimated:YES
                            completion:^{
                              [weakSelf runCompletionWithSigninResult:
-                                           SigninCoordinatorResultSuccess
-                                                  completionIdentity:
-                                                      completionIdentity];
+                                           completionIdentity];
                              completion();
                            }];
 }
@@ -651,9 +650,10 @@
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:YES
                            completion:^{
-                             [weakSelf runCompletionWithSigninResult:
-                                           SigninCoordinatorResultInterrupted
-                                                  completionIdentity:nil];
+                             [weakSelf
+                                 runCompletionWithSigninResult:
+                                     base::unexpected(
+                                         SigninCoordinatorResultInterrupted)];
                            }];
 }
 
@@ -668,13 +668,15 @@
                                                                    completion {
   CHECK(completion);
   __weak __typeof(self) weakSelf = self;
-  [self dismissViewControllerAnimated:YES
-                           completion:^{
-                             [weakSelf runCompletionWithSigninResult:
-                                           SigninCoordinatorResultCanceledByUser
-                                                  completionIdentity:nil];
-                             completion();
-                           }];
+  [self
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf
+                               runCompletionWithSigninResult:
+                                   base::unexpected(
+                                       SigninCoordinatorResultCanceledByUser)];
+                           completion();
+                         }];
 }
 
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator

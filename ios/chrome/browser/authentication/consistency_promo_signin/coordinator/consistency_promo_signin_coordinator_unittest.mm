@@ -173,15 +173,12 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
 // cancelling ConsistencyPromoSigninCoordinator.
 // See crbug.com/372272374.
 TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
-  __block SigninCoordinatorResult coordinator_result;
-  __block id<SystemIdentity> signed_in_identity = nil;
+  __block SigninCoordinatorResultOrIdentity coordinator_result =
+      base::unexpected(SigninCoordinatorResultInterrupted);
   __block bool signin_completion_called = false;
   coordinator_.signinCompletion = ^(SigninCoordinator* coordinator,
                                     SigninCoordinatorResultOrIdentity result) {
-    coordinator_result =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    signed_in_identity = result.value_or(nil);
+    coordinator_result = result;
     signin_completion_called = true;
   };
   StartCoordinator();
@@ -200,16 +197,24 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   OCMExpect([consistency_default_account_coordinator_mock_ stop]);
   // Expect the mediator to be stopped and the delegate to be reset.
   OCMExpect([mediator_mock_ setDelegate:nil]);
-  OCMExpect([mediator_mock_
-      disconnectWithResult:SigninCoordinatorResultCanceledByUser]);
+  OCMExpect(
+      [[(id)mediator_mock_ ignoringNonObjectArgs]
+          disconnectWithResult:base::unexpected(
+                                   SigninCoordinatorResultCanceledByUser)])
+      .andCallBlockWithParameterAtIndex(
+          const SigninCoordinatorResultOrIdentity, 0,
+          ^(const SigninCoordinatorResultOrIdentity* result) {
+            EXPECT_EQ(*result,
+                      base::unexpected(SigninCoordinatorResultCanceledByUser));
+          });
   // Call the cancel skip method.
   [GetConsistencyDefaultAccountCoordinatorDelegate()
       consistencyDefaultAccountCoordinatorSkip:
           consistency_default_account_coordinator_mock_];
   // Expect the sign-in completion block called.
   EXPECT_TRUE(signin_completion_called);
-  EXPECT_EQ(SigninCoordinatorResultCanceledByUser, coordinator_result);
-  EXPECT_EQ(nil, signed_in_identity);
+  EXPECT_EQ(base::unexpected(SigninCoordinatorResultCanceledByUser),
+            coordinator_result);
   EXPECT_TRUE(scene_state_.signinInProgress);
   [coordinator_ stop];
   coordinator_ = nil;

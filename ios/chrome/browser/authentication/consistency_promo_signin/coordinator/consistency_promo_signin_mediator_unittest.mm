@@ -181,7 +181,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
 
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kWebSignin);
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -201,7 +202,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
 
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kWebSignin);
-  [mediator_ disconnectWithResult:SigninCoordinatorResultInterrupted];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultInterrupted)];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -216,8 +218,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
 }
 
 // Tests start and sign-in with default identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
-       SigninCoordinatorResultSuccessWithDefaultIdentity) {
+TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithDefaultIdentity) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
@@ -238,7 +239,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ disconnectWithResult:kDefaultIdentity];
 
   EXPECT_EQ(0,
             GetPrefService()->GetInteger(prefs::kSigninWebSignDismissalCount));
@@ -255,8 +256,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 }
 
 // Tests start and sign-in with secondary identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
-       SigninCoordinatorResultSuccessWithSecondaryIdentity) {
+TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithSecondaryIdentity) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
@@ -278,7 +278,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ disconnectWithResult:kNonDefaultIdentity];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -293,8 +293,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 }
 
 // Tests start and sign-in with an added identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
-       SigninCoordinatorResultSuccessWithAddedIdentity) {
+TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithAddedIdentity) {
   base::HistogramTester histogram_tester;
 
   mediator_ = BuildConsistencyPromoSigninMediator(
@@ -316,7 +315,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ disconnectWithResult:kDefaultIdentity];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -354,7 +353,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kOtherError);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -396,7 +396,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kTimeout);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -431,7 +432,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 
   histogram_tester.ExpectTotalCount(
       "Signin.AccountConsistencyPromoAction.Shown", 1);
@@ -468,7 +470,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
                                     completion:[OCMArg invokeBlock]]);
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
-  [mediator_ disconnectWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ disconnectWithResult:kDefaultIdentity];
 
   EXPECT_EQ(1,
             GetPrefService()->GetInteger(prefs::kSigninWebSignDismissalCount));
@@ -502,7 +504,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       "Signin.AccountConsistencyPromoAction.SigninStartedWithManagedAccount",
       signin_metrics::AccessPoint::kWebSignin, 1);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 }
 
 // Tests that the non-managed status metric is recorded when the hosted domain
@@ -523,7 +526,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       "Signin.AccountConsistencyPromoAction.SigninStartedWithNonManagedAccount",
       signin_metrics::AccessPoint::kWebSignin, 1);
 
-  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  [mediator_ disconnectWithResult:base::unexpected(
+                                      SigninCoordinatorResultCanceledByUser)];
 }
 
 }  // namespace

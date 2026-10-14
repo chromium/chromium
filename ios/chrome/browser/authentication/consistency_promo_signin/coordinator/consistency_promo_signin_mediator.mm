@@ -135,57 +135,59 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       << _identityManagerObserverBridge.get();
 }
 
-- (void)disconnectWithResult:(SigninCoordinatorResult)signinResult {
-  switch (signinResult) {
-    case SigninCoordinatorResultSuccess: {
-      CHECK(_signingIdentity);
-      id<SystemIdentity> signingIdentity = _signingIdentity;
-      id<SystemIdentity> defaultIdentity = signin::GetDefaultIdentityOnDevice(
-          _identityManager, _accountManagerService);
-      DCHECK(defaultIdentity);
-      if (!_initializedWithDefaultAccount) {
-        // Added identity, from having no existing account.
+- (void)disconnectWithResult:
+    (const SigninCoordinatorResultOrIdentity&)signinResult {
+  if (signinResult.has_value()) {
+    CHECK(_signingIdentity);
+    id<SystemIdentity> signingIdentity = _signingIdentity;
+    id<SystemIdentity> defaultIdentity = signin::GetDefaultIdentityOnDevice(
+        _identityManager, _accountManagerService);
+    DCHECK(defaultIdentity);
+    if (!_initializedWithDefaultAccount) {
+      // Added identity, from having no existing account.
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
+          _accessPoint);
+    } else if (_addedGaiaIDs.contains(signingIdentity.gaiaId)) {
+      // Added identity.
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SIGNED_IN_WITH_ADDED_ACCOUNT,
+          _accessPoint);
+    } else if ([defaultIdentity isEqual:signingIdentity]) {
+      // Default identity.
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+          _accessPoint);
+    } else {
+      // Other identity.
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+          _accessPoint);
+    }
+  } else {
+    switch (signinResult.error()) {
+      case SigninCoordinatorResultCanceledByUser: {
         RecordConsistencyPromoUserAction(
-            signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
+            signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON,
             _accessPoint);
-      } else if (_addedGaiaIDs.contains(signingIdentity.gaiaId)) {
-        // Added identity.
-        RecordConsistencyPromoUserAction(
-            signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_ADDED_ACCOUNT,
-            _accessPoint);
-      } else if ([defaultIdentity isEqual:signingIdentity]) {
-        // Default identity.
-        RecordConsistencyPromoUserAction(
-            signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_DEFAULT_ACCOUNT,
-            _accessPoint);
-      } else {
-        // Other identity.
-        RecordConsistencyPromoUserAction(
-            signin_metrics::AccountConsistencyPromoAction::
-                SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
-            _accessPoint);
+        break;
       }
-      break;
+      case SigninCoordinatorResultDisabled:
+      case SigninCoordinatorResultInterrupted:
+      case SigninCoordinatorProfileSwitch: {
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,
+            _accessPoint);
+        break;
+      }
+      case SigninCoordinatorResultSuccess:
+      case SigninCoordinatorUINotAvailable:
+        NOTREACHED();
     }
-    case SigninCoordinatorResultCanceledByUser: {
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON,
-          _accessPoint);
-      break;
-    }
-    case SigninCoordinatorResultDisabled:
-    case SigninCoordinatorResultInterrupted:
-    case SigninCoordinatorProfileSwitch: {
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,
-          _accessPoint);
-      break;
-    }
-    case SigninCoordinatorUINotAvailable:
-      NOTREACHED();
   }
   _accountManagerService = nullptr;
   _authenticationService = nullptr;

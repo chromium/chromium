@@ -122,8 +122,11 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
-// Disconnects the mediator.
-- (void)disconnectWithResult:(SigninCoordinatorResult)signinResult;
+// Disconnects the mediator. Passed by const ref because OCMock calls
+// `NSGetSizeAndAlignment()` on mocked Objective-C arguments, which throws on
+// by-value `base::expected` Objective-C type encodings.
+- (void)disconnectWithResult:
+    (const SigninCoordinatorResultOrIdentity&)signinResult;
 
 // Records when an identity is added by a subscreen of the web sign-in dialogs.
 - (void)systemIdentityAdded:(id<SystemIdentity>)identity;
