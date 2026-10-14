@@ -69,9 +69,8 @@ suite('AppReceivesToolbarChanges', () => {
     emitEvent(app, ToolbarEvent.FONT, {detail: {data: fontName}});
   }
 
-  function emitFontSize(size: number): void {
-    visualBrowserProxy.fontSize = size;
-    emitEvent(app, ToolbarEvent.FONT_SIZE);
+  function emitFontSize(increase: boolean): void {
+    emitEvent(app, ToolbarEvent.FONT_SIZE, {detail: {data: increase}});
   }
 
   function emitLineSpacing(spacingEnumValue: number): void {
@@ -136,17 +135,15 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('on font size change container font size updated', () => {
-    const fontSize1 = 12;
-    emitFontSize(fontSize1);
-    assertEquals(fontSize1, containerFontSize());
+    const startingSize = visualBrowserProxy.fontSize;
+    emitFontSize(true);
+    assertEquals(startingSize + 1, containerFontSize());
 
-    const fontSize2 = 16;
-    emitFontSize(fontSize2);
-    assertEquals(fontSize2, containerFontSize());
+    emitFontSize(true);
+    assertEquals(startingSize + 2, containerFontSize());
 
-    const fontSize3 = 9;
-    emitFontSize(fontSize3);
-    assertEquals(fontSize3, containerFontSize());
+    emitFontSize(false);
+    assertEquals(startingSize + 1, containerFontSize());
   });
 
   suite('on color theme change', () => {
@@ -457,8 +454,8 @@ suite('AppReceivesToolbarChanges', () => {
     await microtasksFinished();
     const startingHeight = app.style.getPropertyValue('--line-focus-height');
 
-    visualBrowserProxy.fontSize = 4;
-    emitEvent(app, ToolbarEvent.FONT_SIZE);
+    visualBrowserProxy.fontSize = 3;
+    emitFontSize(true);
     await microtasksFinished();
 
     const newHeight = app.style.getPropertyValue('--line-focus-height');
@@ -476,8 +473,8 @@ suite('AppReceivesToolbarChanges', () => {
         const startingHeight =
             app.style.getPropertyValue('--line-focus-height');
 
-        visualBrowserProxy.fontSize = 4;
-        emitEvent(app, ToolbarEvent.FONT_SIZE);
+        visualBrowserProxy.fontSize = 3;
+        emitFontSize(true);
         await microtasksFinished();
 
         const newHeight = app.style.getPropertyValue('--line-focus-height');
@@ -1038,6 +1035,25 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertEquals(
           audioBrowserProxy.noHighlighting, app.$.toolbar.highlightGranularity);
+    });
+
+    test('font size', async () => {
+      const startingSize = visualBrowserProxy.fontSize;
+      emitFontSize(true);
+      await microtasksFinished();
+
+      assertTrue(await visualBrowserProxy.whenCalled('onFontSizeChanged'));
+      assertEquals(
+          ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertEquals(startingSize + 1, app.$.toolbar.fontSize);
+
+      emitEvent(app, ToolbarEvent.FONT_SIZE_RESET);
+      await microtasksFinished();
+
+      assertEquals(1, visualBrowserProxy.getCallCount('onFontSizeReset'));
+      assertEquals(2, metrics.getCallCount('recordTextSettingsChange'));
+      assertEquals(startingSize, app.$.toolbar.fontSize);
     });
 
     test('line focus', async () => {

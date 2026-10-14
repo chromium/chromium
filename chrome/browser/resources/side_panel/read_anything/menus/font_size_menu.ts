@@ -16,6 +16,7 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
@@ -23,8 +24,6 @@ import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 import {getNewIndex, isArrow} from '../shared/keyboard_util.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getCss} from './font_size_menu.css.js';
 import {getHtml} from './font_size_menu.html.js';
@@ -64,21 +63,27 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
 
   static override get properties() {
     return {
+      fontSize: {type: Number},
       webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
+  accessor fontSize: number = 0;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private visualBrowserProxy_: VisualBrowserProxy =
       VisualBrowserProxyImpl.getInstance();
+  // Announced once fontSize reflects the last +/- click. Clicks that don't
+  // change the size (already at the min or max) aren't announced.
+  private pendingAnnouncement_: string|null = null;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.visualBrowserProxy_.restoreSettingsFromPrefs.addListener(
-        () => this.requestUpdate());
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('fontSize') && this.pendingAnnouncement_) {
+      this.announceSizeChange_(this.pendingAnnouncement_);
+      this.pendingAnnouncement_ = null;
+    }
   }
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -94,18 +99,15 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
   }
 
   protected isFontSizeDefault_(): boolean {
-    return this.visualBrowserProxy_.getFontSize() ===
-        this.visualBrowserProxy_.getDefaultFontSize();
+    return this.fontSize === this.visualBrowserProxy_.getDefaultFontSize();
   }
 
   protected isFontSizeMin_(): boolean {
-    return this.visualBrowserProxy_.getFontSize() <=
-        this.visualBrowserProxy_.getMinFontSize();
+    return this.fontSize <= this.visualBrowserProxy_.getMinFontSize();
   }
 
   protected isFontSizeMax_(): boolean {
-    return this.visualBrowserProxy_.getFontSize() >=
-        this.visualBrowserProxy_.getMaxFontSize();
+    return this.fontSize >= this.visualBrowserProxy_.getMaxFontSize();
   }
 
   protected onDecreaseClick_() {
@@ -117,34 +119,22 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
   }
 
   protected onResetClick_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
-    this.visualBrowserProxy_.onFontSizeReset();
-    this.fire(ToolbarEvent.FONT_SIZE);
+    this.pendingAnnouncement_ = null;
+    this.fire(ToolbarEvent.FONT_SIZE_RESET);
     // TODO(crbug.com/441561417): Keep focus on the button when it becomes
     // disabled.
-    this.requestUpdate();
   }
 
   private updateFontSize_(increase: boolean) {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
-    const startingSize = this.visualBrowserProxy_.getFontSize();
-    this.visualBrowserProxy_.onFontSizeChanged(increase);
-    this.fire(ToolbarEvent.FONT_SIZE);
-    if (startingSize !== this.visualBrowserProxy_.getFontSize()) {
-      this.announceSizeChange_(increase);
-    }
-    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
-    // disabled.
-    this.requestUpdate();
-  }
-
-  private announceSizeChange_(increase: boolean) {
-    const text = this.i18n(
+    this.pendingAnnouncement_ = this.i18n(
         increase ? 'increaseFontSizeAnnouncement' :
                    'decreaseFontSizeAnnouncement');
+    this.fire(ToolbarEvent.FONT_SIZE, {data: increase});
+    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
+    // disabled.
+  }
 
+  private announceSizeChange_(text: string) {
     const sizeChangeAnnounce =
         this.$.lazyMenu.get().querySelector<HTMLDivElement>('#size-announce');
     if (sizeChangeAnnounce) {

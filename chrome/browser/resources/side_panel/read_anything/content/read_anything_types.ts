@@ -144,6 +144,7 @@ export enum ToolbarEvent {
   LINE_SPACING = 'line-spacing-change',
   THEME = 'theme-change',
   FONT_SIZE = 'font-size-change',
+  FONT_SIZE_RESET = 'font-size-reset',
   FONT = 'font-change',
   RATE = 'rate-change',
   PLAY_PAUSE = 'play-pause-click',

@@ -24,6 +24,7 @@ suite('FontSize', () => {
     visualBrowserProxy = result.visualBrowserProxy;
 
     toolbar = document.createElement('read-anything-toolbar');
+    toolbar.fontSize = visualBrowserProxy.defaultFontSize;
     document.body.appendChild(toolbar);
     await microtasksFinished();
 
@@ -49,48 +50,57 @@ suite('FontSize', () => {
     return getAnnouncementBlock(blockId).querySelectorAll('p').length;
   }
 
-  function clickIncrease(): void {
-    toolbar.$.fontSizeMenu.get()
-        .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
+  function getButton<T extends HTMLElement>(id: string): T {
+    return toolbar.$.fontSizeMenu.get().querySelector<T>(`#${id}`)!;
   }
 
-  function clickDecrease(): void {
-    toolbar.$.fontSizeMenu.get()
-        .querySelector<CrIconButtonElement>('#font-size-decrease')!.click();
+  // Clicks the button and, like the app would, passes the new size back down.
+  async function clickIncrease(): Promise<void> {
+    getButton<CrIconButtonElement>('font-size-increase').click();
+    toolbar.fontSize++;
+    await microtasksFinished();
   }
 
-  test('increase clicked fires events', async () => {
-    const whenFired = eventToPromise(ToolbarEvent.FONT_SIZE, toolbar);
+  async function clickDecrease(): Promise<void> {
+    getButton<CrIconButtonElement>('font-size-decrease').click();
+    toolbar.fontSize--;
+    await microtasksFinished();
+  }
 
-    clickIncrease();
+  test('increase clicked fires event', async () => {
+    const whenFired = eventToPromise<CustomEvent<{data: boolean}>>(
+        ToolbarEvent.FONT_SIZE, toolbar);
 
-    await whenFired;
-    assertTrue(await visualBrowserProxy.whenCalled('onFontSizeChanged'));
+    await clickIncrease();
+
+    const event = await whenFired;
+    assertTrue(event.detail.data);
   });
 
-  test('increase clicked changes aria-live region', () => {
-    clickIncrease();
+  test('increase clicked changes aria-live region', async () => {
+    await clickIncrease();
     assertEquals(
         'Font size increased', getAnnouncementBlockText('#size-announce'));
   });
 
-  test('decrease clicked first events', async () => {
-    const whenFired = eventToPromise(ToolbarEvent.FONT_SIZE, toolbar);
+  test('decrease clicked fires event', async () => {
+    const whenFired = eventToPromise<CustomEvent<{data: boolean}>>(
+        ToolbarEvent.FONT_SIZE, toolbar);
 
-    clickDecrease();
+    await clickDecrease();
 
-    await whenFired;
-    assertFalse(await visualBrowserProxy.whenCalled('onFontSizeChanged'));
+    const event = await whenFired;
+    assertFalse(event.detail.data);
   });
 
-  test('aria-live region is not visible', () => {
+  test('aria-live region is not visible', async () => {
     let announceBlock = getAnnouncementBlock('#size-announce');
     let width = announceBlock.offsetWidth;
     let height = announceBlock.offsetHeight;
     assertGT(2, width);
     assertGT(2, height);
 
-    clickDecrease();
+    await clickDecrease();
 
     announceBlock = getAnnouncementBlock('#size-announce');
     assertEquals(1, announceBlock.querySelectorAll('p').length);
@@ -100,86 +110,71 @@ suite('FontSize', () => {
     assertGT(2, height);
   });
 
-  test('font size clicked keeps adding to aria-live region', () => {
-    clickIncrease();
+  test('font size clicked keeps adding to aria-live region', async () => {
+    await clickIncrease();
     assertEquals(1, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     assertEquals(2, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     assertEquals(3, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     assertEquals(4, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     assertEquals(5, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     // After 6 calls to increase size, the div will be cleared.
     assertEquals(0, getAnnouncementBlockNumParagraphs('#size-announce'));
 
-    clickDecrease();
+    await clickDecrease();
     assertEquals(1, getAnnouncementBlockNumParagraphs('#size-announce'));
   });
 
-  test(' decrease clicked changes aria-live region', () => {
-    clickDecrease();
+  test('decrease clicked changes aria-live region', async () => {
+    await clickDecrease();
     assertEquals(
         'Font size decreased', getAnnouncementBlockText('#size-announce'));
   });
 
-  test('reset clicked returns font size to starting size', async () => {
-    clickIncrease();
-    assertTrue(await visualBrowserProxy.whenCalled('onFontSizeChanged'));
-    visualBrowserProxy.reset();
-    clickIncrease();
-    assertTrue(await visualBrowserProxy.whenCalled('onFontSizeChanged'));
+  test('click that does not change the size is not announced', async () => {
+    getButton<CrIconButtonElement>('font-size-increase').click();
+    await microtasksFinished();
 
-    const whenFired = eventToPromise(ToolbarEvent.FONT_SIZE, toolbar);
-    toolbar.$.fontSizeMenu.get()
-        .querySelector<CrButtonElement>('#font-size-reset')!.click();
+    assertEquals(0, getAnnouncementBlockNumParagraphs('#size-announce'));
+  });
+
+  test('reset clicked fires event', async () => {
+    await clickIncrease();
+
+    const whenFired = eventToPromise(ToolbarEvent.FONT_SIZE_RESET, toolbar);
+    getButton<CrButtonElement>('font-size-reset').click();
     await whenFired;
-
-    assertEquals(1, visualBrowserProxy.getCallCount('onFontSizeReset'));
   });
 
   test(
       'reset button disabled state updates based on default font size',
       async () => {
-        // Force a re-render of the toolbar element
-        toolbar.requestUpdate();
-        await microtasksFinished();
-
         // Open the font size settings drop-down menu
         stubAnimationFrame();
         menuButton!.click();
         await microtasksFinished();
 
-        const resetButton =
-            toolbar.$.fontSizeMenu.get().querySelector<CrButtonElement>(
-                '#font-size-reset')!;
+        const resetButton = getButton<CrButtonElement>('font-size-reset');
         assertTrue(!!resetButton, 'Reset button should be present in DOM');
-
-        // Assertion: Reset button must be disabled initially because font
-        // size is at its default value
         assertTrue(
             resetButton.disabled,
             'Reset button should be disabled at default font size');
 
-        clickIncrease();
-        await visualBrowserProxy.whenCalled('onFontSizeChanged');
-        visualBrowserProxy.fontSize++;
-        await microtasksFinished();
+        await clickIncrease();
         assertFalse(
             resetButton.disabled,
             'Reset button should be enabled when font size changes');
 
-        // Interaction: Click the reset button to revert to default font size
-        resetButton.click();
-        await visualBrowserProxy.whenCalled('onFontSizeReset');
-        visualBrowserProxy.fontSize = visualBrowserProxy.defaultFontSize;
+        toolbar.fontSize = visualBrowserProxy.defaultFontSize;
         await microtasksFinished();
         assertTrue(
             resetButton.disabled,
@@ -191,18 +186,14 @@ suite('FontSize', () => {
     menuButton!.click();
     await microtasksFinished();
 
-    const decreaseButton =
-        toolbar.$.fontSizeMenu.get().querySelector<CrIconButtonElement>(
-            '#font-size-decrease')!;
+    const decreaseButton = getButton<CrIconButtonElement>('font-size-decrease');
     assertFalse(decreaseButton.disabled);
 
-    visualBrowserProxy.fontSize = visualBrowserProxy.minFontSize + 1;
-    clickDecrease();
-    await microtasksFinished();
+    toolbar.fontSize = visualBrowserProxy.minFontSize + 1;
+    await clickDecrease();
     assertTrue(decreaseButton.disabled);
 
-    clickIncrease();
-    await microtasksFinished();
+    await clickIncrease();
     assertFalse(decreaseButton.disabled);
   });
 
@@ -211,18 +202,14 @@ suite('FontSize', () => {
     menuButton!.click();
     await microtasksFinished();
 
-    const increaseButton =
-        toolbar.$.fontSizeMenu.get().querySelector<CrIconButtonElement>(
-            '#font-size-increase')!;
+    const increaseButton = getButton<CrIconButtonElement>('font-size-increase');
     assertFalse(increaseButton.disabled);
 
-    visualBrowserProxy.fontSize = visualBrowserProxy.maxFontSize - 1;
-    clickIncrease();
-    await microtasksFinished();
+    toolbar.fontSize = visualBrowserProxy.maxFontSize - 1;
+    await clickIncrease();
     assertTrue(increaseButton.disabled);
 
-    clickDecrease();
-    await microtasksFinished();
+    await clickDecrease();
     assertFalse(increaseButton.disabled);
   });
 });

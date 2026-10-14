@@ -89,6 +89,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       lineSpacing_: {type: Number},
       letterSpacing_: {type: Number},
       font_: {type: String},
+      fontSize_: {type: Number},
       speechRate_: {type: Number},
       highlightGranularity_: {type: Number},
       linksEnabled_: {type: Boolean},
@@ -179,6 +180,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor lineSpacing_: number = 0;
   protected accessor letterSpacing_: number = 0;
   protected accessor font_: string = '';
+  protected accessor fontSize_: number = 0;
   protected accessor speechRate_: number = 1;
   protected accessor highlightGranularity_: number = 0;
   protected accessor linksEnabled_: boolean = false;
@@ -712,6 +714,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.lineSpacing_ = this.visualBrowserProxy_.getLineSpacing();
     this.letterSpacing_ = this.visualBrowserProxy_.getLetterSpacing();
     this.font_ = this.visualBrowserProxy_.getFontName();
+    this.fontSize_ = this.visualBrowserProxy_.getFontSize();
     this.speechRate_ = getCurrentSpeechRate();
     this.highlightGranularity_ =
         this.audioBrowserProxy_.getHighlightGranularity();
@@ -767,7 +770,20 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.onTextLocationsChange_();
   }
 
-  protected onFontSizeChange_() {
+  protected onFontSizeChange_(event: CustomEvent<{data: boolean}>) {
+    this.visualBrowserProxy_.onFontSizeChanged(event.detail.data);
+    this.applyFontSize_();
+  }
+
+  protected onFontSizeReset_() {
+    this.visualBrowserProxy_.onFontSizeReset();
+    this.applyFontSize_();
+  }
+
+  private applyFontSize_() {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
+    this.syncSettings_();
     this.styleUpdater_.setFontSize();
     this.onTextLocationsChange_();
     this.setLineFocusStyle_();
