@@ -26,7 +26,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -153,6 +152,7 @@ void LensPreselectionBubble::Init() {
   // Need to set this false so label color token doesn't get changed by
   // SetEnabledColor() color mapper. Color tokens provided have enough contrast.
   label_->SetAutoColorReadabilityEnabled(false);
+  label_->SetEnabledColor(kColorLensOverlayToastForeground);
   if (offline_) {
     exit_button_ = AddChildView(std::make_unique<views::MdTextButton>(
         std::move(exit_clicked_callback_),
@@ -164,6 +164,10 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetStyle(ui::ButtonStyle::kProminent);
     exit_button_->SetProperty(views::kElementIdentifierKey,
                               kExitButtonElementId);
+    exit_button_->SetEnabledTextColors(kColorLensOverlayToastForeground);
+    exit_button_->SetBorder(views::CreateRoundedRectBorder(
+        1, 48, kColorLensOverlayToastButtonBorder));
+    exit_button_->SetBgColorIdOverride(bubble_background_color_);
   }
   if (cancel_button_config_.has_value()) {
     cancel_button_ = AddChildView(std::make_unique<views::MdTextButton>(
@@ -177,6 +181,12 @@ void LensPreselectionBubble::Init() {
     cancel_button_->SetStyle(ui::ButtonStyle::kProminent);
     cancel_button_->SetProperty(views::kElementIdentifierKey,
                                 kCancelButtonElementId);
+    const ui::ColorId color_id = cancel_button_config_->color;
+    cancel_button_->SetEnabledTextColors(color_id);
+    cancel_button_->SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(1, 48, color_id),
+        cancel_button_config_->padding));
+    cancel_button_->SetBgColorIdOverride(bubble_background_color_);
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
@@ -222,33 +232,6 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
                     ? anchor_bounds.y() - bubble_size.height() / 2
                     : anchor_bounds.y() + kPreselectionBubbleMinY;
   return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
-}
-
-void LensPreselectionBubble::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  const auto* color_provider = GetColorProvider();
-  label_->SetEnabledColor(
-      color_provider->GetColor(kColorLensOverlayToastForeground));
-
-  if (offline_) {
-    CHECK(exit_button_);
-    exit_button_->SetEnabledTextColors(
-        color_provider->GetColor(kColorLensOverlayToastForeground));
-    exit_button_->SetBorder(views::CreateRoundedRectBorder(
-        1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
-    exit_button_->SetBgColorIdOverride(bubble_background_color_);
-  }
-
-  if (cancel_button_config_.has_value()) {
-    CHECK(cancel_button_);
-    ui::ColorId color_id = cancel_button_config_->color;
-    cancel_button_->SetEnabledTextColors(color_provider->GetColor(color_id));
-    cancel_button_->SetBorder(views::CreatePaddedBorder(
-        views::CreateRoundedRectBorder(1, 48,
-                                       color_provider->GetColor(color_id)),
-        cancel_button_config_->padding));
-    cancel_button_->SetBgColorIdOverride(bubble_background_color_);
-  }
 }
 
 void LensPreselectionBubble::OpenMoreInfoMenu() {

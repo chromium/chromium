@@ -75,7 +75,6 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
  protected:
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
-  void OnThemeChanged() override;
 
  private:
   // Opens the more info menu.
