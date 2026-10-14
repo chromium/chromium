@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -17,7 +18,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
@@ -26,7 +26,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -68,9 +67,11 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
 #include "chrome/browser/android/tab_android.h"
@@ -134,6 +135,10 @@ class ChromeBrowsingDataLifetimeManagerTest
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     browsing_data_lifetime_manager->SetBrowsingDataRemoverObserverForTesting(
         &completion_observer);
+    base::ScopedClosureRunner reset_observer(base::BindOnce(
+        &ChromeBrowsingDataLifetimeManager::
+            SetBrowsingDataRemoverObserverForTesting,
+        base::Unretained(browsing_data_lifetime_manager), nullptr));
     // The pref needs to be cleared so that the browsing data deletion is
     // triggered even if the same pref value is set twice in a row.
     GetProfile()->GetPrefs()->ClearPref(
@@ -175,14 +180,8 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
   }
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// See https://crbug.com/40902685 for tracking bug.
-#define MAYBE_PrefChange DISABLED_PrefChange
-#else
-#define MAYBE_PrefChange PrefChange
-#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       MAYBE_PrefChange) {
+                       PrefChange) {
   static constexpr char kCookiesPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":
       ["cookies_and_other_site_data"]}])";
@@ -204,6 +203,15 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
   EXPECT_FALSE(HasDataForType("Cookie"));
 
+  // Navigate away to about:blank while the server is still running.
+  // This ensures:
+  // 1. Navigation completes cleanly without socket/connection teardown races.
+  // 2. Active tab origin (127.0.0.1) is cleared so
+  //    GetOpenedUrlsAndOngoingDownloads() will not add it to
+  //    BrowsingDataFilterBuilder with Mode::kPreserve.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
   url = embedded_test_server()->GetURL("/cachetime");
 
   EXPECT_EQ(net::OK, content::LoadBasicRequest(network_context(), url));
@@ -213,8 +221,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   EXPECT_EQ(net::OK, content::LoadBasicRequest(network_context(), url));
 
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(url::kAboutBlankURL)));
+  // With the server stopped and no active tabs pointing to 127.0.0.1, the cache
+  // can now be safely deleted.
   ApplyBrowsingDataLifetimeDeletion(kCachePref);
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }

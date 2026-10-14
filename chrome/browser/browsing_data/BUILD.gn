@@ -366,29 +366,53 @@ source_set("platform_browser_tests") {
   sources = [
     "browsing_data_remover_browsertest_base.cc",
     "browsing_data_remover_browsertest_base.h",
+    "chrome_browsing_data_lifetime_manager_browsertest.cc",
   ]
 
   deps = [
     ":browsing_data",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/autofill",
     "//chrome/browser/commerce",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/download:test_support",
+    "//chrome/browser/history",
     "//chrome/browser/net",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
+    "//components/autofill/core/browser:test_support",
     "//components/browsing_data/content:test_support",
+    "//components/browsing_data/core",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:feature_utils",
     "//components/commerce/core:shopping_service_test_support",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/sync/base",
+    "//components/sync/service",
     "//content/test:test_support",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/browser_window" ]
+    deps += [
+      "//chrome/browser/autofill:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   }
 }
 
@@ -400,7 +424,6 @@ if (!is_android) {
     sources = [
       "browsing_data_model_browsertest.cc",
       "browsing_data_remover_browsertest.cc",
-      "chrome_browsing_data_lifetime_manager_browsertest.cc",
       "counters/autofill_counter_browsertest.cc",
       "counters/browsing_data_counter_utils_browsertest.cc",
       "counters/cache_counter_browsertest.cc",
