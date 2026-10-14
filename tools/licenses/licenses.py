@@ -231,7 +231,7 @@ SPECIAL_CASES = {
     "Name": "BoringSSL",
     "URL": "https://boringssl.googlesource.com/boringssl/",
     "Shipped": "yes",
-    "License": "BSDish",
+    "License": "Apache-2.0, BSD-3-Clause",
     "License File": ["//third_party/boringssl/src/LICENSE"],
   },
   os.path.join('third_party', 'openscreen', 'src', 'third_party', 'jsoncpp'): {
@@ -245,7 +245,7 @@ SPECIAL_CASES = {
     "Name": "PDFium",
     "URL": "https://pdfium.googlesource.com/pdfium/",
     "Shipped": "yes",
-    "License": "BSD",
+    "License": "Apache-2.0, BSD-3-Clause",
   },
   os.path.join('third_party', 'blink'): {
     # about:credits doesn't show "Blink" but "WebKit".
@@ -255,7 +255,7 @@ SPECIAL_CASES = {
     "Name": "WebKit",
     "URL": "https://webkit.org/",
     "Shipped": "yes",
-    "License": "BSD and LGPL v2 and LGPL v2.1",
+    "License": "BSD-2-Clause, BSD-3-Clause, LGPL-2.0, LGPL-2.1",
     # Absolute path here is resolved as relative to the source root.
     "License File": ["//third_party/blink/LICENSE_FOR_ABOUT_CREDITS"],
   },
@@ -277,7 +277,7 @@ SPECIAL_CASES = {
     "Name": "fdlibm",
     "URL": "https://www.netlib.org/fdlibm/",
     "Shipped": "yes",
-    "License": "Freely Distributable",
+    "License": "SunPro",
     # Absolute path here is resolved as relative to the source root.
     "License File": ["//v8/LICENSE.fdlibm"],
     "License Android Compatible": "yes",
@@ -286,7 +286,7 @@ SPECIAL_CASES = {
     "Name": "SwiftShader",
     "URL": "https://swiftshader.googlesource.com/SwiftShader",
     "Shipped": "yes",
-    "License": "Apache 2.0 and compatible licenses",
+    "License": "Apache-2.0",
     "License Android Compatible": "yes",
     "License File": ["//third_party/swiftshader/LICENSE.txt"],
   },
@@ -303,7 +303,7 @@ SPECIAL_CASES = {
     "Name": "SPIRV-Headers",
     "URL": "https://github.com/KhronosGroup/SPIRV-Headers",
     "Shipped": "yes",
-    "License": "Apache 2.0",
+    "License": "Khronos, MIT, CC-BY-4.0",
     "License File": [
       "//third_party/swiftshader/third_party/SPIRV-Headers/LICENSE",
     ],
