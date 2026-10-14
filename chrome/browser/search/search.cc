@@ -180,7 +180,7 @@ struct NewTabURLDetails {
 
 #if BUILDFLAG(IS_ANDROID)
     const bool is_desktop_android = IsWebUiNtpEnabledForDesktopAndroid();
-    const GURL local_url(
+    GURL local_url(
         is_desktop_android ? chrome::ChromeUINewTabPageURLAsGURL() : GURL());
     if (is_desktop_android) {
       if (default_is_google) {
@@ -192,6 +192,7 @@ struct NewTabURLDetails {
           return NewTabURLDetails(GURL(chrome::kChromeUINativeNewTabURL),
                                   NEW_TAB_URL_VALID);
         }
+        local_url = GURL(chrome::kChromeUINewTabPageThirdPartyURL);
       }
     }
 #else
@@ -278,7 +279,8 @@ bool IsNTPURL(const GURL& url) {
   }
 #if BUILDFLAG(IS_ANDROID)
   if (IsWebUiNtpEnabledForDesktopAndroid()) {
-    if (MatchesOrigin(url, chrome::ChromeUINewTabPageURLAsGURL())) {
+    if (MatchesOrigin(url, chrome::ChromeUINewTabPageURLAsGURL()) ||
+        MatchesOrigin(url, GURL(chrome::kChromeUINewTabPageThirdPartyURL))) {
       return true;
     }
   }

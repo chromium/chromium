@@ -137,6 +137,10 @@ public class TabGroupSyncUtilsUnitTest {
         expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://newtab", "New tab");
         expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://newtab/", "New tab");
         expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://new-tab-page", "New Tab");
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "New tab", "chrome://new-tab-page-third-party", "New Tab");
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "New tab", "chrome://new-tab-page-third-party/", "New Tab");
     }
 
     @Test

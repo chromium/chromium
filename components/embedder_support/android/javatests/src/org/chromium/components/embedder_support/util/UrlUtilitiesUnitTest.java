@@ -218,10 +218,13 @@ public class UrlUtilitiesUnitTest {
         assertTrue(UrlUtilities.isNtpUrl("chrome-native://newtab"));
         assertTrue(UrlUtilities.isNtpUrl("chrome://newtab"));
         assertTrue(UrlUtilities.isNtpUrl("about:newtab"));
+        assertTrue(UrlUtilities.isNtpUrl("chrome://new-tab-page"));
+        assertTrue(UrlUtilities.isNtpUrl("chrome://new-tab-page-third-party"));
 
         assertFalse(UrlUtilities.isNtpUrl("http://www.example.com"));
         assertFalse(UrlUtilities.isNtpUrl("chrome://history"));
         assertFalse(UrlUtilities.isNtpUrl("chrome-native://newtabz"));
+        assertFalse(UrlUtilities.isNtpUrl("chrome://new-tab-page-third-partyx"));
         assertFalse(UrlUtilities.isNtpUrl("newtab"));
         assertFalse(UrlUtilities.isNtpUrl(""));
     }
@@ -231,6 +234,8 @@ public class UrlUtilitiesUnitTest {
     public void testIsNtpUrlGurl() {
         assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome-native://newtab")));
         assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome://newtab")));
+        assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome://new-tab-page")));
+        assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome://new-tab-page-third-party")));
 
         // Note that this intentionally differs from UrlUtilities#isNTPUrl(String) (see comments on
         // method).
@@ -239,6 +244,9 @@ public class UrlUtilitiesUnitTest {
         assertFalse(UrlUtilities.isNtpUrl(new GURL("http://www.example.com")));
         assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome://history")));
         assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome-native://newtabz")));
+        assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome://new-tab-pagex")));
+        assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome://new-tab-page-third-partyx")));
+        assertFalse(UrlUtilities.isNtpUrl(new GURL("https://new-tab-page-third-party")));
         assertFalse(UrlUtilities.isNtpUrl(new GURL("newtab")));
         assertFalse(UrlUtilities.isNtpUrl(new GURL("")));
     }
