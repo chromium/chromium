@@ -124,6 +124,16 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   // Notifies `delegate_` of a conversation error.
   void HandleError(ttc::ErrorCode error);
 
+  // Journal logging helpers.
+  void LogBackendSetupStarted();
+  void LogBackendInitialized();
+  void LogBackendClosed();
+  void LogBackendError(ttc::ErrorCode error);
+  void LogGenerationStateChanged(bool started,
+                                 bool completed,
+                                 bool interrupted);
+  void LogToolCallReceived(const std::string& tool_name);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Non-owning pointer to the conversation delegate.

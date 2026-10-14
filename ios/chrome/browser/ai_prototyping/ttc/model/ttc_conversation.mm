@@ -13,6 +13,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/span.h"
+#import "base/strings/strcat.h"
+#import "base/strings/stringprintf.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
@@ -119,6 +121,7 @@ void TtcConversation::Start() {
   const uint64_t current_generation = ++session_generation_;
 
   if (backend_) {
+    LogBackendSetupStarted();
     backend_->Connect(this);
   }
   // `Connect()` may synchronously fail and notify the delegate of a fatal
@@ -208,6 +211,7 @@ void TtcConversation::OnAudioControllerStoppedCapture() {
 
 void TtcConversation::OnBackendInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogBackendInitialized();
   if (delegate_) {
     delegate_->OnConversationInitialized();
   }
@@ -215,6 +219,7 @@ void TtcConversation::OnBackendInitialized() {
 
 void TtcConversation::OnBackendClosed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogBackendClosed();
   if (delegate_) {
     delegate_->OnConversationClosed();
   }
@@ -222,6 +227,7 @@ void TtcConversation::OnBackendClosed() {
 
 void TtcConversation::OnBackendError(ttc::ErrorCode error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogBackendError(error);
   HandleError(error);
 }
 
@@ -241,6 +247,7 @@ void TtcConversation::OnGenerationStateChanged(bool started,
                                                bool completed,
                                                bool interrupted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogGenerationStateChanged(started, completed, interrupted);
   if (interrupted) {
     [audio_controller_ clearPlaybackQueue];
     [audio_controller_ stopPlayback];
@@ -257,13 +264,16 @@ void TtcConversation::OnTranscriptions(
 void TtcConversation::OnToolCall(const ttc::ToolRequest& tool_request,
                                  ttc::ToolResponseCallback response_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogToolCallReceived(tool_request.name);
   // Tool call dispatch will be wired in a subsequent CL.
 }
 
 void TtcConversation::OnJournalEvent(
     const ttc::ServerJournalEvent& journal_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Server journal events will be wired in a subsequent CL.
+  if (journal_) {
+    journal_->HandleServerJournalEvent(journal_event);
+  }
 }
 
 #pragma mark - Private
@@ -286,4 +296,76 @@ void TtcConversation::HandleError(ttc::ErrorCode error) {
   if (delegate_) {
     delegate_->OnConversationError(error);
   }
+}
+
+#pragma mark - Journal Logging
+
+void TtcConversation::LogBackendSetupStarted() {
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(TTCJournalComponent::kBackend, "TtcBackendSetupStarted",
+                TTCJournalDetailsBuilder()
+                    .SetSummary("Backend setup started...")
+                    .Build());
+}
+
+void TtcConversation::LogBackendInitialized() {
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(
+      TTCJournalComponent::kBackend, "TtcBackendInitialized",
+      TTCJournalDetailsBuilder().SetSummary("Backend setup completed").Build());
+}
+
+void TtcConversation::LogBackendClosed() {
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(
+      TTCJournalComponent::kBackend, "TtcBackendClosed",
+      TTCJournalDetailsBuilder().SetSummary("Backend closed").Build());
+}
+
+void TtcConversation::LogBackendError(ttc::ErrorCode error) {
+  if (!journal_) {
+    return;
+  }
+  const int error_code = static_cast<int>(error);
+  journal_->LogError(
+      TTCJournalComponent::kBackend, "TtcBackendError",
+      TTCJournalDetailsBuilder()
+          .SetSummary(base::StringPrintf("Backend error (code=%d)", error_code))
+          .AddError(error)
+          .Add("error_code", error_code)
+          .Build());
+}
+
+void TtcConversation::LogGenerationStateChanged(bool started,
+                                                bool completed,
+                                                bool interrupted) {
+  if (!journal_) {
+    return;
+  }
+  TTCJournalDetailsBuilder details;
+  if (interrupted) {
+    details.SetSummary("Generation interrupted");
+  }
+  details.Add("started", started)
+      .Add("completed", completed)
+      .Add("interrupted", interrupted);
+  journal_->Log(TTCJournalComponent::kConversation, "TtcGenerationStateChanged",
+                std::move(details).Build());
+}
+
+void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(TTCJournalComponent::kConversation, "TtcToolCallReceived",
+                TTCJournalDetailsBuilder()
+                    .SetSummary(base::StrCat({"Tool: ", tool_name}))
+                    .Add("tool_name", tool_name)
+                    .Build());
 }
