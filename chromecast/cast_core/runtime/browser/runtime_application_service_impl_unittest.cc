@@ -372,5 +372,13 @@ TEST_F(RuntimeApplicationServiceImplTest,
             cast_receiver::StatusCode::kFailedPrecondition);
 }
 
+TEST_F(RuntimeApplicationServiceImplTest,
+       VisibilityChangedDoesNotCrashWithoutCoreAppStub) {
+  // If core_app_stub_ is not initialized (because Launch wasn't called),
+  // this should safely return early.
+  service_impl_->NotifyApplicationVisibilityChanged(
+      cast::common::Visibility::HIDDEN);
+}
+
 }  // namespace
 }  // namespace chromecast

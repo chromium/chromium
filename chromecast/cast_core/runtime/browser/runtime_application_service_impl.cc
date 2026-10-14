@@ -36,9 +36,12 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
  public:
   explicit CastContentWindowControls(
       CastContentWindow& content_window,
-      cast_receiver::RuntimeApplication& runtime_application)
+      cast_receiver::RuntimeApplication& runtime_application,
+      base::RepeatingCallback<void(cast::common::Visibility::Type)>
+          visibility_change_cb)
       : content_window_(&content_window),
-        runtime_application_(runtime_application) {
+        runtime_application_(runtime_application),
+        visibility_change_cb_(std::move(visibility_change_cb)) {
     content_window_->AddObserver(this);
   }
 
@@ -100,9 +103,15 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
       case VisibilityType::PARTIAL_OUT:
       case VisibilityType::TRANSIENTLY_HIDDEN:
         OnWindowShown();
+        if (visibility_change_cb_) {
+          visibility_change_cb_.Run(cast::common::Visibility::FULL_SCREEN);
+        }
         break;
       default:
         OnWindowHidden();
+        if (visibility_change_cb_) {
+          visibility_change_cb_.Run(cast::common::Visibility::HIDDEN);
+        }
         break;
     }
   }
@@ -122,6 +131,8 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
 
   raw_ptr<CastContentWindow> content_window_;
   raw_ref<cast_receiver::RuntimeApplication> runtime_application_;
+  base::RepeatingCallback<void(cast::common::Visibility::Type)>
+      visibility_change_cb_;
 };
 
 cast::common::StopReason::Type ToProtoType(
@@ -708,6 +719,29 @@ void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
       }));
 }
 
+void RuntimeApplicationServiceImpl::NotifyApplicationVisibilityChanged(
+    cast::common::Visibility::Type visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!core_app_stub_ || !runtime_application_) {
+    return;
+  }
+
+  LOG(INFO) << "Application visibility changed: visibility=" << visibility
+            << ", " << *runtime_application_;
+
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreApplicationServiceStub::VisibilityChanged>();
+  call.request().set_cast_session_id(runtime_application_->GetCastSessionId());
+  call.request().set_visibility(visibility);
+  std::move(call).InvokeAsync(base::BindOnce(
+      [](cast::utils::GrpcStatusOr<cast::v2::VisibilityChangedResponse>
+             response_or) {
+        LOG_IF(ERROR, !response_or.ok())
+            << "Failed to report application visibility changed state: "
+            << response_or.ToString();
+      }));
+}
+
 void RuntimeApplicationServiceImpl::GetAllBindings(
     GetAllBindingsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -759,7 +793,10 @@ RuntimeApplicationServiceImpl::GetContentWindowControls() {
   }
 
   content_window_controls_ = std::make_unique<CastContentWindowControls>(
-      *cast_web_view_->window(), *runtime_application_);
+      *cast_web_view_->window(), *runtime_application_,
+      base::BindRepeating(
+          &RuntimeApplicationServiceImpl::NotifyApplicationVisibilityChanged,
+          base::Unretained(this)));
 
   return content_window_controls_.get();
 }

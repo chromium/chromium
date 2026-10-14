@@ -82,6 +82,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void NotifyApplicationStopped(ApplicationStopReason stop_reason,
                                 int32_t net_error_code) override;
   void NotifyMediaPlaybackChanged(bool playing) override;
+  void NotifyApplicationVisibilityChanged(
+      cast::common::Visibility::Type visibility);
   void GetAllBindings(GetAllBindingsCallback callback) override;
   cast_receiver::MessagePortService* GetMessagePortService() override;
   content::WebContents* GetWebContents() override;

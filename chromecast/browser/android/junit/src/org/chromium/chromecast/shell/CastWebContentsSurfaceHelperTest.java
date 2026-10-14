@@ -29,6 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chromecast.base.Controller;
@@ -211,7 +212,8 @@ public class CastWebContentsSurfaceHelperTest {
     }
 
     @Test
-    public void testScreenOffResetsWebContentsView() {
+    public void testScreenOffOnTvResetsWebContentsView() {
+        DeviceInfo.setIsTVForTesting(true);
         WebContents webContents = mock(WebContents.class);
         StartParams params = new StartParamsBuilder().withWebContents(webContents).build();
         Scope scope = mock(Scope.class);
@@ -219,6 +221,18 @@ public class CastWebContentsSurfaceHelperTest {
         mSurfaceHelper.onNewStartParams(params);
         sendSystemBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
         verify(scope).close();
+    }
+
+    @Test
+    public void testScreenOffOnNonTvDoesNotResetWebContentsView() {
+        DeviceInfo.setIsTVForTesting(false);
+        WebContents webContents = mock(WebContents.class);
+        StartParams params = new StartParamsBuilder().withWebContents(webContents).build();
+        Scope scope = mock(Scope.class);
+        when(mWebContentsView.open(webContents)).thenReturn(scope);
+        mSurfaceHelper.onNewStartParams(params);
+        sendSystemBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
+        verify(scope, never()).close();
     }
 
     @Test
@@ -287,12 +301,22 @@ public class CastWebContentsSurfaceHelperTest {
     }
 
     @Test
-    public void testFinishLaterCallbackIsRunAfterScreenOff() {
+    public void testFinishLaterCallbackIsRunAfterScreenOffOnTv() {
+        DeviceInfo.setIsTVForTesting(true);
         StartParams params = new StartParamsBuilder().withId("0").build();
         mSurfaceHelper.onNewStartParams(params);
         sendSystemBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
         ShadowLooper.idleMainLooper(1, TimeUnit.SECONDS);
         verify(mFinishCallback).accept(CastWebContentsIntentUtils.getInstanceUri("0"));
+    }
+
+    @Test
+    public void testFinishLaterCallbackIsNotRunAfterScreenOffOnNonTv() {
+        DeviceInfo.setIsTVForTesting(false);
+        StartParams params = new StartParamsBuilder().withId("0").build();
+        mSurfaceHelper.onNewStartParams(params);
+        sendSystemBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
+        verify(mFinishCallback, never()).accept(any());
     }
 
     @Test

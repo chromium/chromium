@@ -225,7 +225,8 @@ public class CastWebContentsActivity extends ComponentActivity {
                         .filter(
                                 intent ->
                                         CastWebContentsIntentUtils.shouldKeepScreenOn(intent)
-                                                || isInLockTaskMode(this))
+                                                || (isInLockTaskMode(this)
+                                                        && !canPlayBackgroundAudio()))
                         .opaque();
 
         isDocked.subscribe(
@@ -438,6 +439,10 @@ public class CastWebContentsActivity extends ComponentActivity {
             CastWebContentsComponent.onComponentClosed(
                     CastWebContentsIntentUtils.getSessionId(getIntent()));
             mIsFinishingState.set("User exit while in lock task mode");
+        } else if (isFinishing()) {
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit");
         }
         super.onStop();
     }
@@ -494,8 +499,8 @@ public class CastWebContentsActivity extends ComponentActivity {
         if (canUsePictureInPicture() && mVideoIsPlaying) {
             Log.i(TAG, "entering picture-in-picture mode");
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
-        } else if (canPlayBackgroundAudio() && mAudioIsPlaying) {
-            Log.i(TAG, "entering background audio mode");
+        } else if (canPlayBackgroundAudio()) {
+            Log.i(TAG, "entering background mode");
         } else {
             mSurfaceAvailable.reset();
             CastWebContentsComponent.onComponentClosed(

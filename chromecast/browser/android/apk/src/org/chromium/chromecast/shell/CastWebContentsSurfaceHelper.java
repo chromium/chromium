@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.Controller;
@@ -145,6 +146,9 @@ class CastWebContentsSurfaceHelper {
                     return new BroadcastReceiverScope(
                             filter,
                             (Intent intent) -> {
+                                if (!DeviceInfo.isTV()) {
+                                    return;
+                                }
                                 final String sessionId = mSessionId;
                                 if (sessionId == null) return;
                                 Uri uri = CastWebContentsIntentUtils.getInstanceUri(sessionId);

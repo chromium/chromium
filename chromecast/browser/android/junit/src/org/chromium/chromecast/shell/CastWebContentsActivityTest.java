@@ -519,7 +519,8 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    public void testStopWhileNoMediaPlayingClosesActivity() {
+    public void testStopWhileNoMediaPlayingOnTvClosesActivity() {
+        DeviceInfo.setIsTVForTesting(true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
         updateMediaState(false, false);
@@ -530,6 +531,21 @@ public class CastWebContentsActivityTest {
                     assertTrue(mActivity.isFinishing());
                 },
                 true);
+    }
+
+    @Test
+    public void testStopWhileNoMediaPlayingOnNonTvDoesNotCloseActivity() {
+        DeviceInfo.setIsTVForTesting(false);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(false, false);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivity.onUserLeaveHint();
+                    assertFalse(mActivity.isFinishing());
+                },
+                false);
     }
 
     @Test
@@ -558,6 +574,19 @@ public class CastWebContentsActivityTest {
                 () -> {
                     mActivity.onUserLeaveHint();
                     assertTrue(mActivity.isFinishing());
+                },
+                true);
+    }
+
+    @Test
+    public void testStopWhenIsFinishingClosesActivity() {
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivity.finish();
+                    mActivityLifecycle.pause().stop();
                 },
                 true);
     }
@@ -622,11 +651,23 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    public void testKeepsScreenOnInLockTaskMode() {
+    public void testKeepsScreenOnInLockTaskModeOnTv() {
+        DeviceInfo.setIsTVForTesting(true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_PINNED);
         mActivityLifecycle.create().start().resume();
 
         Assert.assertTrue(
+                Shadows.shadowOf(mActivityLifecycle.get().getWindow())
+                        .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+    }
+
+    @Test
+    public void testDoesNotKeepScreenOnInLockTaskModeOnNonTv() {
+        DeviceInfo.setIsTVForTesting(false);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_PINNED);
+        mActivityLifecycle.create().start().resume();
+
+        Assert.assertFalse(
                 Shadows.shadowOf(mActivityLifecycle.get().getWindow())
                         .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
     }
@@ -690,6 +731,7 @@ public class CastWebContentsActivityTest {
     @Test
     @SuppressWarnings("unchecked") // mock(Observer.class) returns raw Observer.
     public void testSurfaceAvailable() {
+        DeviceInfo.setIsTVForTesting(true);
         Observer<Unit> observer = mock(Observer.class);
         Scope scope = mock(Scope.class);
         when(observer.open(any())).thenReturn(scope);
