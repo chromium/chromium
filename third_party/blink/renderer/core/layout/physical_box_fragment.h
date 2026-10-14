@@ -677,7 +677,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return bit_field_.get<IncludeBorderLeftFlag>();
   }
 
-  static size_t AdditionalByteSize(bool has_fragment_items);
+  static uint32_t AdditionalByteSize(bool has_fragment_items);
 
   using FieldId = PhysicalFragmentRareData::FieldId;
   ALWAYS_INLINE const PhysicalFragmentRareData::RareField* GetRareField(

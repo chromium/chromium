@@ -89,13 +89,13 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T>
-  static bool ExpandVectorBacking(T* array, size_t new_size) {
+  static bool ExpandVectorBacking(T* array, uint32_t new_size) {
     DCHECK(array);
     return HeapVectorBacking<T>::FromArray(array)->Resize(new_size);
   }
 
   template <typename T>
-  static bool ShrinkVectorBacking(T* array, size_t, size_t new_size) {
+  static bool ShrinkVectorBacking(T* array, size_t, uint32_t new_size) {
     DCHECK(array);
     return HeapVectorBacking<T>::FromArray(array)->Resize(new_size);
   }
@@ -126,7 +126,7 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T, typename HashTable>
-  static bool ExpandHashTableBacking(T* array, size_t new_size) {
+  static bool ExpandHashTableBacking(T* array, uint32_t new_size) {
     DCHECK(array);
     return HeapHashTableBacking<HashTable>::FromArray(array)->Resize(new_size);
   }

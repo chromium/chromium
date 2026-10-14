@@ -116,7 +116,8 @@ CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
   }
 
   CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
-      AdditionalBytes(sizeof(CSSSelector) * (selector_vector.size() - 1)),
+      AdditionalBytes(base::checked_cast<uint32_t>(
+          sizeof(CSSSelector) * (selector_vector.size() - 1))),
       base::PassKey<CSSSelectorList>());
   AdoptSelectorVector(selector_vector, list->first_selector_);
   return list;

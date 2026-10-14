@@ -59,7 +59,7 @@ class alignas(T) HeapVectorBacking final
     cppgc::subtle::FreeUnreferencedObject(heap_handle, *this);
   }
 
-  bool Resize(size_t new_size) {
+  bool Resize(uint32_t new_size) {
     return cppgc::subtle::Resize(*this, GetAdditionalBytes(new_size));
   }
 
@@ -70,7 +70,7 @@ class alignas(T) HeapVectorBacking final
     requires(Traits::kNeedsDestruction);
 
  private:
-  static cppgc::AdditionalBytes GetAdditionalBytes(size_t wanted_array_size) {
+  static cppgc::AdditionalBytes GetAdditionalBytes(uint32_t wanted_array_size) {
     // HVB is an empty class that's purely used with inline storage. Since it
     // has no fields, its size is solely determined by its alignment
     // requirement. We subtract its size to avoid wasting storage during
@@ -78,7 +78,8 @@ class alignas(T) HeapVectorBacking final
     static_assert(sizeof(ClassType) == alignof(ClassType),
                   "Class declaration changed");
     DCHECK_GE(wanted_array_size, sizeof(ClassType));
-    return cppgc::AdditionalBytes{wanted_array_size - sizeof(ClassType)};
+    return cppgc::AdditionalBytes{wanted_array_size -
+                                  static_cast<uint32_t>(sizeof(ClassType))};
   }
 };
 

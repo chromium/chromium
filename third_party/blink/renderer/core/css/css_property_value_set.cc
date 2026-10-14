@@ -44,7 +44,8 @@ namespace blink {
 
 static AdditionalBytes
 AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(size_t count) {
-  return AdditionalBytes(sizeof(CSSPropertyValue) * count);
+  return AdditionalBytes(
+      base::checked_cast<uint32_t>(sizeof(CSSPropertyValue) * count));
 }
 
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(

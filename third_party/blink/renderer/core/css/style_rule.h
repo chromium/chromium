@@ -26,6 +26,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
@@ -199,8 +200,8 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
     constexpr size_t padding_bytes =
         base::bits::AlignUp(sizeof(StyleRule), alignof(CSSSelector)) -
         sizeof(StyleRule);
-    return AdditionalBytes{(sizeof(CSSSelector) * flattened_size) +
-                           padding_bytes};
+    return AdditionalBytes{base::checked_cast<uint32_t>(
+        (sizeof(CSSSelector) * flattened_size) + padding_bytes)};
   }
 
  public:

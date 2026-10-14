@@ -83,8 +83,9 @@ NodeRareData* NodeRareData::SetField(FieldId field_id,
       // reallocate.
       size_t new_size = std::max<size_t>(current_size * 2, 1);
       vec = MakeGarbageCollected<NodeRareData>(
-          AdditionalBytes(kSlotSizeBytes * new_size), PassKey(),
-          std::move(*this));
+          AdditionalBytes(
+              base::checked_cast<uint32_t>(kSlotSizeBytes * new_size)),
+          PassKey(), std::move(*this));
     }
 
     // Update the bitfield first, so that if we're tracing in parallel,

@@ -50,7 +50,7 @@ class HeapHashTableBacking final
     cppgc::subtle::FreeUnreferencedObject(heap_handle, *this);
   }
 
-  bool Resize(size_t new_size) {
+  bool Resize(uint32_t new_size) {
     return cppgc::subtle::Resize(*this, GetAdditionalBytes(new_size));
   }
 
@@ -61,12 +61,13 @@ class HeapHashTableBacking final
     requires(!std::is_trivially_destructible_v<typename Table::ValueType>);
 
  private:
-  static cppgc::AdditionalBytes GetAdditionalBytes(size_t wanted_array_size) {
+  static cppgc::AdditionalBytes GetAdditionalBytes(uint32_t wanted_array_size) {
     // HHTB is an empty class that's purely used with inline storage. Since its
     // sizeof(HHTB) == 1, we need to subtract its size to avoid wasting storage.
     static_assert(sizeof(ClassType) == 1, "Class declaration changed");
     DCHECK_GE(wanted_array_size, sizeof(ClassType));
-    return cppgc::AdditionalBytes{wanted_array_size - sizeof(ClassType)};
+    return cppgc::AdditionalBytes{wanted_array_size -
+                                  static_cast<uint32_t>(sizeof(ClassType))};
   }
 };
 

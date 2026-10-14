@@ -501,8 +501,9 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
     }
   }
 
-  size_t AllocationSize(size_t capacity) const {
-    return Allocator::template QuantizedSize<T>(capacity);
+  wtf_size_t AllocationSize(wtf_size_t capacity) const {
+    return base::checked_cast<wtf_size_t>(
+        Allocator::template QuantizedSize<T>(capacity));
   }
 
   T* Buffer() { return buffer_; }
@@ -675,7 +676,7 @@ class VectorBuffer<T, 0, Allocator>
   }
 
   bool ExpandBuffer(wtf_size_t new_capacity) {
-    size_t size_to_allocate = AllocationSize(new_capacity);
+    wtf_size_t size_to_allocate = AllocationSize(new_capacity);
     if (buffer_ && Allocator::ExpandVectorBacking(buffer_, size_to_allocate)) {
       capacity_ = static_cast<wtf_size_t>(size_to_allocate / sizeof(T));
       return true;
@@ -686,7 +687,7 @@ class VectorBuffer<T, 0, Allocator>
   inline bool ShrinkBuffer(wtf_size_t new_capacity) {
     DCHECK(buffer_);
     DCHECK_LT(new_capacity, capacity());
-    size_t size_to_allocate = AllocationSize(new_capacity);
+    wtf_size_t size_to_allocate = AllocationSize(new_capacity);
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
     UNSAFE_TODO(ANNOTATE_DELETE_BUFFER(buffer_, capacity_, size_));
 #endif
@@ -798,7 +799,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
     if (buffer_ == InlineBuffer())
       return false;
 
-    size_t size_to_allocate = AllocationSize(new_capacity);
+    wtf_size_t size_to_allocate = AllocationSize(new_capacity);
     if (buffer_ && Allocator::ExpandVectorBacking(buffer_, size_to_allocate)) {
       capacity_ = static_cast<wtf_size_t>(size_to_allocate / sizeof(T));
       return true;
@@ -815,7 +816,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
       return false;
     }
     DCHECK_NE(buffer_, InlineBuffer());
-    size_t new_size = AllocationSize(new_capacity);
+    wtf_size_t new_size = AllocationSize(new_capacity);
     bool succeeded = false;
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
     UNSAFE_TODO(ANNOTATE_DELETE_BUFFER(buffer_, capacity_, size_));
@@ -845,7 +846,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
     }
   }
 
-  size_t AllocationSize(size_t capacity) const {
+  wtf_size_t AllocationSize(wtf_size_t capacity) const {
     if (capacity <= kInlineCapacity) {
       return kInlineBufferSize;
     }
