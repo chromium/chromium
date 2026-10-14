@@ -162,9 +162,6 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
   segment_database_->FindOrCreateSegment(kTestSegmentId);
   segment_database_->FindOrCreateSegment(kTestOptimizationTarget2);
 
-  // TODO(shaktisahu): Add tests for expired segments, freshly computed segments
-  // etc.
-
   EXPECT_CALL(
       model_manager_,
       GetModelProvider(kTestSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE))
@@ -178,6 +175,32 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
       .Times(0);
   // TODO(shaktisahu): Add test when the signal collection returns false.
 
+  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);
+
+  auto* segment_info = segment_database_->FindOrCreateSegment(kTestSegmentId);
+  auto* metadata = segment_info->mutable_model_metadata();
+  metadata->set_result_time_to_live(1);
+  metadata->set_time_unit(proto::TimeUnit::DAY);
+
+  // If we just got a new result, we SHOULD NOT try to execute the model.
+  auto* prediction_result = segment_info->mutable_prediction_result();
+  prediction_result->add_result(0.9);
+  prediction_result->set_timestamp_us(
+      clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
+  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);
+
+  // If we have an expired result, we SHOULD try to execute the model.
+  base::Time just_expired_timestamp =
+      clock_.Now() - base::Days(1) - base::Hours(1);
+  prediction_result->set_timestamp_us(
+      just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_CALL(
+      model_manager_,
+      GetModelProvider(kTestSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE))
+      .WillOnce(Return(&provider));
+  EXPECT_CALL(model_executor_, ExecuteModel(IsForTarget(kTestSegmentId)))
+      .Times(1);
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);
 }
 
