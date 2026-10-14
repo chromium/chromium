@@ -16398,6 +16398,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "SkillsAndExtensionsAppMenu",
                         "SkillsWebViewV2Enabled"
                     ]
                 }
