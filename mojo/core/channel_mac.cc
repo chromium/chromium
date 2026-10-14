@@ -27,10 +27,13 @@
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/rand_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/core/ipcz_driver/envelope.h"
 
@@ -89,6 +92,12 @@ class ChannelMac : public Channel,
   void Write(MessagePtr message) override {
     RecordSentMessageMetricsSubsampled(message->data_num_bytes());
 
+    base::TimeTicks creation_time;
+    if (base::ShouldRecordSubsampledMetric(
+            Channel::kMetricSubsamplingProbability)) {
+      creation_time = base::TimeTicks::Now();
+    }
+
     base::AutoLock lock(write_lock_);
     if (reject_writes_) {
       return;
@@ -96,19 +105,19 @@ class ChannelMac : public Channel,
 
     // If the channel is not fully established, queue pending messages.
     if (!handshake_done_) {
-      pending_messages_.push_back(std::move(message));
+      pending_messages_.emplace_back(std::move(message), creation_time);
       return;
     }
 
     // If messages are being queued, enqueue |message| and try to flush
     // the queue.
     if (send_buffer_contains_message_ || !pending_messages_.empty()) {
-      pending_messages_.push_back(std::move(message));
+      pending_messages_.emplace_back(std::move(message), creation_time);
       SendPendingMessagesLocked();
       return;
     }
 
-    SendMessageLocked(std::move(message));
+    SendMessageLocked(std::move(message), creation_time);
   }
 
   void LeakHandle() override {
@@ -180,6 +189,11 @@ class ChannelMac : public Channel,
   }
 
  private:
+  struct PendingMessage {
+    MessagePtr message;
+    base::TimeTicks creation_time;
+  };
+
   ~ChannelMac() override = default;
 
   void StartOnIOThread() {
@@ -242,6 +256,7 @@ class ChannelMac : public Channel,
     {
       base::AutoLock lock(write_lock_);
       send_buffer_.reset();
+      send_buffer_creation_time_ = base::TimeTicks();
       reject_writes_ = true;
     }
     receive_buffer_.reset();
@@ -366,7 +381,9 @@ class ChannelMac : public Channel,
 
     // Try and send any other pending messages that were queued.
     while (!pending_messages_.empty() && !reject_writes_) {
-      bool did_send = SendMessageLocked(std::move(pending_messages_.front()));
+      PendingMessage& pending = pending_messages_.front();
+      bool did_send =
+          SendMessageLocked(std::move(pending.message), pending.creation_time);
       // If the message failed to send because the kernel message queue is
       // full, the message will have been fully serialized and
       // |send_buffer_contains_message_| will be set to true. The Mojo message
@@ -378,7 +395,7 @@ class ChannelMac : public Channel,
     }
   }
 
-  bool SendMessageLocked(MessagePtr message)
+  bool SendMessageLocked(MessagePtr message, base::TimeTicks creation_time)
       EXCLUSIVE_LOCKS_REQUIRED(write_lock_) {
     if (!send_buffer_.address()) {
       return false;
@@ -478,6 +495,7 @@ class ChannelMac : public Channel,
     }
 
     header->msgh_size = round_msg(buffer.position());
+    send_buffer_creation_time_ = creation_time;
     return MachMessageSendLocked(header);
   }
 
@@ -505,6 +523,7 @@ class ChannelMac : public Channel,
       } else {
         // If the message failed to send for other reasons, destroy it.
         send_buffer_contains_message_ = false;
+        send_buffer_creation_time_ = base::TimeTicks();
         mach_msg_destroy(header);
         if (kr != MACH_SEND_INVALID_DEST) {
           // If the message failed to send because the receiver is a dead-name,
@@ -520,6 +539,14 @@ class ChannelMac : public Channel,
       return false;
     }
 
+    if (!send_buffer_creation_time_.is_null()) {
+      base::TimeDelta latency =
+          base::TimeTicks::Now() - send_buffer_creation_time_;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Mojo.Channel.WriteLatencyUs",
+                                              latency, base::Microseconds(1),
+                                              base::Seconds(1), 100);
+      send_buffer_creation_time_ = base::TimeTicks();
+    }
     send_buffer_contains_message_ = false;
     return true;
   }
@@ -795,9 +822,13 @@ class ChannelMac : public Channel,
   // a task to RetrySendPendingMessages() has been posted. There should only be
   // one retry task in-flight at once.
   bool is_retry_scheduled_ GUARDED_BY(write_lock_) = false;
+  // Creation timestamp of the message currently serialized in `send_buffer_`,
+  // or null if not subsampled for latency metrics.
+  base::TimeTicks send_buffer_creation_time_ GUARDED_BY(write_lock_);
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
-  base::circular_deque<MessagePtr> pending_messages_ GUARDED_BY(write_lock_);
+  base::circular_deque<PendingMessage> pending_messages_
+      GUARDED_BY(write_lock_);
 };
 
 }  // namespace
