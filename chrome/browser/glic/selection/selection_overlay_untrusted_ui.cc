@@ -56,6 +56,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
        IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
       {"close", IDS_CLOSE},
       {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
+      {"askGeminiMore", IDS_GLIC_SELECTION_ASK_GEMINI_MORE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("enableShimmer", true);

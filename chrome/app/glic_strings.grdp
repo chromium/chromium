@@ -585,6 +585,9 @@
   <message name="IDS_GLIC_SELECTION_ASK_ABOUT" desc="Label for the nudge asking about the selected text.">
     Ask about <ph name="TEXT">$1<ex>something</ex></ph>
   </message>
+  <message name="IDS_GLIC_SELECTION_ASK_GEMINI_MORE" desc="Label for the button in the explanation card that opens Gemini to ask more about the selection.">
+    Ask Gemini more about this
+  </message>
   <message name="IDS_GLIC_SELECTION_MENU_HIDE_FOR_SITE" desc="Label for the menu item to hide the selection widget on the current website.">
     Hide for this site
   </message>

@@ -7,7 +7,7 @@ import {create} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import type {ExplainFulfillmentElement} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import {ExplainFulfillment} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
 import type {ExplainFulfillmentInterface} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
-import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class FakeExplainFulfillment implements ExplainFulfillmentInterface {
   askGeminiCount = 0;
@@ -33,7 +33,9 @@ suite('ExplainFulfillment', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.resetForTesting({askGemini: 'Ask Gemini'});
+    loadTimeData.resetForTesting({
+      askGeminiMore: 'Ask Gemini more about this',
+    });
     fulfillment = new FakeExplainFulfillment();
     card = document.createElement('glic-explain-fulfillment');
     card.fulfillment = fulfillment;
@@ -61,7 +63,10 @@ suite('ExplainFulfillment', () => {
   });
 
   test('AskGeminiButtonAsksGemini', () => {
-    card.querySelector<HTMLElement>('.ask-gemini')!.click();
+    const askGemini = card.querySelector<HTMLElement>('.ask-gemini')!;
+    assertEquals('Ask Gemini more about this', askGemini.textContent);
+    assertTrue(!!askGemini.querySelector('.ask-gemini-icon'));
+    askGemini.click();
     assertEquals(1, fulfillment.askGeminiCount);
   });
 });

@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -168,21 +169,6 @@
 
 :host([disable-multi-select]) #cursor {
   visibility: hidden;
-}
-
-/* Set styles for high contrast mode in Windows. */
-@media (forced-colors: active) {
-  #cursor {
-    /* Set the icon color to hcm (high contrast mode) value. */
-    background: ButtonFace;
-    /* Add a border since the shadow is not visible in hcm. */
-    border: 1px solid ButtonBorder;
-  }
-
-  #cursorImg {
-    /* Set the icon color to hcm (high contrast mode) value. */
-    background-color: ButtonText;
-  }
 }
 
 @keyframes initial-inset-animation {
@@ -379,16 +365,16 @@
 }
 
 #inlineFulfillmentHost {
-  background-color: #FFF;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--cr-fallback-color-surface);
+  border-radius: 12px;
+  box-shadow: var(--cr-card-shadow);
   box-sizing: border-box;
-  color: #1F1F1F;
+  color: var(--cr-primary-text-color);
   font-size: 14px;
   line-height: 20px;
   max-width: 100%;
-  padding: 12px 16px;
-  width: 360px;
+  padding: 20px 20px 16px 20px;
+  width: 380px;
 }
 
 /* Hidden until it holds a card, so it doesn't add a flex gap. */
@@ -401,8 +387,10 @@
   display: none;
 }
 
-#inlineFulfillmentHost .ask-gemini {
-  margin-top: 12px;
+#inlineFulfillmentHost glic-explain-fulfillment {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 #inlineFulfillmentHost .explanation > * {
@@ -418,5 +406,51 @@
 }
 
 #inlineFulfillmentHost .explanation a {
-  color: #0B57D0;
+  color: var(--cr-link-color);
+}
+
+#inlineFulfillmentHost .ask-gemini {
+  --cr-button-border: none;
+  --cr-button-height: 28px;
+  font-size: 13px;
+  margin-inline-start: -8px;
+  padding: 4px 8px;
+  width: fit-content;
+}
+
+#inlineFulfillmentHost .ask-gemini-icon {
+  background-color: currentColor;
+  flex-shrink: 0;
+  height: var(--cr-icon-size);
+  mask-image: url('/prompt_suggestion.svg');
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+}
+
+:host-context([dir=rtl]) #inlineFulfillmentHost .ask-gemini-icon {
+  transform: scaleX(-1);
+}
+
+/* Set styles for high contrast mode in Windows. This must stay at the end of
+ * the file so that it overrides the rules above. */
+@media (forced-colors: active) {
+  #cursor {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background: ButtonFace;
+    /* Add a border since the shadow is not visible in hcm. */
+    border: 1px solid ButtonBorder;
+  }
+
+  #cursorImg,
+  #inlineFulfillmentHost .ask-gemini-icon {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background-color: ButtonText;
+  }
+
+  /* Add a border since the shadow is not visible in hcm. */
+  #inlineFulfillmentHost {
+    border: 1px solid ButtonBorder;
+  }
 }

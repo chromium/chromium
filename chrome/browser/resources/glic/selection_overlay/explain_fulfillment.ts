@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ExplainFulfillment, ExplainFulfillmentRemote} from './explain_fulfillment.mojom-webui.js';
@@ -29,9 +31,12 @@ export class ExplainFulfillmentElement extends HTMLElement {
         this.fulfillment?.openTabForSearch(link.textContent);
       }
     });
-    const askGemini = document.createElement('button');
-    askGemini.className = 'action-chip ask-gemini';
-    askGemini.textContent = loadTimeData.getString('askGemini');
+    const askGemini = document.createElement('cr-button');
+    askGemini.className = 'ask-gemini';
+    const askGeminiIcon = document.createElement('div');
+    askGeminiIcon.className = 'ask-gemini-icon';
+    askGeminiIcon.slot = 'prefix-icon';
+    askGemini.append(askGeminiIcon, loadTimeData.getString('askGeminiMore'));
     askGemini.addEventListener('click', () => this.fulfillment?.askGemini());
     this.replaceChildren(explanation, askGemini);
     this.fulfillment?.getExplanation().then(response => {
