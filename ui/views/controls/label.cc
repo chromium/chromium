@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +44,7 @@
 #include "ui/views/property_effects.h"
 #include "ui/views/selection_controller.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/views_features.h"
 
 namespace {
 
@@ -1371,7 +1373,11 @@ void Label::Init(std::u16string_view text,
   set_context_menu_controller(this);
   GetViewAccessibility().set_needs_ax_tree_manager(true);
 
-  UpdateTooltipText();
+  if (!base::FeatureList::IsEnabled(features::kLabelDefaultTooltipFastPath)) {
+    // Redundant: SetText() above already updated the tooltip if `text` is
+    // non-empty. Otherwise, the tooltip is already empty, as it should be.
+    UpdateTooltipText();
+  }
 }
 
 void Label::MaybeBuildDisplayText() const {
@@ -1532,6 +1538,18 @@ void Label::UpdateColorsFromTheme() {
 }
 
 bool Label::ShouldShowDefaultTooltip() const {
+  if (base::FeatureList::IsEnabled(features::kLabelDefaultTooltipFastPath)) {
+    // Avoid computing the text size, which requires shaping, when the answer is
+    // known without it.
+    if (GetObscured() || GetText().empty()) {
+      return false;
+    }
+    if (GetContentsBounds().width() == 0) {
+      // No text fits in zero width (e.g. the label isn't laid out yet).
+      return true;
+    }
+  }
+
   const gfx::Size text_size = GetTextSize();
   const gfx::Size size = GetContentsBounds().size();
   return !GetObscured() &&

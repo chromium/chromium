@@ -10877,6 +10877,24 @@
             ]
         }
     ],
+    "LabelDefaultTooltipFastPath": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LabelDefaultTooltipFastPath"
+                    ]
+                }
+            ]
+        }
+    ],
     "LazilySetCustomActionCaption": [
         {
             "platforms": [
