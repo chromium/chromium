@@ -130,6 +130,7 @@ cr-theme-color-picker {
 :host-context([webui-rounded-icons]) {
   #editThemeIcon {
     --cr-icon-image: url(icons/image.svg);
+    --cr-icon-size: 16px;
   }
 
   #searchedImageButton {
