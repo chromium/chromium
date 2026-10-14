@@ -186,6 +186,18 @@ const gfx::VectorIcon& IndigoPageActionController::GetEntryPointVectorIcon() {
 #endif
 }
 
+bool IndigoPageActionController::IsPageEligible() const {
+  return EvaluateTriggerState().source.has_value();
+}
+
+void IndigoPageActionController::OnContextMenuShown() {
+  if (context_menu_shown_on_current_page_) {
+    return;
+  }
+  context_menu_shown_on_current_page_ = true;
+  RecordShownEntryPoint(IndigoPageActionEntryPoint::kContextMenu);
+}
+
 void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
   RecordClickedEntryPoint(entry_point, last_anchored_message_priority_);
 
@@ -199,6 +211,12 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
           &IndigoPageActionController::CheckEligibilityForOnboarding,
           invoke_weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
           IndigoTransformationTriggerSource::kErrorToastRetry));
+      return;
+    case EntryPoint::kContextMenu:
+      indigo_service_->GetCombinedEligibility(base::BindOnce(
+          &IndigoPageActionController::CheckEligibilityForOnboarding,
+          invoke_weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+          IndigoTransformationTriggerSource::kContextMenu));
       return;
     case EntryPoint::kAnchoredMessage:
       indigo_service_->GetCombinedEligibility(base::BindOnce(
@@ -552,6 +570,7 @@ void IndigoPageActionController::DidFinishNavigation(
       tab().GetContents(), navigation_handle->IsSameDocument());
   last_anchored_message_priority_ = std::nullopt;
   last_trigger_source_ = std::nullopt;
+  context_menu_shown_on_current_page_ = false;
   UpdateEntryPointsState();
 
   if (optimization_guide_) {
@@ -701,6 +720,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   metadata_classifier_.Reset();
   last_anchored_message_priority_ = std::nullopt;
   last_trigger_source_ = std::nullopt;
+  context_menu_shown_on_current_page_ = false;
   UpdateEntryPointsState();
 }
 

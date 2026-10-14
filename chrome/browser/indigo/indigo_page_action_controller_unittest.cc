@@ -2560,5 +2560,104 @@ TEST_P(IndigoPageActionControllerTest,
   }
 }
 
+TEST_P(IndigoPageActionControllerTest, IsPageEligible) {
+  CreateController();
+  EXPECT_FALSE(controller_->IsPageEligible());
+
+  GURL url1("https://example.com/eligible");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
+  auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
+      url1, tab_interface_->GetContents());
+  navigation1->Commit();
+  EXPECT_TRUE(controller_->IsPageEligible());
+
+  GURL url2("https://example.com/ineligible");
+  ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kFalse);
+  auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
+      url2, tab_interface_->GetContents());
+  navigation2->Commit();
+  EXPECT_FALSE(controller_->IsPageEligible());
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       OnContextMenuShownDeduplicatedPerPageLoad) {
+  CreateController();
+
+  GURL url1("https://example.com/page1");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
+  auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
+      url1, tab_interface_->GetContents());
+  navigation1->Commit();
+
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // First context menu shown on page1 records the impression.
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kContextMenu, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuShowAction), 1);
+
+  // Subsequent context menu opens on the same page load do not record again.
+  controller_->OnContextMenuShown();
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kContextMenu, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuShowAction), 1);
+
+  // Fragment-only navigation on the same document does not reset deduplication.
+  GURL url1_fragment("https://example.com/page1#section");
+  auto fragment_nav = content::NavigationSimulator::CreateRendererInitiated(
+      url1_fragment, tab_interface_->GetContents()->GetPrimaryMainFrame());
+  fragment_nav->CommitSameDocument();
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kContextMenu, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuShowAction), 1);
+
+  // Navigating to a new page resets the deduplication flag.
+  GURL url2("https://example.com/page2");
+  ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kTrue);
+  auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
+      url2, tab_interface_->GetContents());
+  navigation2->Commit();
+
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kContextMenu, 2);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuShowAction), 2);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       InvokeActionContextMenuDoesNotOpenGlicAndRecordsMetrics) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  // Glic should NOT be invoked when triggered from the context menu.
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuClickAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kClickedEntryPointHistogram, IndigoPageActionEntryPoint::kContextMenu, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTransformationTriggerAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kTransformationTriggerSourceHistogram,
+      IndigoTransformationTriggerSource::kContextMenu, 1);
+}
 }  // namespace
 }  // namespace indigo

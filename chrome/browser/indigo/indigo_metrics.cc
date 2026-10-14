@@ -65,6 +65,9 @@ void RecordShownEntryPoint(IndigoPageActionEntryPoint entry_point) {
       break;
     case IndigoPageActionEntryPoint::kErrorToast:
       break;
+    case IndigoPageActionEntryPoint::kContextMenu:
+      base::RecordAction(base::UserMetricsAction(kContextMenuShowAction));
+      break;
   }
   base::UmaHistogramEnumeration(kShownEntryPointHistogram, entry_point);
 }
@@ -98,6 +101,11 @@ void RecordClickedEntryPoint(
       base::RecordAction(base::UserMetricsAction(kErrorToastRetryClickAction));
       base::UmaHistogramEnumeration(kClickedEntryPointHistogram,
                                     IndigoPageActionEntryPoint::kErrorToast);
+      break;
+    case EntryPoint::kContextMenu:
+      base::RecordAction(base::UserMetricsAction(kContextMenuClickAction));
+      base::UmaHistogramEnumeration(kClickedEntryPointHistogram,
+                                    IndigoPageActionEntryPoint::kContextMenu);
       break;
   }
 }

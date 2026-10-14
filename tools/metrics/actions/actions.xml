@@ -15161,6 +15161,25 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Indigo.ContextMenu.Click">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User clicked the Indigo item from a page or image context menu.
+  </description>
+</action>
+
+<action name="Indigo.ContextMenu.Show">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    The Indigo item was displayed in a page or image context menu (recorded at
+    most once per page load).
+  </description>
+</action>
+
 <action name="Indigo.DeleteOriginalPhoto.Complete">
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>

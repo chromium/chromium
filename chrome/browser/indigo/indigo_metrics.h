@@ -71,7 +71,8 @@ enum class IndigoPageActionEntryPoint {
   kProactiveAnchoredMessage = 1,
   kReactiveAnchoredMessage = 2,
   kErrorToast = 3,
-  kMaxValue = kErrorToast,
+  kContextMenu = 4,
+  kMaxValue = kContextMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoPageActionEntryPoint)
 
@@ -84,7 +85,8 @@ enum class IndigoTransformationTriggerSource {
   kErrorToastRetry = 1,
   kRegenerate = 2,
   kReplacePhoto = 3,
-  kMaxValue = kReplacePhoto,
+  kContextMenu = 4,
+  kMaxValue = kContextMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationTriggerSource)
 
@@ -92,6 +94,7 @@ enum class EntryPoint {
   kSuggestionChip = 0,
   kAnchoredMessage = 1,
   kErrorToast = 2,
+  kContextMenu = 3,
 };
 
 inline constexpr char kShownEntryPointHistogram[] =
@@ -109,6 +112,7 @@ inline constexpr char kProactiveAnchoredMessageShowAction[] =
     "Indigo.PageAction.AnchoredMessage.Proactive.Show";
 inline constexpr char kReactiveAnchoredMessageShowAction[] =
     "Indigo.PageAction.AnchoredMessage.Reactive.Show";
+inline constexpr char kContextMenuShowAction[] = "Indigo.ContextMenu.Show";
 
 inline constexpr char kSuggestionChipClickAction[] =
     "Indigo.PageAction.SuggestionChip.Click";
@@ -116,6 +120,7 @@ inline constexpr char kAnchoredMessageClickAction[] =
     "Indigo.PageAction.AnchoredMessage.Click";
 inline constexpr char kErrorToastRetryClickAction[] =
     "Indigo.ErrorToast.Retry.Click";
+inline constexpr char kContextMenuClickAction[] = "Indigo.ContextMenu.Click";
 
 inline constexpr char kTransformationTriggerAction[] =
     "Indigo.Transformation.Trigger";
