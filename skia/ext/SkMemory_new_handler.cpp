@@ -177,27 +177,6 @@ void* sk_malloc_flags(size_t size, unsigned flags) {
   }
 }
 
-// TODO(crbug.com/501161323): Remove once Skia rolls in
-// https://skia-review.googlesource.com/c/skia/+/1242277.
-size_t sk_malloc_size(void* addr, size_t size) {
-  if (!addr) {
-    return 0;
-  }
-
-  size_t completeSize = 0;
-
-#if BUILDFLAG(IS_WIN)
-  completeSize = _msize(addr);
-#elif BUILDFLAG(IS_APPLE)
-  completeSize = malloc_size(addr);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  completeSize = malloc_usable_size(addr);
-#endif
-
-  // Guarantee that we return at least `size`
-  return std::max(completeSize, size);
-}
-
 size_t sk_malloc_good_size(size_t needed_size) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return allocator_shim::internal::PartitionAllocMalloc::Allocator()
