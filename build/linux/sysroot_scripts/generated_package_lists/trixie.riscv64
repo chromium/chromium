@@ -387,6 +387,8 @@ https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxi
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxkbcommon/libxkbcommon-dev_1.7.0-2_riscv64.deb
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxkbcommon/libxkbcommon-x11-0_1.7.0-2_riscv64.deb
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxkbcommon/libxkbcommon0_1.7.0-2_riscv64.deb
+https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxkbcommon/libxkbregistry-dev_1.7.0-2_riscv64.deb
+https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxkbcommon/libxkbregistry0_1.7.0-2_riscv64.deb
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxml2/libxml2-dev_2.12.7+dfsg+really2.9.14-0.2+b1_riscv64.deb
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxml2/libxml2_2.12.7+dfsg+really2.9.14-0.2+b1_riscv64.deb
 https://snapshot.debian.org/archive/debian/20250129T203412Z/pool/main/libx/libxrandr/libxrandr-dev_1.5.4-1+b3_riscv64.deb

@@ -163,6 +163,7 @@ DEBIAN_PACKAGES = [
     "libxcb-present-dev",
     "libxcb-render-util0-dev",
     "libxcb-util-dev",
+    "libxkbregistry-dev",
     "libxshmfence-dev",
     "libxslt1-dev",
     "libxss-dev",
