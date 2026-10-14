@@ -27,6 +27,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     return chrome::kGlicSettingsSubpage;
   }
   int GetEntryPointIconId() const override { return IDR_GLIC_BUTTON_ALT_ICON; }
+  std::string_view GetSyntheticTrialGroupName() const override {
+    return "Gemini";
+  }
 };
 
 class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
@@ -39,6 +42,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return chrome::kGlicEnterpriseSettingsSubpage;
   }
   int GetEntryPointIconId() const override { return IDR_GEIC_BUTTON_ICON; }
+  std::string_view GetSyntheticTrialGroupName() const override {
+    return "GeminiEnterprise";
+  }
 };
 
 }  // namespace

@@ -27,6 +27,8 @@ class GlicProviderSpec {
   virtual std::string_view GetSettingsSubpage() const = 0;
   // Resource ID of the entry-point (Glic button) icon.
   virtual int GetEntryPointIconId() const = 0;
+  // The synthetic field trial group name for this provider.
+  virtual std::string_view GetSyntheticTrialGroupName() const = 0;
 };
 
 }  // namespace glic

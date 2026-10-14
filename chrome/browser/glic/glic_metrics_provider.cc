@@ -8,11 +8,15 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
+#include "chrome/browser/glic/glic_provider_spec_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -102,7 +106,20 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
   int invoked_count = 0;
   int opt_in_count = 0;
   int user_submit_count = 0;
+  Profile* default_profile = nullptr;
+  Profile* most_recent_glic_profile = nullptr;
+  base::Time most_recent_invoked_time;
   for (auto* profile : profile_list) {
+    if (profile->GetBaseName() == ProfileManager::GetInitialProfileDir()) {
+      default_profile = profile;
+    }
+    base::Time last_invoked =
+        profile->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime);
+    if (!last_invoked.is_null() && last_invoked > most_recent_invoked_time) {
+      most_recent_invoked_time = last_invoked;
+      most_recent_glic_profile = profile;
+    }
+
     GlicEnabling::EnablementForProfile(profile).RecordSteadyStateMetrics();
 
     if (GlicEnabling::HasConsentedForProfile(profile)) {
@@ -131,6 +148,23 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
         user_submit_count++;
       }
     }
+  }
+
+  if (Profile* provider_profile = most_recent_glic_profile
+                                      ? most_recent_glic_profile
+                                      : default_profile) {
+    // Register a synthetic field trial to report which provider is used by the
+    // most recently invoked glic profile (or the default profile if glic has
+    // not been invoked). Warning, there are caveats to using this data:
+    // * Only loaded profiles are considered. If glic has not been invoked on a
+    //   loaded profile, the default profile is used, which may not be the
+    //   profile where the user uses glic.
+    // * A user can use glic on multiple profiles, but use is attributed to only
+    //   one provider here.
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "GlicProvider",
+        CreateGlicProviderSpec(provider_profile)->GetSyntheticTrialGroupName(),
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 
   // No profiles enabled.

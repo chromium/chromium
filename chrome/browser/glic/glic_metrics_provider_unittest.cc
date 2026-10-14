@@ -8,11 +8,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -188,6 +191,80 @@ TEST_F(GlicMetricsProviderTest, PromotionSourceSyntheticTrialReconciliation) {
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
       kGlicPromotionSourceMultiProfileDetected));
+}
+
+TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_GlicProvider_Gemini) {
+  GlicMetricsProvider provider;
+
+  // Without a default profile loaded, GlicProvider is not registered.
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_FALSE(
+      variations::ContainsTrialName(GetSyntheticFieldTrials(), "GlicProvider"));
+
+  profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(GetSyntheticFieldTrials(),
+                                                    "GlicProvider", "Gemini"));
+}
+
+TEST_F(GlicMetricsProviderTest,
+       ProvideCurrentSessionData_GlicProvider_GeminiEnterprise) {
+  base::test::ScopedFeatureList geic_feature_list;
+  geic_feature_list.InitAndEnableFeature(features::kGeic);
+
+  Profile* default_profile =
+      profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+  base::DictValue settings;
+  settings.Set("url", "http://localhost:8080/geic");
+  default_profile->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                       std::move(settings));
+
+  GlicMetricsProvider provider;
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), "GlicProvider", "GeminiEnterprise"));
+}
+
+TEST_F(GlicMetricsProviderTest,
+       ProvideCurrentSessionData_GlicProvider_WhenGlicDisabled) {
+  base::test::ScopedFeatureList disabled_glic_feature_list;
+  disabled_glic_feature_list.InitAndDisableFeature(features::kGlic);
+
+  profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+
+  GlicMetricsProvider provider;
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(GetSyntheticFieldTrials(),
+                                                    "GlicProvider", "Gemini"));
+}
+
+TEST_F(GlicMetricsProviderTest,
+       ProvideCurrentSessionData_GlicProvider_MostRecentlyInvokedProfile) {
+  base::test::ScopedFeatureList geic_feature_list;
+  geic_feature_list.InitAndEnableFeature(features::kGeic);
+
+  Profile* default_profile =
+      profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+
+  // Configure profile2 as GeminiEnterprise and invoke Glic there.
+  base::DictValue settings;
+  settings.Set("url", "http://localhost:8080/geic");
+  profile2()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                  std::move(settings));
+  const base::Time t1 = base::Time::Now();
+  profile2()->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime, t1);
+
+  GlicMetricsProvider provider;
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), "GlicProvider", "GeminiEnterprise"));
+
+  // Invoke Glic more recently in default_profile (which is Gemini).
+  default_profile->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                       t1 + base::Seconds(10));
+  provider.ProvideCurrentSessionData(nullptr);
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(GetSyntheticFieldTrials(),
+                                                    "GlicProvider", "Gemini"));
 }
 
 }  // namespace glic
