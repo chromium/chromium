@@ -19,7 +19,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/popular_sites_pref_names.h"
 #include "components/ntp_tiles/webui/ntp_tiles_internals_message_handler_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_fixer.h"
