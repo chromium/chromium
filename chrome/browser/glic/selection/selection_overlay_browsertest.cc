@@ -176,7 +176,6 @@ class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
   SelectionOverlayPromptBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {::features::kGlicCaptureRegion,
-         ::features::kGlicSelectionOverlayPrompt,
          ::features::kGlicSelectionOverlayPromptBox,
          ::selection::kSmartSelectionServerSuggestions},
         {});

@@ -95,6 +95,11 @@ BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kQuickAnswersSelectionSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsSelectionOverlayPromptEnabled() {
+  return base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
+         base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox);
+}
+
 selection::SuggestedActionIcon GetIconForTool(
     ::selection::Suggestion::ToolId tool_id) {
   switch (tool_id) {
@@ -737,7 +742,7 @@ void SelectionOverlayController::PageContextReady(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+  if (IsSelectionOverlayPromptEnabled()) {
     if (auto* suggestion_service = ::selection::SuggestionService::From(tab_);
         suggestion_service && !redacted_screenshot_.empty()) {
       optimization_guide::proto::AnnotatedPageContent apc;
@@ -912,8 +917,7 @@ void SelectionOverlayController::SetLiveBlur(bool enabled) {
 }
 
 void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
-      !base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
@@ -955,8 +959,7 @@ void SelectionOverlayController::GetSuggestedActionsForTesting(
 
 void SelectionOverlayController::GetSuggestedActionsImpl(
     SuggestedActionsCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
-      !active_region_id_.has_value()) {
+  if (!IsSelectionOverlayPromptEnabled() || !active_region_id_.has_value()) {
     callback.Run({});
     return;
   }
@@ -1135,7 +1138,7 @@ void SelectionOverlayController::OnSuggestionsReceived(
 void SelectionOverlayController::ExecuteSuggestedAction(
     const base::UnguessableToken& action_id,
     mojo::GenericPendingAssociatedReceiver channel) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+  if (!IsSelectionOverlayPromptEnabled()) {
     return;
   }
   ::selection::Suggestion* matched_suggestion = nullptr;

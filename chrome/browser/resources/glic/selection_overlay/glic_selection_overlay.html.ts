@@ -58,7 +58,8 @@ export function getHtml(this: GlicSelectionOverlayElement) {
       <div id="cursorImg"></div>
     </div>
 
-    ${this.enableSelectionOverlayPrompt ? html`
+    ${this.enableSelectionOverlayPrompt ||
+      this.enableSelectionOverlayPromptBox ? html`
       <div id="floatingPromptContainer"
           ?hidden="${!this.showFloatingPrompt}"
           style="${this.floatingPromptStyle}">

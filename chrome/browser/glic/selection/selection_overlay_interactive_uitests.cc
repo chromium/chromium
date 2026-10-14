@@ -262,8 +262,7 @@ class SelectionOverlayInteractiveTestWithPrompt
  public:
   SelectionOverlayInteractiveTestWithPrompt() {
     feature_list_.InitWithFeatures(
-        {features::kGlicSelectionOverlayPrompt,
-         features::kGlicSelectionOverlayPromptBox,
+        {features::kGlicSelectionOverlayPromptBox,
          ::selection::kSmartSelectionServerSuggestions},
         {});
   }

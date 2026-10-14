@@ -158,7 +158,8 @@ export class GlicSelectionOverlayElement extends
       this.clearInlineFulfillment_();
     });
 
-    if (this.enableSelectionOverlayPrompt) {
+    if (this.enableSelectionOverlayPrompt ||
+        this.enableSelectionOverlayPromptBox) {
       this.fetchSuggestedActions();
     }
 
@@ -282,7 +283,8 @@ export class GlicSelectionOverlayElement extends
       SuggestedActionsListenerCallbackRouter|null = null;
 
   private fetchSuggestedActions() {
-    if (!this.enableSelectionOverlayPrompt) {
+    if (!this.enableSelectionOverlayPrompt &&
+        !this.enableSelectionOverlayPromptBox) {
       return;
     }
     if (this.suggestedActionsListenerRouter_) {
@@ -316,7 +318,8 @@ export class GlicSelectionOverlayElement extends
   }
 
   private updateFloatingPromptPosition() {
-    if (!this.enableSelectionOverlayPrompt) {
+    if (!this.enableSelectionOverlayPrompt &&
+        !this.enableSelectionOverlayPromptBox) {
       this.showFloatingPrompt = false;
       return;
     }
