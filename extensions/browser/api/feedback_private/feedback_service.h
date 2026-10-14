@@ -23,6 +23,7 @@
 
 #include "base/containers/span.h"
 #include "chromeos/ash/components/dbus/debug_daemon/binary_log_files_reader.h"
+#include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace feedback {
@@ -148,6 +149,9 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       browser_context_;
   raw_ptr<FeedbackPrivateDelegate, AcrossTasksDanglingUntriaged> delegate_;
 #if BUILDFLAG(IS_CHROMEOS)
+  // The account of `browser_context_`, read up front because the context can
+  // be gone by the time the logs are fetched.
+  const AccountId account_id_;
   // Root file path for log files. It can be overwritten for testing purpose.
   base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
   feedback::BinaryLogFilesReader binary_log_files_reader_;

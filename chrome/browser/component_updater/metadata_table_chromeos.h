@@ -37,9 +37,6 @@ class MetadataTable {
   // Register a Dictionary in PrefService.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Adds or updates a component usage item for current active user.
-  bool AddComponentForCurrentUser(const std::string& component_name);
-
   // Deletes a component usage item for current active user.
   bool DeleteComponentForCurrentUser(const std::string& component_name);
 

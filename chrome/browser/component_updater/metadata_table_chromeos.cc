@@ -21,8 +21,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/obsolete/sha1.h"
 
@@ -64,13 +64,6 @@ constexpr char kMetadataContentItemHashedUserIdKey[] = "hashed_user_id";
 // Key to the component name.
 constexpr char kMetadataContentItemComponentKey[] = "component";
 
-// Gets current active user.
-const user_manager::User* GetActiveUser() {
-  CHECK(user_manager::UserManager::Get(), base::NotFatalUntil::M161);
-
-  return user_manager::UserManager::Get()->GetActiveUser();
-}
-
 const std::string& GetRequiredStringFromDict(const base::Value& dict,
                                              std::string_view key) {
   const std::string* str = dict.GetDict().FindString(key);
@@ -101,32 +94,18 @@ void MetadataTable::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kMetadataPrefPath);
 }
 
-bool MetadataTable::AddComponentForCurrentUser(
-    const std::string& component_name) {
-  const user_manager::User* active_user = GetActiveUser();
-  // Return immediately if action is performed when no user is signed in.
-  if (!active_user) {
-    return false;
-  }
-
-  const std::string hashed_user_id =
-      HashUsername(active_user->GetAccountId().GetUserEmail());
-  AddItem(hashed_user_id, component_name);
-  Store();
-  return true;
-}
-
 bool MetadataTable::DeleteComponentForCurrentUser(
     const std::string& component_name) {
-  const user_manager::User* active_user = GetActiveUser();
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   // Return immediately if action is performed when no user is signed in.
-  if (!active_user) {
+  if (!active_session) {
     return false;
   }
 
-  const std::string hashed_user_id =
-      HashUsername(active_user->GetAccountId().GetUserEmail());
-  if (!DeleteItem(hashed_user_id, component_name)) {
+  if (!DeleteItem(HashUsername(active_session->account_id().GetUserEmail()),
+                  component_name)) {
     return false;
   }
   Store();

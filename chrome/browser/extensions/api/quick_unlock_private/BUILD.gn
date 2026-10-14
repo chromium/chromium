@@ -32,11 +32,11 @@ source_set("quick_unlock_private") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/public",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
   ]
 }

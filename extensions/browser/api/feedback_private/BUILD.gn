@@ -60,6 +60,7 @@ source_set("feedback_private") {
 
     deps += [
       "//ash/public/cpp",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
       "//chromeos/ash/services/assistant/public/cpp",

@@ -261,6 +261,7 @@ source_set("impl") {
       "//chromeos/ash/components/dbus/image_loader",
       "//chromeos/ash/components/settings",
       "//chromeos/constants",
+      "//components/session_manager/core",
     ]
   }
 

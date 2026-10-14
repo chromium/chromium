@@ -43,9 +43,9 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/hpke.h"
 #include "crypto/keypair.h"
@@ -156,6 +156,16 @@ void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
   feedback_data->RedactDescription(redactor);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns the account of `browser_context`, or an empty one for the sign-in
+// profile.
+AccountId GetAccountIdForContext(content::BrowserContext* browser_context) {
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(
+      ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context));
+  return account_id ? *account_id : EmptyAccountId();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 FeedbackService::FeedbackService(content::BrowserContext* browser_context)
@@ -165,7 +175,14 @@ FeedbackService::FeedbackService(content::BrowserContext* browser_context)
 
 FeedbackService::FeedbackService(content::BrowserContext* browser_context,
                                  FeedbackPrivateDelegate* delegate)
-    : browser_context_(browser_context), delegate_(delegate) {}
+    : browser_context_(browser_context),
+      delegate_(delegate)
+#if BUILDFLAG(IS_CHROMEOS)
+      ,
+      account_id_(GetAccountIdForContext(browser_context))
+#endif  // BUILDFLAG(IS_CHROMEOS)
+{
+}
 
 FeedbackService::~FeedbackService() = default;
 
@@ -337,11 +354,8 @@ void FeedbackService::OnExtraLogsFetched(
 
   EncryptVariations(feedback_data, barrier_closure);
 
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
   const auto account_identifier =
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user ? user->GetAccountId() : EmptyAccountId());
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
 
   // If bluetooth logs are requested, invoke AttachBluetoothLogs to add
   // them in a separate thread to avoid blocking the UI thread.

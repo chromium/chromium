@@ -49,6 +49,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/test_helper.h"
@@ -151,6 +153,13 @@ class QuickUnlockPrivateUnitTest
 
  protected:
   void SetUp() override {
+    // ExtensionServiceTestBase owns the UserManager.
+    // TODO(crbug.com/534323787): Create a UserSessionTestEnvironment in
+    // ExtensionServiceTestBase instead of its UserManager, and drop this.
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    session_manager_->OnUserManagerCreated(user_manager::UserManager::Get());
+
     const auto param = GetParam();
 
     ash::CryptohomeMiscClient::InitializeFake();
@@ -206,14 +215,14 @@ class QuickUnlockPrivateUnitTest
     AccountId auth_account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("gaia"));
 
-    // Ensure the primary user exists by explicitly logging them in to the
-    // UserManager.
+    // Ensure the primary user exists by explicitly logging them in.
     auto* user_manager = user_manager::UserManager::Get();
     ASSERT_TRUE(
         user_manager::TestHelper(user_manager).AddRegularUser(auth_account_id));
-    user_manager->UserLoggedIn(
+    session_manager_->CreateSession(
         auth_account_id,
-        user_manager::TestHelper::GetFakeUsernameHash(auth_account_id));
+        user_manager::TestHelper::GetFakeUsernameHash(auth_account_id),
+        /*new_user=*/false, /*has_active_session=*/false);
 
     // Setup the primary user mapping.
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
@@ -267,6 +276,7 @@ class QuickUnlockPrivateUnitTest
     base::RunLoop().RunUntilIdle();
 
     test_api_.reset();
+    test_pref_service_ = nullptr;
 
     ExtensionApiUnittest::TearDown();
 
@@ -275,6 +285,7 @@ class QuickUnlockPrivateUnitTest
     ash::CryptohomeMiscClient::Shutdown();
 
     ash::quick_unlock::PinBackend::Shutdown();
+    session_manager_.reset();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() {
@@ -619,8 +630,8 @@ class QuickUnlockPrivateUnitTest
         /*override_quick_unlock=*/true);
   }
 
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
-      test_pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> test_pref_service_ =
+      nullptr;
 
  private:
   // Runs the given |func| with the given |params|.
@@ -654,6 +665,7 @@ class QuickUnlockPrivateUnitTest
     expect_modes_changed_ = false;
   }
 
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ash::AuthPartsImpl> auth_parts_;
   QuickUnlockPrivateSetModesFunction::ModesChangedEventHandler
       modes_changed_handler_;

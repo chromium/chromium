@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -21,11 +22,13 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -121,7 +124,7 @@ bool IsPinNumeric(const std::string& pin) {
 // - minimum must be at least 1.
 // - maximum must be at least |min_length|, or 0.
 std::pair<int, int> GetSanitizedPolicyPinMinMaxLength(
-    PrefService* pref_service) {
+    const PrefService* pref_service) {
   int min_length = std::max(
       pref_service->GetInteger(ash::prefs::kPinUnlockMinimumLength), 1);
   int max_length =
@@ -137,7 +140,7 @@ std::pair<int, int> GetSanitizedPolicyPinMinMaxLength(
 // in |pref_service|. Returns CREDENTIAL_PROBLEM_NONE if |pin| has no problems,
 // or another CREDENTIAL_PROBLEM_ enum value to indicate the detected problem.
 CredentialProblem GetCredentialProblemForPin(const std::string& pin,
-                                             PrefService* pref_service) {
+                                             const PrefService* pref_service) {
   int min_length;
   int max_length;
   std::tie(min_length, max_length) =
@@ -467,18 +470,20 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
   // SetupPinKeyboardElement.connectedCallback,
   // Use the sign-in profile from browser_context() in such case.
   // TODO(b/288150711): Revert to `GetActiveProfile` after fix.
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile =
-      active_user && active_user->is_profile_created()
-          ? Profile::FromBrowserContext(
-                ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-                    active_user))
-          : Profile::FromBrowserContext(browser_context());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const PrefService* prefs =
+      active_session ? CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                                       active_session->account_id()))
+                           .GetProfilePrefs()
+                     : nullptr;
+  if (!prefs) {
+    prefs = Profile::FromBrowserContext(browser_context())->GetPrefs();
+  }
 
   auto result = std::make_unique<CredentialRequirements>();
   std::tie(result->min_length, result->max_length) =
-      GetSanitizedPolicyPinMinMaxLength(profile->GetPrefs());
+      GetSanitizedPolicyPinMinMaxLength(prefs);
 
   return RespondNow(
       ArgumentList(GetCredentialRequirements::Results::Create(*result)));
