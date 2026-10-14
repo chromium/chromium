@@ -11,10 +11,9 @@ import subprocess
 
 import perf_config
 
-# pylint: disable=import-error, wrong-import-position
+# perf_config puts build/util (home of lib/) on sys.path.
 from lib.proto import measures
 from lib.results import result_sink
-# pylint: enable=import-error, wrong-import-position
 
 
 def calculate_psnr_ssim(
@@ -58,7 +57,7 @@ def calculate_psnr_ssim(
                 "Failed to parse PSNR from FFmpeg output. Stderr: %s",
                 psnr_result.stderr,
             )
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         logging.error("Failed to calculate PSNR: %s", e)
 
     # SSIM command. Arguments are identical to PSNR above, but calculates
@@ -89,7 +88,7 @@ def calculate_psnr_ssim(
                 "Failed to parse SSIM from FFmpeg output. Stderr: %s",
                 ssim_result.stderr,
             )
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         logging.error("Failed to calculate SSIM: %s", e)
 
 
@@ -112,7 +111,7 @@ def finalize_results(chrome_version=None):
             records = {measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()}
             client.UpdateInvocationExtendedProperties(records)
             logging.info("Metrics uploaded successfully.")
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.error("Failed to upload metrics to ResultSink: %s", e)
 
 
@@ -200,5 +199,5 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
             _record_cros_power(video_file, csv_local_path)
         else:
             _record_glances_csv(video_file, csv_local_path)
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         logging.error("Failed to parse monitoring log: %s", e)

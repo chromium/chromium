@@ -21,43 +21,81 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-# pylint: disable=import-error, wrong-import-position, unused-import
 # Imported first: puts build/util, fuchsia_web/av_testing, and
 # build/fuchsia/test on sys.path for the imports below.
-import perf_config  # noqa: F401
-from lib.proto import measures  # noqa: F401
-import server  # noqa: F401
-import video_analyzer  # noqa: F401
-import camera  # noqa: F401
-from repeating_log import RepeatingLog  # noqa: F401
-
-from cros_setup import setup_cros_environment  # noqa: F401
-from media_metrics import (
-    calculate_psnr_ssim,  # noqa: F401
-    finalize_results,  # noqa: F401
-    parse_glances_csv_and_record,  # noqa: F401
-)
 from perf_config import (
-    BUILD_UTIL_ROOT,  # noqa: F401
-    CHROME_FUCHSIA_ROOT,  # noqa: F401
-    CFT_JSON_URL,  # noqa: F401
-    CHROMEDRIVER_PORT,  # noqa: F401
-    LOCAL_HOST_IP,  # noqa: F401
-    RECORDINGS_DIR,  # noqa: F401
-    REMOTE_URL,  # noqa: F401
-    REPO_ROOT,  # noqa: F401
+    BUILD_UTIL_ROOT,
+    CHROME_FUCHSIA_ROOT,
+    CFT_JSON_URL,
+    CHROMEDRIVER_PORT,
+    LOCAL_HOST_IP,
+    RECORDINGS_DIR,
+    REMOTE_URL,
+    REPO_ROOT,
     SERVER_PORT,
-    TEST_SCRIPTS_ROOT,  # noqa: F401
-    TRACES_DIR,  # noqa: F401
+    TEST_SCRIPTS_ROOT,
+    TRACES_DIR,
+)
+from lib.proto import measures
+import server
+import video_analyzer
+import camera
+from repeating_log import RepeatingLog
+
+from cros_setup import setup_cros_environment
+from media_metrics import (
+    calculate_psnr_ssim,
+    finalize_results,
+    parse_glances_csv_and_record,
 )
 from remote_transport import (
-    RemoteDeviceError,  # noqa: F401
-    SenderNotFoundError,  # noqa: F401
-    SenderSshError,  # noqa: F401
-    SenderUnreachableError,  # noqa: F401
+    RemoteDeviceError,
+    SenderNotFoundError,
+    SenderSshError,
+    SenderUnreachableError,
 )
-from senders import WIN_REMOTE_TMP_DIR, make_sender  # noqa: F401
-# pylint: enable=import-error, wrong-import-position, unused-import
+from senders import WIN_REMOTE_TMP_DIR, make_sender
+
+__all__ = [
+    # Re-exported for the test scripts.
+    'BUILD_UTIL_ROOT',
+    'CFT_JSON_URL',
+    'CHROMEDRIVER_PORT',
+    'CHROME_FUCHSIA_ROOT',
+    'LOCAL_HOST_IP',
+    'RECORDINGS_DIR',
+    'REMOTE_URL',
+    'REPO_ROOT',
+    'SERVER_PORT',
+    'TEST_SCRIPTS_ROOT',
+    'TRACES_DIR',
+    'RemoteDeviceError',
+    'RepeatingLog',
+    'SenderNotFoundError',
+    'SenderSshError',
+    'SenderUnreachableError',
+    'WIN_REMOTE_TMP_DIR',
+    'calculate_psnr_ssim',
+    'camera',
+    'finalize_results',
+    'make_sender',
+    'measures',
+    'parse_glances_csv_and_record',
+    'server',
+    'setup_cros_environment',
+    'video_analyzer',
+    # Defined here.
+    'FAIL_CODE',
+    'METRICS',
+    'VIDEOS',
+    'StartProcess',
+    'cleanup_binaries',
+    'dump_remote_logs',
+    'start_glances_monitoring',
+    'stop_glances_monitoring',
+    'teardown_recording_process',
+    'teardown_test_environment',
+]
 
 # This code is used as the default failure value for recordings in the case that
 # `results.get()` throws an unexpected error. -128 is chosen as a clear fail
@@ -175,7 +213,7 @@ def teardown_test_environment(driver, tunnel_proc, args):
             try:
                 tunnel_proc.ports.stop_reverse_forward(SERVER_PORT)
                 logging.info("Stopped Crossbench port forwarding.")
-            except Exception as e:  # pylint: disable=broad-exception-caught
+            except Exception as e:
                 logging.warning("Failed to stop Crossbench forwarding: %s", e)
 
     sender = _sender_for_cleanup(args)

@@ -4,16 +4,13 @@
 """Test doubles shared by the media perf unit tests."""
 
 import errno
-import os
 import socket
 import subprocess
-import sys
 import types
 import unittest
 from unittest import mock
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import remote_transport  # pylint: disable=wrong-import-position
+import remote_transport
 
 MAC_HOST = 'lin-137-e504--mac'
 WIN_HOST = 'lin-149-e504--win'
@@ -81,10 +78,8 @@ class SenderTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        # pylint: disable=protected-access
-        remote_transport._preflight_results.clear()
-        self.addCleanup(remote_transport._preflight_results.clear)
-        # pylint: enable=protected-access
+        remote_transport.reset_connectivity_cache()
+        self.addCleanup(remote_transport.reset_connectivity_cache)
 
         self.getaddrinfo = self._patch(
             'socket.getaddrinfo',

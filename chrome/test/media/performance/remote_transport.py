@@ -152,7 +152,7 @@ class LocalTransport(Transport):
 
     def spawn(self, command):
         logging.debug('Executing local command: %s', command)
-        return subprocess.Popen(  # pylint: disable=consider-using-with
+        return subprocess.Popen(
             command,
             shell=True,
             stdin=subprocess.PIPE,
@@ -210,7 +210,7 @@ class SshTransport(Transport):
     def spawn(self, command):
         argv = self._ssh_argv(command)
         logging.debug('Executing SSH command: %s', ' '.join(argv))
-        return subprocess.Popen(  # pylint: disable=consider-using-with
+        return subprocess.Popen(
             argv,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -419,3 +419,11 @@ def make_transport(host, username):
     if host in LOCAL_SENDERS:
         return LocalTransport(host, username)
     return SshTransport(host, username)
+
+
+def reset_connectivity_cache():
+    """Forgets earlier connectivity check results, so the next check reruns.
+
+    Tests use this for isolation. Production code has no need to call it.
+    """
+    _preflight_results.clear()

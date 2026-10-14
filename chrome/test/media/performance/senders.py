@@ -278,7 +278,7 @@ class Sender(abc.ABC):
                 )
             except subprocess.TimeoutExpired:
                 logging.warning("Status check timed out. Retrying...")
-            except Exception as e:  # pylint: disable=broad-exception-caught
+            except Exception as e:
                 logging.warning(
                     "A script-level error occurred: %s. Retrying...", e
                 )
@@ -403,7 +403,7 @@ class Sender(abc.ABC):
 
         try:
             self.terminate_chromedriver()
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.warning("Error terminating processes in cleanup: %s", e)
 
         if self.transport.is_local:
@@ -422,7 +422,7 @@ class Sender(abc.ABC):
     def _run_cleanup(self, command, what):
         try:
             result = self.run(command)
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.warning('Failed to clean up %s: %s', what, e)
             return
         if result.returncode == 0:

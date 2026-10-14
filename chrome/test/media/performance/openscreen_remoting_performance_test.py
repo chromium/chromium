@@ -25,11 +25,9 @@ from selenium.webdriver.support import expected_conditions as ec
 
 import common
 
-# pylint: disable=import-error, wrong-import-position
+# Must follow common, which puts these modules on sys.path.
 import camera
 from repeating_log import RepeatingLog
-
-# pylint: enable=import-error, wrong-import-position
 
 CHROME_OPTIONS = [
     # Redirects logging output to stderr to better catch automation issues.
@@ -103,7 +101,7 @@ def fuchsia_infra_is_available():
             import version
 
             return True
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         logging.warning("Result reporting infra not available: %s", e)
         return False
 
@@ -140,7 +138,7 @@ def connect_to_remote_driver(chrome_options, binary_location):
             )
             logging.info("Successfully connected!")
             return driver
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
@@ -690,7 +688,7 @@ def main():
                 rec_proc = run_performance_test(
                     video['name'], driver, args, is_first_run=(i == 0)
                 )
-            except Exception:  # pylint: disable=broad-exception-caught
+            except Exception:
                 logging.exception("Error during video %s test", video['name'])
                 common.dump_remote_logs(args, actual_version)
                 raise

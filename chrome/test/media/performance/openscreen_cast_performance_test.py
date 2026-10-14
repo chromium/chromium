@@ -25,9 +25,8 @@ from selenium.webdriver.support import expected_conditions as ec
 
 import common
 
-# pylint: disable=import-error, wrong-import-position
+# Must follow common, which puts these modules on sys.path.
 from repeating_log import RepeatingLog
-# pylint: enable=import-error, wrong-import-position
 
 CAST_BTN_XPATH = "//button[text()='Launch app']"
 CAST_URL = (
@@ -127,7 +126,7 @@ def connect_to_remote_driver(chrome_options, binary_location):
             )
             logging.info("Successfully connected!")
             return driver
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
@@ -272,7 +271,7 @@ def start_tab_mirroring(driver, args):
                 "'Cast.startTabMirroring' command sent to %s.", args.receiver
             )
             return True
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:
             logging.warning(
                 "Attempt %d failed to start mirroring: %s. Retrying...",
                 attempt,
@@ -284,7 +283,6 @@ def start_tab_mirroring(driver, args):
     raise RuntimeError("Failed to start tab mirroring.")
 
 
-# pylint: disable=too-many-locals
 def run_performance_test(
     video_file: str, driver: webdriver, codec_name: str, args
 ):
@@ -372,7 +370,8 @@ def run_performance_test(
     csv_local_path = os.path.join(common.TRACES_DIR, f"glances_{video_key}.csv")
     try:
         glances_proc = common.start_glances_monitoring(args, csv_remote_path)
-        # pylint: disable=consider-using-with
+        # Returned to the caller, which stops it after recording.
+        # pylint: disable-next=consider-using-with
         rec_proc_local = subprocess.Popen(
             host_recording_cmd,
             stdout=subprocess.PIPE,
@@ -397,7 +396,6 @@ def run_performance_test(
 
         logging.info("Starting Receiver Perfetto trace via ADB...")
         try:
-            # pylint: disable=consider-using-with
             # Pre-clean the remote trace path to ensure fresh data.
             subprocess.run(
                 [
@@ -412,6 +410,8 @@ def run_performance_test(
                 check=False,
                 timeout=5,
             )
+            # Collected in the finally block below.
+            # pylint: disable-next=consider-using-with
             receiver_trace_proc = subprocess.Popen(
                 [
                     ADB_PATH,
@@ -935,7 +935,7 @@ def main():
                                 "Video %s was skipped.", video['name']
                             )
                             continue
-                    except Exception:  # pylint: disable=broad-exception-caught
+                    except Exception:
                         logging.exception(
                             "Error during video %s test", video['name']
                         )
