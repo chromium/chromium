@@ -10,3 +10,9 @@ include_rules = [
   "+third_party/blink/public/common/web_preferences",
   "+third_party/boringssl/src/include",
 ]
+
+specific_include_rules = {
+  "eche_app_manager_unittest\\.cc": [
+    "+extensions/browser/api",
+  ],
+}
