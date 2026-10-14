@@ -966,6 +966,14 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
                                              uint32_t latched,
                                              uint32_t locked,
                                              uint32_t group) {
+  if (!xkb_state_) {
+    // The first XKB keymap may arrive after GTK IM events that depend on
+    // modifier state (e.g. fcitx5 firing on first input activation).
+    // Guard like XkbLookup does to avoid xkb_state_update_mask(NULL).
+    LOG(ERROR) << "No current XKB state";
+    return 0;
+  }
+
   auto* state = xkb_state_.get();
   xkb_state_update_mask(state, depressed, latched, locked, 0, 0, group);
   auto component = static_cast<xkb_state_component>(XKB_STATE_MODS_DEPRESSED |
@@ -985,6 +993,11 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
     const std::optional<std::vector<std::string_view>>& modifiers) const {
+  if (!xkb_state_) {
+    LOG(ERROR) << "No current XKB state";
+    return DomCode::NONE;
+  }
+
   // Look up all candidates.
   auto range = std::equal_range(
       xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},

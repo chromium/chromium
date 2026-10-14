@@ -1146,4 +1146,17 @@ TEST(XkbKeyboardLayoutEngineTest, NumpadDecimalGerman) {
 #endif
 }
 
+TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {
+  // GTK IM events (e.g. from fcitx5 on first input activation) can arrive
+  // before the compositor delivers the first keymap. The engine must not
+  // crash on a null XKB state (crbug.com/558945735).
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  EXPECT_EQ(0, layout_engine.UpdateModifiers(/*depressed=*/0, /*latched=*/0,
+                                             /*locked=*/0, /*group=*/0));
+  EXPECT_EQ(DomCode::NONE,
+            layout_engine.GetDomCodeByKeysym(XKB_KEY_a, std::nullopt));
+}
+
 }  // namespace ui
