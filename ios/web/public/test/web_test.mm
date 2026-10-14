@@ -44,7 +44,15 @@ WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
                  WebTaskEnvironment::MainThreadType main_thread_type)
     : web_client_(std::move(web_client)), task_environment_(main_thread_type) {}
 
-WebTest::~WebTest() {}
+WebTest::~WebTest() {
+  // Drain autoreleased objects from `browser_state_` teardown before
+  // `task_environment_` is destroyed; otherwise they are held by
+  // `PlatformTest`'s pool and outlive `WebThread`s.
+  @autoreleasepool {
+    crash_observer_.reset();
+    browser_state_.reset();
+  }
+}
 
 void WebTest::SetUp() {
   PlatformTest::SetUp();

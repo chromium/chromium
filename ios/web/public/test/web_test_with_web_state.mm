@@ -36,7 +36,9 @@ WebTestWithWebState::WebTestWithWebState(
     WebTaskEnvironment::MainThreadType main_thread_type)
     : WebTest(std::move(web_client), main_thread_type) {}
 
-WebTestWithWebState::~WebTestWithWebState() {}
+WebTestWithWebState::~WebTestWithWebState() {
+  DestroyWebState();
+}
 
 void WebTestWithWebState::SetUp() {
   WebTest::SetUp();
@@ -136,7 +138,11 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
 }
 
 void WebTestWithWebState::DestroyWebState() {
-  web_state_.reset();
+  // Drain autoreleased objects (e.g., `CRWWebController`, `WKWebView`) before
+  // `WebTest`'s `task_environment_` is destroyed.
+  @autoreleasepool {
+    web_state_.reset();
+  }
 }
 
 std::string WebTestWithWebState::BaseUrl() const {

@@ -89,21 +89,29 @@ void WebIntTest::SetUp() {
 }
 
 void WebIntTest::TearDown() {
+  StopObservingWebStatesForRenderProcessGone();
+
   // Tests can create an unresponsive WebProcess. WebIntTest::TearDown will
   // call ClearBrowingData, which can take a very long time with an unresponsive
   // WebProcess. Work around this problem by force closing WKWebView and its
   // network process via private APIs.
   WKWebsiteDataStore* data_store =
       GetDataStoreForBrowserState(GetBrowserState());
+  // Drain autoreleased `WKWebView` and `WebState` objects before clearing
+  // website data and before `WebTest`'s `task_environment_` is destroyed.
+  @autoreleasepool {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
-      web::WebStateImpl::FromWebState(web_state())
-          ->GetWebViewNavigationProxy());
-  [web_view performSelector:@selector(_close)];
+    WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
+        web::WebStateImpl::FromWebState(web_state())
+            ->GetWebViewNavigationProxy());
+    [web_view performSelector:@selector(_close)];
 
-  [data_store performSelector:@selector(_terminateNetworkProcess)];
+    [data_store performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
+
+    web_state_.reset();
+  }
 
   RemoveWKWebViewCreatedData(data_store,
                              [WKWebsiteDataStore allWebsiteDataTypes]);
