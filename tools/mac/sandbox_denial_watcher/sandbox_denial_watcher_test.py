@@ -20,14 +20,21 @@ from typing import Optional, Union
 import unittest
 from unittest.mock import MagicMock, patch
 
+from bug_tracker import get_bug_url
 from log_events import SandboxDenial
 from sandbox_denial_watcher import (
+    _DIALOG_GIVE_UP_SECONDS,
+    _DIALOG_SCRIPT,
+    _DISMISS_BUTTON_TITLE,
+    _FILE_BUG_BUTTON_TITLE,
     _HOME_DIR,
     _INTERESTING_PROCS,
+    _OSASCRIPT_PATH,
     DenialFilter,
     SandboxDenialWatcher,
     _validate_process_name,
     main,
+    prompt_to_file_bug,
 )
 
 
@@ -42,8 +49,12 @@ def _denial_line(
     ).encode("utf-8")
 
 
-def _denial(pattern: str) -> SandboxDenial:
-    denial = SandboxDenial.from_json(_denial_line(pattern))
+def _denial(
+    pattern: str, process: str = "Chromium", pid: int = 100
+) -> SandboxDenial:
+    denial = SandboxDenial.from_json(
+        _denial_line(pattern, process=process, pid=pid)
+    )
     assert denial is not None
     return denial
 
@@ -198,17 +209,48 @@ class FilteringTest(WatcherTestCase):
             "org.chromium.Chromium.MachPortRendezvousServer.1",
         )
 
-    def test_report_denial_prints_event_message(self):
+    @patch("sandbox_denial_watcher.prompt_to_file_bug")
+    def test_report_denial_logs_and_prompts(self, mock_prompt):
         denial = _denial("mach-lookup com.apple.foo")
         with self.assertLogs("sandbox_denial_watcher", level="INFO") as cm:
             self.watcher._report_denial(denial)
+            self.watcher._flush_batch((denial.process_name, denial.action))
         self.assertEqual(
             cm.output,
             [
                 "INFO:sandbox_denial_watcher:[DENIAL] "
-                "Sandbox: Chromium(100) deny(1) mach-lookup com.apple.foo"
+                "Sandbox: Chromium(100) deny(1) mach-lookup com.apple.foo",
+                f"INFO:sandbox_denial_watcher:[REPORT] {get_bug_url([denial])}",
             ],
         )
+        mock_prompt.assert_called_once_with([denial])
+
+    @patch("sandbox_denial_watcher.prompt_to_file_bug")
+    def test_report_denial_deduplicates_prompts(self, mock_prompt):
+        denial = _denial("mach-lookup com.apple.foo")
+        self.watcher._report_denial(denial)
+        self.watcher._flush_batch((denial.process_name, denial.action))
+        self.watcher._report_denial(denial)
+        self.watcher._flush_batch((denial.process_name, denial.action))
+        mock_prompt.assert_called_once_with([denial])
+
+    @patch("sandbox_denial_watcher.prompt_to_file_bug")
+    def test_report_denial_batches_multiple_denials(self, mock_prompt):
+        d1 = _denial("file-write-times /path/to/crl-set")
+        d2 = _denial("file-write-times /path/to/manifest.json")
+        with self.assertLogs("sandbox_denial_watcher", level="INFO") as cm:
+            self.watcher._report_denial(d1)
+            self.watcher._report_denial(d2)
+            self.watcher._flush_batch((d1.process_name, d1.action))
+        self.assertEqual(
+            cm.output,
+            [
+                f"INFO:sandbox_denial_watcher:[DENIAL] {d1.event_message}",
+                f"INFO:sandbox_denial_watcher:[DENIAL] {d2.event_message}",
+                f"INFO:sandbox_denial_watcher:[REPORT] {get_bug_url([d1, d2])}",
+            ],
+        )
+        mock_prompt.assert_called_once_with([d1, d2])
 
 
 class DenialFilterTest(unittest.TestCase):
@@ -448,6 +490,118 @@ class LogStreamTest(WatcherTestCase):
         with self.assertLogs("sandbox_denial_watcher", level="INFO") as cm:
             self.assertEqual(self.watcher.watch_logs(), 0)
         self.assertFalse(any("ERROR" in record for record in cm.output))
+
+
+class PromptToFileBugTest(unittest.TestCase):
+    """Verifies the macOS dialog invocation and response handling."""
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    @patch("sandbox_denial_watcher.webbrowser.open")
+    def test_prompt_files_bug_when_file_bug_clicked(
+        self, mock_browser_open, mock_run
+    ):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout=f"button returned:{_FILE_BUG_BUTTON_TITLE}, gave up:false\n",
+        )
+        self.assertTrue(prompt_to_file_bug(denial))
+        mock_browser_open.assert_called_once_with(get_bug_url([denial]))
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    @patch("sandbox_denial_watcher.webbrowser.open")
+    def test_prompt_dismissed_when_dismiss_clicked(
+        self, mock_browser_open, mock_run
+    ):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout=f"button returned:{_DISMISS_BUTTON_TITLE}, gave up:false\n",
+        )
+        self.assertFalse(prompt_to_file_bug(denial))
+        mock_browser_open.assert_not_called()
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    @patch("sandbox_denial_watcher.webbrowser.open")
+    def test_prompt_times_out_when_dialog_gives_up(
+        self, mock_browser_open, mock_run
+    ):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="button returned:, gave up:true\n",
+        )
+        self.assertFalse(prompt_to_file_bug(denial))
+        mock_browser_open.assert_not_called()
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    @patch("sandbox_denial_watcher.webbrowser.open")
+    def test_prompt_times_out_when_subprocess_times_out(
+        self, mock_browser_open, mock_run
+    ):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.side_effect = subprocess.TimeoutExpired(
+            cmd=["osascript"], timeout=20
+        )
+        self.assertFalse(prompt_to_file_bug(denial))
+        mock_browser_open.assert_not_called()
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    @patch("sandbox_denial_watcher.webbrowser.open")
+    def test_prompt_dismissed_on_nonzero_exit(
+        self, mock_browser_open, mock_run
+    ):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.return_value = MagicMock(
+            returncode=1,
+            stdout="",
+            stderr="execution error: User canceled. (-128)",
+        )
+        self.assertFalse(prompt_to_file_bug(denial))
+        mock_browser_open.assert_not_called()
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_prompt_invokes_osascript_with_expected_arguments(self, mock_run):
+        denial = _denial("mach-lookup com.apple.foo")
+        mock_run.return_value = MagicMock(returncode=0, stdout="")
+
+        prompt_to_file_bug(denial)
+
+        args, kwargs = mock_run.call_args
+        argv = args[0]
+        self.assertEqual(argv[0], _OSASCRIPT_PATH)
+        self.assertEqual(argv[1], "-e")
+        self.assertEqual(argv[2], _DIALOG_SCRIPT)
+        self.assertEqual(
+            argv[3],
+            "Chromium: mach-lookup com.apple.foo",
+        )
+        self.assertEqual(
+            argv[4:],
+            [
+                _DISMISS_BUTTON_TITLE,
+                _FILE_BUG_BUTTON_TITLE,
+                str(_DIALOG_GIVE_UP_SECONDS),
+            ],
+        )
+        self.assertEqual(kwargs["encoding"], "utf-8")
+        self.assertEqual(kwargs["errors"], "replace")
+        self.assertEqual(kwargs["timeout"], _DIALOG_GIVE_UP_SECONDS + 5)
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_prompt_invokes_osascript_with_batch_dialog_text(self, mock_run):
+        d1 = _denial("file-write-times /path/to/unpack/crl-set")
+        d2 = _denial("file-write-times /path/to/unpack/manifest.json")
+        mock_run.return_value = MagicMock(returncode=0, stdout="")
+
+        prompt_to_file_bug([d1, d2])
+
+        args, _ = mock_run.call_args
+        self.assertEqual(
+            args[0][3],
+            "Chromium: file-write-times /path/to/unpack/crl-set, "
+            "/path/to/unpack/manifest.json",
+        )
 
 
 @patch("sandbox_denial_watcher.logging.basicConfig")

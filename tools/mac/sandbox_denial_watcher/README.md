@@ -1,7 +1,7 @@
 # macOS Sandbox Denial Watcher
 
-This directory contains tools to monitor unexpected macOS Sandbox denials
-emitted by Chrome/Chromium and related processes.
+This directory contains tools to detect and report unexpected macOS
+Sandbox denials emitted by Chrome/Chromium and related processes.
 
 ## Overview
 
@@ -13,7 +13,8 @@ Chrome already produces a number of denials today (e.g., from system framework
 probing or fallback queries). Not all of them are necessarily desirable, but
 the goal of this tool is to detect regressions, so these known denials are
 filtered out. The tool uses `/usr/bin/log stream` to watch for unexpected
-denials and prints each one to the terminal.
+denials and displays a dialog when one is detected. From the dialog, you can
+file a pre-filled Chromium Issue Tracker bug.
 
 ## Requirements
 
@@ -43,10 +44,21 @@ tools/mac/sandbox_denial_watcher/sandbox_denial_watcher.py -v
 Start Chrome or Chromium as you normally would, ensuring that sandbox logging
 is enabled (see [Requirements](#requirements)).
 
-### Viewing Denials
+### Reporting Bugs
 
-When an unexpected denial occurs, the terminal displays the full `[DENIAL]` log
-message.
+When unexpected denials occur:
+
+- The terminal displays each full `[DENIAL]` log message in real time.
+- Related denials occurring within a short time window are batched together by
+  process and operation type.
+- A single `[REPORT]` URL is emitted for the batch, and a macOS dialog appears
+  with **Dismiss** and **File bug** buttons:
+  - Clicking **File bug** opens your browser to a pre-filled issue on the
+    Chromium Issue Tracker containing all batched denial events.
+  - Clicking **Dismiss** closes the dialog.
+  - If neither button is clicked within 15 seconds, the dialog closes itself.
+- To avoid repeated popups, you will only be prompted once for a given denial
+  per session.
 
 ## Adding New Known Denials
 

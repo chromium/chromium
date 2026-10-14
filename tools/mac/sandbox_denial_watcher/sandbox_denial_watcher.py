@@ -6,7 +6,8 @@
 
 """Watches macOS system logs for unexpected Chrome/Chromium sandbox denials.
 
-Prints each unexpected denial reported by a Chrome/Chromium or related process.
+Filters out expected/known denials and displays a macOS dialog prompting to file
+a pre-filled Chromium Issue Tracker bug when an unexpected denial occurs.
 
 This tool MUST remain compatible with the default macOS Python interpreter
 (`/usr/bin/python3`), which is Python 3.9.6 at the time of writing. Do not use
@@ -28,11 +29,42 @@ from pathlib import Path
 import shlex
 import subprocess
 import sys
-from typing import Sequence
+import threading
+from typing import Sequence, Union
+import webbrowser
 
+from bug_tracker import get_bug_url, get_denial_summary, normalize_denials
 from log_events import SandboxDenial
 
+# Duration (in seconds) before an unanswered dialog closes itself.
+_DIALOG_GIVE_UP_SECONDS = 15
+
+# Duration (in seconds) to collect related denials into a batch before
+# prompting.
+_BATCH_WINDOW_SECONDS = 1.0
+
 _LOG_PATH = "/usr/bin/log"
+_OSASCRIPT_PATH = "/usr/bin/osascript"
+
+_DISMISS_BUTTON_TITLE = "Dismiss"
+_FILE_BUG_BUTTON_TITLE = "File bug"
+
+_DIALOG_SCRIPT = (
+    "on run argv\n"
+    "    set dialogText to item 1 of argv\n"
+    "    set dismissTitle to item 2 of argv\n"
+    "    set fileBugTitle to item 3 of argv\n"
+    "    set giveUpSeconds to (item 4 of argv as integer)\n"
+    "    display dialog dialogText buttons {dismissTitle, fileBugTitle} "
+    "default button fileBugTitle cancel button dismissTitle "
+    'with title "Chrome Sandbox Denial" '
+    "giving up after giveUpSeconds\n"
+    "end run\n"
+)
+
+# Serializes modal dialog display so concurrent unexpected denials do not
+# stack dialogs.
+_dialog_lock = threading.Lock()
 
 _HOME_DIR = Path.home()
 
@@ -155,6 +187,61 @@ def _validate_process_name(proc: str) -> None:
         raise ValueError(f"Invalid process name: {proc!r}")
 
 
+def prompt_to_file_bug(
+    denial_event: Union[SandboxDenial, Sequence[SandboxDenial]],
+) -> bool:
+    """Displays a macOS modal dialog prompting the user to file a bug.
+
+    If accepted, opens the pre-filled bug URL in the default browser.
+    Returns True if the user opened the bug tracker, or False otherwise.
+    """
+    denials = normalize_denials(denial_event)
+    if not denials:
+        return False
+
+    url = get_bug_url(denials)
+    logger = logging.getLogger("sandbox_denial_watcher")
+
+    first = denials[0]
+    dialog_text = f"{first.process_name}: {get_denial_summary(denials)}"
+
+    with _dialog_lock:
+        try:
+            res = subprocess.run(
+                [
+                    _OSASCRIPT_PATH,
+                    "-e",
+                    _DIALOG_SCRIPT,
+                    dialog_text,
+                    _DISMISS_BUTTON_TITLE,
+                    _FILE_BUG_BUTTON_TITLE,
+                    str(_DIALOG_GIVE_UP_SECONDS),
+                ],
+                capture_output=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=_DIALOG_GIVE_UP_SECONDS + 5,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            logger.debug("Dialog timed out via subprocess timeout")
+            return False
+
+        if res.returncode != 0:
+            logger.debug(
+                "Dialog command exited with code %d: %s",
+                res.returncode,
+                res.stderr.strip(),
+            )
+            return False
+
+        logger.debug("Dialog response: %s", res.stdout.strip())
+        if f"button returned:{_FILE_BUG_BUTTON_TITLE}" in res.stdout:
+            webbrowser.open(url)
+            return True
+        return False
+
+
 class SandboxDenialWatcher:
     """Watches macOS system logs for unexpected sandbox denials."""
 
@@ -164,10 +251,47 @@ class SandboxDenialWatcher:
             _validate_process_name(proc)
         self._interesting_procs = _INTERESTING_PROCS
         self._denial_filter = DenialFilter()
+        self._prompted_denials: set[tuple[str, str]] = set()
+        self._batch_window_seconds = _BATCH_WINDOW_SECONDS
+        self._batch_lock = threading.Lock()
+        self._active_batches: dict[tuple[str, str], list[SandboxDenial]] = {}
+
+    def _flush_batch(self, batch_key: tuple[str, str]) -> None:
+        """Flushes a pending batch of denials and prompts the user."""
+        with self._batch_lock:
+            denials = self._active_batches.pop(batch_key, None)
+            if not denials or batch_key in self._prompted_denials:
+                return
+            self._prompted_denials.add(batch_key)
+
+        url = get_bug_url(denials)
+        self._logger.info("[REPORT] %s", url)
+        prompt_to_file_bug(denials)
 
     def _report_denial(self, denial_event: SandboxDenial) -> None:
-        """Prints a denial to the terminal."""
+        """Logs an unexpected denial and queues it into a batch."""
         self._logger.info("[DENIAL] %s", denial_event.event_message)
+        batch_key = (denial_event.process_name, denial_event.action)
+
+        with self._batch_lock:
+            if batch_key in self._prompted_denials:
+                self._logger.debug(
+                    "Skipping bug prompt for already prompted denial: %s",
+                    batch_key,
+                )
+                return
+
+            if batch_key not in self._active_batches:
+                self._active_batches[batch_key] = [denial_event]
+                timer = threading.Timer(
+                    self._batch_window_seconds,
+                    self._flush_batch,
+                    args=(batch_key,),
+                )
+                timer.daemon = True
+                timer.start()
+            else:
+                self._active_batches[batch_key].append(denial_event)
 
     def _handle_log_line(self, line: bytes) -> None:
         """Parses a log line and reports it if it is an unexpected denial."""
