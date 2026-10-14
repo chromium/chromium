@@ -137,7 +137,7 @@ effective at protecting against leaking web credentials.
 
 ## Sandboxing
 
-Similar to the [Linux sandbox design](../linux/sandboxing.md), which uses a
+Similar to the [Linux sandbox design](../../sandbox/linux/README.md), which uses a
 bilayer sandbox, Chrome on Android also uses two technologies to secure
 low-privilege processes.
 

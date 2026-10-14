@@ -14,7 +14,7 @@ More specifically, on Linux, it allows to:
    up to ~8 MB per process. See [Appendix C](#appendix-c-overall-memory-impact).
 
 Security-wise, the Zygote is responsible for setting up and bookkeeping the
-[namespace sandbox](sandboxing.md).
+[namespace sandbox](../../sandbox/linux/README.md).
 
 Furthermore it is the only reasonable way to keep a reference to a binary
 and a set of shared libraries that can be exec'ed. In the model used on Windows

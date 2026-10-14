@@ -226,7 +226,7 @@ Caveats:
 * For the DRM (GBM) platform, you may need to terminate your X server (or any other
   display server) prior to testing.
 * During development, you may need to configure
-  [sandboxing](linux/sandboxing.md) or to disable it.
+  [sandboxing](../sandbox/linux/README.md) or to disable it.
 
 ## Ozone Platforms
 
