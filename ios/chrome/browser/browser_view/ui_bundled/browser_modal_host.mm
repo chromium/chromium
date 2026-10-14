@@ -550,6 +550,9 @@ const char kContextPanelDismissedHistogram[] =
 // Starts the StoreKitCoordinator with the given productParameters.
 - (void)startStoreKitCoordinatorWithParameters:
     (NSDictionary*)productParameters {
+  if (_storeKitCoordinator) {
+    return;
+  }
   _storeKitCoordinator = [[StoreKitCoordinator alloc]
       initWithBaseViewController:_baseViewController
                          browser:_browser];
@@ -2593,6 +2596,9 @@ const char kContextPanelDismissedHistogram[] =
 #pragma mark - WebContentCommands
 
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
+  if (_storeKitCoordinator) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   // Properly start the StoreKitCoordinator in a clean presented state.
   [HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands)

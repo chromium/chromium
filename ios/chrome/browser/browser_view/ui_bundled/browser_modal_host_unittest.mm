@@ -445,6 +445,59 @@ TEST_F(BrowserModalHostTest, StartsAndStopsStoreKitCoordinator) {
   EXPECT_OCMOCK_VERIFY(classMock);
 }
 
+// Tests that `-showAppStoreWithParameters:` does not clear presented state or
+// start a new `StoreKitCoordinator` if one is already started.
+TEST_F(BrowserModalHostTest, DoesNotStartStoreKitCoordinatorIfAlreadyStarted) {
+  id classMock = OCMClassMock([StoreKitCoordinator class]);
+  StoreKitCoordinator* mockCoordinator = classMock;
+  NSDictionary* parameters = @{@"id" : @"12345"};
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()])
+      .andReturn(mockCoordinator);
+  OCMExpect([mockCoordinator setDelegate:[OCMArg any]]);
+  OCMExpect([mockCoordinator setITunesProductParameters:parameters]);
+  OCMExpect([mockCoordinator start]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id mockBrowserCoordinatorCommandsHandler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorCommandsHandler
+                           forProtocol:@protocol(BrowserCoordinatorCommands)];
+  OCMExpect([mockBrowserCoordinatorCommandsHandler
+                clearPresentedStateWithCompletion:[OCMArg any]
+                                   dismissOmnibox:YES])
+      .andDo(^(NSInvocation* invocation) {
+        __unsafe_unretained ProceduralBlock completion;
+        [invocation getArgument:&completion atIndex:2];
+        if (completion) {
+          completion();
+        }
+      });
+
+  id<WebContentCommands> handler =
+      HandlerForProtocol(dispatcher, WebContentCommands);
+
+  [handler showAppStoreWithParameters:parameters];
+
+  EXPECT_OCMOCK_VERIFY(mockBrowserCoordinatorCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  // Calling `-showAppStoreWithParameters:` again while `StoreKitCoordinator` is
+  // already started should early return without clearing presented state or
+  // starting another coordinator.
+  OCMReject([mockBrowserCoordinatorCommandsHandler
+      clearPresentedStateWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES]);
+  OCMReject([classMock alloc]);
+
+  [handler showAppStoreWithParameters:parameters];
+
+  EXPECT_OCMOCK_VERIFY(mockBrowserCoordinatorCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
 // Tests that `-showDialogForPassKitPasses:` starts the PassKitCoordinator.
 TEST_F(BrowserModalHostTest, StartsPassKitCoordinator) {
   id classMock = OCMClassMock([PassKitCoordinator class]);
