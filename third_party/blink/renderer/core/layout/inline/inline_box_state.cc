@@ -33,7 +33,7 @@ void LogicalRubyColumn::Trace(Visitor* visitor) const {
   visitor->Trace(state_stack);
 }
 
-InlineBoxState::InlineBoxState(const InlineBoxState&& state)
+InlineBoxState::InlineBoxState(InlineBoxState&& state)
     : fragment_start(state.fragment_start),
       item(state.item),
       style(state.style),

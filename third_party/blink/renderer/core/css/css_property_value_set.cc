@@ -222,7 +222,7 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     bool may_have_logical_properties =
         bits_.get<MayHaveLogicalPropertiesField>();
     for (const CSSPropertyValue& property : other.Properties()) {
-      property_vector_.UncheckedAppend(CSSPropertyValue(property));
+      property_vector_.UncheckedAppend(property);
       may_have_logical_properties |=
           kLogicalGroupProperties.Has(property.PropertyID());
     }

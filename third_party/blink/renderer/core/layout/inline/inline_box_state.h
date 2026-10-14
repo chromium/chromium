@@ -103,7 +103,7 @@ struct InlineBoxState {
 
   InlineBoxState() = default;
   // Needs the move constructor for Vector<InlineBoxState>.
-  InlineBoxState(const InlineBoxState&& state);
+  InlineBoxState(InlineBoxState&& state);
   InlineBoxState(const InlineBoxState&) = delete;
   InlineBoxState& operator=(const InlineBoxState&) = delete;
 
