@@ -4,7 +4,7 @@ Version: 1.0.3
 Revision: 8dbd6483e920311a58c9af10a10beb278efebc36
 Update Mechanism: Manual
 License: SGI-B-2.0
-License File: LICENSE
+License File: src/LICENSE.txt
 Shipped: yes
 Security Critical: yes
 License Android Compatible: yes
