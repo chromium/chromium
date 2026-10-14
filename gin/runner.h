@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/gin_export.h"
 #include "gin/public/context_holder.h"
@@ -40,6 +41,8 @@ class GIN_EXPORT Runner {
   }
 
   class GIN_EXPORT Scope {
+    STACK_ALLOCATED();
+
    public:
     explicit Scope(Runner* runner);
     Scope(const Scope&) = delete;

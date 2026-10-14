@@ -6,6 +6,7 @@
 #define GIN_ARGUMENTS_H_
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -18,11 +19,12 @@ namespace gin {
 // If constructed instead with a v8::PropertyCallbackInfo, behaves as though a
 // function with no arguments had been called.
 class GIN_EXPORT Arguments {
+  STACK_ALLOCATED();
+
  public:
   Arguments();
   explicit Arguments(const v8::FunctionCallbackInfo<v8::Value>& info);
   explicit Arguments(const v8::PropertyCallbackInfo<v8::Value>& info);
-  ~Arguments();
 
   template <typename T>
   bool GetHolder(T* out) const {

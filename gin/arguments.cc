@@ -21,8 +21,6 @@ Arguments::Arguments(const v8::FunctionCallbackInfo<v8::Value>& info)
 Arguments::Arguments(const v8::PropertyCallbackInfo<v8::Value>& info)
     : info_for_property_(&info), is_for_property_(true) {}
 
-Arguments::~Arguments() = default;
-
 v8::Local<v8::Value> Arguments::PeekNext() const {
   if (is_for_property_)
     return v8::Local<v8::Value>();
