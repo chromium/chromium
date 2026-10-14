@@ -26,7 +26,7 @@ class OneTimeToken {
 
   OneTimeToken(
       OneTimeTokenType type,
-      const std::string& value,
+      std::string value,
       base::TimeTicks on_device_arrival_time,
       std::optional<std::string> sender_address = std::nullopt,
       std::optional<base::Time> email_received_timestamp = std::nullopt);

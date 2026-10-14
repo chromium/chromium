@@ -5,7 +5,9 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
 #include <algorithm>
+#include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_util.h"
 
 namespace one_time_tokens {
@@ -18,12 +20,12 @@ bool OneTimeToken::IsPotentialOtp(std::u16string_view value) {
 }
 
 OneTimeToken::OneTimeToken(OneTimeTokenType type,
-                           const std::string& value,
+                           std::string value,
                            base::TimeTicks on_device_arrival_time,
                            std::optional<std::string> sender_address,
                            std::optional<base::Time> email_received_timestamp)
     : type_(type),
-      value_(value),
+      value_(std::move(value)),
       on_device_arrival_time_(on_device_arrival_time),
       sender_address_(std::move(sender_address)),
       email_received_timestamp_(email_received_timestamp) {
