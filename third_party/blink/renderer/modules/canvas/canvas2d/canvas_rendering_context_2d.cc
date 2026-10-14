@@ -1341,14 +1341,4 @@ void CanvasRenderingContext2D::CreateSoftwareSurfaceForTesting() {
   }
 }
 
-void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
-    std::nullptr_t provider,
-    const gfx::Size& size) {
-  canvas()->DiscardResources();
-  canvas()->SetSize(size);
-  hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ResetBacking();
-  ResetRecorder();
-}
-
 }  // namespace blink

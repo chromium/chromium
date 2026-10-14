@@ -1601,8 +1601,7 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque, kNormalLatency);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
   DrawSomething();
   NonThrowableExceptionState exception_state;
@@ -1618,8 +1617,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
 
@@ -1638,8 +1636,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
 
@@ -1672,8 +1669,7 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
   constexpr unsigned int kImageSize = 10;
   constexpr unsigned int kBytesPerImage = 400;
@@ -1696,8 +1692,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   size_t expected_op_count = Context2D()->Recorder()->TotalOpCount();
@@ -1723,8 +1718,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
   NonThrowableExceptionState exception_state;
   Context2D()->beginLayer(ToScriptStateForMainWorld(GetDocument().GetFrame()),
                           BeginLayerOptions::Create(), exception_state);
@@ -2078,8 +2072,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       CanvasContextCreationAttributesCore::WillReadFrequently::kFalse);
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
   DrawSomething();
   NonThrowableExceptionState exception_state;
@@ -3415,8 +3408,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   gfx::Size size(300, 300);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
   EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
@@ -3585,8 +3577,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  Context2D()->SetCanvas2DResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
   CanvasRenderingContext2D* context = Context2D();
 
   // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
