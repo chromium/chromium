@@ -1041,7 +1041,8 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
     const SharedImageInfo& si_info,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    scoped_refptr<SharedImageFactoryRef> shared_image_factory) {
   auto format = si_info.format;
   auto size = si_info.size;
   auto usage = si_info.usage;
@@ -1059,9 +1060,9 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, si_info, std::move(shm_backing),
-      /*shared_image_factory=*/nullptr, gpu_backing_factory->GetWeakPtr(),
-      std::move(copy_manager), std::move(buffer_usage)));
+      mailbox, si_info, std::move(shm_backing), std::move(shared_image_factory),
+      gpu_backing_factory->GetWeakPtr(), std::move(copy_manager),
+      std::move(buffer_usage)));
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -1383,8 +1384,12 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   }
 
   auto* gpu_backing = GetGpuBacking();
-  if (!gpu_backing ||
-      !copy_manager_->CopyImage(gpu_backing, shm_element.GetBacking())) {
+  if (!gpu_backing) {
+    LOG(ERROR) << "Failed to copy from GPU backing to shared memory: no GPU "
+                  "backing with latest content";
+    return false;
+  }
+  if (!copy_manager_->CopyImage(gpu_backing, shm_element.GetBacking())) {
     LOG(ERROR) << "Failed to copy from GPU backing (" << gpu_backing->GetName()
                << ") to shared memory";
     return false;
@@ -1412,8 +1417,8 @@ void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
 
   auto* gpu_backing = GetGpuBacking();
   if (!gpu_backing) {
-    LOG(ERROR) << "Failed to copy from GPU backing (" << gpu_backing->GetName()
-               << ") to shared memory";
+    LOG(ERROR) << "Failed to copy from GPU backing to shared memory: no GPU "
+                  "backing with latest content";
     std::move(callback).Run(false);
     return;
   }
@@ -1982,11 +1987,12 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
 
 SharedImageBacking* CompoundImageBacking::GetGpuBacking() {
   for (auto& element : elements_) {
-    if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+    if (!element.access_streams.Has(SharedImageAccessStream::kMemory) &&
+        HasLatestContent(element) && element.GetBacking()) {
       return element.GetBacking();
     }
   }
-  LOG(ERROR) << "No GPU backing found.";
+  LOG(ERROR) << "No GPU backing with latest content found.";
   return nullptr;
 }
 
