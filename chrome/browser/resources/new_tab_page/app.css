@@ -64,10 +64,8 @@
 }
 
 /**
- * Maintain a larger width if the secondary side can be shown and was at any
- * point available to be shown.
+ * Use a larger width if the secondary side can be shown.
  */
-:host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
 :host([realbox-can-show-secondary-side]) {
   #rhsContent {
     --ntp-search-box-width: 746px;

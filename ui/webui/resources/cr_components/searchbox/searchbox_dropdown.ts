@@ -55,14 +55,6 @@ export class SearchboxDropdownElement extends CrLitElement {
        */
       canShowSecondarySide: {type: Boolean},
 
-      /**
-       * Whether the secondary side was at any point available to be shown.
-       */
-      hadSecondarySide: {
-        type: Boolean,
-        notify: true,
-      },
-
       /*
        * Whether the secondary side is currently available to be shown.
        */
@@ -111,7 +103,6 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   accessor canShowSecondarySide: boolean = false;
-  accessor hadSecondarySide: boolean = false;
   accessor hasSecondarySide: boolean = false;
   accessor hasEmptyInput: boolean = false;
   accessor result: AutocompleteResult|null = null;
@@ -303,12 +294,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   private computeHasSecondarySide_(): boolean {
-    const hasSecondarySide =
-        !!this.groupIdsForSideType_(SideType.kSecondary).length;
-    if (!this.hadSecondarySide) {
-      this.hadSecondarySide = hasSecondarySide;
-    }
-    return hasSecondarySide;
+    return !!this.groupIdsForSideType_(SideType.kSecondary).length;
   }
 
   private computeHasEmptyInput_(): boolean {

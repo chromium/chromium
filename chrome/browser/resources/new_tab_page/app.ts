@@ -210,16 +210,6 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      /**
-       * Whether the searchbox secondary side was at any point available to
-       * be shown.
-       */
-      realboxHadSecondarySide: {
-        type: Boolean,
-        reflect: true,
-        notify: true,
-      },
-
       composeButtonEnabled: {type: Boolean},
       composeboxEnabled: {type: Boolean},
 
@@ -382,7 +372,6 @@ export class AppElement extends AppElementBase {
 
   accessor hasVoiceSearchError = false;
   accessor realboxCanShowSecondarySide: boolean = false;
-  accessor realboxHadSecondarySide: boolean = false;
   accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   accessor composeboxEnabled: boolean =
@@ -1696,11 +1685,6 @@ export class AppElement extends AppElementBase {
 
   protected showThemeAttribution_(): boolean {
     return !!this.theme_?.backgroundImage?.attributionUrl;
-  }
-
-  protected onRealboxHadSecondarySideChanged_(
-      e: CustomEvent<{value: boolean}>) {
-    this.realboxHadSecondarySide = e.detail.value;
   }
 
   protected onSearchboxContainerFocusin_(e: FocusEvent) {
