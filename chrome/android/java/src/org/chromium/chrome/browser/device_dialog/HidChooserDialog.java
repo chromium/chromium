@@ -184,7 +184,10 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         HidManager hidManager = delegate != null ? delegate.getHidManager() : null;
-        if (hidManager != null && !hidManager.canEnumerateDevices()) {
+        if (hidManager == null) {
+            return null;
+        }
+        if (!hidManager.canEnumerateDevices()) {
             showSystemPermissionExplanationDialog(windowAndroid);
             return null;
         }
