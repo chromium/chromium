@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -45,27 +46,16 @@ constexpr char kBackgroundTaskStartedEvent[] =
 constexpr char kBackgroundTaskFinalizedEvent[] =
     "ActorTaskBackgroundWorker::FinalizeBackgroundTask";
 
-// Fake delegate exposing settable task state to the worker. Like
-// `ActorTask`, it only returns controlled WebStates that are still alive.
+// Fake delegate exposing settable task state to the worker.
 class FakeTaskStateDelegate
     : public ActorTaskBackgroundWorker::TaskStateDelegate {
  public:
-  std::vector<web::WebState*> GetControlledWebStates() override {
-    std::vector<web::WebState*> live_web_states;
-    for (const base::WeakPtr<web::WebState>& web_state : web_states) {
-      if (web_state) {
-        live_web_states.push_back(web_state.get());
-      }
-    }
-    return live_web_states;
-  }
   ActorTaskState GetTaskState() const override { return state; }
   const std::string& GetTaskTitle() const override { return title; }
   const std::string& GetLastTaskUpdate() const override {
     return last_task_update;
   }
 
-  std::vector<base::WeakPtr<web::WebState>> web_states;
   ActorTaskState state = ActorTaskState::kInit;
   std::string title = "Test Task";
   std::string last_task_update;
@@ -113,7 +103,8 @@ int CountHeartbeatPingFailures(AggregatedJournal& journal) {
 
 }  // namespace
 
-// Tests `ActorTaskBackgroundWorker` against a fake delegate. Skipped when
+// Tests `ActorTaskBackgroundWorker` against a fake delegate. Every scene
+// is foreground active unless a test says otherwise. Skipped when
 // backgrounding is unavailable in the current configuration.
 class ActorTaskBackgroundWorkerTest : public PlatformTest {
  protected:
@@ -130,9 +121,33 @@ class ActorTaskBackgroundWorkerTest : public PlatformTest {
         &delegate_, ActorTaskId(1), journal_);
   }
 
-  // Adds `web_state` to the delegate's controlled WebStates.
+  void TearDown() override {
+    worker_.reset();
+    PlatformTest::TearDown();
+  }
+
+  // Adds `web_state` to the worker's observed WebStates.
   void AddControlledWebState(web::WebState* web_state) {
-    delegate_.web_states.push_back(web_state->GetWeakPtr());
+    worker_->OnWebStateAdded(web_state);
+  }
+
+  // Creates a visible fake WebState with a main frame, owned by the fixture
+  // until `DestroyWebState()` or tear-down.
+  web::FakeWebState* CreateShownWebState() {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    AttachMainWebFrame(web_state.get());
+    web_state->WasShown();
+    web::FakeWebState* web_state_ptr = web_state.get();
+    owned_web_states_.push_back(std::move(web_state));
+    return web_state_ptr;
+  }
+
+  // Destroys `web_state`, which must come from `CreateShownWebState()`.
+  void DestroyWebState(web::WebState* web_state) {
+    std::erase_if(owned_web_states_,
+                  [web_state](const std::unique_ptr<web::FakeWebState>& owned) {
+                    return owned.get() == web_state;
+                  });
   }
 
   // Sets `task_update` as the last update and transitions the task to acting.
@@ -153,6 +168,13 @@ class ActorTaskBackgroundWorkerTest : public PlatformTest {
     return main_frame_ptr;
   }
 
+  // Returns the main frame attached to `web_state`.
+  web::FakeWebFrame* MainWebFrame(web::WebState* web_state) {
+    return static_cast<web::FakeWebFrame*>(
+        web_state->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+            ->GetMainWebFrame());
+  }
+
   // Returns whether the heartbeat timer is running.
   bool IsHeartbeatTimerRunning() const {
     return worker_->heartbeat_timer_.IsRunning();
@@ -169,6 +191,7 @@ class ActorTaskBackgroundWorkerTest : public PlatformTest {
   AggregatedJournal journal_;
   FakeTaskStateDelegate delegate_;
   std::unique_ptr<ActorTaskBackgroundWorker> worker_;
+  std::vector<std::unique_ptr<web::FakeWebState>> owned_web_states_;
 };
 
 #pragma mark - Background task context
@@ -318,7 +341,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, InertWhenBackgroundingDisabled) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
@@ -641,7 +663,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStartsOnWebStateAdded) {
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
   StartActing("Starting actuation");
@@ -675,7 +696,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStartsOnActingState) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing("Act without backgrounding");
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
@@ -700,7 +720,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatPersistsDuringReflecting) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing("Executing tool");
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -734,8 +753,10 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStartsAndStopsOnTerminalState) {
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
   // Events received while terminal must not restart it.
-  worker_->OnWebStateAdded();
+  worker_->OnWebStateAdded(web_state.get());
   worker_->OnStateChanged(ActorTaskState::kActing);
+  web_state->WasHidden();
+  worker_->SetAllScenesForegroundActive(false);
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 }
 
@@ -746,7 +767,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStopsOnStopped) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -771,7 +791,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatPersistsDuringPause) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -802,7 +821,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatPersistsDuringWaitingOnUser) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -823,28 +841,23 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatPersistsDuringWaitingOnUser) {
   EXPECT_EQ(2u, main_frame->GetJavaScriptCallHistory().size());
 }
 
-// Tests that losing all controlled WebStates stops the heartbeat timer, both
-// on the next ping and on `OnWebStateDestroyed()`, and that adding a WebState
-// restarts it.
+// Tests that destroying the last controlled WebState stops the heartbeat
+// timer immediately, through the worker's own observation, and that
+// adding a WebState restarts it.
 TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStopsWhenAllWebStatesDestroyed) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
   task_environment_.FastForwardBy(base::Milliseconds(400));
   EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
 
-  // Destroy the WebState.
+  // Destroying the WebState stops the timer immediately.
   web_state.reset();
-
-  // On the next interval, `SendHeartbeatPing()` detects that no valid
-  // WebStates remain and stops the timer.
-  task_environment_.FastForwardBy(base::Milliseconds(400));
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
   // Adding a new WebState while the task is actuating resumes the heartbeat
@@ -852,12 +865,9 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStopsWhenAllWebStatesDestroyed) {
   auto web_state2 = std::make_unique<web::FakeWebState>();
   AttachMainWebFrame(web_state2.get());
   AddControlledWebState(web_state2.get());
-  worker_->OnWebStateAdded();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
-  // Destroying the last WebState stops the timer immediately.
   web_state2.reset();
-  worker_->OnWebStateDestroyed();
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 }
 
@@ -871,7 +881,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatPingsFireAndForget) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -896,7 +905,6 @@ TEST_F(ActorTaskBackgroundWorkerTest,
   main_frame->AddResultForExecutedJs(&success_result, u";");
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -918,7 +926,6 @@ TEST_F(ActorTaskBackgroundWorkerTest,
   AttachMainWebFrame(web_state.get());
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 
   StartActing("Act with backgrounding disabled");
@@ -942,7 +949,6 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatUsesConfiguredInterval) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state.get());
-  worker_->OnWebStateAdded();
   StartActing();
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
@@ -968,9 +974,7 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatMultipleWebStates) {
   ASSERT_TRUE(main_frame2);
 
   AddControlledWebState(web_state1.get());
-  worker_->OnWebStateAdded();
   AddControlledWebState(web_state2.get());
-  worker_->OnWebStateAdded();
 
   StartActing("Act across multiple WebStates");
   EXPECT_TRUE(IsHeartbeatTimerRunning());
@@ -990,11 +994,140 @@ TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatMultipleWebStates) {
   EXPECT_TRUE(IsHeartbeatTimerRunning());
   EXPECT_EQ(2u, main_frame2->GetJavaScriptCallHistory().size());
 
-  // Destroy the second WebState.
+  // Destroying the second WebState stops the timer immediately.
   web_state2.reset();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+}
 
-  // On the next interval, all WebStates have expired, so timer stops.
+#pragma mark - Heartbeat visibility policy
+
+// Tests that no heartbeat runs while every controlled WebState is visible and
+// every scene is foreground active.
+TEST_F(ActorTaskBackgroundWorkerTest, NoHeartbeatWhenAllWebStatesShown) {
+  web::FakeWebState* web_state = CreateShownWebState();
+
+  AddControlledWebState(web_state);
+  StartActing();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(0u, MainWebFrame(web_state)->GetJavaScriptCallHistory().size());
+}
+
+// Tests that the heartbeat follows the scenes for a visible WebState: it
+// starts once a scene is no longer foreground active, since the WebState may
+// be in it, and stops once every scene is foreground active again.
+TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatFollowsScenesForegroundActive) {
+  web::FakeWebState* web_state = CreateShownWebState();
+  web::FakeWebFrame* main_frame = MainWebFrame(web_state);
+  AddControlledWebState(web_state);
+  StartActing();
+  ASSERT_FALSE(IsHeartbeatTimerRunning());
+
+  worker_->SetAllScenesForegroundActive(false);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
   task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+
+  worker_->SetAllScenesForegroundActive(true);
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+}
+
+// Tests that a scene that is not foreground active does not run the heartbeat
+// on its own: a controlled WebState is needed for pings to make sense.
+TEST_F(ActorTaskBackgroundWorkerTest, NoHeartbeatWithoutControlledWebStates) {
+  worker_->SetAllScenesForegroundActive(false);
+  StartActing();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  // The heartbeat starts as soon as a WebState is controlled.
+  web::FakeWebState* web_state = CreateShownWebState();
+  AddControlledWebState(web_state);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+}
+
+// Tests that the heartbeat follows the WebState's own visibility while every
+// scene is foreground active, through the worker's observation.
+TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatFollowsWebStateVisibility) {
+  web::FakeWebState* web_state = CreateShownWebState();
+  web::FakeWebFrame* main_frame = MainWebFrame(web_state);
+  AddControlledWebState(web_state);
+  StartActing();
+  ASSERT_FALSE(IsHeartbeatTimerRunning());
+
+  // Hiding the tab (e.g. switching to another tab) starts the heartbeat.
+  web_state->WasHidden();
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+
+  // Showing it again stops the heartbeat.
+  web_state->WasShown();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+}
+
+// Tests that a single hidden WebState is enough to run the heartbeat, which
+// pings every controlled WebState, shown or not.
+TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatRunsWhileAnyWebStateHidden) {
+  web::FakeWebState* shown_web_state = CreateShownWebState();
+  web::FakeWebState* hidden_web_state = CreateShownWebState();
+  hidden_web_state->WasHidden();
+
+  AddControlledWebState(shown_web_state);
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+  AddControlledWebState(hidden_web_state);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(1u,
+            MainWebFrame(shown_web_state)->GetJavaScriptCallHistory().size());
+  EXPECT_EQ(1u,
+            MainWebFrame(hidden_web_state)->GetJavaScriptCallHistory().size());
+
+  // Showing the hidden tab leaves every tab shown, so the heartbeat stops.
+  hidden_web_state->WasShown();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+}
+
+// Tests that a ping re-evaluates the policy: the heartbeat stops on its next
+// tick once the task is terminal, even without a notification.
+TEST_F(ActorTaskBackgroundWorkerTest, HeartbeatStopsOnTickOnceTerminal) {
+  web::FakeWebState* web_state = CreateShownWebState();
+  AddControlledWebState(web_state);
+  worker_->SetAllScenesForegroundActive(false);
+  StartActing();
+  ASSERT_TRUE(IsHeartbeatTimerRunning());
+
+  // Finish the task without notifying the worker.
+  delegate_.state = ActorTaskState::kFinished;
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+  EXPECT_EQ(0u, MainWebFrame(web_state)->GetJavaScriptCallHistory().size());
+}
+
+// Tests that a destroyed WebState no longer counts: destroying the only hidden
+// WebState stops the heartbeat while a shown one remains, without crashing.
+TEST_F(ActorTaskBackgroundWorkerTest, DestroyedWebStateNoLongerRunsHeartbeat) {
+  web::FakeWebState* shown_web_state = CreateShownWebState();
+  auto hidden_web_state = std::make_unique<web::FakeWebState>();
+  AttachMainWebFrame(hidden_web_state.get());
+  AddControlledWebState(shown_web_state);
+  AddControlledWebState(hidden_web_state.get());
+  StartActing();
+  ASSERT_TRUE(IsHeartbeatTimerRunning());
+
+  hidden_web_state.reset();
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  // Hiding the remaining tab restarts it, and destroying it stops it.
+  shown_web_state->WasHidden();
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+  DestroyWebState(shown_web_state);
   EXPECT_FALSE(IsHeartbeatTimerRunning());
 }
 

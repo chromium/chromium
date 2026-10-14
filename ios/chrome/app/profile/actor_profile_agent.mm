@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 @implementation ActorProfileAgent {
   // The profile's actor service, resolved on first use.
@@ -32,6 +33,25 @@
   [super setProfileState:profileState];
   _actorService.reset();
   [[self backgroundTaskAppAgent] addTaskProvider:self];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+  actor::ActorService* service = [self actorService];
+  if (!service) {
+    return;
+  }
+
+  const BOOL allScenesForegroundActive = [self allScenesForegroundActive];
+  for (const base::WeakPtr<actor::ActorTaskBackgroundWorker>& worker :
+       service->GetWeakTaskBackgroundWorkers()) {
+    if (worker) {
+      worker->SetAllScenesForegroundActive(allScenesForegroundActive);
+    }
+  }
 }
 
 #pragma mark - BackgroundContinuedProcessingTaskProvider
@@ -82,6 +102,21 @@
   }
 
   return service;
+}
+
+// Returns whether every scene of the profile is foreground active.
+//
+// `SceneActivationLevelUnattached` and `SceneActivationLevelDisconnected`
+// scenes have no live `Browser` or `WebState`s, and are therefore ignored.
+- (BOOL)allScenesForegroundActive {
+  for (SceneState* sceneState in self.profileState.connectedScenes) {
+    const SceneActivationLevel level = sceneState.activationLevel;
+    if (level == SceneActivationLevelBackground ||
+        level == SceneActivationLevelForegroundInactive) {
+      return NO;
+    }
+  }
+  return YES;
 }
 
 // Returns the request for `worker`'s task. The started context is handed

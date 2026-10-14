@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/actor/core/task_source_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
@@ -28,8 +29,13 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -150,8 +156,34 @@ class ActorProfileAgentTest : public PlatformTest {
     return nullptr;
   }
 
+  // Creates a visible fake WebState with a main frame, makes it controlled by
+  // the task identified by `task_id`, and returns its main frame to observe
+  // heartbeat pings. The fixture owns the WebState.
+  web::FakeWebFrame* AddShownControlledWebState(actor::ActorTaskId task_id) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
+    web::FakeWebFrame* main_frame_ptr = main_frame.get();
+    frames_manager->AddWebFrame(std::move(main_frame));
+    web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                   std::move(frames_manager));
+    web_state->WasShown();
+    service()->AddControlledWebState(task_id, web_state.get());
+    owned_web_states_.push_back(std::move(web_state));
+    return main_frame_ptr;
+  }
+
+  // Connects a scene at `level` to the profile state and returns it.
+  SceneState* ConnectScene(SceneActivationLevel level) {
+    SceneState* scene_state = [[SceneState alloc] init];
+    scene_state.activationLevel = level;
+    [profile_state_ sceneStateConnected:scene_state];
+    return scene_state;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   id mock_app_state_;
@@ -160,6 +192,7 @@ class ActorProfileAgentTest : public PlatformTest {
   ActorProfileAgent* agent_;
   FakeActorProfileAgentInterventionDelegate* intervention_delegate_ =
       [[FakeActorProfileAgentInterventionDelegate alloc] init];
+  std::vector<std::unique_ptr<web::FakeWebState>> owned_web_states_;
 };
 
 // Fixture for tests that need background continued processing to be available;
@@ -383,4 +416,77 @@ TEST_F(ActorProfileAgentBackgroundingTest,
 TEST_F(ActorProfileAgentTest, DoesNotObserveForeground) {
   EXPECT_FALSE([agent_
       respondsToSelector:@selector(backgroundProcessingBecameUnnecessary)]);
+}
+
+// Tests that scene activation level changes reach the task workers: the
+// heartbeat of a task controlling a shown tab starts as soon as the profile's
+// only scene leaves the foreground active level, keeps running through
+// further levels, and stops when the scene returns to it.
+TEST_F(ActorProfileAgentBackgroundingTest,
+       HeartbeatFollowsSceneActivationLevel) {
+  [profile_state_ addAgent:agent_];
+  SceneState* scene_state = ConnectScene(SceneActivationLevelForegroundActive);
+  actor::ActorTaskId task_id = CreateTask("Task");
+  web::FakeWebFrame* main_frame = AddShownControlledWebState(task_id);
+
+  // Everything is shown, so no heartbeat runs.
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(0u, main_frame->GetJavaScriptCallHistory().size());
+
+  scene_state.activationLevel = SceneActivationLevelForegroundInactive;
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+
+  scene_state.activationLevel = SceneActivationLevelBackground;
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(2u, main_frame->GetJavaScriptCallHistory().size());
+
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(2u, main_frame->GetJavaScriptCallHistory().size());
+}
+
+// Tests that with several scenes, the heartbeat runs while any scene of the
+// profile is not foreground active, whichever scene holds the controlled
+// tab, and stops once the other scene is foreground active again or gone.
+TEST_F(ActorProfileAgentBackgroundingTest,
+       HeartbeatRunsWhileAnySceneIsNotForegroundActive) {
+  [profile_state_ addAgent:agent_];
+  ConnectScene(SceneActivationLevelForegroundActive);
+  SceneState* other_scene_state =
+      ConnectScene(SceneActivationLevelForegroundActive);
+  actor::ActorTaskId task_id = CreateTask("Task");
+  web::FakeWebFrame* main_frame = AddShownControlledWebState(task_id);
+
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(0u, main_frame->GetJavaScriptCallHistory().size());
+
+  other_scene_state.activationLevel = SceneActivationLevelBackground;
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+
+  other_scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(1u, main_frame->GetJavaScriptCallHistory().size());
+
+  // A scene that goes away while in the background no longer counts.
+  other_scene_state.activationLevel = SceneActivationLevelBackground;
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(2u, main_frame->GetJavaScriptCallHistory().size());
+  other_scene_state.activationLevel = SceneActivationLevelDisconnected;
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(2u, main_frame->GetJavaScriptCallHistory().size());
+}
+
+// Tests that a scene transition without an actor service is a no-op that does
+// not create the service.
+TEST_F(ActorProfileAgentTest, SceneTransitionWithoutServiceDoesNotCreateIt) {
+  [profile_state_ addAgent:agent_];
+  SceneState* scene_state = [[SceneState alloc] init];
+
+  [agent_ sceneState:scene_state
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  EXPECT_EQ(nullptr,
+            actor::ActorServiceFactory::GetForProfileIfExists(profile_.get()));
 }

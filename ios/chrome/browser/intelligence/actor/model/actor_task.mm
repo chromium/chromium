@@ -259,7 +259,7 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
       tab_helper->SetControlState(ControlStateForTaskState(state_));
     }
 
-    background_worker_->OnWebStateAdded();
+    background_worker_->OnWebStateAdded(web_state);
 
     const ActorTaskId task_id = task_id_;
     const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
@@ -499,8 +499,6 @@ void ActorTask::WebStateDestroyed(web::WebState* web_state) {
     tab_helper->SetControlState(ActorControlState::kInactive);
   }
   PruneDestroyedWebStates(web_state);
-
-  background_worker_->OnWebStateDestroyed();
 }
 
 #pragma mark - Private
@@ -668,16 +666,6 @@ void ActorTask::OnNavigationBlocked(mojom::ActionResultCode code) {
 }
 
 #pragma mark - ActorTaskBackgroundWorker::TaskStateDelegate
-
-std::vector<web::WebState*> ActorTask::GetControlledWebStates() {
-  PruneDestroyedWebStates();
-  std::vector<web::WebState*> web_states;
-  for (const base::WeakPtr<web::WebState>& web_state_weak :
-       controlled_web_states_) {
-    web_states.push_back(web_state_weak.get());
-  }
-  return web_states;
-}
 
 ActorTaskState ActorTask::GetTaskState() const {
   return state_;

@@ -234,7 +234,6 @@ class ActorTask : public web::WebStateObserver,
                          web::WebStateID web_state_id) override;
 
   // ActorTaskBackgroundWorker::TaskStateDelegate.
-  std::vector<web::WebState*> GetControlledWebStates() override;
   ActorTaskState GetTaskState() const override;
   const std::string& GetTaskTitle() const override;
   const std::string& GetLastTaskUpdate() const override;
@@ -242,9 +241,9 @@ class ActorTask : public web::WebStateObserver,
   // Returns the Browser associated with the given `window_id`.
   Browser* GetBrowserForWindowId(int32_t window_id) const;
 
-  // Prunes destroyed or null WebStates from `controlled_web_states_`. If
-  // `destroying_web_state` is provided, also prunes the matching entry.
-  void PruneDestroyedWebStates(web::WebState* destroying_web_state = nullptr);
+  // Prunes destroyed or null WebStates from `controlled_web_states_`, including
+  // the matching `destroying_web_state`.
+  void PruneDestroyedWebStates(web::WebState* destroying_web_state);
 
   // Handles an implicit navigation on a controlled WebState being
   // blocked by origin gating policy.

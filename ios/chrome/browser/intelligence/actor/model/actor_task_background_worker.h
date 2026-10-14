@@ -5,16 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_BACKGROUND_WORKER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_BACKGROUND_WORKER_H_
 
+#import <Foundation/Foundation.h>
+
 #import <string>
-#import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_multi_source_observation.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/web/public/web_state_observer.h"
 
 @class BackgroundContinuedProcessingTaskContext;
 @class NSError;
@@ -34,18 +37,16 @@ class AggregatedJournal;
 
 // Owns the background work of an `ActorTask`: the background continued
 // processing task context and the JavaScript heartbeat that keeps controlled
-// WebContent processes alive. Owned by the task, which forwards its events.
-class ActorTaskBackgroundWorker {
+// WebContent processes alive when they are hidden. Owned by the task, which
+// forwards its events.
+class ActorTaskBackgroundWorker : public web::WebStateObserver {
  public:
   // Delegate interface through which the worker reads the owning
-  // `ActorTask`'s current state: its lifecycle state, controlled WebStates and
-  // latest task update.
+  // `ActorTask`'s current state: its lifecycle state, title and latest task
+  // update.
   class TaskStateDelegate {
    public:
     virtual ~TaskStateDelegate() = default;
-
-    // Returns the live controlled WebStates.
-    virtual std::vector<web::WebState*> GetControlledWebStates() = 0;
 
     // Returns the task's current state.
     virtual ActorTaskState GetTaskState() const = 0;
@@ -61,7 +62,7 @@ class ActorTaskBackgroundWorker {
   ActorTaskBackgroundWorker(TaskStateDelegate* delegate,
                             ActorTaskId task_id,
                             AggregatedJournal& journal);
-  ~ActorTaskBackgroundWorker();
+  ~ActorTaskBackgroundWorker() override;
 
   ActorTaskBackgroundWorker(const ActorTaskBackgroundWorker&) = delete;
   ActorTaskBackgroundWorker& operator=(const ActorTaskBackgroundWorker&) =
@@ -86,15 +87,16 @@ class ActorTaskBackgroundWorker {
   // subtitle. No-op if `GeminiActorBackgrounding` is disabled.
   void SetContext(BackgroundContinuedProcessingTaskContext* context);
 
-  // Called when a WebState is added to the task's controlled WebStates.
-  void OnWebStateAdded();
+  // Called when `web_state` is added to the task's controlled WebStates. The
+  // worker observes it until it is destroyed.
+  void OnWebStateAdded(web::WebState* web_state);
 
-  // Called when a controlled WebState is destroyed.
-  void OnWebStateDestroyed();
+  // Sets whether every scene of the profile is foreground active.
+  void SetAllScenesForegroundActive(bool all_scenes_foreground_active);
 
-  // Called when the task's state changes to `new_state`. Acting refreshes the
-  // subtitle and starts the heartbeat; terminal states stop it; non-terminal
-  // wait or pause states complete the background task with success.
+  // Called when the task's state changes to `new_state`. Re-evaluates the
+  // heartbeat; acting refreshes the subtitle; non-terminal wait or pause states
+  // complete the background task with success.
   void OnStateChanged(ActorTaskState new_state);
 
   // Called when the task is about to execute a tool.
@@ -102,6 +104,11 @@ class ActorTaskBackgroundWorker {
 
   // Called when the task is stopped, reporting whether it succeeded.
   void OnStopped(bool success);
+
+  // web::WebStateObserver:
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
   friend class ActorTaskBackgroundWorkerTest;
@@ -121,17 +128,16 @@ class ActorTaskBackgroundWorker {
   // duration.
   void FinalizeBackgroundTask(ActorBackgroundTaskEndReason reason);
 
-  // Starts the JavaScript heartbeat ping timer if backgrounding is enabled and
-  // the timer is not already running.
-  // TODO(crbug.com/561253684): Ensure we only start the heartbeat timer when
-  // the app is backgrounded.
-  void StartHeartbeatTimer();
+  // Returns whether the WebContent process keep-alive heartbeat should run.
+  bool ShouldRunHeartbeat();
 
-  // Stops the JavaScript heartbeat ping timer.
-  void StopHeartbeatTimer();
+  // Starts the JavaScript heartbeat ping timer if the heartbeat should run,
+  // and stops it otherwise.
+  void UpdateHeartbeatTimer();
 
   // Sends a lightweight JavaScript ping to all controlled WebStates to keep
-  // their out-of-process WebContent processes alive.
+  // their out-of-process WebContent processes alive. Stops the timer once the
+  // heartbeat should no longer run.
   void SendHeartbeatPing();
 
   // Handles completion or failure of a JavaScript heartbeat ping for
@@ -149,6 +155,9 @@ class ActorTaskBackgroundWorker {
   // The journal used for logging heartbeat failures.
   const raw_ref<AggregatedJournal> journal_;
 
+  // Whether all scenes of the profile are currently active in the foreground.
+  bool all_scenes_foreground_active_ = true;
+
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
       nil;
@@ -158,6 +167,10 @@ class ActorTaskBackgroundWorker {
 
   // Repeating timer for sending JavaScript heartbeat pings.
   base::RepeatingTimer heartbeat_timer_;
+
+  // Observations of the controlled WebStates, for visibility changes.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 
   base::WeakPtrFactory<ActorTaskBackgroundWorker> weak_ptr_factory_{this};
 };
