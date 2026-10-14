@@ -13325,15 +13325,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kUserMediaElementLegacy)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"read-anything-readability-select-text",
-     flag_descriptions::kReadAnythingReadabilitySelectTextName,
-     flag_descriptions::kReadAnythingReadabilitySelectTextDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadAnythingReadabilitySelectText)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-web-signin-loading-dialog",
      flag_descriptions::kEnableWebSigninLoadingDialogName,

@@ -6989,11 +6989,6 @@ inline constexpr char kReadAnythingDistillerRefactorDescription[] =
     "Optimizes how web page content is prepared and processed for Reading "
     "Mode.";
 
-inline constexpr char kReadAnythingReadabilitySelectTextName[] =
-    "Reading Mode Select Text with Readability";
-inline constexpr char kReadAnythingReadabilitySelectTextDescription[] =
-    "Enables the select text feature for readability distillation";
-
 inline constexpr char kReadAnythingWithReadabilityName[] =
     "Reading Mode Experimental Webpage Distilation";
 inline constexpr char kReadAnythingWithReadabilityDescription[] =
