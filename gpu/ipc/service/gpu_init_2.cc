@@ -409,79 +409,11 @@ bool GpuInit2::InitializeAndStartSandbox(
     return false;
   }
 
-  // Collect GPU process info
-  if (!state.gl_disabled) {
-    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
-      VLOG(1) << "gpu::CollectGpuExtraInfo failed";
-      return false;
-    }
+  if (!FinalizeGLInitialization(state)) {
+    return false;
   }
 
-  if (!state.gl_disabled) {
-    if (!gpu_feature_info_.disabled_extensions.empty()) {
-      gl::init::SetDisabledExtensionsPlatform(
-          gpu_feature_info_.disabled_extensions);
-    }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
-            state.gl_display)) {
-      VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
-      return false;
-    }
-    default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
-    if (!default_offscreen_surface_) {
-      VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
-      return false;
-    }
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Driver may create a compatibility profile context when collect graphics
-  // information on Linux platform. Try to collect graphics information
-  // based on core profile context after disabling platform extensions.
-  if (!state.gl_disabled && !gl_use_swiftshader_) {
-    if (!CollectGraphicsInfo(&gpu_info_)) {
-      return false;
-    }
-    SetKeysForCrashLogging(gpu_info_);
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, nullptr);
-    gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
-        command_line, gpu_feature_info_,
-        gpu_preferences_.disable_software_rasterizer, false);
-    if (gl_use_swiftshader_) {
-      VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
-              << "on Linux";
-      return false;
-    }
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_OZONE)
-  gpu_init_internal::QueryNativePixmapSupport(gpu_feature_info_);
-#endif  // BUILDFLAG(IS_OZONE)
-
-  if (gl_use_swiftshader_) {
-    AdjustInfoToSwiftShader();
-  }
-  if (state.gl_disabled) {
-    // GL is disabled in display compositor mode, typically due to repeated GPU
-    // crashes. Disable WebNN to ensure stability in this state.
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
-        kGpuFeatureStatusDisabled;
-  }
-
-  if (kGpuFeatureStatusEnabled !=
-      gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE]) {
-    gpu_preferences_.disable_accelerated_video_decode = true;
-  }
-
-  if (kGpuFeatureStatusEnabled !=
-      gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE]) {
-    gpu_preferences_.disable_accelerated_video_encode = true;
-  }
+  ApplyFeatureStatusToPreferences();
 
   FinalizeWatchdog(state);
 
@@ -491,29 +423,8 @@ bool GpuInit2::InitializeAndStartSandbox(
 
   InitializeDawnProcs();
 
-  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
-    if (!InitializeDawn()) {
-      auto& graphite_feature =
-          gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE];
-#if BUILDFLAG(IS_ANDROID)
-      // On Android it's expected most users don't support Vulkan so dawn
-      // initialization will fail. Immediately fallback to Ganesh/GL for those
-      // users to avoid regressing startup time.
-      if (graphite_feature == kGpuFeatureStatusEnabled) {
-        graphite_feature = kGpuFeatureStatusDisabled;
-      }
-#else
-      if (graphite_feature == kGpuFeatureStatusEnabled) {
-        return false;
-      }
-      // SkiaGraphite is disabled by software_rendering_list.json
-#endif  // BUILDFLAG(IS_ANDROID)
-      gpu_preferences_.gr_context_type = GrContextType::kGL;
-    }
-  } else if (gpu_preferences_.gr_context_type ==
-             GrContextType::kGraphiteVulkan) {
-    // Vulkan was already initialized earlier in the function.
-    CHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE));
+  if (!InitializeSkiaBackend()) {
+    return false;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1107,6 +1018,83 @@ bool GpuInit2::InitializeVulkanIfNeeded() {
   return true;
 }
 
+bool GpuInit2::FinalizeGLInitialization(InitState& state) {
+  if (!state.gl_disabled) {
+    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
+      VLOG(1) << "gpu::CollectGpuExtraInfo failed";
+      return false;
+    }
+
+    if (!gpu_feature_info_.disabled_extensions.empty()) {
+      gl::init::SetDisabledExtensionsPlatform(
+          gpu_feature_info_.disabled_extensions);
+    }
+    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
+            state.gl_display)) {
+      VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
+      return false;
+    }
+    default_offscreen_surface_ =
+        gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
+    if (!default_offscreen_surface_) {
+      VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
+      return false;
+    }
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Driver may create a compatibility profile context when collect graphics
+  // information on Linux platform. Try to collect graphics information
+  // based on core profile context after disabling platform extensions.
+  if (!state.gl_disabled && !gl_use_swiftshader_) {
+    if (!CollectGraphicsInfo(&gpu_info_)) {
+      return false;
+    }
+    SetKeysForCrashLogging(gpu_info_);
+    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
+                                              state.command_line, nullptr);
+    gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
+        state.command_line, gpu_feature_info_,
+        gpu_preferences_.disable_software_rasterizer, false);
+    if (gl_use_swiftshader_) {
+      VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
+              << "on Linux";
+      return false;
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_OZONE)
+  gpu_init_internal::QueryNativePixmapSupport(gpu_feature_info_);
+#endif  // BUILDFLAG(IS_OZONE)
+
+  if (gl_use_swiftshader_) {
+    AdjustInfoToSwiftShader();
+  }
+  if (state.gl_disabled) {
+    // GL is disabled in display compositor mode, typically due to repeated GPU
+    // crashes. Disable WebNN to ensure stability in this state.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusDisabled;
+  }
+
+  return true;
+}
+
+void GpuInit2::ApplyFeatureStatusToPreferences() {
+  if (kGpuFeatureStatusEnabled !=
+      gpu_feature_info_
+          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE]) {
+    gpu_preferences_.disable_accelerated_video_decode = true;
+  }
+
+  if (kGpuFeatureStatusEnabled !=
+      gpu_feature_info_
+          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE]) {
+    gpu_preferences_.disable_accelerated_video_encode = true;
+  }
+}
+
 void GpuInit2::FinalizeWatchdog(InitState& state) {
   bool recreate_watchdog = false;
   if (!gl_use_swiftshader_ && state.command_line->HasSwitch(switches::kUseGL)) {
@@ -1138,6 +1126,34 @@ void GpuInit2::FinalizeWatchdog(InitState& state) {
   if (recreate_watchdog) {
     state.watchdog.Create(software_rendering);
   }
+}
+
+bool GpuInit2::InitializeSkiaBackend() {
+  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
+    if (!InitializeDawn()) {
+      auto& graphite_feature =
+          gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE];
+#if BUILDFLAG(IS_ANDROID)
+      // On Android it's expected most users don't support Vulkan so dawn
+      // initialization will fail. Immediately fallback to Ganesh/GL for those
+      // users to avoid regressing startup time.
+      if (graphite_feature == kGpuFeatureStatusEnabled) {
+        graphite_feature = kGpuFeatureStatusDisabled;
+      }
+#else
+      if (graphite_feature == kGpuFeatureStatusEnabled) {
+        return false;
+      }
+      // SkiaGraphite is disabled by software_rendering_list.json
+#endif  // BUILDFLAG(IS_ANDROID)
+      gpu_preferences_.gr_context_type = GrContextType::kGL;
+    }
+  } else if (gpu_preferences_.gr_context_type ==
+             GrContextType::kGraphiteVulkan) {
+    // Vulkan was already initialized earlier in the function.
+    CHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE));
+  }
+  return true;
 }
 
 void GpuInit2::SetSkiaBackendType() {

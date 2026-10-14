@@ -102,7 +102,10 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   bool FinalizeFeaturesWithContextInfo(InitState& state);
   bool ResolveGrContextType(InitState& state);
   bool InitializeVulkanIfNeeded();
+  bool FinalizeGLInitialization(InitState& state);
+  void ApplyFeatureStatusToPreferences();
   void FinalizeWatchdog(InitState& state);
+  bool InitializeSkiaBackend();
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;
