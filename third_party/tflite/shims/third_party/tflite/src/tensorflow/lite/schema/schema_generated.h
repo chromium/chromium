@@ -9,7 +9,7 @@
 #include "third_party/tflite/buildflags.h"
 
 #if BUILDFLAG(USE_LITERT_TFLITE)
-#include "third_party/litert/src/tflite/schema/schema_generated.h"
+#include "third_party/litert/src/tflite/converter/schema/schema_generated.h"
 #else
 #include_next "tensorflow/lite/schema/schema_generated.h"
 #endif

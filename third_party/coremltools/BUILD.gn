@@ -8,6 +8,7 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("modelformat_proto") {
   visibility = [
     "//services/webnn/*",
+    "//third_party/litert:*",
     "//third_party/tflite:*",
   ]
   sources = [

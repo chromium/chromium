@@ -9,7 +9,7 @@
 #include "third_party/tflite/buildflags.h"
 
 #if BUILDFLAG(USE_LITERT_TFLITE)
-#include "third_party/litert/src/tflite/converter/stablehlo/odml_converter/passes.h"
+#include "third_party/litert/src/tflite/converter/transforms/passes.h"
 #else
 #include_next "tensorflow/compiler/mlir/lite/transforms/passes.h"
 #endif

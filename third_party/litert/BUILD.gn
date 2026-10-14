@@ -157,6 +157,17 @@ config("tflite_flags") {
     "-Wno-unused-variable",
   ]
 
+  cflags_objc = [
+    "-Wno-objc-missing-property-synthesis",
+    "-Wno-objc-property-no-attribute",
+    "-fno-objc-exceptions",
+  ]
+  cflags_objcc = [
+    "-Wno-objc-missing-property-synthesis",
+    "-Wno-objc-property-no-attribute",
+    "-fno-objc-exceptions",
+  ]
+
   defines = [
     "EIGEN_ALLOW_UNALIGNED_SCALARS",
     "FARMHASH_NO_CXX_STRING",
@@ -193,6 +204,13 @@ config("tflite_flags") {
   } else if (is_linux) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
+}
+
+config("tflite_coreml_flags") {
+  cflags_objcc = [
+    "-fobjc-exceptions",
+    "-U__EXCEPTIONS",
+  ]
 }
 
 flatbuffer("mutable_schema_litert_tflite_path") {
@@ -669,7 +687,6 @@ if (use_litert_tflite) {
       "src/tflite/kernels/bitwise_xor.cc",
       "src/tflite/kernels/broadcast_args.cc",
       "src/tflite/kernels/bucketize.cc",
-      "src/tflite/kernels/call_once.cc",
       "src/tflite/kernels/complex_support.cc",
       "src/tflite/kernels/conv3d.cc",
       "src/tflite/kernels/conv3d_transpose.cc",
@@ -700,7 +717,6 @@ if (use_litert_tflite) {
       "src/tflite/kernels/stablehlo_reduce_window.cc",
       "src/tflite/kernels/stablehlo_shift_left.cc",
       "src/tflite/kernels/unsorted_segment.cc",
-      "src/tflite/kernels/var_handle.cc",
     ]
 
     deps = [
@@ -750,40 +766,53 @@ if (use_litert_tflite) {
     ]
     public = [
       "//third_party/tflite/shims/tensorflow/lite/types/fp16.h",
-      "src/tflite/acceleration/configuration/flatbuffer_to_proto.h",
-      "src/tflite/acceleration/configuration/proto_to_flatbuffer.h",
       "src/tflite/allocation.h",
       "src/tflite/arena_planner.h",
       "src/tflite/array.h",
       "src/tflite/builtin_ops.h",
       "src/tflite/c/builtin_op_data.h",
+      "src/tflite/c/common_internal.h",
       "src/tflite/context.h",
       "src/tflite/context_util.h",
       "src/tflite/converter/allocation.h",
+      "src/tflite/converter/core/api/error_reporter.h",
       "src/tflite/converter/core/model_builder_base.h",
+      "src/tflite/converter/experimental/remat/metadata_util.h",
       "src/tflite/converter/schema/schema_generated.h",
       "src/tflite/converter/schema/schema_utils.h",
       "src/tflite/core/api/profiler.h",
+      "src/tflite/core/async/async_kernel_internal.h",
+      "src/tflite/core/async/async_signature_runner.h",
+      "src/tflite/core/async/async_subgraph.h",
       "src/tflite/core/c/c_api.h",
       "src/tflite/core/c/c_api_types.h",
       "src/tflite/core/c/common.h",
+      "src/tflite/core/c/operator.h",
       "src/tflite/core/create_op_resolver.h",
       "src/tflite/core/interpreter.h",
       "src/tflite/core/interpreter_builder.h",
       "src/tflite/core/macros.h",
       "src/tflite/core/model_builder.h",
+      "src/tflite/core/signature_runner.h",
       "src/tflite/core/subgraph.h",
+      "src/tflite/delegates/utils/simple_opaque_delegate.h",
       "src/tflite/delegates/xnnpack/xnnpack_delegate.h",
       "src/tflite/error_reporter.h",
       "src/tflite/graph_info.h",
       "src/tflite/logger.h",
+      "src/tflite/memory_planner.h",
       "src/tflite/minimal_logging.h",
       "src/tflite/model.h",
       "src/tflite/mutable_op_resolver.h",
       "src/tflite/op_resolver.h",
       "src/tflite/optional_debug_tools.h",
+      "src/tflite/profiling/memory_info.h",
       "src/tflite/profiling/profile_buffer.h",
+      "src/tflite/profiling/root_profiler.h",
+      "src/tflite/profiling/telemetry/profiler.h",
+      "src/tflite/profiling/time.h",
       "src/tflite/signature_runner.h",
+      "src/tflite/simple_memory_arena.h",
       "src/tflite/stderr_reporter.h",
       "src/tflite/string_type.h",
       "src/tflite/string_util.h",
@@ -794,7 +823,10 @@ if (use_litert_tflite) {
 
     # The shims files need to access USE_LITERT_TFLITE before completely
     # switching to use LiteRT.
-    public_deps = [ "//third_party/tflite:buildflags" ]
+    public_deps = [
+      ":tflite_kernel_common_headers",
+      "//third_party/tflite:buildflags",
+    ]
     configs += [ ":tflite_flags" ]
   }
 
@@ -1067,6 +1099,7 @@ if (use_litert_tflite) {
       "src/tflite/kernels/bidirectional_sequence_rnn.cc",
       "src/tflite/kernels/broadcast_to.cc",
       "src/tflite/kernels/builtin_op_kernels.h",
+      "src/tflite/kernels/call_once.cc",
       "src/tflite/kernels/cast.cc",
       "src/tflite/kernels/ceil.cc",
       "src/tflite/kernels/comparisons.cc",
@@ -1167,6 +1200,7 @@ if (use_litert_tflite) {
       "src/tflite/kernels/unidirectional_sequence_rnn.cc",
       "src/tflite/kernels/unique.cc",
       "src/tflite/kernels/unpack.cc",
+      "src/tflite/kernels/var_handle.cc",
       "src/tflite/kernels/where.cc",
       "src/tflite/kernels/while.cc",
       "src/tflite/kernels/zeros_like.cc",
@@ -1217,9 +1251,9 @@ if (use_litert_tflite) {
   if (!is_fuchsia) {
     tflite_static_library("tflite_op_shim") {
       sources = [
-        "src/tflite/kernels/shim/shape.cc",
-        "src/tflite/kernels/shim/tflite_op_shim.cc",
-        "src/tflite/kernels/shim/tflite_tensor_view.cc",
+        "//third_party/tflite/src/tensorflow/lite/kernels/shim/shape.cc",
+        "//third_party/tflite/src/tensorflow/lite/kernels/shim/tflite_op_shim.cc",
+        "//third_party/tflite/src/tensorflow/lite/kernels/shim/tflite_tensor_view.cc",
       ]
 
       if (is_win) {
@@ -1332,8 +1366,82 @@ if (use_litert_tflite) {
     ]
   }
 
+  if (is_ios) {
+    tflite_source_set("tflite_coreml_delegate") {
+      sources = [
+        "src/tflite/delegates/coreml/builders/activation_layer_builder.cc",
+        "src/tflite/delegates/coreml/builders/activation_layer_builder.h",
+        "src/tflite/delegates/coreml/builders/add_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/add_op_builder.h",
+        "src/tflite/delegates/coreml/builders/concatenation_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/concatenation_op_builder.h",
+        "src/tflite/delegates/coreml/builders/convolution_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/convolution_op_builder.h",
+        "src/tflite/delegates/coreml/builders/dummy_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/dummy_op_builder.h",
+        "src/tflite/delegates/coreml/builders/fully_connected_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/fully_connected_op_builder.h",
+        "src/tflite/delegates/coreml/builders/hardswish_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/hardswish_op_builder.h",
+        "src/tflite/delegates/coreml/builders/mul_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/mul_op_builder.h",
+        "src/tflite/delegates/coreml/builders/op_builder.cc",
+        "src/tflite/delegates/coreml/builders/op_builder.h",
+        "src/tflite/delegates/coreml/builders/op_factory.h",
+        "src/tflite/delegates/coreml/builders/op_validator.h",
+        "src/tflite/delegates/coreml/builders/pad_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/pad_op_builder.h",
+        "src/tflite/delegates/coreml/builders/pooling_layer_builder.cc",
+        "src/tflite/delegates/coreml/builders/pooling_layer_builder.h",
+        "src/tflite/delegates/coreml/builders/reshape_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/reshape_op_builder.h",
+        "src/tflite/delegates/coreml/builders/resize_bilinear_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/resize_bilinear_op_builder.h",
+        "src/tflite/delegates/coreml/builders/softmax_op_builder.cc",
+        "src/tflite/delegates/coreml/builders/softmax_op_builder.h",
+        "src/tflite/delegates/coreml/builders/threshold_layer_builder.cc",
+        "src/tflite/delegates/coreml/builders/threshold_layer_builder.h",
+        "src/tflite/delegates/coreml/builders/util.cc",
+        "src/tflite/delegates/coreml/builders/util.h",
+        "src/tflite/delegates/coreml/coreml_delegate.h",
+        "src/tflite/delegates/coreml/coreml_delegate.mm",
+        "src/tflite/delegates/coreml/coreml_delegate_kernel.h",
+        "src/tflite/delegates/coreml/coreml_delegate_kernel.mm",
+        "src/tflite/delegates/coreml/coreml_executor.h",
+        "src/tflite/delegates/coreml/coreml_executor.mm",
+      ]
+      configs_to_add = [
+        ":tflite_config",
+        ":tflite_flags",
+        ":tflite_coreml_flags",
+        "//third_party/eigen3:eigen_includes",
+      ]
+      public_deps = [
+        ":tflite_kernel_common_headers",
+        ":tflite_kernel_internals",
+        ":tflite_public_headers",
+      ]
+      deps = [
+        "//third_party/abseil-cpp:absl",
+        "//third_party/coremltools:modelformat_proto",
+        "//third_party/flatbuffers",
+        "//third_party/fp16",
+        "//third_party/gemmlowp",
+      ]
+      frameworks = [
+        "CoreML.framework",
+        "Foundation.framework",
+      ]
+      include_dirs = [ "$root_gen_dir/third_party/coremltools" ]
+      check_includes = false
+      visibility = [ ":*" ]
+    }
+  }
+
   tflite_static_library("tflite_framework_core") {
     sources = [
+      "//third_party/tflite/src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
+      "//third_party/tflite/src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
       "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.cc",
       "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.h",
       "src/tflite/acceleration/configuration/flatbuffer_to_proto.cc",
@@ -1343,15 +1451,10 @@ if (use_litert_tflite) {
       "src/tflite/arena_planner.cc",
       "src/tflite/array.cc",
       "src/tflite/c/common_internal.cc",
-      "src/tflite/c/common_internal.h",
       "src/tflite/converter/allocation.cc",
-      "src/tflite/converter/allocation.h",
       "src/tflite/converter/core/api/error_reporter.cc",
-      "src/tflite/converter/core/api/error_reporter.h",
       "src/tflite/converter/core/model_builder_base.cc",
-      "src/tflite/converter/core/model_builder_base.h",
       "src/tflite/converter/experimental/remat/metadata_util.cc",
-      "src/tflite/converter/experimental/remat/metadata_util.h",
       "src/tflite/converter/schema/schema_utils.cc",
       "src/tflite/converter/utils/string_utils.cc",
       "src/tflite/core/acceleration/configuration/delegate_registry.cc",
@@ -1359,21 +1462,16 @@ if (use_litert_tflite) {
       "src/tflite/core/api/flatbuffer_conversions.cc",
       "src/tflite/core/api/flatbuffer_conversions.h",
       "src/tflite/core/api/op_resolver.cc",
-      "src/tflite/core/api/profiler.h",
       "src/tflite/core/api/tensor_utils.cc",
       "src/tflite/core/api/tensor_utils.h",
-      "src/tflite/core/async/async_kernel_internal.h",
       "src/tflite/core/async/async_signature_runner.cc",
-      "src/tflite/core/async/async_signature_runner.h",
       "src/tflite/core/async/async_subgraph.cc",
-      "src/tflite/core/async/async_subgraph.h",
       "src/tflite/core/async/task_internal.cc",
       "src/tflite/core/async/task_internal.h",
       "src/tflite/core/interpreter.cc",
       "src/tflite/core/interpreter_builder.cc",
       "src/tflite/core/interpreter_experimental.cc",
       "src/tflite/core/signature_runner.cc",
-      "src/tflite/core/signature_runner.h",
       "src/tflite/core/subgraph.cc",
       "src/tflite/core/tools/verifier.cc",
       "src/tflite/core/tools/verifier_internal.cc",
@@ -1396,14 +1494,13 @@ if (use_litert_tflite) {
       "src/tflite/graph_info.cc",
       "src/tflite/kernels/internal/portable_tensor_utils.cc",
       "src/tflite/logger.cc",
-      "src/tflite/memory_planner.h",
       "src/tflite/minimal_logging.cc",
       "src/tflite/mutable_op_resolver.cc",
       "src/tflite/nnapi/NeuralNetworksTypes.h",
       "src/tflite/nnapi/nnapi_implementation.h",
+      "src/tflite/nnapi/nnapi_implementation_disabled.cc",
       "src/tflite/optional_debug_tools.cc",
       "src/tflite/profiling/memory_info.cc",
-      "src/tflite/profiling/memory_info.h",
       "src/tflite/profiling/memory_latency_logger.cc",
       "src/tflite/profiling/memory_latency_logger.h",
       "src/tflite/profiling/memory_usage_monitor.cc",
@@ -1413,21 +1510,16 @@ if (use_litert_tflite) {
       "src/tflite/profiling/platform_profiler.cc",
       "src/tflite/profiling/platform_profiler.h",
       "src/tflite/profiling/profile_buffer.cc",
-      "src/tflite/profiling/profile_buffer.h",
       "src/tflite/profiling/profile_summarizer.cc",
       "src/tflite/profiling/profile_summarizer.h",
       "src/tflite/profiling/profile_summary_formatter.cc",
       "src/tflite/profiling/profile_summary_formatter.h",
       "src/tflite/profiling/root_profiler.cc",
-      "src/tflite/profiling/root_profiler.h",
       "src/tflite/profiling/telemetry/profiler.cc",
-      "src/tflite/profiling/telemetry/profiler.h",
       "src/tflite/profiling/telemetry/telemetry.cc",
       "src/tflite/profiling/telemetry/telemetry.h",
       "src/tflite/profiling/time.cc",
-      "src/tflite/profiling/time.h",
       "src/tflite/simple_memory_arena.cc",
-      "src/tflite/simple_memory_arena.h",
       "src/tflite/stderr_reporter.cc",
       "src/tflite/string_util.cc",
       "src/tflite/tools/command_line_flags.h",
@@ -1477,6 +1569,9 @@ if (use_litert_tflite) {
     ]
 
     conditional_public_deps = [ ":tflite_litert" ]
+    if (is_ios) {
+      conditional_public_deps += [ ":tflite_coreml_delegate" ]
+    }
 
     public_deps = [
       ":mutable_tflite_schema",
@@ -1518,11 +1613,9 @@ if (use_litert_tflite) {
       "src/tflite/core/c/c_api_opaque.cc",
       "src/tflite/core/c/c_api_opaque.h",
       "src/tflite/core/c/operator.cc",
-      "src/tflite/core/c/operator.h",
       "src/tflite/delegates/utils/simple_delegate.cc",
       "src/tflite/delegates/utils/simple_delegate.h",
       "src/tflite/delegates/utils/simple_opaque_delegate.cc",
-      "src/tflite/delegates/utils/simple_opaque_delegate.h",
     ]
 
     deps = [
@@ -1609,7 +1702,6 @@ if (use_litert_tflite) {
         "src/tflite/delegates/xnnpack/windows_util.cc",
         "src/tflite/delegates/xnnpack/windows_util.h",
         "src/tflite/delegates/xnnpack/xnnpack_delegate.cc",
-        "src/tflite/delegates/xnnpack/xnnpack_delegate.h",
       ]
     }
 
@@ -1645,6 +1737,9 @@ if (use_litert_tflite) {
       # absl::Cord::CopyToArray is not available on fuchsia but is required by
       # this library.
       conditional_public_deps += [ ":tflite_op_shim" ]
+    }
+    if (is_ios) {
+      conditional_public_deps += [ ":tflite_coreml_delegate" ]
     }
 
     public_deps = [
