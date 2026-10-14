@@ -21,21 +21,12 @@ typedef struct _MEMORYSTATUSEX MEMORYSTATUSEX;
 namespace memory_pressure::win {
 
 // Windows memory pressure voter that checks the amount of RAM left at a low
-// frequency and applies internal hysteresis.
+// frequency.
 class SystemMemoryPressureEvaluator
     : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
   // The memory sampling period, currently 5s.
   static constexpr base::TimeDelta kDefaultPeriod = base::Seconds(5);
-
-  // Constants governing the polling and hysteresis behaviour of the observer.
-  // The time which should pass between 2 successive moderate memory pressure
-  // signals, in milliseconds. The value has been lifted from similar values in
-  // the ChromeOS memory pressure monitor. The values were determined
-  // experimentally to ensure sufficient responsiveness of the memory pressure
-  // subsystem, and minimal overhead.
-  static constexpr base::TimeDelta kModeratePressureCooldown =
-      base::Seconds(10);
 
   // Available physical memory threshold to dispatch moderate/critical memory
   // pressure. Many years ago, we observed that Windows maintains ~300MB of
@@ -83,16 +74,14 @@ class SystemMemoryPressureEvaluator
   // which the monitor was instantiated.
   void StopObserving();
 
-  // Checks memory pressure, storing the current level, applying any hysteresis
-  // and emitting memory pressure level change signals as necessary. This
-  // function is called periodically while the monitor is observing memory
-  // pressure. Must be called from the same thread on which the monitor was
-  // instantiated.
+  // Checks memory pressure, storing the current level and casting a vote to the
+  // aggregator. This function is called periodically while the monitor is
+  // observing memory pressure. Must be called from the same thread on which the
+  // monitor was instantiated.
   void CheckMemoryPressure();
 
-  // Calculates the current instantaneous memory pressure level. This does not
-  // use any hysteresis and simply returns the result at the current moment. Can
-  // be called on any thread.
+  // Calculates the current instantaneous memory pressure level. Can be called
+  // on any thread.
   base::MemoryPressureLevel CalculateCurrentPressureLevel();
 
   // Gets system memory status. This is virtual as a unittesting hook. Returns
@@ -111,12 +100,6 @@ class SystemMemoryPressureEvaluator
 
   // A periodic timer to check for memory pressure changes.
   base::RepeatingTimer timer_;
-
-  // To slow down the amount of moderate pressure event calls, this gets used to
-  // count the number of events since the last event occurred. This is used by
-  // |CheckMemoryPressure| to apply hysteresis on the raw results of
-  // |CalculateCurrentPressureLevel|.
-  int moderate_pressure_repeat_count_;
 
   // Ensures that this object is used from a single sequence.
   SEQUENCE_CHECKER(sequence_checker_);

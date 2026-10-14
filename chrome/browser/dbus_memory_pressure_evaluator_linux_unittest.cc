@@ -26,6 +26,7 @@ namespace {
 
 class MockMemoryPressureVoter : public memory_pressure::MemoryPressureVoter {
  public:
+  MOCK_METHOD1(SetVote, void(base::MemoryPressureLevel));
   MOCK_METHOD2(SetVote, void(base::MemoryPressureLevel, bool));
 };
 

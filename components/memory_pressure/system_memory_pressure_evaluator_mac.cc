@@ -66,12 +66,6 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
           DISPATCH_MEMORYPRESSURE_WARN | DISPATCH_MEMORYPRESSURE_CRITICAL |
               DISPATCH_MEMORYPRESSURE_NORMAL,
           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0))),
-      renotify_current_vote_timer_(
-          FROM_HERE,
-          kRenotifyVotePeriod,
-          base::BindRepeating(&SystemMemoryPressureEvaluator::SendCurrentVote,
-                              base::Unretained(this),
-                              /*notify=*/true)),
       disk_check_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       weak_ptr_factory_(this) {
@@ -208,15 +202,8 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
         os_pressure_level_);
   }
 
-  // Run the callback that's waiting on memory pressure change notifications.
   if (current_vote() != old_vote) {
-    SendCurrentVote(true);
-
-    if (current_vote() != base::MEMORY_PRESSURE_LEVEL_NONE) {
-      renotify_current_vote_timer_.Reset();
-    } else {
-      renotify_current_vote_timer_.Stop();
-    }
+    SendCurrentVote();
   }
 }
 

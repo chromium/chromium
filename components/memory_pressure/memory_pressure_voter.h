@@ -11,6 +11,9 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "build/build_config.h"
 
 namespace memory_pressure {
 
@@ -23,7 +26,17 @@ class MemoryPressureVoter {
  public:
   virtual ~MemoryPressureVoter() = default;
 
-  // Called to set a vote / change a vote.
+  // Called to set a vote / change a vote. The aggregator will notify
+  // listeners when the aggregate pressure level changes, and periodically
+  // re-notify them at the cooldown interval while this vote matches the
+  // aggregate pressure level.
+  virtual void SetVote(base::MemoryPressureLevel level) = 0;
+
+  // Called to set a vote / change a vote when the caller manages its own
+  // notification cadence. Listeners are notified if and only if
+  // |notify_listeners| is true. The aggregator does not re-notify listeners
+  // periodically on behalf of this vote: if it is the only vote at the
+  // aggregate pressure level, the re-notification timer is stopped.
   virtual void SetVote(base::MemoryPressureLevel level,
                        bool notify_listeners) = 0;
 };
@@ -37,6 +50,16 @@ class MemoryPressureVoteAggregator {
  public:
   class Delegate;
 
+  // The cooldown period between repeated notifications at a given memory
+  // pressure level.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+  static constexpr base::TimeDelta kModeratePressureCooldown = base::Seconds(5);
+#else
+  static constexpr base::TimeDelta kModeratePressureCooldown =
+      base::Seconds(10);
+#endif
+  static constexpr base::TimeDelta kCriticalPressureCooldown = base::Seconds(5);
+
   explicit MemoryPressureVoteAggregator(Delegate* delegate);
   ~MemoryPressureVoteAggregator();
 
@@ -48,8 +71,9 @@ class MemoryPressureVoteAggregator {
   // Voter must not out-live the Aggregator.
   std::unique_ptr<MemoryPressureVoter> CreateVoter();
 
-  void OnVoteForTesting(std::optional<base::MemoryPressureLevel> old_vote,
-                        std::optional<base::MemoryPressureLevel> new_vote);
+  void OnVoteForTesting(
+      std::optional<base::MemoryPressureLevel> old_pressure_level,
+      std::optional<base::MemoryPressureLevel> new_pressure_level);
 
   void NotifyListenersForTesting();
 
@@ -61,18 +85,36 @@ class MemoryPressureVoteAggregator {
  private:
   friend class MemoryPressureVoterImpl;
 
+  // A vote cast by a MemoryPressureVoter.
+  struct Vote {
+    base::MemoryPressureLevel level;
+    // True if the aggregator should periodically re-notify listeners while
+    // |level| is the aggregate pressure level (i.e. the vote was cast through
+    // the single-argument SetVote()).
+    bool periodic_renotify;
+  };
+
   // Invoked by MemoryPressureVoter as it calculates its vote. Optional is
   // used so a voter can pass null as |old_vote| if this is their first vote, or
   // null as |new_vote| if they are removing their vote (e.g. when the voter is
   // being destroyed). |old_vote| and |new_vote| should never both be null.
-  void OnVote(std::optional<base::MemoryPressureLevel> old_vote,
-              std::optional<base::MemoryPressureLevel> new_vote);
+  // Returns true if the aggregate pressure level changed as a result of this
+  // vote.
+  bool OnVote(std::optional<Vote> old_vote, std::optional<Vote> new_vote);
+
+  // Starts or stops |renotify_timer_| according to |current_pressure_level_|
+  // and the votes cast at that level. The timer runs only while at least one
+  // vote with |periodic_renotify| set matches |current_pressure_level_|.
+  // |level_changed| indicates whether this update follows a change of
+  // |current_pressure_level_|, in which case a running timer is restarted
+  // with the cooldown of the new level.
+  void UpdateRenotifyTimer(bool level_changed);
+
+  // Resets |renotify_timer_| if it is currently running.
+  void ResetRenotifyTimer();
 
   // Triggers a notification of the MemoryPressureMonitor's current pressure
-  // level, allowing each of the various sources of input on MemoryPressureLevel
-  // to maintain their own signalling behavior.
-  // TODO(crbug.com/40639224): Remove this behavior and standardize across
-  // platforms.
+  // level.
   void NotifyListeners();
 
   // Returns the highest index of |votes_| with a non-zero value, as a
@@ -93,6 +135,15 @@ class MemoryPressureVoteAggregator {
   // MemoryPressureLevel system will be changing soon regardless.
   std::array<size_t, base::MEMORY_PRESSURE_LEVEL_CRITICAL + 1> votes_ = {};
 
+  // Subset of |votes_| that were cast with |Vote::periodic_renotify| set.
+  std::array<size_t, base::MEMORY_PRESSURE_LEVEL_CRITICAL + 1>
+      periodic_renotify_votes_ = {};
+
+  // Timer that re-notifies listeners of the current pressure level at regular
+  // intervals while pressure is MODERATE or CRITICAL and at least one vote at
+  // that level requested periodic re-notification.
+  base::RepeatingTimer renotify_timer_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -107,8 +158,7 @@ class MemoryPressureVoteAggregator::Delegate {
   virtual void OnMemoryPressureLevelChanged(
       base::MemoryPressureLevel level) = 0;
 
-  // Invoked when a voter has determined that a notification of the current
-  // pressure level is necessary.
+  // Invoked when listeners should be notified of the current pressure level.
   virtual void OnNotifyListenersRequested() = 0;
 };
 

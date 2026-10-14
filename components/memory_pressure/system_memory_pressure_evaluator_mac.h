@@ -62,15 +62,12 @@ class SystemMemoryPressureEvaluator
   void OnDiskSpaceCheckComplete(
       std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info);
 
-  // Updates the pressure level and manages re-notification timers.
+  // Updates the pressure level and sends the current vote if it changed.
   void UpdatePressureAndManageNotifications();
 
   // The dispatch source that generates memory pressure change notifications.
   base::apple::ScopedDispatchObject<dispatch_source_t>
       memory_level_event_source_;
-
-  // Timer that will re-notify with the current vote at regular interval.
-  base::RepeatingTimer renotify_current_vote_timer_;
 
   // A task runner that can be used for blocking tasks.
   scoped_refptr<base::SequencedTaskRunner> disk_check_task_runner_;

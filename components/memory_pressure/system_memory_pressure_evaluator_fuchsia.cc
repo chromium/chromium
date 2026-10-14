@@ -8,7 +8,6 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/time/time.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 
 namespace memory_pressure {
@@ -53,32 +52,14 @@ void SystemMemoryPressureEvaluatorFuchsia::OnLevelChanged(
     OnLevelChangedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  renotify_current_vote_timer_.Stop();
-
   VLOG(1) << "OnLevelChanged: level=" << static_cast<uint32_t>(level);
 
-  base::MemoryPressureLevel old_vote = current_vote();
   base::MemoryPressureLevel new_level = FuchsiaToBaseMemoryPressureLevel(level);
 
   VLOG(1) << "MemoryPressureLevel: " << new_level;
 
-  // Set the new vote, and determine whether to notify listeners.
   SetCurrentVote(new_level);
-  switch (new_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      // Only notify when transitioning to no pressure.
-      SendCurrentVote(old_vote != base::MEMORY_PRESSURE_LEVEL_NONE);
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      SendCurrentVote(true);
-      renotify_current_vote_timer_.Start(
-          FROM_HERE, kRenotifyVotePeriod,
-          base::BindRepeating(
-              &SystemMemoryPressureEvaluatorFuchsia::SendCurrentVote,
-              base::Unretained(this), true));
-      break;
-  }
+  SendCurrentVote();
 
   callback();
 }

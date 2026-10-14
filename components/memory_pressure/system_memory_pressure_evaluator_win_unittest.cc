@@ -152,7 +152,8 @@ class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests the fundamental direct calculation of memory pressure with default
@@ -201,28 +202,27 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   // events.
   evaluator.SetNone();
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
 
   // Setting the memory level to 80% should produce a moderate pressure level.
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator.SetModerate();
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 
-  // Check that the event gets reposted after a while.
+  // Check that the event gets reposted after the moderate cooldown period.
   const int kModeratePressureCooldownCycles =
-      evaluator.kModeratePressureCooldown / evaluator.kDefaultPeriod;
+      MemoryPressureVoteAggregator::kModeratePressureCooldown /
+      evaluator.kDefaultPeriod;
 
   for (int i = 0; i < kModeratePressureCooldownCycles; ++i) {
     if (i + 1 == kModeratePressureCooldownCycles) {
       EXPECT_CALL(listener,
                   OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
     }
+    task_environment_.FastForwardBy(evaluator.kDefaultPeriod);
     evaluator.CheckMemoryPressure();
-    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
     testing::Mock::VerifyAndClearExpectations(&listener);
   }
@@ -231,14 +231,14 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   evaluator.SetCritical();
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 
-  // Calling it again should immediately produce a second call.
+  // Critical pressure should be reposted after the critical cooldown period.
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  task_environment_.FastForwardBy(
+      MemoryPressureVoteAggregator::kCriticalPressureCooldown);
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 
@@ -247,18 +247,17 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator.SetModerate();
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 
-  // Check that the event gets reposted after a while.
+  // Check that the event gets reposted after the moderate cooldown period.
   for (int i = 0; i < kModeratePressureCooldownCycles; ++i) {
     if (i + 1 == kModeratePressureCooldownCycles) {
       EXPECT_CALL(listener,
                   OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
     }
+    task_environment_.FastForwardBy(evaluator.kDefaultPeriod);
     evaluator.CheckMemoryPressure();
-    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
     testing::Mock::VerifyAndClearExpectations(&listener);
   }
@@ -267,13 +266,13 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
   evaluator.SetNone();
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 
   // Again no pressure should not produce an additional notification.
+  task_environment_.FastForwardBy(
+      MemoryPressureVoteAggregator::kModeratePressureCooldown);
   evaluator.CheckMemoryPressure();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&listener);
 }

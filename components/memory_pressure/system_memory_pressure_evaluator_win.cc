@@ -139,8 +139,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
     : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_threshold_(moderate_threshold),
-      critical_threshold_(critical_threshold),
-      moderate_pressure_repeat_count_(0) {
+      critical_threshold_(critical_threshold) {
   DCHECK_GE(moderate_threshold_, critical_threshold_);
   DCHECK(critical_threshold_.is_positive());
   StartObserving();
@@ -171,47 +170,8 @@ void SystemMemoryPressureEvaluator::StopObserving() {
 void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Get the previous pressure level and update the current one.
-  base::MemoryPressureLevel old_vote = current_vote();
   SetCurrentVote(CalculateCurrentPressureLevel());
-
-  // |notify| will be set to true if MemoryPressureListeners need to be
-  // notified of a memory pressure level state change.
-
-  bool notify = false;
-  switch (current_vote()) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      // Always notify if the state changed.
-      if (old_vote != current_vote()) {
-        notify = true;
-      }
-      break;
-
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      if (old_vote != current_vote()) {
-        // This is a new transition to moderate pressure so notify.
-        moderate_pressure_repeat_count_ = 0;
-        notify = true;
-      } else {
-        // Already in moderate pressure, only notify if sustained over the
-        // cooldown period.
-        const int kModeratePressureCooldownCycles =
-            kModeratePressureCooldown / kWinMemoryPressurePeriodParam.Get();
-        if (++moderate_pressure_repeat_count_ ==
-            kModeratePressureCooldownCycles) {
-          moderate_pressure_repeat_count_ = 0;
-          notify = true;
-        }
-      }
-      break;
-
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // Always notify of critical pressure levels.
-      notify = true;
-      break;
-  }
-
-  SendCurrentVote(notify);
+  SendCurrentVote();
 }
 
 base::MemoryPressureLevel

@@ -7,7 +7,6 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
@@ -17,10 +16,6 @@ namespace memory_pressure {
 // MemoryPressureVoters to cast their vote on the overall MemoryPressureLevel.
 class SystemMemoryPressureEvaluator {
  public:
-  // The period at which the system is re-notified when the pressure is not
-  // none.
-  static const base::TimeDelta kRenotifyVotePeriod;
-
   // Used by the MemoryPressureMonitor to create the correct Evaluator for the
   // platform in use.
   static std::unique_ptr<SystemMemoryPressureEvaluator>
@@ -42,9 +37,16 @@ class SystemMemoryPressureEvaluator {
   // MemoryPressureVoteAggregator.
   void SetCurrentVote(base::MemoryPressureLevel level);
 
-  // Uses the Evaluators' |voter_| to cast/update its vote on memory pressure
-  // level. The MemoryPressureListeners will only be notified of the newly
-  // calculated pressure level if |notify| is true.
+  // Uses the Evaluator's |voter_| to cast/update its vote on memory pressure
+  // level. MemoryPressureListeners will be notified of the newly calculated
+  // pressure level if the aggregate level changes, and periodically
+  // re-notified at the cooldown interval while under pressure.
+  void SendCurrentVote() const;
+
+  // Uses the Evaluator's |voter_| to cast/update its vote on memory pressure
+  // level when the evaluator manages its own notification cadence.
+  // MemoryPressureListeners will be notified of the newly calculated pressure
+  // level if and only if |notify| is true.
   void SendCurrentVote(bool notify) const;
 
  private:

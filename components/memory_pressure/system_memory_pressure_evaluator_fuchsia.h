@@ -9,23 +9,17 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/sequence_checker.h"
-#include "base/timer/timer.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace memory_pressure {
 class MemoryPressureVoter;
 
 // Registers with the fuchsia.memorypressure.Provider to be notified of changes
-// to the system memory pressure level. Votes are sent immediately when
-// memory pressure becomes MODERATE or CRITICAL, and periodically until
-// memory pressure drops back down to NONE. No notifications are sent at NONE
-// level.
+// to the system memory pressure level.
 class SystemMemoryPressureEvaluatorFuchsia
     : public SystemMemoryPressureEvaluator,
       public fuchsia::memorypressure::Watcher {
  public:
-  using SystemMemoryPressureEvaluator::SendCurrentVote;
-
   explicit SystemMemoryPressureEvaluatorFuchsia(
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
 
@@ -42,9 +36,6 @@ class SystemMemoryPressureEvaluatorFuchsia
                       OnLevelChangedCallback callback) override;
 
   fidl::Binding<fuchsia::memorypressure::Watcher> binding_;
-
-  // Timer that will re-notify with the current vote at regular interval.
-  base::RepeatingTimer renotify_current_vote_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -20,9 +20,6 @@
 
 namespace memory_pressure {
 
-const base::TimeDelta SystemMemoryPressureEvaluator::kRenotifyVotePeriod =
-    base::Seconds(5);
-
 // static
 std::unique_ptr<SystemMemoryPressureEvaluator>
 SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
@@ -56,6 +53,11 @@ void SystemMemoryPressureEvaluator::SetCurrentVote(
     base::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_vote_ = level;
+}
+
+void SystemMemoryPressureEvaluator::SendCurrentVote() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  voter_->SetVote(current_vote_);
 }
 
 void SystemMemoryPressureEvaluator::SendCurrentVote(bool notify) const {
