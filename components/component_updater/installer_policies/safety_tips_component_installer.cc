@@ -24,12 +24,12 @@
 
 namespace {
 
-const base::FilePath::CharType kSafetyTipsConfigBinaryPbFileName[] =
+constexpr base::FilePath::CharType kSafetyTipsConfigBinaryPbFileName[] =
     FILE_PATH_LITERAL("safety_tips.pb");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: jflookgnkcckhobaglndicnbbgbonegd
-const uint8_t kSafetyTipsPublicKeySHA256[32] = {
+constexpr uint8_t kSafetyTipsPublicKeySHA256[32] = {
     0x95, 0xbe, 0xea, 0x6d, 0xa2, 0x2a, 0x7e, 0x10, 0x6b, 0xd3, 0x82,
     0xd1, 0x16, 0x1e, 0xd4, 0x63, 0x21, 0xfe, 0x79, 0x5d, 0x02, 0x30,
     0xc2, 0xcf, 0x4a, 0x9c, 0x8a, 0x39, 0xcc, 0x4a, 0x00, 0xce};

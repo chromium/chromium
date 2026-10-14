@@ -7,18 +7,24 @@
 
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace enterprise_companion {
 
 #if BUILDFLAG(IS_WIN)
 // The registry key in which the companion app's updater registration is stored.
-extern const wchar_t kAppRegKey[];
+inline constexpr wchar_t kAppRegKey[] =
+    L"Software\\" COMPANY_SHORTNAME_STRING
+    "\\Update\\Clients\\" ENTERPRISE_COMPANION_APPID;
 // The registry value under `kAppRegKey` which stores the application's version.
-extern const wchar_t kRegValuePV[];
+inline constexpr wchar_t kRegValuePV[] = L"pv";
 // The registry value under `kAppRegKey` which stores the application's name.
-extern const wchar_t kRegValueName[];
+inline constexpr wchar_t kRegValueName[] = L"name";
 
 #if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
-extern const wchar_t kIcuDataFileName[];
+inline constexpr wchar_t kIcuDataFileName[] = L"icudtl.dat";
 #endif  // ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
 
 #endif  // BUILDFLAG(IS_WIN)

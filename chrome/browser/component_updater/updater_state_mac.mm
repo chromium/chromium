@@ -17,7 +17,7 @@ namespace component_updater {
 
 namespace {
 
-const base::FilePath::CharType kKeystonePlist[] =
+constexpr base::FilePath::CharType kKeystonePlist[] =
     FILE_PATH_LITERAL("Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/"
                       "Contents/Info.plist");
 

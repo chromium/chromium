@@ -32,7 +32,7 @@ namespace component_updater {
 
 namespace {
 
-const base::FilePath::CharType kRecoveryFileName[] =
+constexpr base::FilePath::CharType kRecoveryFileName[] =
     FILE_PATH_LITERAL("ChromeRecovery.exe");
 
 // Returns the Chrome's appid registered with Google Update for updates.
@@ -80,7 +80,7 @@ std::tuple<bool, int, int> RunRecoveryCRXElevated(
   }
 
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
+  static constexpr base::TimeDelta kMaxWaitTime = base::Seconds(600);
   base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);

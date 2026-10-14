@@ -39,14 +39,15 @@ using ::ash::power::ml::LoadComponentEvent;
 using ::ash::power::ml::LogComponentVersionType;
 using ::ash::power::ml::LogLoadComponentEvent;
 
-const base::FilePath::CharType kSmartDimFeaturePreprocessorConfigFileName[] =
-    FILE_PATH_LITERAL("example_preprocessor_config.pb");
-const base::FilePath::CharType kSmartDimModelFileName[] =
+constexpr base::FilePath::CharType
+    kSmartDimFeaturePreprocessorConfigFileName[] =
+        FILE_PATH_LITERAL("example_preprocessor_config.pb");
+constexpr base::FilePath::CharType kSmartDimModelFileName[] =
     FILE_PATH_LITERAL("mlservice-model-smart_dim.tflite");
-const base::FilePath::CharType kSmartDimMetaJsonFileName[] =
+constexpr base::FilePath::CharType kSmartDimMetaJsonFileName[] =
     FILE_PATH_LITERAL("smart_dim_meta.json");
 
-const char kDefaultVersion[] = "20210201.1";
+constexpr char kDefaultVersion[] = "20210201.1";
 
 constexpr base::FeatureParam<std::string> kVersion{
     &ash::features::kSmartDimExperimentalComponent,
@@ -54,12 +55,12 @@ constexpr base::FeatureParam<std::string> kVersion{
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: ghiclnejioiofblmbphpgbhaojnkempa
-const uint8_t kSmartDimPublicKeySHA256[32] = {
+constexpr uint8_t kSmartDimPublicKeySHA256[32] = {
     0x67, 0x82, 0xbd, 0x49, 0x8e, 0x8e, 0x51, 0xbc, 0x1f, 0x7f, 0x61,
     0x70, 0xe9, 0xda, 0x4c, 0xf0, 0x30, 0x2e, 0x24, 0x4d, 0x68, 0x17,
     0x19, 0xad, 0x26, 0x6e, 0xd0, 0x33, 0x03, 0xb3, 0xe5, 0xff};
 
-const char kMLSmartDimManifestName[] = "Smart Dim";
+constexpr char kMLSmartDimManifestName[] = "Smart Dim";
 
 // Read files from the component to strings, should be called from a blocking
 // task runner.

@@ -39,7 +39,7 @@ namespace component_updater {
 
 namespace {
 
-const char kTestVersion[] = "1.0.0.0";
+constexpr char kTestVersion[] = "1.0.0.0";
 
 constexpr optimization_guide::proto::OptimizationTarget kTestTarget =
     optimization_guide::proto::

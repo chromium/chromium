@@ -5086,7 +5086,7 @@ INSTANTIATE_TEST_SUITE_P(IntegrationLegacyAppCommandWebTestCases,
                          ::testing::ValuesIn(GetRealUpdaterVersions()));
 
 TEST_P(IntegrationLegacyAppCommandWebTest, NoUsageStats_NoPing) {
-  const char kAppId[] = "test1";
+  static constexpr char kAppId[] = "test1";
   if (GetParam().version > base::Version("137.0.0.0")) {
     ExpectInstallEvent(*test_server_, kAppId);
   }

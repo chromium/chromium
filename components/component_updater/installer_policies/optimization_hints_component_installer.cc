@@ -25,29 +25,23 @@
 
 namespace component_updater {
 
-const base::FilePath::CharType kUnindexedHintsFileName[] =
-    FILE_PATH_LITERAL("optimization-hints.pb");
-
 namespace {
 
-const char kDisableInstallerUpdate[] = "optimization-guide-disable-installer";
+constexpr char kDisableInstallerUpdate[] =
+    "optimization-guide-disable-installer";
 
-const char kRulesetFormatVersionString[] = "1.0.0";
+constexpr char kRulesetFormatVersionString[] = "1.0.0";
 
 // The extension id is: lmelglejhemejginpboagddgdfbepgmp
-const uint8_t kOptimizationHintsPublicKeySHA256[32] = {
+constexpr uint8_t kOptimizationHintsPublicKeySHA256[32] = {
     0xbc, 0x4b, 0x6b, 0x49, 0x74, 0xc4, 0x96, 0x8d, 0xf1, 0xe0, 0x63,
     0x36, 0x35, 0x14, 0xf6, 0xcf, 0x86, 0x92, 0xe6, 0x06, 0x03, 0x76,
     0x70, 0xaf, 0x8b, 0xd4, 0x47, 0x2c, 0x42, 0x59, 0x38, 0xef};
 
-const char kOptimizationHintsSetFetcherManifestName[] = "Optimization Hints";
+constexpr char kOptimizationHintsSetFetcherManifestName[] =
+    "Optimization Hints";
 
 }  // namespace
-
-// static
-const char
-    OptimizationHintsComponentInstallerPolicy::kManifestRulesetFormatKey[] =
-        "ruleset_format";
 
 OptimizationHintsComponentInstallerPolicy::
     OptimizationHintsComponentInstallerPolicy()

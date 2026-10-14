@@ -27,7 +27,7 @@ namespace component_updater {
 
 // This file name must be in sync with the server-side configuration, or updates
 // will fail.
-const base::FilePath::CharType kTrustTokenKeyCommitmentsFileName[] =
+inline constexpr base::FilePath::CharType kTrustTokenKeyCommitmentsFileName[] =
     FILE_PATH_LITERAL("keys.json");
 
 // TrustTokenKeyCommitmentsComponentInstallerPolicy defines an installer

@@ -23,7 +23,7 @@
 namespace component_updater {
 namespace {
 
-const base::FilePath::CharType
+constexpr base::FilePath::CharType
     kAmountExtractionHeuristicRegexesBinaryPbFileName[] =
         FILE_PATH_LITERAL("heuristic_regexes.binarypb");
 

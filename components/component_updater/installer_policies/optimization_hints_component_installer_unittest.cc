@@ -21,7 +21,7 @@
 
 namespace {
 
-static const char kTestHintsVersion[] = "1.2.3";
+constexpr char kTestHintsVersion[] = "1.2.3";
 
 class OptimizationHintsMockComponentUpdateService
     : public component_updater::MockComponentUpdateService {

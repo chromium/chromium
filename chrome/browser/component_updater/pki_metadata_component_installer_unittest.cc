@@ -47,7 +47,7 @@ namespace component_updater {
 
 namespace {
 // An arbitrary, DER-encoded subjectpublickeyinfo encoded as BASE64.
-const char kLogSPKIBase64[] =
+constexpr char kLogSPKIBase64[] =
     "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1+5tMt7sGC0MTw/AloiaTsFbEpW3s"
     "g3GCAFY6wRP5Izt+mV/Q9xHb450LppfptaYh94nIkVIhtTkSQ4b2GRxOAcaSkpTsN+PUPaO2D"
     "Jd/5M7MFxXeHGYqXIbdD+rgSsU5rcBspFbJkRv+Q34bqNeiwKT+zcYqfAEH3cYvDGF+FIxXrZ"
@@ -59,24 +59,24 @@ const char kLogSPKIBase64[] =
     "Iyrq1REXsoc/O0HVCXQXKP1/g6mduco4wA57lH1BSJrSet5Rc8NyR5g7zR8FPzXvav+eErLwd"
     "RsVdo4HNxlBlrc50CqkbsNFg2hdU1uCbbzRHKAF5Ih/NGdFkQZ9N+pPbTcpA8z5mWyjo6cCAw"
     "EAAQ==";
-const char kLogIdBase64[] = "KHWaS8pa+aGJCk5BUfi+NfHcNTRSlVLLQ8/A3d3QN3w=";
+constexpr char kLogIdBase64[] = "KHWaS8pa+aGJCk5BUfi+NfHcNTRSlVLLQ8/A3d3QN3w=";
 constexpr uint64_t kLogMMDSeconds = 42;
-const char kLogURL[] = "https://futuregadgetlab.jp";
-const char kLogName[] = "FutureGadgetLog2022";
-const char kLogOperatorName[] = "Future Gadget Lab";
-const char kLogOperatorEmail[] = "kurisu@dmail.com";
+constexpr char kLogURL[] = "https://futuregadgetlab.jp";
+constexpr char kLogName[] = "FutureGadgetLog2022";
+constexpr char kLogOperatorName[] = "Future Gadget Lab";
+constexpr char kLogOperatorEmail[] = "kurisu@dmail.com";
 constexpr base::TimeDelta kCurrentOperatorStart = base::Days(3);
-const char kPreviousOperator1Name[] = "SERN";
+constexpr char kPreviousOperator1Name[] = "SERN";
 constexpr base::TimeDelta kPreviousOperator1Start = base::Days(2);
-const char kPreviousOperator2Name[] = "DURPA";
+constexpr char kPreviousOperator2Name[] = "DURPA";
 constexpr base::TimeDelta kPreviousOperator2Start = base::Days(1);
-const char kGoogleLogName[] = "GoogleLog2022";
-const char kGoogleLogOperatorName[] = "Google";
+constexpr char kGoogleLogName[] = "GoogleLog2022";
+constexpr char kGoogleLogOperatorName[] = "Google";
 constexpr base::TimeDelta kGoogleLogDisqualificationDate = base::Days(2);
 
 // BASE64 encoded fake leaf hashes.
-const char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
-const char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
+constexpr char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
+constexpr char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
 constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 

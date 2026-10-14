@@ -27,8 +27,8 @@ class ComponentUpdateService;
 class SubresourceFilterComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
-  static const char kManifestRulesetFormatKey[];
-  static const int kCurrentRulesetFormat;
+  static constexpr char kManifestRulesetFormatKey[] = "ruleset_format";
+  static constexpr int kCurrentRulesetFormat = 1;
 
   SubresourceFilterComponentInstallerPolicy();
 

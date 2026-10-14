@@ -131,17 +131,17 @@ TEST(UpdateClientUtils, IsValidInstallerAttributeName) {
   EXPECT_FALSE(IsValidInstallerAttribute(
       make_pair(std::string(257, 'a'), std::string("value"))));
 
-  const char* const valid_names[] = {"A", "Z", "a", "a-b", "A_B",
-                                     "z", "0", "9", "-_"};
-  for (const char* name : valid_names) {
+  static constexpr const char* kValidNames[] = {"A", "Z", "a", "a-b", "A_B",
+                                                "z", "0", "9", "-_"};
+  for (const char* name : kValidNames) {
     EXPECT_TRUE(IsValidInstallerAttribute(
         make_pair(std::string(name), std::string("value"))));
   }
 
-  const char* const invalid_names[] = {
+  static constexpr const char* kInvalidNames[] = {
       "",   "a=1", " name", "name ", "na me", "<name", "name>",
       "\"", "\\",  "\xaa",  ".",     ",",     ";",     "+"};
-  for (const char* name : invalid_names) {
+  for (const char* name : kInvalidNames) {
     EXPECT_FALSE(IsValidInstallerAttribute(
         make_pair(std::string(name), std::string("value"))));
   }
@@ -158,16 +158,16 @@ TEST(UpdateClientUtils, IsValidInstallerAttributeValue) {
   EXPECT_FALSE(IsValidInstallerAttribute(
       make_pair(std::string("name"), std::string(257, 'a'))));
 
-  const char* const valid_values[] = {"",  "a=1", "A", "Z",       "a",
-                                      "z", "0",   "9", "-.,;+_=$"};
-  for (const char* value : valid_values) {
+  static constexpr const char* kValidValues[] = {
+      "", "a=1", "A", "Z", "a", "z", "0", "9", "-.,;+_=$"};
+  for (const char* value : kValidValues) {
     EXPECT_TRUE(IsValidInstallerAttribute(
         make_pair(std::string("name"), std::string(value))));
   }
 
-  const char* const invalid_values[] = {" ap", "ap ", "a p", "<ap",
-                                        "ap>", "\"",  "\\",  "\xaa"};
-  for (const char* value : invalid_values) {
+  static constexpr const char* kInvalidValues[] = {" ap", "ap ", "a p", "<ap",
+                                                   "ap>", "\"",  "\\",  "\xaa"};
+  for (const char* value : kInvalidValues) {
     EXPECT_FALSE(IsValidInstallerAttribute(
         make_pair(std::string("name"), std::string(value))));
   }

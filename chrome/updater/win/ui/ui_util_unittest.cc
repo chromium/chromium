@@ -1423,11 +1423,11 @@ TEST(UiUtilTest, ApplySuggestedWindowRect) {
   EXPECT_TRUE(::EqualRect(&before, &after_null));
 
   // Non-null lParam resizes and repositions the window to the suggested rect.
-  const RECT suggested = {50, 60, 200, 250};
-  ApplySuggestedWindowRect(hwnd, reinterpret_cast<LPARAM>(&suggested));
+  static constexpr RECT kSuggested = {50, 60, 200, 250};
+  ApplySuggestedWindowRect(hwnd, reinterpret_cast<LPARAM>(&kSuggested));
   RECT after_suggested = {};
   ASSERT_TRUE(::GetWindowRect(hwnd, &after_suggested));
-  EXPECT_TRUE(::EqualRect(&suggested, &after_suggested));
+  EXPECT_TRUE(::EqualRect(&kSuggested, &after_suggested));
 }
 
 TEST(UiUtilTest, CreateIconFromBitmap_BadgeOverlay_24bpp) {

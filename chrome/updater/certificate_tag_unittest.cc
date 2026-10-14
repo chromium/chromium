@@ -164,15 +164,15 @@ std::vector<uint32_t> GetDifatEntries(int sectors, int free_entries) {
   entries.reserve(kNumDifatHeaderEntries + sectors * 1024);
 
   // Some sector number.
-  const uint32_t sentinel = 123;
+  constexpr uint32_t kSentinel = 123;
   for (; sectors > 0; --sectors) {
     std::vector<uint32_t> new_entries(1024);
-    new_entries[1023] = sectors == 1 ? kFatEndOfChain : sentinel;
+    new_entries[1023] = sectors == 1 ? kFatEndOfChain : kSentinel;
     entries.insert(entries.end(), new_entries.begin(), new_entries.end());
   }
   size_t i = entries.size() - 1;
   while (free_entries > 0) {
-    if (entries[i] != kFatEndOfChain && entries[i] != sentinel) {
+    if (entries[i] != kFatEndOfChain && entries[i] != kSentinel) {
       entries[i] = kFatFreeSector;
       --free_entries;
     }

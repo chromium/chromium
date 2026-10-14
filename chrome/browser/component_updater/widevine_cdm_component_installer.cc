@@ -59,7 +59,7 @@ namespace component_updater {
 namespace {
 
 // CRX hash. The extension id is: oimompecagnajdejgnnjijobebaeigek.
-const uint8_t kWidevineSha2Hash[] = {
+constexpr uint8_t kWidevineSha2Hash[] = {
     0xe8, 0xce, 0xcf, 0x42, 0x06, 0xd0, 0x93, 0x49, 0x6d, 0xd9, 0x89,
     0xe1, 0x41, 0x04, 0x86, 0x4a, 0x8f, 0xbd, 0x86, 0x12, 0xb9, 0x58,
     0x9b, 0xfb, 0x4f, 0xbb, 0x1b, 0xa9, 0xd3, 0x85, 0x37, 0xef};
@@ -69,7 +69,7 @@ static_assert(std::size(kWidevineSha2Hash) == crypto::hash::kSha256Size);
 // On ChromeOS the component updated CDM comes as a disk image which must be
 // registered and then mounted in order to access the files. The startup
 // script that mounts the image (widevine-cdm.conf) also uses this name.
-const char ImageLoaderComponentName[] = "WidevineCdm";
+constexpr char kImageLoaderComponentName[] = "WidevineCdm";
 #endif
 
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
@@ -169,7 +169,7 @@ void RegisterImage(const std::string& version,
   // is used by the startup script widevine-cdm.conf to mount the image so the
   // contained files are available when Chrome starts. The name is also used by
   // UpdateCdmPath() to mount the image so the hint file can be updated.
-  loader->RegisterComponent(ImageLoaderComponentName, version,
+  loader->RegisterComponent(kImageLoaderComponentName, version,
                             install_dir.value(),
                             base::BindOnce(&OnImageRegistered));
 }
@@ -232,7 +232,7 @@ void LoadImage() {
     return;
   }
 
-  loader->LoadComponent(ImageLoaderComponentName,
+  loader->LoadComponent(kImageLoaderComponentName,
                         base::BindOnce(&OnImageLoaded));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

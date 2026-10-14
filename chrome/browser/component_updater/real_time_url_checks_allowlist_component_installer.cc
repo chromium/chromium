@@ -24,19 +24,19 @@
 
 namespace {
 
-const base::FilePath::CharType kRealTimeUrlChecksAllowlistPbFileName[] =
+constexpr base::FilePath::CharType kRealTimeUrlChecksAllowlistPbFileName[] =
     FILE_PATH_LITERAL("real_time_url_checks_allowlist.pb");
 constexpr char kInstallerLoadFromDiskPbFileEmpty[] =
     "SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty";
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: aagaghndoahmfdbmfnajfklaomcanlnh
-const uint8_t kRealTimeUrlChecksAllowlistPublicKeySHA256[32] = {
+constexpr uint8_t kRealTimeUrlChecksAllowlistPublicKeySHA256[32] = {
     0x00, 0x60, 0x67, 0xd3, 0xe0, 0x7c, 0x53, 0x1c, 0x5d, 0x09, 0x5a,
     0xb0, 0xec, 0x20, 0xdb, 0xd7, 0x5b, 0x15, 0xa2, 0x3c, 0x21, 0xe9,
     0xea, 0xde, 0x48, 0x11, 0x7a, 0x50, 0x43, 0x6c, 0xe9, 0x45};
 
-const char kRealTimeUrlChecksAllowlistManifestName[] =
+constexpr char kRealTimeUrlChecksAllowlistManifestName[] =
     "Real Time Url Checks Allowlist";
 
 void LoadFromDisk(const base::FilePath& pb_path) {

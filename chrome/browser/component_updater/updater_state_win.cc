@@ -18,24 +18,25 @@ namespace component_updater {
 namespace {
 
 // Google Update group policy settings.
-const wchar_t kGoogleUpdatePoliciesKey[] =
+constexpr wchar_t kGoogleUpdatePoliciesKey[] =
     L"SOFTWARE\\Policies\\Google\\Update";
-const wchar_t kCheckPeriodOverrideMinutes[] = L"AutoUpdateCheckPeriodMinutes";
-const wchar_t kUpdatePolicyValue[] = L"UpdateDefault";
-const wchar_t kChromeUpdatePolicyOverride[] =
+constexpr wchar_t kCheckPeriodOverrideMinutes[] =
+    L"AutoUpdateCheckPeriodMinutes";
+constexpr wchar_t kUpdatePolicyValue[] = L"UpdateDefault";
+constexpr wchar_t kChromeUpdatePolicyOverride[] =
     L"Update{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 // Don't allow update periods longer than six weeks (Chrome release cadence).
-const int kCheckPeriodOverrideMinutesMax = 60 * 24 * 7 * 6;
+constexpr int kCheckPeriodOverrideMinutesMax = 60 * 24 * 7 * 6;
 
 // Google Update registry settings.
-const wchar_t kRegPathGoogleUpdate[] = L"Software\\Google\\Update";
-const wchar_t kRegPathClientsGoogleUpdate[] =
+constexpr wchar_t kRegPathGoogleUpdate[] = L"Software\\Google\\Update";
+constexpr wchar_t kRegPathClientsGoogleUpdate[] =
     L"Software\\Google\\Update\\Clients\\"
     L"{430FD4D0-B729-4F61-AA34-91526481799D}";
-const wchar_t kRegValueGoogleUpdatePv[] = L"pv";
-const wchar_t kRegValueLastStartedAU[] = L"LastStartedAU";
-const wchar_t kRegValueLastChecked[] = L"LastChecked";
+constexpr wchar_t kRegValueGoogleUpdatePv[] = L"pv";
+constexpr wchar_t kRegValueLastStartedAU[] = L"LastStartedAU";
+constexpr wchar_t kRegValueLastChecked[] = L"LastChecked";
 
 base::Time GetUpdaterTimeValue(bool is_machine, const wchar_t* value_name) {
   const HKEY root_key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
@@ -117,7 +118,7 @@ bool UpdaterState::IsAutoupdateCheckEnabled() {
 // returns a value in the [0, 3] range, representing the value of the
 // Chrome update group policy.
 int UpdaterState::GetUpdatePolicy() {
-  const int kMaxUpdatePolicyValue = 3;
+  constexpr int kMaxUpdatePolicyValue = 3;
 
   base::win::RegKey policy_key;
 

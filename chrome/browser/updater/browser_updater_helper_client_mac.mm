@@ -22,7 +22,7 @@
 namespace updater {
 
 namespace {
-const int kPrivilegedHelperConnectionFailed = -10000;
+constexpr int kPrivilegedHelperConnectionFailed = -10000;
 }
 
 BrowserUpdaterHelperClientMac::BrowserUpdaterHelperClientMac() {

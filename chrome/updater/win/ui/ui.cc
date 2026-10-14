@@ -51,19 +51,6 @@ void SetItemFont(HWND parent, int item_id, HFONT font) {
 
 }  // namespace
 
-const OmahaWnd::ControlAttributes OmahaWnd::kVisibleTextAttributes = {
-    false, true, true, false, false};
-const OmahaWnd::ControlAttributes OmahaWnd::kDefaultActiveButtonAttributes = {
-    false, true, true, true, true};
-const OmahaWnd::ControlAttributes OmahaWnd::kDisabledButtonAttributes = {
-    false, false, false, true, false};
-const OmahaWnd::ControlAttributes OmahaWnd::kNonDefaultActiveButtonAttributes =
-    {false, true, true, true, false};
-const OmahaWnd::ControlAttributes OmahaWnd::kVisibleImageAttributes = {
-    false, true, false, false, false};
-const OmahaWnd::ControlAttributes OmahaWnd::kDisabledNonButtonAttributes = {
-    false, false, false, false, false};
-
 void EnableFlatButtons(HWND hwnd_parent) {
   ::EnumChildWindows(
       hwnd_parent,

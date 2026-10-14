@@ -23,17 +23,17 @@
 
 namespace {
 
-const base::FilePath::CharType kActorSafetyListsComponentFileName[] =
+constexpr base::FilePath::CharType kActorSafetyListsComponentFileName[] =
     FILE_PATH_LITERAL("listdata.json");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: ninodabcejpeglfjbkhdplaoglpcbffj
-const uint8_t kActorSafetyListsPublicKeySHA256[32] = {
+constexpr uint8_t kActorSafetyListsPublicKeySHA256[32] = {
     0xd8, 0xde, 0x30, 0x12, 0x49, 0xf4, 0x6b, 0x59, 0x1a, 0x73, 0xfb,
     0x0e, 0x6b, 0xf2, 0x15, 0x59, 0x82, 0x1b, 0x44, 0xa6, 0xa6, 0x71,
     0x3b, 0x51, 0x57, 0xd0, 0xab, 0xa7, 0x61, 0xb9, 0x6a, 0x20};
 
-const char kActorSafetyListsManifestName[] = "Actor Safety Lists";
+constexpr char kActorSafetyListsManifestName[] = "Actor Safety Lists";
 
 constexpr base::FilePath::CharType kRelInstallDir[] =
     FILE_PATH_LITERAL("ActorSafetyLists");

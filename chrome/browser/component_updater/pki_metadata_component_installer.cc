@@ -82,7 +82,7 @@ namespace {
 // if it is set). This should never be decreased since that will cause CT
 // enforcement to eventually stop. This should also only be increased if Chrome
 // is compatible with the version it is being incremented to.
-const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
+constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 
 // This is the last version of signer sets that this version of Chrome will
 // accept. If a list is delivered with a compatibility version higher than this,
@@ -90,7 +90,7 @@ const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 // verification to eventually fail for new signer sets. This should also only be
 // increased if Chrome is compatible with the version it is being incremented
 // to.
-const int64_t kMaxSupportedSignerSetCompatibilityVersion = 2;
+constexpr int64_t kMaxSupportedSignerSetCompatibilityVersion = 2;
 
 // Ignore any MtcMetadata component update data that is older than this amount.
 // The MTC Metadata has a short useful lifetime, and since it impacts Trust
@@ -102,7 +102,7 @@ const int64_t kMaxSupportedSignerSetCompatibilityVersion = 2;
 // CQRP draft policy allows up to 47 days as the max cert lifetime.
 constexpr base::TimeDelta kMaxMtcMetadataAge = base::Days(47);
 
-const base::FilePath::CharType kCTConfigProtoFileName[] =
+constexpr base::FilePath::CharType kCTConfigProtoFileName[] =
     FILE_PATH_LITERAL("ct_config.pb");
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
@@ -111,20 +111,20 @@ const base::FilePath::CharType kCTConfigProtoFileName[] =
 // it will be ignored. This should never be decreased since that will cause key
 // pinning enforcement to eventually stop. This should also only be increased if
 // Chrome is compatible with the version it is being incremented to.
-const uint64_t kMaxSupportedKPCompatibilityVersion = 1;
+constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
-const base::FilePath::CharType kKPConfigProtoFileName[] =
+constexpr base::FilePath::CharType kKPConfigProtoFileName[] =
     FILE_PATH_LITERAL("kp_pinslist.pb");
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-const base::FilePath::CharType kCRSProtoFileName[] =
+constexpr base::FilePath::CharType kCRSProtoFileName[] =
     FILE_PATH_LITERAL("crs.pb");
 constexpr char kChromeRootStoreProto[] = "chrome_root_store.RootStore";
-const base::FilePath::CharType kMtcMetadataProtoFileName[] =
+constexpr base::FilePath::CharType kMtcMetadataProtoFileName[] =
     FILE_PATH_LITERAL("mtc_metadata.pb");
 constexpr char kMtcMetadataProto[] = "chrome_root_store.MtcMetadata";
-const base::FilePath::CharType kMtcConfigProtoFileName[] =
+constexpr base::FilePath::CharType kMtcConfigProtoFileName[] =
     FILE_PATH_LITERAL("mtc_config.pb");
 constexpr char kMtcConfigProto[] = "chrome_root_store.MtcConfig";
 #endif

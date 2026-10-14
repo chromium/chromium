@@ -22,10 +22,10 @@ namespace component_updater {
 
 namespace {
 constexpr char kAmountExtractionHeuristicRegexesVersion[] = "1";
-const base::FilePath::CharType
+constexpr base::FilePath::CharType
     kAmountExtractionHeuristicRegexesBinaryPbFileName[] =
         FILE_PATH_LITERAL("heuristic_regexes.binarypb");
-const char* kAmountExtractionComponentInstallationResultMetric =
+constexpr char kAmountExtractionComponentInstallationResultMetric[] =
     "Autofill.AmountExtraction.HeuristicRegexesComponentInstallationResult";
 }  // namespace
 

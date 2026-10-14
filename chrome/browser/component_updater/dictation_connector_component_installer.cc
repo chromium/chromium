@@ -31,25 +31,25 @@ namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component's id is: kbglekiebdohdafflpmiejhbfdmjdbbe
-const uint8_t kDictationConnectorPublicKeySHA256[32] = {
+constexpr uint8_t kDictationConnectorPublicKeySHA256[32] = {
     0xa1, 0x6b, 0x4a, 0x84, 0x13, 0xe7, 0x30, 0x55, 0xbf, 0xc8, 0x49,
     0x71, 0x53, 0xc9, 0x31, 0x14, 0x7c, 0xaa, 0x56, 0x41, 0xd3, 0xa6,
     0x25, 0xb9, 0x75, 0xec, 0xd4, 0xcb, 0xe1, 0xb9, 0xbf, 0x81};
 
-const char kDictationConnectorManifestName[] = "Dictation Connector";
+constexpr char kDictationConnectorManifestName[] = "Dictation Connector";
 
 // The relative path where the component will be installed.
-const base::FilePath::CharType kDictationConnectorRelativeInstallDir[] =
+constexpr base::FilePath::CharType kDictationConnectorRelativeInstallDir[] =
     FILE_PATH_LITERAL("DictationConnector");
 
 // Files in the extension
-const base::FilePath::CharType kBackgroundCompiledFileName[] =
+constexpr base::FilePath::CharType kBackgroundCompiledFileName[] =
     FILE_PATH_LITERAL("background_compiled.js");
-const base::FilePath::CharType kManifestFileName[] =
+constexpr base::FilePath::CharType kManifestFileName[] =
     FILE_PATH_LITERAL("manifest.json");
-const base::FilePath::CharType kOffscreenCompiledFileName[] =
+constexpr base::FilePath::CharType kOffscreenCompiledFileName[] =
     FILE_PATH_LITERAL("offscreen_compiled.js");
-const base::FilePath::CharType kOffscreenHtmlFileName[] =
+constexpr base::FilePath::CharType kOffscreenHtmlFileName[] =
     FILE_PATH_LITERAL("offscreen.html");
 
 class DictationConnectorDirectory {

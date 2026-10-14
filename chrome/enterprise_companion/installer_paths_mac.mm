@@ -17,7 +17,7 @@
 
 namespace enterprise_companion {
 
-const char kExecutableName[] = PRODUCT_FULLNAME_STRING;
+constexpr char kExecutableName[] = PRODUCT_FULLNAME_STRING;
 
 std::optional<base::FilePath> GetInstallDirectory() {
   base::FilePath application_support_path;

@@ -219,13 +219,13 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
 }
 
 std::string UpdaterState::NormalizeTimeDelta(base::TimeDelta delta) {
-  const base::TimeDelta two_weeks = base::Days(14);
-  const base::TimeDelta two_months = base::Days(56);
+  static constexpr base::TimeDelta kTwoWeeks = base::Days(14);
+  static constexpr base::TimeDelta kTwoMonths = base::Days(56);
 
   std::string val;  // Contains the value to return in hours.
-  if (delta <= two_weeks) {
+  if (delta <= kTwoWeeks) {
     val = "0";
-  } else if (two_weeks < delta && delta <= two_months) {
+  } else if (kTwoWeeks < delta && delta <= kTwoMonths) {
     val = "336";  // 2 weeks in hours.
   } else {
     val = "1344";  // 2*28 days in hours.

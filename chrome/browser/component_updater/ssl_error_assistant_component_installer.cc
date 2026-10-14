@@ -24,12 +24,12 @@
 
 namespace {
 
-const base::FilePath::CharType kConfigBinaryPbFileName[] =
+constexpr base::FilePath::CharType kConfigBinaryPbFileName[] =
     FILE_PATH_LITERAL("ssl_error_assistant.pb");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: giekcmmlnklenlaomppkphknjmnnpneh
-const uint8_t kSslErrorAssistantPublicKeySHA256[32] = {
+constexpr uint8_t kSslErrorAssistantPublicKeySHA256[32] = {
     0x68, 0x4a, 0x2c, 0xcb, 0xda, 0xb4, 0xdb, 0x0e, 0xcf, 0xfa, 0xf7,
     0xad, 0x9c, 0xdd, 0xfd, 0x47, 0x97, 0xe4, 0x73, 0x24, 0x67, 0x93,
     0x9c, 0xb1, 0x14, 0xcd, 0x3f, 0x54, 0x66, 0x25, 0x99, 0x3f};

@@ -71,15 +71,6 @@ bool WaitForFileWritable(const base::FilePath& path) {
 
 }  // namespace
 
-const wchar_t kAppRegKey[] = L"Software\\" COMPANY_SHORTNAME_STRING
-                             "\\Update\\Clients\\" ENTERPRISE_COMPANION_APPID;
-const wchar_t kRegValuePV[] = L"pv";
-const wchar_t kRegValueName[] = L"name";
-
-#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
-const wchar_t kIcuDataFileName[] = L"icudtl.dat";
-#endif
-
 bool Install() {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {

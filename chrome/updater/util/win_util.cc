@@ -909,12 +909,12 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
 
 bool EnableSecureDllLoading() {
 #if defined(COMPONENT_BUILD)
-  const DWORD directory_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+  constexpr DWORD kDirectoryFlags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
 #else
-  const DWORD directory_flags = LOAD_LIBRARY_SEARCH_SYSTEM32;
+  constexpr DWORD kDirectoryFlags = LOAD_LIBRARY_SEARCH_SYSTEM32;
 #endif
 
-  return ::SetDefaultDllDirectories(directory_flags);
+  return ::SetDefaultDllDirectories(kDirectoryFlags);
 }
 
 bool EnableProcessHeapMetadataProtection() {

@@ -797,12 +797,12 @@ RECT GetBadgeRect(int target_w, int target_h) {
   const int badge_w = std::max((target_w + 1) / 2, 1);
   const int badge_h = std::max((target_h + 1) / 2, 1);
   const int badge_x = target_w - badge_w;
-  const int badge_y = 0;
+  constexpr int kBadgeY = 0;
   return {
       .left = badge_x,
-      .top = badge_y,
+      .top = kBadgeY,
       .right = badge_x + badge_w,
-      .bottom = badge_y + badge_h,
+      .bottom = kBadgeY + badge_h,
   };
 }
 

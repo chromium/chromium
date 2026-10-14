@@ -153,12 +153,18 @@ class OmahaWnd : public DialogImpl,
     return current_logo_small_;
   }
 
-  static const ControlAttributes kVisibleTextAttributes;
-  static const ControlAttributes kDefaultActiveButtonAttributes;
-  static const ControlAttributes kDisabledButtonAttributes;
-  static const ControlAttributes kNonDefaultActiveButtonAttributes;
-  static const ControlAttributes kVisibleImageAttributes;
-  static const ControlAttributes kDisabledNonButtonAttributes;
+  static constexpr ControlAttributes kVisibleTextAttributes = {
+      false, true, true, false, false};
+  static constexpr ControlAttributes kDefaultActiveButtonAttributes = {
+      false, true, true, true, true};
+  static constexpr ControlAttributes kDisabledButtonAttributes = {
+      false, false, false, true, false};
+  static constexpr ControlAttributes kNonDefaultActiveButtonAttributes = {
+      false, true, true, true, false};
+  static constexpr ControlAttributes kVisibleImageAttributes = {
+      false, true, false, false, false};
+  static constexpr ControlAttributes kDisabledNonButtonAttributes = {
+      false, false, false, false, false};
 
  private:
   void MaybeRequestExitProcess();

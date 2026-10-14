@@ -49,7 +49,7 @@ constexpr char kComponentsRootPath[] = "cros-components";
 namespace {
 
 // All downloadable Chrome OS components.
-const ComponentConfig kConfigs[] = {
+constexpr ComponentConfig kConfigs[] = {
     {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "980.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
     {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "106.0",
