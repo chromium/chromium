@@ -1,0 +1,17 @@
+upstream {
+  commit: "8dbd6483e920311a58c9af10a10beb278efebc36"
+  artifacts {
+    git {
+      repository: "https://github.com/memononen/libtess2"
+      commit: "8dbd6483e920311a58c9af10a10beb278efebc36"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  output {
+    update { git {} }
+  }
+}

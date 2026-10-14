@@ -1,7 +1,12 @@
-diff --git a/third_party/libtess2/src/Source/geom.c b/third_party/libtess2/src/Source/geom.c
+Replace assert() with tess_assert(), which calls Chromium's CHECK(), so
+the asserts also run in release builds.
+
+Chromium commit 17a734bf6fe90, Bug: 339682315.
+
+diff --git a/src/Source/geom.c b/src/Source/geom.c
 index b421157c38719..18884ff23699a 100644
---- a/third_party/libtess2/src/Source/geom.c
-+++ b/third_party/libtess2/src/Source/geom.c
+--- a/src/Source/geom.c
++++ b/src/Source/geom.c
 @@ -30,7 +30,7 @@
  */
  
@@ -47,10 +52,10 @@ index b421157c38719..18884ff23699a 100644
  
  	gapL = v->t - u->t;
  	gapR = w->t - v->t;
-diff --git a/third_party/libtess2/src/Source/mesh.c b/third_party/libtess2/src/Source/mesh.c
+diff --git a/src/Source/mesh.c b/src/Source/mesh.c
 index 2ce746b9726c9..9a419cafaad40 100644
---- a/third_party/libtess2/src/Source/mesh.c
-+++ b/third_party/libtess2/src/Source/mesh.c
+--- a/src/Source/mesh.c
++++ b/src/Source/mesh.c
 @@ -31,7 +31,7 @@
  
  //#include "tesos.h"
@@ -223,10 +228,10 @@ index 2ce746b9726c9..9a419cafaad40 100644
  		&& e->Sym == &mesh->eHeadSym
  		&& e->Sym->Sym == e
  		&& e->Org == NULL && e->Dst == NULL
-diff --git a/third_party/libtess2/src/Source/priorityq.c b/third_party/libtess2/src/Source/priorityq.c
+diff --git a/src/Source/priorityq.c b/src/Source/priorityq.c
 index 02a6988b0e893..50e2de3d98eff 100644
---- a/third_party/libtess2/src/Source/priorityq.c
-+++ b/third_party/libtess2/src/Source/priorityq.c
+--- a/src/Source/priorityq.c
++++ b/src/Source/priorityq.c
 @@ -31,7 +31,7 @@
  
  //#include "tesos.h"
@@ -299,10 +304,10 @@ index 02a6988b0e893..50e2de3d98eff 100644
  
  	pq->keys[curr] = NULL;
  	while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL ) {
-diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
+diff --git a/src/Source/sweep.c b/src/Source/sweep.c
 index 332fdb311962e..6116b5b69da1c 100644
---- a/third_party/libtess2/src/Source/sweep.c
-+++ b/third_party/libtess2/src/Source/sweep.c
+--- a/src/Source/sweep.c
++++ b/src/Source/sweep.c
 @@ -29,7 +29,7 @@
  ** Author: Eric Veach, July 1994.
  */
@@ -448,10 +453,10 @@ index 332fdb311962e..6116b5b69da1c 100644
  
  		if( e->Lnext->Lnext == e ) {
  			/* A face with only two edges */
-diff --git a/third_party/libtess2/src/Source/tess.c b/third_party/libtess2/src/Source/tess.c
+diff --git a/src/Source/tess.c b/src/Source/tess.c
 index 0b479210f4d86..5f043d67da2e2 100644
---- a/third_party/libtess2/src/Source/tess.c
-+++ b/third_party/libtess2/src/Source/tess.c
+--- a/src/Source/tess.c
++++ b/src/Source/tess.c
 @@ -30,7 +30,7 @@
  */
  

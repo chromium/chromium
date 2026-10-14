@@ -1,7 +1,13 @@
-diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
+Upstream declares fixedEdges only when NDEBUG is not defined, but
+0001-assert_always_on.patch keeps the assert that uses it in release
+builds. Guard that assert with the same #ifndef NDEBUG.
+
+Chromium commit 100e0d24e84b1 (https://crrev.com/c/7108464).
+
+diff --git a/src/Source/sweep.c b/src/Source/sweep.c
 index 31e050efc85a8..d18ad92de91ad 100644
---- a/third_party/libtess2/src/Source/sweep.c
-+++ b/third_party/libtess2/src/Source/sweep.c
+--- a/src/Source/sweep.c
++++ b/src/Source/sweep.c
 @@ -1159,7 +1159,9 @@ static void DoneEdgeDict( TESStesselator *tess )
  		*/
  		if( ! reg->sentinel ) {

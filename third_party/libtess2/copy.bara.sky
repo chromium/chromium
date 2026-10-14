@@ -1,0 +1,19 @@
+load("//crowbar", "crowbar_workflow", "replace_crlf", "strip_executable_permission")
+
+crowbar_workflow(
+    origin_files = glob([
+        "Include/**",
+        "LICENSE.txt",
+        "Source/**",
+    ]),
+    transformations = [
+        # Upstream marks the files in Include/ and Source/ as executable.
+        strip_executable_permission(glob(["src/**"])),
+        # Upstream Source/geom.c and Source/geom.h use CRLF line endings.
+        replace_crlf(paths = glob(["src/**.c", "src/**.h"])),
+        patch.apply(patches = [
+            "patches/0001-assert_always_on.patch",
+            "patches/0002-build_fix.patch",
+        ]),
+    ],
+)
