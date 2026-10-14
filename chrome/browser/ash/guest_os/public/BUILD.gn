@@ -41,6 +41,7 @@ static_library("public") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/trash_service/public/cpp",
     "//components/exo",
     "//components/exo/server",
     "//components/keyed_service/core",

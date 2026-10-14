@@ -82,7 +82,9 @@ static_library("dlp") {
     # instead after fixing cyclic dependency.
     "//chrome/app/vector_icons",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/paint_preview/buildflags",
 

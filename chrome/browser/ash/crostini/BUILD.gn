@@ -132,6 +132,7 @@ static_library("crostini") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/scheduler_config",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/constants",
