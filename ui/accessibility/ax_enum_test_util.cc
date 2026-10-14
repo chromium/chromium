@@ -4,7 +4,10 @@
 
 #include "ui/accessibility/ax_enum_test_util.h"
 
-#include <unordered_map>
+#include <algorithm>
+#include <iterator>
+#include <string_view>
+#include <utility>
 
 #include "base/notreached.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -13,8 +16,8 @@ namespace ui {
 
 ax::mojom::IntListAttribute StringToIntListAttribute(
     const std::string& attribute) {
-  static const std::unordered_map<std::string, ax::mojom::IntListAttribute>
-      attribute_map = {
+  static constexpr std::pair<std::string_view, ax::mojom::IntListAttribute>
+      kAttributeMap[] = {
           {"kNone", ax::mojom::IntListAttribute::kNone},
           {"kIndirectChildIds", ax::mojom::IntListAttribute::kIndirectChildIds},
           {"kActionsIds", ax::mojom::IntListAttribute::kActionsIds},
@@ -52,8 +55,10 @@ ax::mojom::IntListAttribute StringToIntListAttribute(
           {"kAriaNotificationPriorityProperties",
            ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties}};
 
-  auto it = attribute_map.find(attribute);
-  if (it != attribute_map.end()) {
+  const auto it = std::ranges::find(
+      kAttributeMap, attribute,
+      &std::pair<std::string_view, ax::mojom::IntListAttribute>::first);
+  if (it != std::end(kAttributeMap)) {
     return it->second;
   }
 

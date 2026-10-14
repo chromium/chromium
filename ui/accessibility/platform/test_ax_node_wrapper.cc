@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,21 +23,11 @@ namespace ui {
 
 namespace {
 
-// A global map from AXNodes to TestAXNodeWrappers.
-std::map<AXNodeID, std::unique_ptr<TestAXNodeWrapper>> g_node_id_to_wrapper_map;
-
 // A global coordinate offset.
 gfx::Vector2d g_offset;
 
 // A global scale factor.
 float g_scale_factor = 1.0;
-
-// A global map that stores which node is focused on a determined tree.
-//   - If a tree has no node being focused, there shouldn't be any entry on the
-//     map associated with such tree, i.e. a pair {tree, nullptr} is invalid.
-//   - For testing purposes, assume there is a single node being focused in the
-//     entire tree and if such node is deleted, focus is completely lost.
-std::map<AXTree*, AXNode*> g_focused_node_in_tree;
 
 // A global indicating the last node which ShowContextMenu was called from.
 AXNode* g_node_from_last_show_context_menu;
@@ -48,9 +39,30 @@ AXNode* g_node_from_last_default_action;
 // A global indicating that AXPlatformNodeDelegate objects are web content.
 bool g_is_web_content = false;
 
+// A global map from AXNodes to TestAXNodeWrappers.
+std::map<AXNodeID, std::unique_ptr<TestAXNodeWrapper>>& NodeIdToWrapperMap() {
+  static base::NoDestructor<
+      std::map<AXNodeID, std::unique_ptr<TestAXNodeWrapper>>>
+      map;
+  return *map;
+}
+
+// A global map that stores which node is focused on a determined tree.
+//   - If a tree has no node being focused, there shouldn't be any entry on the
+//     map associated with such tree, i.e. a pair {tree, nullptr} is invalid.
+//   - For testing purposes, assume there is a single node being focused in the
+//     entire tree and if such node is deleted, focus is completely lost.
+std::map<AXTree*, AXNode*>& FocusedNodeInTree() {
+  static base::NoDestructor<std::map<AXTree*, AXNode*>> map;
+  return *map;
+}
+
 // A map of hit test results - a map from source node ID to destination node
 // ID.
-std::map<AXNodeID, AXNodeID> g_hit_test_result;
+std::map<AXNodeID, AXNodeID>& HitTestResult() {
+  static base::NoDestructor<std::map<AXNodeID, AXNodeID>> map;
+  return *map;
+}
 
 }  // namespace
 
@@ -59,20 +71,20 @@ TestAXNodeWrapper* TestAXNodeWrapper::GetOrCreate(AXTree* tree, AXNode* node) {
   if (!tree || !node)
     return nullptr;
 
-  auto iter = g_node_id_to_wrapper_map.find(node->id());
-  if (iter != g_node_id_to_wrapper_map.end()) {
+  auto iter = NodeIdToWrapperMap().find(node->id());
+  if (iter != NodeIdToWrapperMap().end()) {
     if (iter->second->node_) {
       return iter->second.get();
     } else {
       // The underlying node has been deleted, so create a new one below.
-      g_node_id_to_wrapper_map.erase(iter);
+      NodeIdToWrapperMap().erase(iter);
     }
   }
 
   auto wrapper =
       std::unique_ptr<TestAXNodeWrapper>(new TestAXNodeWrapper(tree, node));
   TestAXNodeWrapper* ptr = wrapper.get();
-  g_node_id_to_wrapper_map[node->id()] = std::move(wrapper);
+  NodeIdToWrapperMap()[node->id()] = std::move(wrapper);
   return ptr;
 }
 
@@ -110,14 +122,14 @@ void TestAXNodeWrapper::SetGlobalIsWebContent(bool is_web_content) {
 // static
 void TestAXNodeWrapper::SetHitTestResult(AXNodeID src_node_id,
                                          AXNodeID dst_node_id) {
-  g_hit_test_result[src_node_id] = dst_node_id;
+  HitTestResult()[src_node_id] = dst_node_id;
 }
 
 // static
 void TestAXNodeWrapper::ResetGlobalState() {
-  g_node_id_to_wrapper_map.clear();
-  g_focused_node_in_tree.clear();
-  g_hit_test_result.clear();
+  NodeIdToWrapperMap().clear();
+  FocusedNodeInTree().clear();
+  HitTestResult().clear();
   g_node_from_last_show_context_menu = nullptr;
   g_node_from_last_default_action = nullptr;
   g_scale_factor = 1.0;
@@ -285,8 +297,8 @@ gfx::Rect TestAXNodeWrapper::GetHypertextRangeBoundsRect(
 }
 
 TestAXNodeWrapper* TestAXNodeWrapper::HitTestSyncInternal(int x, int y) {
-  if (g_hit_test_result.find(node_->id()) != g_hit_test_result.end()) {
-    int result_id = g_hit_test_result[node_->id()];
+  if (HitTestResult().find(node_->id()) != HitTestResult().end()) {
+    int result_id = HitTestResult()[node_->id()];
     AXNode* result_node = tree_->GetFromId(result_id);
     return GetOrCreate(tree_, result_node);
   }
@@ -322,8 +334,8 @@ gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
-  auto focused = g_focused_node_in_tree.find(tree_);
-  if (focused != g_focused_node_in_tree.end() &&
+  auto focused = FocusedNodeInTree().find(tree_);
+  if (focused != FocusedNodeInTree().end() &&
       focused->second->IsDescendantOf(node_)) {
     return GetOrCreate(tree_, focused->second)
         ->ax_platform_node()
@@ -365,9 +377,10 @@ AXPlatformNode* TestAXNodeWrapper::GetFromNodeID(int32_t id) {
   // Force creating all of the wrappers for this tree.
   BuildAllWrappers(tree_, tree_->root());
 
-  const auto iter = g_node_id_to_wrapper_map.find(id);
-  if (iter != g_node_id_to_wrapper_map.end())
+  const auto iter = NodeIdToWrapperMap().find(id);
+  if (iter != NodeIdToWrapperMap().end()) {
     return iter->second->ax_platform_node();
+  }
 
   return nullptr;
 }
@@ -639,7 +652,7 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(const AXActionData& data) {
     }
 
     case ax::mojom::Action::kFocus: {
-      g_focused_node_in_tree[tree_] = node_;
+      FocusedNodeInTree()[tree_] = node_;
 
       // The platform has select follows focus behavior:
       // https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_selection_follows_focus
