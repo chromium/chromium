@@ -134,7 +134,7 @@ bool NtpPromoController::HasShowablePromo(
 // See the full explanation of how this system works at the top of this file.
 std::optional<NtpShowablePromo> NtpPromoController::GenerateShowablePromo(
     const user_education::UserEducationContextPtr& context) {
-  if (ArePromosBlocked()) {
+  if (!context || !context->IsValid() || ArePromosBlocked()) {
     return std::nullopt;
   }
 
@@ -258,11 +258,14 @@ void NtpPromoController::OnPromoShown(const NtpPromoIdentifier& id) {
 void NtpPromoController::OnPromoClicked(
     NtpPromoIdentifier id,
     const user_education::UserEducationContextPtr& context) {
+  if (!context || !context->IsValid()) {
+    return;
+  }
+
   const auto* spec = registry_->GetNtpPromoSpecification(id);
   if (!spec) {
     return;
   }
-
   spec->action_callback().Run(context);
 
   auto prefs = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());

@@ -390,6 +390,9 @@ auto GetNtpPromoData(
       storage.ReadNtpPromoData(id).value_or(user_education::NtpPromoData());
   std::vector<FeaturePromoDemoPageDataPtr> result;
   std::string eligibility = [&]() {
+    if (!context || !context->IsValid()) {
+      return "Not Eligible";
+    }
     switch (spec.eligibility_callback().Run(context)) {
       case user_education::NtpPromoSpecification::Eligibility::kEligible:
         return "Eligible";

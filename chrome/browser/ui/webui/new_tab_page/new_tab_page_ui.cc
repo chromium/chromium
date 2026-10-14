@@ -1345,7 +1345,7 @@ void NewTabPageUI::CreateHelpBubbleHandler(
 void NewTabPageUI::CreateNtpPromoHandler(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler) {
-  ntp_promo_handler_ = NtpPromoHandler::Create(
+  ntp_promo_handler_ = std::make_unique<NtpPromoHandler>(
       std::move(client), std::move(handler), web_contents());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -49,14 +49,16 @@ class NtpPromoSpecification {
   // Eligibility status returned by an EligibilityCallback.
   enum class Eligibility { kIneligible, kEligible, kCompleted };
 
-  // Receives the profile to be evaluated for eligibility.
+  // Receives the context to be evaluated for eligibility. `context` is
+  // guaranteed to be non-null and valid when invoked.
   using EligibilityCallback = base::RepeatingCallback<Eligibility(
       const user_education::UserEducationContextPtr&)>;
 
   using ShowCallback = base::RepeatingClosure;
 
-  // Receives a browser in which the action can be taken, and an object
-  // to be held by the invoked flow until termination.
+  // Receives the context in which the action can be taken, to be held by the
+  // invoked flow until termination. `context` is guaranteed to be non-null and
+  // valid when invoked.
   using ActionCallback = base::RepeatingCallback<void(
       const user_education::UserEducationContextPtr&)>;
 

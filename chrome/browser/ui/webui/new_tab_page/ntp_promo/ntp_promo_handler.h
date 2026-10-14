@@ -20,24 +20,13 @@ class WebContents;
 
 class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
  public:
-  NtpPromoHandler(const NtpPromoHandler&) = delete;
-  void operator=(const NtpPromoHandler&) = delete;
-  ~NtpPromoHandler() override;
-
-  // Convenience method so NTP doesn't have to care about User Education stuff
-  // when creating the handler.
-  static std::unique_ptr<NtpPromoHandler> Create(
+  NtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
       content::WebContents* web_contents);
-
-  // Used for tests that want to directly inject a `promo_controller`.
-  // Otherwise identical to `Create()`.
-  static std::unique_ptr<NtpPromoHandler> CreateForTesting(
-      mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
-      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-      const user_education::UserEducationContextPtr& ue_context,
-      user_education::NtpPromoController* promo_controller);
+  NtpPromoHandler(const NtpPromoHandler&) = delete;
+  void operator=(const NtpPromoHandler&) = delete;
+  ~NtpPromoHandler() override;
 
   // ntp_promo::mojom::NtpPromoHandler:
   void RequestPromos() override;
@@ -45,16 +34,19 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   void OnPromoDismissed(const std::string& promo_id) override;
   void OnPromoShown(const std::string& promo_id) override;
 
- private:
+ protected:
   NtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-      const user_education::UserEducationContextPtr& ue_context,
+      content::WebContents* web_contents,
       user_education::NtpPromoController* promo_controller);
 
+  virtual user_education::UserEducationContextPtr GetContext() const;
+
+ private:
   mojo::Remote<ntp_promo::mojom::NtpPromoClient> remote_client_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandler> receiver_;
-  const user_education::UserEducationContextPtr ue_context_;
+  const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<user_education::NtpPromoController> promo_controller_;
 };
 

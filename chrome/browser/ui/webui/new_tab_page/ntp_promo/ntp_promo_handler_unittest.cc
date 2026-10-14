@@ -69,6 +69,29 @@ class MockController : public user_education::NtpPromoController {
                const user_education::UserEducationContextPtr&));
 };
 
+class TestNtpPromoHandler : public NtpPromoHandler {
+ public:
+  TestNtpPromoHandler(
+      mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
+      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+      const user_education::UserEducationContextPtr& ue_context,
+      user_education::NtpPromoController* promo_controller)
+      : NtpPromoHandler(std::move(pending_client),
+                        std::move(pending_handler),
+                        /*web_contents=*/nullptr,
+                        promo_controller),
+        ue_context_(ue_context) {}
+  ~TestNtpPromoHandler() override = default;
+
+ protected:
+  user_education::UserEducationContextPtr GetContext() const override {
+    return ue_context_;
+  }
+
+ private:
+  const user_education::UserEducationContextPtr ue_context_;
+};
+
 }  // namespace
 
 class NtpPromoHandlerTest : public testing::Test {
@@ -107,11 +130,12 @@ class NtpPromoHandlerTest : public testing::Test {
   MockClient mock_client_;
   scoped_refptr<user_education::UserEducationContext> mock_context_ =
       base::MakeRefCounted<user_education::test::MockUserEducationContext>();
-  std::unique_ptr<NtpPromoHandler> handler_ = NtpPromoHandler::CreateForTesting(
-      mock_client_.BindAndGetRemote(),
-      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
-      mock_context(),
-      &mock_controller_);
+  std::unique_ptr<NtpPromoHandler> handler_ =
+      std::make_unique<TestNtpPromoHandler>(
+          mock_client_.BindAndGetRemote(),
+          mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
+          mock_context(),
+          &mock_controller_);
 };
 
 TEST_F(NtpPromoHandlerTest, PassesOnClick) {

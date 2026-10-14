@@ -7,7 +7,6 @@
 #include <iterator>
 #include <memory>
 
-#include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -23,12 +22,9 @@
 
 namespace {
 
-void CheckBackend(user_education::NtpPromoController* controller,
-                  const user_education::UserEducationContextPtr& context) {
-  const std::string error =
-      "Should never show in a context where NTP promos are prohibited.";
-  CHECK(controller) << error;
-  CHECK(context) << error;
+void CheckController(user_education::NtpPromoController* controller) {
+  CHECK(controller)
+      << "Should never show in a context where NTP promos are prohibited.";
 }
 
 }  // namespace
@@ -36,52 +32,45 @@ void CheckBackend(user_education::NtpPromoController* controller,
 NtpPromoHandler::NtpPromoHandler(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-    const user_education::UserEducationContextPtr& ue_context,
+    content::WebContents* web_contents)
+    : NtpPromoHandler(std::move(pending_client),
+                      std::move(pending_handler),
+                      web_contents,
+                      UserEducationServiceFactory::GetForBrowserContext(
+                          web_contents->GetBrowserContext())
+                          ->ntp_promo_controller()) {}
+
+NtpPromoHandler::NtpPromoHandler(
+    mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
+    mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+    content::WebContents* web_contents,
     user_education::NtpPromoController* promo_controller)
     : remote_client_(std::move(pending_client)),
       receiver_(this, std::move(pending_handler)),
-      ue_context_(ue_context),
+      web_contents_(web_contents),
       promo_controller_(promo_controller) {}
-
-// static
-std::unique_ptr<NtpPromoHandler> NtpPromoHandler::Create(
-    mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
-    mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-    content::WebContents* web_contents) {
-  auto* user_education =
-      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents);
-  return base::WrapUnique(new NtpPromoHandler(
-      std::move(pending_client), std::move(pending_handler),
-      user_education ? user_education->GetUserEducationContext(
-                           base::PassKey<NtpPromoHandler>())
-                     : nullptr,
-      UserEducationServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())
-          ->ntp_promo_controller()));
-}
-
-// static
-std::unique_ptr<NtpPromoHandler> NtpPromoHandler::CreateForTesting(
-    mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
-    mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-    const user_education::UserEducationContextPtr& ue_context,
-    user_education::NtpPromoController* promo_controller) {
-  return base::WrapUnique(new NtpPromoHandler(std::move(pending_client),
-                                              std::move(pending_handler),
-                                              ue_context, promo_controller));
-}
 
 NtpPromoHandler::~NtpPromoHandler() = default;
 
+user_education::UserEducationContextPtr NtpPromoHandler::GetContext() const {
+  if (auto* user_education =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents_)) {
+    return user_education->GetUserEducationContext(
+        base::PassKey<NtpPromoHandler>());
+  }
+  return nullptr;
+}
+
 void NtpPromoHandler::RequestPromos() {
-  CheckBackend(promo_controller_, ue_context_);
-  const auto showable = promo_controller_->GenerateShowablePromo(ue_context_);
+  CheckController(promo_controller_);
+  const auto showable = promo_controller_->GenerateShowablePromo(GetContext());
   remote_client_->SetPromo(showable);
 }
 
 void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
-  CheckBackend(promo_controller_, ue_context_);
-  promo_controller_->OnPromoClicked(promo_id, ue_context_);
+  CheckController(promo_controller_);
+  promo_controller_->OnPromoClicked(promo_id, GetContext());
 }
 
 void NtpPromoHandler::OnPromoDismissed(const std::string& promo_id) {
