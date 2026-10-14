@@ -17,4 +17,6 @@ Tests the transfer size of signed exchange is set correctly.
   failed: false
   statusCode: 200
   resourceType: document
+Number of outer requests: 1
+Transfer size is larger than 10000: true
 

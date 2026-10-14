@@ -1,7 +1,7 @@
 Tests the signed exchange information are available when the certificate file is not available.
 
-about:blank:1 Invalid reponse code: 404
-about:blank:1 Failed to fetch the certificate.
+Log entry (error): Invalid reponse code: 404
+Log entry (error): Failed to fetch the certificate.
 * http://127.0.0.1:8000/loading/sxg/resources/sxg-cert-not-found.sxg
   failed: false
   statusCode: 200
