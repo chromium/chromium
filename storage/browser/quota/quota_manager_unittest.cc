@@ -1958,52 +1958,6 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
       GetStorageKeyUsageWithBreakdown(ToStorageKey("http://foo.com/")).usage);
 }
 
-TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
-  base::HistogramTester histograms;
-  static const ClientBucketData kData[] = {
-      {"http://foo.com/", kDefaultBucketName, 1},
-      {"http://bar.com/", kDefaultBucketName, 1},
-  };
-  MockQuotaClient* client =
-      CreateAndRegisterClient(QuotaClientType::kFileSystem);
-  RegisterClientBucketData(client, kData);
-
-  GetGlobalUsage();
-
-  ASSERT_OK_AND_ASSIGN(auto bucket, GetBucket(ToStorageKey("http://foo.com"),
-                                              kDefaultBucketName));
-
-  EvictBucketData(bucket.ToBucketLocator());
-
-  // Ensure use count and time since access are recorded.
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kEvictedBucketAccessedCountHistogram, 1);
-  histograms.ExpectBucketCount(
-      QuotaManagerImpl::kEvictedBucketAccessedCountHistogram, 0, 1);
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kEvictedBucketDaysSinceAccessHistogram, 1);
-
-  // Change the use count.
-  NotifyDefaultBucketAccessed(ToStorageKey("http://bar.com/"),
-                              base::Time::Now());
-  task_environment_.RunUntilIdle();
-
-  GetGlobalUsage();
-
-  ASSERT_OK_AND_ASSIGN(
-      bucket, GetBucket(ToStorageKey("http://bar.com"), kDefaultBucketName));
-
-  EvictBucketData(bucket.ToBucketLocator());
-
-  // The new use count should be logged.
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kEvictedBucketAccessedCountHistogram, 2);
-  histograms.ExpectBucketCount(
-      QuotaManagerImpl::kEvictedBucketAccessedCountHistogram, 1, 1);
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kEvictedBucketDaysSinceAccessHistogram, 2);
-}
-
 TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
   static const ClientBucketData kData[] = {
       {"http://foo.com/", kDefaultBucketName, 1},

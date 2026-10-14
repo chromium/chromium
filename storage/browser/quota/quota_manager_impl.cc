@@ -33,7 +33,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -170,13 +169,11 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   UsageAndQuotaInfoGatherer(
       QuotaManagerImpl* manager,
       const StorageKey& storage_key,
-      bool is_incognito,
       UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback)
       : QuotaTask(manager),
         storage_key_(storage_key),
         callback_(std::move(callback)),
-        is_unlimited_(manager->IsStorageUnlimited(storage_key_)),
-        is_incognito_(is_incognito) {
+        is_unlimited_(manager->IsStorageUnlimited(storage_key_)) {
     CHECK(manager);
     CHECK(callback_);
   }
@@ -184,11 +181,9 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   UsageAndQuotaInfoGatherer(
       QuotaManagerImpl* manager,
       const BucketInfo& bucket_info,
-      bool is_incognito,
       UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback)
       : UsageAndQuotaInfoGatherer(manager,
                                   bucket_info.storage_key,
-                                  is_incognito,
                                   std::move(callback)) {
     bucket_info_ = bucket_info;
   }
@@ -275,15 +270,6 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
                                  : blink::mojom::QuotaStatusCode::kUnknown,
                              usage_, quota, quota_override_size.has_value(),
                              std::move(usage_breakdown_));
-    if (!is_incognito_ && !is_unlimited_ && !bucket_info_) {
-      UMA_HISTOGRAM_MBYTES("Quota.QuotaForOrigin", quota);
-      UMA_HISTOGRAM_MBYTES("Quota.UsageByOrigin", usage_);
-      if (quota > 0) {
-        UMA_HISTOGRAM_PERCENTAGE(
-            "Quota.PercentUsedByOrigin",
-            std::min(100, static_cast<int>((usage_ * 100) / quota)));
-      }
-    }
     DeleteSoon();
   }
 
@@ -346,7 +332,6 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   std::optional<BucketInfo> bucket_info_;
   QuotaManagerImpl::UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback_;
   const bool is_unlimited_;
-  const bool is_incognito_;
 
   // Fields retrieved while running.
   int64_t available_space_ = 0;
@@ -1230,8 +1215,8 @@ void QuotaManagerImpl::HandleGetUsageAndQuotaRequest(
   CHECK(callback);
   EnsureDatabaseOpened();
 
-  UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-      this, storage_key, is_incognito_, std::move(callback));
+  UsageAndQuotaInfoGatherer* helper =
+      new UsageAndQuotaInfoGatherer(this, storage_key, std::move(callback));
   helper->Start();
 }
 
@@ -1282,7 +1267,7 @@ void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
                   weak_this->IsStorageUnlimited(bucket.storage_key);
 
               UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-                  weak_this.get(), bucket, weak_this->is_incognito_,
+                  weak_this.get(), bucket,
                   base::BindOnce(
                       [](base::WeakPtr<QuotaManagerImpl> weak_this,
                          UsageAndQuotaCallback callback,
@@ -2223,13 +2208,6 @@ void QuotaManagerImpl::DidEvictBucketData(
 
   if (entry.has_value()) {
     CHECK(entry.value());
-    base::Time now = base::Time::Now();
-    base::UmaHistogramCounts1M(
-        QuotaManagerImpl::kEvictedBucketAccessedCountHistogram,
-        entry.value()->use_count);
-    base::UmaHistogramCounts1000(
-        QuotaManagerImpl::kEvictedBucketDaysSinceAccessHistogram,
-        (now - entry.value()->last_accessed).InDays());
     barrier.Run(true);
   } else {
     // We only try to evict buckets that are not in use, so basically deletion
@@ -2394,6 +2372,8 @@ void QuotaManagerImpl::ReportHistogram() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_incognito_);
 
+  // Computing the global usage also fills the usage tracker's cache, which
+  // eviction reads when there is no storage pressure.
   GetGlobalUsage(
       base::BindOnce(&QuotaManagerImpl::DidGetGlobalUsageForHistogram,
                      weak_factory_.GetWeakPtr()));
@@ -2406,63 +2386,22 @@ void QuotaManagerImpl::DidGetGlobalUsageForHistogram(int64_t usage,
 
   GetStorageCapacity(
       base::BindOnce(&QuotaManagerImpl::DidGetStorageCapacityForHistogram,
-                     weak_factory_.GetWeakPtr(), usage));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void QuotaManagerImpl::DidGetStorageCapacityForHistogram(
-    int64_t usage,
     base::SysInfo::DiskSpaceInfo disk_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(usage, -1);
 
   int64_t total_space = static_cast<int64_t>(disk_space.total.InBytes());
   int64_t available_space =
       static_cast<int64_t>(disk_space.available.InBytes());
 
-  UMA_HISTOGRAM_MBYTES("Quota.GlobalUsageOfTemporaryStorage", usage);
   if (total_space > 0) {
-    UMA_HISTOGRAM_PERCENTAGE("Quota.PercentUsedForTemporaryStorage2",
-                             static_cast<int>((usage * 100) / total_space));
     UMA_HISTOGRAM_MBYTES("Quota.AvailableDiskSpace2", available_space);
     UMA_HISTOGRAM_PERCENTAGE(
         "Quota.PercentDiskAvailable2",
         std::min(100, static_cast<int>((available_space * 100 / total_space))));
-  }
-
-  // We DumpBucketTable last to ensure the trackers caches are loaded.
-  DumpBucketTable(
-      base::BindOnce(&QuotaManagerImpl::DidDumpBucketTableForHistogram,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void QuotaManagerImpl::DidDumpBucketTableForHistogram(
-    BucketTableEntries entries) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramCounts100000("Quota.TotalBucketCount", entries.size());
-
-  std::map<StorageKey, int64_t> usage_map =
-      GetUsageTracker()->GetCachedStorageKeysUsage();
-  base::Time now = base::Time::Now();
-  for (const auto& info : entries) {
-    std::optional<StorageKey> storage_key =
-        StorageKey::Deserialize(info->storage_key);
-    if (!storage_key.has_value()) {
-      continue;
-    }
-    auto it = usage_map.find(*storage_key);
-    if (it == usage_map.end() || it->second == 0) {
-      continue;
-    }
-
-    base::TimeDelta age =
-        now - std::max(info->last_accessed, info->last_modified);
-    base::UmaHistogramCounts1000("Quota.AgeOfOriginInDays", age.InDays());
-
-    int64_t kilobytes = std::max(it->second / int64_t{1024}, int64_t{1});
-    base::Histogram::FactoryGet("Quota.AgeOfDataInDays", 1, 1000, 50,
-                                base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(age.InDays(), base::saturated_cast<int>(kilobytes));
   }
 }
 
@@ -2658,7 +2597,6 @@ void QuotaManagerImpl::DidGetSettings(std::optional<QuotaSettings> settings) {
   }
   SetQuotaSettings(*settings);
   settings_callbacks_.Run(*settings);
-  UMA_HISTOGRAM_MBYTES("Quota.GlobalTemporaryPoolSize", settings->pool_size);
   LOG_IF(WARNING, settings->pool_size == 0)
       << "No storage quota provided in QuotaSettings.";
 }
@@ -2844,7 +2782,7 @@ void QuotaManagerImpl::DidGetBucketForUsageAndQuota(
   }
 
   UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-      this, result.value(), is_incognito_,
+      this, result.value(),
       base::BindOnce(&DidGetUsageAndQuotaStripOverride,
                      base::BindOnce(&DidGetUsageAndQuotaStripBreakdown,
                                     std::move(callback))));

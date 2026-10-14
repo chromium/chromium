@@ -73,10 +73,6 @@ const char kMediaLicenseDatabaseRemoved[] = "IsMediaLicenseDatabaseRemoved";
 
 const int kCommitIntervalMs = 30000;
 
-void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
-  base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
-}
-
 // SQL statement fragment for inserting fields into the buckets table.
 #define BUCKETS_FIELDS_INSERTER                                         \
   " (storage_key, host, name, use_count, last_accessed, last_modified," \
@@ -1057,52 +1053,35 @@ bool QuotaDatabase::OpenDatabase() {
 
   // Open in memory database.
   if (db_file_path_.empty()) {
-    if (db_->OpenInMemory()) {
-      return true;
-    }
-    RecordDatabaseResetHistogram(DatabaseResetReason::kOpenInMemoryDatabase);
-    return false;
+    return db_->OpenInMemory();
   }
 
   if (!base::CreateDirectory(db_file_path_.DirName())) {
-    RecordDatabaseResetHistogram(DatabaseResetReason::kCreateDirectory);
     return false;
   }
 
-  if (!db_->Open(db_file_path_)) {
-    RecordDatabaseResetHistogram(DatabaseResetReason::kOpenDatabase);
-    return false;
-  }
-
-  return true;
+  return db_->Open(db_file_path_);
 }
 
 bool QuotaDatabase::EnsureDatabaseVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sql::MetaTable::DoesTableExist(db_.get())) {
-    if (CreateSchema()) {
-      return true;
-    }
-    RecordDatabaseResetHistogram(DatabaseResetReason::kCreateSchema);
-    return false;
+    return CreateSchema();
   }
 
   if (!meta_table_->Init(db_.get(), kQuotaDatabaseCurrentSchemaVersion,
                          kQuotaDatabaseCompatibleVersion)) {
-    RecordDatabaseResetHistogram(DatabaseResetReason::kInitMetaTable);
     return false;
   }
 
   if (meta_table_->GetCompatibleVersionNumber() >
       kQuotaDatabaseCurrentSchemaVersion) {
-    RecordDatabaseResetHistogram(DatabaseResetReason::kDatabaseVersionTooNew);
     LOG(WARNING) << "Quota database is too new.";
     return false;
   }
 
   if (meta_table_->GetVersionNumber() < kQuotaDatabaseCurrentSchemaVersion) {
     if (!QuotaDatabaseMigrations::UpgradeSchema(*this)) {
-      RecordDatabaseResetHistogram(DatabaseResetReason::kDatabaseMigration);
       return false;
     }
   }

@@ -829,7 +829,6 @@ TEST_P(QuotaDatabaseTest, BootstrapFlag) {
 }
 
 TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
-  base::HistogramTester histograms;
   // Create database, force corruption and close db by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
@@ -858,10 +857,6 @@ TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
     base::FilePath storage_path = db->GetStoragePath();
     EXPECT_FALSE(base::IsDirectoryEmpty(storage_path));
   }
-
-  histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
-  histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
-                               DatabaseResetReason::kOpenDatabase, 1);
 }
 
 // The long-running transaction that batches writes must be re-established

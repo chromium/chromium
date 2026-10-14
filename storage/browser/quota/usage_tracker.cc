@@ -139,20 +139,6 @@ std::map<std::string, int64_t> UsageTracker::GetCachedHostsUsage() const {
   return host_usage;
 }
 
-std::map<blink::StorageKey, int64_t> UsageTracker::GetCachedStorageKeysUsage()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<blink::StorageKey, int64_t> storage_key_usage;
-  for (const auto& [client_type, client_tracker] : client_tracker_map_) {
-    const ClientUsageTracker::BucketUsageMap& usage_map =
-        client_tracker->GetCachedBucketsUsage();
-    for (const auto& [bucket, usage] : usage_map) {
-      storage_key_usage[bucket.storage_key] += usage;
-    }
-  }
-  return storage_key_usage;
-}
-
 std::map<BucketLocator, int64_t> UsageTracker::GetCachedBucketsUsage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<BucketLocator, int64_t> aggregated_usage;

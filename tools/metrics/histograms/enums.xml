@@ -1367,11 +1367,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Visible"/>
 </enum>
 
-<enum name="BooleanVolumeZero">
-  <int value="0" label="Not zero"/>
-  <int value="1" label="Zero"/>
-</enum>
-
 <enum name="BooleanWasDeferred">
   <int value="0" label="Was not deferred"/>
   <int value="1" label="Was deferred"/>
@@ -25555,16 +25550,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="The second step of bootstrapping failed"/>
   <int value="2"
       label="Tried and failed to raze database after a catastrophic error"/>
-</enum>
-
-<enum name="QuotaDatabaseResetReason">
-  <int value="0" label="Failed to open/create database for path"/>
-  <int value="1" label="Failed to create in-memory database"/>
-  <int value="2" label="Failed to create schema"/>
-  <int value="3" label="Database migration failed"/>
-  <int value="4" label="Database version is too new"/>
-  <int value="5" label="Failed to initialize meta table"/>
-  <int value="6" label="Failed to create directory"/>
 </enum>
 
 <enum name="RankerModelStatus">

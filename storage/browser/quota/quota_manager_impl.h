@@ -451,11 +451,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   static constexpr char kDatabaseName[] = "QuotaManager";
 
-  static constexpr char kEvictedBucketAccessedCountHistogram[] =
-      "Quota.EvictedBucketAccessCount";
-  static constexpr char kEvictedBucketDaysSinceAccessHistogram[] =
-      "Quota.EvictedBucketDaysSinceAccess";
-
   // Kept non-const so that test code can change the value.
   // TODO(kinuko): Make this a real const value and add a proper way to set
   // the quota for syncable storage. (http://crbug.com/155488)
@@ -656,9 +651,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void ReportHistogram();
   void DidGetGlobalUsageForHistogram(int64_t usage, int64_t unlimited_usage);
   void DidGetStorageCapacityForHistogram(
-      int64_t usage,
       base::SysInfo::DiskSpaceInfo disk_space);
-  void DidDumpBucketTableForHistogram(BucketTableEntries entries);
 
   // Returns the list of bucket ids that should be excluded from eviction due to
   // consistent errors after multiple attempts.

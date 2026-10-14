@@ -91,10 +91,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   // GetGlobalUsage which retrieves and caches host usage.
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
 
-  // Returns all cached usage organized by StorageKey. Used for histogram
-  // recording.
-  std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
-
   // Returns all cached usage organized by bucket. Used for eviction.
   std::map<BucketLocator, int64_t> GetCachedBucketsUsage() const;
 

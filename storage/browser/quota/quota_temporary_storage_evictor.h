@@ -34,25 +34,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
     int64_t num_evicted_buckets = 0;
     int64_t num_eviction_rounds = 0;
     int64_t num_skipped_eviction_rounds = 0;
-
-    void subtract_assign(const Statistics& rhs) {
-      num_errors_on_getting_usage_and_quota -=
-          rhs.num_errors_on_getting_usage_and_quota;
-      num_evicted_buckets -= rhs.num_evicted_buckets;
-      num_eviction_rounds -= rhs.num_eviction_rounds;
-      num_skipped_eviction_rounds -= rhs.num_skipped_eviction_rounds;
-    }
   };
 
   struct EvictionRoundStatistics {
     bool in_round = false;
-    bool is_initialized = false;
 
     base::Time start_time;
-    int64_t diskspace_shortage_at_round = -1;
-
-    int64_t usage_on_beginning_of_round = -1;
-    int64_t usage_on_end_of_round = -1;
     int64_t num_evicted_buckets = 0;
   };
 
@@ -67,7 +54,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
 
   void GetStatistics(std::map<std::string, int64_t>* statistics);
   void ReportPerRoundHistogram();
-  void ReportPerHourHistogram();
   void Start();
 
   bool in_round() const { return round_statistics_.in_round; }
@@ -95,7 +81,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   raw_ptr<QuotaEvictionHandler> quota_eviction_handler_;
 
   Statistics statistics_;
-  Statistics previous_statistics_;
   EvictionRoundStatistics round_statistics_;
   base::Time time_of_end_of_last_nonskipped_round_;
 
@@ -104,7 +89,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   base::RepeatingClosure on_round_finished_for_testing_;
 
   base::OneShotTimer eviction_timer_;
-  base::RepeatingTimer histogram_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
