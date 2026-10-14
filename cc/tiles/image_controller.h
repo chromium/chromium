@@ -139,7 +139,10 @@ class CC_EXPORT ImageController {
     WorkerTaskState task_state GUARDED_BY(lock) = WorkerTaskState::kNoTask;
 
     const scoped_refptr<base::SequencedTaskRunner> origin_task_runner;
-    const base::WeakPtr<ImageController> weak_ptr;
+    // `weak_ptr` may be replaced while worker tasks are running so access is
+    // guarded by the lock. WeakPtr is not thread safe and copies of `weak_ptr`
+    // can still only be dereferenced on `origin_task_runner`.
+    base::WeakPtr<ImageController> weak_ptr GUARDED_BY(lock);
   };
 
   void ForEachDecodeRequest(base::FunctionRef<void(ImageDecodeRequest&)>);
