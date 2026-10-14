@@ -117,7 +117,6 @@ cast_shared_library("libcast_graphics_1.0") {
   sources = [
     "cast_egl_platform_default.cc",
     "graphics_properties_default.cc",
-    "osd_plane_default.cc",
   ]
 
   public_deps = [ "//chromecast/public" ]
