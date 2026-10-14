@@ -912,9 +912,7 @@ void GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged() {
     return;
   }
   is_enabled_ = is_enabled;
-  if (is_enabled_) {
-    base::RecordAction(base::UserMetricsAction("Glic.Enabled"));
-  } else {
+  if (!is_enabled_) {
     base::RecordAction(base::UserMetricsAction("Glic.Disabled"));
   }
 }

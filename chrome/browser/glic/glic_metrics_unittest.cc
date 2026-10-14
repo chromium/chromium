@@ -898,38 +898,30 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreNotPermittedByPolicy) {
 
 TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 0);
-  // Glic starts enabled and during profile creation GlicMetrics records a user
-  // action.
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 1);
 
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kNotStarted);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 1);
 
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kCompleted);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 2);
 
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(
           optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 2);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 2);
 
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(
           optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 2);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 3);
 
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kIncomplete);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 3);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 3);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
