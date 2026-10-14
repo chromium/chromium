@@ -295,6 +295,13 @@ WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
   return nullptr;
 }
 
+void PrintPreviewDialogController::CancelPrintPreview(WebContents* initiator) {
+  CHECK(initiator);
+  if (GetPrintPreviewForContents(initiator)) {
+    RemoveInitiator(initiator);
+  }
+}
+
 WebContents* PrintPreviewDialogController::GetInitiator(
     WebContents* preview_dialog) {
   auto it = preview_dialog_map_.find(preview_dialog);

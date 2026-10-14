@@ -67,6 +67,9 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
   content::WebContents* GetPrintPreviewForContents(
       content::WebContents* contents) const;
 
+  // Cancels the open or backgrounded print preview for `initiator`, if any.
+  void CancelPrintPreview(content::WebContents* initiator);
+
   // Returns the initiator for `preview_dialog`.
   // Returns nullptr if no initiator exists for `preview_dialog`.
   content::WebContents* GetInitiator(content::WebContents* preview_dialog);

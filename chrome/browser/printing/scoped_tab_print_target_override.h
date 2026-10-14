@@ -21,7 +21,8 @@ namespace printing {
 // Routes print commands for `tab` to `target`, a WebContents associated with
 // `tab` that is not itself a tab (e.g. an overlay drawn over the tab's
 // contents), for as long as this object is alive. At most one override can
-// exist per tab at a time.
+// exist per tab at a time. Destroying this object cancels any open or pending
+// print preview for `target`.
 class [[nodiscard]] ScopedTabPrintTargetOverride {
  public:
   DECLARE_USER_DATA(ScopedTabPrintTargetOverride);
