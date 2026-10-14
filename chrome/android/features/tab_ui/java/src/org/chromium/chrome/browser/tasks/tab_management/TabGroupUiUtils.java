@@ -17,11 +17,15 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.BringToFrontSource;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -567,18 +571,9 @@ public class TabGroupUiUtils {
         if (tabs == null || tabs.isEmpty()) {
             return;
         }
-        if (destinationGroup == null
-                || !isValidDestination(destinationGroup, syncService, uiActionHandler)) {
-            return;
-        }
-        Token destinationGroupId = null;
-        if (isRemoteGroup(destinationGroup)) {
-            destinationGroupId =
-                    maybeRestoreRemoteGroup(
-                            sourceTabModel, destinationGroup, syncService, uiActionHandler);
-        } else if (destinationGroup.groupWindowState != GroupWindowState.HIDDEN) {
-            destinationGroupId = destinationGroup.localId;
-        }
+        Token destinationGroupId =
+                getOrRestoreLocalGroupId(
+                        sourceTabModel, destinationGroup, syncService, uiActionHandler);
         if (destinationGroupId == null || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
             return;
         }
@@ -593,6 +588,20 @@ public class TabGroupUiUtils {
             moveTabsToAnotherWindow(
                     sourceTabModel, tabs, destinationGroupId, tabMovedCallback, bringToFront);
         }
+    }
+
+    private static @Nullable Token getOrRestoreLocalGroupId(
+            TabModel tabModel,
+            @Nullable GroupWindowInfo groupInfo,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler) {
+        if (groupInfo == null || !isValidDestination(groupInfo, syncService, uiActionHandler)) {
+            return null;
+        }
+        if (isRemoteGroup(groupInfo)) {
+            return maybeRestoreRemoteGroup(tabModel, groupInfo, syncService, uiActionHandler);
+        }
+        return groupInfo.groupWindowState != GroupWindowState.HIDDEN ? groupInfo.localId : null;
     }
 
     private static @Nullable Token maybeRestoreRemoteGroup(
@@ -698,5 +707,51 @@ public class TabGroupUiUtils {
         if (syncService != null && syncId != null) {
             syncService.removeGroup(syncId);
         }
+    }
+
+    /**
+     * Opens a tab group in a new window. If the group is remote or closing, it is first restored
+     * locally before moving.
+     *
+     * @param tabModel The current {@link TabModel}.
+     * @param groupInfo The {@link GroupWindowInfo} representing the tab group, or null.
+     * @param syncService The {@link TabGroupSyncService}, or null.
+     * @param uiActionHandler The {@link TabGroupUiActionHandler} to restore remote groups, or null.
+     * @param multiInstanceManager The {@link MultiInstanceManager} to close the source window if
+     *     empty, or null.
+     * @return True if the group was moved to a new window; false otherwise.
+     */
+    public static boolean openTabGroupInNewWindow(
+            TabModel tabModel,
+            @Nullable GroupWindowInfo groupInfo,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler,
+            @Nullable MultiInstanceManager multiInstanceManager) {
+        Token groupId = getOrRestoreLocalGroupId(tabModel, groupInfo, syncService, uiActionHandler);
+        if (groupId == null) {
+            return false;
+        }
+        @WindowId
+        int windowId = TabWindowManagerSingleton.getInstance().findWindowIdForTabGroup(groupId);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
+        }
+        TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+        Tab selectedTab = TabGroupUtils.getSelectedOrFirstTabInGroup(targetModel, groupId);
+        TabGroupMetadata metadata =
+                TabGroupMetadataExtractor.extractTabGroupMetadata(
+                        targetModel,
+                        targetModel.getTabsInGroup(groupId),
+                        windowId,
+                        selectedTab != null ? selectedTab.getId() : Tab.INVALID_TAB_ID);
+        if (metadata == null) {
+            return false;
+        }
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabGroupToNewWindow(metadata, NewWindowAppSource.MENU);
+        if (multiInstanceManager != null) {
+            multiInstanceManager.closeChromeWindowIfEmpty(windowId);
+        }
+        return true;
     }
 }
