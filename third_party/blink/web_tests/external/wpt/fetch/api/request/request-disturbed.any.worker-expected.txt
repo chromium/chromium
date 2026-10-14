@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Input request used for creating new request became disturbed even if body is not used
-  assert_true: bodyUsed is true when request is disturbed expected true got false
-Harness: the test ran to completion.
-
