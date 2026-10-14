@@ -508,7 +508,11 @@ OptionalPaintTimingCallback SoftNavigationHeuristics::OnPaintFinished(
 template <IsDerivedFromPaintTimingRecord T>
 void SoftNavigationHeuristics::OnContentfulPaintImpl(T* record) const {
   Node* node = record->GetNode();
-  CHECK(node, base::NotFatalUntil::M163);
+  // TODO(crbug.com/454082773): `node` can be null if it's removed from the DOM
+  // and GCed between queuing `record` for processing and the end of the
+  // subsequent paint. This can happen for <video> since first video frame is
+  // queued for processing out side of paint. We should either support these
+  // records or filter them at the PaintTiming layer.
   if (!node) {
     return;
   }
