@@ -287,7 +287,7 @@ public class TabReparentingDelegateUnitTest {
                 mDestActivity,
                 tabs,
                 /* destTabIndex= */ 2,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
         // Verify that the reparenting task is initiated.

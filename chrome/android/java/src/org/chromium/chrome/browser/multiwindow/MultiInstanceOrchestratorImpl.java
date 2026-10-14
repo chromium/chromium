@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -216,18 +217,17 @@ import java.util.function.Supplier;
             int destWindowId,
             List<Tab> tabs,
             int destTabIndex,
-            int destGroupTabId,
+            @TabId int destGroupTabId,
             boolean bringToFront) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (tabs.isEmpty()) return;
-        assert destTabIndex == TabList.INVALID_TAB_INDEX
-                        || destGroupTabId == TabList.INVALID_TAB_INDEX
+        assert destTabIndex == TabList.INVALID_TAB_INDEX || destGroupTabId == Tab.INVALID_TAB_ID
                 : "Only one of destTabIndex or destGroupTabId should be specified.";
         assert ChromeMultiInstancePersistentStore.hasInstance(destWindowId)
                 : "Invalid destination window id.";
 
         // Validate tabs that are being moved to a tab group in the destination window.
-        if (BuildConfig.ENABLE_ASSERTS && destGroupTabId != TabList.INVALID_TAB_INDEX) {
+        if (BuildConfig.ENABLE_ASSERTS && destGroupTabId != Tab.INVALID_TAB_ID) {
             for (Tab tab : tabs) {
                 assert tab.getTabGroupId() == null : "Tab should not be part of a group.";
             }
@@ -299,7 +299,7 @@ import java.util.function.Supplier;
                                         instanceInfo.instanceId,
                                         tabs,
                                         /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                        /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                                         /* bringToFront= */ true);
                                 // Close the source instance window, if needed.
                                 multiInstanceManager.closeChromeWindowIfEmpty(

@@ -494,7 +494,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                                 /* destWindowId= */ NONEXISTENT_INSTANCE_ID,
                                 tabs,
                                 /* destTabIndex= */ 2,
-                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                                 /* bringToFront= */ true));
 
         // destTabIndex and destGroupTabId should not both be specified when moving tabs to an
@@ -521,7 +521,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 destTabIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
         // Verify.
@@ -562,7 +562,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
         // Verify.
@@ -589,7 +589,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
         // Verify.
@@ -620,7 +620,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
         // Verify.

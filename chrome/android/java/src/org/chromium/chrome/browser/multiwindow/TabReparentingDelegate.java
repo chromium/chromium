@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -105,7 +106,7 @@ import java.util.List;
             ChromeTabbedActivity targetActivity,
             List<Tab> tabs,
             int destTabIndex,
-            int destGroupTabId,
+            @TabId int destGroupTabId,
             boolean bringToFront) {
         if (targetActivity.isActivityFinishingOrDestroyed() || tabs.isEmpty()) return;
         Context context = tabs.get(0).getContext();
@@ -190,7 +191,7 @@ import java.util.List;
                         context,
                         targetActivity,
                         destTabIndex,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ Tab.INVALID_TAB_ID);
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
         ReparentingTabGroupTask.from(tabGroupMetadata)
                 .setupIntent(intent, /* finalizeCallback= */ null);
@@ -225,7 +226,7 @@ import java.util.List;
             Context context,
             ChromeTabbedActivity targetActivity,
             int destTabIndex,
-            int destGroupTabId) {
+            @TabId int destGroupTabId) {
         assert targetActivity != null;
         Intent intent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
@@ -234,13 +235,12 @@ import java.util.List;
                 intent, context, targetActivity.getClass());
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
 
-        assert !(destGroupTabId != TabList.INVALID_TAB_INDEX
-                        && destTabIndex != TabList.INVALID_TAB_INDEX)
+        assert !(destGroupTabId != Tab.INVALID_TAB_ID && destTabIndex != TabList.INVALID_TAB_INDEX)
                 : "Only one of dest tab index or dest group tab id should be specified.";
         if (destTabIndex != TabList.INVALID_TAB_INDEX) {
             intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, destTabIndex);
         }
-        if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
+        if (destGroupTabId != Tab.INVALID_TAB_ID) {
             IntentHandler.setDestTabId(intent, destGroupTabId);
         }
         return intent;

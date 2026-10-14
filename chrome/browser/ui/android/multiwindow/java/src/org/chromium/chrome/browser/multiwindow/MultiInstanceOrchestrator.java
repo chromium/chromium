@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -106,18 +107,18 @@ public interface MultiInstanceOrchestrator {
      * @param destTabIndex The tab index in the destination window where the tabs will be
      *     positioned. This will be ignored if {@code destGroupTabId} is set. To use the default tab
      *     index, set this to {@code TabList.INVALID_TAB_INDEX}.
-     * @param destGroupTabId The id of the tab in the destination tab group, if the tabs need to be
+     * @param destGroupTabId The {@link TabId} of a tab in the destination tab group, if the tabs
      *     moved to a specific tab group in the destination window. The tabs will be added to the
      *     end of the destination tab group. A tab with this id must exist in the destination
      *     window, otherwise this operation will fail. If there is no tab group to move the
-     *     specified tabs to, set this to {@code TabList.INVALID_TAB_INDEX}.
+     *     specified tabs to, set this to {@link Tab#INVALID_TAB_ID}.
      * @param bringToFront Whether the destination window should be brought to the front.
      */
     void moveTabsToWindowByIdChecked(
             int destWindowId,
             List<Tab> tabs,
             int destTabIndex,
-            int destGroupTabId,
+            @TabId int destGroupTabId,
             boolean bringToFront);
 
     /**
