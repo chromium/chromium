@@ -9,6 +9,7 @@
 #include "base/bits.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
@@ -194,8 +195,7 @@ void GLTextureHolder::Initialize(
   // below is attributable to the storage call. Silently squelching
   // these errors is unfortunate, but is done in order to mirror other
   // allocation checks done in the command decoder.
-  while (api->glGetErrorFn() != GL_NO_ERROR) {
-  }
+  DrainGLErrors(api);
 
   // Initialize the texture storage/image parameters and upload initial pixels
   // if available.
