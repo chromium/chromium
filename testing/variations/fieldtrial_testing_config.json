@@ -11314,6 +11314,24 @@
             ]
         }
     ],
+    "MenuSimplification": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MenuSimplification"
+                    ]
+                }
+            ]
+        }
+    ],
     "MetrickitDeferRegistration": [
         {
             "platforms": [
