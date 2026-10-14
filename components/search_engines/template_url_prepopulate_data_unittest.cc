@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -834,6 +835,90 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
           TemplateURLPrepopulateData::ecosia.keyword);
   ASSERT_TRUE(found_engine_by_keyword);
   ExpectSimilar(expected_engine.get(), found_engine_by_keyword.get());
+}
+
+TEST_F(TemplateURLPrepopulateDataTest, GetAllPrepopulatedEngines_UniqueIds) {
+  OverrideCountryId(CountryId("US"));
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      engines = prepopulate_data_resolver().GetAllPrepopulatedEngines();
+  ASSERT_FALSE(engines.empty());
+
+  base::flat_set<int> seen_ids;
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : engines) {
+    ASSERT_TRUE(engine);
+    EXPECT_TRUE(seen_ids.insert(engine->id).second)
+        << "Duplicate prepopulate_id: " << engine->id;
+  }
+
+  const auto& migrating_engines =
+      regional_capabilities::GetMigratingPrepopulatedEngines();
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+       regional_capabilities::GetAllPrepopulatedEngines()) {
+    if (migrating_engines.contains(engine->id)) {
+      EXPECT_FALSE(seen_ids.contains(engine->id));
+    } else {
+      EXPECT_TRUE(seen_ids.contains(engine->id));
+    }
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetAllPrepopulatedEngines_RegionalPriority) {
+  auto find_by_id =
+      [](const std::vector<
+             raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>&
+             engines,
+         int id) -> const TemplateURLPrepopulateData::PrepopulatedEngine* {
+    auto it = std::ranges::find(
+        engines, id, &TemplateURLPrepopulateData::PrepopulatedEngine::id);
+    return it != engines.end() ? *it : nullptr;
+  };
+
+  OverrideCountryId(CountryId("JP"));
+  EXPECT_EQ(&TemplateURLPrepopulateData::yahoo_jp,
+            find_by_id(prepopulate_data_resolver().GetAllPrepopulatedEngines(),
+                       TemplateURLPrepopulateData::yahoo_jp.id));
+
+  OverrideCountryId(CountryId("US"));
+  EXPECT_EQ(&TemplateURLPrepopulateData::yahoo,
+            find_by_id(prepopulate_data_resolver().GetAllPrepopulatedEngines(),
+                       TemplateURLPrepopulateData::yahoo.id));
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetAllPrepopulatedEngines_SkipsMigratingTargets) {
+  OverrideCountryId(CountryId("JP"));
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      engines = prepopulate_data_resolver().GetAllPrepopulatedEngines();
+
+  EXPECT_NE(std::ranges::find(engines, &TemplateURLPrepopulateData::yahoo_jp),
+            engines.end());
+  EXPECT_EQ(
+      std::ranges::find(engines, &TemplateURLPrepopulateData::yahoo_jp_next),
+      engines.end());
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetAllPrepopulatedEngines_MatchesGetEngineFromFullList) {
+  OverrideCountryId(CountryId("US"));
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+       prepopulate_data_resolver().GetAllPrepopulatedEngines()) {
+    std::unique_ptr<TemplateURLData> from_catalog =
+        TemplateURLDataFromPrepopulatedEngine(*engine);
+    std::unique_ptr<TemplateURLData> from_full_list =
+        prepopulate_data_resolver().GetEngineFromFullList(engine->id);
+    ASSERT_TRUE(from_full_list);
+    ExpectSimilar(from_catalog.get(), from_full_list.get());
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetAllPrepopulatedEngines_EmptyWhenOverridesHonored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+
+  OverrideCountryId(CountryId("US"));
+  EXPECT_TRUE(prepopulate_data_resolver().GetAllPrepopulatedEngines().empty());
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineWithVariants) {

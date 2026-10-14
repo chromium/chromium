@@ -60,6 +60,12 @@ std::unique_ptr<TemplateURLData> Resolver::GetEngineFromFullList(
       regional_capabilities_->GetRegionalVariants(), keyword);
 }
 
+std::vector<raw_ptr<const PrepopulatedEngine>>
+Resolver::GetAllPrepopulatedEngines() const {
+  return TemplateURLPrepopulateData::GetAllPrepopulatedEngines(
+      regional_capabilities_->GetRegionalPrepopulatedEngines());
+}
+
 std::unique_ptr<TemplateURLData> Resolver::GetFallbackSearch() const {
   return TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
       profile_prefs_.get(),

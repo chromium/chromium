@@ -6,15 +6,18 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/ui_utils.h"
 #include "components/search_engines/util.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -94,6 +97,13 @@ DefaultSearchEnginePickerData::DefaultSearchEnginePickerData(
 DefaultSearchEnginePickerData& DefaultSearchEnginePickerData::operator=(
     DefaultSearchEnginePickerData&& other) = default;
 DefaultSearchEnginePickerData::~DefaultSearchEnginePickerData() = default;
+
+AllPrepopulatedSearchEnginesData::AllPrepopulatedSearchEnginesData() = default;
+AllPrepopulatedSearchEnginesData::AllPrepopulatedSearchEnginesData(
+    AllPrepopulatedSearchEnginesData&&) = default;
+AllPrepopulatedSearchEnginesData& AllPrepopulatedSearchEnginesData::operator=(
+    AllPrepopulatedSearchEnginesData&&) = default;
+AllPrepopulatedSearchEnginesData::~AllPrepopulatedSearchEnginesData() = default;
 
 SearchEngineSettingsDataProvider::SearchEngineSettingsDataProvider(
     TemplateURLService& template_url_service,
@@ -230,6 +240,42 @@ SearchEngineSettingsDataProvider::GetDefaultSearchEnginePickerData() const {
 
   RecordSearchEngineCountInSettingsHistogram(
       SearchEngineListSurface::kDsePicker, data.primary.size());
+
+  return data;
+}
+
+AllPrepopulatedSearchEnginesData
+SearchEngineSettingsDataProvider::GetAllPrepopulatedSearchEngines() const {
+  // Map each `prepopulate_id` to its first matching engine in
+  // `TemplateURLService`. This mirrors
+  // `TemplateURLService::FindPrepopulatedTemplateURL()`, so the listed engine
+  // is the exact one that `SetUserSelectedDefaultSearchProviderByPrepopulateId()`
+  // makes the default.
+  // TODO(crbug.com/570940695): Resolve conflicts when several engines share a
+  // `prepopulate_id`.
+  base::flat_map<int, TemplateURL*> service_engines_by_id;
+  for (TemplateURL* url : template_url_service_->GetTemplateURLs()) {
+    if (url->prepopulate_id() > 0) {
+      service_engines_by_id.try_emplace(url->prepopulate_id(), url);
+    }
+  }
+
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      catalog = prepopulate_data_resolver_->GetAllPrepopulatedEngines();
+  AllPrepopulatedSearchEnginesData data;
+  data.engines.reserve(catalog.size());
+
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : catalog) {
+    if (auto it = service_engines_by_id.find(engine->id);
+        it != service_engines_by_id.end()) {
+      data.engines.push_back(it->second);
+    } else {
+      auto fresh_engine = std::make_unique<TemplateURL>(
+          *TemplateURLDataFromPrepopulatedEngine(*engine));
+      data.engines.push_back(fresh_engine.get());
+      data.owned_engines.push_back(std::move(fresh_engine));
+    }
+  }
 
   return data;
 }

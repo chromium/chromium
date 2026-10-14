@@ -775,6 +775,18 @@ class SearchEnginesHandlerWithMoreEnginesTest
       switches::kSearchSettingsWithMoreEngines};
 };
 
+TEST_F(SearchEnginesHandlerTest, GetMoreSearchEngines_NoOpWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kSearchSettingsWithMoreEngines);
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getMoreSearchEngines", args);
+
+  EXPECT_TRUE(web_ui()->call_data().empty());
+}
+
 TEST_F(SearchEnginesHandlerWithMoreEnginesTest,
        SetDefaultSearchEngineByPrepopulateId) {
   ConfigureTestWithRegularProfile();

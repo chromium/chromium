@@ -285,6 +285,18 @@ base::DictValue SearchEnginesHandler::GetDefaultSearchEnginePickerData() {
   return picker_data;
 }
 
+base::ListValue SearchEnginesHandler::GetMoreSearchEngines() {
+  search_engines::AllPrepopulatedSearchEnginesData data =
+      settings_data_provider_->GetAllPrepopulatedSearchEngines();
+
+  base::ListValue engines_list;
+  engines_list.reserve(data.engines.size());
+  for (TemplateURL* turl : data.engines) {
+    engines_list.Append(CreateDictionaryForEngine(turl));
+  }
+  return engines_list;
+}
+
 base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
   CHECK(!base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 

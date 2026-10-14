@@ -25,6 +25,7 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/ui_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -855,6 +856,109 @@ TEST_F(SearchEngineSettingsDataProviderTest,
                                        (prepop_engines.at(1)->short_name()))),
                                    HasShortName(base::UTF16ToASCII(
                                        (prepop_engines.at(2)->short_name())))));
+}
+
+TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
+       GetAllPrepopulatedSearchEngines_CuratesTheCatalog) {
+  template_url_service().Load();
+
+  // Edit an existing regional service engine to verify that the service
+  // instance (with user edits and a valid database ID) is reused.
+  TemplateURL* google_service = const_cast<TemplateURL*>(
+      template_url_service().GetDefaultSearchProvider());
+  ASSERT_TRUE(google_service);
+  ASSERT_EQ(google_service->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
+  ASSERT_NE(google_service->id(), kInvalidTemplateURLID);
+  template_url_service().ResetTemplateURL(google_service, u"Google Edited",
+                                          google_service->keyword(),
+                                          google_service->url());
+
+  // Add custom, starter pack, and extension engines; none should be included.
+  TemplateURL* custom = AddTemplateURL(u"Custom Engine", u"custom");
+  TemplateURL* starter_pack = AddTemplateURL(
+      u"Starter Pack", u"sp", /*prepopulate_id=*/0,
+      /*created_by_policy=*/false, TemplateURLData::ActiveStatus::kTrue,
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
+  TemplateURL* ext = AddExtension(u"Ext Feature", u"ext",
+                                  TemplateURLData::ActiveStatus::kTrue);
+
+  auto provider = CreateProvider();
+  AllPrepopulatedSearchEnginesData data =
+      provider->GetAllPrepopulatedSearchEngines();
+
+  const auto catalog = prepopulate_data_resolver().GetAllPrepopulatedEngines();
+  EXPECT_EQ(data.engines.size(), catalog.size());
+
+  // Reuses the service engine for Google, preserving the edited short name.
+  EXPECT_THAT(data.engines, testing::Contains(google_service));
+  EXPECT_EQ(google_service->short_name(), u"Google Edited");
+
+  // Excludes custom, starter pack, and extension engines.
+  EXPECT_THAT(data.engines, testing::Not(testing::Contains(custom)));
+  EXPECT_THAT(data.engines, testing::Not(testing::Contains(starter_pack)));
+  EXPECT_THAT(data.engines, testing::Not(testing::Contains(ext)));
+
+  // Non-regional prepopulated engines not in TemplateURLService (e.g. Naver)
+  // are freshly built in `owned_engines` with `kInvalidTemplateURLID`.
+  auto naver_it =
+      std::ranges::find(data.engines, TemplateURLPrepopulateData::naver.id,
+                        &TemplateURL::prepopulate_id);
+  ASSERT_NE(naver_it, data.engines.end());
+  EXPECT_EQ((*naver_it)->id(), kInvalidTemplateURLID);
+  EXPECT_TRUE(std::ranges::any_of(
+      data.owned_engines, [&](const std::unique_ptr<TemplateURL>& owned) {
+        return owned.get() == *naver_it;
+      }));
+}
+
+TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
+       GetAllPrepopulatedSearchEngines_IncludesNonRegionalDefault) {
+  template_url_service().Load();
+  const int id = TemplateURLPrepopulateData::naver.id;
+  ASSERT_FALSE(prepopulate_data_resolver().GetPrepopulatedEngine(id));
+
+  template_url_service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      id, ChoiceMadeLocation::kSearchSettings);
+  const TemplateURL* dse = template_url_service().GetDefaultSearchProvider();
+  ASSERT_EQ(dse->prepopulate_id(), id);
+  ASSERT_NE(dse->id(), kInvalidTemplateURLID);
+
+  auto provider = CreateProvider();
+  AllPrepopulatedSearchEnginesData data =
+      provider->GetAllPrepopulatedSearchEngines();
+
+  // The service-tracked non-regional DSE is reused rather than building a
+  // duplicate owned instance.
+  EXPECT_THAT(data.engines, testing::Contains(dse));
+  EXPECT_EQ(std::ranges::count(data.engines, id, &TemplateURL::prepopulate_id),
+            1);
+}
+
+TEST_F(
+    SearchEngineSettingsDataProviderNonSplitRegionTest,
+    GetAllPrepopulatedSearchEngines_MatchesSelectionWhenDuplicatePrepopulateId) {
+  template_url_service().Load();
+  const auto& naver = TemplateURLPrepopulateData::naver;
+
+  TemplateURL* first_naver = AddTemplateURL(u"Naver", u"naver_first", naver.id);
+  TemplateURL* second_naver =
+      AddTemplateURL(u"Naver", u"naver_second", naver.id);
+  ASSERT_TRUE(first_naver);
+  ASSERT_TRUE(second_naver);
+
+  auto provider = CreateProvider();
+  AllPrepopulatedSearchEnginesData data =
+      provider->GetAllPrepopulatedSearchEngines();
+
+  auto it =
+      std::ranges::find(data.engines, naver.id, &TemplateURL::prepopulate_id);
+  ASSERT_NE(it, data.engines.end());
+  EXPECT_EQ(*it, first_naver);
+
+  template_url_service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      naver.id, ChoiceMadeLocation::kSearchSettings);
+  EXPECT_EQ(template_url_service().GetDefaultSearchProvider(), *it);
 }
 
 #if BUILDFLAG(IS_ANDROID)

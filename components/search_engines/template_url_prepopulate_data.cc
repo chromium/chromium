@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -303,6 +304,46 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
   }
 
   return {};
+}
+
+std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines) {
+  // TODO(crbug.com/530597465): Remove this check together with the
+  // SearchProvidersOverride logic.
+  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides)) {
+    return {};
+  }
+
+  std::vector<raw_ptr<const PrepopulatedEngine>> engines;
+  base::flat_set<int> seen_ids;
+
+  for (const PrepopulatedEngine* engine : regional_prepopulated_engines) {
+    if (seen_ids.insert(engine->id).second) {
+      engines.push_back(engine);
+    }
+  }
+
+  // TODO(crbug.com/446637115): With migration enabled, migration targets are
+  // not listed outside regions whose list includes them, and a pre-migration ID
+  // falls back to its first global definition.
+  // TODO(crbug.com/446637115): `GetPrepopulatedEngineFromFullList()` also
+  // consults regional variants, and this function does not. With shadow
+  // variants enabled, an engine could be listed with one definition and added
+  // with another. Resolve this as part of that feature.
+  const auto& migrating_engines =
+      regional_capabilities::GetMigratingPrepopulatedEngines();
+  for (const PrepopulatedEngine* engine :
+       regional_capabilities::GetAllPrepopulatedEngines()) {
+    if (migrating_engines.contains(engine->id)) {
+      continue;
+    }
+    if (seen_ids.insert(engine->id).second) {
+      engines.push_back(engine);
+    }
+  }
+
+  return engines;
 }
 
 void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {

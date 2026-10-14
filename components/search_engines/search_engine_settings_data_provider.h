@@ -108,6 +108,25 @@ struct DefaultSearchEnginePickerData {
   TemplateURL::TemplateURLVector recently_visited;
 };
 
+// Container for all the prepopulated engines that can be offered in search
+// engine settings. Move-only: it owns the engines that aren't tracked by the
+// `TemplateURLService`.
+struct AllPrepopulatedSearchEnginesData {
+  AllPrepopulatedSearchEnginesData();
+  AllPrepopulatedSearchEnginesData(AllPrepopulatedSearchEnginesData&&);
+  AllPrepopulatedSearchEnginesData& operator=(
+      AllPrepopulatedSearchEnginesData&&);
+  ~AllPrepopulatedSearchEnginesData();
+
+  // Every prepopulated engine. An entry points to the `TemplateURLService`
+  // engine for that `prepopulate_id` if there is one, and into `owned_engines`
+  // otherwise. Valid only while this object is alive and the
+  // `TemplateURLService` is unchanged.
+  TemplateURL::TemplateURLVector engines;
+  // Engines built from prepopulated data. They have no valid `id()`.
+  std::vector<std::unique_ptr<TemplateURL>> owned_engines;
+};
+
 // Defines the category of template URLs to be displayed in different UI
 // sections.
 //
@@ -182,6 +201,9 @@ class SearchEngineSettingsDataProvider {
   // Returns the search engines to display in the default search engine picker
   // dialog in settings.
   DefaultSearchEnginePickerData GetDefaultSearchEnginePickerData() const;
+
+  // Returns all prepopulated engines, sorted alphabetically.
+  AllPrepopulatedSearchEnginesData GetAllPrepopulatedSearchEngines() const;
 
   // Returns template URLs filtered by `category` and sorted appropriately
   // (managed first, then alphabetically for site search).

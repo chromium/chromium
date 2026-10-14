@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -69,6 +70,12 @@ class Resolver : public KeyedService {
   // known there.
   std::unique_ptr<TemplateURLData> GetEngineFromFullList(
       std::u16string_view keyword) const;
+
+  // Returns every known prepopulated engine, deduplicated by ID. When several
+  // definitions share an ID, the profile country's one is used, matching
+  // `GetEngineFromFullList(id)`.
+  std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines()
+      const;
 
   // Returns the fallback default search provider, currently hardcoded to be
   // Google, or whichever one is the first of the list if Google is not in the

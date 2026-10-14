@@ -93,6 +93,14 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     std::u16string_view keyword);
 
+// Returns every known prepopulated engine, deduplicated by ID. When several
+// definitions share an ID, the one from `regional_prepopulated_engines` is
+// preferred, matching `GetPrepopulatedEngineFromFullList()`.
+// Returns an empty list while search provider overrides are honored.
+std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines);
+
 // Returns the prepopulated search engine with the given `prepopulated_id`
 // from the full list of known prepopulated search engines, or `nullptr` if
 // it's not known there.
