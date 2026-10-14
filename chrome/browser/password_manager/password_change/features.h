@@ -11,10 +11,6 @@ namespace password_change::features {
 
 // All features in alphabetical order.
 
-// Controls whether ChromePasswordChangeService checks whether the password
-// field is focusable (visible).
-BASE_DECLARE_FEATURE(kCheckPasswordFieldFocusableBeforeOffering);
-
 // Controls whether PasswordChangeDelegateImpl uses Glic for password change.
 BASE_DECLARE_FEATURE(kPasswordChangeWithGlic);
 

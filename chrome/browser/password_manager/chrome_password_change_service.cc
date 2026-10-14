@@ -440,10 +440,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     return PasswordChangeAvailability::kNonPasswordLogin;
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_change::features::
-              kCheckPasswordFieldFocusableBeforeOffering) &&
-      !IsPasswordFieldVisible(form)) {
+  if (!IsPasswordFieldVisible(form)) {
     return PasswordChangeAvailability::kInvisiblePasswordField;
   }
 
