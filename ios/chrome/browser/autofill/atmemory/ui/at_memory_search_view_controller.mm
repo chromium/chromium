@@ -133,21 +133,6 @@ enum class ItemIdentifier {
 
 #pragma mark - UIViewController
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  _viewIsVisible = YES;
-  // Restart from the default subtitle with a fresh shuffle each time the view
-  // appears, so users always see the primary hint first.
-  if ([self isInZeroState] && !_zeroStateSubtitleTimer.IsRunning()) {
-    [self startZeroStateSubtitleRotation];
-  }
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  _viewIsVisible = NO;
-  _zeroStateSubtitleTimer.Stop();
-}
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -183,6 +168,28 @@ enum class ItemIdentifier {
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  _viewIsVisible = YES;
+  // Restart from the default subtitle with a fresh shuffle each time the view
+  // appears, so users always see the primary hint first.
+  if ([self isInZeroState] && !_zeroStateSubtitleTimer.IsRunning()) {
+    [self startZeroStateSubtitleRotation];
+  }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.title);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  _viewIsVisible = NO;
+  _zeroStateSubtitleTimer.Stop();
 }
 
 - (void)loadModel {
