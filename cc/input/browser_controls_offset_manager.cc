@@ -98,6 +98,8 @@ BrowserControlsOffsetManager::BrowserControlsOffsetManager(
       bottom_controls_min_height_offset_(0.0f),
       use_snap_animation_(base::FeatureList::IsEnabled(
           features::kBrowserControlsScrollSnapAnimation)),
+      extra_hide_gestures_enabled_(base::FeatureList::IsEnabled(
+          features::kBrowserControlsExtraHideGestures)),
       in_viz_process_(in_viz_process),
       scroll_velocity_tracker_(base::Milliseconds(kShowHideMaxDurationMs)) {
   CHECK(client_);
@@ -999,6 +1001,9 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
                  gfx::Tween::IntValueBetween(slowness, kShowHideMinDurationMs,
                                              kShowHideMaxDurationMs),
                  curve);
+  if (extra_hide_gestures_enabled_) {
+    is_snap_animation_ = HasAnimation();
+  }
 }
 
 void BrowserControlsOffsetManager::ScrollEnd(
@@ -1108,6 +1113,10 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
   // initialized.
   bool animation_completed = !top_controls_animation_.IsInitialized() &&
                              !bottom_controls_animation_.IsInitialized();
+  bool was_snap_animation = is_snap_animation_;
+  if (animation_completed) {
+    is_snap_animation_ = false;
+  }
 
   client_->SetCurrentBrowserControlsShownRatio(new_top_ratio.value(),
                                                new_bottom_ratio.value());
@@ -1118,8 +1127,11 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
   // If the user is in the always-shown region, snap to the shown state after
   // the animation is completed. This prevents the controls from being hidden
   // when the user scrolls to the top of the page while a hide animation is
-  // running.
+  // running. When the extra hide gestures are enabled, only snap animations
+  // (initiated by scrolling) are undone this way; an explicit hide (e.g. from a
+  // toolbar swipe) must stay hidden.
   if (use_snap_animation_ && animation_completed &&
+      (!extra_hide_gestures_enabled_ || was_snap_animation) &&
       client_->ViewportScrollOffset().y() <=
           SnapAnimationAlwaysShownRegionHeight()) {
     SetupSnapAnimation(AnimationDirection::kShowingControls, gfx::Vector2dF(),
@@ -1205,6 +1217,7 @@ void BrowserControlsOffsetManager::ResetAnimations() {
   }
   top_min_height_change_in_progress_ = false;
   bottom_min_height_change_in_progress_ = false;
+  is_snap_animation_ = false;
   top_min_height_offset_animation_range_.reset();
   bottom_min_height_offset_animation_range_.reset();
 }

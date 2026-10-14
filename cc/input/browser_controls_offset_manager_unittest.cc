@@ -1894,8 +1894,10 @@ TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
 #if !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
  public:
-  BrowserControlsOffsetManagerSnapAnimationTest()
-      : client_(kControlsHeight, 0.5f, 0.5f) {
+  explicit BrowserControlsOffsetManagerSnapAnimationTest(
+      const std::vector<base::test::FeatureRef>& enabled_features =
+          {features::kBrowserControlsScrollSnapAnimation})
+      : feature_list_(enabled_features), client_(kControlsHeight, 0.5f, 0.5f) {
     client_.SetMaxViewportScrollOffsetY(kMaxScrollY);
   }
 
@@ -2075,8 +2077,7 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
   // Initialize the feature list before the client is created to avoid
   // other threads from being created before the feature list is initialized,
   // which can cause crashes (see crbug.com/487287578 for details).
-  base::test::ScopedFeatureList feature_list_{
-      features::kBrowserControlsScrollSnapAnimation};
+  base::test::ScopedFeatureList feature_list_;
   MockBrowserControlsOffsetManagerClient client_;
   base::ScopedMockClockOverride mock_clock_;
 };
@@ -2582,6 +2583,146 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
     ASSERT_FALSE(manager->HasAnimation());
     histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/true, 1);
   }
+}
+
+class BrowserControlsOffsetManagerExtraHideGesturesSnapTest
+    : public BrowserControlsOffsetManagerSnapAnimationTest {
+ public:
+  BrowserControlsOffsetManagerExtraHideGesturesSnapTest()
+      : BrowserControlsOffsetManagerSnapAnimationTest(
+            {features::kBrowserControlsScrollSnapAnimation,
+             features::kBrowserControlsExtraHideGestures}) {}
+};
+
+TEST_F(BrowserControlsOffsetManagerExtraHideGesturesSnapTest,
+       ExplicitHideInAlwaysShownRegionStaysHidden) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Start at the top of the page (inside the always-shown region).
+  client_.SetViewportScrollOffset(0.0f, 0.0f);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.0f);
+
+  // Explicitly hide the browser controls (e.g. via toolbar swipe-to-hide).
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kHidden,
+                                      /*animate=*/true, std::nullopt);
+  ASSERT_TRUE(manager->HasAnimation());
+  ASSERT_FALSE(manager->IsAnimatingToShowControls());
+
+  // Completing the explicit hide animation in the always-shown region must not
+  // immediately trigger a snap animation to re-show the controls.
+  AnimateToCompletion(/*animate_to_show=*/false);
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_EQ(manager->TopControlsShownRatio(), 0.0f);
+
+  // A zero-velocity ScrollBegin/ScrollEnd sequence at the page top must also
+  // not re-show the controls.
+  manager->ScrollBegin();
+  manager->ScrollEnd();
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_EQ(manager->TopControlsShownRatio(), 0.0f);
+
+  // A single-gesture down-then-up scroll starting at the page top should
+  // reveal the controls once the scroll reverses upward.
+  {
+    ScrollSequence scroll_sequence(this);
+    EXPECT_TRUE(ScrollDidNotAnimate(10.0f));
+    EXPECT_TRUE(ScrollDidAnimate(-5.0f, AnimationDirection::kShowingControls));
+  }
+  EXPECT_EQ(manager->TopControlsShownRatio(), 1.0f);
+}
+
+TEST_F(BrowserControlsOffsetManagerExtraHideGesturesSnapTest,
+       ScrollInitiatedHideCompletingInAlwaysShownRegionStillShowsControls) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Start well inside the can-hide region and trigger a scroll-initiated hide
+  // animation.
+  client_.SetViewportScrollOffset(
+      0.0f, MaximumTopCanHideRegionHeight() + 2 * LargeScrollDelta());
+  manager->ScrollBegin();
+  ScrollBy(LargeScrollDelta(), base::Milliseconds(1), /*is_inertial=*/false);
+  manager->ScrollEnd();
+  ASSERT_TRUE(manager->HasAnimation());
+  ASSERT_FALSE(manager->IsAnimatingToShowControls());
+
+  // Scroll to the top of the page while the hide animation is running.
+  manager->ScrollBegin();
+  ScrollBy(-client_.ViewportScrollOffset().y(), base::Microseconds(10),
+           /*is_inertial=*/false);
+  manager->ScrollEnd();
+
+  // Only explicit (non-snap) hide animations are exempt from the snap-back to
+  // the shown state; a scroll-initiated one must still be undone.
+  while (manager->HasAnimation()) {
+    mock_clock_.Advance(base::Milliseconds(1));
+    manager->Animate(base::TimeTicks::Now());
+  }
+  EXPECT_EQ(manager->TopControlsShownRatio(), 1.0f);
+}
+
+TEST_F(BrowserControlsOffsetManagerExtraHideGesturesSnapTest,
+       ExplicitHideWithBottomControlsOnlyStaysHiddenAtPageTop) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Bottom toolbar: there are no top controls, so the always-shown region has
+  // zero height and the page top still satisfies the re-show condition.
+  BrowserControlsParams params;
+  params.bottom_controls_height = kControlsHeight;
+  client_.SetBrowserControlsParams(params);
+  client_.SetViewportScrollOffset(0.0f, 0.0f);
+  ASSERT_EQ(manager->BottomControlsShownRatio(), 1.0f);
+
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kHidden,
+                                      /*animate=*/true, std::nullopt);
+  ASSERT_TRUE(manager->HasAnimation());
+  AnimateToCompletion(/*animate_to_show=*/false);
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_EQ(manager->BottomControlsShownRatio(), 0.0f);
+
+  // A zero-velocity scroll at the page top must not re-show the controls.
+  manager->ScrollBegin();
+  manager->ScrollEnd();
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_EQ(manager->BottomControlsShownRatio(), 0.0f);
+}
+
+TEST_F(BrowserControlsOffsetManagerExtraHideGesturesSnapTest,
+       ExplicitHideReplacingSnapShowAtPageTopStaysHidden) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Scroll-initiated hide, well inside the can-hide region.
+  client_.SetViewportScrollOffset(
+      0.0f, MaximumTopCanHideRegionHeight() + 2 * LargeScrollDelta());
+  {
+    ScrollSequence scroll_sequence(this);
+    EXPECT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
+  }
+  ASSERT_EQ(manager->TopControlsShownRatio(), 0.0f);
+
+  // Scroll up so that a scroll-initiated show animation starts, and advance it
+  // part-way.
+  manager->ScrollBegin();
+  ScrollBy(-2 * LargeScrollDelta());
+  manager->ScrollEnd();
+  ASSERT_TRUE(manager->IsAnimatingToShowControls());
+  base::TimeTicks time = base::TimeTicks::Now();
+  manager->Animate(time);
+  manager->Animate(time + base::Milliseconds(30));
+  ASSERT_GT(manager->TopControlsShownRatio(), 0.0f);
+  ASSERT_LT(manager->TopControlsShownRatio(), 1.0f);
+
+  // An explicit hide at the page top replaces the snap animation. It must not
+  // inherit its snap state, which would re-show the controls on completion.
+  client_.SetViewportScrollOffset(0.0f, 0.0f);
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kHidden,
+                                      /*animate=*/true, std::nullopt);
+  ASSERT_FALSE(manager->IsAnimatingToShowControls());
+  AnimateToCompletion(/*animate_to_show=*/false);
+  EXPECT_EQ(manager->TopControlsShownRatio(), 0.0f);
 }
 
 class BrowserControlsOffsetManagerScrollSpeedTest

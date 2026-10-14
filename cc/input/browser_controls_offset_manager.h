@@ -303,9 +303,17 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // scroll sequence.
   bool did_hide_this_scroll_ = false;
 
+  // Whether the currently active animation was initiated by a scroll snap
+  // animation rather than an explicit browser state update. Only set while
+  // |extra_hide_gestures_enabled_| is true.
+  bool is_snap_animation_ = false;
+
   // If set to true, browser controls will snap to fully show or hide on scroll
   // instead of moving in pixel-perfect sync with the scroll.
   const bool use_snap_animation_ = false;
+  // If set to true, an explicit hide (e.g. from a toolbar swipe) that completes
+  // in the always-shown region is not undone by a snap animation to show.
+  const bool extra_hide_gestures_enabled_ = false;
   const bool in_viz_process_ = false;
 
   BrowserControlsOffsetTagModifications offset_tag_modifications_;
