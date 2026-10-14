@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
@@ -111,6 +112,8 @@ class BottomSheetDisclaimerHost implements EnterpriseSignalsDisclaimerHost, Bott
 
     /** {@link BottomSheetContent} wrapping the disclaimer view. */
     private class SheetContent implements BottomSheetContent {
+        private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
         private final View mContentView;
         private final IntSupplier mVerticalScrollOffsetSupplier;
 
@@ -139,6 +142,11 @@ class BottomSheetDisclaimerHost implements EnterpriseSignalsDisclaimerHost, Bott
             // The sheet content was destroyed by the BottomSheetController, e.g. because it was
             // dropped from the queue. It will not be shown anymore.
             mIsActive = false;
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return SHEET_TYPE;
         }
 
         @Override
