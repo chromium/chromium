@@ -496,14 +496,40 @@ void ChromeTranslateClient::WebContentsDestroyed() {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void ChromeTranslateClient::PrimaryPageChanged(content::Page& page) {
+#if BUILDFLAG(IS_ANDROID)
   if (auto_translate_snackbar_controller_ &&
       auto_translate_snackbar_controller_->IsShowing()) {
     auto_translate_snackbar_controller_->NativeDismissSnackbar();
   }
+#else
+  // If the Reading Mode side panel was opened specifically to translate the
+  // PDF, close it when navigating to a new page.
+  if (!opened_side_panel_for_pdf_translation_) {
+    return;
+  }
+  opened_side_panel_for_pdf_translation_ = false;
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+
+  // Stop observing Reading Mode before closing it: the translation belonged to
+  // the previous page, so there is nothing to revert on the new one.
+  if (read_anything_observer_ && tab) {
+    if (auto* controller = ReadAnythingController::From(tab)) {
+      controller->RemoveObserver(read_anything_observer_.get());
+    }
+  }
+
+  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
+  if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(SidePanelEntryKey(
+                           SidePanelEntryId::kReadAnything))) {
+    side_panel_ui->Close();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void ChromeTranslateClient::OnVisibilityChanged(
     content::Visibility visibility) {
   if (auto_translate_snackbar_controller_ &&
@@ -512,7 +538,7 @@ void ChromeTranslateClient::OnVisibilityChanged(
     auto_translate_snackbar_controller_->NativeDismissSnackbar();
   }
 }
-#endif  // IS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // TranslateDriver::LanguageDetectionObserver implementation.
 void ChromeTranslateClient::OnLanguageDetermined(

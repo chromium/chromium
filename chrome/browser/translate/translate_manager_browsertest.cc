@@ -1655,6 +1655,49 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       NavigationClosesSidePanelIfOpenedByPdfTranslation) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  // Navigating to a new page should close the side panel that was opened for
+  // PDF translation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/english_page.html")));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       NavigationDoesNotCloseSidePanelIfAlreadyOpen) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  // Open Reading Mode side panel prior to triggering PDF translation.
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(chrome_translate_client->IsReadingModeOpen());
+
+  // The side panel was opened by the user, so navigating should keep it open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/english_page.html")));
+  EXPECT_TRUE(chrome_translate_client->IsReadingModeOpen());
+
+  // Clean up
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+}
+
 // TODO(crbug.com/467160838): Fix test failure on ChromeOS ASan, MSan
 // and Mac.
 // TODO(crbug.com/568775395): Fix test failure on Linux.

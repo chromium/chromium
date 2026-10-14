@@ -186,9 +186,13 @@ class ChromeTranslateClient
 
   // content::WebContentsObserver implementation on Android only. Used for the
   // auto-translate Snackbar.
-  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 #endif
+
+  // content::WebContentsObserver implementation. On Android, dismisses the
+  // auto-translate Snackbar. On desktop, closes the Reading Mode side panel if
+  // it was opened for PDF translation.
+  void PrimaryPageChanged(content::Page& page) override;
 
   bool opened_side_panel_for_pdf_translation_ = false;
 
