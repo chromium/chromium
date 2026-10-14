@@ -103,6 +103,11 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
         type: Boolean,
         value: false,
       },
+
+      problemMessage_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -115,7 +120,7 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface =
       getAppParentalControlsProvider();
   declare private pinKeyboardValue_: string;
-  private problemMessage_: string = '';
+  declare private problemMessage_: string;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();

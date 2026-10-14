@@ -53,6 +53,11 @@ export class SettingsCustomizePenButtonsSubpageElement extends
        * Use metaKey to decide which meta key icon to display.
        */
       metaKey_: Object,
+
+      buttonActionList_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -69,7 +74,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
 
   declare selectedTablet: GraphicsTablet;
   declare graphicsTablets: GraphicsTablet[];
-  private buttonActionList_: ActionChoice[] = [];
+  declare private buttonActionList_: ActionChoice[];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;

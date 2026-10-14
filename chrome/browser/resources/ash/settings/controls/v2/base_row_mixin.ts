@@ -71,10 +71,10 @@ export const BaseRowMixin = dedupingMixin(
 
         declare ariaDescription: string;
         declare ariaLabel: string;
-        label?: string;
-        sublabel?: string;
-        icon?: string;
-        learnMoreUrl?: string;
+        declare label?: string;
+        declare sublabel?: string;
+        declare icon?: string;
+        declare learnMoreUrl?: string;
 
         /**
          * Return an a11y label for the associated control element. `ariaLabel`

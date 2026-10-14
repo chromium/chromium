@@ -107,6 +107,35 @@ export class SettingsGoogleDriveSubpageElement extends
         readonly: true,
         value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
       },
+      driveDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      bulkPinningVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      bulkPinningStatus_: {
+        type: Object,
+        value: null,
+      },
+
+      bulkPinningServiceUnavailable_: {
+        type: Boolean,
+        value: false,
+      },
+
+      dialogType_: {
+        type: String,
+        value: ConfirmationDialogType.NONE,
+      },
+
+      listedFiles_: {
+        type: Object,
+        value: 0n,
+      },
     };
   }
 
@@ -130,12 +159,12 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * Reflects the state of `prefs.gdata.disabled` pref.
    */
-  private driveDisabled_: boolean = false;
+  declare private driveDisabled_: boolean;
 
   /**
    * Reflects the state of `prefs.drivefs.bulk_pinning.visible` pref.
    */
-  private bulkPinningVisible_: boolean = false;
+  declare private bulkPinningVisible_: boolean;
 
   /**
    * A connection with the browser process to send/receive messages.
@@ -146,17 +175,17 @@ export class SettingsGoogleDriveSubpageElement extends
    * Keeps track of the latest response about bulk pinning from the page
    * handler.
    */
-  private bulkPinningStatus_: Status|null = null;
+  declare private bulkPinningStatus_: Status|null;
 
   /**
    * If the underlying service is unavailable, this will get set to true.
    */
-  private bulkPinningServiceUnavailable_: boolean = false;
+  declare private bulkPinningServiceUnavailable_: boolean;
 
   /**
    * Maps the dialogType_ property.
    */
-  private dialogType_: ConfirmationDialogType = ConfirmationDialogType.NONE;
+  declare private dialogType_: ConfirmationDialogType;
 
   /**
    * Keeps track of the last requested total content cache size.
@@ -168,7 +197,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * displayed in the UI which gets updated every 5s from the source at
    * bulkPinningStatus_.listedFiles.
    */
-  private listedFiles_: bigint = 0n;
+  declare private listedFiles_: bigint;
 
   /**
    * The interval to update listedFiles_.

@@ -48,13 +48,18 @@ export class SettingsInternetSubpageMenuElement extends
       deviceState: Object,
 
       showDeviceNetworkInfoDialog_: {type: Boolean, value: false},
+
+      euicc_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
   declare deviceState: OncMojo.DeviceStateProperties|undefined;
 
   declare private showDeviceNetworkInfoDialog_: boolean;
-  private euicc_: EuiccRemote|null = null;
+  declare private euicc_: EuiccRemote|null;
 
   constructor() {
     super();

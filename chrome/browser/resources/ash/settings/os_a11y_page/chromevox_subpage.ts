@@ -331,6 +331,11 @@ export class SettingsChromeVoxSubpageElement extends
         value: loadTimeData.getBoolean('japaneseBrailleEnabled'),
         readOnly: true,
       },
+
+      brailleTables_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -355,7 +360,7 @@ export class SettingsChromeVoxSubpageElement extends
   declare private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_ =
       ChromeVoxSubpageBrowserProxyImpl.getInstance();
-  private brailleTables_: BrailleTable[] = [];
+  declare private brailleTables_: BrailleTable[];
   declare private developerOptionsExpanded_: boolean;
   declare private readonly eventStreamFilters_: string[];
   declare private readonly mainNodeAnnotationsFeatureEnabled_: boolean;

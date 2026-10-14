@@ -138,6 +138,11 @@ export class SettingsKeyboardAndTextInputPageElement extends
         computed: 'computeBounceKeysDelayVirtualPref_(' +
             'prefs.settings.a11y.bounce_keys_delay_ms.value)',
       },
+
+      dictationLocaleSubtitleOverride_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -169,11 +174,9 @@ export class SettingsKeyboardAndTextInputPageElement extends
   declare private dictationLearnMoreUrl_: string;
   declare private dictationLocaleMenuSubtitle_: string;
   declare private dictationLocaleOptions_: LocaleInfo[];
-  private dictationLocaleSubtitleOverride_: string = '';
+  declare private dictationLocaleSubtitleOverride_: string;
   declare private dictationLocalesList_: LocaleInfo[];
   declare private isKioskModeActive_: boolean;
-  declare private focusHighlightEnabledPref_:
-      chrome.settingsPrivate.PrefObject<boolean>;
   declare private focusHighlightEnabledVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_ =

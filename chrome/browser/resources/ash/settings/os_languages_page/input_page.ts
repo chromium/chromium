@@ -190,8 +190,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   declare private isShortcutCustomizationEnabled_: boolean;
   declare private lastUsedImeAccelerator_?: StandardAcceleratorProperties;
   declare private nextImeAccelerator_?: StandardAcceleratorProperties;
-  declare private acceleratorFetcherObserverReceiver_:
-      AcceleratorFetcherObserverReceiver;
+  private acceleratorFetcherObserverReceiver_:
+      AcceleratorFetcherObserverReceiver|null = null;
   declare private metaKey_: MetaKey;
 
   // loadTimeData flags.

@@ -62,6 +62,11 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
         type: Boolean,
         value: loadTimeData.getBoolean('quickUnlockDisabledByPolicy'),
       },
+
+      hasPassword_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -70,7 +75,7 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
   declare private showSetPinDialog_: boolean;
   declare private showPinAutosubmitDialog_: boolean;
   declare private quickUnlockDisabledByPolicy_: boolean;
-  private hasPassword_: boolean = false;
+  declare private hasPassword_: boolean;
 
   override ready(): void {
     super.ready();

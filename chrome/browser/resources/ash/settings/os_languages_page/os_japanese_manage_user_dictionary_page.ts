@@ -46,6 +46,11 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
         type: String,
         value: 'No dictionary call made',
       },
+
+      dictionaries_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -57,7 +62,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
   override subpageRoute = routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY;
 
   // All Japanese user dictionary data that is loaded into the app.
-  private dictionaries_: JapaneseDictionary[] = [];
+  declare private dictionaries_: JapaneseDictionary[];
 
   override ready(): void {
     super.ready();

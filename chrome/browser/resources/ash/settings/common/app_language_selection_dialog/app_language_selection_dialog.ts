@@ -62,6 +62,15 @@ export class AppLanguageSelectionDialogElement extends
             'getFilteredLanguages_(searchQuery_.length, suggestedLanguages_)',
       },
       entryPoint: String,
+      suggestedLanguages_: {
+        type: Array,
+        value: () => [],
+      },
+      selectedLanguage_: Object,
+      searchQuery_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -76,10 +85,10 @@ export class AppLanguageSelectionDialogElement extends
   // App must be present when this dialog is shown.
   declare app: App;
   declare entryPoint: AppLanguageSelectionDialogEntryPoint;
-  private suggestedLanguages_: Locale[] = [];
+  declare private suggestedLanguages_: Locale[];
   declare private filteredLanguages_: Locale[];
-  private selectedLanguage_?: Locale;
-  private searchQuery_ = '';
+  declare private selectedLanguage_?: Locale;
+  declare private searchQuery_: string;
 
   override ready(): void {
     super.ready();

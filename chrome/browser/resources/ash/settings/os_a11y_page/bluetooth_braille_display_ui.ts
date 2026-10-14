@@ -80,6 +80,11 @@ export class BluetoothBrailleDisplayUiElement extends
         type: Array,
         value: [BLANK_BRAILLE_DISPLAY_MENU_ITEM],
       },
+
+      inPinMode_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -95,7 +100,7 @@ export class BluetoothBrailleDisplayUiElement extends
   declare private brailleDisplayMenuOptions_: DropdownMenuOptionList;
   private manager_: BluetoothBrailleDisplayManager;
   private pincodeRequestedDisplay_?: chrome.bluetooth.Device;
-  private inPinMode_: boolean = false;
+  declare private inPinMode_: boolean;
   private pincodeTimeoutId_?: number;
   private selectedDisplay_?: chrome.bluetooth.Device;
   private selectedAndConnectedDisplayAddress_?: string;

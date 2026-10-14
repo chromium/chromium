@@ -307,6 +307,11 @@ export class SettingsInternetDetailPageElement extends
       networkExpanded_: Boolean,
 
       proxyExpanded_: Boolean,
+
+      propertiesReceived_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -395,7 +400,7 @@ export class SettingsInternetDetailPageElement extends
    * Set to true to once the initial properties have been received. This
    * prevents setProperties from being called when setting default properties.
    */
-  private propertiesReceived_: boolean = false;
+  declare private propertiesReceived_: boolean;
   declare private proxyExpanded_: boolean;
   /**
    * Set in currentRouteChanged() if the showConfigure URL query

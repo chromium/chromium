@@ -57,6 +57,10 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
       dictIndex: {
         type: Number,
       },
+      expanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -80,7 +84,7 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
   declare syncedEntriesCount: number;
 
   // Whether or not this container UI is expanded or folded.
-  private expanded_ = false;
+  declare private expanded_: boolean;
 
   declare private showingDeleteDialog_: boolean;
 

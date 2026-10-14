@@ -151,6 +151,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
         value: true,
       },
+
+      batteryStatus_: {
+        type: Object,
+      },
     };
   }
 
@@ -181,7 +185,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private isSpatialAudioSupported_: boolean = false;
   declare private outputVolume_: number;
   declare private startupSoundEnabled_: boolean;
-  private batteryStatus_: BatteryStatus|undefined;
+  declare private batteryStatus_: BatteryStatus|undefined;
   declare private powerSoundsHidden_: boolean;
   declare private voiceIsolationEffectModePrefValues_: {[key: string]: number};
 

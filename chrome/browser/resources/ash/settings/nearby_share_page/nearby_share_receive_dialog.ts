@@ -108,6 +108,16 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      highVisibilityShutoffTimestamp_: {
+        type: Number,
+        value: 0,
+      },
+
+      registerForegroundReceiveSurfaceResult_: {
+        type: Number,
+        value: null,
+      },
     };
   }
 
@@ -122,14 +132,14 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
   declare settings: NearbySettings;
   declare shareTarget: ShareTarget|null;
   private closing_: boolean;
-  private highVisibilityShutoffTimestamp_: number;
+  declare private highVisibilityShutoffTimestamp_: number;
   declare private nearbyProcessStopped_: boolean;
   private observerReceiver_: ReceiveObserverReceiver|null;
   private postOnboardingCallback_: Function|null;
   private postSettingsCallback_: Function|null;
   private receiveManager_: ReceiveManagerInterface|null;
-  private registerForegroundReceiveSurfaceResult_: RegisterReceiveSurfaceResult|
-      null;
+  declare private registerForegroundReceiveSurfaceResult_:
+      RegisterReceiveSurfaceResult|null;
   declare private startAdvertisingFailed_: boolean;
   declare private transferStatus_: TransferStatus|null;
 
@@ -151,14 +161,6 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
     this.receiveManager_ = null;
 
     this.observerReceiver_ = null;
-
-    /**
-     * Timestamp in milliseconds since unix epoch of when high visibility will
-     * be turned off.
-     */
-    this.highVisibilityShutoffTimestamp_ = 0;
-
-    this.registerForegroundReceiveSurfaceResult_ = null;
   }
 
   override ready(): void {

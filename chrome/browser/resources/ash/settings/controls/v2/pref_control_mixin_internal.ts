@@ -76,7 +76,7 @@ export const PrefControlMixinInternal = dedupingMixin(
 
         declare disabled: boolean;
         declare readonly isPrefEnforced: boolean;
-        pref?: PrefObject;
+        declare pref?: PrefObject;
 
         /**
          * Array of valid types for `pref`. An empty array means all pref types

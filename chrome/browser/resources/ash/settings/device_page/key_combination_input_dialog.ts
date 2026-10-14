@@ -86,6 +86,8 @@ export class KeyCombinationInputDialogElement extends
       },
 
       metaKey: Object,
+
+      shortcutInput: Object,
     };
   }
 

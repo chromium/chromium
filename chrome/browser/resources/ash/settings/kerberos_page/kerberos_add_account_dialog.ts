@@ -161,13 +161,31 @@ export class KerberosAddAccountDialogElement extends
           return loadTimeData.getBoolean('isGuest');
         },
       },
+
+      actionButtonLabel_: {
+        type: String,
+        value: '',
+      },
+
+      rememberPasswordChecked_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('kerberosRememberPasswordEnabled') &&
+              !loadTimeData.getBoolean('isGuest');
+        },
+      },
+
+      title_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   declare accountWasRefreshed: boolean;
   declare presetAccount: KerberosAccount|null;
 
-  private actionButtonLabel_: string;
+  declare private actionButtonLabel_: string;
   private browserProxy_: KerberosAccountsBrowserProxy;
   declare private configErrorText_: string;
   private config_: string;
@@ -180,9 +198,9 @@ export class KerberosAddAccountDialogElement extends
   declare private password_: string;
   declare private prefillDomain_: string;
   declare private rememberPasswordEnabledByPolicy_: boolean;
-  private rememberPasswordChecked_: boolean;
+  declare private rememberPasswordChecked_: boolean;
   declare private showAdvancedConfig_: boolean;
-  private title_: string;
+  declare private title_: string;
   private useStoredPassword_: boolean;
   declare private usernameErrorText_: string;
   declare private username_: string;
@@ -191,16 +209,15 @@ export class KerberosAddAccountDialogElement extends
     super();
 
     this.useStoredPassword_ = false;
-    this.rememberPasswordChecked_ =
-        this.rememberPasswordEnabledByPolicy_ && !this.isGuestMode_;
     this.config_ = '';
-    this.title_ = '';
-    this.actionButtonLabel_ = '';
     this.browserProxy_ = KerberosAccountsBrowserProxyImpl.getInstance();
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
+
+    this.rememberPasswordChecked_ =
+        this.rememberPasswordEnabledByPolicy_ && !this.isGuestMode_;
 
     this.$.addDialog.showModal();
 

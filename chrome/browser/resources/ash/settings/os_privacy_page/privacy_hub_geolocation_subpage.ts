@@ -167,6 +167,10 @@ export class SettingsPrivacyHubGeolocationSubpage extends
             'systemGeolocationAccessLevel_,' +
             'prefs.settings.ambient_mode.enabled.value)',
       },
+      shouldShowManageGeolocationDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -207,7 +211,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   declare private currentTimeZoneName_: string;
   declare private currentSunRiseTime_: string;
   declare private currentSunSetTime_: string;
-  private shouldShowManageGeolocationDialog_: boolean = false;
+  declare private shouldShowManageGeolocationDialog_: boolean;
   declare private automaticTimeZoneText_: string;
   declare private darkThemeText_: string;
   declare private localWeatherText_: string;
