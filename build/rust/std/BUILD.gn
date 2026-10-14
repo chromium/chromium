@@ -379,26 +379,19 @@ if (toolchain_has_rust) {
       visibility = [ ":*" ]
     }
 
-    config("prebuilt_stdlib_libs") {
-      ldflags = []
-      lib_dir = rebase_path("$prebuilt_rustc_sysroot/$sysroot_lib_subdir",
-                            root_build_dir)
-
-      # We're unable to make these files regular gn dependencies because
-      # they're prebuilt. Instead, we'll pass them in the ldflags. This doesn't
-      # work for all types of build because ldflags propagate differently from
-      # actual dependencies and therefore can end up in different targets from
-      # the remap_alloc.cc above. For example, in a component build, we might
-      # apply the remap_alloc.cc file and these ldlags to shared object A,
-      # while shared object B (that depends upon A) might get only the ldflags
-      # but not remap_alloc.cc, and thus the build will fail. There is
-      # currently no known solution to this for the prebuilt stdlib - this
-      # problem does not apply with configurations where we build the stdlib
-      # ourselves, which is what we'll use in production.
+    # The prebuilt rlibs are not built by GN, so they are passed to the linker
+    # via `libs`.  `libs` set on a target (rather than in a config) propagate
+    # to dependents only until the nearest shared library or executable - the
+    # same way as GN dependencies on `//build/rust/allocator` and on other Rust
+    # libraries.  This ensures that in a component build the rlibs are linked
+    # only into the shared libraries that contain Rust code (and therefore also
+    # the allocator shims that the rlibs depend on).
+    source_set("prebuilt_stdlib_libs") {
+      libs = []
       foreach(lib, stdlib_files) {
-        this_file = "$lib_dir/lib$lib.rlib"
-        ldflags += [ this_file ]
+        libs += [ "$prebuilt_rustc_sysroot/$sysroot_lib_subdir/lib$lib.rlib" ]
       }
+      deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
       visibility = [ ":*" ]
     }
 
@@ -410,11 +403,8 @@ if (toolchain_has_rust) {
     }
 
     group("std") {
-      all_dependent_configs = [
-        ":prebuilt_stdlib_libs",
-        ":stdlib_public_dependent_libs",
-      ]
-      deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
+      all_dependent_configs = [ ":stdlib_public_dependent_libs" ]
+      deps = [ ":prebuilt_stdlib_libs" ]
     }
 
     # `stdlib_test_files` are already included in `all_stdlibs_to_copy` and
