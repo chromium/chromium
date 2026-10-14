@@ -26,10 +26,6 @@ BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);
 // exponentially.
 BASE_DECLARE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter);
 
-// Controls whether ChangePasswordFormWaiter stops waiting for local ML model to
-// finish downloading after timeout.
-BASE_DECLARE_FEATURE(kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter);
-
 }  // namespace password_change::features
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_FEATURES_H_

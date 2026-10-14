@@ -12,7 +12,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -868,39 +867,6 @@ TEST_F(ChangePasswordFormWaiterTest, ModelNotAvailable_Timeout) {
   EXPECT_CALL(completion_callback, Run).Times(0);
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kLocalMLModelDownloadTimeout / 2);
-
-  EXPECT_CALL(completion_callback, Run(ChangePasswordFormWaiter::Result()));
-  task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
-}
-
-TEST_F(ChangePasswordFormWaiterTest,
-       ModelNotAvailable_Timeout_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordFormClientsideClassifier},
-      {password_change::features::
-           kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter});
-
-  model_handler()->SetModelAvailability(/*available=*/false);
-
-  base::MockOnceCallback<void(ChangePasswordFormWaiter::Result)>
-      completion_callback;
-  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
-                                                  completion_callback.Get())
-                    .EnableTimeout()
-                    .Build();
-
-  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
-
-  // Fast forward past model download timeout. Since feature is disabled, it
-  // should not time out.
-  EXPECT_CALL(completion_callback, Run).Times(0);
-  task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kLocalMLModelDownloadTimeout * 2);
-
-  // Model becomes available.
-  model_handler()->NotifyAboutModelChange();
 
   EXPECT_CALL(completion_callback, Run(ChangePasswordFormWaiter::Result()));
   task_environment()->FastForwardBy(

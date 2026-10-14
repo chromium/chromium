@@ -17,7 +17,4 @@ BASE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck,
 BASE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace password_change::features
