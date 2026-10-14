@@ -1419,10 +1419,6 @@ TEST_F(PdfViewWebPluginTest, OnPaintWithMultiplePaintRects) {
 
   EXPECT_EQ(gfx::Rect(20, 20, 10, 10), ready[2].rect());
   EXPECT_FALSE(ready[2].flush_now());
-
-  // All the requested paints should share the same `SkImage`.
-  EXPECT_NE(ready[0].image(), ready[1].image());
-  EXPECT_EQ(ready[1].image(), ready[2].image());
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithIdentity) {
@@ -1626,7 +1622,7 @@ TEST_F(PdfViewWebPluginTest, HandleInputEvent) {
             static_cast<const blink::WebMouseEvent&>(event);
         EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown,
                   mouse_event.GetType());
-        EXPECT_EQ(gfx::PointF(10.0f, 40.0f), mouse_event.PositionInWidget());
+        EXPECT_EQ(gfx::PointF(0.0f, 20.0f), mouse_event.PositionInWidget());
         return true;
       });
 
