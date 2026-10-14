@@ -115,28 +115,11 @@ bool KernelReleaseHasPEBSFlushingFix(const std::string& release) {
   return major >= 5 || (major == 4 && minor >= 14);
 }
 
-// Returns if a micro-architecture supports LBR callgraph profiling.
-bool MicroarchitectureHasLBRCallgraph(const std::string& uarch) {
-  return uarch == "Haswell" || uarch == "Broadwell" || uarch == "Skylake" ||
-         uarch == "Kabylake" || uarch == "Tigerlake" || uarch == "Tremont" ||
-         uarch == "AlderLake" || uarch == "RaptorLake" || uarch == "Gracemont";
-}
-
-// Returns if a kernel release supports LBR callgraph profiling.
-bool KernelReleaseHasLBRCallgraph(const std::string& release) {
-  int32_t major, minor, bugfix;
-  ExtractVersionNumbers(release, &major, &minor, &bugfix);
-  return major > 4 || (major == 4 && minor >= 4) || (major == 3 && minor == 18);
-}
-
 // Hopefully we never need a space in a command argument.
 const char kPerfCommandDelimiter[] = " ";
 
 // Collect precise=3 (:ppp) cycle events on microarchitectures and kernels that
 // support it.
-const char kPerfLBRCallgraphPPPCmd[] =
-    "-- record -a -e cycles:ppp -c 6000011 --call-graph lbr";
-
 const char kPerfCyclesPPPHGCmd[] = "-- record -a -e cycles:pppHG -c 1000003";
 
 const char kPerfFPCallgraphPPPHGCmd[] =
@@ -146,9 +129,6 @@ const char kPerfFPCallgraphPPPHGCmd[] =
 const char kPerfCyclesHGCmd[] = "-- record -a -e cycles:HG -c 1000003";
 
 const char kPerfFPCallgraphHGCmd[] = "-- record -a -e cycles:HG -g -c 4000037";
-
-const char kPerfLBRCallgraphCmd[] =
-    "-- record -a -e cycles -c 6000011 --call-graph lbr";
 
 const char kPerfLBRCmd[] = "-- record -a -e r20c4 -b -c 800011";
 
@@ -243,7 +223,6 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   const char* lbr_cmd = kPerfLBRCmd;
   const char* cycles_cmd = kPerfCyclesHGCmd;
   const char* fp_callgraph_cmd = kPerfFPCallgraphHGCmd;
-  const char* lbr_callgraph_cmd = kPerfLBRCallgraphCmd;
   const char* dap_dtlb_miss_cmd = nullptr;
 
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
@@ -288,7 +267,6 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     // has the fix for flushing PEBS on context switch.
     if (KernelReleaseHasPEBSFlushingFix(cpuid.release)) {
       cycles_cmd = kPerfCyclesPPPHGCmd;
-      lbr_callgraph_cmd = kPerfLBRCallgraphPPPCmd;
     }
   }
 
@@ -298,20 +276,7 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     cmds.emplace_back(50.0, cycles_cmd);
   }
 
-  // Haswell and newer big Intel cores support LBR callstack profiling. This
-  // requires kernel support, which was added in kernel 4.4, and it was
-  // backported to kernel 3.18. Collect LBR callstack profiling where
-  // supported in addition to FP callchains. The former works with binaries
-  // compiled with frame pointers disabled, but it only captures callchains
-  // after profiling is enabled, so it's likely missing the lower frames of
-  // the callstack.
-  if (MicroarchitectureHasLBRCallgraph(cpu_uarch) &&
-      KernelReleaseHasLBRCallgraph(cpuid.release)) {
-    cmds.emplace_back(10.0, fp_callgraph_cmd);
-    cmds.emplace_back(10.0, lbr_callgraph_cmd);
-  } else {
-    cmds.emplace_back(20.0, fp_callgraph_cmd);
-  }
+  cmds.emplace_back(20.0, fp_callgraph_cmd);
 
   if (dap_dtlb_miss_cmd != nullptr) {
     cmds.emplace_back(5.0, dap_dtlb_miss_cmd);
