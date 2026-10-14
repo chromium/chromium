@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -44,8 +45,31 @@ function getTabTodoPriority(item: AutoTodoItem): number {
   return 3;
 }
 
+function isChromeHistoryTodo(item: AutoTodoItem): boolean {
+  return !!item.data.firstParty?.sourceReferences.some(
+      ref => !!ref.chromeHistoryEntry);
+}
+
 function compareFirstPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
   return b.score - a.score || a.title.localeCompare(b.title);
+}
+
+function filterWorkspaceTodos(
+    todos: AutoTodoItem[], status: AutoTodoStatus): AutoTodoItem[] {
+  return todos
+      .filter(
+          todo => !!todo.data.firstParty && !isChromeHistoryTodo(todo) &&
+              todo.status === status)
+      .sort(compareFirstPartyTodos);
+}
+
+function filterHistoryTodos(
+    todos: AutoTodoItem[], status: AutoTodoStatus): AutoTodoItem[] {
+  return todos
+      .filter(
+          todo => !!todo.data.firstParty && isChromeHistoryTodo(todo) &&
+              todo.status === status)
+      .sort(compareFirstPartyTodos);
 }
 
 function compareThirdPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
@@ -70,6 +94,7 @@ export class AiTaskboxElement extends CrLitElement {
     return {
       autoTodosEnabled_: {type: Boolean},
       showingReadingList_: {type: Boolean},
+      selectedTab_: {type: Number},
       // Gmail-based todo properties.
       todos: {type: Array},
       completedTodos: {type: Array},
@@ -80,6 +105,12 @@ export class AiTaskboxElement extends CrLitElement {
       isCompletedExpanded_: {type: Boolean},
       isDismissedExpanded_: {type: Boolean},
       lastGmailGenerationTime_: {type: Object},
+      // Chrome history-based todo properties.
+      historyTodos: {type: Array},
+      completedHistoryTodos: {type: Array},
+      dismissedHistoryTodos: {type: Array},
+      isCompletedHistoryExpanded_: {type: Boolean},
+      isDismissedHistoryExpanded_: {type: Boolean},
       // Tab-based todo properties.
       tabTodos: {type: Array},
       completedTabTodos: {type: Array},
@@ -99,6 +130,9 @@ export class AiTaskboxElement extends CrLitElement {
   accessor todos: AutoTodoItem[]|null = null;
   accessor completedTodos: AutoTodoItem[]|null = null;
   accessor dismissedTodos: AutoTodoItem[]|null = null;
+  accessor historyTodos: AutoTodoItem[]|null = null;
+  accessor completedHistoryTodos: AutoTodoItem[]|null = null;
+  accessor dismissedHistoryTodos: AutoTodoItem[]|null = null;
   accessor tabTodos: AutoTodoItem[]|null = null;
   accessor completedTabTodos: AutoTodoItem[]|null = null;
   accessor dismissedTabTodos: AutoTodoItem[]|null = null;
@@ -107,6 +141,7 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
   protected accessor showingReadingList_: boolean = false;
+  protected accessor selectedTab_: number = 0;
 
   // Gmail-based property accessors.
   protected accessor isGeneratingGmailTodos_: boolean = false;
@@ -115,6 +150,10 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor isCompletedExpanded_: boolean = false;
   protected accessor isDismissedExpanded_: boolean = false;
   protected accessor lastGmailGenerationTime_: Date|null = null;
+
+  // Chrome history-based property accessors.
+  protected accessor isCompletedHistoryExpanded_: boolean = false;
+  protected accessor isDismissedHistoryExpanded_: boolean = false;
 
   // Tab-based property accessors.
   protected accessor isGeneratingTabTodos_: boolean = false;
@@ -138,23 +177,17 @@ export class AiTaskboxElement extends CrLitElement {
               .callbackRouter.onAutoTodosChanged.addListener(
                   (todos: AutoTodoItem[]) => {
                     this.todos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.firstParty &&
-                                    todo.status === AutoTodoStatus.kActive)
-                            .sort(compareFirstPartyTodos);
+                        filterWorkspaceTodos(todos, AutoTodoStatus.kActive);
                     this.completedTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.firstParty &&
-                                    todo.status === AutoTodoStatus.kCompleted)
-                            .sort(compareFirstPartyTodos);
+                        filterWorkspaceTodos(todos, AutoTodoStatus.kCompleted);
                     this.dismissedTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.firstParty &&
-                                    todo.status === AutoTodoStatus.kDismissed)
-                            .sort(compareFirstPartyTodos);
+                        filterWorkspaceTodos(todos, AutoTodoStatus.kDismissed);
+                    this.historyTodos =
+                        filterHistoryTodos(todos, AutoTodoStatus.kActive);
+                    this.completedHistoryTodos =
+                        filterHistoryTodos(todos, AutoTodoStatus.kCompleted);
+                    this.dismissedHistoryTodos =
+                        filterHistoryTodos(todos, AutoTodoStatus.kDismissed);
                     this.tabTodos =
                         todos
                             .filter(
@@ -252,19 +285,17 @@ export class AiTaskboxElement extends CrLitElement {
       this.feedbacks_ = feedbackMap;
 
       this.todos =
-          firstPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
-              .sort(compareFirstPartyTodos) ??
-          null;
+          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kActive);
       this.completedTodos =
-          firstPartyTodos
-              .filter(todo => todo.status === AutoTodoStatus.kCompleted)
-              .sort(compareFirstPartyTodos) ??
-          null;
+          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
       this.dismissedTodos =
-          firstPartyTodos
-              .filter(todo => todo.status === AutoTodoStatus.kDismissed)
-              .sort(compareFirstPartyTodos) ??
-          null;
+          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
+      this.historyTodos =
+          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kActive);
+      this.completedHistoryTodos =
+          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
+      this.dismissedHistoryTodos =
+          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
       this.tabTodos = thirdPartyTodos
                           .filter(
                               todo => todo.data.thirdParty?.groupType !==
@@ -337,6 +368,10 @@ export class AiTaskboxElement extends CrLitElement {
     this.showingReadingList_ = false;
   }
 
+  protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
+    this.selectedTab_ = e.detail.value;
+  }
+
   protected getUnfinishedTabTodos_(): AutoTodoItem[] {
     return this.tabTodos?.filter(
                todo => todo.data.thirdParty?.groupType ===
@@ -371,12 +406,22 @@ export class AiTaskboxElement extends CrLitElement {
     this.isCompletedExpanded_ = e.detail.value;
   }
 
+  protected onCompletedHistoryExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.isCompletedHistoryExpanded_ = e.detail.value;
+  }
+
   protected onCompletedTabExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.isCompletedTabExpanded_ = e.detail.value;
   }
 
   protected onDismissedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.isDismissedExpanded_ = e.detail.value;
+  }
+
+  protected onDismissedHistoryExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.isDismissedHistoryExpanded_ = e.detail.value;
   }
 
   protected onDismissedTabExpandedChanged_(e: CustomEvent<{value: boolean}>) {
@@ -478,6 +523,9 @@ export class AiTaskboxElement extends CrLitElement {
         this.todos = null;
         this.completedTodos = null;
         this.dismissedTodos = null;
+        this.historyTodos = null;
+        this.completedHistoryTodos = null;
+        this.dismissedHistoryTodos = null;
         this.hasGeneratedGmail_ = false;
         this.lastGmailGenerationTime_ = null;
         this.hasGmailGenerationError_ = false;

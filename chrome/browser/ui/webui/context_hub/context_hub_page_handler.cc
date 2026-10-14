@@ -408,15 +408,8 @@ GURL ContextHubPageHandler::TabProvider::ResolveTopicUrl(
 
 void ContextHubPageHandler::OnAutoTodosChanged(
     base::span<const context_hub::AutoTodoEntry> entries) {
-  std::vector<context_hub::AutoTodoEntry> filtered_entries;
-  filtered_entries.reserve(entries.size());
-  // Filter out entries with chrome history references for now.
-  for (const context_hub::AutoTodoEntry& entry : entries) {
-    if (!entry.HasChromeHistoryReferences()) {
-      filtered_entries.push_back(entry);
-    }
-  }
-  page_->OnAutoTodosChanged(std::move(filtered_entries));
+  page_->OnAutoTodosChanged(
+      std::vector<context_hub::AutoTodoEntry>(entries.begin(), entries.end()));
 }
 
 void ContextHubPageHandler::OnFirstPartyAutoTodosGenerationStateChanged(
@@ -487,10 +480,7 @@ void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
         std::vector<context_hub::AutoTodoEntry> third_party_todos;
         for (context_hub::AutoTodoEntry& entry : entries) {
           if (entry.is_first_party()) {
-            // Filter out entries with chrome history references for now.
-            if (!entry.HasChromeHistoryReferences()) {
-              first_party_todos.push_back(std::move(entry));
-            }
+            first_party_todos.push_back(std::move(entry));
           } else if (entry.is_third_party()) {
             third_party_todos.push_back(std::move(entry));
           }

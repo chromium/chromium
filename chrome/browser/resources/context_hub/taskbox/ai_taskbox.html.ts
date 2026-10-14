@@ -8,6 +8,7 @@ import type {AiTaskboxElement} from './ai_taskbox.js';
 import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: AiTaskboxElement) {
+  // clang-format off
   return html`
 ${this.showingReadingList_ ? html`
     <main id="reading-list-view" @feedback-changed="${this.onFeedbackChanged_}">
@@ -62,6 +63,13 @@ ${this.showingReadingList_ ? html`
             </div>
         </section>
 
+        <cr-tabs id="tabs"
+            .tabNames="${['Workspace & History Todos', 'Browser Todos']}"
+            .selected="${this.selectedTab_}"
+            @selected-changed="${this.onTabsSelectedChanged_}">
+        </cr-tabs>
+
+        ${this.selectedTab_ === 0 ? html`
         <div class="columns-container">
             <!-- Gmail Todos Section -->
             <section class="todo-column">
@@ -203,6 +211,131 @@ ${this.showingReadingList_ ? html`
                 </div>
             </section>
 
+            <!-- Chrome History Todos Section -->
+            <section class="todo-column">
+                <div class="column-header">
+                    <h2>History Todos</h2>
+                    <div class="refresh-container">
+                      <span class="last-updated-text">Generate</span>
+                      <cr-icon-button
+                          iron-icon="cr:sync"
+                          title="Refresh"
+                          aria-label="Refresh History Todos"
+                          disabled
+                          @click="${this.onGenerateGmailTodosClick_}">
+                      </cr-icon-button>
+                      <cr-icon-button
+                          id="historyDropdownButton"
+                          iron-icon="cr:arrow-drop-down"
+                          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+                          aria-label="Clear ALL Workspace & History Todos"
+                          disabled
+                          @click="${this.onWorkspaceMenuClick_}">
+                      </cr-icon-button>
+                    </div>
+                </div>
+
+                <div class="todo-list">
+                  ${this.historyTodos && this.historyTodos.length > 0 ? html`
+                    ${repeat(this.historyTodos, todo => todo.id, todo => html`
+                      <todo-item
+                          .id="${todo.id}"
+                          .heading="${todo.title}"
+                          .description="${todo.description}"
+                          .status="${todo.status}"
+                          .actionableUrl="${
+                  todo.data.firstParty?.actionableUrl || ''}"
+                          .sourceReferences="${
+                  todo.data.firstParty?.sourceReferences || []}"
+                          .score="${todo.score}"
+                          .variant="${TodoItemVariant.HISTORY}"
+                          .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                          .disable_state_mgmt="${true}">
+                      </todo-item>
+                    `)}
+                  ` : html`
+                    <div class="placeholder-card">
+                      <p class="placeholder-text">No History Todos</p>
+                    </div>
+                  `}
+                </div>
+
+                <!-- Completed Chrome History Todos Section -->
+                <div class="completed-section">
+                    <cr-expand-button
+                        class="completed-expand-button"
+                        ?disabled="${(this.completedHistoryTodos?.length || 0) === 0}"
+                        ?expanded="${this.isCompletedHistoryExpanded_ && (this.completedHistoryTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onCompletedHistoryExpandedChanged_}"
+                        no-hover>
+                        <h2>Completed History Todos (${this.completedHistoryTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isCompletedHistoryExpanded_
+                                            && (this.completedHistoryTodos?.length || 0) > 0}">
+                        <div class="todo-list completed-todo-list">
+                          ${this.completedHistoryTodos &&
+                                  this.completedHistoryTodos.length > 0 ? html`
+                            ${repeat(this.completedHistoryTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .status="${todo.status}"
+                                  .actionableUrl="${
+                          todo.data.firstParty?.actionableUrl || ''}"
+                                  .sourceReferences="${
+                          todo.data.firstParty?.sourceReferences || []}"
+                                  .score="${todo.score}"
+                                  .variant="${TodoItemVariant.HISTORY}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                                  .disable_state_mgmt="${true}">
+                              </todo-item>
+                            `)}
+                          ` : ''}
+                        </div>
+                    </cr-collapse>
+                </div>
+
+                <!-- Dismissed Chrome History Todos Section -->
+                <div class="dismissed-section">
+                    <cr-expand-button
+                        class="dismissed-expand-button"
+                        ?disabled="${(this.dismissedHistoryTodos?.length || 0) === 0}"
+                        ?expanded="${this.isDismissedHistoryExpanded_ && (this.dismissedHistoryTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onDismissedHistoryExpandedChanged_}"
+                        no-hover>
+                        <h2>Dismissed History Todos (${this.dismissedHistoryTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isDismissedHistoryExpanded_
+                                            && (this.dismissedHistoryTodos?.length || 0) > 0}">
+                        <div class="todo-list dismissed-todo-list">
+                          ${this.dismissedHistoryTodos &&
+                                  this.dismissedHistoryTodos.length > 0 ? html`
+                            ${repeat(this.dismissedHistoryTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .status="${todo.status}"
+                                  .actionableUrl="${
+                          todo.data.firstParty?.actionableUrl || ''}"
+                                  .sourceReferences="${
+                          todo.data.firstParty?.sourceReferences || []}"
+                                  .score="${todo.score}"
+                                  .variant="${TodoItemVariant.HISTORY}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                                  .disable_state_mgmt="${true}">
+                              </todo-item>
+                            `)}
+                          ` : ''}
+                        </div>
+                    </cr-collapse>
+                </div>
+            </section>
+        </div>
+        ` : html`
             <!-- Tab-based Todos Section -->
             <section class="todo-column">
                 <div class="column-header">
@@ -407,7 +540,7 @@ ${this.showingReadingList_ ? html`
                     </cr-collapse>
                 </div>
             </section>
-        </div>
+        `}
 
         <cr-action-menu id="workspaceMenu">
           <button class="dropdown-item"
@@ -426,4 +559,5 @@ ${this.showingReadingList_ ? html`
         </cr-action-menu>
     </main>
   `}`;
+  // clang-format on
 }

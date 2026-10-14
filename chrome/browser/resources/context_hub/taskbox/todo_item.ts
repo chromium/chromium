@@ -30,6 +30,7 @@ const ENTRY_DETAILS = 'entry.809272442';
 export enum TodoItemVariant {
   DEFAULT = 'default',
   TAB = 'tab',
+  HISTORY = 'history',
 }
 
 export class TodoItemElement extends CrLitElement {
@@ -157,7 +158,7 @@ export class TodoItemElement extends CrLitElement {
   }
 
   private async updateStatus_(status: AutoTodoStatus) {
-    if (this.disable_state_mgmt) {
+    if (this.disable_state_mgmt || this.variant === TodoItemVariant.HISTORY) {
       return;
     }
 
@@ -176,7 +177,7 @@ export class TodoItemElement extends CrLitElement {
         } :
         {
           firstParty: {
-            actionableUrl: this.actionableUrl,
+            actionableUrl: this.actionableUrl || null,
             sourceReferences: this.sourceReferences,
           },
         };
@@ -261,6 +262,18 @@ export class TodoItemElement extends CrLitElement {
     }
   }
 
+  protected onContinueInTabsClick_(e: Event) {
+    e.stopPropagation();
+    // TODO(igoralsky): Implement this.
+    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
+  }
+
+  protected onContinueInGeminiClick_(e: Event) {
+    e.stopPropagation();
+    // TODO(igoralsky): Implement this.
+    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
+  }
+
   protected onCloseTabClick_(e: Event) {
     e.stopPropagation();
     this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
@@ -313,6 +326,13 @@ export class TodoItemElement extends CrLitElement {
             return {
               label: ref.gmail.subject.trim() || 'Gmail',
               url: ref.gmail.messageUrl,
+            };
+          }
+          if (ref.chromeHistoryEntry) {
+            return {
+              label: ref.chromeHistoryEntry.title.trim() ||
+                  ref.chromeHistoryEntry.url,
+              url: ref.chromeHistoryEntry.url,
             };
           }
           return null;

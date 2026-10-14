@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_AUTO_TODOS_AUTO_TODO_ENTRY_H_
 #define CHROME_BROWSER_CONTEXT_HUB_AUTO_TODOS_AUTO_TODO_ENTRY_H_
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -96,15 +95,6 @@ struct AutoTodoEntry {
 
   bool is_first_party() const {
     return std::holds_alternative<FirstPartyData>(data);
-  }
-
-  bool HasChromeHistoryReferences() const {
-    const auto* first_party = std::get_if<FirstPartyData>(&data);
-    return first_party &&
-           std::ranges::any_of(
-               first_party->source_references, [](const SourceReference& ref) {
-                 return std::holds_alternative<ChromeHistoryEntry>(ref);
-               });
   }
 
   std::optional<int64_t> tab_id() const {

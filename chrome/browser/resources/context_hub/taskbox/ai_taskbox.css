@@ -47,6 +47,11 @@ h1 {
   margin: 0;
 }
 
+#tabs {
+  margin-bottom: 16px;
+  max-width: 500px;
+}
+
 .columns-container {
   display: grid;
   grid-template-columns: 1fr 1fr;

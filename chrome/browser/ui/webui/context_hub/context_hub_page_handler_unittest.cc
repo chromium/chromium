@@ -1495,7 +1495,7 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_IncludesDismissedTodos) {
   EXPECT_EQ(cached_items[0].status, AutoTodoEntry::Status::kDismissed);
 }
 
-TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersOutChromeHistoryTodos) {
+TEST_F(ContextHubPageHandlerTest, GetAutoTodos_IncludesChromeHistoryTodos) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
@@ -1527,7 +1527,7 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersOutChromeHistoryTodos) {
                           history_future.GetCallback());
   ASSERT_TRUE(history_future.Get());
 
-  // Verify that `GetAutoTodos()` filters out the Chrome history todo.
+  // Verify that `GetAutoTodos()` returns both Gmail and Chrome history todos.
   base::test::TestFuture<const std::vector<context_hub::AutoTodoEntry>&,
                          const std::vector<context_hub::AutoTodoEntry>&,
                          const context_hub::AutoTodosGenerationMetadata&,
@@ -1537,18 +1537,16 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersOutChromeHistoryTodos) {
 
   auto [first_party, third_party, first_party_metadata, third_party_metadata] =
       get_future.Take();
-  ASSERT_EQ(first_party.size(), 1u);
-  EXPECT_EQ(first_party[0].id, "gmail_1");
+  ASSERT_EQ(first_party.size(), 2u);
+  std::vector<std::string> first_party_ids = {first_party.at(0).id,
+                                              first_party.at(1).id};
+  EXPECT_THAT(first_party_ids,
+              testing::UnorderedElementsAre("gmail_1", "history_1"));
   EXPECT_TRUE(third_party.empty());
-
-  // Verify both items are still in the underlying store.
-  base::test::TestFuture<std::vector<AutoTodoEntry>> service_get_future;
-  service->GetAutoTodos(service_get_future.GetCallback());
-  EXPECT_EQ(service_get_future.Get().size(), 2u);
 }
 
 TEST_F(ContextHubPageHandlerTest,
-       OnAutoTodosChanged_FiltersOutChromeHistoryTodos) {
+       OnAutoTodosChanged_IncludesChromeHistoryTodos) {
   personal_context::proto::AutoTodosResponse response;
 
   personal_context::proto::AutoTodoItem* gmail_todo = response.add_todos();
@@ -1584,8 +1582,10 @@ TEST_F(ContextHubPageHandlerTest,
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(true));
   EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
       .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
-        ASSERT_EQ(todos.size(), 1u);
-        EXPECT_EQ(todos[0].title, "Gmail Todo");
+        ASSERT_EQ(todos.size(), 2u);
+        std::vector<std::string> titles = {todos[0].title, todos[1].title};
+        EXPECT_THAT(titles, testing::UnorderedElementsAre("Gmail Todo",
+                                                          "History Todo"));
       });
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(false));
 

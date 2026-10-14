@@ -666,7 +666,6 @@ TEST_F(ContextHubServiceTest,
   ASSERT_EQ(items.size(), 1u);
   EXPECT_EQ(items[0].id, "todo_history_1");
   EXPECT_TRUE(items[0].is_first_party());
-  EXPECT_TRUE(items[0].HasChromeHistoryReferences());
   const auto* fp_data = std::get_if<FirstPartyData>(&items[0].data);
   ASSERT_TRUE(fp_data);
   EXPECT_FALSE(fp_data->actionable_url.has_value());
