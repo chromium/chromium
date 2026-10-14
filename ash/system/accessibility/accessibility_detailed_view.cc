@@ -215,6 +215,13 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
                        docked_magnifier_top_view_);
   }
 
+  // Hover Text conflicts with Spoken Feedback. Always update its toggle and
+  // enabled state even when Spoken Feedback becomes enabled while the menu is
+  // already open, so existing rows reflect the disabled state.
+  UpdateFeatureState(controller->hover_text().enabled(),
+                     /*enabled=*/controller->IsHoverTextSettingVisibleInTray(),
+                     hover_text_view_, hover_text_top_view_);
+
   if (controller->IsAutoclickSettingVisibleInTray()) {
     bool checked = controller->autoclick().enabled();
     UpdateFeatureState(checked, autoclick_view_, autoclick_top_view_);
@@ -332,6 +339,10 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
       Shell::Get()->docked_magnifier_controller()->GetEnabled()) {
     docked_magnifier_top_view_ = AddDockedMagnifierView(container);
   }
+  if (controller->IsHoverTextSettingVisibleInTray() &&
+      controller->hover_text().enabled()) {
+    hover_text_top_view_ = AddHoverTextView(container);
+  }
   if (controller->IsAutoclickSettingVisibleInTray() &&
       controller->autoclick().enabled()) {
     autoclick_top_view_ = AddAutoclickView(container);
@@ -413,6 +424,10 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
 
   if (controller->IsDockedMagnifierSettingVisibleInTray()) {
     docked_magnifier_view_ = AddDockedMagnifierView(container);
+  }
+
+  if (controller->IsHoverTextSettingVisibleInTray()) {
+    hover_text_view_ = AddHoverTextView(container);
   }
 
   if (controller->IsAutoclickSettingVisibleInTray()) {
@@ -547,6 +562,16 @@ HoverHighlightView* AccessibilityDetailedView::AddDockedMagnifierView(
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DOCKED_MAGNIFIER),
       checked, controller->IsEnterpriseIconVisibleForDockedMagnifier());
+}
+
+HoverHighlightView* AccessibilityDetailedView::AddHoverTextView(
+    views::View* container) {
+  auto* controller = Shell::Get()->accessibility_controller();
+  bool checked = controller->hover_text().enabled();
+  return AddScrollListFeatureItem(
+      container, kHoverTextIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HOVER_TEXT),
+      checked, /*enterprise_managed=*/false);
 }
 
 HoverHighlightView* AccessibilityDetailedView::AddAutoclickView(
@@ -803,6 +828,14 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     base::UmaHistogramBoolean("Accessibility.CrosStatusArea.DockedMagnifier",
                               new_state);
     docked_magnifier_controller->SetEnabled(new_state);
+  } else if ((view == hover_text_top_view_ || view == hover_text_view_) &&
+             controller->IsHoverTextSettingVisibleInTray()) {
+    bool new_state = !controller->hover_text().enabled();
+    RecordAction(new_state ? UserMetricsAction("StatusArea_HoverTextEnabled")
+                           : UserMetricsAction("StatusArea_HoverTextDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.HoverText",
+                              new_state);
+    controller->hover_text().SetEnabled(new_state);
   } else if ((view == large_cursor_top_view_ || view == large_cursor_view_) &&
              !controller->IsEnterpriseIconVisibleForLargeCursor()) {
     bool new_state = !controller->large_cursor().enabled();

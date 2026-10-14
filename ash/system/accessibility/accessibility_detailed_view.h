@@ -84,6 +84,7 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* AddHighContrastView(views::View* container);
   HoverHighlightView* AddScreenMagnifierView(views::View* container);
   HoverHighlightView* AddDockedMagnifierView(views::View* container);
+  HoverHighlightView* AddHoverTextView(views::View* container);
   HoverHighlightView* AddLargeCursorView(views::View* container);
   HoverHighlightView* AddAutoclickView(views::View* container);
   HoverHighlightView* AddVirtualKeyboardView(views::View* container);
@@ -134,6 +135,7 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView> high_contrast_view_ = nullptr;
   raw_ptr<HoverHighlightView> screen_magnifier_view_ = nullptr;
   raw_ptr<HoverHighlightView> docked_magnifier_view_ = nullptr;
+  raw_ptr<HoverHighlightView> hover_text_view_ = nullptr;
   raw_ptr<HoverHighlightView> large_cursor_view_ = nullptr;
   raw_ptr<HoverHighlightView> autoclick_view_ = nullptr;
   raw_ptr<HoverHighlightView> virtual_keyboard_view_ = nullptr;
@@ -156,6 +158,7 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView> high_contrast_top_view_ = nullptr;
   raw_ptr<HoverHighlightView> screen_magnifier_top_view_ = nullptr;
   raw_ptr<HoverHighlightView> docked_magnifier_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView> hover_text_top_view_ = nullptr;
   raw_ptr<HoverHighlightView> large_cursor_top_view_ = nullptr;
   raw_ptr<HoverHighlightView> autoclick_top_view_ = nullptr;
   raw_ptr<HoverHighlightView> virtual_keyboard_top_view_ = nullptr;

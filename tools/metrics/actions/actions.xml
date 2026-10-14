@@ -37945,6 +37945,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="StatusArea_HoverTextDisabled">
+  <owner>katie@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
+  <description>Ash system menu: Accessibility: Disable Hover Text</description>
+</action>
+
+<action name="StatusArea_HoverTextEnabled">
+  <owner>katie@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
+  <description>Ash system menu: Accessibility: Enable Hover Text</description>
+</action>
+
 <action name="StatusArea_IME_Detailed">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -21,6 +21,8 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -622,6 +624,12 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   }
   HoverHighlightView* color_correction_top_view() const {
     return detailed_menu_->color_correction_top_view_;
+  }
+  HoverHighlightView* hover_text_view() const {
+    return detailed_menu_->hover_text_view_;
+  }
+  HoverHighlightView* hover_text_top_view() const {
+    return detailed_menu_->hover_text_top_view_;
   }
 
  private:
@@ -1487,6 +1495,114 @@ TEST_F(AccessibilityDetailedViewTest, FaceGazeEnterpriseKiosk) {
   SetUpKioskSession();
   CreateDetailedMenu();
   EXPECT_FALSE(IsFaceGazeShownOnDetailMenu());
+}
+
+TEST_F(AccessibilityDetailedViewTest, HoverText) {
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        ::features::kAccessibilityHoverText);
+    controller()->hover_text().SetEnabled(true);
+    EXPECT_FALSE(controller()->hover_text().enabled());
+    EXPECT_TRUE(controller()->GetEnabledFeaturesInQuickSettings().empty());
+    controller()->hover_text().SetEnabled(false);
+  }
+
+  base::test::ScopedFeatureList feature_list(
+      ::features::kAccessibilityHoverText);
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(controller()->hover_text().enabled());
+
+  CreateDetailedMenu();
+  ASSERT_TRUE(hover_text_view());
+  EXPECT_FALSE(hover_text_top_view());
+  EXPECT_FALSE(IsEnabledOnDetailMenu(controller()->hover_text().enabled(),
+                                     hover_text_view()));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount("StatusArea_HoverTextEnabled"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount("StatusArea_HoverTextDisabled"));
+  histogram_tester.ExpectTotalCount("Accessibility.CrosStatusArea.HoverText",
+                                    0);
+
+  ClickView(hover_text_view());
+  EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_TRUE(IsEnabledOnDetailMenu(controller()->hover_text().enabled(),
+                                    hover_text_view()));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("StatusArea_HoverTextEnabled"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount("StatusArea_HoverTextDisabled"));
+  histogram_tester.ExpectBucketCount("Accessibility.CrosStatusArea.HoverText",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount("Accessibility.CrosStatusArea.HoverText",
+                                     false, 0);
+  CloseDetailMenu();
+
+  CreateDetailedMenu();
+  ASSERT_TRUE(hover_text_view());
+  ASSERT_TRUE(hover_text_top_view());
+  EXPECT_TRUE(IsSwitchToggled(hover_text_view()));
+  EXPECT_TRUE(hover_text_view()->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(hover_text_top_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(hover_text_top_view()));
+  EXPECT_TRUE(hover_text_top_view()->GetEnabled());
+
+  // Enabling Spoken Feedback while the menu is already open should update the
+  // existing Hover Text rows to unchecked and disabled.
+  EnableSpokenFeedback(true);
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_FALSE(IsSwitchToggled(hover_text_view()));
+  EXPECT_FALSE(IsCheckedForAccessibility(hover_text_view()));
+  EXPECT_FALSE(hover_text_view()->GetEnabled());
+  EXPECT_FALSE(IsSwitchToggled(hover_text_top_view()));
+  EXPECT_FALSE(IsCheckedForAccessibility(hover_text_top_view()));
+  EXPECT_FALSE(hover_text_top_view()->GetEnabled());
+
+  // Disabling Spoken Feedback restores Hover Text to checked and enabled.
+  EnableSpokenFeedback(false);
+  EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_TRUE(IsSwitchToggled(hover_text_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(hover_text_view()));
+  EXPECT_TRUE(hover_text_view()->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(hover_text_top_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(hover_text_top_view()));
+  EXPECT_TRUE(hover_text_top_view()->GetEnabled());
+
+  // Turn off Hover Text, then enable Spoken Feedback and verify that clicking
+  // the conflicting rows in the open menu is ignored.
+  ClickView(hover_text_top_view());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("StatusArea_HoverTextEnabled"));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("StatusArea_HoverTextDisabled"));
+  histogram_tester.ExpectBucketCount("Accessibility.CrosStatusArea.HoverText",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount("Accessibility.CrosStatusArea.HoverText",
+                                     false, 1);
+  EnableSpokenFeedback(true);
+  ClickView(hover_text_view());
+  ClickView(hover_text_top_view());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_FALSE(IsSwitchToggled(hover_text_view()));
+  EXPECT_FALSE(IsSwitchToggled(hover_text_top_view()));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("StatusArea_HoverTextEnabled"));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("StatusArea_HoverTextDisabled"));
+  histogram_tester.ExpectTotalCount("Accessibility.CrosStatusArea.HoverText",
+                                    2);
+
+  // Reopen the menu while Spoken Feedback is active (so the conflicting row
+  // pointer is nullptr) and verify disabling Spoken Feedback does not crash.
+  CloseDetailMenu();
+  CreateDetailedMenu();
+  EXPECT_FALSE(hover_text_view());
+  EnableSpokenFeedback(false);
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  CloseDetailMenu();
 }
 
 class AccessibilityDetailedViewSodaTest

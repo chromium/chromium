@@ -225,8 +225,8 @@ const FeatureData kFeatures[] = {
      /*toggleable_in_quicksettings=*/true},
     {FeatureType::kDisableTouchpad, prefs::kAccessibilityDisableTrackpadEnabled,
      nullptr, 0, /*toggleable_in_quicksettings=*/false},
-    {FeatureType::kHoverText, prefs::kAccessibilityHoverTextEnabled, nullptr,
-     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HOVER_TEXT,
+    {FeatureType::kHoverText, prefs::kAccessibilityHoverTextEnabled,
+     &kHoverTextIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HOVER_TEXT,
      /*toggleable_in_quicksettings=*/true,
      /*conflicting_feature=*/FeatureType::kSpokenFeedback},
 };
@@ -965,6 +965,11 @@ void AccessibilityController::Feature::UpdateFromPref() {
 
   if (conflicting_feature_ != FeatureType::kNoConflictingFeature &&
       owner_->GetFeature(conflicting_feature_).enabled()) {
+    enabled = false;
+  }
+
+  if (type_ == FeatureType::kHoverText &&
+      !::features::IsAccessibilityHoverTextEnabled()) {
     enabled = false;
   }
 
