@@ -426,6 +426,10 @@ def _RunCompiler(
                     and not changes.HasStringChanges()
                     and os.path.exists(jar_path)
                     and (jar_info_path is None or os.path.exists(jar_info_path))
+                    and (
+                        not options.filtered_jar
+                        or os.path.exists(options.filtered_jar)
+                    )
                 ):
                     # Log message is used by tests to determine whether partial javac
                     # optimization was used.
@@ -451,6 +455,10 @@ def _RunCompiler(
 
                     # Extracts .class as well as META-INF/services.
                     build_utils.ExtractAll(jar_path, classes_dir)
+                    if options.filtered_jar:
+                        build_utils.ExtractAll(
+                            options.filtered_jar, classes_dir
+                        )
 
         if intermediates_out_dir is None:
             intermediates_out_dir = temp_dir
