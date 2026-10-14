@@ -98,6 +98,7 @@ def __step_config(ctx, step_config):
                 "*.xml",
             ],
             "remote": remote_run and not config.get(ctx, "no-remote-javac"),
+            "restat_content": True,
             "platform_ref": "large",
             "timeout": "2m",
             "remote_command": platform.remote_python_bin,
