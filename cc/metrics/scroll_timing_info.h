@@ -5,8 +5,11 @@
 #ifndef CC_METRICS_SCROLL_TIMING_INFO_H_
 #define CC_METRICS_SCROLL_TIMING_INFO_H_
 
+#include <cstdint>
 #include <ostream>
+#include <type_traits>
 
+#include "base/memory/shared_memory_safety_checker.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
@@ -23,10 +26,29 @@ struct CC_EXPORT ScrollTimingInfo {
   base::TimeTicks start_time;
   base::TimeTicks end_time;
   ui::ScrollInputType input_type;
+  uint32_t reserved = 0;  // Explicit padding; must stay zero.
   ElementId element_id;
 
   bool operator==(const ScrollTimingInfo&) const = default;
 };
+
+// ScrollTimingBuffer stores ScrollTimingInfo in shared memory. For structs,
+// AllowedOverSharedMemory only requires trivial copyability, which still
+// allows pointer members, so check each member too. Add new members here.
+static_assert(std::is_trivially_copyable_v<ScrollTimingInfo>);
+static_assert(std::has_unique_object_representations_v<ScrollTimingInfo>,
+              "ScrollTimingInfo is copied over shared memory; no padding "
+              "allowed");
+static_assert(base::subtle::AllowedOverSharedMemory<
+              decltype(ScrollTimingInfo::start_time)>);
+static_assert(base::subtle::AllowedOverSharedMemory<
+              decltype(ScrollTimingInfo::end_time)>);
+static_assert(base::subtle::AllowedOverSharedMemory<
+              decltype(ScrollTimingInfo::input_type)>);
+static_assert(base::subtle::AllowedOverSharedMemory<
+              decltype(ScrollTimingInfo::reserved)>);
+static_assert(base::subtle::AllowedOverSharedMemory<
+              decltype(ScrollTimingInfo::element_id)>);
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const ScrollTimingInfo& info) {
