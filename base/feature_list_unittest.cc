@@ -1928,6 +1928,56 @@ TEST_F(FeatureListTest, RuntimeMutability_GetOverrideStateWithoutActivation) {
   EXPECT_TRUE(FieldTrialList::IsTrialActive(trial->trial_name()));
 }
 
+TEST_F(FeatureListTest, RuntimeMutability_ActivateRuntimeOverrideOnQuery) {
+  // The destruction order is important here. FeatureList holds raw_ptr
+  // references to the RuntimeFieldTrialInfo object(s). Declaring these
+  // unique_ptrs before ScopedFeatureList ensures they are destructed *after*
+  // the FeatureList singleton is torn down, preventing DanglingPtr crash in
+  // unittests.
+  std::unique_ptr<base::RuntimeFieldTrialInfo> override_info;
+  test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kRuntimeMutableFeature,
+        /*pre_mutation_callback=*/
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+        /*post_mutation_callback=*/
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  // Apply an inactive runtime override.
+  override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
+      "TrialA", "GroupA", base::FieldTrialParams(),
+      /*overridden_trial=*/nullptr);
+  auto update =
+      FeatureList::GetInstance()
+          ->PrepareRuntimeMutableFeatureStateUpdateForTesting(
+              pass_key(), override_info.get(), kRuntimeMutableFeature.name,
+              FeatureList::OVERRIDE_DISABLE_FEATURE);
+  ASSERT_TRUE(update.has_value());
+  update->RunPreMutationCallback();
+  update->UpdateState();
+  update->RunPostMutationCallback();
+
+  // The runtime override should initially be inactive.
+  EXPECT_FALSE(override_info->is_active());
+
+  // Querying without activation should not activate the override.
+  FeatureList::OverrideState override_state =
+      FeatureList::GetInstance()->GetOverrideStateWithoutActivation(
+          kRuntimeMutableFeature, metrics::RuntimeMutableFeaturesHandlerBase::
+                                      CreatePassKeyForTesting());
+  EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, override_state);
+  EXPECT_FALSE(override_info->is_active());
+
+  // Querying with activation (IsEnabled) should activate the override!
+  EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_TRUE(override_info->is_active());
+}
+
 TEST_F(FeatureListTest,
        RuntimeMutability_GetControllingTrialInfoByFeatureName) {
   int callback_calls = 0;

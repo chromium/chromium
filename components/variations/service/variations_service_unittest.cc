@@ -2012,8 +2012,43 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
   }
 }
 
-// Verifies that only starts_active killswitches can be applied.
-TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotStartsActive) {
+// Verifies that unhandled activation types cannot be applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_InvalidActivationType) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)->set_activation_type(Study::STICKY_AFTER_QUERY);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kInvalidActivationType, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy"));
+  }
+}
+
+// Verifies that ACTIVATE_ON_QUERY studies can be applied and start inactive,
+// activating only upon query.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_ActivateOnQuery) {
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -2037,11 +2072,128 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotStartsActive) {
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
         kPrepareRuntimeMutableChangesResultMetric,
-        PrepareRuntimeMutableChangesResult::kNotStartsActive, 1);
-    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
-    EXPECT_FALSE(
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    const auto* override_info =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-            "MyStudy"));
+            "MyStudy");
+    ASSERT_TRUE(override_info != nullptr);
+    EXPECT_EQ(override_info->trial_name(), "MyStudy");
+    EXPECT_EQ(override_info->group_name(), "Group1");
+    // Starts inactive because activation type is ACTIVATE_ON_QUERY.
+    EXPECT_FALSE(override_info->is_active());
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->IsRuntimeOverrideActive("MyStudy"));
+
+    base::FieldTrial::ActiveGroups active_groups;
+    base::FieldTrialList::GetActiveFieldTrialGroups(
+        &active_groups, /*include_runtime_overrides=*/true);
+    for (const auto& group : active_groups) {
+      EXPECT_NE(group.trial_name, "MyStudy");
+    }
+
+    // Feature query activates the override.
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                    ->IsRuntimeOverrideActive("MyStudy"));
+
+    active_groups.clear();
+    base::FieldTrialList::GetActiveFieldTrialGroups(
+        &active_groups, /*include_runtime_overrides=*/true);
+    bool found = false;
+    for (const auto& group : active_groups) {
+      if (group.trial_name == "MyStudy") {
+        EXPECT_EQ(group.group_name, "Group1");
+        found = true;
+      }
+    }
+    EXPECT_TRUE(found);
+  }
+}
+
+// Verifies that ACTIVATE_ON_QUERY resets the activation state if overriding an
+// already-active trial: the previous trial is suppressed, the override starts
+// inactive, and is activated upon query.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ActivateOnQuery_ResetActivation) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Killswitch", "Disabled50");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Query initially to activate the trial.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  {
+    base::FieldTrial::ActiveGroups active_groups;
+    base::FieldTrialList::GetActiveFieldTrialGroups(
+        &active_groups, /*include_runtime_overrides=*/true);
+    bool found = false;
+    for (const auto& group : active_groups) {
+      if (group.trial_name == "Killswitch") {
+        EXPECT_EQ(group.group_name, "Disabled50");
+        found = true;
+      }
+    }
+    EXPECT_TRUE(found);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)->set_activation_type(Study::ACTIVATE_ON_QUERY);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+
+    const auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override_info != nullptr);
+    EXPECT_FALSE(override_info->is_active());
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->IsRuntimeOverrideActive("Killswitch"));
+
+    // Neither the overridden trial nor the new inactive override is in active
+    // groups.
+    base::FieldTrial::ActiveGroups active_groups;
+    base::FieldTrialList::GetActiveFieldTrialGroups(
+        &active_groups, /*include_runtime_overrides=*/true);
+    for (const auto& group : active_groups) {
+      EXPECT_NE(group.trial_name, "Killswitch");
+    }
+
+    // Querying activates the override.
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                    ->IsRuntimeOverrideActive("Killswitch"));
+
+    active_groups.clear();
+    base::FieldTrialList::GetActiveFieldTrialGroups(
+        &active_groups, /*include_runtime_overrides=*/true);
+    bool found = false;
+    for (const auto& group : active_groups) {
+      if (group.trial_name == "Killswitch") {
+        EXPECT_EQ(group.group_name, "Disabled100");
+        found = true;
+      }
+    }
+    EXPECT_TRUE(found);
   }
 }
 

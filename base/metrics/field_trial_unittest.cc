@@ -1318,21 +1318,23 @@ TEST_F(FieldTrialListTest, GetActiveFieldTrialGroups_RuntimeOverrides) {
 
   // Apply a runtime override. Here "OverrideTrial" overrides "OverriddenTrial".
   auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+  auto* overrides = base::RuntimeFieldTrialOverrides::GetInstance();
+  auto override1 = std::make_unique<base::RuntimeFieldTrialInfo>(
+      "OverrideTrial", "OverrideGroup", base::FieldTrialParams(),
+      overridden_trial.get());
+  auto* override1_ptr = override1.get();
   ASSERT_TRUE(
-      base::RuntimeFieldTrialOverrides::GetInstance()->ApplyRuntimeOverride(
-          pass_key,
-          std::make_unique<base::RuntimeFieldTrialInfo>(
-              "OverrideTrial", "OverrideGroup", base::FieldTrialParams(),
-              overridden_trial.get()),
-          ""));
+      overrides->ApplyRuntimeOverride(pass_key, std::move(override1), ""));
+  override1_ptr->Activate();
+
   // Apply a runtime override that does not override any existing trial.
+  auto override2 = std::make_unique<base::RuntimeFieldTrialInfo>(
+      "StandaloneOverrideTrial", "OverrideGroup2", base::FieldTrialParams(),
+      nullptr);
+  auto* override2_ptr = override2.get();
   ASSERT_TRUE(
-      base::RuntimeFieldTrialOverrides::GetInstance()->ApplyRuntimeOverride(
-          pass_key,
-          std::make_unique<base::RuntimeFieldTrialInfo>(
-              "StandaloneOverrideTrial", "OverrideGroup2",
-              base::FieldTrialParams(), nullptr),
-          ""));
+      overrides->ApplyRuntimeOverride(pass_key, std::move(override2), ""));
+  override2_ptr->Activate();
 
   // 1. Check with |include_runtime_overrides| = false.
   {
@@ -1368,6 +1370,51 @@ TEST_F(FieldTrialListTest, GetActiveFieldTrialGroups_RuntimeOverrides) {
     EXPECT_TRUE(active_pairs.contains({"OverrideTrial", "OverrideGroup"}));
     EXPECT_TRUE(
         active_pairs.contains({"StandaloneOverrideTrial", "OverrideGroup2"}));
+  }
+
+  // 3. Check with an inactive runtime override (starts inactive).
+  {
+    scoped_refptr<FieldTrial> trial3 =
+        FieldTrialList::CreateFieldTrial("OverriddenTrial3", "Group3");
+    trial3->Activate();
+
+    auto override3 = std::make_unique<base::RuntimeFieldTrialInfo>(
+        "InactiveOverrideTrial", "InactiveGroup", base::FieldTrialParams(),
+        trial3.get());
+    auto* override3_ptr = override3.get();
+    ASSERT_TRUE(
+        overrides->ApplyRuntimeOverride(pass_key, std::move(override3), ""));
+
+    // When is_active = false, neither the overridden trial nor the override
+    // should be included in active groups.
+    FieldTrial::ActiveGroups active_groups;
+    FieldTrialList::GetActiveFieldTrialGroupsInternal(
+        &active_groups, /*include_low_anonymity=*/false,
+        /*include_runtime_overrides=*/true);
+
+    std::set<std::pair<std::string, std::string>> active_pairs;
+    for (const auto& group : active_groups) {
+      active_pairs.insert({group.trial_name, group.group_name});
+    }
+    EXPECT_FALSE(active_pairs.contains({"OverriddenTrial3", "Group3"}));
+    EXPECT_FALSE(
+        active_pairs.contains({"InactiveOverrideTrial", "InactiveGroup"}));
+
+    // Once activated, the override should appear in active groups.
+    override3_ptr->Activate();
+
+    active_groups.clear();
+    FieldTrialList::GetActiveFieldTrialGroupsInternal(
+        &active_groups, /*include_low_anonymity=*/false,
+        /*include_runtime_overrides=*/true);
+
+    active_pairs.clear();
+    for (const auto& group : active_groups) {
+      active_pairs.insert({group.trial_name, group.group_name});
+    }
+    EXPECT_FALSE(active_pairs.contains({"OverriddenTrial3", "Group3"}));
+    EXPECT_TRUE(
+        active_pairs.contains({"InactiveOverrideTrial", "InactiveGroup"}));
   }
 
   // Clean up.

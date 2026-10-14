@@ -490,8 +490,9 @@ class VariationsService
     raw_ptr<const base::FieldTrial> trial_to_override = nullptr;
     std::string previous_override_to_replace;
     std::vector<std::string> feature_names;
-    std::unique_ptr<const base::RuntimeFieldTrialInfo> override_info;
+    std::unique_ptr<base::RuntimeFieldTrialInfo> override_info;
     std::vector<base::FeatureList::RuntimeMutableFeatureUpdate> feature_updates;
+    Study::ActivationType activation_type = Study::ACTIVATE_ON_STARTUP;
   };
 
   // Prepares the runtime mutable changes of the `simulated_trial`'s selected

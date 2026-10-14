@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/types/pass_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -29,7 +30,7 @@ namespace base {
 namespace {
 
 const RuntimeFieldTrialInfo* FindOverride(
-    const flat_map<std::string, std::unique_ptr<const RuntimeFieldTrialInfo>>&
+    const flat_map<std::string, std::unique_ptr<RuntimeFieldTrialInfo>>&
         overrides,
     std::string_view trial_name) {
   auto it = overrides.find(trial_name);
@@ -58,6 +59,15 @@ class RuntimeFieldTrialOverridesTest : public ::testing::Test {
     raw_ptr<const FieldTrial> last_overridden_trial = nullptr;
     std::string last_previous_override_trial_name;
     int call_count = 0;
+
+    void OnRuntimeFieldTrialOverrideActivated(
+        const RuntimeFieldTrialInfo& override_info) override {
+      last_activated_trial_name = override_info.trial_name();
+      activated_call_count++;
+    }
+
+    std::string last_activated_trial_name;
+    int activated_call_count = 0;
   };
 
   void TearDown() override {
@@ -329,6 +339,190 @@ TEST_F(RuntimeFieldTrialOverridesTest, IsFieldTrialOverridden) {
   // trial1 should be overridden, trial2 should not.
   EXPECT_TRUE(overrides->IsFieldTrialOverridden(*trial1));
   EXPECT_FALSE(overrides->IsFieldTrialOverridden(*trial2));
+}
+
+TEST_F(RuntimeFieldTrialOverridesTest, Activation) {
+  auto* overrides = RuntimeFieldTrialOverrides::GetInstance();
+  auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+
+  MockObserver observer;
+  overrides->AddObserver(&observer);
+
+  FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");
+
+  // Activating an unregistered RuntimeFieldTrialInfo marks it active locally
+  // without notifying observers.
+  RuntimeFieldTrialInfo unregistered_info("UnregisteredTrial",
+                                          "UnregisteredGroup",
+                                          base::FieldTrialParams(), trial);
+  EXPECT_FALSE(unregistered_info.is_active());
+  unregistered_info.Activate();
+  EXPECT_TRUE(unregistered_info.is_active());
+  EXPECT_EQ(observer.activated_call_count, 0);
+
+  // Apply an override (starts inactive).
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "OverrideTrial", "OverrideGroup", base::FieldTrialParams(), trial),
+      /*previous_override_trial_name=*/""));
+
+  EXPECT_EQ(observer.call_count, 1);
+  EXPECT_EQ(observer.activated_call_count, 0);
+  EXPECT_FALSE(overrides->IsRuntimeOverrideActive("OverrideTrial"));
+
+  auto* override_info = overrides->GetRuntimeOverride("OverrideTrial");
+  ASSERT_TRUE(override_info != nullptr);
+  EXPECT_FALSE(override_info->is_active());
+
+  // Activating the trial marks it active and notifies observers.
+  override_info->Activate();
+  EXPECT_TRUE(override_info->is_active());
+  EXPECT_TRUE(overrides->IsRuntimeOverrideActive("OverrideTrial"));
+  EXPECT_EQ(observer.activated_call_count, 1);
+  EXPECT_EQ(observer.last_activated_trial_name, "OverrideTrial");
+
+  // Activating again is a no-op and doesn't re-notify observers.
+  override_info->Activate();
+  EXPECT_EQ(observer.activated_call_count, 1);
+
+  overrides->RemoveObserver(&observer);
+}
+
+TEST_F(RuntimeFieldTrialOverridesTest, ReentrantObserverActivation) {
+  class RecordingObserver : public RuntimeFieldTrialOverrides::Observer {
+   public:
+    RecordingObserver(std::string_view name, std::vector<std::string>* events)
+        : name_(name), events_(events) {}
+
+    void OnRuntimeFieldTrialOverride(
+        const RuntimeFieldTrialInfo& override_info,
+        std::string_view previous_override_trial_name) override {
+      events_->push_back(std::string(name_) +
+                         ":Override:" + override_info.trial_name());
+    }
+
+    void OnRuntimeFieldTrialOverrideActivated(
+        const RuntimeFieldTrialInfo& override_info) override {
+      events_->push_back(std::string(name_) +
+                         ":Activated:" + override_info.trial_name());
+    }
+
+   private:
+    std::string name_;
+    raw_ptr<std::vector<std::string>> events_;
+  };
+
+  class ActivatingObserver : public RecordingObserver {
+   public:
+    using RecordingObserver::RecordingObserver;
+
+    void OnRuntimeFieldTrialOverride(
+        const RuntimeFieldTrialInfo& override_info,
+        std::string_view previous_override_trial_name) override {
+      RecordingObserver::OnRuntimeFieldTrialOverride(
+          override_info, previous_override_trial_name);
+      if (override_info.trial_name() == "OverrideTrial3") {
+        // Activate the newly applied override itself from within
+        // OnRuntimeFieldTrialOverride(). Its
+        // OnRuntimeFieldTrialOverrideActivated notification should be deferred
+        // until all observers have received OnRuntimeFieldTrialOverride().
+        RuntimeFieldTrialInfo* self_info =
+            RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+                "OverrideTrial3");
+        ASSERT_NE(self_info, nullptr);
+        self_info->Activate();
+
+        // Also re-entrantly activate a different, already-registered runtime
+        // field trial ("OverrideTrial1") from within
+        // OnRuntimeFieldTrialOverride().
+        RuntimeFieldTrialInfo* other_info =
+            RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+                "OverrideTrial1");
+        ASSERT_NE(other_info, nullptr);
+        other_info->Activate();
+      }
+    }
+
+    void OnRuntimeFieldTrialOverrideActivated(
+        const RuntimeFieldTrialInfo& override_info) override {
+      RecordingObserver::OnRuntimeFieldTrialOverrideActivated(override_info);
+      // Re-entrantly activate another runtime field trial ("OverrideTrial2")
+      // from within OnRuntimeFieldTrialOverrideActivated().
+      if (override_info.trial_name() == "OverrideTrial1") {
+        RuntimeFieldTrialInfo* other_info =
+            RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+                "OverrideTrial2");
+        ASSERT_NE(other_info, nullptr);
+        other_info->Activate();
+      }
+    }
+  };
+
+  auto* overrides = RuntimeFieldTrialOverrides::GetInstance();
+  auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+
+  FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  FieldTrial* trial2 = FieldTrialList::CreateFieldTrial("Trial2", "Group2");
+  FieldTrial* trial3 = FieldTrialList::CreateFieldTrial("Trial3", "Group3");
+
+  // Register OverrideTrial1 and OverrideTrial2 first (both start inactive).
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "OverrideTrial1", "OverrideGroup1", base::FieldTrialParams(), trial1),
+      /*previous_override_trial_name=*/""));
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "OverrideTrial2", "OverrideGroup2", base::FieldTrialParams(), trial2),
+      /*previous_override_trial_name=*/""));
+  EXPECT_FALSE(overrides->IsRuntimeOverrideActive("OverrideTrial1"));
+  EXPECT_FALSE(overrides->IsRuntimeOverrideActive("OverrideTrial2"));
+
+  std::vector<std::string> events;
+  ActivatingObserver observer1("Observer1", &events);
+  RecordingObserver observer2("Observer2", &events);
+  overrides->AddObserver(&observer1);
+  overrides->AddObserver(&observer2);
+
+  // Applying OverrideTrial3 triggers OnRuntimeFieldTrialOverride, which
+  // activates OverrideTrial3 (deferred until after the
+  // OnRuntimeFieldTrialOverride loop) and OverrideTrial1 (whose
+  // OnRuntimeFieldTrialOverrideActivated in turn activates OverrideTrial2).
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "OverrideTrial3", "OverrideGroup3", base::FieldTrialParams(), trial3),
+      /*previous_override_trial_name=*/""));
+
+  EXPECT_TRUE(overrides->IsRuntimeOverrideActive("OverrideTrial1"));
+  EXPECT_TRUE(overrides->IsRuntimeOverrideActive("OverrideTrial2"));
+  EXPECT_TRUE(overrides->IsRuntimeOverrideActive("OverrideTrial3"));
+  EXPECT_THAT(
+      events,
+      ::testing::ElementsAre(
+          // Observer1 receives OverrideTrial3's override notification and
+          // activates OverrideTrial3 (deferred) and OverrideTrial1 (immediate).
+          "Observer1:Override:OverrideTrial3",
+          // OverrideTrial1's activation immediately notifies Observer1, which
+          // re-entrantly activates OverrideTrial2.
+          "Observer1:Activated:OverrideTrial1",
+          // OverrideTrial2's nested activation notifies both observers.
+          "Observer1:Activated:OverrideTrial2",
+          "Observer2:Activated:OverrideTrial2",
+          // Unwinding back to OverrideTrial1's activation notifies Observer2.
+          "Observer2:Activated:OverrideTrial1",
+          // Unwinding back to OverrideTrial3's override notification notifies
+          // Observer2 before OverrideTrial3's activation notification fires.
+          "Observer2:Override:OverrideTrial3",
+          // Now that all observers have received OnRuntimeFieldTrialOverride
+          // for OverrideTrial3, its deferred activation notification fires.
+          "Observer1:Activated:OverrideTrial3",
+          "Observer2:Activated:OverrideTrial3"));
+
+  overrides->RemoveObserver(&observer2);
+  overrides->RemoveObserver(&observer1);
 }
 
 }  // namespace base

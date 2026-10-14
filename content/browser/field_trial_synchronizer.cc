@@ -195,15 +195,18 @@ void FieldTrialSynchronizer::OnRuntimeFieldTrialOverride(
         previous_override_trial_name);
   }
 
-  // Add the new override to the persistent data. This must be done after the
-  // previous override is removed, since the `previous_override_trial_name` may
-  // be the same name as the new override (in which case, if the order was
-  // reversed, the new override would be removed immediately after being added).
-  metrics::GlobalPersistentSystemProfile::GetInstance()->AddFieldTrial(
-      override_info.trial_name(), override_info.group_name());
+  // Note: The new override will be added to the persistent data when it is
+  // activated via OnRuntimeFieldTrialOverrideActivated().
 
   // TODO(crbug.com/482449878): Notify renderers of the new override for
   // reporting purposes (e.g. crash keys).
+}
+
+void FieldTrialSynchronizer::OnRuntimeFieldTrialOverrideActivated(
+    const base::RuntimeFieldTrialInfo& override_info) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  metrics::GlobalPersistentSystemProfile::GetInstance()->AddFieldTrial(
+      override_info.trial_name(), override_info.group_name());
 }
 
 // static

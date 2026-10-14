@@ -246,8 +246,9 @@ chromium-metrics-reviews@google.com.
     The experiment is not a strict killswitch (e.g., it enables features). No
     longer recorded: runtime mutability now supports enabling features.
   </int>
-  <int value="5" label="Not starts_active">
-    The study is not activated on startup (starts_active).
+  <int value="5" label="Not starts_active (Deprecated 10/2026)">
+    The study is not activated on startup (starts_active). No longer recorded:
+    replaced by Invalid Activation Type.
   </int>
   <int value="6" label="Not permanent consistency">
     The study does not have permanent consistency.
@@ -295,6 +296,10 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Feature Both Enabled And Disabled">
     The experiment specifies the same feature in both enable_feature and
     disable_feature.
+  </int>
+  <int value="19" label="Invalid Activation Type">
+    The study does not have a supported activation type (ACTIVATE_ON_STARTUP or
+    ACTIVATE_ON_QUERY).
   </int>
 </enum>
 

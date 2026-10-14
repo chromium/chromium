@@ -120,7 +120,9 @@ enum class PrepareRuntimeMutableChangesResult {
   // Deprecated: runtime mutability now allows enabling features as well as
   // killswitches, so this will no longer be recorded.
   // kNotStrictKillswitch = 4,
-  kNotStartsActive = 5,
+  // Deprecated: both ACTIVATE_ON_STARTUP and ACTIVATE_ON_QUERY are now
+  // supported; replaced by kInvalidActivationType.
+  // kNotStartsActive = 5,
   kNotPermanentConsistency = 6,
   kAlreadyApplied = 7,
   kNonRuntimeMutableFeature = 8,
@@ -138,7 +140,8 @@ enum class PrepareRuntimeMutableChangesResult {
   // no longer be recorded.
   // kRuntimeExperimentHasParams = 17,
   kFeatureBothEnabledAndDisabled = 18,
-  kMaxValue = kFeatureBothEnabledAndDisabled,
+  kInvalidActivationType = 19,
+  kMaxValue = kInvalidActivationType,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsPrepareRuntimeMutableChangesResult)
 

@@ -1242,11 +1242,14 @@ void FieldTrialList::GetActiveFieldTrialGroupsInternal(
     for (const auto& [override_trial_name, runtime_override] :
          base::RuntimeFieldTrialOverrides::GetInstance()
              ->GetRuntimeOverrides()) {
-      // Runtime FieldTrial overrides are all considered active, so include them
-      // all.
-      active_groups->emplace_back(runtime_override->trial_name(),
-                                  runtime_override->group_name(),
-                                  /*is_overridden=*/false);
+      // Only active runtime overrides should be included. However, if an
+      // override is inactive but overrides a field trial, we should still stop
+      // reporting that field trial.
+      if (runtime_override->is_active()) {
+        active_groups->emplace_back(runtime_override->trial_name(),
+                                    runtime_override->group_name(),
+                                    /*is_overridden=*/false);
+      }
       if (runtime_override->overridden_trial()) {
         trials_to_ignore.insert(
             runtime_override->overridden_trial()->trial_name());

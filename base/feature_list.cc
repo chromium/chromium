@@ -536,7 +536,7 @@ FeatureList::GetRuntimeMutableFeatureState(
 
 FeatureList::RuntimeMutableFeatureUpdate::RuntimeMutableFeatureUpdate(
     internal::RuntimeMutableFeatureState& state_entry,
-    const RuntimeFieldTrialInfo* override_info,
+    RuntimeFieldTrialInfo* override_info,
     OverrideState override_state)
     : state_entry_(&state_entry),
       override_info_(override_info),
@@ -602,7 +602,7 @@ void FeatureList::RuntimeMutableFeatureUpdate::RunPostMutationCallback() {
 std::optional<FeatureList::RuntimeMutableFeatureUpdate>
 FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
     base::PassKey<variations::VariationsService>,
-    const RuntimeFieldTrialInfo* override_info,
+    RuntimeFieldTrialInfo* override_info,
     std::string_view feature_name,
     OverrideState override_state) {
   return PrepareRuntimeMutableFeatureStateUpdateImpl(
@@ -612,7 +612,7 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
 std::optional<FeatureList::RuntimeMutableFeatureUpdate>
 FeatureList::PrepareRuntimeMutableFeatureStateUpdateForTesting(
     base::PassKey<base::test::ScopedFeatureList, FeatureListTest>,
-    const RuntimeFieldTrialInfo* override_info,
+    RuntimeFieldTrialInfo* override_info,
     std::string_view feature_name,
     OverrideState override_state) {
   return PrepareRuntimeMutableFeatureStateUpdateImpl(
@@ -621,7 +621,7 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdateForTesting(
 
 std::optional<FeatureList::RuntimeMutableFeatureUpdate>
 FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
-    const RuntimeFieldTrialInfo* override_info,
+    RuntimeFieldTrialInfo* override_info,
     std::string_view feature_name,
     OverrideState override_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1251,8 +1251,8 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
 
   // If the feature is runtime mutable, then we need to check if there is a
   // runtime override state and use that if it exists.
-  auto optional_runtime_override =
-      MaybeGetRuntimeOverrideState(feature, current_cached_value);
+  auto optional_runtime_override = MaybeGetRuntimeOverrideState(
+      feature, current_cached_value, activate_trial);
   if (optional_runtime_override.has_value()) {
     return *optional_runtime_override;
   }
@@ -1284,7 +1284,8 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
 std::optional<FeatureList::OverrideState>
 FeatureList::MaybeGetRuntimeOverrideState(
     const Feature& feature,
-    Feature::FeatureStateCache current_cached_value) const {
+    Feature::FeatureStateCache current_cached_value,
+    bool activate_trial) const {
   const bool is_runtime_mutable = FeatureIsRuntimeMutable(current_cached_value);
   if (is_runtime_mutable) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1300,6 +1301,10 @@ FeatureList::MaybeGetRuntimeOverrideState(
     const auto& override_entry = it->second;
     DCHECK_EQ(&override_entry.feature.get(), &feature);
     if (override_entry.override_state != OVERRIDE_USE_DEFAULT) {
+      CHECK(override_entry.override_info);
+      if (activate_trial) {
+        override_entry.override_info->Activate();
+      }
       return override_entry.override_state;
     }
   }

@@ -93,7 +93,7 @@ struct BASE_EXPORT RuntimeMutableFeatureState {
 
   // The runtime override info associated with this feature, or null if there is
   // none.
-  base::raw_ptr<const RuntimeFieldTrialInfo> override_info;
+  base::raw_ptr<RuntimeFieldTrialInfo> override_info;
 };
 
 }  // namespace base::internal

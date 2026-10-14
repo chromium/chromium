@@ -114,6 +114,8 @@ class VariationsCrashKeys final
   void OnRuntimeFieldTrialOverride(
       const base::RuntimeFieldTrialInfo& override_info,
       std::string_view previous_override_trial_name) override;
+  void OnRuntimeFieldTrialOverrideActivated(
+      const base::RuntimeFieldTrialInfo& override_info) override;
 
   // Notifies the object that the list of synthetic field trial groups has
   // changed. Note: This matches the SyntheticTrialObserver interface, but this
@@ -279,18 +281,27 @@ void VariationsCrashKeys::OnRuntimeFieldTrialOverride(
 
   ++num_total_runtime_field_trial_overrides_;
 
-  // If we've already initialized crash keys previously, then we need to
-  // recompute the list of active trials from scratch when an override is
-  // applied because runtime overrides changes the state of active trials (i.e.,
-  // one of the currently active trial will be replaced by the override).
-  // If we are in the process of initializing (i.e. initialized_ is false), then
-  // there is no need to recompute the list of as it will be properly
-  // initialized with the overrides already taken into account.
+  // If this override is replacing a previous override or an existing trial, we
+  // need to recompute the list of active trials from scratch to remove the
+  // replaced trial from the active trials crash key.
   if (initialized_) {
-    active_trials_.clear();
-    variations_string_.clear();
-    InitializeWithActiveTrials();
+    if (override_info.overridden_trial() ||
+        !previous_override_trial_name.empty()) {
+      active_trials_.clear();
+      variations_string_.clear();
+      InitializeWithActiveTrials();
+    }
     UpdateCrashKeys();
+  }
+}
+
+void VariationsCrashKeys::OnRuntimeFieldTrialOverrideActivated(
+    const base::RuntimeFieldTrialInfo& override_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (initialized_) {
+    AppendFieldTrialAndUpdateCrashKeys(override_info.trial_name(),
+                                       override_info.group_name(),
+                                       /*is_overridden=*/false);
   }
 }
 

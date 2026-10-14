@@ -236,11 +236,11 @@ class BASE_EXPORT FeatureList {
 
     RuntimeMutableFeatureUpdate(
         internal::RuntimeMutableFeatureState& state_entry,
-        const RuntimeFieldTrialInfo* override_info,
+        RuntimeFieldTrialInfo* override_info,
         OverrideState override_state);
 
     raw_ptr<internal::RuntimeMutableFeatureState> state_entry_ = nullptr;
-    base::raw_ptr<const RuntimeFieldTrialInfo> override_info_;
+    base::raw_ptr<RuntimeFieldTrialInfo> override_info_;
     OverrideState override_state_ = OVERRIDE_USE_DEFAULT;
     Stage stage_ = Stage::kInitial;
   };
@@ -367,7 +367,7 @@ class BASE_EXPORT FeatureList {
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdate(
       base::PassKey<variations::VariationsService>,
-      const RuntimeFieldTrialInfo* override_info,
+      RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);
 
@@ -380,7 +380,7 @@ class BASE_EXPORT FeatureList {
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdateForTesting(
       base::PassKey<base::test::ScopedFeatureList, FeatureListTest>,
-      const RuntimeFieldTrialInfo* override_info,
+      RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);
 
@@ -709,16 +709,19 @@ class BASE_EXPORT FeatureList {
                                      bool activate_trial) const;
 
   // Returns the runtime override state for |feature| if it is runtime-mutable
-  // and a runtime override has been set. Otherwise returns std::nullopt.
+  // and a runtime override has been set. Otherwise returns std::nullopt. If
+  // `activate_trial` is true, activates the associated runtime override trial
+  // (if any).
   std::optional<OverrideState> MaybeGetRuntimeOverrideState(
       const Feature& feature,
-      Feature::FeatureStateCache current_cached_value) const;
+      Feature::FeatureStateCache current_cached_value,
+      bool activate_trial) const;
 
   // Common implementation for the PassKey-gated
   // PrepareRuntimeMutableFeatureStateUpdate() overloads.
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdateImpl(
-      const RuntimeFieldTrialInfo* override_info,
+      RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);
 

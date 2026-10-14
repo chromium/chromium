@@ -1017,6 +1017,9 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
     // desynchronize `FeatureList` and `RuntimeFieldTrialOverrides`. Crashing is
     // preferable to running the rest of the session in a corrupted state, and
     // gradual seed rollout will catch any seed-triggered crash.
+    if (changes.activation_type == Study::ACTIVATE_ON_STARTUP) {
+      changes.override_info->Activate();
+    }
     CHECK(runtime_field_trial_overrides->ApplyRuntimeOverride(
         base::PassKey<VariationsService>(), std::move(changes.override_info),
         changes.previous_override_to_replace));
@@ -1377,9 +1380,14 @@ VariationsService::PrepareRuntimeMutableChanges(
   const Study& study = *processed_study.study();
   const Study::Experiment& experiment = study.experiment(experiment_index);
 
-  // For now, only allow ACTIVATE_ON_STARTUP studies.
-  if (study.activation_type() != Study::ACTIVATE_ON_STARTUP) {
-    return base::unexpected(kNotStartsActive);
+  // For now, only allow ACTIVATE_ON_STARTUP and ACTIVATE_ON_QUERY studies.
+  // TODO(crbug.com/536852160): For normal field trials, Default groups that
+  // have no features are still associated with features from the other groups
+  // (see `AssociateDefaultFeatures()`) for activation purposes. Implement this
+  // logic for runtime mutable experiments.
+  if (study.activation_type() != Study::ACTIVATE_ON_STARTUP &&
+      study.activation_type() != Study::ACTIVATE_ON_QUERY) {
+    return base::unexpected(kInvalidActivationType);
   }
 
   // Only allow permanent consistency. Otherwise, the user may get constantly
@@ -1574,6 +1582,7 @@ VariationsService::PrepareRuntimeMutableChanges(
   changes.trial_to_override = trial_to_override;
   changes.previous_override_to_replace = previous_override_to_replace;
   changes.feature_names.assign(feature_names.begin(), feature_names.end());
+  changes.activation_type = study.activation_type();
   changes.override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
       study.name(), group_name, std::move(params), trial_to_override);
 

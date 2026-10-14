@@ -4,6 +4,7 @@
 
 #include "base/metrics/runtime_field_trial_overrides.h"
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 
 namespace base {
@@ -18,7 +19,7 @@ RuntimeFieldTrialOverrides* RuntimeFieldTrialOverrides::GetInstance() {
 
 bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
     base::PassKey<variations::VariationsService>,
-    std::unique_ptr<const RuntimeFieldTrialInfo> override_info,
+    std::unique_ptr<RuntimeFieldTrialInfo> override_info,
     std::string_view previous_override_trial_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -36,6 +37,7 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
         override_info->overridden_trial()) {
       return false;
     }
+    previous_override->second->trial_registered_ = false;
     overrides_.erase(previous_override);
   }
 
@@ -63,16 +65,34 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
     observer.OnRuntimeFieldTrialOverride(*it->second,
                                          previous_override_trial_name);
   }
+  // Set `trial_registered_` only after all observers have been notified via
+  // `OnRuntimeFieldTrialOverride()`. If an observer activates `*it->second`
+  // inside `OnRuntimeFieldTrialOverride()` (or if `override_info` was already
+  // activated before `ApplyRuntimeOverride()`), deferring
+  // `NotifyRuntimeOverrideActivated()` until after the loop guarantees that
+  // every observer receives `OnRuntimeFieldTrialOverride()` for this trial
+  // before `OnRuntimeFieldTrialOverrideActivated()`.
+  it->second->trial_registered_ = true;
+  if (it->second->is_active()) {
+    NotifyRuntimeOverrideActivated(*it->second);
+  }
   return true;
 }
 
-const flat_map<std::string, std::unique_ptr<const RuntimeFieldTrialInfo>>&
+bool RuntimeFieldTrialOverrides::IsRuntimeOverrideActive(
+    std::string_view trial_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = overrides_.find(trial_name);
+  return it != overrides_.end() && it->second->is_active();
+}
+
+const flat_map<std::string, std::unique_ptr<RuntimeFieldTrialInfo>>&
 RuntimeFieldTrialOverrides::GetRuntimeOverrides() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return overrides_;
 }
 
-const RuntimeFieldTrialInfo* RuntimeFieldTrialOverrides::GetRuntimeOverride(
+RuntimeFieldTrialInfo* RuntimeFieldTrialOverrides::GetRuntimeOverride(
     std::string_view trial_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = overrides_.find(trial_name);
@@ -110,6 +130,15 @@ void RuntimeFieldTrialOverrides::ResetForTesting() {
 }
 
 RuntimeFieldTrialOverrides::RuntimeFieldTrialOverrides() = default;
+
+void RuntimeFieldTrialOverrides::NotifyRuntimeOverrideActivated(
+    const RuntimeFieldTrialInfo& override_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& observer : observers_) {
+    observer.OnRuntimeFieldTrialOverrideActivated(override_info);
+  }
+}
+
 RuntimeFieldTrialInfo::RuntimeFieldTrialInfo(std::string trial_name,
                                              std::string group_name,
                                              base::FieldTrialParams params,
@@ -117,8 +146,22 @@ RuntimeFieldTrialInfo::RuntimeFieldTrialInfo(std::string trial_name,
     : trial_name_(std::move(trial_name)),
       group_name_(std::move(group_name)),
       params_(std::move(params)),
-      overridden_trial_(overridden_trial) {}
+      overridden_trial_(overridden_trial) {
+  CHECK(!trial_name_.empty());
+  CHECK(!group_name_.empty());
+}
 
 RuntimeFieldTrialInfo::~RuntimeFieldTrialInfo() = default;
+
+void RuntimeFieldTrialInfo::Activate() {
+  if (is_active_) {
+    return;
+  }
+  is_active_ = true;
+  if (trial_registered_) {
+    RuntimeFieldTrialOverrides::GetInstance()->NotifyRuntimeOverrideActivated(
+        *this);
+  }
+}
 
 }  // namespace base

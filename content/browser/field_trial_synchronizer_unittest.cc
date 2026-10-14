@@ -103,12 +103,14 @@ TEST_F(FieldTrialSynchronizerTest, RuntimeOverrides) {
   // Activating the trial should have added it to the profile.
   EXPECT_TRUE(ProfileHasFieldTrial("OverriddenTrial", "Group"));
 
-  // Apply the runtime override, replacing the overridden trial.
+  // Apply the runtime override, replacing the overridden trial, and activate
+  // it.
   EXPECT_TRUE(overrides->ApplyRuntimeOverride(
       pass_key,
       std::make_unique<base::RuntimeFieldTrialInfo>(
           "Killswitch", "Disabled", base::FieldTrialParams(), trial.get()),
       ""));
+  overrides->GetRuntimeOverride("Killswitch")->Activate();
 
   // The overridden trial should be removed from the profile, and the new
   // override added.
@@ -123,12 +125,39 @@ TEST_F(FieldTrialSynchronizerTest, RuntimeOverrides) {
           "NewKillswitch", "NewDisabled", base::FieldTrialParams(),
           trial.get()),
       "Killswitch"));
+  overrides->GetRuntimeOverride("NewKillswitch")->Activate();
 
   // The previous override "Killswitch" should be removed, and "NewKillswitch"
   // added.
   EXPECT_FALSE(ProfileHasFieldTrial("OverriddenTrial", "Group"));
   EXPECT_FALSE(ProfileHasFieldTrial("Killswitch", "Disabled"));
   EXPECT_TRUE(ProfileHasFieldTrial("NewKillswitch", "NewDisabled"));
+}
+
+TEST_F(FieldTrialSynchronizerTest, InactiveRuntimeOverride) {
+  auto* overrides = base::RuntimeFieldTrialOverrides::GetInstance();
+  auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::CreateFieldTrial("OverriddenTrial", "Group");
+  trial->Activate();
+  EXPECT_TRUE(ProfileHasFieldTrial("OverriddenTrial", "Group"));
+
+  // Apply inactive runtime override (starts inactive).
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "Killswitch", "Disabled", base::FieldTrialParams(), trial.get()),
+      ""));
+
+  // The overridden trial should be removed from the profile, but the new
+  // override should not be added yet since it's inactive.
+  EXPECT_FALSE(ProfileHasFieldTrial("OverriddenTrial", "Group"));
+  EXPECT_FALSE(ProfileHasFieldTrial("Killswitch", "Disabled"));
+
+  // Activating the override adds it to the profile.
+  overrides->GetRuntimeOverride("Killswitch")->Activate();
+  EXPECT_TRUE(ProfileHasFieldTrial("Killswitch", "Disabled"));
 }
 
 }  // namespace

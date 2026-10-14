@@ -42,8 +42,16 @@ class BASE_EXPORT RuntimeFieldTrialInfo {
   const std::string& group_name() const { return group_name_; }
   const base::FieldTrialParams& params() const { return params_; }
   const FieldTrial* overridden_trial() const { return overridden_trial_; }
+  bool is_active() const { return is_active_; }
+
+  // Marks this runtime override as active and notifies
+  // RuntimeFieldTrialOverrides observers if it is registered and was not
+  // previously active.
+  void Activate();
 
  private:
+  friend class RuntimeFieldTrialOverrides;
+
   // The trial name of the override.
   std::string trial_name_;
 
@@ -58,6 +66,12 @@ class BASE_EXPORT RuntimeFieldTrialInfo {
   // ENABLED_BY_DEFAULT feature). Weak pointer (owned by the FieldTrialList
   // singleton).
   raw_ptr<const FieldTrial> overridden_trial_;
+  // Whether this runtime override has been activated (e.g. due to an associated
+  // feature being queried).
+  bool is_active_ = false;
+  // Whether this override has been registered in RuntimeFieldTrialOverrides
+  // and thus should notify observers when it is activated.
+  bool trial_registered_ = false;
 };
 
 // Manages (applying and retrieving) runtime FieldTrial overrides for features
@@ -84,6 +98,11 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
     virtual void OnRuntimeFieldTrialOverride(
         const RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) = 0;
+
+    // Called when a runtime override becomes active (e.g. upon feature query
+    // for an ACTIVATE_ON_QUERY override).
+    virtual void OnRuntimeFieldTrialOverrideActivated(
+        const RuntimeFieldTrialInfo& override_info) {}
   };
 
   RuntimeFieldTrialOverrides(const RuntimeFieldTrialOverrides&) = delete;
@@ -97,12 +116,7 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
   // Applies a FieldTrial runtime override. Returns false if the application
   // fails.
   //
-  // `trial_name`: The override's trial name.
-  // `group_name`: The override's group name.
-  // `overridden_trial`: The FieldTrial that is being overridden. This may be
-  //     nullptr if no specific trial is being overridden (e.g. a killswitch for
-  //     an ENABLED_BY_DEFAULT feature that is not being controlled by any
-  //     FieldTrial).
+  // `override_info`: Information about the runtime override to apply.
   // `previous_override_trial_name`: The name of the previous override that this
   //     override is replacing, if any. If this is non-empty, the previous
   //     override will be removed before the new override is applied.
@@ -123,17 +137,20 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
   // not an input but rather something that is tracked by this class internally.
   bool ApplyRuntimeOverride(
       PassKey<variations::VariationsService> pass_key,
-      std::unique_ptr<const RuntimeFieldTrialInfo> override_info,
-      std::string_view previous_override_to_replace);
+      std::unique_ptr<RuntimeFieldTrialInfo> override_info,
+      std::string_view previous_override_trial_name);
+
+  // Returns true if the registered runtime trial override with name
+  // `trial_name` exists and is currently active.
+  bool IsRuntimeOverrideActive(std::string_view trial_name) const;
 
   // Returns all applied runtime overrides. The returned map should not be
   // accessed other than on the main sequence.
-  const flat_map<std::string, std::unique_ptr<const RuntimeFieldTrialInfo>>&
+  const flat_map<std::string, std::unique_ptr<RuntimeFieldTrialInfo>>&
   GetRuntimeOverrides() const;
 
   // Returns the runtime field trial associated with `trial_name`, if any.
-  const RuntimeFieldTrialInfo* GetRuntimeOverride(
-      std::string_view trial_name) const;
+  RuntimeFieldTrialInfo* GetRuntimeOverride(std::string_view trial_name) const;
 
   // Returns true if the given `trial` is currently being overridden by a
   // runtime FieldTrial override.
@@ -150,19 +167,33 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
 
  private:
   friend class base::NoDestructor<RuntimeFieldTrialOverrides>;
+  friend class RuntimeFieldTrialInfo;
 
   // Private constructor to enforce singleton pattern.
   RuntimeFieldTrialOverrides();
+
+  // Notifies observers that `override_info` has been activated. Called by
+  // `RuntimeFieldTrialInfo::Activate()`.
+  void NotifyRuntimeOverrideActivated(
+      const RuntimeFieldTrialInfo& override_info);
 
   // Map of all applied runtime FieldTrial overrides. Keyed by the override's
   // trial name. E.g., if the runtime override trial
   // "MyFeatureKillswitch" overrides the "MyFeature" trial, the key would be
   // "MyFeatureKillswitch".
-  flat_map<std::string, std::unique_ptr<const RuntimeFieldTrialInfo>> overrides_
+  flat_map<std::string, std::unique_ptr<RuntimeFieldTrialInfo>> overrides_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // List of observers to notify when a runtime override is applied.
-  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // List of observers to notify when a runtime override is applied or
+  // activated. Reentrancy is allowed because an observer's
+  // `OnRuntimeFieldTrialOverride()` implementation may query a feature (e.g.
+  // via `FeatureList::IsEnabled()`), which synchronously calls
+  // `RuntimeFieldTrialInfo::Activate()` and notifies
+  // `OnRuntimeFieldTrialOverrideActivated()`.
+  base::ObserverList<Observer,
+                     /*check_empty=*/false,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
+      observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
