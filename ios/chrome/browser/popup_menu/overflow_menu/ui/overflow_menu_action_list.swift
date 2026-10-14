@@ -50,11 +50,12 @@ struct OverflowMenuActionList: View {
       )
       .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)
       .overflowMenuListStyle()
-      .onReceive(uiConfiguration.$scrollToAction) { action in
+      .onChange(of: uiConfiguration.scrollToAction, initial: true) { oldAction, action in
         guard let action = action else {
           return
         }
-        withAnimation {
+        // Skip animation if this is the initial appearance.
+        withAnimation(oldAction == action ? nil : .default) {
           // Scroll so the item is in the middle of the screen.
           scrollProxy.scrollTo(action.id, anchor: UnitPoint(x: 0.5, y: 0.5))
         }

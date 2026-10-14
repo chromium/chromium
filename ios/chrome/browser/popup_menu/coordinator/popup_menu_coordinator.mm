@@ -382,19 +382,13 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       [self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu];
   self.contentBlockerMediator.consumer = mediator;
 
-  NSInteger highlightDestination =
-      [self.popupMenuHelpCoordinator highlightDestination] == nil
-          ? -1
-          : [[self.popupMenuHelpCoordinator highlightDestination] integerValue];
-
   UITraitCollection* traits = self.baseViewController.traitCollection;
-  OverflowMenuUIConfiguration* uiConfiguration = [[OverflowMenuUIConfiguration
-      alloc]
-      initWithPresentingViewControllerHorizontalSizeClass:
-          traits.horizontalSizeClass
-                presentingViewControllerVerticalSizeClass:traits
-                                                              .verticalSizeClass
-                                     highlightDestination:highlightDestination];
+  OverflowMenuUIConfiguration* uiConfiguration =
+      [[OverflowMenuUIConfiguration alloc]
+          initWithPresentingViewControllerHorizontalSizeClass:
+              traits.horizontalSizeClass
+                    presentingViewControllerVerticalSizeClass:
+                        traits.verticalSizeClass];
 
   self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
 
@@ -404,6 +398,7 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   _overflowMenuOrderer.model = _overflowMenuModel;
   mediator.model = _overflowMenuModel;
   self.popupMenuHelpCoordinator.actionProvider = mediator;
+  [self.popupMenuHelpCoordinator prepareToShowIPHInOverflowMenu];
 
   self.overflowMenuMediator = mediator;
 

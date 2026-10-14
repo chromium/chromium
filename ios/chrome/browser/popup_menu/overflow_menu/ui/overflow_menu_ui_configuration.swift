@@ -19,6 +19,9 @@ import SwiftUI
   /// The highlighted destination's frame, in the coordinate system of the menu view.
   public var highlightedDestinationFrame: CGRect = .zero
 
+  /// The highlighted action's frame, in the coordinate system of the menu view.
+  public var highlightedActionFrame: CGRect = .zero
+
   /// The destination list's frame in screen coordinates.
   public var destinationListScreenFrame: CGRect = .zero
 
@@ -33,13 +36,11 @@ import SwiftUI
 
   public init(
     presentingViewControllerHorizontalSizeClass: UIUserInterfaceSizeClass,
-    presentingViewControllerVerticalSizeClass: UIUserInterfaceSizeClass,
-    highlightDestination: Int
+    presentingViewControllerVerticalSizeClass: UIUserInterfaceSizeClass
   ) {
     self.presentingViewControllerHorizontalSizeClass =
       UserInterfaceSizeClass(presentingViewControllerHorizontalSizeClass) ?? .compact
     self.presentingViewControllerVerticalSizeClass =
       UserInterfaceSizeClass(presentingViewControllerVerticalSizeClass) ?? .compact
-    self.highlightDestination = highlightDestination
   }
 }

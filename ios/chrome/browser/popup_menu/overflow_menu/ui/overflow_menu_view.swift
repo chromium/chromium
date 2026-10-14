@@ -13,6 +13,9 @@ struct OverflowMenuView: View {
   /// Sync'ed with pref OverflowMenuDestinationList.HighlightedDestinationBounds
   @State private var highlightedDestinationBounds: Anchor<CGRect>?
 
+  /// Sync'ed with pref OverflowMenuActionRow.HighlightedActionBounds
+  @State private var highlightedActionBounds: Anchor<CGRect>?
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   /// The namespace for the animation of this view appearing or disappearing.
@@ -51,6 +54,19 @@ struct OverflowMenuView: View {
         return nil
       } action: { frame in
         uiConfiguration.highlightedDestinationFrame = frame ?? .zero
+      }
+      .onPreferenceChange(OverflowMenuActionRow.HighlightedActionBounds.self) { pref in
+        Task { @MainActor in
+          highlightedActionBounds = pref
+        }
+      }
+      .onGeometryChange(for: CGRect?.self) { [highlightedActionBounds] proxy in
+        if let highlightedActionBounds = highlightedActionBounds {
+          return proxy[highlightedActionBounds]
+        }
+        return nil
+      } action: { frame in
+        uiConfiguration.highlightedActionFrame = frame ?? .zero
       }
     }
   }

@@ -49,8 +49,7 @@ class OverflowMenuHostingControllerTest : public PlatformTest {
             initWithPresentingViewControllerHorizontalSizeClass:
                 UIUserInterfaceSizeClassCompact
                       presentingViewControllerVerticalSizeClass:
-                          UIUserInterfaceSizeClassRegular
-                                           highlightDestination:-1];
+                          UIUserInterfaceSizeClassRegular];
 
     metrics_handler_ = [[DummyPopupMenuMetricsHandler alloc] init];
 
