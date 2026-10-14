@@ -33,6 +33,7 @@ class TestTarget : public Target {
   }
   const std::u16string& last_sent_commit() const { return last_sent_commit_; }
   const std::u16string& last_sent_paste() const { return last_sent_paste_; }
+  int commit_count() const { return commit_count_; }
 
   void ManuallyCompleteCompositionCallbacks() { auto_run_callbacks_ = false; }
 
@@ -60,6 +61,7 @@ class TestTarget : public Target {
       const std::u16string& text,
       base::OnceClosure on_complete) override {
     last_sent_commit_ = text;
+    ++commit_count_;
 
     SetCompletionCallback(std::move(on_complete));
   }
@@ -92,6 +94,7 @@ class TestTarget : public Target {
   std::u16string last_sent_composition_;
   std::u16string last_sent_commit_;
   std::u16string last_sent_paste_;
+  int commit_count_ = 0;
   std::optional<std::u16string> text_preceding_selection_;
 };
 
@@ -195,6 +198,25 @@ TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallback) {
   EXPECT_EQ(target.last_sent_composition(), u"hello");
   EXPECT_EQ(target.last_sent_commit(), u"");
   EXPECT_EQ(target.last_sent_paste(), u"hello\nworld again.");
+}
+
+// When the first composition is already multiline, there is no composition to
+// cancel. Ensure we don't commit empty text, which would delete any selected
+// content as a separate undo step before the paste.
+TEST_F(DictationTargetTest,
+       RichlyEditableNewlinePasteFallbackWithoutPriorComposition) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails{target_id, /*richly_editable=*/true});
+
+  target.SetComposition(u"hello\nworld", true);
+  EXPECT_EQ(target.last_sent_composition(), u"");
+  EXPECT_EQ(target.commit_count(), 0);
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.CommitComposition(u"hello\nworld.", base::NullCallback());
+  EXPECT_EQ(target.last_sent_composition(), u"");
+  EXPECT_EQ(target.commit_count(), 0);
+  EXPECT_EQ(target.last_sent_paste(), u"hello\nworld.");
 }
 
 TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallbackWithFocusLoss) {

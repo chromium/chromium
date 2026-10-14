@@ -150,6 +150,14 @@ void Target::ExecuteSetComposition(const std::u16string& text,
     // composition, if any, but we'll need to handle this more robustly if we
     // want to show partial transcripts.
     paste_fallback_required_ = true;
+    if (last_sent_composition_.empty()) {
+      // Nothing has been composed yet, so there is no composition to cancel.
+      // Committing empty text here would delete any selected content as a
+      // separate edit, splitting the eventual paste across two undo steps.
+      // Instead, leave the selection intact so the paste replaces it in a
+      // single edit.
+      return;
+    }
     last_sent_composition_ = u"";
     CommitExternallySourcedComposition(u"",
                                        scoped_operation_complete.Release());
