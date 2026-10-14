@@ -322,6 +322,17 @@ bool NoRealtimeH265EncodingOnMac(
   // Should support at least L1T1 and L1T2 to have realtime support.
   return profile.scalability_modes.size() <= 1;
 }
+
+std::string ProfileToString(
+    const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+  blink::Vector<std::string> scalability_modes;
+  for (const media::SVCScalabilityMode& mode : profile.scalability_modes) {
+    scalability_modes.push_back(media::GetScalabilityModeName(mode));
+  }
+  return media::GetProfileName(profile.profile) + " (" +
+         (profile.is_software_codec ? "software" : "hardware") + ", " +
+         base::JoinString(scalability_modes, "/") + ")";
+}
 #endif
 
 SupportedFormats GetSupportedFormatsInternal(
@@ -333,6 +344,11 @@ SupportedFormats GetSupportedFormatsInternal(
   auto profiles = gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles();
   if (!profiles)
     return supported_formats;
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(RTC_USE_H265)
+  bool supports_h265 = false;
+  blink::Vector<std::string> skipped_h265_profiles;
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(RTC_USE_H265)
 
   // |profiles| are either the info at GpuInfo instance or the info got by
   // querying GPU process.
@@ -387,13 +403,14 @@ SupportedFormats GetSupportedFormatsInternal(
         // See https://crbug.com/555794214
         // Some older MacOS devices don't support realtime H265 encoding
         // resulting in unaccaptable encode latency.
-
         if (NoRealtimeH265EncodingOnMac(profile)) {
-          LOG(WARNING)
-              << "Skipping H265 hardware encoder because it's known to have "
-                 "high encode latency.";
+          std::string profile_str = ProfileToString(profile);
+          if (!skipped_h265_profiles.Contains(profile_str)) {
+            skipped_h265_profiles.push_back(std::move(profile_str));
+          }
           continue;
         }
+        supports_h265 = true;
 #endif
 
         // Avoid having duplicated formats reported via GetSupportedFormats().
@@ -411,6 +428,25 @@ SupportedFormats GetSupportedFormatsInternal(
       supported_formats.max_resolutions.push_back(profile.max_resolution);
     }
   }
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(RTC_USE_H265)
+  if (!skipped_h265_profiles.empty()) {
+    static bool logged_once = false;
+    if (!std::exchange(logged_once, true)) {
+      if (supports_h265) {
+        LOG(WARNING) << "H265 is supported, but the following profiles were "
+                     << "skipped due to being known to have high encode "
+                     << "latency: "
+                     << base::JoinString(skipped_h265_profiles, ", ");
+      } else {
+        LOG(WARNING)
+            << "All H265 profiles were skipped due to being known to have high "
+            << "encode latency: "
+            << base::JoinString(skipped_h265_profiles, ", ");
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(RTC_USE_H265)
 
   AddH264ConstrainedBaselineProfileToSupportedFormats(&supported_formats);
 
