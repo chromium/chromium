@@ -432,7 +432,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-android",
@@ -447,17 +447,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-preferences",
@@ -467,27 +467,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha11"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "documentfile",
@@ -1882,12 +1882,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.84.2"
+        "version": "1.84.3"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.84.2"
+        "version": "1.84.3"
     },
     {
         "name": "rxandroid",
