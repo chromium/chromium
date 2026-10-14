@@ -293,7 +293,10 @@ suite('HistoryFilterChipsTest', function() {
     // default.
     assertFalse(!!element.shadowRoot.querySelector('#deviceFilterChip'));
 
-    element.devices = [{name: 'Device 1'}, {name: 'Device 2'}];
+    element.devices = [
+      {name: 'Device 1', isLocalDevice: true, ids: ['id1']},
+      {name: 'Device 2', isLocalDevice: false, ids: ['id2']},
+    ];
     element.showDeviceFilter = true;
     await microtasksFinished();
     const deviceChip = element.shadowRoot.querySelector<HTMLSelectElement>(

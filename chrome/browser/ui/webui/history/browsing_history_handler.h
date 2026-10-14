@@ -106,6 +106,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   void OpenCriticalActionConversation(
       const std::string& critical_action_id,
       OpenCriticalActionConversationCallback callback) override;
+  void GetSyncedDevicesForFiltering(
+      GetSyncedDevicesForFilteringCallback callback) override;
 #if !BUILDFLAG(IS_CHROMEOS)
   void ShouldShowHistoryPageHistorySyncPromo(
       ShouldShowHistoryPageHistorySyncPromoCallback callback) override;

@@ -569,9 +569,10 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
 
 suite('HistoryFilterChipsVisibility', function() {
   let element: HistoryAppElement;
+  let browserProxy: TestHistoryBrowserProxy;
 
   setup(() => {
-    const browserProxy = new TestHistoryBrowserProxy();
+    browserProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
 
     // Some of the tests below assume the query state is fully reset to empty
@@ -584,11 +585,8 @@ suite('HistoryFilterChipsVisibility', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function createPage(devices?: Array<{name: string}>) {
+  function createPage() {
     element = document.createElement('history-app');
-    if (devices) {
-      element.setDevicesForTesting(devices);
-    }
     document.body.appendChild(element);
     return microtasksFinished();
   }
@@ -598,8 +596,15 @@ suite('HistoryFilterChipsVisibility', function() {
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
     });
+    browserProxy.handler.setResultFor(
+        'getSyncedDevicesForFiltering', Promise.resolve({
+          devices: [
+            {name: 'Device 1', isLocalDevice: true, ids: ['id1']},
+            {name: 'Device 2', isLocalDevice: false, ids: ['id2']},
+          ],
+        }));
     // Re-create the element to pick up the new loadTimeData.
-    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
+    await createPage();
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 
@@ -618,8 +623,17 @@ suite('HistoryFilterChipsVisibility', function() {
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
     });
+    browserProxy.handler.setResultFor(
+        'getSyncedDevicesForFiltering', Promise.resolve({
+          devices: [
+            {name: 'Device 1', isLocalDevice: true, ids: ['id1']},
+            {name: 'Device 2', isLocalDevice: false, ids: ['id2']},
+          ],
+        }));
     // Re-create the element to pick up the new loadTimeData.
-    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
+    await createPage();
+    assertEquals(
+        1, browserProxy.handler.getCallCount('getSyncedDevicesForFiltering'));
     assertTrue(isChildVisible(element, '#historyFilterChips'));
   });
 
@@ -628,8 +642,14 @@ suite('HistoryFilterChipsVisibility', function() {
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
     });
+    browserProxy.handler.setResultFor(
+        'getSyncedDevicesForFiltering', Promise.resolve({
+          devices: [{name: 'Device 1', isLocalDevice: true, ids: ['id1']}],
+        }));
     // Re-create the element to pick up the new loadTimeData.
-    await createPage([{name: 'Device 1'}]);
+    await createPage();
+    assertEquals(
+        1, browserProxy.handler.getCallCount('getSyncedDevicesForFiltering'));
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 
@@ -672,7 +692,14 @@ suite('HistoryFilterChipsVisibility', function() {
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
     });
-    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
+    browserProxy.handler.setResultFor(
+        'getSyncedDevicesForFiltering', Promise.resolve({
+          devices: [
+            {name: 'Device 1', isLocalDevice: true, ids: ['id1']},
+            {name: 'Device 2', isLocalDevice: false, ids: ['id2']},
+          ],
+        }));
+    await createPage();
 
     assertTrue(isChildVisible(element, '#historyFilterChips'));
 

@@ -63,6 +63,10 @@ class MockBrowsingHistoryService : public BrowsingHistoryService {
               QueryHistory,
               (const std::u16string& search_text, const QueryOptions& options),
               (override));
+  MOCK_METHOD(std::vector<BrowsingHistoryService::ClientGroup>,
+              GetSyncedDevicesForFiltering,
+              (),
+              (const, override));
 };
 
 namespace {
@@ -1092,6 +1096,31 @@ TEST_F(BrowsingHistoryHandlerTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(BrowsingHistoryHandlerTest,
+       GetSyncedDevicesForFilteringPassesCorrectData) {
+  std::vector<BrowsingHistoryService::ClientGroup> dummy_groups = {
+      {.name = "Device 1", .is_local_device = true, .client_ids = {"id1"}},
+      {.name = "Device 2",
+       .is_local_device = false,
+       .client_ids = {"id2", "id3"}},
+  };
+
+  EXPECT_CALL(*handler()->mock_service(), GetSyncedDevicesForFiltering())
+      .WillOnce(testing::Return(dummy_groups));
+
+  base::test::TestFuture<std::vector<history::mojom::DevicePtr>> future;
+  handler()->GetSyncedDevicesForFiltering(future.GetCallback());
+
+  const std::vector<history::mojom::DevicePtr>& devices = future.Get();
+  ASSERT_EQ(devices.size(), 2u);
+  EXPECT_EQ(devices[0]->name, "Device 1");
+  EXPECT_TRUE(devices[0]->is_local_device);
+  EXPECT_EQ(devices[0]->ids, std::vector<std::string>({"id1"}));
+  EXPECT_EQ(devices[1]->name, "Device 2");
+  EXPECT_FALSE(devices[1]->is_local_device);
+  EXPECT_EQ(devices[1]->ids, std::vector<std::string>({"id2", "id3"}));
+}
 
 class BrowsingHistoryHandlerHatsSurveyTest
     : public BrowsingHistoryHandlerTest,

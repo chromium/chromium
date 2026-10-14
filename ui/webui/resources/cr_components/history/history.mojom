@@ -18,6 +18,13 @@ enum FilteringBehavior {
   kInvalid = 3,
 };
 
+// Represents a synced device.
+struct Device {
+  string name;
+  bool is_local_device;
+  array<string> ids;
+};
+
 // Represents the possible states of the query process.
 struct QueryState {
   // Whether the most recent query was incremental.
@@ -256,6 +263,9 @@ interface PageHandler {
   // split view.
   OpenCriticalActionConversation(string critical_action_id)
       => (OpenConversationResult result);
+
+  // Fetches the list of known synced devices.
+  GetSyncedDevicesForFiltering() => (array<Device> devices);
 
   // Checks if the history sync promo should be shown on the history page.
   [EnableIfNot=is_chromeos]

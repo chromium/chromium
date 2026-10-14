@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AccessPoint, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {AccessPoint, Device, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
@@ -29,6 +29,7 @@ export interface BrowserProxy {
   otherDevicesInitialized(): void;
   getInitialIdentityState(): Promise<HistoryIdentityState>;
   startTurnOnSyncFlow(): void;
+  getSyncedDevicesForFiltering(): Promise<{devices: Device[]}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -84,6 +85,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   startTurnOnSyncFlow() {
     chrome.send('startTurnOnSyncFlow');
+  }
+
+  getSyncedDevicesForFiltering() {
+    return this.handler.getSyncedDevicesForFiltering();
   }
 
   static getInstance(): BrowserProxy {

@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1138,4 +1139,15 @@ void BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout(
                 static_cast<history::mojom::OpenConversationResult>(result));
           },
           std::move(callback)));
+}
+
+void BrowsingHistoryHandler::GetSyncedDevicesForFiltering(
+    GetSyncedDevicesForFilteringCallback callback) {
+  std::move(callback).Run(base::ToVector(
+      browsing_history_service_->GetSyncedDevicesForFiltering(),
+      [](auto& device) {
+        return history::mojom::Device::New(std::move(device.name),
+                                           device.is_local_device,
+                                           std::move(device.client_ids));
+      }));
 }

@@ -28,7 +28,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {ForeignSessionPageCallbackRouter} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-import type {PageCallbackRouter, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {Device, PageCallbackRouter, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -249,9 +249,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor tabContentScrollOffset_: number = 0;
   protected accessor numCharsTypedInSearch_: number = 0;
   protected accessor nonEmbeddingsResultClicked_: boolean = false;
-  // TODO(b:570141282): Replace mock devices with the actual ones.
-  protected accessor devices_: Array<{name: string}> =
-      [{name: 'device 1'}, {name: 'device 2'}];
+  protected accessor devices_: Device[] = [];
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
   protected accessor isGlicWebActuationAvailable_: boolean =
@@ -311,6 +309,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
     BrowserProxyImpl.getInstance().getInitialIdentityState().then(
         (identityState: HistoryIdentityState) =>
             this.onIdentityStateChanged_(identityState));
+    BrowserProxyImpl.getInstance().getSyncedDevicesForFiltering().then(
+        ({devices}) => {
+          this.devices_ = devices;
+        });
 
     const mediaQuery = window.matchMedia('(max-width: 1023px)');
     this.hasDrawer_ = mediaQuery.matches;
@@ -1006,10 +1008,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected showFilterChips_(): boolean {
     return (this.showActorFilter_() || this.showDeviceFilter_()) &&
         !this.getShowResultsByGroup_();
-  }
-
-  setDevicesForTesting(devices: Array<{name: string}>) {
-    this.devices_ = devices;
   }
 
   // TODO(crub.com/509908129): Add static stylesheet in history.html

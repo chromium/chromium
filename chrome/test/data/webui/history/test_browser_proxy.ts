@@ -5,7 +5,7 @@
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {OpenConversationResult, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import type {AccessPoint, PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {AccessPoint, Device, PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -64,6 +64,10 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
         'openCriticalActionConversation', Promise.resolve({
           result: OpenConversationResult.kSuccess,
         }));
+
+    this.handler.setResultFor('getSyncedDevicesForFiltering', Promise.resolve({
+      devices: [],
+    }));
 
     // <if expr="not is_chromeos">
     this.handler.setResultFor(
@@ -133,5 +137,9 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
 
   startTurnOnSyncFlow() {
     this.methodCalled('startTurnOnSyncFlow');
+  }
+
+  getSyncedDevicesForFiltering(): Promise<{devices: Device[]}> {
+    return this.handler.getSyncedDevicesForFiltering();
   }
 }
