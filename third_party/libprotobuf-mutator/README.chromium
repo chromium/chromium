@@ -1,7 +1,7 @@
 Name: libprotobuf-mutator
 URL: https://github.com/google/libprotobuf-mutator
 Version: N/A
-Revision: 4373c81cd7d50a65f7fbd8dc3779c0c3b1dc9d72
+Revision: 7d13ce6de096c9c1dbd79abfe8b8a42390b3e951
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: src/LICENSE
