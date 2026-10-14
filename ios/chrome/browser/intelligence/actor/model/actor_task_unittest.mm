@@ -1547,8 +1547,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromActing) {
   EXPECT_EQ(helper->GetControlState(),
             actor::ActorControlState::kActorControlled);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(delegate.confirmationTitle, @"Please confirm purchase");
-  EXPECT_EQ(delegate.confirmationSubtitle, nil);
+  EXPECT_NSEQ(delegate.confirmationTitle, @"Input needed");
+  EXPECT_NSEQ(delegate.confirmationSubtitle, @"Please confirm purchase");
   EXPECT_NSEQ(delegate.confirmationButtonText, @"Continue");
 }
 
@@ -1568,8 +1568,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromReflecting) {
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(delegate.confirmationTitle, @"Please review details");
-  EXPECT_EQ(delegate.confirmationSubtitle, nil);
+  EXPECT_NSEQ(delegate.confirmationTitle, @"Input needed");
+  EXPECT_NSEQ(delegate.confirmationSubtitle, @"Please review details");
 }
 
 // Test that interrupting a task in non-executing states is ignored.
@@ -1790,8 +1790,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromInit) {
   EXPECT_EQ(observer.oldState, ActorTaskState::kInit);
   EXPECT_EQ(observer.newState, ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(delegate.confirmationTitle, @"Please confirm before starting");
-  EXPECT_EQ(delegate.confirmationSubtitle, nil);
+  EXPECT_NSEQ(delegate.confirmationTitle, @"Input needed");
+  EXPECT_NSEQ(delegate.confirmationSubtitle, @"Please confirm before starting");
   EXPECT_NSEQ(delegate.confirmationButtonText, @"Continue");
   ASSERT_TRUE(delegate.hasPendingUserIntervention);
 
@@ -1836,7 +1836,8 @@ TEST_F(ActorTaskTest, InterruptIgnoredWhenAlreadyWaitingOnUser) {
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(delegate.confirmationTitle, @"Please confirm the purchase");
+  EXPECT_NSEQ(delegate.confirmationTitle, @"Input needed");
+  EXPECT_NSEQ(delegate.confirmationSubtitle, @"Please confirm the purchase");
 }
 
 // Test that notifications posted before the task is destroyed are still

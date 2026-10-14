@@ -1094,7 +1094,8 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
 
   EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(@"Please confirm", delegate.confirmationTitle);
+  EXPECT_NSEQ(@"Input needed", delegate.confirmationTitle);
+  EXPECT_NSEQ(@"Please confirm", delegate.confirmationSubtitle);
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
   ASSERT_TRUE(delegate.hasPendingUserIntervention);
 
@@ -1133,7 +1134,8 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
 
   EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(@"Please confirm before starting", delegate.confirmationTitle);
+  EXPECT_NSEQ(@"Input needed", delegate.confirmationTitle);
+  EXPECT_NSEQ(@"Please confirm before starting", delegate.confirmationSubtitle);
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
   ASSERT_TRUE(delegate.hasPendingUserIntervention);
 

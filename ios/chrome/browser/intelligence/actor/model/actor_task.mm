@@ -46,6 +46,10 @@ namespace {
 // Safety timeout duration to wait for pages to finish loading.
 constexpr base::TimeDelta kPageLoadTimeout = base::Seconds(7);
 
+// Default title for confirmation intervention prompts.
+// TODO(crbug.com/573515833): Localize default title string.
+NSString* const kDefaultConfirmationTitle = @"Input needed";
+
 // Default button text for confirmation intervention prompts.
 // TODO(crbug.com/556739755): Localize default button text string.
 NSString* const kDefaultConfirmationButtonText = @"Continue";
@@ -376,8 +380,8 @@ void ActorTask::ShowInterruptConfirmation(const std::string& message) {
   // Must remain the last statement: the delegate may stop, and thereby
   // destroy, the task.
   [intervention_delegate_ actorTask:task_id_
-      requestUserInterventionWithTitle:base::SysUTF8ToNSString(message)
-                              subtitle:nil
+      requestUserInterventionWithTitle:kDefaultConfirmationTitle
+                              subtitle:base::SysUTF8ToNSString(message)
                             buttonText:kDefaultConfirmationButtonText
                      completionHandler:completion];
 }

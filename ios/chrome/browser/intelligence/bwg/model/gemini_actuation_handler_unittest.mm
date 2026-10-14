@@ -643,7 +643,7 @@ TEST_F(GeminiActuationHandlerTest,
       handler, task_id, kConfirmationMessage, future);
 
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_NSEQ(kConfirmationMessage, delegate.confirmationTitle);
+  EXPECT_NSEQ(kConfirmationMessage, delegate.confirmationSubtitle);
   // The request stays pending until the user answers.
   EXPECT_FALSE(future.IsReady());
   ASSERT_TRUE(delegate.hasPendingUserIntervention);

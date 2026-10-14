@@ -422,7 +422,8 @@ TEST_F(ActuationWorklogMediatorTest,
 
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kWaitingOnUser);
   ASSERT_NE(fake_consumer_.intervention, nil);
-  EXPECT_NSEQ(fake_consumer_.intervention.title, @(kConfirmationMessage));
+  EXPECT_NSEQ(fake_consumer_.intervention.title, @"Input needed");
+  EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @(kConfirmationMessage));
 
   [mediator_
       didTriggerInterventionAction:ActuationInterventionAction::kPrimary];
