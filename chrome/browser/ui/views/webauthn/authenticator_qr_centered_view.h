@@ -29,8 +29,6 @@ class AuthenticatorQrCenteredView : public views::View {
   AuthenticatorQrCenteredView& operator=(const AuthenticatorQrCenteredView&) =
       delete;
 
-  void OnThemeChanged() override;
-
  private:
   raw_ptr<views::ImageView> qr_code_image_;
 };

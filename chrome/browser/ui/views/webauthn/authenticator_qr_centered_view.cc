@@ -47,6 +47,10 @@ AuthenticatorQrCenteredView::AuthenticatorQrCenteredView(
                                    gfx::Size(qr_margin, qr_margin));
   qr_code_image_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_QR_CODE_ALT_TEXT));
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
+      kColorQrCodeBackground, border_radius, 2));
 
   // TODO(https://crbug.com/325664342): Audit if `QuietZone::kIncluded`
   // can/should be used instead (this may require testing if the different
@@ -69,15 +73,6 @@ AuthenticatorQrCenteredView::AuthenticatorQrCenteredView(
 }
 
 AuthenticatorQrCenteredView::~AuthenticatorQrCenteredView() = default;
-
-void AuthenticatorQrCenteredView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
-  qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
-      GetColorProvider()->GetColor(kColorQrCodeBackground), border_radius, 2));
-}
 
 BEGIN_METADATA(AuthenticatorQrCenteredView)
 END_METADATA
