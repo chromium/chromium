@@ -23,8 +23,6 @@ suite('LensChipTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.style.width = '100px';
-    document.body.style.height = '100px';
 
     browserProxy = new TestExtensionBrowserProxy();
     ExtensionBrowserProxyImpl.setInstance(browserProxy);
@@ -160,23 +158,5 @@ suite('LensChipTest', () => {
     app.setDarkModeForTesting(false);
     await microtasksFinished();
     assertFalse(app.hasAttribute('dark-mode'));
-  });
-
-  test('RTL direction is supported on host element', async () => {
-    app = document.createElement('lens-chip-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
-
-    app.setAttribute('dir', 'rtl');
-    await microtasksFinished();
-    assertEquals('rtl', app.getAttribute('dir'));
-
-    app.setDataUriForTesting(MOCK_DATA_URI);
-    await microtasksFinished();
-
-    const closeButton =
-        app.shadowRoot?.querySelector<HTMLElement>('#closeButton');
-    assertTrue(!!closeButton);
-    assertTrue(isVisible(closeButton));
   });
 });

@@ -20,6 +20,7 @@
 
 .chip {
   align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   box-sizing: border-box;
   display: flex;
@@ -28,6 +29,10 @@
   overflow: hidden;
   position: relative;
   width: 100%;
+}
+
+:host([dark-mode]) .chip {
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 #cropImage {
@@ -67,12 +72,6 @@
   pointer-events: auto;
 }
 
-:host([dir='rtl']),
-:host-context([dir='rtl']) {
-  direction: rtl;
-}
-
-
 @media (forced-colors: active) {
   .chip {
     border: 1px solid ButtonText;
@@ -84,6 +83,5 @@
     background-color: ButtonFace;
     border: 1px solid ButtonText;
     box-sizing: border-box;
-    forced-color-adjust: none;
   }
 }
