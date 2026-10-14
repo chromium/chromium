@@ -55,7 +55,26 @@ export class OrganizerPanelAppElement extends CrLitElement {
   }
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
-  private boundOnContextMenu_ = this.onContextMenu_.bind(this);
+  private onWindowFocused_: () => void = () => {
+    // Autofocus only works when the window is initially shown; for subsequent
+    // focus events, focus the search field.
+    this.$.searchField.showAndFocus();
+  };
+  private onContextMenu_: (e: MouseEvent) => void = (e: MouseEvent) => {
+    e.preventDefault();
+    if (e.clientY > this.getBoundingClientRect().bottom) {
+      this.browserProxy_.handler.showSystemContextMenu({
+        x: Math.round(e.clientX),
+        y: Math.round(e.clientY),
+      });
+    } else {
+      this.allSectionsExpanded_ = this.$.list.areAllSectionsExpanded();
+      this.$.menu.showAtPosition({
+        top: e.clientY,
+        left: e.clientX,
+      });
+    }
+  };
 
   protected accessor allSectionsExpanded_: boolean = false;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
@@ -67,13 +86,14 @@ export class OrganizerPanelAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
-    window.addEventListener('focus', this.onWindowFocused_.bind(this));
-    this.addEventListener('contextmenu', this.boundOnContextMenu_);
+    window.addEventListener('focus', this.onWindowFocused_);
+    window.addEventListener('contextmenu', this.onContextMenu_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener('contextmenu', this.boundOnContextMenu_);
+    window.removeEventListener('focus', this.onWindowFocused_);
+    window.removeEventListener('contextmenu', this.onContextMenu_);
   }
 
   private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
@@ -90,27 +110,12 @@ export class OrganizerPanelAppElement extends CrLitElement {
     return delegates;
   }
 
-  private onWindowFocused_() {
-    // Autofocus only works when the window is initially shown; for subsequent
-    // focus events, focus the search field.
-    this.$.searchField.showAndFocus();
-  }
-
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.searchQuery_ = e.detail;
   }
 
   protected isSearching_(): boolean {
     return this.searchQuery_.length > 0;
-  }
-
-  private onContextMenu_(e: MouseEvent) {
-    e.preventDefault();
-    this.allSectionsExpanded_ = this.$.list.areAllSectionsExpanded();
-    this.$.menu.showAtPosition({
-      top: e.clientY,
-      left: e.clientX,
-    });
   }
 
   protected onExpandAllClick_() {

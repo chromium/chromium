@@ -14,14 +14,23 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace {
 
@@ -94,6 +103,50 @@ void OrganizerPanelPageHandler::SetSectionShowAll(const std::string& section_id,
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kOrganizerPanelSectionsShowAll);
   update->Set(section_id, show_all);
+}
+
+void OrganizerPanelPageHandler::ShowSystemContextMenu(const gfx::Point& point) {
+  OnContextMenuClosed();
+
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->browser_widget()) {
+    return;
+  }
+
+  const gfx::Rect container_bounds = web_contents_->GetContainerBounds();
+  if (!gfx::Rect(container_bounds.size()).Contains(point)) {
+    return;
+  }
+
+  gfx::Point screen_point = point + container_bounds.OffsetFromOrigin();
+  BrowserWidget* browser_widget = browser_view->browser_widget();
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      browser_widget->GetSystemMenuModel(),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU |
+          views::MenuRunner::IS_NESTED,
+      base::BindRepeating(&OrganizerPanelPageHandler::OnContextMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  context_menu_runner_->RunMenuAt(
+      browser_widget, nullptr, gfx::Rect(screen_point, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
+  base::RecordAction(base::UserMetricsAction("SystemContextMenu_Opened"));
+}
+
+bool OrganizerPanelPageHandler::IsContextMenuRunningForTesting() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
+void OrganizerPanelPageHandler::OnContextMenuClosed() {
+  if (context_menu_runner_ && context_menu_runner_->IsRunning()) {
+    context_menu_runner_->Cancel();
+  }
+  context_menu_runner_.reset();
 }
 
 organizer_panel::mojom::SectionStatePtr

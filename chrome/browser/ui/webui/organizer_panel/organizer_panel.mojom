@@ -4,6 +4,8 @@
 
 module organizer_panel.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Persisted display state for an organizer panel section.
 struct SectionState {
   bool expanded = true;
@@ -29,6 +31,9 @@ interface PageHandler {
 
   // Sets whether the section with the given ID shows all items.
   SetSectionShowAll(string section_id, bool show_all);
+
+  // Shows the system context menu at `point`.
+  ShowSystemContextMenu(gfx.mojom.Point point);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

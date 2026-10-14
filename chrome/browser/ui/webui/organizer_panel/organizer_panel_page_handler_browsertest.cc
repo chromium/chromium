@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace {
 
@@ -199,6 +200,32 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
           testing::Pair("open-tabs", IsSectionState(true, true)),
           testing::Pair("recently-closed", IsSectionState(true, false)),
           testing::Pair("tab-groups", IsSectionState(true, true))));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       ShowSystemContextMenu) {
+  FakeOrganizerPanelPage page;
+  mojo::Remote<organizer_panel::mojom::PageHandler> handler_remote;
+  OrganizerPanelPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->ShowSystemContextMenu(gfx::Point(10, 20));
+  handler_remote.FlushForTesting();
+  EXPECT_TRUE(handler.IsContextMenuRunningForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       ShowSystemContextMenuOutOfBoundsDoesNotShowMenu) {
+  FakeOrganizerPanelPage page;
+  mojo::Remote<organizer_panel::mojom::PageHandler> handler_remote;
+  OrganizerPanelPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->ShowSystemContextMenu(gfx::Point(-10, -20));
+  handler_remote.FlushForTesting();
+  EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
 }
 
 }  // namespace

@@ -8,15 +8,15 @@ import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
-  let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
       OrganizerPanelPageHandlerRemote;
+  let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let mockTabGroupsHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
   let mockForeignTabsHandler: TestMock<ForeignTabsPageHandlerRemote>&
@@ -43,6 +43,15 @@ suite('OrganizerPanelAppTest', () => {
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
     });
+    mockOrganizerPanelHandler =
+        TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    mockOrganizerPanelHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: false, showAll: false}});
+    const {instance: organizerPanelInstance} =
+        organizerPanelBrowserProxyFactory.createForTest(
+            mockOrganizerPanelHandler);
+    organizerPanelBrowserProxyFactory.setInstance(organizerPanelInstance);
+
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(mockPageHandler);
     browserProxyFactory.setInstance(instance);
@@ -70,15 +79,6 @@ suite('OrganizerPanelAppTest', () => {
         'getForeignTabs', Promise.resolve({tabs: []}));
     foreignTabsBrowserProxyFactory.setInstance(
         {handler: mockForeignTabsHandler});
-
-    mockOrganizerPanelHandler =
-        TestMock.fromClass(OrganizerPanelPageHandlerRemote);
-    mockOrganizerPanelHandler.setPromiseResolveFor(
-        'getSectionState', {state: {expanded: false, showAll: false}});
-    const {instance: organizerPanelInstance} =
-        organizerPanelBrowserProxyFactory.createForTest(
-            mockOrganizerPanelHandler);
-    organizerPanelBrowserProxyFactory.setInstance(organizerPanelInstance);
 
     app = document.createElement('organizer-panel-app');
     document.body.appendChild(app);
@@ -181,6 +181,8 @@ suite('OrganizerPanelAppTest', () => {
 
     assertTrue(event.defaultPrevented);
     assertTrue(app.$.menu.open);
+    assertEquals(
+        0, mockOrganizerPanelHandler.getCallCount('showSystemContextMenu'));
 
     const expandAllButton =
         app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton');
@@ -195,6 +197,26 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(
         isMac ? 'Close Tab Search' : 'Close tab search',
         closeButton.textContent.trim());
+  });
+
+  test('shows system context menu when right clicking below app', async () => {
+    const appRect = app.getBoundingClientRect();
+    const clickX = 50;
+    const clickY = Math.ceil(appRect.bottom) + 20;
+
+    const event = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: clickX,
+      clientY: clickY,
+    });
+    window.dispatchEvent(event);
+
+    assertTrue(event.defaultPrevented);
+    assertFalse(app.$.menu.open);
+    const point =
+        await mockOrganizerPanelHandler.whenCalled('showSystemContextMenu');
+    assertDeepEquals({x: clickX, y: clickY}, point);
   });
 
   test(
