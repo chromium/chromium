@@ -270,7 +270,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_attach_file_24dp, shadowOf(thumbnail).getCreatedFromResId());
@@ -287,7 +287,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_attach_file_24dp, shadowOf(thumbnail).getCreatedFromResId());
@@ -304,7 +304,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.CAMERA);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertEquals(mDrawable, thumbnail);
     }
@@ -320,7 +320,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.CAMERA);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNull(thumbnail);
     }
@@ -336,7 +336,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_attach_pdf_24dp, shadowOf(thumbnail).getCreatedFromResId());
@@ -353,7 +353,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_attach_pdf_24dp, shadowOf(thumbnail).getCreatedFromResId());
@@ -375,7 +375,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
     }
@@ -393,7 +393,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_globe_24dp, shadowOf(thumbnail).getCreatedFromResId());
@@ -412,7 +412,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         TimeUtils.elapsedRealtimeMillis(),
                         FuseboxAttachmentButtonType.DRIVE_FILES);
 
-        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+        Drawable thumbnail = mBinder.getThumbnailDrawable(attachment, mContext);
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_drive_docs_24dp, shadowOf(thumbnail).getCreatedFromResId());

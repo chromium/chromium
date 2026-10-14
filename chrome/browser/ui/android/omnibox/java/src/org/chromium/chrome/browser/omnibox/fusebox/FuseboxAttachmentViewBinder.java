@@ -25,7 +25,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -46,12 +45,12 @@ class FuseboxAttachmentViewBinder {
         if (propertyKey == FuseboxAttachmentProperties.ATTACHMENT) {
             FuseboxAttachment attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
             assert attachment != null : "FuseboxAttachment cannot be null";
-            updateViewForUploadState(model, attachment, view);
+            updateViewForUploadState(attachment, view);
         } else if (propertyKey == FuseboxAttachmentProperties.COLOR_SCHEME) {
-            adjustColorsForScheme(model, view);
+            adjustColorsForScheme(view);
             FuseboxAttachment attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
             if (attachment != null) {
-                updateViewForUploadState(model, attachment, view);
+                updateViewForUploadState(attachment, view);
             }
         } else if (propertyKey == FuseboxAttachmentProperties.ON_REMOVE) {
             view.findViewById(R.id.attachment_remove_button)
@@ -63,15 +62,14 @@ class FuseboxAttachmentViewBinder {
         }
     }
 
-    private void updateViewForUploadState(
-            PropertyModel model, FuseboxAttachment attachment, View view) {
+    private void updateViewForUploadState(FuseboxAttachment attachment, View view) {
         View progressView = view.findViewById(R.id.attachment_spinner);
         ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (attachment.isUploadComplete() || attachment.isSuggestedTab) {
             progressView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
-            imageView.setImageDrawable(getThumbnailDrawable(model, attachment, view.getContext()));
+            imageView.setImageDrawable(getThumbnailDrawable(attachment, view.getContext()));
             applyTitleAndDescriptionIfPresent(attachment, view);
         } else {
             progressView.setVisibility(View.VISIBLE);
@@ -85,22 +83,14 @@ class FuseboxAttachmentViewBinder {
         view.setLayoutParams(layoutParams);
     }
 
-    @Nullable Drawable getThumbnailDrawable(
-            PropertyModel model, FuseboxAttachment attachment, Context context) {
-
-        @BrandedColorScheme
-        int brandedColorScheme = model.get(FuseboxAttachmentProperties.COLOR_SCHEME);
-
+    @Nullable Drawable getThumbnailDrawable(FuseboxAttachment attachment, Context context) {
         return switch (attachment.type) {
             case FuseboxAttachmentType.ATTACHMENT_IMAGE -> imageThumbnail(attachment);
-            case FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL ->
-                    imageFallbackThumbnail(context, brandedColorScheme);
-            case FuseboxAttachmentType.ATTACHMENT_FILE ->
-                    fileThumbnail(context, brandedColorScheme);
+            case FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL -> imageFallbackThumbnail();
+            case FuseboxAttachmentType.ATTACHMENT_FILE -> fileThumbnail();
             case FuseboxAttachmentType.ATTACHMENT_PDF -> pdfThumbnail();
             case FuseboxAttachmentType.ATTACHMENT_DRIVE -> driveThumbnail(attachment);
-            case FuseboxAttachmentType.ATTACHMENT_TAB ->
-                    tabThumbnail(context, brandedColorScheme, attachment);
+            case FuseboxAttachmentType.ATTACHMENT_TAB -> tabThumbnail(context, attachment);
             default -> null;
         };
     }
@@ -109,10 +99,9 @@ class FuseboxAttachmentViewBinder {
         return attachment.thumbnail;
     }
 
-    private Drawable imageFallbackThumbnail(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
+    private Drawable imageFallbackThumbnail() {
         Drawable fileIcon = mResourceProvider.getDrawable(R.drawable.ic_attach_image_24dp);
-        fileIcon.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        fileIcon.setTint(mResourceProvider.getDefaultIconColor());
         return fileIcon;
     }
 
@@ -123,9 +112,9 @@ class FuseboxAttachmentViewBinder {
         return null;
     }
 
-    private Drawable fileThumbnail(Context context, @BrandedColorScheme int brandedColorScheme) {
+    private Drawable fileThumbnail() {
         Drawable fileIcon = mResourceProvider.getDrawable(R.drawable.ic_attach_file_24dp);
-        fileIcon.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        fileIcon.setTint(mResourceProvider.getDefaultIconColor());
         return fileIcon;
     }
 
@@ -133,10 +122,7 @@ class FuseboxAttachmentViewBinder {
         return mResourceProvider.getDrawable(R.drawable.ic_attach_pdf_24dp);
     }
 
-    private static Drawable tabThumbnail(
-            Context context,
-            @BrandedColorScheme int brandedColorScheme,
-            FuseboxAttachment attachment) {
+    private Drawable tabThumbnail(Context context, FuseboxAttachment attachment) {
         Bitmap favicon =
                 OmniboxResourceProvider.getFaviconBitmapForTab(assumeNonNull(attachment.tab));
         Drawable drawable =
@@ -147,8 +133,7 @@ class FuseboxAttachmentViewBinder {
                                 .getDimensionPixelSize(R.dimen.fusebox_attachment_visible_height));
         // Only the fallback needs to be tinted, website favicons should be unchanged.
         if (favicon == null) {
-            drawable.setTint(
-                    OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+            drawable.setTint(mResourceProvider.getDefaultIconColor());
         }
         return drawable;
     }
@@ -161,32 +146,22 @@ class FuseboxAttachmentViewBinder {
         titleView.setText(attachment.title);
     }
 
-    private static void adjustColorsForScheme(PropertyModel model, View view) {
+    private void adjustColorsForScheme(View view) {
         Context context = view.getContext();
-        @BrandedColorScheme
-        int brandedColorScheme = model.get(FuseboxAttachmentProperties.COLOR_SCHEME);
         ProgressBar progressView = view.findViewById(R.id.attachment_spinner);
         progressView.setIndeterminateTintList(
-                ColorStateList.valueOf(
-                        OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme)));
+                ColorStateList.valueOf(mResourceProvider.getColorPrimary()));
 
         View backgroundView = view.findViewById(R.id.attachment_background);
-        backgroundView
-                .getBackground()
-                .setTint(
-                        OmniboxResourceProvider.getRequestTypeButtonColor(
-                                context, brandedColorScheme));
+        backgroundView.getBackground().setTint(mResourceProvider.getRequestTypeButtonColor());
 
         TextView titleView = view.findViewById(R.id.attachment_title);
         if (titleView != null) {
-            titleView.setTextAppearance(
-                    OmniboxResourceProvider.getRequestTypeButtonTextRes(brandedColorScheme));
+            titleView.setTextAppearance(mResourceProvider.getRequestTypeButtonTextRes());
         }
         ImageButton closeButton = view.findViewById(R.id.attachment_remove_button);
-        closeButton.setColorFilter(
-                OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme));
-        @ColorInt
-        int colorSurface = OmniboxResourceProvider.getColorSurface(context, brandedColorScheme);
+        closeButton.setColorFilter(mResourceProvider.getColorOnSurface());
+        @ColorInt int colorSurface = mResourceProvider.getColorSurface();
         @ColorInt int closeBgColor = ColorUtils.setAlphaComponentWithFloat(colorSurface, 0.64f);
         Drawable closeBg = closeButton.getBackground();
         closeBg.setTint(closeBgColor);
