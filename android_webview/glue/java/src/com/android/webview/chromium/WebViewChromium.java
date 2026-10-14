@@ -505,6 +505,7 @@ class WebViewChromium
     @Override
     @UiThread
     public SslCertificate getCertificate() {
+        checkThread();
         forbidBuilderConfiguration();
         if (!mStartupController.isChromiumInitialized()) {
             return null;
