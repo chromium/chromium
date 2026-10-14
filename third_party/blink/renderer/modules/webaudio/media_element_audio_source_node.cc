@@ -70,8 +70,6 @@ MediaElementAudioSourceNode* MediaElementAudioSourceNode::Create(
 
   if (node) {
     media_element.SetAudioSourceNode(node);
-    // context keeps reference until node is disconnected
-    context.NotifySourceNodeStartedProcessing(node);
     if (!context.HasRealtimeConstraint()) {
       Deprecation::CountDeprecation(
           node->GetExecutionContext(),

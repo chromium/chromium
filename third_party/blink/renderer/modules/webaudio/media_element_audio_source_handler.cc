@@ -71,14 +71,6 @@ MediaElementAudioSourceHandler::MediaElement() const {
   return media_element_.Lock();
 }
 
-void MediaElementAudioSourceHandler::Dispose() {
-  if (GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(this)) {
-    GetDeferredTaskHandler().GetActiveSourceHandlers()->erase(this);
-    BreakConnectionWithLock();
-  }
-  AudioHandler::Dispose();
-}
-
 void MediaElementAudioSourceHandler::SetFormat(uint32_t number_of_channels,
                                                float source_sample_rate) {
   DCHECK(MediaElement());

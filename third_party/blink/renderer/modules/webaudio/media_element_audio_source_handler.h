@@ -36,7 +36,6 @@ class MODULES_EXPORT MediaElementAudioSourceHandler final
   CrossThreadPersistent<HTMLMediaElement> MediaElement() const;
 
   // AudioHandler
-  void Dispose() override;
   void Process(uint32_t frames_to_process) override;
 
   // AudioNode

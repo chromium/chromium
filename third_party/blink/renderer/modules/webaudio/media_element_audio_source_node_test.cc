@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -170,27 +169,6 @@ TEST_F(MediaElementAudioSourceNodeTest, HasPendingActivity) {
   EXPECT_FALSE(media_element_->paused());
   node_->disconnect();
   EXPECT_FALSE(node_->HasPendingActivity());
-}
-
-TEST_F(MediaElementAudioSourceNodeTest,
-       DisposeRemovesFromActiveSourceHandlers) {
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(context_->ContextState(), V8AudioContextState::Enum::kRunning);
-
-  MediaElementAudioSourceHandler& handler =
-      node_->GetMediaElementAudioSourceHandler();
-  EXPECT_TRUE(
-      context_->GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(
-          &handler));
-
-  // Clear references to allow garbage collection.
-  node_ = nullptr;
-  media_element_ = nullptr;
-  ThreadState::Current()->CollectAllGarbageForTesting();
-
-  EXPECT_FALSE(
-      context_->GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(
-          &handler));
 }
 
 }  // namespace blink
