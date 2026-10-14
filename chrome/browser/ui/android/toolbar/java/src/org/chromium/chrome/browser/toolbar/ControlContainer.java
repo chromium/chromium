@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -110,6 +111,17 @@ public interface ControlContainer extends TabStripTransitionDelegate {
      * Remove a touch event observer added via {@link #addTouchEventObserver(TouchEventObserver)}
      */
     void removeTouchEventObserver(TouchEventObserver observer);
+
+    /**
+     * Sets a view that handles its own input on top of the compositor-drawn tab strip. The view is
+     * added as a child of this container, replacing (and removing) any previously set view. While
+     * the view is visible, touch events on it are dispatched to it instead of being intercepted and
+     * forwarded to the native tab strip. The caller manages the view's size, position and
+     * visibility.
+     *
+     * @param view The view, or null to remove the current one.
+     */
+    default void setTabStripInputView(@Nullable View view) {}
 
     /**
      * Sets the max height for the control container view. The view may be smaller than this and

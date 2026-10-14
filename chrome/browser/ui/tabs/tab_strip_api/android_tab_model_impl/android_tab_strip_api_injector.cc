@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_browser_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_model_event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_translation_adapter.h"
 #include "components/browser_apis/tab_strip/adapters/event_bridge.h"
@@ -13,13 +14,31 @@
 
 namespace tabs_api {
 
-AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model)
+namespace {
+
+class NoOpEventBridge : public EventBridge {
+ public:
+  ~NoOpEventBridge() override = default;
+  void AddObserver(events::EventObserver* observer) override {}
+  void RemoveObserver(events::EventObserver* observer) override {}
+};
+
+}  // namespace
+
+AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model,
+                                                       bool enable_event_bridge)
     : browser_adapter_(std::make_unique<AndroidBrowserAdapterImpl>(model)),
       tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)),
       translation_adapter_(
           std::make_unique<AndroidTranslationAdapter>(model,
-                                                      *tab_model_adapter_)),
-      event_bridge_(model, *tab_model_adapter_, *translation_adapter_) {}
+                                                      *tab_model_adapter_)) {
+  if (enable_event_bridge) {
+    event_bridge_ = std::make_unique<AndroidTabModelEventBridge>(
+        model, *tab_model_adapter_, *translation_adapter_);
+  } else {
+    event_bridge_ = std::make_unique<NoOpEventBridge>();
+  }
+}
 
 AndroidTabStripApiInjector::~AndroidTabStripApiInjector() = default;
 
@@ -36,7 +55,7 @@ TranslationAdapter& AndroidTabStripApiInjector::translation_adapter() {
 }
 
 EventBridge& AndroidTabStripApiInjector::event_bridge() {
-  return event_bridge_;
+  return *event_bridge_;
 }
 
 }  // namespace tabs_api

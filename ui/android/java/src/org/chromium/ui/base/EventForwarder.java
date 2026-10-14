@@ -80,6 +80,10 @@ public class EventForwarder {
     private float mCurrentTouchOffsetX;
     private float mCurrentTouchOffsetY;
 
+    // Origin of the container view in the compositor surface, in pixels.
+    private float mContainerViewOriginX;
+    private float mContainerViewOriginY;
+
     // Offset for the drag events that's dispatching through other views.
     private float mDragDispatchingOffsetX;
     private float mDragDispatchingOffsetY;
@@ -387,14 +391,17 @@ public class EventForwarder {
         return false;
     }
 
+    // Returns the offset that maps compositor surface coordinates to web contents coordinates.
+    // Used when a touch sequence is transferred to Viz, which receives events in compositor surface
+    // coordinates rather than in container view coordinates.
     @CalledByNative
     private float getWebContentsOffsetXInWindow() {
-        return mCurrentTouchOffsetX;
+        return mCurrentTouchOffsetX - mContainerViewOriginX;
     }
 
     @CalledByNative
     private float getWebContentsOffsetYInWindow() {
-        return mCurrentTouchOffsetY;
+        return mCurrentTouchOffsetY - mContainerViewOriginY;
     }
 
     private boolean sendTouchEvent(MotionEvent event, boolean isTouchHandleEvent) {
@@ -514,6 +521,19 @@ public class EventForwarder {
     public void setDragDispatchingOffset(float dx, float dy) {
         mDragDispatchingOffsetX = dx;
         mDragDispatchingOffsetY = dy;
+    }
+
+    /**
+     * Sets the origin of the container view in the compositor surface. Only affects touch sequences
+     * transferred to Viz, which receive events in compositor surface coordinates. Needed when the
+     * container view isn't placed at the origin of the compositor surface.
+     *
+     * @param x The X origin in pixels.
+     * @param y The Y origin in pixels.
+     */
+    public void setContainerViewOriginInCompositorSurface(float x, float y) {
+        mContainerViewOriginX = x;
+        mContainerViewOriginY = y;
     }
 
     /**

@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ANDROID_TAB_MODEL_IMPL_ANDROID_TAB_STRIP_API_INJECTOR_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ANDROID_TAB_MODEL_IMPL_ANDROID_TAB_STRIP_API_INJECTOR_H_
 
+#include <memory>
+
 #include "base/types/expected.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_model_event_bridge.h"
 #include "components/browser_apis/tab_strip/adapters/event_bridge.h"
 #include "components/browser_apis/tab_strip/adapters/platform_adapters_provider.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
@@ -24,7 +25,11 @@ class AndroidTranslationAdapter;
 
 class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
  public:
-  explicit AndroidTabStripApiInjector(TabModel* model);
+  // TODO(crbug.com/498763314): AndroidTabModelEventBridge assumes every tab has
+  // a loaded WebContents, which fails on Android when background tabs are
+  // lazily restored. Callers that don't observe tab strip events can set
+  // `enable_event_bridge` to false. Remove the parameter once the bug is fixed.
+  AndroidTabStripApiInjector(TabModel* model, bool enable_event_bridge);
   AndroidTabStripApiInjector(const AndroidTabStripApiInjector&&) = delete;
   AndroidTabStripApiInjector operator=(const AndroidTabStripApiInjector&) =
       delete;
@@ -39,7 +44,7 @@ class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
   std::unique_ptr<AndroidBrowserAdapterImpl> browser_adapter_;
   std::unique_ptr<AndroidTabStripModelAdapter> tab_model_adapter_;
   std::unique_ptr<AndroidTranslationAdapter> translation_adapter_;
-  AndroidTabModelEventBridge event_bridge_;
+  std::unique_ptr<EventBridge> event_bridge_;
 };
 
 }  // namespace tabs_api

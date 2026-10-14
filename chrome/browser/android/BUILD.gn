@@ -980,6 +980,7 @@ if (is_android) {
       "//ui/accessibility",
       "//ui/base/unowned_user_data",
       "//ui/menus",
+      "//ui/webui:buildflags",
       "//url",
 
       # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets
@@ -1195,6 +1196,20 @@ if (is_android) {
           "//device/vr/android/cardboard:vr_cardboard",
         ]
       }
+    }
+
+    if (enable_webui_tabstrip_ntb) {
+      sources += [
+        "compositor/tab_strip_ntb_webui_host.cc",
+        "compositor/tab_strip_ntb_webui_host.h",
+      ]
+      deps += [
+        "//chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl",
+        "//chrome/browser/ui/webui/tabstrip_ntb",
+        "//components/browser_apis/tab_strip:service",
+      ]
+    } else {
+      sources += [ "compositor/tab_strip_ntb_webui_host_stub.cc" ]
     }
   }
 }

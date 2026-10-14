@@ -137,6 +137,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private ViewGroup mToolbarView;
     private boolean mShowLocationBarOnly;
     private @Nullable View mLocationBarView;
+    // A child view on top of the tab strip that handles its own input. See setTabStripInputView().
+    private @Nullable View mTabStripInputView;
+    // Whether the current touch gesture started on mTabStripInputView.
+    private boolean mIsTabStripInputViewGesture;
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
@@ -378,6 +382,20 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Override
     public void removeTouchEventObserver(TouchEventObserver observer) {
         mTouchEventObservers.removeObserver(observer);
+    }
+
+    @SuppressLint("RtlHardcoded")
+    @Override
+    public void setTabStripInputView(@Nullable View view) {
+        if (mTabStripInputView == view) return;
+        if (mTabStripInputView != null) removeView(mTabStripInputView);
+        mTabStripInputView = view;
+        mIsTabStripInputViewGesture = false;
+        if (view == null) return;
+        // Added last so that it sits on top of the other children. Its size and position (via
+        // translation) are managed by the caller in compositor coordinates, which are always
+        // measured from the physical left edge even in RTL.
+        addView(view, new FrameLayout.LayoutParams(0, 0, Gravity.TOP | Gravity.LEFT));
     }
 
     @Override
@@ -1289,9 +1307,20 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        // If the container is not fully visible or if the event occurs on the tab strip, intercept
-        // the event here.
+        // If the container is not fully visible, intercept the event here.
         if (!isToolbarContainerFullyVisible()) return true;
+        // Gestures that start on the tab strip input view are left to it for their whole duration,
+        // so that it isn't sent a cancel if the pointer moves off of it.
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mIsTabStripInputViewGesture = isOnTabStripInputView(event);
+        }
+        boolean isTabStripInputViewGesture = mIsTabStripInputViewGesture;
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            mIsTabStripInputViewGesture = false;
+        }
+        if (isTabStripInputViewGesture) return false;
+        // If the touch is on the tab strip, intercept the event here.
         if (isOnTabStrip(event)) return true;
         // Don't intercept touches below the toolbar container while a child is stacked there, so
         // that they are not treated as toolbar swipes, whether they are on the stacked child (e.g.
@@ -1312,6 +1341,17 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // Otherwise, permit bottom toolbar to handle swipe up gesture to open tab switcher.
         int tabStripHeight = mToolbar.getTabStripHeight();
         return tabStripHeight != 0 && e.getY() <= tabStripHeight;
+    }
+
+    private boolean isOnTabStripInputView(MotionEvent e) {
+        View view = mTabStripInputView;
+        if (view == null || view.getVisibility() != View.VISIBLE) return false;
+        float x = view.getX();
+        float y = view.getY();
+        return e.getX() >= x
+                && e.getX() < x + view.getWidth()
+                && e.getY() >= y
+                && e.getY() < y + view.getHeight();
     }
 
     /**

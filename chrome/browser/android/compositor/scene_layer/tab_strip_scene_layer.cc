@@ -20,6 +20,11 @@
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+#include "chrome/browser/android/compositor/tab_strip_ntb_webui_host.h"  // nogncheck
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
@@ -42,6 +47,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
+      ntb_webui_container_(cc::slim::Layer::Create()),
       left_fade_(cc::slim::SolidColorLayer::Create()),
       right_fade_(cc::slim::SolidColorLayer::Create()),
       left_padding_layer_(cc::slim::SolidColorLayer::Create()),
@@ -140,6 +146,10 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(new_tab_button_background_);
   tab_strip_layer_->AddChild(new_tab_button_);
   tab_strip_layer_->AddChild(new_tab_button_keyboard_focus_ring_);
+
+  ntb_webui_container_->SetMasksToBounds(true);
+  ntb_webui_container_->SetHideLayerAndSubtree(true);
+  tab_strip_layer_->AddChild(ntb_webui_container_);
 
   glic_button_container_->SetMasksToBounds(true);
   glic_button_container_->AddChild(glic_button_background_);
@@ -342,6 +352,42 @@ void TabStripSceneLayer::UpdateNewTabButton(
                          should_apply_hover_highlight, button_alpha,
                          new_tab_button_keyboard_focus_ring_,
                          is_keyboard_focused, keyboard_focus_ring_drawable);
+}
+
+void TabStripSceneLayer::UpdateNtbWebUi(JNIEnv* env,
+                                        int64_t native_host,
+                                        float x,
+                                        float y,
+                                        float width,
+                                        float height) {
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+  new_tab_button_->SetHideLayerAndSubtree(true);
+  new_tab_button_background_->SetHideLayerAndSubtree(true);
+  new_tab_button_keyboard_focus_ring_->SetIsDrawable(false);
+
+  TabStripNtbWebUiHost* host =
+      reinterpret_cast<TabStripNtbWebUiHost*>(native_host);
+  scoped_refptr<cc::slim::Layer> webui_layer =
+      host ? host->GetLayer() : nullptr;
+  if (!webui_layer) {
+    ntb_webui_container_->RemoveAllChildren();
+    ntb_webui_container_->SetHideLayerAndSubtree(true);
+    return;
+  }
+
+  if (webui_layer->parent() != ntb_webui_container_.get()) {
+    ntb_webui_container_->RemoveAllChildren();
+    ntb_webui_container_->AddChild(webui_layer);
+  }
+  webui_layer->SetPosition(gfx::PointF());
+  webui_layer->SetBounds(gfx::Size(width, height));
+  webui_layer->SetHideLayerAndSubtree(false);
+
+  ntb_webui_container_->SetPosition(gfx::PointF(x, y));
+  ntb_webui_container_->SetBounds(
+      gfx::Size(std::round(width), std::round(height)));
+  ntb_webui_container_->SetHideLayerAndSubtree(false);
+#endif
 }
 
 // The Glic button layer can be constructed with the following dynamic layout:
@@ -559,7 +605,6 @@ void TabStripSceneLayer::UpdateGlicButtonInternal(
     icon_resource = resource_manager_->GetResource(
         ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
   }
-
 
   gfx::Size background_size(std::round(button_width),
                             std::round(button_height));

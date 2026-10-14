@@ -90,6 +90,18 @@ class TabStripSceneLayer : public SceneLayer {
                           int32_t keyboard_focus_ring_resource_id,
                           int32_t keyboard_focus_ring_color);
 
+  // Positions the layer of the WebUI new tab button (owned by the
+  // TabStripNtbWebUiHost at |native_host|) inside the tab strip. Used instead
+  // of the native new tab button when AndroidNewTabButtonTabstripWebUI is on.
+  // The region is hidden until the host's layer is available (i.e. during
+  // startup).
+  void UpdateNtbWebUi(JNIEnv* env,
+                      int64_t native_host,
+                      float x,
+                      float y,
+                      float width,
+                      float height);
+
   void UpdateGlicButton(JNIEnv* env,
                         int32_t resource_id,
                         float x,
@@ -329,6 +341,8 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_keyboard_focus_ring_;
+  // Parent of the WebUI new tab button WebContents layer.
+  scoped_refptr<cc::slim::Layer> ntb_webui_container_;
   scoped_refptr<cc::slim::SolidColorLayer> left_fade_;
   scoped_refptr<cc::slim::SolidColorLayer> right_fade_;
 
