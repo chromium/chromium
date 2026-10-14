@@ -420,10 +420,8 @@ class ReadAnythingPrintingBrowserTest : public ReadAnythingPrintingTestBase {
 
 // Prints IRM and checks that the output has all of the distilled content and
 // the Reading Mode theme.
-// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
-                       DISABLED_PrintsFullStyledIrmContent) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+                       PrintsFullStyledIrmContent) {
   NavigateToArticle();
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingColorInfo,
@@ -433,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   ASSERT_TRUE(irm_contents);
   WaitForDistillation(irm_contents);
 
-  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
   chrome::ExecuteCommand(browser(), IDC_PRINT);
   observer.WaitUntilPreviewIsReady();
 
@@ -448,6 +446,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WebContents* preview_dialog =
       dialog_controller->GetPrintPreviewForContents(irm_contents);
   ASSERT_TRUE(preview_dialog);
+  content::ScopedAccessibilityModeOverride mode_override(preview_dialog,
+                                                         ui::kAXModeComplete);
   content::WaitForAccessibilityTreeToContainNodeWithName(
       preview_dialog, LineNodeName(kBottomSentinel));
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -473,7 +473,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 // printout is laid out the same as with line focus off.
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
                        LineFocusPaddingIsNotPrinted) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   auto* dialog_controller =
       printing::PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(dialog_controller);
@@ -484,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 
   uint32_t off_page_count = 0;
   {
-    printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+    printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
     chrome::ExecuteCommand(browser(), IDC_PRINT);
     observer.WaitUntilPreviewIsReady();
     off_page_count = observer.rendered_page_count();
@@ -492,10 +491,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WebContents* preview =
       dialog_controller->GetPrintPreviewForContents(irm_contents);
   ASSERT_TRUE(preview);
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      preview, LineNodeName(kTopSentinel));
-  std::optional<float> off_top_sentinel =
-      GetLineTop(preview, LineNodeName(kTopSentinel));
+  std::optional<float> off_top_sentinel;
+  {
+    content::ScopedAccessibilityModeOverride mode_override(preview,
+                                                           ui::kAXModeComplete);
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        preview, LineNodeName(kTopSentinel));
+    off_top_sentinel = GetLineTop(preview, LineNodeName(kTopSentinel));
+  }
   ASSERT_TRUE(off_top_sentinel.has_value());
 
   // Close IRM, which closes the preview. Wait until the preview is destroyed
@@ -522,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   WaitForDistillation(line_focus_irm_contents);
   WaitForLineFocusPadding(line_focus_irm_contents);
 
-  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
   chrome::ExecuteCommand(browser(), IDC_PRINT);
   observer.WaitUntilPreviewIsReady();
 
@@ -530,6 +533,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WebContents* line_focus_preview =
       dialog_controller->GetPrintPreviewForContents(line_focus_irm_contents);
   ASSERT_TRUE(line_focus_preview);
+  content::ScopedAccessibilityModeOverride mode_override(line_focus_preview,
+                                                         ui::kAXModeComplete);
   content::WaitForAccessibilityTreeToContainNodeWithName(
       line_focus_preview, LineNodeName(kTopSentinel));
   std::optional<float> top_sentinel =
@@ -541,10 +546,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 
 // Closing IRM with a preview open closes the preview and restores the print
 // target, and IRM can print again after it is reopened.
-// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
-                       DISABLED_CloseWithPreviewOpenThenReopenPrintsAgain) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+                       CloseWithPreviewOpenThenReopenPrintsAgain) {
   NavigateToArticle();
   tabs::TabInterface* tab = GetActiveTab();
   auto* dialog_controller =
@@ -555,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   ASSERT_TRUE(irm_contents);
   WaitForDistillation(irm_contents);
   {
-    printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+    printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
     chrome::ExecuteCommand(browser(), IDC_PRINT);
     observer.WaitUntilPreviewIsReady();
   }
@@ -578,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   ASSERT_EQ(OpenIRM(), irm_contents);
   WaitForDistillation(irm_contents);
 
-  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
   chrome::ExecuteCommand(browser(), IDC_PRINT);
   observer.WaitUntilPreviewIsReady();
 
@@ -590,6 +593,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WebContents* preview_dialog =
       dialog_controller->GetPrintPreviewForContents(irm_contents);
   ASSERT_TRUE(preview_dialog);
+  content::ScopedAccessibilityModeOverride mode_override(preview_dialog,
+                                                         ui::kAXModeComplete);
   content::WaitForAccessibilityTreeToContainNodeWithName(
       preview_dialog, LineNodeName(kBottomSentinel));
 }
@@ -611,11 +616,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 // If a user requests print and closes IRM before preview arrives, the request
 // is dropped and does not show or crash, and IRM can print again after it is
 // reopened.
-// TODO(crbug.com/573445343): Flaky timeouts on gardened builders.
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingPrintingBrowserTest,
-    DISABLED_PrintRequestWhileClosingIrmIsDroppedThenReopenPrints) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
+                       PrintRequestWhileClosingIrmIsDroppedThenReopenPrints) {
   auto* dialog_controller =
       printing::PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(dialog_controller);
@@ -641,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(OpenIRM(), irm_contents);
   WaitForDistillation(irm_contents);
 
-  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/true);
   chrome::ExecuteCommand(browser(), IDC_PRINT);
   observer.WaitUntilPreviewIsReady();
 
@@ -653,6 +655,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* preview_dialog =
       dialog_controller->GetPrintPreviewForContents(irm_contents);
   ASSERT_TRUE(preview_dialog);
+  content::ScopedAccessibilityModeOverride mode_override(preview_dialog,
+                                                         ui::kAXModeComplete);
   content::WaitForAccessibilityTreeToContainNodeWithName(
       preview_dialog, LineNodeName(kBottomSentinel));
 }
