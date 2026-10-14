@@ -645,24 +645,24 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Get Fusebox popup icon tint list.
+     * Resolves the icon tint for Fusebox popup items (primary for bottom sheet, secondary for plus
+     * menu).
      *
      * @param isBottomSheet Whether the popup is presented as a bottom sheet.
      * @return Tint list for Fusebox popup icons.
      */
     public ColorStateList getFuseboxPopupIconTintList(boolean isBottomSheet) {
-        return getFuseboxPopupIconTintList(mContext, getBrandedColorScheme(), isBottomSheet);
+        return isBottomSheet ? getPrimaryIconTintList() : getSecondaryIconTintList();
     }
 
     /**
-     * Get Fusebox popup icon background tint list.
+     * Resolves the icon background tint for Fusebox popup items (only present for bottom sheet).
      *
      * @param isBottomSheet Whether the popup is presented as a bottom sheet.
      * @return Background tint list for Fusebox popup icons, or null if unstyled.
      */
     public @Nullable ColorStateList getFuseboxPopupIconBackgroundTintList(boolean isBottomSheet) {
-        return getFuseboxPopupIconBackgroundTintList(
-                mContext, getBrandedColorScheme(), isBottomSheet);
+        return isBottomSheet ? getPrimaryIconBackgroundTintList() : null;
     }
 
     /**
@@ -708,13 +708,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return IncognitoColors.getColorOnPrimary(mContext, isIncognito());
     }
 
-    /**
-     * Get request type button text res.
-     *
-     * @see #getRequestTypeButtonTextRes(Context, ...)
-     */
+    /** Resolves the text appearance for the active tool button. */
     public @StyleRes int getRequestTypeButtonTextRes() {
-        return getRequestTypeButtonTextRes(getBrandedColorScheme());
+        return IncognitoColors.getTextMediumThickPrimary(isIncognito());
     }
 
     /**
@@ -735,13 +731,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getAttachmentButtonTextRes(getBrandedColorScheme());
     }
 
-    /**
-     * Get popup header visibility text res.
-     *
-     * @see #getPopupHeaderVisibilityTextRes(Context, ...)
-     */
+    /** Resolves the text appearance for header visibility text in the popup. */
     public @StyleRes int getPopupHeaderVisibilityTextRes() {
-        return getPopupHeaderVisibilityTextRes(getBrandedColorScheme());
+        return IncognitoColors.getTextSmallSecondary(isIncognito());
     }
 
     /**
@@ -758,13 +750,10 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return IncognitoColors.getHeadline2ThickPrimary(isIncognito);
     }
 
-    /**
-     * Get search box icon background.
-     *
-     * @see #getSearchBoxIconBackground(Context, ...)
-     */
+    /** Returns the drawable that normally goes behind the plus button. */
     public Drawable getSearchBoxIconBackground() {
-        return getSearchBoxIconBackground(mContext, getBrandedColorScheme());
+        @Px int size = mCache.getDimen(R.dimen.small_icon_background_size);
+        return DrawableUtils.getIconBackground(mContext, isIncognito(), size, size);
     }
 
     /** Get popover navigate button background. */
@@ -1282,25 +1271,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Resolves the icon tint for Fusebox popup items (primary for bottom sheet, secondary for plus
-     * menu).
-     */
-    public static ColorStateList getFuseboxPopupIconTintList(
-            Context context, @BrandedColorScheme int brandedColorScheme, boolean isBottomSheet) {
-        return isBottomSheet
-                ? getPrimaryIconTintList(context, brandedColorScheme)
-                : getSecondaryIconTintList(context, brandedColorScheme);
-    }
-
-    /**
-     * Resolves the icon background tint for Fusebox popup items (only present for bottom sheet).
-     */
-    public static @Nullable ColorStateList getFuseboxPopupIconBackgroundTintList(
-            Context context, @BrandedColorScheme int brandedColorScheme, boolean isBottomSheet) {
-        return isBottomSheet ? getPrimaryIconBackgroundTintList(context, brandedColorScheme) : null;
-    }
-
-    /**
      * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
      * menu, or 24dp for both when popup variations are enabled).
      */
@@ -1329,14 +1299,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return IncognitoColors.getColorSurfaceContainerTintList(context, isIncognito);
     }
 
-    /** Resolves the text appearance for the active tool button. */
-    public static @StyleRes int getRequestTypeButtonTextRes(
-            @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextMediumThickPrimary(isIncognito);
-    }
-
     /** Resolves the text appearance for menu items in the popup. */
     public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
@@ -1355,24 +1317,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         return IncognitoColors.getTextMediumPrimary(isIncognito);
-    }
-
-    /** Resolves the text appearance for header visibility text in the popup. */
-    public static @StyleRes int getPopupHeaderVisibilityTextRes(
-            @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextSmallSecondary(isIncognito);
-    }
-
-    /** Returns the drawable that normally goes behind the plus button. */
-    public static Drawable getSearchBoxIconBackground(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        Resources res = context.getResources();
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        @Px int size = res.getDimensionPixelSize(R.dimen.small_icon_background_size);
-        return DrawableUtils.getIconBackground(context, isIncognito, size, size);
     }
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
