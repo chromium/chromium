@@ -4,7 +4,7 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -16,6 +16,7 @@ suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
   let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
       OrganizerPanelPageHandlerRemote;
+  let remotePage: OrganizerPanelPageRemote;
   let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let mockTabGroupsHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
@@ -47,10 +48,11 @@ suite('OrganizerPanelAppTest', () => {
         TestMock.fromClass(OrganizerPanelPageHandlerRemote);
     mockOrganizerPanelHandler.setPromiseResolveFor(
         'getSectionState', {state: {expanded: false, showAll: false}});
-    const {instance: organizerPanelInstance} =
+    const {instance: organizerPanelInstance, remote} =
         organizerPanelBrowserProxyFactory.createForTest(
             mockOrganizerPanelHandler);
     organizerPanelBrowserProxyFactory.setInstance(organizerPanelInstance);
+    remotePage = remote;
 
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(mockPageHandler);
@@ -131,6 +133,33 @@ suite('OrganizerPanelAppTest', () => {
     app.$.searchField.setValue('test search');
     await microtasksFinished();
     assertEquals('test search', app.$.list.searchQuery);
+  });
+
+  test('updates divider color when vertical tabs enabled', async () => {
+    app.style.setProperty('--color-sys-divider', 'rgb(10, 20, 30)');
+    app.style.setProperty('--color-sys-on-header-divider', 'rgb(40, 50, 60)');
+    await microtasksFinished();
+
+    const divider =
+        app.$.list.shadowRoot.querySelector<HTMLElement>('.divider');
+    assertTrue(!!divider);
+    assertFalse(app.verticalTabsEnabled);
+    assertFalse(app.hasAttribute('vertical-tabs-enabled'));
+    assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
+
+    remotePage.onVerticalTabsEnabledChanged(true);
+    await microtasksFinished();
+
+    assertTrue(app.verticalTabsEnabled);
+    assertTrue(app.hasAttribute('vertical-tabs-enabled'));
+    assertEquals('rgb(40, 50, 60)', getComputedStyle(divider).backgroundColor);
+
+    remotePage.onVerticalTabsEnabledChanged(false);
+    await microtasksFinished();
+
+    assertFalse(app.verticalTabsEnabled);
+    assertFalse(app.hasAttribute('vertical-tabs-enabled'));
+    assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
   });
 
   test(

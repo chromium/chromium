@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -68,6 +69,15 @@ OrganizerPanelPageHandler::OrganizerPanelPageHandler(
                              pref_changed_callback);
   pref_change_registrar_.Add(prefs::kOrganizerPanelSectionsShowAll,
                              pref_changed_callback);
+
+  if (auto* controller = tabs::VerticalTabStripStateController::From(
+          webui::GetBrowserWindowInterface(web_contents_))) {
+    OnVerticalTabStripModeChanged(controller);
+    vertical_tab_strip_mode_subscription_ =
+        controller->RegisterOnModeChanged(base::BindRepeating(
+            &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
+            base::Unretained(this)));
+  }
 }
 
 OrganizerPanelPageHandler::~OrganizerPanelPageHandler() = default;
@@ -166,6 +176,11 @@ OrganizerPanelPageHandler::GetSectionStateForId(
     state->show_all = *show_all;
   }
   return state;
+}
+
+void OrganizerPanelPageHandler::OnVerticalTabStripModeChanged(
+    tabs::VerticalTabStripStateController* controller) {
+  page_->OnVerticalTabsEnabledChanged(controller->ShouldDisplayVerticalTabs());
 }
 
 void OrganizerPanelPageHandler::OnSectionsStateChanged() {

@@ -14,6 +14,9 @@ struct SectionState {
 
 // WebUI-side handler for general panel requests from the browser.
 interface Page {
+  // Called when whether vertical tabs are enabled changes.
+  OnVerticalTabsEnabledChanged(bool vertical_tabs_enabled);
+
   // Called when the persisted state of sections changes.
   OnSectionsStateChanged(map<string, SectionState> sections_state);
 };

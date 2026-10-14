@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,6 +44,13 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  void OnVerticalTabsEnabledChanged(bool vertical_tabs_enabled) override {
+    vertical_tabs_enabled_ = vertical_tabs_enabled;
+    if (vertical_tabs_enabled_changed_quit_closure_) {
+      std::move(vertical_tabs_enabled_changed_quit_closure_).Run();
+    }
+  }
+
   void OnSectionsStateChanged(
       base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
           sections_state) override {
@@ -51,10 +60,20 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
     }
   }
 
+  void WaitForVerticalTabsEnabledChanged() {
+    base::RunLoop run_loop;
+    vertical_tabs_enabled_changed_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   void WaitForSectionsStateChanged() {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
+  }
+
+  std::optional<bool> vertical_tabs_enabled() const {
+    return vertical_tabs_enabled_;
   }
 
   const base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>&
@@ -64,8 +83,10 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
 
  private:
   mojo::Receiver<organizer_panel::mojom::Page> receiver_{this};
+  std::optional<bool> vertical_tabs_enabled_;
   base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
       sections_state_;
+  base::OnceClosure vertical_tabs_enabled_changed_quit_closure_;
   base::OnceClosure quit_closure_;
 };
 
@@ -226,6 +247,30 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   handler_remote->ShowSystemContextMenu(gfx::Point(-10, -20));
   handler_remote.FlushForTesting();
   EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       OnVerticalTabsEnabledChangedNotifiesPage) {
+  auto* vt_controller = tabs::VerticalTabStripStateController::From(browser());
+  ASSERT_TRUE(vt_controller);
+  vt_controller->SetVerticalTabsEnabled(false);
+
+  FakeOrganizerPanelPage page;
+  mojo::Remote<organizer_panel::mojom::PageHandler> handler_remote;
+  OrganizerPanelPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  page.WaitForVerticalTabsEnabledChanged();
+  EXPECT_EQ(false, page.vertical_tabs_enabled());
+
+  vt_controller->SetVerticalTabsEnabled(true);
+  page.WaitForVerticalTabsEnabledChanged();
+  EXPECT_EQ(true, page.vertical_tabs_enabled());
+
+  vt_controller->SetVerticalTabsEnabled(false);
+  page.WaitForVerticalTabsEnabledChanged();
+  EXPECT_EQ(false, page.vertical_tabs_enabled());
 }
 
 }  // namespace

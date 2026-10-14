@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom.h"
@@ -26,6 +27,10 @@ class WebContents;
 namespace gfx {
 class Point;
 }  // namespace gfx
+
+namespace tabs {
+class VerticalTabStripStateController;
+}  // namespace tabs
 
 namespace views {
 class MenuRunner;
@@ -57,6 +62,8 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   void OnContextMenuClosed();
   organizer_panel::mojom::SectionStatePtr GetSectionStateForId(
       const std::string& section_id) const;
+  void OnVerticalTabStripModeChanged(
+      tabs::VerticalTabStripStateController* controller);
   void OnSectionsStateChanged();
 
   mojo::Receiver<organizer_panel::mojom::PageHandler> receiver_;
@@ -65,6 +72,7 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  base::CallbackListSubscription vertical_tab_strip_mode_subscription_;
   base::WeakPtrFactory<OrganizerPanelPageHandler> weak_ptr_factory_{this};
 };
 
