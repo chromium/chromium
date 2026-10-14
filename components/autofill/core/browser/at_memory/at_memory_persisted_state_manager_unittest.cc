@@ -1655,16 +1655,126 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
               Field(&AtMemorySearchState::filter, u"passport"));
 }
 
-// Tests that state changes that do not indicate frame reset or deletion (e.g.
-// kInactive -> kActive) do not reset the persisted search state.
-TEST_F(AtMemoryPersistedStateManagerNavigationTest, NoResetOnActivation) {
+// Tests that a primary main frame becoming inactive (e.g. because it enters the
+// BFCache) does not by itself reset the persisted search state. The reset is
+// triggered by the main frame that becomes active instead.
+TEST_F(AtMemoryPersistedStateManagerNavigationTest, NoResetOnDeactivation) {
+  ActivateAutofillDriver(autofill_driver(0));
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
               Field(&AtMemorySearchState::filter, u"passport"));
 
+  autofill_driver(0).SetIsActive(false);
   DeactivateAutofillDriver(autofill_driver(0));
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+}
+
+// Tests that activating a prerendered page resets all state of the previously
+// shown page. Prerender activations emit no `kPendingReset`; the drivers only
+// transition between `kInactive` and `kActive` (see
+// `ContentAutofillDriverFactoryTestLifecycleState.NavigatePrerendering`).
+TEST_F(AtMemoryPersistedStateManagerNavigationTest,
+       AllStateResetOnPrerenderActivation) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
   ActivateAutofillDriver(autofill_driver(0));
+
+  // Prerender a page. The prerendered main frame's `kPendingReset` must not
+  // reset the state of the page that is shown.
+  CreateAutofillDriver();
+  autofill_driver(1).SetIsActive(false);
+  ResetAutofillDriver(autofill_driver(1));
+
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"Passport #12345", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+
+  // Activate the prerendered page.
+  autofill_driver(1).SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver(1));
+  autofill_driver(0).SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver(0));
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that restoring a page from the BFCache resets all state of the
+// previously shown page. BFCache restores emit no `kPendingReset`; the drivers
+// only transition between `kInactive` and `kActive` (see
+// `ContentAutofillDriverFactoryTestLifecycleState.NavigateBFCached`).
+TEST_F(AtMemoryPersistedStateManagerNavigationTest,
+       AllStateResetOnBFCacheRestore) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  ActivateAutofillDriver(autofill_driver(0));
+
+  // Navigate cross-document to a new page; the old page enters the BFCache.
+  CreateAutofillDriver();
+  ActivateAutofillDriver(autofill_driver(1));
+  autofill_driver(0).SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver(0));
+  ResetAutofillDriver(autofill_driver(1));
+
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"Passport #12345", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+
+  // Navigate back; the old page is restored from the BFCache.
+  autofill_driver(0).SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver(0));
+  autofill_driver(1).SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver(1));
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that a subframe becoming active (e.g. as part of a prerender
+// activation, where the main frame resets the state) does not reset the
+// persisted search state.
+TEST_F(AtMemoryPersistedStateManagerNavigationTest,
+       NoResetOnSubframeActivation) {
+  CreateAutofillDriver();
+  autofill_driver(1).SetParent(&autofill_driver(0));
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+
+  ActivateAutofillDriver(autofill_driver(1));
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+}
+
+// Tests that the main frame of an embedded frame tree (i.e. a <fencedframe> or
+// a GuestView) becoming active does not reset the persisted search state.
+TEST_F(AtMemoryPersistedStateManagerNavigationTest,
+       NoResetOnEmbeddedMainFrameActivation) {
+  CreateAutofillDriver();
+  autofill_driver(1).SetIsEmbedded(true);
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Field(&AtMemorySearchState::filter, u"passport"));
+
+  ActivateAutofillDriver(autofill_driver(1));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
               Field(&AtMemorySearchState::filter, u"passport"));

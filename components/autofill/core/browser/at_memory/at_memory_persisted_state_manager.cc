@@ -464,8 +464,17 @@ void AtMemoryPersistedStateManager::OnAutofillManagerStateChanged(
     AutofillManager::LifecycleState new_state) {
   switch (new_state) {
     case AutofillManager::LifecycleState::kInactive:
-    case AutofillManager::LifecycleState::kActive:
       return;
+    case AutofillManager::LifecycleState::kActive:
+      // A main frame that turns from inactive to active becomes the primary
+      // main frame. This happens when a prerendered page is activated or a
+      // BFCached page is restored. Such navigations do not emit
+      // `kPendingReset`, so the state of the previous page is reset here.
+      // (`kPendingReset -> kActive` follows a reset that was already handled.)
+      if (old_state != AutofillManager::LifecycleState::kInactive) {
+        return;
+      }
+      break;
     case AutofillManager::LifecycleState::kPendingReset:
     case AutofillManager::LifecycleState::kPendingDeletion:
       break;

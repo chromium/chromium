@@ -167,7 +167,9 @@ class AtMemoryPersistedStateManager
   // AutofillManager::Observer:
   // Clears all state when the tab's primary main frame navigates
   // cross-document, i.e. when its AutofillManager transitions to
-  // `kPendingReset` or `kPendingDeletion`.
+  // `kPendingReset` or `kPendingDeletion`, or when an inactive main frame
+  // becomes the primary main frame (prerender activation or BFCache restore),
+  // i.e. when its AutofillManager transitions from `kInactive` to `kActive`.
   void OnAutofillManagerStateChanged(
       AutofillManager& manager,
       AutofillManager::LifecycleState old_state,
