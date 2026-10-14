@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_MOCK_TRANSPORT_CHANNEL_H_
 #define COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_MOCK_TRANSPORT_CHANNEL_H_
 
+#include <cstdint>
+#include <optional>
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "components/browser_actuator/public/transport_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +29,8 @@ class MockTransportChannel : public TransportChannel {
               SendUpstreamMessage,
               (std::string_view session_id,
                PayloadType payload_type,
-               const google::protobuf::MessageLite& message),
+               const google::protobuf::MessageLite& message,
+               std::optional<int64_t> responding_to_sequence_number),
               (override));
 
   base::WeakPtr<MockTransportChannel> GetWeakPtr();

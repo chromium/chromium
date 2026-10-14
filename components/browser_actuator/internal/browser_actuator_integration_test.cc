@@ -309,7 +309,7 @@ TEST_F(
       upstream_req.actuator_upstream_message();
   EXPECT_EQ(upstream_msg.session_id(), "session-feature-1");
   EXPECT_EQ(upstream_msg.client_sequence_number(), 1);
-  EXPECT_EQ(upstream_msg.responding_to_sequence_number(), 1);
+  EXPECT_FALSE(upstream_msg.has_responding_to_sequence_number());
   ASSERT_EQ(upstream_msg.typed_payloads_size(), 1);
   EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
@@ -520,10 +520,12 @@ TEST_F(BrowserActuatorIntegrationTest,
   ASSERT_EQ(received_messages_.size(), 2u);
   EXPECT_EQ(received_messages_[0].context_id(), "step-1");
   EXPECT_EQ(received_messages_[1].context_id(), "step-2");
-  EXPECT_EQ(req_1.actuator_upstream_message().responding_to_sequence_number(),
-            1);
-  EXPECT_EQ(req_2.actuator_upstream_message().responding_to_sequence_number(),
-            2);
+  EXPECT_EQ(req_1.actuator_upstream_message().client_sequence_number(), 1);
+  EXPECT_FALSE(
+      req_1.actuator_upstream_message().has_responding_to_sequence_number());
+  EXPECT_EQ(req_2.actuator_upstream_message().client_sequence_number(), 2);
+  EXPECT_FALSE(
+      req_2.actuator_upstream_message().has_responding_to_sequence_number());
 }
 
 }  // namespace

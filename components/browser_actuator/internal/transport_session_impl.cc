@@ -90,7 +90,11 @@ TransportSessionImpl::SendUpstreamMessage(
     const google::protobuf::MessageLite& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (channel_) {
-    channel_->SendUpstreamMessage(session_id_, payload_type, message);
+    std::optional<int64_t> responding_to_sequence_number =
+        payload_type == PayloadType::kControl ? dispatching_sequence_number_
+                                              : std::nullopt;
+    channel_->SendUpstreamMessage(session_id_, payload_type, message,
+                                  responding_to_sequence_number);
     return {};
   }
   return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
@@ -244,6 +248,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
       break;
     }
     last_seen_sequence_number_ = ready_message.sequence_number();
+    dispatching_sequence_number_ = ready_message.sequence_number();
     for (const auto& typed_payload : ready_message.typed_payloads()) {
       // A handler's OnMessage() may have synchronously destroyed this session.
       if (!weak_this) {
@@ -251,6 +256,9 @@ TransportSessionImpl::ProcessDownstreamMessage(
       }
       ProcessTypedPayload(typed_payload);
     }
+  }
+  if (weak_this) {
+    dispatching_sequence_number_.reset();
   }
   return {};
 }

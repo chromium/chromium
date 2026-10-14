@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -147,6 +148,8 @@ class TransportSessionImpl : public TransportSession {
   size_t consecutive_invalid_sequence_numbers_
       GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int64_t client_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  std::optional<int64_t> dispatching_sequence_number_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Map that holds ownership of all active `TransportHandler` instances for
   // this session, keyed by their instantiating factory ID to guarantee a

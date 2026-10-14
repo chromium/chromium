@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -540,7 +541,7 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
 
   ControlCommand command;
   command.mutable_close_channel();
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
   ASSERT_TRUE(
       WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
@@ -564,6 +565,7 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
   const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_TRUE(upstream.has_responding_to_sequence_number());
   EXPECT_EQ(upstream.responding_to_sequence_number(), 1);
 
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
@@ -580,16 +582,48 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+TEST_F(TransportChannelImplTest,
+       SendUnsolicitedUpstreamMessageOmitsRespondingToSequenceNumber) {
+  // Even after the session has seen downstream sequence_number = 1, an
+  // unsolicited upstream message (`responding_to_sequence_number = nullopt`)
+  // must not implicitly populate `responding_to_sequence_number`.
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command,
+                                std::nullopt);
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending->request.url.spec(), /*content=*/"", net::HTTP_OK);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
 TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s1", 5));
 
   ControlCommand command1;
   command1.mutable_close_channel();
   ControlCommand command2;
   command2.mutable_close_session();
 
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command1);
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command2);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command1, 1);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command2, 5);
 
   ASSERT_TRUE(
       WaitFor([&]() { return test_url_loader_factory_.NumPending() == 2; }));
@@ -618,7 +652,7 @@ TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
   const ActuatorUpstreamMessage& upstream2 =
       request2.actuator_upstream_message();
   EXPECT_EQ(upstream2.client_sequence_number(), 2);
-  EXPECT_EQ(upstream2.responding_to_sequence_number(), 1);
+  EXPECT_EQ(upstream2.responding_to_sequence_number(), 5);
   EXPECT_EQ(upstream2.typed_payloads(0).proto_payload().value(),
             command2.SerializeAsString());
 
@@ -643,8 +677,8 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
   ControlCommand command_s2;
   command_s2.mutable_close_session();
 
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command_s1);
-  channel_->SendUpstreamMessage("s2", PayloadType::kControl, command_s2);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command_s1, 1);
+  channel_->SendUpstreamMessage("s2", PayloadType::kControl, command_s2, 2);
 
   ASSERT_TRUE(
       WaitFor([&]() { return test_url_loader_factory_.NumPending() == 2; }));
@@ -734,7 +768,7 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ControlCommand command;
   command.mutable_close_channel();
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
   for (int i = 0; i < 4; ++i) {
     ASSERT_TRUE(
@@ -771,14 +805,14 @@ TEST_F(TransportChannelImplTest,
 
   ControlCommand command;
   command.mutable_close_channel();
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 7);
 
   ASSERT_EQ(observer.received.size(), 1u);
   EXPECT_EQ(observer.received[0].first, "s1");
   const ActuatorUpstreamMessage& observed = observer.received[0].second;
   EXPECT_EQ(observed.session_id(), "s1");
   EXPECT_EQ(observed.client_sequence_number(), 1);
-  EXPECT_EQ(observed.responding_to_sequence_number(), 1);
+  EXPECT_EQ(observed.responding_to_sequence_number(), 7);
   ASSERT_EQ(observed.typed_payloads_size(), 1);
   EXPECT_EQ(observed.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
@@ -812,14 +846,14 @@ TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
 
   ControlCommand command;
   command.mutable_close_channel();
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
   EXPECT_EQ(observer1.received.size(), 1u);
   EXPECT_EQ(observer2.received.size(), 1u);
 
   observation1.Reset();
 
-  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
   EXPECT_EQ(observer1.received.size(), 1u);
   ASSERT_EQ(observer2.received.size(), 2u);
@@ -836,7 +870,7 @@ TEST_F(TransportChannelImplTest,
   ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("unknown_session", PayloadType::kControl,
-                                command);
+                                command, std::nullopt);
 
   EXPECT_TRUE(observer.received.empty());
 }
@@ -932,7 +966,7 @@ TEST_F(TransportChannelImplTest,
   const ActuatorUpstreamMessage& upstream = observer.received[0].second;
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
-  EXPECT_EQ(upstream.responding_to_sequence_number(), 2);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
   EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
             ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);

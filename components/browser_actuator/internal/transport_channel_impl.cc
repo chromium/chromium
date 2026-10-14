@@ -4,6 +4,7 @@
 
 #include "components/browser_actuator/internal/transport_channel_impl.h"
 
+#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -172,7 +173,8 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
                         << " consecutive invalid sequence numbers";
           ControlCommand command;
           command.mutable_close_session();
-          SendUpstreamMessage(session_id, PayloadType::kControl, command);
+          SendUpstreamMessage(session_id, PayloadType::kControl, command,
+                              /*responding_to_sequence_number=*/std::nullopt);
           session_registry_->DestroySession(session_id);
         }
         break;
@@ -194,12 +196,13 @@ void TransportChannelImpl::OnStreamConnectionStateChange(bool connected) {
                                      : DownstreamConnectionState::kDisconnected;
 }
 
-// Upstream: assemble the outgoing message for a session, reading that
-// session's own counters.
+// Upstream: assemble the outgoing message for a session, advancing that
+// session's client sequence counter.
 void TransportChannelImpl::SendUpstreamMessage(
     std::string_view session_id,
     PayloadType payload_type,
-    const google::protobuf::MessageLite& message) {
+    const google::protobuf::MessageLite& message,
+    std::optional<int64_t> responding_to_sequence_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransportSessionImpl* session = session_registry_->GetSessionImpl(session_id);
   if (!session) {
@@ -207,15 +210,14 @@ void TransportChannelImpl::SendUpstreamMessage(
   }
 
   int64_t client_sequence_number = session->IncrementClientSequenceNumber();
-  std::optional<int64_t> responding_to_sequence_number;
-  // TODO(crbug.com/562572789): Plumb explicit responding_to_sequence_number
-  // from callers instead of reading last_seen_sequence_number().
-  if (session->has_last_seen_sequence_number()) {
-    responding_to_sequence_number = session->last_seen_sequence_number();
+  std::optional<int64_t> validated_responding_to_seq;
+  if (responding_to_sequence_number.has_value() &&
+      *responding_to_sequence_number > 0) {
+    validated_responding_to_seq = *responding_to_sequence_number;
   }
   ActuatorUpstreamMessage upstream =
       upstream_message_client_->SendUpstreamMessage(
-          session_id, client_sequence_number, responding_to_sequence_number,
+          session_id, client_sequence_number, validated_responding_to_seq,
           payload_type, message,
           base::BindOnce(
               [](std::string session_id, bool success, int response_code) {

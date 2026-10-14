@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -72,11 +73,75 @@ TEST(TransportSessionImplTest, SendUpstreamMessage) {
   ControlCommand command;
   command.mutable_close_channel();
 
-  EXPECT_CALL(channel,
-              SendUpstreamMessage("test_session", PayloadType::kUnspecified,
-                                  testing::Ref(command)));
+  EXPECT_CALL(channel, SendUpstreamMessage(
+                           "test_session", PayloadType::kUnspecified,
+                           testing::Ref(command), std::optional<int64_t>()));
   EXPECT_TRUE(session.SendUpstreamMessage(PayloadType::kUnspecified, command)
                   .has_value());
+}
+
+TEST(TransportSessionImplTest,
+     SendUpstreamControlMessageDuringDownstreamDispatchSetsRespondingToSeq) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory control_factory({PayloadType::kControl});
+  MockTransportHandlerFactory feature_factory(
+      {PayloadType::kExperimentalTriggering}, kTestFactoryId2);
+  registry.RegisterFactory(&control_factory);
+  registry.RegisterFactory(&feature_factory);
+
+  auto control_handler = std::make_unique<MockTransportHandler>(&session);
+  MockTransportHandler* control_handler_ptr = control_handler.get();
+  EXPECT_CALL(control_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(control_handler)));
+
+  auto feature_handler = std::make_unique<MockTransportHandler>(&session);
+  MockTransportHandler* feature_handler_ptr = feature_handler.get();
+  EXPECT_CALL(feature_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(feature_handler)));
+
+  ControlCommand ack;
+  ack.mutable_start_session_ack();
+
+  EXPECT_CALL(*control_handler_ptr, OnMessage)
+      .WillOnce([&](PayloadType, std::string_view) {
+        EXPECT_TRUE(session.SendUpstreamMessage(PayloadType::kControl, ack)
+                        .has_value());
+      });
+  EXPECT_CALL(*feature_handler_ptr, OnMessage)
+      .WillOnce([&](PayloadType, std::string_view) {
+        EXPECT_TRUE(
+            session
+                .SendUpstreamMessage(PayloadType::kExperimentalTriggering, ack)
+                .has_value());
+      });
+
+  // Control reply during ProcessDownstreamMessage attaches sequence_number 1.
+  EXPECT_CALL(channel, SendUpstreamMessage(
+                           "test_session", PayloadType::kControl,
+                           testing::Ref(ack), std::optional<int64_t>(1)));
+  // Non-control reply omits responding_to_sequence_number.
+  EXPECT_CALL(channel, SendUpstreamMessage(
+                           "test_session", PayloadType::kExperimentalTriggering,
+                           testing::Ref(ack), std::optional<int64_t>()));
+
+  ActuatorDownstreamMessage downstream =
+      MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+                            ExpectedTypeUrl(PayloadType::kControl), "payload",
+                            /*sequence_number=*/1);
+  auto* feature_payload = downstream.add_typed_payloads();
+  feature_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  feature_payload->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering)));
+  feature_payload->mutable_proto_payload()->set_value("payload");
+
+  EXPECT_OK(session.ProcessDownstreamMessage(downstream));
 }
 
 TEST(TransportSessionImplTest, SendUpstreamMessageAfterChannelDestruction) {

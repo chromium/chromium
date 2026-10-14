@@ -137,7 +137,7 @@ TEST_F(
   ControlCommand command;
   command.mutable_close_channel();
   service.GetChannel()->SendUpstreamMessage("s1", PayloadType::kControl,
-                                            command);
+                                            command, 1);
 
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
   const base::ListValue* sessions = dump.FindList("sessions");

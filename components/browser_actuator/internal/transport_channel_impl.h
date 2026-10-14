@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_CHANNEL_IMPL_H_
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_CHANNEL_IMPL_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -82,7 +84,8 @@ class TransportChannelImpl : public TransportChannel,
   void SendUpstreamMessage(
       std::string_view session_id,
       PayloadType payload_type,
-      const google::protobuf::MessageLite& message) override;
+      const google::protobuf::MessageLite& message,
+      std::optional<int64_t> responding_to_sequence_number) override;
 
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;
