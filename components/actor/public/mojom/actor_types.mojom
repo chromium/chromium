@@ -597,6 +597,22 @@ enum ActionResultCode {
   kPageSearchAlreadyOnMatchingTab = 2002,
 
   // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 2100-2199: Errors for get screenshot.
+
+  // The screenshot capture failed.
+  kScreenshotCaptureFailed = 2100,
+
+  // Another screenshot capture is already in progress on this tab.
+  kScreenshotCaptureThrottled = 2101,
+
+  // The page for which the screenshot was requested changed during capture.
+  kScreenshotCapturePageChanged = 2102,
+
+  // The page for which the screenshot was requested was not eligible for
+  // capture.
+  kScreenshotCapturePageNotEligible = 2103,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)

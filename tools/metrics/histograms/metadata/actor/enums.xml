@@ -176,6 +176,10 @@ chromium-metrics-reviews@google.com.
   <int value="2000" label="PageSearchNoMatch"/>
   <int value="2001" label="PageSearchAmbiguousMatch"/>
   <int value="2002" label="PageSearchAlreadyOnMatchingTab"/>
+  <int value="2100" label="ScreenshotCaptureFailed"/>
+  <int value="2101" label="ScreenshotCaptureThrottled"/>
+  <int value="2102" label="ScreenshotCapturePageChanged"/>
+  <int value="2103" label="ScreenshotCapturePageNotEligible"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->
