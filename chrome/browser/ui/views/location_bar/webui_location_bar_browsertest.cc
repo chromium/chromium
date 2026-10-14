@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -19,11 +20,14 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -47,6 +51,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/find_in_page/find_types.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
@@ -54,6 +59,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -230,6 +236,28 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
 
   tab_strip_model->SelectTabAt(1);
   EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, OmniboxPopupOpenClose) {
+  WaitForInitialWebUIToolbar(browser());
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  ASSERT_TRUE(omnibox_controller);
+  EXPECT_FALSE(omnibox_controller->IsPopupOpen());
+
+  // Open the popup.
+  omnibox_controller->edit_model()->SetUserText(u"example");
+  AutocompleteInput input(
+      u"example", metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
+  input.set_omit_asynchronous_matches(true);
+  omnibox_controller->StartAutocomplete(input);
+  EXPECT_TRUE(omnibox_controller->IsPopupOpen());
+
+  // Close the popup.
+  omnibox_controller->StopAutocomplete(/*clear_result=*/true);
+  EXPECT_FALSE(omnibox_controller->IsPopupOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {

@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -65,7 +66,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -1182,6 +1189,68 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
   }
 
   UpdateWithoutTabRestore();
+
+  // Notify accessibility that the popup controls changed, matching
+  // LocationBarView::OnPopupStateChanged().
+  NotifyPopupControlsChanged();
+}
+
+void WebUILocationBar::NotifyPopupControlsChanged() {
+#if BUILDFLAG(IS_WIN)
+  // Firing `ax::mojom::Event::kControlsChanged` is specifically needed on
+  // Windows UIA (to populate `ControllerFor`) for screen readers (like
+  // Narrator) to discover suggestions popup changes. On macOS, firing
+  // `kControlsChanged` causes crashes because delegates without an NSWindow
+  // hit NOTREACHED().
+  if (!toolbar_delegate_) {
+    return;
+  }
+  content::WebContents* web_contents = toolbar_delegate_->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    return;
+  }
+  ui::AXTreeManager* tree_manager =
+      ui::AXTreeManager::FromID(rfh->GetAXTreeID());
+  if (!tree_manager || !tree_manager->is_platform_tree_manager() ||
+      !tree_manager->GetRoot()) {
+    return;
+  }
+  auto* platform_tree_manager =
+      static_cast<ui::AXPlatformTreeManager*>(tree_manager);
+  const std::string expected_name =
+      l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION);
+  auto find_omnibox_node = [&expected_name](auto& self,
+                                            ui::AXNode* node) -> ui::AXNode* {
+    if (!node) {
+      return nullptr;
+    }
+    if (node->GetStringAttribute(ax::mojom::StringAttribute::kName) ==
+        expected_name) {
+      return node;
+    }
+    for (ui::AXNode* child : node->children()) {
+      if (ui::AXNode* found = self(self, child)) {
+        return found;
+      }
+    }
+    return nullptr;
+  };
+  if (ui::AXNode* omnibox_node =
+          find_omnibox_node(find_omnibox_node, tree_manager->GetRoot())) {
+    if (ui::AXPlatformNode* platform_node =
+            platform_tree_manager->GetPlatformNodeFromTree(*omnibox_node)) {
+      // TODO(crbug.com/572483458): Make sure the omnibox popup correctly calls
+      // SetControlIds(), and ensure the timing of this kControlsChanged and
+      // SetControlIds() isn't racy.
+      platform_node->NotifyAccessibilityEvent(
+          ax::mojom::Event::kControlsChanged);
+    }
+  }
+#endif
 }
 
 void WebUILocationBar::ClearInPopupStateTransition() {
