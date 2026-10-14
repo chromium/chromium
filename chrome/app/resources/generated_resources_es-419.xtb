@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Usar tu micrófono y tu cámara</translation>
 <translation id="1005333234656240382">¿Quieres habilitar la depuración de adb?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1005692418949452963">Dejar de enfocar</translation>
 <translation id="1005919400326853998">Ver los detalles del certificado de <ph name="CERT_NAME" /> en un diálogo nuevo</translation>
 <translation id="1006033052970139968">Se permite el acceso al micrófono para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1006873397406093306">Esta extensión puede leer y cambiar tus datos en los sitios. Puedes controlar los sitios a los que la extensión puede acceder.</translation>
@@ -46,7 +47,7 @@
 <translation id="1028700151766901954">Motivo: LBS permanece en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
-<translation id="1029526375103058355">Toca para hacer clic</translation>
+<translation id="1029526375103058355">Tocar para hacer clic</translation>
 <translation id="1029724557649700742">Se incluirán funciones nuevas a medida que estén disponibles y pueden variar según el dispositivo.</translation>
 <translation id="1031343556156414679">Administrar llaves de acceso en Windows Hello</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
@@ -869,7 +870,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayudar a mejorar <ph name="PRODUCT_NAME" /> enviando automáticamente estadísticas de uso e informes de fallos a Google</translation>
 <translation id="1657937299377480641">Pídele permiso a tu madre o padre para ingresar de nuevo a la cuenta que te permita acceder a recursos educativos</translation>
-<translation id="1657952527687824398">Enfocar grupo de pestañas</translation>
 <translation id="1658424621194652532">Esta página está accediendo al micrófono.</translation>
 <translation id="1660405268563702784">Actualización disponible para <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corregir el problema de la pestaña que ralentiza tu navegador}other{Corregir el problema de las pestañas que ralentizan tu navegador}}</translation>
@@ -1588,6 +1588,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o pantalla</translation>
 <translation id="2217208085547223783">Estado de confianza</translation>
 <translation id="2218019600945559112">Mouse y panel táctil</translation>
+<translation id="2218116022473625437">Puedes desactivar la función para destacar texto, modificar la voz y cambiar el aspecto de la página en la configuración.</translation>
 <translation id="2218515861914035131">Pegar como texto simple</translation>
 <translation id="2219007152108311874">Preguntar en cada visita</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
@@ -2329,7 +2330,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2767077837043621282">No se pudo actualizar tu Chromebook. Vuelve a intentarlo más tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> podrá editar <ph name="FILENAME" /> hasta que cierres todas las pestañas de este sitio</translation>
 <translation id="2769174155451290427">Imagen subida</translation>
-<translation id="2769715732905083104">Enfocar grupo de pestañas</translation>
 <translation id="2770082596325051055">Pausar <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Eliminar de la lista</translation>
 <translation id="2770690685823456775">Exporta tus contraseñas a otra carpeta</translation>
@@ -2611,7 +2611,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2984727013951557074">El archivo todavía se está sincronizando en Drive.</translation>
 <translation id="2984923316661218534">Obtén tus llaves de acceso en este dispositivo con el Administrador de contraseñas de Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> desinstaló una app}other{<ph name="APP_NAME" /> desinstaló # apps}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Enfocar pestaña}other{Enfocar # pestañas}}</translation>
 <translation id="2988018669686457659">Renderizador anticipado</translation>
 <translation id="2988328607561082373">No reutilizas ninguna contraseña.</translation>
 <translation id="2989123969927553766">Aceleración de desplazamiento del mouse</translation>
@@ -3070,6 +3069,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3320957378743864387">No pueden ofrecer ayuda para escribir</translation>
 <translation id="3321460131042519426">Habilitar ajuste de línea</translation>
 <translation id="3321494112580110651">¿No ves tu impresora?</translation>
+<translation id="3321512411079201586">&amp;Aislado</translation>
 <translation id="3321776060736518525">De <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Instalar para Edge</translation>
 <translation id="3323521181261657960">Bonus: Disfruta de más tiempo de uso</translation>
@@ -3339,7 +3339,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3527473647192919613">Nueva ventana aislada</translation>
 <translation id="3528498924003805721">Destinos de accesos directos</translation>
 <translation id="35296112145429559">Fijar botones de desplazamiento</translation>
-<translation id="3530919970074558307">Dejar de enfocar el grupo</translation>
 <translation id="3531070080754387701">Microsoft 365 no puede abrir <ph name="FILE_NAMES" /> desde esta carpeta</translation>
 <translation id="3531883061432162622">Encuentra tu lista de lectura y tus favoritos en Favoritos y Listas</translation>
 <translation id="3532521178906420528">Estableciendo una conexión de red…</translation>
@@ -3760,6 +3759,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3812525830114410218">Certificado incorrecto</translation>
 <translation id="3813296892522778813">Consulta la <ph name="BEGIN_LINK_CHROMIUM" />Ayuda de Google Chrome<ph name="END_LINK_CHROMIUM" /> si no encuentras lo que estás buscando</translation>
 <translation id="3813358687923336574">Idioma utilizado para traducir páginas y Respuestas rápidas</translation>
+<translation id="3815509884387832993">Para escuchar esta página como si fuera un podcast mediante la reproducción con IA, usa el botón Activar la reproducción con IA en la barra de herramientas del Modo de lectura</translation>
 <translation id="3815668647912194650">Conserva este grupo para agregar pestañas más tarde, o abandónalo si ya no quieres acceder a él.</translation>
 <translation id="3816118180265633665">Colores de Chrome</translation>
 <translation id="3817524650114746564">Abre la configuración de proxy de tu computadora</translation>
@@ -4144,6 +4144,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
+<translation id="4112282889480354965">Extensiones y habilidades</translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
         <ph name="BREAK" />
@@ -4517,7 +4518,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4405580203042711503">Nueva pestaña abajo</translation>
 <translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
-<translation id="4406881185911439342">Enfocar el grupo</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406963243402726564">Datos sin guardar</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
@@ -5703,7 +5703,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5311304534597152726">Accediendo como</translation>
 <translation id="5312746996236433535">espejo de pantalla</translation>
 <translation id="5313967007315987356">Agregar sitio</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Enfocar pestaña}other{Enfocar # pestañas}}</translation>
 <translation id="5315738755890845852">Llave adicional: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5317781812114905957">Instrucciones</translation>
@@ -5979,6 +5978,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5533343601674003130">Servicio de PDF</translation>
 <translation id="5535769176698670170">Intercambiar con la vista superior</translation>
+<translation id="5536642445914063887">Cambiar de perfil</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5541091577812545428">No se cambió la contraseña</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -6574,6 +6574,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6007053304250788613">Solo se puede excluir una pantalla en el modo de espejo</translation>
 <translation id="6007240208646052708">La búsqueda por voz no está disponible en tu idioma.</translation>
+<translation id="6007858579659393165">Las pestañas tienen un nuevo aspecto transparente</translation>
 <translation id="6010651352520077187">Cuando Google Traductor está activado, te ofrecerá traducir los sitios a tu idioma preferido. También puede traducir sitios automáticamente.</translation>
 <translation id="6011193465932186973">Huella dactilar</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
@@ -8784,6 +8785,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7702463352133825032">Detener la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarea</translation>
 <translation id="7705085181312584869">Ayúdame a escribir</translation>
+<translation id="7705230242432916648">Escucha esta página como si fuera un podcast mediante la reproducción con IA</translation>
 <translation id="7705276765467986571">No se pudo cargar el modelo de favoritos.</translation>
 <translation id="7705334495398865155">Selecciona el ID de tu hardware (BSSID) de forma aleatoria para evitar que otras personas hagan un seguimiento de este dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9164,6 +9166,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7991296728590311172">Configuración de Accesibilidad con interruptores</translation>
 <translation id="7992080146463834191">Resume el contenido, simplifica el lenguaje complejo o haz preguntas.</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
+<translation id="7992462686695281167">&amp;Incógnito</translation>
 <translation id="7997826902155442747">Prioridad de proceso</translation>
 <translation id="7998701048266085837">URLs</translation>
 <translation id="7999229196265990314">Los siguientes archivos fueron creados:
@@ -9465,6 +9468,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> administra este perfil y te solicita crear otro perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">No se encontraron perfiles. Intenta escanear el código QR con la cámara del dispositivo o ingresa el código de activación que te brinde tu proveedor.</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>
+<translation id="8214771296778317256">Elige el estilo de pestañas que prefieras aquí</translation>
 <translation id="8215129063232901118">Accede a las funciones del teléfono desde tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8217212468862726597">Destacar el puntero</translation>
 <translation id="8217399928341212914">Seguir bloqueando las descargas automáticas de varios archivos</translation>
@@ -10212,6 +10216,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8780123805589053431">Obtener descripciones de imágenes de Google</translation>
 <translation id="8780443667474968681">Se desactivó la búsqueda por voz.</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, usa las teclas de flecha hacia la izquierda y hacia la derecha para mover el acceso directo. Presiona Intro o Escape para finalizar.</translation>
 <translation id="8781980678064919987">Apagar cuando se cierra la tapa</translation>
 <translation id="8783171585655659524">Incluir captura de pantalla</translation>
 <translation id="8785622406424941542">Pluma stylus</translation>
@@ -10710,6 +10715,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="915485121129452731">Tablet con lápiz</translation>
 <translation id="9155344700756733162">Anular selección de color</translation>
+<translation id="9155515662479003830">En la configuración, puedes volver al estilo clásico en cualquier momento</translation>
 <translation id="9157096865782046368">0.8 segundos</translation>
 <translation id="9157697743260533322">No se pudieron configurar actualizaciones automáticas para todos los usuarios (error de inicio preliminar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">La tapa de la impresora está abierta</translation>

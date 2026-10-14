@@ -135,6 +135,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1485343711570311792">Hape në <ph name="NATIVE_APP_NAME" /> • Nga <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1496514951988037011">emri i përdoruesit</translation>
+<translation id="1498051468374914325">Hap panelin e veglave për zhvilluesit</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
 <translation id="1513352483775369820">Faqeshënuesit dhe historiku i uebit</translation>
@@ -142,6 +143,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1516966594427080024">Hap një dritare të re në modalitetin "e fshehtë"</translation>
 <translation id="152204906462707884">Fshi me shpejtësi historikun e shfletimit dhe merr më shumë kontroll mbi privatësinë tënde</translation>
 <translation id="153446405401665083">Ofrohet një version i ri i Chrome</translation>
+<translation id="1537160738459068682">Hap elementet e veglave për zhvilluesit</translation>
 <translation id="1540012742443808215">Shiriti i adresave aktualisht në krye</translation>
 <translation id="1543035591122163372">Identifikohu për të marrë fjalëkalimet e tua etj. nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
@@ -2061,6 +2063,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9024318700713112071">Cakto Chrome si parazgjedhje</translation>
 <translation id="9027728231343310283">Zhbëj <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Zhvendose te\u2026</translation>
+<translation id="9038316201889095704">"Gjej në faqe" është e çaktivizuar kur ka ndryshime të paruajtura.</translation>
 <translation id="904146253922032365">Prek dhe mbaj shtypur për t'i shfaqur skedat vertikalisht</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9047347135558855162">Fillo me shpejtësi një kërkim në Chrome</translation>

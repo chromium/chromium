@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Открыть в приложении "<ph name="NATIVE_APP_NAME" />" • Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
 <translation id="1496514951988037011">имя пользователя</translation>
+<translation id="1498051468374914325">Открыть консоль инструментов разработчика</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1513352483775369820">Закладки и история поиска</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Открыть новое окно в режиме инкогнито</translation>
 <translation id="152204906462707884">Быстро удаляйте историю браузера и управляйте конфиденциальностью.</translation>
 <translation id="153446405401665083">Доступна новая версия Chrome</translation>
+<translation id="1537160738459068682">Открыть элементы инструментов разработчика</translation>
 <translation id="1540012742443808215">Адресная строка расположена сверху</translation>
 <translation id="1543035591122163372">Войдите, чтобы получить доступ к паролям и другим данным с <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1544084554881119930">Способы оплаты и адреса не будут шифроваться, а история браузера Chrome – синхронизироваться.
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">Сделать Chrome браузером по умолчанию</translation>
 <translation id="9027728231343310283">Отменить: <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Место перемещения</translation>
+<translation id="9038316201889095704">Поиск на странице отключен, пока есть несохраненные изменения.</translation>
 <translation id="904146253922032365">Нажмите и удерживайте, чтобы расположить вкладки вертикально</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
 <translation id="9047347135558855162">Быстрый поиск в Chrome.</translation>

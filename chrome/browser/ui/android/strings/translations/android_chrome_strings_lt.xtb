@@ -135,6 +135,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1485343711570311792">Atidarykite programoje „<ph name="NATIVE_APP_NAME" />“ • Iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1495677929897281669">Atgal į skirtuką</translation>
 <translation id="1496514951988037011">naudotojo vardas</translation>
+<translation id="1498051468374914325">Atidaryti kūrėjo įrankių pultą</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
 <translation id="1506061864768559482">Paieškos variklis</translation>
 <translation id="1513352483775369820">Žymių ir žiniatinklio istorija</translation>
@@ -142,6 +143,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1516966594427080024">Atidaryti naują langą inkognito režimu</translation>
 <translation id="152204906462707884">Sparčiai ištrinkite naršymo istoriją ir geriau valdykite privatumą</translation>
 <translation id="153446405401665083">Yra nauja „Chrome“ versija</translation>
+<translation id="1537160738459068682">Atidaryti kūrėjo įrankių elementus</translation>
 <translation id="1540012742443808215">Adreso juosta šiuo metu yra viršuje</translation>
 <translation id="1543035591122163372">Prisijunkite, kad gautumėte slaptažodžius ir kt. iš <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
@@ -1069,6 +1071,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5233638681132016545">Naujas skirtukas</translation>
 <translation id="5235196193381275927">Prisijungiant įvyko klaida</translation>
 <translation id="5246093389635966745">Redaguoti spartųjį įrankių juostos klavišą</translation>
+<translation id="5257142004843671642">Pakeisti šoninio skydelio dydį</translation>
 <translation id="5264813352784073502">pastarosios dvidešimt keturios valandos</translation>
 <translation id="5267572070504076962">Įjunkite Saugų naršymą, kad būtumėte apsaugoti nuo pavojingų svetainių</translation>
 <translation id="5273031377282080577">Šį nustatymą tvarko administratorius.</translation>
@@ -2061,6 +2064,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9024318700713112071">Nustatykite „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="9027728231343310283">Anuliuoti <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Perkelti į\u2026</translation>
+<translation id="9038316201889095704">Paieška puslapyje išjungta, kol yra neišsaugotų pakeitimų.</translation>
 <translation id="904146253922032365">Palieskite ir palaikykite, kad skirtukai būtų rodomi vertikaliai</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
 <translation id="9047347135558855162">Sparčiai pradėkite paiešką naršyklėje „Chrome“</translation>

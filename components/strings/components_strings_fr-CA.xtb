@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038168778161626396">Chiffrer seulement</translation>
 <translation id="1038842779957582377">nom inconnu</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
 <translation id="1044897699341250361">Qu'est-ce que cela signifie?</translation>
 <translation id="1049837829250301306">Impossible de coller le contenu en raison des politiques de votre organisation</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">Nom de partie EDI</translation>
 <translation id="1816436748874040213">Peut demander de faire défiler et de zoomer les onglets partagés</translation>
 <translation id="1816707915923025275">Tapez @history pour effectuer des recherches dans votre historique de navigation</translation>
+<translation id="1816771466809215784">Pour qu'il soit rempli automatiquement lors du paiement, enregistrez le nom du titulaire de cette carte dans Google Portefeuille</translation>
 <translation id="1817364650920811003">Rôle : astuce Chrome. Étiquette d'accessibilité : <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">Téléchargements automatiques</translation>
 <translation id="1821930232296380041">La demande ou ses paramètres ne sont pas valides.</translation>
@@ -1054,7 +1054,6 @@
 <translation id="2734797989819862638">Ne pas copier</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Propulsé par l'Intelligence personnalisée avec Gemini. Vos requêtes, les titres des pages et vos URL peuvent être examinés afin d'améliorer le remplissage automatique amélioré. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Téléversement de <ph name="COUNT" /> fichiers vers Google Disque en cours…</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
@@ -1434,7 +1433,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3434025015623587566">Le gestionnaire de mots de passe Google demande davantage d'accès</translation>
 <translation id="343474037147570563">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise et être visibles pour votre administrateur.</translation>
-<translation id="3435267628744367511">Appuyez deux fois sur Ctrl dans n'importe quel formulaire pour trouver et fournir des informations sans changer d'onglet</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3436125638121079308">Partager automatiquement les onglets pertinents pour obtenir de meilleures réponses dans ce fil?</translation>
@@ -1880,7 +1878,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4153446078232988116"><ph name="SITE" /> ne prend pas en charge une connexion sécurisée avec HTTPS</translation>
 <translation id="4153858337812834972">Onglets les plus récents</translation>
 <translation id="4154277373259957087">Chrome va maintenant vérifier qu'il s'agit bien de vous avant de renseigner les modes de paiement. Vous pouvez le mettre à jour à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Propulsé par l'Intelligence personnalisée avec Gemini. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Mettre à jour le permis de conduire en toute sécurité</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
@@ -2148,7 +2145,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4599572944836204718">Payez plus rapidement avec Google Pay lorsque votre carte est enregistrée. Les détails de la carte sont chiffrés dans Google Portefeuille.</translation>
 <translation id="4603727370377253901">Réservations de vols</translation>
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
-<translation id="4607879293515681409">Le remplissage automatique amélioré peut désormais trouver et remplir des informations, comme les numéros de vol et les heures de rendez-vous, à partir d'applis comme Gmail et Photos</translation>
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4612631413844865947">Une erreur s'est produite lors du traitement de votre commande sur <ph name="MERCHANT_ORIGIN" /> par le biais de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2919,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5884465125445718607">Enveloppe chinoise nᵒ 6</translation>
 <translation id="5887400589839399685">Carte enregistrée</translation>
 <translation id="5887687176710214216">Dernière visite : hier.</translation>
-<translation id="5887791684215121787">Appuyez deux fois sur ⌘ dans n'importe quel formulaire pour trouver et fournir des informations sans changer d'onglet</translation>
 <translation id="5889251770650310375">Pour obtenir votre historique à partir de vos autres appareils, confirmez qu'il s'agit bien de vous et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5895187275912066135">Émis le :</translation>
@@ -3539,7 +3534,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6936976777388162184">Il s'agit d'un appareil lié, il ne peut donc pas être inscrit avec la mise à niveau de Kiosk et Signage.</translation>
 <translation id="6942444979237658241">Commentaires : <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Vous avez entré votre mot de passe sur un site non géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
-<translation id="6946949206576443118">Faites des recherches sur le Web dans Chrome</translation>
 <translation id="6948051842255602737">Partie terminée, votre pointage est de <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Lorsque vous effectuez des achats sur Chrome, vous verrez Pix comme option</translation>
 <translation id="6948701128805548767">Pour voir les exigences et les modes de ramassage, sélectionnez une adresse</translation>
@@ -4254,6 +4248,7 @@ Détails supplémentaires :
 <translation id="813024282736408069">Activez une carte virtuelle pour le remplissage automatique</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8135546115396015134">touche de gauche</translation>
+<translation id="8136385032646505126">Enregistrer le nom du titulaire de la carte?</translation>
 <translation id="8137185688006450980">Compare les options de régime d'assurance maladie</translation>
 <translation id="8138591088112729119">Propulsé par l'Intelligence personnalisée</translation>
 <translation id="814071672416123670">Impossible de copier le contenu en raison des politiques de votre organisation</translation>
@@ -4527,6 +4522,7 @@ Détails supplémentaires :
 <translation id="8622864575115813231">Communication avec votre institution financière en cours…</translation>
 <translation id="8632584659860846053">Votre historique de navigation, vos témoins et vos données relatives aux sites, votre cache et les informations saisies dans les formulaires seront supprimés une fois que vous aurez fermé toutes les fenêtres isolées</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
+<translation id="8635822281281406185">Ajoutez jusqu'à 10 fichiers, onglets ou images</translation>
 <translation id="8637362707224133343">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté de l'hameçonnage<ph name="END_LINK" /> sur le site que vous avez essayé de visiter. Les sites d'hameçonnage se font passer pour d'autres sites pour vous tromper.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Indiquez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il y a eu une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="8640996933372643759">Pour partager des onglets et collaborer avec d'autres personnes, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>

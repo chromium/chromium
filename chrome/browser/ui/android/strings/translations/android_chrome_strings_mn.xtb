@@ -135,6 +135,7 @@
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" />-д нээх • <ph name="DEVICE_NAME" />-с</translation>
 <translation id="1495677929897281669">Таб руу буцах</translation>
 <translation id="1496514951988037011">хэрэглэгчийн нэр</translation>
+<translation id="1498051468374914325">Хөгжүүлэгчийн хэрэгслийн консолыг нээх</translation>
 <translation id="1501480321619201731">Бүлгийг устгах</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
 <translation id="1513352483775369820">Хавчуурга болон веб түүх</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Нууцлалтай горимд шинэ цонх нээх</translation>
 <translation id="152204906462707884">Хөтчийн түүхээ шуурхай устгаж, нууцлалаа илүү хянаарай</translation>
 <translation id="153446405401665083">Chrome-н шинэ хувилбар бэлэн байна</translation>
+<translation id="1537160738459068682">Хөгжүүлэгчийн хэрэгслийн элементүүдийг нээх</translation>
 <translation id="1540012742443808215">Хаяг оруулах хэсэг одоогоор дээд талд байна</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" />-с нууц үг болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="1544084554881119930">Төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
@@ -2061,6 +2063,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9024318700713112071">Chrome-г өгөгдмөлөөрөө тохируулна уу</translation>
 <translation id="9027728231343310283"><ph name="SITE" />-н зөвшөөрлийг цуцлахаа болих</translation>
 <translation id="9035378196785279980">Дараах руу зөөх\u2026</translation>
+<translation id="9038316201889095704">Хадгалаагүй өөрчлөлт байхад хуудаснаас олохыг идэвхгүй болгосон.</translation>
 <translation id="904146253922032365">Табуудыг босоо байдлаар харуулахын тулд хүрээд удаан дарна уу</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
 <translation id="9047347135558855162">Chrome-д түргэн хайж эхэлнэ үү</translation>

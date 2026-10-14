@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">เปิดใน Wallet ใช่ไหม</translation>
 <translation id="183878838231635348">การ์ดนี้แสดงปัญหาด้านความเป็นส่วนตัวหรือความปลอดภัยที่การตรวจสอบความปลอดภัยตรวจหาให้คุณโดยอัตโนมัติ</translation>
 <translation id="1845230888742614096">เก็บกลุ่มไว้</translation>
-<translation id="1853558655412913122">ตอนนี้คุณเปลี่ยนตำแหน่งของแถบที่อยู่ได้แล้วใน "การตั้งค่า" จากนั้นไปที่ "แถบที่อยู่"</translation>
 <translation id="1853692000353488670">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1854463785401910334">ค้นหาในแท็บที่เปิดอยู่</translation>
 <translation id="1860609647735325606">อธิบายด้วย Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">ดึงข้อมูลของคุณจาก Safari</translation>
 <translation id="2526166285241366046">บันทึกรหัสผ่าน</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
+<translation id="2530932541542751783">เกิดข้อผิดพลาดกับการตั้งค่านี้ โปรดอัปเดตและรีสตาร์ท Chrome และ iPadOS แล้วลองอีกครั้ง หากข้อผิดพลาดนี้ยังคงเกิดขึ้น iPad ของคุณอาจไม่รองรับการตั้งค่านี้</translation>
 <translation id="2536991091671391962">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="EMAIL" /></translation>
 <translation id="2538103551183528357">รหัสผ่านแบบซ่อน</translation>
 <translation id="2538705697765638552">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถจัดการข้อมูลใน Google Wallet สำหรับ <ph name="USER_EMAIL" /> ได้</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
 <translation id="3476450923187944815">เข้าถึงรหัสผ่านของคุณในแอปอื่นๆ</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
+<translation id="3481315707647070701">แสดงภาพและแก้ไข</translation>
 <translation id="3485558910355485767">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3488501490964659223">ปิดแท็บและลบข้อมูลการท่องเว็บแล้ว คุณออกจากระบบแล้ว</translation>
 <translation id="3490396108106323715">แชร์แท็บปัจจุบัน</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">เลือกทั้งหมด</translation>
 <translation id="3679163990085797665">ลบรายการที่อ่านแล้ว</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
+<translation id="3689746421535476813">เลือกวิธีการชำระเงินที่บันทึกไว้เพื่อแก้ไข หรือเพิ่มวิธีการชำระเงินใหม่</translation>
 <translation id="3695446226812920698">ดูวิธีการ</translation>
 <translation id="3700134753671613714">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กบนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="3701167022068948696">แก้ไขเลย</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">คุณจะลงชื่อเข้าใช้ <ph name="URL" /></translation>
 <translation id="3934905113567851655">บีบเพื่อปรับขนาด</translation>
 <translation id="393732545649378031">บัญชี</translation>
+<translation id="3939683043166875001">ซ่อนหรือแสดงเว็บไซต์ยอดนิยม ฟีดสำรวจ และอื่นๆ</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{ปิด {COUNT} แท็บ}other{ปิด {COUNT} แท็บ}}</translation>
 <translation id="3946483119107054883">ดาวน์โหลดเป็น CSV</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">เปิดเมนูการทำงานของหน้า</translation>
 <translation id="4979397965658815378">ลงชื่อเข้าใช้บัญชี Google เพื่อรับบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 แท็บที่แชร์}other{{COUNT} แท็บที่แชร์}}</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4986428648020277392">พรอมต์: ฉันควรซื้ออันไหนดี 2 จาก 3</translation>
 <translation id="498768198683310172">เริ่มใช้งาน Gemini</translation>
@@ -1720,6 +1724,7 @@
 <translation id="6372558618707314581">ไปที่หน้าใดก็ได้ที่คุณต้องการ</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6374514103145916800">ถาม</translation>
+<translation id="6381241974485088375">ปรับแต่งหน้าแท็บใหม่ได้ทุกเมื่อจากที่นี่</translation>
 <translation id="6383719166112032471">เปิดตำแหน่ง…</translation>
 <translation id="6387994324662817823">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6393156038355142111">แนะนำรหัสผ่านที่รัดกุม</translation>
@@ -1838,6 +1843,7 @@
 <translation id="6708501134077648845">ตัวเลือกรหัสผ่าน</translation>
 <translation id="6709964700841491574">โหมดปิดล็อก</translation>
 <translation id="6710079714193676716">จัดการโดยองค์กร ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">คำตอบที่ฉลาดและรวดเร็วขึ้น</translation>
 <translation id="6713676799463473249">แก้ไขเมื่อ <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">แท็บที่ได้รับ</translation>
 <translation id="6722638373100589752">เปิด "ใช้บัตรในบริการต่างๆ ของ Google" ในการตั้งค่า Wallet เพื่อป้อนข้อความอัตโนมัติ</translation>
@@ -1918,6 +1924,7 @@
 <translation id="6938212956536472404">แชร์แท็บนี้ไม่ได้</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6946722113367118030">ใช้ความคิด</translation>
+<translation id="6947751977892029882">เกิดข้อผิดพลาดกับการตั้งค่านี้ โปรดอัปเดตและรีสตาร์ท Chrome และ iOS แล้วลองอีกครั้ง หากข้อผิดพลาดนี้ยังคงเกิดขึ้น iPhone ของคุณอาจไม่รองรับการตั้งค่านี้</translation>
 <translation id="6950522403736391608">ซ่อนอยู่</translation>
 <translation id="695965663642079255">บันทึกและจัดการข้อมูลการชำระเงินเพื่อชำระเงินได้เร็วขึ้น</translation>
 <translation id="6962809930976936328">รับข้อมูลเชิงลึกด้วย Gemini</translation>
@@ -2340,6 +2347,7 @@
 <translation id="8264966119170358612">รหัสผ่านบางส่วนที่คุณบันทึกไว้มีการรั่วไหลจากการละเมิดข้อมูลที่ไม่ใช่ของ Google <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">เปิดเมนู Chrome</translation>
 <translation id="826614135184049678">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPad หากต้องการลงชื่อเข้าใช้อีกครั้ง ให้แตะ "ต่อไป" ด้านล่าง</translation>
+<translation id="8266370374397811600">ปลดล็อกรางวัลพิเศษใหม่แล้ว 🥳</translation>
 <translation id="8270320981823560179">ไดรฟ์</translation>
 <translation id="8274795744553482834">คุณกำลังจะสลับโปรไฟล์</translation>
 <translation id="8275068909952022340">เพิ่มเติม…</translation>
@@ -2424,6 +2432,7 @@
 <translation id="8535368836838588657">แสดงรหัสผ่าน</translation>
 <translation id="8540426897269305488">ลงชื่อเข้าใช้ด้วย <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">เกิดข้อผิดพลาด แตะปุ่ม Live เพื่อลองใช้ฟีเจอร์ Live อีกครั้ง</translation>
+<translation id="8544172904312384600">แก้ไขหรือเพิ่มวิธีการชำระเงินใหม่</translation>
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8551311254462607218">ในแถบที่อยู่ ให้แตะไอคอนกล้อง Google Lens</translation>
@@ -2462,6 +2471,7 @@
 <translation id="8639963783467694461">การตั้งค่าป้อนอัตโนมัติ</translation>
 <translation id="8642417828095157370">ระบบได้แชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="8643403533759285912">ลบกลุ่ม</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">ยกเลิกการติดตามราคาไม่ได้</translation>
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8655861111558401309">เลือก "ลบข้อมูลการท่องเว็บ"</translation>

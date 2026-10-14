@@ -135,6 +135,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1485343711570311792">Otvorite u aplikaciji <ph name="NATIVE_APP_NAME" /> • S uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Nazad na karticu</translation>
 <translation id="1496514951988037011">korisničko ime</translation>
+<translation id="1498051468374914325">Otvaranje konzole alata za programere</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1513352483775369820">Oznake i web historija</translation>
@@ -142,6 +143,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1516966594427080024">Otvaranje novog prozora u anonimnom načinu rada</translation>
 <translation id="152204906462707884">Brzo izbrišite historiju pregledanja i preuzmite veću kontrolu nad privatnošću</translation>
 <translation id="153446405401665083">Dostupna je nova verzija Chromea</translation>
+<translation id="1537160738459068682">Otvaranje elemenata alata za programere</translation>
 <translation id="1540012742443808215">Traka za adresu je trenutno na vrhu</translation>
 <translation id="1543035591122163372">Prijavite se da dobijete lozinke i druge stavke s <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
@@ -2061,6 +2063,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="9024318700713112071">Postavite Chrome kao zadani preglednik</translation>
 <translation id="9027728231343310283">Opoziv odobrenja za web lokaciju <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premjesti u\u2026</translation>
+<translation id="9038316201889095704">Pretraživanje na stranici je onemogućeno dok postoje nesačuvane promjene.</translation>
 <translation id="904146253922032365">Dodirnite i zadržite da prikažete kartice okomito</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9047347135558855162">Brzo započnite pretraživati u Chromeu</translation>

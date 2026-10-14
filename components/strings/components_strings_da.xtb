@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038168778161626396">Kun omsætning til kode</translation>
 <translation id="1038842779957582377">ukendt navn</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Jobarksmeddelelse</translation>
 <translation id="1044897699341250361">Hvad det betyder</translation>
 <translation id="1049837829250301306">Indholdet kunne ikke indsættes på grund af din organisations politikker</translation>
@@ -491,6 +490,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="18139523105317219">EDI-partsnavn</translation>
 <translation id="1816436748874040213">Websitet kan anmode om tilladelse til at rulle i og zoome ind på delte faner</translation>
 <translation id="1816707915923025275">Skriv @history for at søge i din browserhistorik</translation>
+<translation id="1816771466809215784">Hvis du vil have disse oplysninger udfyldt automatisk ved betaling, skal du gemme kortindehaverens navn for dette kort i Google Wallet</translation>
 <translation id="1817364650920811003">Rolle: Chrome-tip. Tilgængelighedsetiket: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">automatiske downloads</translation>
 <translation id="1821930232296380041">Ugyldig anmodning eller anmodningsparametre</translation>
@@ -1054,7 +1054,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2734797989819862638">Undlad at kopiere</translation>
 <translation id="2738771556149464852">Ikke efter</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Leveret af Personlig intelligens med Gemini. Dine anmodninger, sidetitler og webadresser kan blive gennemgået for at gøre forbedret autofyld endnu bedre. <ph name="BEGIN_LINK" />Administrer indstillinger<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> filer uploades til Google Drev</translation>
 <translation id="2759299890026163685">Sørg for, at du har en stabil internetforbindelse, før du prøver igen</translation>
 <translation id="2759825833388495838">udfylde din adgangskode på <ph name="APP_NAME" /></translation>
@@ -1434,7 +1433,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3432601291244612633">Luk side</translation>
 <translation id="3434025015623587566">Google Adgangs­kode­admin­istrator skal bruge mere omfattende adgang</translation>
 <translation id="343474037147570563">De filer, du uploader eller vedhæfter, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware, og de kan blive gemt i henhold til virksomhedens politikker og være synlige for din administrator.</translation>
-<translation id="3435267628744367511">Tryk to gange på Ctrl i en formular for at finde og udfylde oplysninger uden at skifte fane</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3436125638121079308">Vil du automatisk dele relevante faner for at få bedre svar i denne tråd?</translation>
@@ -1880,7 +1878,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4153446078232988116"><ph name="SITE" /> understøtter ikke en sikker HTTPS-forbindelse</translation>
 <translation id="4153858337812834972">Seneste faner</translation>
 <translation id="4154277373259957087">Chrome verificerer nu din identitet, inden du angiver betalingsmetoder. Du kan til enhver tid opdatere dette i <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Leveret af Personlig intelligens med Gemini. <ph name="BEGIN_LINK" />Administrer indstillinger<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Opdater kørekortet på en sikker måde</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4165422751765527461">Åbner en artikel i Hjælp på en ny fane</translation>
@@ -2148,7 +2145,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4599572944836204718">Betal hurtigere med Google Pay, når dit kort er gemt. Kortoplysningerne krypteres i Google Wallet.</translation>
 <translation id="4603727370377253901">Flyreservationer</translation>
 <translation id="4607608436550361748">Se tips til Chrome</translation>
-<translation id="4607879293515681409">Forbedret autofyld kan nu finde og udfylde oplysninger – f.eks. flynumre og aftaletidspunkter – fra apps som f.eks. Gmail og Fotos.</translation>
 <translation id="460848736049414407">Blokeret af administrator</translation>
 <translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="4612631413844865947">Der opstod en fejl under behandlingen af din ordre <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2222,7 +2218,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4731638775147756694">Denne app er blokeret af din administrator</translation>
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
-<translation id="473414950835101501">Brug dine kameraer</translation>
+<translation id="473414950835101501">Bruge dine kameraer</translation>
 <translation id="4736089601076994090">Udløber: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
@@ -2361,7 +2357,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4936573216809994970">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om 1 time</translation>
 <translation id="4939748144644852809">Flyttet til højre</translation>
 <translation id="4941627891654116707">Skriftstørrelse</translation>
-<translation id="4943620199112228840">Brug dine mikrofoner</translation>
+<translation id="4943620199112228840">Bruge dine mikrofoner</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="494701040141924538">OK, luk meddelelsen</translation>
 <translation id="4951038790614970523">Tekst, du klipper eller kopierer til udklipsholderen, sendes til Google Cloud eller tredjeparter, hvor den analyseres. Indholdet kan f.eks. blive scannet for følsomme oplysninger, og det kan blive gemt i henhold til virksomhedspolitikker og være synligt for din administrator.</translation>
@@ -2923,7 +2919,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5884465125445718607">Konvolut Kinesisk nr. 6</translation>
 <translation id="5887400589839399685">Kortet er gemt</translation>
 <translation id="5887687176710214216">Senest besøgt i går</translation>
-<translation id="5887791684215121787">Tryk på ⌘ ⌘ i en formular for at finde og udfylde oplysninger uden at skifte fane</translation>
 <translation id="5889251770650310375">Hvis du vil have adgang til din historik på dine andre enheder, skal du verificere din identitet og synkronisere din historik og dine faner. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5895187275912066135">Udstedt den</translation>
@@ -3539,7 +3534,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6936976777388162184">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6942444979237658241">Kommentarer – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Du indtastede din adgangskode på et website, der ikke administreres af <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Du kan beskytte din konto ved at undgå at bruge din adgangskode i andre apps og på andre websites.</translation>
-<translation id="6946949206576443118">Søg på nettet i Chrome</translation>
 <translation id="6948051842255602737">Spillet er slut – du fik <ph name="SCORE" /> point.</translation>
 <translation id="6948223029286835408">Når du foretager køb i Chrome, kan du se Pix som en valgmulighed</translation>
 <translation id="6948701128805548767">Vælg en adresse for at se afhentningsmetoder og -krav</translation>
@@ -4255,6 +4249,7 @@ Yderligere oplysninger:
 <translation id="813024282736408069">Aktivér et virtuelt kort til autofyld</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8135546115396015134">venstre tast</translation>
+<translation id="8136385032646505126">Vil du gemme kortindehaverens navn?</translation>
 <translation id="8137185688006450980">Sammenlign sundhedsforsikringer</translation>
 <translation id="8138591088112729119">Baseret på Personlig intelligens</translation>
 <translation id="814071672416123670">Indholdet kunne ikke kopieres på grund af din organisations politikker</translation>
@@ -4529,6 +4524,7 @@ Yderligere oplysninger:
 <translation id="8622864575115813231">Kontakter dit pengeinstitut…</translation>
 <translation id="8632584659860846053">Din browserhistorik, dine cookies, dine websitedata, din cache og de oplysninger, du har angivet i formularer, slettes, når du lukker alle isolerede vinduer</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Tilføj op til 10 filer, faner eller billeder</translation>
 <translation id="8637362707224133343">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du browser, f.eks. Google Beskyttet browsing. Denne funktion har <ph name="BEGIN_LINK" />for nylig fundet phishing<ph name="END_LINK" /> på det website, du har forsøgt at besøge. Phishingwebsites udgiver sig for at være andre websites med det formål at narre dig.<ph name="NEW_LINE" />Selv websites, der normalt er sikre, kan nogle gange blive kompromitteret af hackere. <ph name="BEGIN_ERROR_LINK" />Giv os besked<ph name="END_ERROR_LINK" />, hvis du mener, at der er sket en fejl, og at websitet ikke udgør en fare.</translation>
 <translation id="8640996933372643759">Hvis du vil dele faner og samarbejde med andre, skal du kunne logge ind i Chrome</translation>
 <translation id="8641131559425911240">Kuvert (bankpost)</translation>

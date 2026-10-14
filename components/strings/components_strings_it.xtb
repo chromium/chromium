@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Mostra suggerimenti</translation>
 <translation id="1038168778161626396">Solo crittografia</translation>
 <translation id="1038842779957582377">nome sconosciuto</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Messaggio foglio di lavoro</translation>
 <translation id="1044897699341250361">Cosa significa</translation>
 <translation id="1049837829250301306">Impossibile incollare i contenuti a causa delle policy della tua organizzazione</translation>
@@ -469,7 +468,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1777422078676229054">Foto (archivio)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1784449499499574899">Abbrevia la mia email</translation>
-<translation id="1785118555253503473">Vuoi installare le app web?</translation>
+<translation id="1785118555253503473">Installare le app web?</translation>
 <translation id="1791044335740781449">Caricamento del file su Google Drive in corso…</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
 <translation id="1793631236004319016">Ultimo utilizzo: <ph name="NUM_HOURS_MINUTES_SECONDS" /> fa</translation>
@@ -491,6 +490,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1816436748874040213">Può chiedere di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="1816707915923025275">Digita @history per cercare nella cronologia di navigazione</translation>
+<translation id="1816771466809215784">Per la compilazione automatica al momento del checkout, salva il nome del titolare di questa carta in Google Wallet</translation>
 <translation id="1817364650920811003">Ruolo: suggerimento di Chrome. Etichetta di accessibilità: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">download automatici</translation>
 <translation id="1821930232296380041">Richiesta o parametri della richiesta non validi</translation>
@@ -1054,7 +1054,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2734797989819862638">Non copiare</translation>
 <translation id="2738771556149464852">Non dopo</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Basato su Personal Intelligence con Gemini. Le tue richieste, i titoli delle pagine e gli URL potrebbero essere esaminati per migliorare la compilazione automatica avanzata. <ph name="BEGIN_LINK" />Gestisci le impostazioni<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Caricamento di <ph name="COUNT" /> file su Google Drive in corso…</translation>
 <translation id="2759299890026163685">Assicurati di avere una connessione a internet stabile prima di riprovare</translation>
 <translation id="2759825833388495838">inserire la tua password su <ph name="APP_NAME" /></translation>
@@ -1431,7 +1430,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3432601291244612633">Chiudi pagina</translation>
 <translation id="3434025015623587566">Gestore delle password di Google richiede un maggiore accesso</translation>
 <translation id="343474037147570563">I file che carichi o alleghi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base alle policy aziendali ed essere visibili al tuo amministratore.</translation>
-<translation id="3435267628744367511">Premi Ctrl due volte in qualsiasi modulo per trovare e inserire informazioni senza cambiare scheda</translation>
 <translation id="3435557549311968410">Continuo (corto)</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3436125638121079308">Condividere automaticamente le schede pertinenti per ricevere risposte migliori in questa conversazione?</translation>
@@ -1877,7 +1875,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4153446078232988116"><ph name="SITE" /> non supporta una connessione sicura con HTTPS</translation>
 <translation id="4153858337812834972">Schede più recenti</translation>
 <translation id="4154277373259957087">Ora Chrome verificherà la tua identità prima di compilare i metodi di pagamento. Puoi aggiornare la scelta in qualsiasi momento in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Basato su Personal Intelligence con Gemini. <ph name="BEGIN_LINK" />Gestisci le impostazioni<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Aggiorna la patente di guida in modo sicuro</translation>
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4165422751765527461">Apre un articolo del Centro assistenza in una nuova scheda</translation>
@@ -2145,7 +2142,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4599572944836204718">Salvare la carta ti consente di pagare più velocemente con Google Pay. I dati della carta sono criptati in Google Wallet.</translation>
 <translation id="4603727370377253901">Prenotazioni di voli</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
-<translation id="4607879293515681409">La Compilazione automatica avanzata ora può trovare e inserire informazioni, come numeri del volo e orari degli appuntamenti, da app come Gmail e Foto</translation>
 <translation id="460848736049414407">Bloccato dall'amministratore</translation>
 <translation id="4610279718074907952">Questo sito fa parte di un gruppo, definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
 <translation id="4612631413844865947">Si è verificato un errore durante l'elaborazione dell'ordine su <ph name="MERCHANT_ORIGIN" /> tramite <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2920,7 +2916,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5884465125445718607">Busta Chinese #6</translation>
 <translation id="5887400589839399685">Carta salvata</translation>
 <translation id="5887687176710214216">Ultima visita: ieri</translation>
-<translation id="5887791684215121787">Premi ⌘ ⌘ in qualsiasi modulo per trovare e inserire informazioni senza cambiare scheda</translation>
 <translation id="5889251770650310375">Per recuperare la cronologia dagli altri tuoi dispositivi, conferma la tua identità e sincronizza la cronologia e le schede. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5895187275912066135">Emesso in data</translation>
@@ -3535,7 +3530,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6936976777388162184">Questo è un dispositivo in bundle e non può essere registrato con Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6942444979237658241">Commenti - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Hai inserito la password in un sito non gestito da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Per proteggere il tuo account, non riutilizzare la password con altri siti e app.</translation>
-<translation id="6946949206576443118">Cerca nel web su Chrome</translation>
 <translation id="6948051842255602737">Game over, il tuo punteggio è <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Quando fai acquisti su Chrome, vedi l'opzione Pix</translation>
 <translation id="6948701128805548767">Seleziona un indirizzo per conoscere i requisiti e i metodi di ritiro</translation>
@@ -4251,6 +4245,7 @@ Ulteriori dettagli:
 <translation id="813024282736408069">Attiva una carta virtuale per la compilazione automatica</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
+<translation id="8136385032646505126">Salvare il nome del titolare della carta?</translation>
 <translation id="8137185688006450980">Confronta le opzioni dei piani sanitari</translation>
 <translation id="8138591088112729119">Con tecnologia Personal Intelligence</translation>
 <translation id="814071672416123670">Impossibile copiare i contenuti a causa delle policy della tua organizzazione</translation>
@@ -4524,6 +4519,7 @@ Ulteriori dettagli:
 <translation id="8622864575115813231">Contatto dell'istituto finanziario in corso…</translation>
 <translation id="8632584659860846053">La cronologia di navigazione, i cookie e i dati dei siti, la cache e le informazioni inserite nei moduli verranno eliminati dopo la chiusura di tutte le finestre isolate</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Aggiungi fino a 10 file, schede o immagini</translation>
 <translation id="8637362707224133343">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato phishing<ph name="END_LINK" /> sul sito che hai cercato di visitare. I siti di phishing si spacciano per altri siti per ingannarti.<ph name="NEW_LINE" />Anche i siti che in genere sono sicuri possono essere compromessi da attaccanti. <ph name="BEGIN_ERROR_LINK" />Contattaci<ph name="END_ERROR_LINK" /> se ritieni che sia stato commesso un errore e che questo sito non rappresenti un pericolo.</translation>
 <translation id="8640996933372643759">Per condividere le schede e collaborare con altri utenti, devi poter accedere a Chrome</translation>
 <translation id="8641131559425911240">Busta (da lettera)</translation>

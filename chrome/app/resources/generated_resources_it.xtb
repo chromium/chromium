@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Utilizzo del microfono e della fotocamera</translation>
 <translation id="1005333234656240382">Attivare il debug ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1005692418949452963">Annulla selezione</translation>
 <translation id="1005919400326853998">Visualizza i dettagli del certificato per <ph name="CERT_NAME" /> in una nuova finestra di dialogo</translation>
 <translation id="1006033052970139968">L'accesso al microfono è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso al microfono e ai servizi di sistema</translation>
 <translation id="1006873397406093306">Questa estensione può leggere e modificare i tuoi dati sui siti. Sei tu a controllare a quali siti può accedere l'estensione.</translation>
@@ -869,7 +870,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1656528038316521561">Opacità sfondo</translation>
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
 <translation id="1657937299377480641">Per eseguire di nuovo l'accesso per accedere a risorse didattiche, chiedi l'autorizzazione a uno dei tuoi genitori</translation>
-<translation id="1657952527687824398">Seleziona gruppo di schede</translation>
 <translation id="1658424621194652532">Questa pagina sta accedendo al microfono.</translation>
 <translation id="1660405268563702784">Aggiornamento disponibile per <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Risolvi il problema della scheda che rallenta il browser}other{Risolvi il problema delle schede che rallentano il browser}}</translation>
@@ -1587,6 +1587,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2215070081105889450">Per condividere l'audio, condividi una scheda o uno schermo</translation>
 <translation id="2217208085547223783">Stato attendibilità</translation>
 <translation id="2218019600945559112">Mouse e touchpad</translation>
+<translation id="2218116022473625437">Puoi disattivare l'evidenziazione del testo, modificare la voce e cambiare l'aspetto della pagina nelle impostazioni.</translation>
 <translation id="2218515861914035131">Incolla come solo testo</translation>
 <translation id="2219007152108311874">Chiedi a ogni visita</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
@@ -2328,7 +2329,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2767077837043621282">Impossibile aggiornare Chromebook. Riprova più tardi.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> potrà modificare il file <ph name="FILENAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
 <translation id="2769174155451290427">Immagine caricata</translation>
-<translation id="2769715732905083104">Seleziona gruppo di schede</translation>
 <translation id="2770082596325051055">Metti in pausa <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Rimuovi dall'elenco</translation>
 <translation id="2770690685823456775">Esporta le password in un'altra cartella</translation>
@@ -2610,7 +2610,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2984727013951557074">Il file è ancora in fase di sincronizzazione con Drive.</translation>
 <translation id="2984923316661218534">Usa le passkey su questo dispositivo con il Gestore delle password di Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ha disinstallato un'app}other{<ph name="APP_NAME" /> ha disinstallato # app}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Seleziona scheda}other{Seleziona # schede}}</translation>
 <translation id="2988018669686457659">Renderer di riserva</translation>
 <translation id="2988328607561082373">Non stai riutilizzando alcuna password</translation>
 <translation id="2989123969927553766">Accelerazione di scorrimento del mouse</translation>
@@ -3069,6 +3068,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3320957378743864387">Nessuna autorizzazione a offrire assistenza per la scrittura</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3321494112580110651">Non vedi la stampante?</translation>
+<translation id="3321512411079201586">&amp;Isolata</translation>
 <translation id="3321776060736518525">Da <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Installa per Edge</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
@@ -3338,7 +3338,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3527473647192919613">Nuova finestra isolata</translation>
 <translation id="3528498924003805721">Target scorciatoie</translation>
 <translation id="35296112145429559">Fissa pulsanti di scorrimento</translation>
-<translation id="3530919970074558307">Annulla selezione gruppo</translation>
 <translation id="3531070080754387701">Microsoft 365 non può aprire <ph name="FILE_NAMES" /> da questa cartella</translation>
 <translation id="3531883061432162622">Trova il tuo elenco di lettura e i preferiti in Preferiti ed elenchi</translation>
 <translation id="3532521178906420528">Creazione di una connessione di rete…</translation>
@@ -3759,6 +3758,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3812525830114410218">Certificato non valido</translation>
 <translation id="3813296892522778813">Visita la <ph name="BEGIN_LINK_CHROMIUM" />guida di Google Chrome<ph name="END_LINK_CHROMIUM" /> se non riesci a trovare quello che cerchi</translation>
 <translation id="3813358687923336574">Lingua utilizzata per la traduzione di pagine e Risposte rapide</translation>
+<translation id="3815509884387832993">Ascolta questa pagina come se fosse un podcast con la riproduzione AI utilizzando il pulsante Attiva Riproduzione AI nella barra degli strumenti della modalità Lettura</translation>
 <translation id="3815668647912194650">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci se non vuoi più accedervi.</translation>
 <translation id="3816118180265633665">Colori di Chrome</translation>
 <translation id="3817524650114746564">Apri le impostazioni proxy del computer</translation>
@@ -4143,6 +4143,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Ripristina avviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4112282889480354965">Estensioni e competenze</translation>
 <translation id="4113743276555482284">Password del file</translation>
 <translation id="4114524937989710624">Visualizzi i file suggeriti per aiutarti a tornare facilmente alle tue attività più recenti in Google Drive.
         <ph name="BREAK" />
@@ -4516,7 +4517,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4405580203042711503">Nuova scheda in basso</translation>
 <translation id="4405781821077215583">Ingrandisci o rimpicciolisci gli elementi sullo schermo, compreso il testo</translation>
 <translation id="4406308048672435032">Puoi rendere inattiva questa scheda o aggiornare per visualizzare di nuovo l'elenco completo</translation>
-<translation id="4406881185911439342">Seleziona gruppo</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4406963243402726564">Dati non salvati</translation>
 <translation id="4408599188496843485">G&amp;uida</translation>
@@ -5701,7 +5701,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5311304534597152726">Accesso come</translation>
 <translation id="5312746996236433535">mirroring dello schermo</translation>
 <translation id="5313967007315987356">Aggiungi sito</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Seleziona scheda}other{Seleziona # schede}}</translation>
 <translation id="5315738755890845852">Parentesi graffa aggiuntiva: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5317781812114905957">Istruzioni</translation>
@@ -5977,6 +5976,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vorrebbe</translation>
 <translation id="5533343601674003130">Servizio PDF</translation>
 <translation id="5535769176698670170">Passa alla visualizzazione dall'alto</translation>
+<translation id="5536642445914063887">Cambia profilo</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5541091577812545428">La password non è stata modificata</translation>
 <translation id="5542132724887566711">Profilo</translation>
@@ -6569,6 +6569,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6006484371116297560">Classico</translation>
 <translation id="6007053304250788613">È possibile escludere un solo display in modalità di mirroring</translation>
 <translation id="6007240208646052708">La ricerca vocale nella tua lingua non è disponibile.</translation>
+<translation id="6007858579659393165">Le schede hanno un nuovo aspetto trasparente</translation>
 <translation id="6010651352520077187">Quando l'opzione è attiva, Google Traduttore propone di tradurre i siti nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
@@ -8779,6 +8780,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7702463352133825032">Interrompi la trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Attività</translation>
 <translation id="7705085181312584869">Aiutami a scrivere</translation>
+<translation id="7705230242432916648">Ascolta questa pagina come se fosse un podcast con la riproduzione AI</translation>
 <translation id="7705276765467986571">Impossibile caricare il modello Preferiti.</translation>
 <translation id="7705334495398865155">Seleziona casualmente l'ID hardware (BSSID) per impedire ad altre persone di tracciare questo dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9159,6 +9161,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7992080146463834191">Riepiloga i contenuti, semplifica il linguaggio complesso o poni domande.</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
+<translation id="7992462686695281167">&amp;Incognito</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Sono stati creati i file seguenti:
@@ -9460,6 +9463,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8212601853154459483">Questo profilo è gestito da <ph name="PROFILE_MANAGER" /> e richiede la creazione di un profilo separato per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Nessun profilo trovato. Prova a scansionare il codice QR usando la fotocamera del dispositivo oppure inserisci il codice di attivazione fornito dall'operatore.</translation>
 <translation id="8214489666383623925">Apri file...</translation>
+<translation id="8214771296778317256">Scegli lo stile della scheda che preferisci qui</translation>
 <translation id="8215129063232901118">Accedi alle funzionalità del telefono dal tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Evidenzia il puntatore</translation>
 <translation id="8217399928341212914">Continua a bloccare download automatici di più file</translation>
@@ -10207,6 +10211,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8780123805589053431">Scarica le descrizioni delle immagini da Google</translation>
 <translation id="8780443667474968681">La ricerca vocale è stata disattivata.</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, usa i tasti Freccia sinistra e Freccia destra per spostare la scorciatoia. Premi Invio o Esc per terminare.</translation>
 <translation id="8781980678064919987">Spegni alla chiusura del coperchio</translation>
 <translation id="8783171585655659524">Includi screenshot</translation>
 <translation id="8785622406424941542">Stilo</translation>
@@ -10293,7 +10298,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8855242995793521265">Non rallenta in modo significativo il browser o il dispositivo.</translation>
 <translation id="8856028055086294840">Ripristina app e pagine</translation>
 <translation id="885701979325669005">Dati memorizzati dai siti</translation>
-<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Vuoi installare l'app?}other{Vuoi installare le app?}}</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Installare l'app?}other{Installare le app?}}</translation>
 <translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8858449624332155432">Policy configurata con valori in conflitto provenienti da più sorgenti.</translation>
 <translation id="8859174528519900719">Frame secondario: <ph name="SUBFRAME_SITE" /></translation>
@@ -10705,6 +10710,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="915485121129452731">Tablet con penna</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>
+<translation id="9155515662479003830">Puoi sempre tornare allo stile classico dalle impostazioni</translation>
 <translation id="9157096865782046368">0,8 secondi</translation>
 <translation id="9157697743260533322">Impostazione degli aggiornamenti automatici per tutti gli utenti non riuscita (errore di avvio preliminare: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Lo sportello della stampante è aperto</translation>

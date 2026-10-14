@@ -135,6 +135,7 @@ Gaan na <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer 
 <translation id="1485343711570311792">Maak oop in <ph name="NATIVE_APP_NAME" /> • Vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Terug na oortjie</translation>
 <translation id="1496514951988037011">gebruikernaam</translation>
+<translation id="1498051468374914325">Maak die konsole vir Ontwikkelaarnutsgoed oop</translation>
 <translation id="1501480321619201731">Vee groep uit</translation>
 <translation id="1506061864768559482">Soekenjin</translation>
 <translation id="1513352483775369820">Boekmerke en webgeskiedenis</translation>
@@ -142,6 +143,7 @@ Gaan na <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer 
 <translation id="1516966594427080024">Maak 'n nuwe venster in Incognitomodus oop</translation>
 <translation id="152204906462707884">Vee jou blaaigeskiedenis vinnig uit en neem meer beheer oor jou privaatheid</translation>
 <translation id="153446405401665083">Nuwe weergawe van Chrome is beskikbaar</translation>
+<translation id="1537160738459068682">Maak die elemente vir Ontwikkelaarnutsgoed oop</translation>
 <translation id="1540012742443808215">Adresbalk is tans bo</translation>
 <translation id="1543035591122163372">Meld aan om jou wagwoorde en meer van <ph name="DEVICE_TYPE" /> af te kry</translation>
 <translation id="1544084554881119930">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
@@ -2061,6 +2063,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9024318700713112071">Stel Chrome as jou verstek.</translation>
 <translation id="9027728231343310283">Ontdoen <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Skuif na \u2026</translation>
+<translation id="9038316201889095704">Soek op bladsy is gedeaktiveer terwyl daar ongestoorde veranderinge is.</translation>
 <translation id="904146253922032365">Raak en hou om oortjies vertikaal te wys</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="9047347135558855162">Begin vinnig ’n soektog in Chrome</translation>

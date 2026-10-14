@@ -135,6 +135,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1485343711570311792">Buka di <ph name="NATIVE_APP_NAME" /> • Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1496514951988037011">nama pengguna</translation>
+<translation id="1498051468374914325">Buka Konsol Developer Tools</translation>
 <translation id="1501480321619201731">Hapus grup</translation>
 <translation id="1506061864768559482">Mesin telusur</translation>
 <translation id="1513352483775369820">Bookmark dan histori web</translation>
@@ -142,6 +143,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1516966594427080024">Membuka jendela baru dalam mode Samaran</translation>
 <translation id="152204906462707884">Hapus histori penjelajahan Anda dengan cepat dan kontrol privasi Anda sepenuhnya</translation>
 <translation id="153446405401665083">Chrome versi baru telah tersedia</translation>
+<translation id="1537160738459068682">Buka Elemen Developer Tools</translation>
 <translation id="1540012742443808215">Kolom URL saat ini berada di atas</translation>
 <translation id="1543035591122163372">Login untuk mendapatkan sandi dan data lainnya dari <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
@@ -2061,6 +2063,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9024318700713112071">Setel Chrome sebagai browser default Anda</translation>
 <translation id="9027728231343310283">Urungkan <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Pindahkan ke\u2026</translation>
+<translation id="9038316201889095704">Cari di halaman dinonaktifkan saat ada perubahan yang belum disimpan.</translation>
 <translation id="904146253922032365">Sentuh lama untuk menampilkan tab secara vertikal</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9047347135558855162">Mulai penelusuran dengan cepat di Chrome</translation>

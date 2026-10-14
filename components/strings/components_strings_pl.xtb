@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Pokaż sugestie</translation>
 <translation id="1038168778161626396">Tylko szyfrowanie</translation>
 <translation id="1038842779957582377">nieznana nazwa</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Komunikat dotyczący arkusza zadań</translation>
 <translation id="1044897699341250361">Co to oznacza</translation>
 <translation id="1049837829250301306">Ze względu na zasady obowiązujące w organizacji nie udało się wkleić treści</translation>
@@ -491,6 +490,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="18139523105317219">Nazwa strony EDI</translation>
 <translation id="1816436748874040213">Może prosić o przewijanie i powiększanie udostępnionych kart</translation>
 <translation id="1816707915923025275">Aby wyszukać w historii przeglądania, wpisz @history</translation>
+<translation id="1816771466809215784">Aby imię i nazwisko posiadacza karty było automatycznie uzupełniane podczas płatności, zapisz je w Portfelu Google</translation>
 <translation id="1817364650920811003">Rola: wskazówka dotycząca Chrome. Etykieta ułatwień dostępu: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">pobieranie automatyczne</translation>
 <translation id="1821930232296380041">Nieprawidłowe żądanie lub jego parametry</translation>
@@ -1054,7 +1054,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2734797989819862638">Nie kopiuj</translation>
 <translation id="2738771556149464852">Nie później niż</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Technologia spersonalizowanej inteligencji w Gemini Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania. <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Przesyłam pliki (<ph name="COUNT" />) na Dysk Google</translation>
 <translation id="2759299890026163685">Zanim spróbujesz ponownie, upewnij się, że masz stabilne połączenie z internetem</translation>
 <translation id="2759825833388495838">wypełnić hasło na <ph name="APP_NAME" /></translation>
@@ -1434,7 +1433,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3432601291244612633">Zamknij stronę</translation>
 <translation id="3434025015623587566">Menedżer haseł Google potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="343474037147570563">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
-<translation id="3435267628744367511">Naciśnij dwukrotnie Ctrl w dowolnym formularzu, aby znaleźć i wypełnić informacje bez przełączania kart</translation>
 <translation id="3435557549311968410">Ciągły (krótki)</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3436125638121079308">Czy chcesz automatycznie udostępniać odpowiednie karty, aby otrzymywać w tym wątku lepsze odpowiedzi?</translation>
@@ -1880,7 +1878,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> nie obsługuje bezpiecznego połączenia z HTTPS</translation>
 <translation id="4153858337812834972">Ostatnie karty</translation>
 <translation id="4154277373259957087">Teraz przed wypełnieniem form płatności Chrome będzie weryfikować Twoją tożsamość. Aby to zmienić, w dowolnym momencie otwórz <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Technologia spersonalizowanej inteligencji w Gemini <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Bezpiecznie zaktualizuj prawo jazdy</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165422751765527461">Otwiera artykuł w Centrum pomocy w nowej karcie</translation>
@@ -2148,7 +2145,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4599572944836204718">Zapisz kartę, aby płacić szybciej z Google Pay. Dane karty są zaszyfrowane w Portfelu Google.</translation>
 <translation id="4603727370377253901">Rezerwacje lotów</translation>
 <translation id="4607608436550361748">Zobacz wskazówki na temat Chrome</translation>
-<translation id="4607879293515681409">Ulepszone autouzupełnianie może teraz znajdować i wypełniać informacje – takie jak numery lotów i godziny spotkań – z aplikacji takich jak Gmail i Zdjęcia.</translation>
 <translation id="460848736049414407">Zablokowany przez administratora</translation>
 <translation id="4610279718074907952">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
 <translation id="4612631413844865947">Podczas przetwarzania Twojego zamówienia w usłudze <ph name="MERCHANT_ORIGIN" /> za pomocą <ph name="PAYMENT_APP_ORIGIN" /> wystąpił błąd.</translation>
@@ -2923,7 +2919,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5884465125445718607">Koperta chińska nr 6</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
-<translation id="5887791684215121787">Naciśnij ⌘ ⌘ w dowolnym formularzu, aby znaleźć i wypełnić informacje bez przełączania kart</translation>
 <translation id="5889251770650310375">Aby zobaczyć historię z innych urządzeń, potwierdź swoją tożsamość i zsynchronizuj historię oraz karty. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5895187275912066135">Wystawiony dnia</translation>
@@ -3539,7 +3534,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6936976777388162184">To urządzenie jest dołączone do pakietu i nie można go zarejestrować w ramach Licencji na kioski i znaki.</translation>
 <translation id="6942444979237658241">Komentarze – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Wpisałeś swoje hasło na stronie, którą nie zarządza <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Aby chronić konto, nie używaj swojego hasła w innych aplikacjach ani witrynach.</translation>
-<translation id="6946949206576443118">Wyszukaj w internecie w Chrome</translation>
 <translation id="6948051842255602737">Koniec gry. Twój wynik to: <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Podczas zakupów w Chrome wyświetlaj Pix jako opcję</translation>
 <translation id="6948701128805548767">Aby zobaczyć metody odbioru oraz wymagania, wybierz adres</translation>
@@ -4255,6 +4249,7 @@ Dodatkowe informacje:
 <translation id="813024282736408069">Włącz kartę wirtualną na potrzeby autouzupełniania</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
+<translation id="8136385032646505126">Zapisać imię i nazwisko posiadacza karty?</translation>
 <translation id="8137185688006450980">Porównaj opcje ubezpieczenia zdrowotnego</translation>
 <translation id="8138591088112729119">Wykorzystuje spersonalizowaną inteligencję</translation>
 <translation id="814071672416123670">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się skopiować treści</translation>
@@ -4528,6 +4523,7 @@ Dodatkowe informacje:
 <translation id="8622864575115813231">Łączę z instytucją finansową…</translation>
 <translation id="8632584659860846053">Historia przeglądania, pliki cookie i dane witryn, pamięć podręczna oraz informacje podane w formularzach zostaną usunięte po zamknięciu wszystkich okien przeglądania prywatnego</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Dodaj maksymalnie 10 plików, kart lub obrazów</translation>
 <translation id="8637362707224133343">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła próbę wyłudzenia informacji<ph name="END_LINK" /> na odwiedzonej przez Ciebie stronie. Strony wyłudzające informacje udają inne strony, aby Cię oszukać.<ph name="NEW_LINE" />Osoby przeprowadzające ataki czasem przejmują nawet strony, które zwykle są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="8640996933372643759">Aby udostępniać karty i współpracować z innymi, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="8641131559425911240">Koperta (Bond)</translation>

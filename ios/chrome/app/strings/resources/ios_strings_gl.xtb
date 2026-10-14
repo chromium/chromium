@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Queres abrilo en Wallet?</translation>
 <translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
 <translation id="1845230888742614096">Manter grupo</translation>
-<translation id="1853558655412913122">Agora podes cambiar a posición da barra de enderezos en Configuración e, a continuación, en Barra de enderezos</translation>
 <translation id="1853692000353488670">Nova pestana de incógnito</translation>
 <translation id="1854463785401910334">Fai buscas nas pestanas abertas</translation>
 <translation id="1860609647735325606">Explicar con Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Importar os teus datos de Safari</translation>
 <translation id="2526166285241366046">Gardar un contrasinal</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
+<translation id="2530932541542751783">Produciuse un erro con esta opción de configuración. Actualiza e reinicia Chrome e iPadOS, e téntao de novo. Se o erro persiste, é posible que o teu iPad non sexa compatible con esta opción de configuración.</translation>
 <translation id="2536991091671391962">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contrasinal oculto</translation>
 <translation id="2538705697765638552">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes xestionar a túa información en Google Wallet de <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accede aos teus contrasinais noutras aplicacións.</translation>
 <translation id="3479552764303398839">Agora non</translation>
+<translation id="3481315707647070701">Visualiza e edita</translation>
 <translation id="3485558910355485767">Nova ventá do modo de incógnito</translation>
 <translation id="3488501490964659223">Pecháronse as pestanas e elimináronse os datos de navegación. Pechouse a túa sesión</translation>
 <translation id="3490396108106323715">Compartir a pestana actual</translation>
@@ -928,6 +929,7 @@
 <translation id="3933372629914873850">Iniciarás sesión en <ph name="URL" /></translation>
 <translation id="3934905113567851655">Para cambiar o tamaño, belisca a pantalla</translation>
 <translation id="393732545649378031">Conta</translation>
+<translation id="3939683043166875001">Oculta ou mostra os teus sitios principais, o feed de Discover e moito máis.</translation>
 <translation id="3940195383040445971">Facer un seguimento dos prezos nas pestanas</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
 <translation id="3946483119107054883">Descargar en formato CSV</translation>
@@ -1262,6 +1264,7 @@
 <translation id="4977176874984951085">Abrir o menú de accións da páxina</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4985921635659180565">Unha vez programada, a eliminación dun ficheiro non se pode cancelar.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 pestana compartida}other{{COUNT} pestanas compartidas}}</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
 <translation id="4986428648020277392">Solicitude: Cal debería comprar? 2 de 3</translation>
 <translation id="498768198683310172">Comezar a usar Gemini</translation>
@@ -1840,6 +1843,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6708501134077648845">Password Options</translation>
 <translation id="6709964700841491574">Modo de bloqueo</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Respostas máis intelixentes e rápidas</translation>
 <translation id="6713676799463473249">Última modificación: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Pestanas recibidas</translation>
 <translation id="6722638373100589752">Para autocompletar a túa información, na configuración de Wallet activa Usar pases en Google</translation>
@@ -1920,6 +1924,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="6938212956536472404">Non se pode compartir esta pestana</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946722113367118030">Pensar</translation>
+<translation id="6947751977892029882">Produciuse un erro con esta opción de configuración. Actualiza e reinicia Chrome e iOS, e téntao de novo. Se o erro persiste, é posible que o teu iPhone non sexa compatible con esta opción de configuración.</translation>
 <translation id="6950522403736391608">Ocultos</translation>
 <translation id="695965663642079255">Garda e xestiona a información de pago para tramitar as compras máis rápido</translation>
 <translation id="6962809930976936328">Obtén información útil con Gemini</translation>
@@ -2342,6 +2347,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Abre Menú de Chrome</translation>
 <translation id="826614135184049678">Para poder restablecer o iPad, pechouse a sesión da túa conta (<ph name="USER_NAME" />). Se queres volver iniciar a sesión, toca Continuar máis abaixo.</translation>
+<translation id="8266370374397811600">Desbloqueaches un novo logro! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Estás a piques de cambiar de perfil</translation>
 <translation id="8275068909952022340">Máis…</translation>

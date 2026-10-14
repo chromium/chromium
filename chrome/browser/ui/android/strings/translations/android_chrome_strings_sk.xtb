@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Otvoriť v aplikácii <ph name="NATIVE_APP_NAME" /> • Zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Späť na kartu</translation>
 <translation id="1496514951988037011">používateľské meno</translation>
+<translation id="1498051468374914325">Otvoriť konzolu nástrojov pre vývojárov</translation>
 <translation id="1501480321619201731">Odstrániť skupinu</translation>
 <translation id="1506061864768559482">Vyhľadávač</translation>
 <translation id="1513352483775369820">Záložky a webová história</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Otvorenie nového okna v režime inkognito</translation>
 <translation id="152204906462707884">Rýchlo odstráňte svoju históriu prehliadania a získajte väčšiu kontrolu nad svojím súkromím</translation>
 <translation id="153446405401665083">K dispozícii je nová verzia Chromu</translation>
+<translation id="1537160738459068682">Otvoriť prvky nástrojov pre vývojárov</translation>
 <translation id="1540012742443808215">Panel s adresou je momentálne hore</translation>
 <translation id="1543035591122163372">Prihláste sa a získajte tak svoje heslá a ďalšie položky zo zariadenia (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
@@ -2061,6 +2063,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9024318700713112071">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="9027728231343310283">Vrátiť web <ph name="SITE" /> späť</translation>
 <translation id="9035378196785279980">Presun do priečinka\u2026</translation>
+<translation id="9038316201889095704">Kým máte neuložené zmeny, vyhľadávanie na stránke je vypnuté.</translation>
 <translation id="904146253922032365">Pridržaním zobrazíte karty zvisle</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9047347135558855162">Rýchle spustenie vyhľadávania v Chrome</translation>

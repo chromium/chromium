@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">‏"هل المطلوب فتح الملف في تطبيق Apple Wallet؟" (Open in Wallet?‎)</translation>
 <translation id="183878838231635348">تعرض هذه البطاقة أي مشاكل تتعلّق بالخصوصية أو الأمان يتم رصدها تلقائيًا من خلال ميزة "التحقّق من الأمان".</translation>
 <translation id="1845230888742614096">الاحتفاظ بمجموعة علامات التبويب</translation>
-<translation id="1853558655412913122">‏يمكنك الآن تغيير موضع شريط العناوين من خلال الانتقال إلى "الإعدادات" (Settings) ثم "شريط العناوين" (Address bar)</translation>
 <translation id="1853692000353488670">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="1854463785401910334">البحث في علامات التبويب المفتوحة</translation>
 <translation id="1860609647735325606">‏شرح المحتوى باستخدام Gemini</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">المتابعة بحساب "<ph name="NAME" />"</translation>
 <translation id="3476450923187944815">يمكنك الوصول في التطبيقات الأخرى إلى كلمات المرور.</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
+<translation id="3481315707647070701">إنشاء الصور وتعديلها</translation>
 <translation id="3485558910355485767">نافذة جديدة للتصفُّح المتخفي</translation>
 <translation id="3488501490964659223">تم إغلاق علامات التبويب وحذف بيانات التصفُّح وتسجيل خروجك</translation>
 <translation id="3490396108106323715">مشاركة علامة التبويب الحالية</translation>
@@ -1838,6 +1838,7 @@
 <translation id="6708501134077648845">خيارات كلمات السر</translation>
 <translation id="6709964700841491574">وضع التأمين</translation>
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">إجابات أسرع وأكثر ذكاءً</translation>
 <translation id="6713676799463473249">تاريخ آخر تعديل: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">علامات التبويب المُستلمَة</translation>
 <translation id="6722638373100589752">‏لملء معلوماتك تلقائيًا، عليك تفعيل الإعداد "استخدام البطاقات في خدمات Google المختلفة" في إعدادات "محفظة Google"</translation>

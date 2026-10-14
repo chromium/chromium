@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">在「<ph name="NATIVE_APP_NAME" />」中開啟 • 來自「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1496514951988037011">使用者名稱</translation>
+<translation id="1498051468374914325">開啟 Developer Tools 控制台</translation>
 <translation id="1501480321619201731">刪除群組</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">在無痕模式中開啟新視窗</translation>
 <translation id="152204906462707884">快速刪除瀏覽記錄，進一步掌控私隱</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1537160738459068682">開啟 Developer Tools 元素</translation>
 <translation id="1540012742443808215">網址列目前在頂部</translation>
 <translation id="1543035591122163372">登入即可在<ph name="DEVICE_TYPE" />上取用密碼及其他內容</translation>
 <translation id="1544084554881119930">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="9038316201889095704">有未儲存的變更時停用「在網頁中尋找」功能。</translation>
 <translation id="904146253922032365">按住即可直向顯示分頁</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9047347135558855162">迅速在 Chrome 中開始搜尋</translation>

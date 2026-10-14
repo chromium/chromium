@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Wallet-en ireki nahi duzu?</translation>
 <translation id="183878838231635348">Segurtasun-egiaztapenak pribatutasun- edo segurtasun-arazoren bat aurkitzen badu automatikoki, txartel honetan agertuko da.</translation>
 <translation id="1845230888742614096">Mantendu taldea</translation>
-<translation id="1853558655412913122">Orain, helbide-barraren kokapena alda dezakezu "Ezarpenak" eta "Helbide-barra" ataletara joanda</translation>
 <translation id="1853692000353488670">Ezkutuko moduko fitxa berria</translation>
 <translation id="1854463785401910334">Bilatu irekitako fitxetan</translation>
 <translation id="1860609647735325606">Azaldu Gemini-rekin</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3476450923187944815">Lortu zure pasahitzak beste aplikazioetatik.</translation>
 <translation id="3479552764303398839">Orain ez</translation>
+<translation id="3481315707647070701">Irudikatu eta editatu</translation>
 <translation id="3485558910355485767">Ireki ezkutuko leiho bat</translation>
 <translation id="3488501490964659223">Fitxak itxi dira, eta arakatze-datuak ezabatu dira. Zure saioa amaitu da.</translation>
 <translation id="3490396108106323715">Partekatu oraingo fitxa</translation>
@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Hautatu guztiak</translation>
 <translation id="3679163990085797665">Ezabatu irakurritakoak</translation>
 <translation id="368329460027487650">Amaitu da saioa. Saioa hasteko aukerak irekitzen ditu.</translation>
+<translation id="3689746421535476813">Aukeratu gordetako ordainketa-metodo bat editatzeko, edo gehitu beste ordainketa-metodo bat</translation>
 <translation id="3695446226812920698">Lortu argibideak</translation>
 <translation id="3700134753671613714">Hasi saioa laster-markak gailu guztietan izateko.</translation>
 <translation id="3701167022068948696">Konpondu</translation>
@@ -1720,6 +1721,7 @@
 <translation id="6372558618707314581">Joan nahi duzun orrira.</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
 <translation id="6374514103145916800">Galdetu</translation>
+<translation id="6381241974485088375">Pertsonalizatu fitxa berriaren orria edonoiz hemen</translation>
 <translation id="6383719166112032471">Ireki kokapena…</translation>
 <translation id="6387994324662817823">Pasahitzak gailu honetan soilik gordetzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="6393156038355142111">Iradoki pasahitz konplexu bat</translation>
@@ -1838,6 +1840,7 @@
 <translation id="6708501134077648845">Pasahitzen aukerak</translation>
 <translation id="6709964700841491574">Blokeo modua</translation>
 <translation id="6710079714193676716">Erakundeak kudeatzen du. Baliteke eginbide batzuk erabilgarri ez egotea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Erantzun adimendunagoak eta bizkorragoak</translation>
 <translation id="6713676799463473249">Azken aldaketa: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Jasotako fitxak</translation>
 <translation id="6722638373100589752">Informazioa automatikoki betetzeko, aktibatu "Erabili txartelak Google-n" Wallet-en ezarpenetan</translation>
@@ -2424,6 +2427,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8535368836838588657">Erakutsi pasahitza</translation>
 <translation id="8540426897269305488">Hasi saioa <ph name="CELL_ACCESSIBILITY_LABEL" /> erabilita</translation>
 <translation id="8542331710562073430">Arazoren bat izan da. Sakatu zuzenean igortzeko botoia berriro zuzenean igortzen saiatzeko.</translation>
+<translation id="8544172904312384600">Editatu edo gehitu beste ordainketa-metodo bat</translation>
 <translation id="8545276357312221485">Egiaztatu zure arakatzaile lehenetsiaren ezarpenak</translation>
 <translation id="854938212724803178">Arriskuan dagoen pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
 <translation id="8551311254462607218">Helbide-barran, sakatu Google Lens-en kameraren ikonoa</translation>
@@ -2462,6 +2466,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8639963783467694461">Betetze automatikoaren ezarpenak</translation>
 <translation id="8642417828095157370">Erantzun egokiagoak emateko partekatzen dira fitxak</translation>
 <translation id="8643403533759285912">Ezabatu taldea</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Ezin izan zaio utzi prezioaren jarraipena egiteari.</translation>
 <translation id="8654802032646794042">Utzi</translation>
 <translation id="8655861111558401309">Hautatu Ezabatu arakatze-datuak</translation>

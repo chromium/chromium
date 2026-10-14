@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Ouvrir dans Cartes ?</translation>
 <translation id="183878838231635348">Cette fiche présente les problèmes de confidentialité ou de sécurité que le contrôle de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
-<translation id="1853558655412913122">Vous pouvez désormais modifier la position de la barre d'adresse en accédant à "Paramètres", puis "Barre d'adresse"</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1854463785401910334">Rechercher dans les onglets ouverts</translation>
 <translation id="1860609647735325606">Expliquer avec Gemini</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applis.</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
+<translation id="3481315707647070701">Visualiser et modifier</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
 <translation id="3490396108106323715">Partager l'onglet actuel</translation>
@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Tout sélectionner</translation>
 <translation id="3679163990085797665">Supprimer entrées lues</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
+<translation id="3689746421535476813">Choisissez un mode de paiement enregistré à modifier ou ajoutez-en un</translation>
 <translation id="3695446226812920698">Comment procéder</translation>
 <translation id="3700134753671613714">Connectez-vous pour accéder à vos favoris sur tous vos appareils.</translation>
 <translation id="3701167022068948696">Corriger maintenant</translation>
@@ -1720,6 +1721,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6372558618707314581">Accédez à la page de votre choix</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374514103145916800">Demander</translation>
+<translation id="6381241974485088375">Personnaliser la page "Nouvel onglet" à tout moment ici</translation>
 <translation id="6383719166112032471">Ouvrir l'emplacement…</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google uniquement sur cet appareil.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe sécurisé</translation>
@@ -1838,6 +1840,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6708501134077648845">Options relatives aux mots de passe</translation>
 <translation id="6709964700841491574">Mode Blocage</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent être indisponibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Des réponses plus intelligentes et plus rapides</translation>
 <translation id="6713676799463473249">Modifié le <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Onglets reçus</translation>
 <translation id="6722638373100589752">Pour que vos informations soient saisies automatiquement, activez "Utiliser les cartes sur Google" dans les paramètres de Wallet</translation>
@@ -2424,6 +2427,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
 <translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Un problème est survenu. Appuyez sur le bouton "Live" pour réessayer.</translation>
+<translation id="8544172904312384600">Modifiez ou ajoutez un mode de paiement</translation>
 <translation id="8545276357312221485">Vérifier les réglages par défaut de votre navigateur</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, appuyez sur l'icône d'appareil photo Google Lens</translation>
@@ -2462,6 +2466,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8639963783467694461">Paramètres de saisie automatique</translation>
 <translation id="8642417828095157370">Les onglets sont partagés pour fournir des réponses plus adaptées</translation>
 <translation id="8643403533759285912">Supprimer le groupe</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Impossible de désactiver le suivi du prix.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8655861111558401309">Sélectionnez "Supprimer les données de navigation"</translation>

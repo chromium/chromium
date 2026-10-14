@@ -135,6 +135,7 @@
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" />માં ખોલો • <ph name="DEVICE_NAME" /> પરથી</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
 <translation id="1496514951988037011">વપરાશકર્તાનું નામ</translation>
+<translation id="1498051468374914325">ડેવલપર ટૂલ કન્સોલ ખોલો</translation>
 <translation id="1501480321619201731">જૂથ ડિલીટ કરો</translation>
 <translation id="1506061864768559482">શોધ એન્જિન</translation>
 <translation id="1513352483775369820">બુકમાર્ક અને વેબ ઇતિહાસ</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">છૂપા મોડમાં એક નવી વિન્ડો ખોલો</translation>
 <translation id="152204906462707884">તમારો બ્રાઉઝિંગ ઇતિહાસ ઝડપથી ડિલીટ કરો અને તમારી પ્રાઇવસી પર વધુ નિયંત્રણ રાખો</translation>
 <translation id="153446405401665083">Chromeનું નવું વર્ઝન ઉપલબ્ધ છે</translation>
+<translation id="1537160738459068682">ડેવલપર ટૂલના એલિમેન્ટ ખોલો</translation>
 <translation id="1540012742443808215">હાલમાં ઍડ્રેસ બાર સૌથી ઉપર છે</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" />માંથી તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="1544084554881119930">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="9027728231343310283"><ph name="SITE" />નો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9035378196785279980">આમાં ખસેડો\u2026</translation>
+<translation id="9038316201889095704">ફેરફારો સાચવ્યા ન હોય ત્યારે 'પેજમાં શોધો' સુવિધા બંધ કરવામાં આવે છે.</translation>
 <translation id="904146253922032365">ટૅબને ઊભી રીતે બતાવવા માટે ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="9047347135558855162">Chromeમાં ઝડપથી શોધ શરૂ કરો</translation>

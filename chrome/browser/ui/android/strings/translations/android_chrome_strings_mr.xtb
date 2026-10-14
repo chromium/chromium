@@ -135,6 +135,7 @@
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> मध्ये उघडा • <ph name="DEVICE_NAME" /> कडून</translation>
 <translation id="1495677929897281669">टॅबवर परत</translation>
 <translation id="1496514951988037011">वापरकर्ता नाव</translation>
+<translation id="1498051468374914325">डेव्हलपर टूल कन्सोल उघडा</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">गुप्त मोडमध्ये नवीन विंडो उघडा</translation>
 <translation id="152204906462707884">तुमचा ब्राउझिंग इतिहास झटपट हटवा आणि तुमच्या गोपनीयतेवर अधिक नियंत्रण मिळवा</translation>
 <translation id="153446405401665083">Chrome ची नवीन आवृत्ती उपलब्ध आहे</translation>
+<translation id="1537160738459068682">डेव्हलपर टूल घटक उघडा</translation>
 <translation id="1540012742443808215">अ‍ॅड्रेस बार सध्या सर्वात वरती आहे</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1544084554881119930">पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">Chrome तुमचा डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> पहिल्यासारखे करा</translation>
 <translation id="9035378196785279980">यावर हलवा\u2026</translation>
+<translation id="9038316201889095704">सेव्ह न केलेले बदल असताना पेजमध्ये शोधा बंद केले आहे.</translation>
 <translation id="904146253922032365">टॅब उभ्या पद्धतीने दाखवण्यासाठी स्‍पर्श करून धरून ठेवा</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
 <translation id="9047347135558855162">Chrome मध्ये झटपट शोध सुरू करा</translation>

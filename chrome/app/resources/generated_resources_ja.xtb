@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
+<translation id="1005692418949452963">フォーカスを解除</translation>
 <translation id="1005919400326853998">新しいダイアログで <ph name="CERT_NAME" /> の証明書の詳細を表示します</translation>
 <translation id="1006033052970139968">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスが許可されています</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザーのデータを読み取ったり変更したりできます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
@@ -869,7 +870,6 @@
 <translation id="1656528038316521561">背景の不透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
 <translation id="1657937299377480641">教育リソースにアクセスするために再度ログインするには、保護者の方に許可してもらってください</translation>
-<translation id="1657952527687824398">タブグループにフォーカス</translation>
 <translation id="1658424621194652532">このページはマイクにアクセスしています。</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> のアップデートが利用可能です</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを修正}other{ブラウザの動作を遅くしているタブを修正}}</translation>
@@ -2025,7 +2025,7 @@
 <translation id="2541706104884128042">お休み時間が変更されました</translation>
 <translation id="2542050502251273923">ff_debug を使用して、ネットワーク接続マネージャーと他のサービスのデバッグレベルを設定します。</translation>
 <translation id="254274314549093389">更新の結果: <ph name="OUTCOMES" /></translation>
-<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも適用されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも適用されます。<ph name="MANAGE_LINK" />}}</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも許可されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも許可されます。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">このタブ</translation>
 <translation id="2546302722632337735">識別子の使用と保護されたコンテンツの再生をサイトに許可しない</translation>
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
@@ -2329,7 +2329,6 @@
 <translation id="2767077837043621282">Chromebook を更新できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2767127727915954024">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FILENAME" />」を編集できるようになります</translation>
 <translation id="2769174155451290427">アップロードされた画像</translation>
-<translation id="2769715732905083104">タブグループにフォーカス</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> を一時停止</translation>
 <translation id="2770465223704140727">リストから削除</translation>
 <translation id="2770690685823456775">パスワードを別のフォルダにエクスポートしてください</translation>
@@ -2611,7 +2610,6 @@
 <translation id="2984727013951557074">ファイルはまだドライブに同期中です。</translation>
 <translation id="2984923316661218534">Google パスワード マネージャーを使用して、このデバイスでパスキーを設定できます</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> は 1 個のアプリをアンインストールしました}other{<ph name="APP_NAME" /> は # 個のアプリをアンインストールしました}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{タブにフォーカス}other{# 個のタブにフォーカス}}</translation>
 <translation id="2988018669686457659">スペアレンダラ</translation>
 <translation id="2988328607561082373">使い回されているパスワードはありません</translation>
 <translation id="2989123969927553766">マウスのスクロール アクセラレーション</translation>
@@ -3337,7 +3335,6 @@
 <translation id="3527473647192919613">新しいアイソレート ウィンドウ</translation>
 <translation id="3528498924003805721">ショートカットの対象</translation>
 <translation id="35296112145429559">スクロール ボタンを固定</translation>
-<translation id="3530919970074558307">グループへのフォーカスを解除</translation>
 <translation id="3531070080754387701">Microsoft 365 はこのフォルダから <ph name="FILE_NAMES" /> を開けません</translation>
 <translation id="3531883061432162622">[ブックマーク] と [リスト] でリーディング リストとブックマークを確認します</translation>
 <translation id="3532521178906420528">ネットワーク接続を確立しています...</translation>
@@ -4517,7 +4514,6 @@
 <translation id="4405580203042711503">下に新しいタブを追加</translation>
 <translation id="4405781821077215583">画面上の項目（テキストなど）のサイズを変更する</translation>
 <translation id="4406308048672435032">このタブを無効にできます。または更新すると完全なリストが再び表示されます</translation>
-<translation id="4406881185911439342">グループにフォーカス</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406963243402726564">保存されていないデータ</translation>
 <translation id="4408599188496843485">ヘルプ(&amp;H)</translation>
@@ -5700,7 +5696,6 @@
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
 <translation id="5312746996236433535">画面のミラーリング</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{タブにフォーカス}other{# 個のタブにフォーカス}}</translation>
 <translation id="5315738755890845852">余分な中かっこがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5317781812114905957">指示</translation>
@@ -5975,6 +5970,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> が次の許可を求めています</translation>
 <translation id="5533343601674003130">PDF サービス</translation>
 <translation id="5535769176698670170">上のビューと入れ替え</translation>
+<translation id="5536642445914063887">プロフィールを切り替え</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5541091577812545428">パスワードは変更されませんでした</translation>
 <translation id="5542132724887566711">プロフィール</translation>
@@ -7774,7 +7770,7 @@
 <translation id="6929639755025587400">アプリをインストールしています…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が拒否されました}other{# 個の拡張機能が拒否されました}}</translation>
 <translation id="6930337524857202955">新しいダウンロードがあります</translation>
-<translation id="6930477763029357444"><ph name="APP_NAME" /> に許可した権限は、<ph name="PARENT_APP_NAME" /> とインストール済みの関連アプリにも適用されます。</translation>
+<translation id="6930477763029357444"><ph name="APP_NAME" /> に許可した権限は、<ph name="PARENT_APP_NAME" /> とそのインストール済みアプリにも許可されます。</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">クリックの感度</translation>
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>

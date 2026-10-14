@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Использование микрофона и камеры</translation>
 <translation id="1005333234656240382">Включить отладку с ADB?</translation>
 <translation id="1005671386794704751">Роза</translation>
+<translation id="1005692418949452963">Отменить выбор</translation>
 <translation id="1005919400326853998">Посмотреть сведения о сертификате <ph name="CERT_NAME" /> в новом диалоговом окне</translation>
 <translation id="1006033052970139968">Микрофон могут использовать приложения и сайты с разрешением на доступ к нему, а также системные сервисы</translation>
 <translation id="1006873397406093306">Расширению разрешено просматривать и изменять ваши данные на сайтах. Вы можете выбрать, к каким сайтам у него будет доступ.</translation>
@@ -869,7 +870,6 @@
 <translation id="1656528038316521561">Прозрачность фона</translation>
 <translation id="1657406563541664238">Автоматическая отправка в Google статистики использования и отчетов о сбоях с целью улучшения <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">Чтобы снова войти в аккаунт и получить доступ к образовательным ресурсам, нужно обратиться за разрешением к одному из родителей.</translation>
-<translation id="1657952527687824398">Фокус на группе вкладок</translation>
 <translation id="1658424621194652532">Этой странице разрешен доступ к вашему микрофону</translation>
 <translation id="1660405268563702784">Доступно обновление для приложения "<ph name="APP_NAME" />"</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Устраните проблемы в работе вкладки, замедляющие браузер}one{Устраните проблемы в работе вкладок, замедляющие браузер}few{Устраните проблемы в работе вкладок, замедляющие браузер}many{Устраните проблемы в работе вкладок, замедляющие браузер}other{Устраните проблемы в работе вкладок, замедляющие браузер}}</translation>
@@ -1588,6 +1588,7 @@
 <translation id="2215070081105889450">Чтобы поделиться аудио, предоставьте доступ к вкладке или экрану</translation>
 <translation id="2217208085547223783">Статус сертификата</translation>
 <translation id="2218019600945559112">Мышь и сенсорная панель</translation>
+<translation id="2218116022473625437">В настройках можно отключить выделение текста, изменить голос и внешний вид страницы</translation>
 <translation id="2218515861914035131">Вставить как обычный текст</translation>
 <translation id="2219007152108311874">Всегда спрашивать</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2767077837043621282">Не удалось обновить Chromebook. Повторите попытку позже.</translation>
 <translation id="2767127727915954024">Сайт <ph name="ORIGIN" /> сможет изменять файл "<ph name="FILENAME" />", пока вы не закроете все вкладки этого сайта.</translation>
 <translation id="2769174155451290427">Загруженное изображение</translation>
-<translation id="2769715732905083104">Фокус на группе вкладок</translation>
 <translation id="2770082596325051055">Приостановить скачивание файла "<ph name="FILE_NAME" />"</translation>
 <translation id="2770465223704140727">Удалить из списка</translation>
 <translation id="2770690685823456775">Экспортируйте пароли в другую папку.</translation>
@@ -2611,7 +2611,6 @@
 <translation id="2984727013951557074">Файл по-прежнему синхронизируется с Диском.</translation>
 <translation id="2984923316661218534">Используйте ключи доступа на этом устройстве с помощью Google Менеджера паролей</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Приложение "<ph name="APP_NAME" />" удалило приложение}one{Приложение "<ph name="APP_NAME" />" удалило # приложение}few{Приложение "<ph name="APP_NAME" />" удалило # приложения}many{Приложение "<ph name="APP_NAME" />" удалило # приложений}other{Приложение "<ph name="APP_NAME" />" удалило # приложения}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Фокус на вкладке}one{Фокус на # вкладке}few{Фокус на # вкладках}many{Фокус на # вкладках}other{Фокус на # вкладки}}</translation>
 <translation id="2988018669686457659">Дополнительный отрисовщик</translation>
 <translation id="2988328607561082373">Вы используете разные пароли</translation>
 <translation id="2989123969927553766">Ускорение прокрутки мыши</translation>
@@ -3070,6 +3069,7 @@
 <translation id="3320957378743864387">На этих сайтах генератор текстов недоступен</translation>
 <translation id="3321460131042519426">Переносить по словам</translation>
 <translation id="3321494112580110651">Нужного принтера нет?</translation>
+<translation id="3321512411079201586">&amp;Изолированный режим</translation>
 <translation id="3321776060736518525">Источник: <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Установить в Edge</translation>
 <translation id="3323521181261657960">Время использования устройства продлено</translation>
@@ -3339,7 +3339,6 @@
 <translation id="3527473647192919613">Новое изолированное окно</translation>
 <translation id="3528498924003805721">Ярлыки</translation>
 <translation id="35296112145429559">Закрепить кнопки прокрутки</translation>
-<translation id="3530919970074558307">Отменить выбор группы</translation>
 <translation id="3531070080754387701">Microsoft 365 не может открыть файл "<ph name="FILE_NAMES" />" из этой папки</translation>
 <translation id="3531883061432162622">Посмотреть список для чтения и закладки можно в меню "Закладки и списки".</translation>
 <translation id="3532521178906420528">Подключение к сети…</translation>
@@ -3760,6 +3759,7 @@
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3813358687923336574">Язык, на который переводятся страницы и быстрые ответы</translation>
+<translation id="3815509884387832993">Слушайте текст на странице как подкаст. Для этого нажмите кнопку "Включить аудиопересказ" на панели инструментов режима чтения.</translation>
 <translation id="3815668647912194650">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
 <translation id="3816118180265633665">Цвета Chrome</translation>
 <translation id="3817524650114746564">Открыть настройки прокси-сервера для компьютера</translation>
@@ -4144,6 +4144,7 @@
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112282889480354965">Расширения и навыки</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Эти рекомендованные файлы помогут вам вернуться к действиям, которые вы недавно выполняли на Google Диске.
         <ph name="BREAK" />
@@ -4517,7 +4518,6 @@
 <translation id="4405580203042711503">Новая вкладка ниже</translation>
 <translation id="4405781821077215583">Увеличивайте или уменьшайте размер текста и элементов на экране</translation>
 <translation id="4406308048672435032">Вы можете сделать вкладку неактивной или обновить ее, чтобы снова увидеть полный список</translation>
-<translation id="4406881185911439342">Выбрать группу</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4406963243402726564">Несохраненные данные</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
@@ -5702,7 +5702,6 @@
 <translation id="5311304534597152726">Вход в аккаунт</translation>
 <translation id="5312746996236433535">Дублирование экрана</translation>
 <translation id="5313967007315987356">Добавить сайт</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Фокус на вкладке}one{Фокус на # вкладке}few{Фокус на # вкладках}many{Фокус на # вкладках}other{Фокус на # вкладки}}</translation>
 <translation id="5315738755890845852">Лишняя фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5317781812114905957">Инструкции</translation>
@@ -5978,6 +5977,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запрашивает разрешение на:</translation>
 <translation id="5533343601674003130">сервис PDF</translation>
 <translation id="5535769176698670170">Поменять местами с верхним окном</translation>
+<translation id="5536642445914063887">Сменить профиль</translation>
 <translation id="5537725057119320332">Трансляция</translation>
 <translation id="5541091577812545428">Пароль не был изменен.</translation>
 <translation id="5542132724887566711">Профиль</translation>
@@ -8789,6 +8789,7 @@
 <translation id="7702463352133825032">Остановить трансляцию на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7704305437604973648">Задача</translation>
 <translation id="7705085181312584869">Генератор текстов</translation>
+<translation id="7705230242432916648">Слушайте текст на странице как подкаст, используя ИИ</translation>
 <translation id="7705276765467986571">Не удалось загрузить модель закладок.</translation>
 <translation id="7705334495398865155">Указать случайный идентификатор BSSID, чтобы другие пользователи не смогли отследить это устройство</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9169,6 +9170,7 @@
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7992080146463834191">Получайте краткий пересказ, упрощайте сложный язык или задавайте вопросы.</translation>
 <translation id="7992203134935383159">Синтез речи</translation>
+<translation id="7992462686695281167">&amp;Инкогнито</translation>
 <translation id="7997826902155442747">Приоритет процессов</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Созданы следующие файлы:
@@ -10218,6 +10220,7 @@
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
 <translation id="8781834595282316166">Добавить вкладку в группу</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, используйте клавиши со стрелками влево и вправо, чтобы переместить ярлык. Для завершения нажмите Ввод или Esc.</translation>
 <translation id="8781980678064919987">Завершать работу при закрытии крышки</translation>
 <translation id="8783171585655659524">Отправлять скриншот</translation>
 <translation id="8785622406424941542">Стилус</translation>

@@ -135,6 +135,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1485343711570311792">Obre a <ph name="NATIVE_APP_NAME" /> • Des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Torna a la pestanya</translation>
 <translation id="1496514951988037011">nom d'usuari</translation>
+<translation id="1498051468374914325">Obre la consola d'eines per a desenvolupadors</translation>
 <translation id="1501480321619201731">Suprimeix el grup</translation>
 <translation id="1506061864768559482">Motor de cerca</translation>
 <translation id="1513352483775369820">Adreces interès i historial web</translation>
@@ -142,6 +143,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1516966594427080024">Obre una finestra nova en mode d'incògnit</translation>
 <translation id="152204906462707884">Suprimeix ràpidament l'historial de navegació i controla millor la teva privadesa</translation>
 <translation id="153446405401665083">Hi ha una versió nova de Chrome disponible</translation>
+<translation id="1537160738459068682">Obre els elements de les eines per a desenvolupadors</translation>
 <translation id="1540012742443808215">Actualment la barra d'adreces és a la part superior</translation>
 <translation id="1543035591122163372">Inicia la sessió per obtenir les teves contrasenyes i més de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
@@ -2061,6 +2063,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9027728231343310283">Desfés <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mou a\u2026</translation>
+<translation id="9038316201889095704">La funció Cerca a la pàgina està desactivada mentre hi hagi canvis no desats.</translation>
 <translation id="904146253922032365">Mantén premut per mostrar les pestanyes en vertical</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
 <translation id="9047347135558855162">Inicia una cerca ràpidament a Chrome</translation>

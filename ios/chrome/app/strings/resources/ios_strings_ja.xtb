@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">ウォレットで開きますか？</translation>
 <translation id="183878838231635348">このカードには、安全チェックで自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
 <translation id="1845230888742614096">グループを保持</translation>
-<translation id="1853558655412913122">[設定] &gt; [アドレスバー] でアドレスバーの位置を変更できるようになりました</translation>
 <translation id="1853692000353488670">新しいシークレット タブ</translation>
 <translation id="1854463785401910334">開いているタブを検索</translation>
 <translation id="1860609647735325606">Gemini で説明</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
 <translation id="3479552764303398839">後で</translation>
+<translation id="3481315707647070701">ビジュアル化して編集</translation>
 <translation id="3485558910355485767">新規シークレット ウインドウ</translation>
 <translation id="3488501490964659223">タブを閉じて閲覧データを削除し、ログアウトしました</translation>
 <translation id="3490396108106323715">現在のタブを共有</translation>
@@ -1840,6 +1840,7 @@
 <translation id="6708501134077648845">パスワードのオプション</translation>
 <translation id="6709964700841491574">ロックダウン モード</translation>
 <translation id="6710079714193676716">組織によって管理されています。一部の機能は使用できません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">よりスマートにすばやく回答</translation>
 <translation id="6713676799463473249">更新: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">受信したタブ</translation>
 <translation id="6722638373100589752">情報を自動入力するには、ウォレットの設定で [Google の各種サービスでパスを使用する] をオンにしてください</translation>
@@ -2463,7 +2464,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8637431369725868556">危険なサイトから保護してください。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="8639963783467694461">自動入力の設定</translation>
-<translation id="8642417828095157370">より関連性の高い回答が得られるようにタブを共有します</translation>
+<translation id="8642417828095157370">より適切な回答のためにタブを共有</translation>
 <translation id="8643403533759285912">グループを削除</translation>
 <translation id="8646357898207744479">レンズ</translation>
 <translation id="8647280737650867362">価格のトラッキングを解除できませんでした。</translation>

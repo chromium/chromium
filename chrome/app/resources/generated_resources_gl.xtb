@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Utilizar o micrófono e a cámara</translation>
 <translation id="1005333234656240382">Queres activar a depuración de ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1005692418949452963">Deixar de enfocar</translation>
 <translation id="1005919400326853998">Consultar os detalles do certificado <ph name="CERT_NAME" /> nun novo cadro de diálogo</translation>
 <translation id="1006033052970139968">As aplicacións, os sitios web co permiso correspondente e os servizos do sistema poden acceder ao micrófono</translation>
 <translation id="1006873397406093306">Esta extensión pode ler e cambiar os teus datos nos sitios. Podes controlar os sitios aos que pode acceder a extensión.</translation>
@@ -869,7 +870,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1656528038316521561">Opacidade do fondo</translation>
 <translation id="1657406563541664238">Axúdanos a mellorar <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e informes de erros a Google</translation>
 <translation id="1657937299377480641">Se queres iniciar sesión de novo para acceder a recursos educativos, pídelle a teu pai ou a túa nai que che dea permiso</translation>
-<translation id="1657952527687824398">Enfocar grupo de pestanas</translation>
 <translation id="1658424621194652532">Esta páxina está accedendo ao teu micrófono.</translation>
 <translation id="1660405268563702784">Hai unha actualización dispoñible para <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corrixe a pestana que fai que o navegador vaia máis lento}other{Corrixe as pestanas que fan que o navegador vaia máis lento}}</translation>
@@ -2330,7 +2330,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2767077837043621282">Non se puido actualizar o Chromebook. Téntao de novo máis tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
 <translation id="2769174155451290427">Imaxe cargada</translation>
-<translation id="2769715732905083104">Enfocar grupo de pestanas</translation>
 <translation id="2770082596325051055">Pór descarga de <ph name="FILE_NAME" /> en pausa</translation>
 <translation id="2770465223704140727">Eliminar da lista</translation>
 <translation id="2770690685823456775">Exporta os teus contrasinais a outro cartafol</translation>
@@ -2612,7 +2611,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2984727013951557074">O ficheiro aínda se está sincronizando con Drive.</translation>
 <translation id="2984923316661218534">Accede ás túas claves de acceso neste dispositivo co xestor de contrasinais de Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> desinstalou unha aplicación}other{<ph name="APP_NAME" /> desinstalou # aplicacións}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Enfocar pestana}other{Enfocar # pestanas}}</translation>
 <translation id="2988018669686457659">Renderizador de reposto</translation>
 <translation id="2988328607561082373">Non estás reutilizando ningún contrasinal</translation>
 <translation id="2989123969927553766">Aceleración de desprazamento do rato</translation>
@@ -3071,6 +3069,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3320957378743864387">Permiso denegado para ofrecer axuda de escritura</translation>
 <translation id="3321460131042519426">Activar axuste de liña</translation>
 <translation id="3321494112580110651">Non ves a impresora?</translation>
+<translation id="3321512411079201586">&amp;Illado</translation>
 <translation id="3321776060736518525">Desde <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Instalar para Edge</translation>
 <translation id="3323521181261657960">Xenial! Máis tempo diante da pantalla</translation>
@@ -3340,7 +3339,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3527473647192919613">Nova ventá illada</translation>
 <translation id="3528498924003805721">Atallos</translation>
 <translation id="35296112145429559">Fixar os botóns de desprazamento</translation>
-<translation id="3530919970074558307">Deixar de enfocar grupo</translation>
 <translation id="3531070080754387701">Microsoft 365 non pode abrir <ph name="FILE_NAMES" /> desde este cartafol</translation>
 <translation id="3531883061432162622">Podes atopar a túa lista de lectura e os teus marcadores en Marcadores e listas</translation>
 <translation id="3532521178906420528">Establecendo conexión de rede...</translation>
@@ -4523,7 +4521,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4405580203042711503">Nova pestana abaixo</translation>
 <translation id="4405781821077215583">Reduce ou amplía os elementos da pantalla, como o texto</translation>
 <translation id="4406308048672435032">Podes desactivar esta pestana ou actualizar a páxina para ver a lista completa de novo</translation>
-<translation id="4406881185911439342">Enfocar grupo</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4406963243402726564">Datos non gardados</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
@@ -5709,7 +5706,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5311304534597152726">Iniciando sesión como</translation>
 <translation id="5312746996236433535">duplicar a pantalla</translation>
 <translation id="5313967007315987356">Engadir sitio</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Enfocar pestana}other{Enfocar # pestanas}}</translation>
 <translation id="5315738755890845852">Hai unha chave de máis: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5317781812114905957">Instrucións</translation>
@@ -5985,6 +5981,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quere:</translation>
 <translation id="5533343601674003130">Servizo de PDF</translation>
 <translation id="5535769176698670170">Cambiar pola vista superior</translation>
+<translation id="5536642445914063887">Cambiar de perfil</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="5541091577812545428">Non se modificou o contrasinal</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -9168,6 +9165,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7991296728590311172">Acceso con interruptores</translation>
 <translation id="7992080146463834191">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
+<translation id="7992462686695281167">&amp;Incógnito</translation>
 <translation id="7997826902155442747">Prioridade do proceso</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Creáronse os ficheiros seguintes:

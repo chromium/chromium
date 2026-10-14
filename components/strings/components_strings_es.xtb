@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038168778161626396">Solo cifrar</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Mensaje de hoja de tarea</translation>
 <translation id="1044897699341250361">Qué significa</translation>
 <translation id="1049837829250301306">El contenido no se ha podido pegar debido a las políticas de tu organización</translation>
@@ -491,6 +490,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="18139523105317219">Nombre de parte EDI</translation>
 <translation id="1816436748874040213">Puede solicitar permiso para desplazarse por las pestañas compartidas y ampliarlas</translation>
 <translation id="1816707915923025275">Escribe @historial para buscar en tu historial de navegación</translation>
+<translation id="1816771466809215784">Para que se rellene automáticamente al tramitar la compra, guarda el nombre del titular de la tarjeta en Google Wallet</translation>
 <translation id="1817364650920811003">Función: consejo de Chrome. Etiqueta de accesibilidad: <ph name="CHROME_TIP" />.</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
 <translation id="1821930232296380041">Parámetros de solicitud o solicitud no válidos</translation>
@@ -1054,7 +1054,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2734797989819862638">No copiar</translation>
 <translation id="2738771556149464852">Anterior a</translation>
 <translation id="2740531572673183784">Aceptar</translation>
-<translation id="275259155159336003">Con Inteligencia personalizada de Gemini. Tus solicitudes, títulos de páginas y URLs se pueden revisar para optimizar Autocompletar mejorado. <ph name="BEGIN_LINK" />Gestionar ajustes<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Subiendo <ph name="COUNT" /> archivos a Google Drive</translation>
 <translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
 <translation id="2759825833388495838">rellenar tu contraseña en <ph name="APP_NAME" /></translation>
@@ -1434,7 +1433,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3434025015623587566">El Gestor de contraseñas de Google necesita más acceso</translation>
 <translation id="343474037147570563">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
-<translation id="3435267628744367511">Pulsa Ctrl dos veces en cualquier formulario para encontrar y rellenar información sin cambiar de pestaña</translation>
 <translation id="3435557549311968410">Impresión continua (corta)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3436125638121079308">¿Compartir automáticamente las pestañas relevantes para obtener mejores respuestas en esta conversación?</translation>
@@ -1880,7 +1878,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4153446078232988116"><ph name="SITE" /> no admite una conexión segura con HTTPS</translation>
 <translation id="4153858337812834972">Pestañas más recientes</translation>
 <translation id="4154277373259957087">Ahora, Chrome verificará tu identidad antes de rellenar los métodos de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Con la tecnología de Inteligencia personalizada de Gemini. <ph name="BEGIN_LINK" />Gestionar ajustes<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Actualiza el carné de conducir de forma segura</translation>
 <translation id="4159784952369912983">Morado</translation>
 <translation id="4165422751765527461">Abre un artículo del Centro de Ayuda en una pestaña nueva</translation>
@@ -2148,7 +2145,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4599572944836204718">Paga más rápido con Google Pay cuando tu tarjeta está guardada. La información de la tarjeta se cifra en Google Wallet.</translation>
 <translation id="4603727370377253901">Reservas de vuelos</translation>
 <translation id="4607608436550361748">Ver consejos de Chrome</translation>
-<translation id="4607879293515681409">Ahora Autocompletar mejorado puede buscar y rellenar información (como números de vuelos y horas de citas) de aplicaciones como Gmail y Fotos</translation>
 <translation id="460848736049414407">Bloqueado por el administrador</translation>
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4612631413844865947">No se ha podido procesar tu pedido de <ph name="MERCHANT_ORIGIN" /> en <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2919,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
-<translation id="5887791684215121787">Pulsa ⌘ ⌘ en cualquier formulario para encontrar y rellenar información sin cambiar de pestaña</translation>
 <translation id="5889251770650310375">Para ver el historial de tus otros dispositivos, verifica que eres tú y sincroniza tu historial y tus pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
@@ -3539,7 +3534,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6936976777388162184">Este dispositivo forma parte de un paquete y no se puede registrar con la Licencia de Kiosk y Signage</translation>
 <translation id="6942444979237658241">Comentarios (<ph name="GROUP_NAME" />)</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> no gestiona el sitio web en el que has introducido tu contraseña. Para proteger tu cuenta, no utilices la misma contraseña en otras aplicaciones o sitios.</translation>
-<translation id="6946949206576443118">Buscar en la Web con Chrome</translation>
 <translation id="6948051842255602737">Fin de la partida, tu puntuación es <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Cuando hagas compras en Chrome, verás Pix como opción</translation>
 <translation id="6948701128805548767">Selecciona una dirección para ver los métodos de recogida y los requisitos</translation>
@@ -4255,6 +4249,7 @@ Más información:
 <translation id="813024282736408069">Activar una tarjeta virtual para Autocompletar</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
+<translation id="8136385032646505126">¿Guardar el nombre del titular de la tarjeta?</translation>
 <translation id="8137185688006450980">Compara opciones de planes de salud</translation>
 <translation id="8138591088112729119">Con la tecnología de Inteligencia personalizada</translation>
 <translation id="814071672416123670">El contenido no se ha podido copiar debido a las políticas de tu organización</translation>
@@ -4528,6 +4523,7 @@ Más información:
 <translation id="8622864575115813231">Contactando con tu entidad financiera...</translation>
 <translation id="8632584659860846053">El historial de navegación, las cookies y los datos de sitios, la caché y la información introducida en los formularios se eliminarán cuando cierres todas las ventanas aisladas</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
+<translation id="8635822281281406185">Añade hasta 10 archivos, pestañas o imágenes</translation>
 <translation id="8637362707224133343">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas (como Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente ha detectado phishing<ph name="END_LINK" /> en el sitio que has intentado visitar). Los sitios de phishing se hacen pasar por otros sitios para engañarte.<ph name="NEW_LINE" />En ocasiones, los atacantes vulneran sitios que normalmente son seguros. Si crees que se ha producido un error y que este sitio no es peligroso, <ph name="BEGIN_ERROR_LINK" />indícanoslo<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Para compartir pestañas y colaborar con otros usuarios, debes poder iniciar sesión en Chrome</translation>
 <translation id="8641131559425911240">Sobre (bond)</translation>

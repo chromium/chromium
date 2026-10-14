@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Mở trong Wallet?</translation>
 <translation id="183878838231635348">Thẻ này cho biết mọi vấn đề về quyền riêng tư hoặc bảo mật mà tính năng Kiểm tra an toàn tự động phát hiện cho bạn.</translation>
 <translation id="1845230888742614096">Giữ lại nhóm</translation>
-<translation id="1853558655412913122">Bạn hiện có thể thay đổi vị trí của thanh địa chỉ bằng cách vào phần "Cài đặt" rồi chọn "Thanh địa chỉ"</translation>
 <translation id="1853692000353488670">Thẻ ẩn danh mới</translation>
 <translation id="1854463785401910334">Tìm kiếm trên các thẻ đang mở</translation>
 <translation id="1860609647735325606">Nhờ Gemini giải thích</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Nhập dữ liệu từ Safari</translation>
 <translation id="2526166285241366046">Lưu mật khẩu</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
+<translation id="2530932541542751783">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iPadOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPad của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="2536991091671391962">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Mật khẩu ẩn</translation>
 <translation id="2538705697765638552">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể quản lý thông tin của mình trong Google Wallet cho <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Tiếp tục bằng tài khoản <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Sử dụng mật khẩu của bạn trên các ứng dụng khác.</translation>
 <translation id="3479552764303398839">Để sau</translation>
+<translation id="3481315707647070701">Trực quan hoá và chỉnh sửa</translation>
 <translation id="3485558910355485767">Cửa sổ ẩn danh mới</translation>
 <translation id="3488501490964659223">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web. Bạn cũng đã bị đăng xuất</translation>
 <translation id="3490396108106323715">Chia sẻ thẻ hiện tại</translation>
@@ -928,6 +929,7 @@
 <translation id="3933372629914873850">Bạn sẽ đăng nhập vào <ph name="URL" /></translation>
 <translation id="3934905113567851655">Chụm hai ngón tay để thay đổi kích thước</translation>
 <translation id="393732545649378031">Tài khoản</translation>
+<translation id="3939683043166875001">Ẩn hoặc hiện các trang web hàng đầu, nguồn cấp dữ liệu Khám phá và nhiều nội dung khác.</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
 <translation id="3946483119107054883">Tải xuống dưới dạng tệp CSV</translation>
@@ -1262,6 +1264,7 @@
 <translation id="4977176874984951085">Mở trình đơn thao tác trên trang</translation>
 <translation id="4979397965658815378">Đăng nhập bằng Tài khoản Google để nhận dấu trang, mật khẩu, lịch sử và các cài đặt khác trên tất cả thiết bị của bạn</translation>
 <translation id="4985921635659180565">Sau khi lên lịch xoá, bạn không thể huỷ quá trình xoá.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 thẻ được chia sẻ}other{{COUNT} thẻ được chia sẻ}}</translation>
 <translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="4986428648020277392">Câu lệnh: Tôi nên mua sản phẩm nào? 2/3</translation>
 <translation id="498768198683310172">Bắt đầu sử dụng Gemini</translation>
@@ -1840,6 +1843,7 @@
 <translation id="6708501134077648845">Các lựa chọn mật khẩu</translation>
 <translation id="6709964700841491574">Chế độ khoá</translation>
 <translation id="6710079714193676716">Do tổ chức của bạn quản lý. Bạn có thể không dùng được một số tính năng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Câu trả lời thông minh hơn, nhanh hơn</translation>
 <translation id="6713676799463473249">Đã sửa đổi vào <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Đã nhận thẻ</translation>
 <translation id="6722638373100589752">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
@@ -1920,6 +1924,7 @@
 <translation id="6938212956536472404">Không thể chia sẻ thẻ này</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6946722113367118030">Đang suy nghĩ</translation>
+<translation id="6947751977892029882">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPhone của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="6950522403736391608">Đã ẩn</translation>
 <translation id="695965663642079255">Lưu và quản lý thông tin thanh toán để thanh toán nhanh hơn</translation>
 <translation id="6962809930976936328">Khám phá thông tin chi tiết cùng Gemini</translation>
@@ -2342,6 +2347,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Mở trình đơn Chrome</translation>
 <translation id="826614135184049678">Bạn đã bị đăng xuất khỏi tài khoản <ph name="USER_NAME" /> trong quá trình đặt lại iPad. Để đăng nhập lại, hãy nhấn vào "Tiếp tục" ở dưới.</translation>
+<translation id="8266370374397811600">Bạn vừa đạt được thành tích mới! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Bạn sắp chuyển đổi hồ sơ</translation>
 <translation id="8275068909952022340">Khác…</translation>

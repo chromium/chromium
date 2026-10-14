@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">要在「錢包」中開啟嗎？</translation>
 <translation id="183878838231635348">這張資訊卡會顯示安全檢查功能自動偵測到的隱私權或安全性問題。</translation>
 <translation id="1845230888742614096">保留群組</translation>
-<translation id="1853558655412913122">你現在可以依序前往「設定」和「網址列」變更網址列的位置</translation>
 <translation id="1853692000353488670">新增無痕式分頁</translation>
 <translation id="1854463785401910334">在開啟的分頁中搜尋</translation>
 <translation id="1860609647735325606">使用 Gemini 解釋</translation>
@@ -589,7 +588,7 @@
 <translation id="2761898608071930085">使用其他帳戶</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可加入 1 張圖像}other{最多可加入 {COUNT} 張圖像}}</translation>
-<translation id="2772667768515195373">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="2772667768515195373">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="USER_EMAIL" />) 。</translation>
 <translation id="2773344962924806829">電子郵件通知</translation>
 <translation id="2781331604911854368">開啟</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
 <translation id="3479552764303398839">現在不要</translation>
+<translation id="3481315707647070701">視覺化呈現與編輯</translation>
 <translation id="3485558910355485767">新增無痕視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
 <translation id="3490396108106323715">分享目前的分頁</translation>
@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">全選</translation>
 <translation id="3679163990085797665">刪除已讀取的項目</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
+<translation id="3689746421535476813">選擇已儲存的付款方式進行編輯，或新增付款方式</translation>
 <translation id="3695446226812920698">操作說明</translation>
 <translation id="3700134753671613714">不論使用任何裝置，只要登入帳戶即可取得自己的書籤。</translation>
 <translation id="3701167022068948696">立即修正</translation>
@@ -1720,6 +1721,7 @@
 <translation id="6372558618707314581">前往要瀏覽的頁面</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6374514103145916800">問問</translation>
+<translation id="6381241974485088375">你隨時可以從這裡自訂新分頁</translation>
 <translation id="6383719166112032471">開啟位置…</translation>
 <translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理工具。</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
@@ -1838,6 +1840,7 @@
 <translation id="6708501134077648845">自動填寫與密碼</translation>
 <translation id="6709964700841491574">鎖定模式</translation>
 <translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">更聰明、更快速的解答</translation>
 <translation id="6713676799463473249">修改日期：<ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">收到的分頁</translation>
 <translation id="6722638373100589752">如要自動填入資訊，請在錢包設定中開啟「在各項 Google 服務中使用憑證」</translation>
@@ -2424,6 +2427,7 @@
 <translation id="8535368836838588657">顯示密碼</translation>
 <translation id="8540426897269305488">登入：<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">發生錯誤，請輕觸「Live」按鈕，再次嘗試開啟 Live 對話。</translation>
+<translation id="8544172904312384600">編輯或新增付款方式</translation>
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 組密碼外洩，請立即修正確保安全。</translation>
 <translation id="8551311254462607218">輕觸網址列中的 Google 智慧鏡頭相機圖示</translation>
@@ -2462,6 +2466,7 @@
 <translation id="8639963783467694461">自動填入設定</translation>
 <translation id="8642417828095157370">系統會分享分頁內容，以提供更符合需求的答案</translation>
 <translation id="8643403533759285912">刪除群組</translation>
+<translation id="8646357898207744479">智慧鏡頭</translation>
 <translation id="8647280737650867362">無法取消追蹤價格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8655861111558401309">選取「刪除瀏覽資料」</translation>

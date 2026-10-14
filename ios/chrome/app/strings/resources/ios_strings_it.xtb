@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Aprire in Wallet?</translation>
 <translation id="183878838231635348">In questa scheda vengono mostrati eventuali problemi di privacy o di sicurezza che il controllo di sicurezza rileva automaticamente per te.</translation>
 <translation id="1845230888742614096">Mantieni gruppo</translation>
-<translation id="1853558655412913122">Ora puoi modificare la posizione della barra degli indirizzi in "Impostazioni" e poi in "Barra degli indirizzi"</translation>
 <translation id="1853692000353488670">Nuova scheda Incognito</translation>
 <translation id="1854463785401910334">Esegui una ricerca nelle schede aperte</translation>
 <translation id="1860609647735325606">Spiega con Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Recupera i tuoi dati da Safari</translation>
 <translation id="2526166285241366046">Salva una password</translation>
 <translation id="2529021024822217800">Apri tutto</translation>
+<translation id="2530932541542751783">Si è verificato un problema con questa impostazione. Aggiorna e riavvia Chrome e iPadOS, quindi riprova. Se l'errore persiste, l'iPad potrebbe non supportare questa impostazione.</translation>
 <translation id="2536991091671391962">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Nascosta, password</translation>
 <translation id="2538705697765638552">Salva le tue informazioni e velocizza le attività, ad esempio la compilazione dei moduli nei prodotti Google. Puoi gestire le tue informazioni in Google Wallet per <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accedi alle tue password su altre app.</translation>
 <translation id="3479552764303398839">Non adesso</translation>
+<translation id="3481315707647070701">Visualizza e modifica</translation>
 <translation id="3485558910355485767">Nuova finestra Incognito</translation>
 <translation id="3488501490964659223">Le schede sono state chiuse e i dati di navigazione sono stati eliminati. Il tuo account è stato disconnesso</translation>
 <translation id="3490396108106323715">Condividi scheda corrente</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">Seleziona tutto</translation>
 <translation id="3679163990085797665">Elimina voci lette</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
+<translation id="3689746421535476813">Scegli un metodo di pagamento salvato da modificare o aggiungine uno nuovo</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
 <translation id="3701167022068948696">Correggi</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">Accederai al sito <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pizzica per ridimensionare</translation>
 <translation id="393732545649378031">Account</translation>
+<translation id="3939683043166875001">Nascondi o mostra i tuoi siti principali, il Feed personalizzato e altro ancora.</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="3946483119107054883">Scarica in formato CSV</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">Apri il menu Azioni della pagina</translation>
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="4985921635659180565">Una volta programmata l'eliminazione di un file, non è possibile annullarla.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 scheda condivisa}other{{COUNT} schede condivise}}</translation>
 <translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
 <translation id="4986428648020277392">Prompt: quale dovrei comprare? 2 di 3</translation>
 <translation id="498768198683310172">Inizia a usare Gemini</translation>
@@ -1720,6 +1724,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6372558618707314581">Vai a una pagina a tua scelta</translation>
 <translation id="6374469231428023295">Riprova</translation>
 <translation id="6374514103145916800">Chiedi</translation>
+<translation id="6381241974485088375">Personalizza la pagina nuova scheda in qualsiasi momento da qui</translation>
 <translation id="6383719166112032471">Apri il percorso</translation>
 <translation id="6387994324662817823">Le password vengono salvate in Gestore delle password di Google solo su questo dispositivo.</translation>
 <translation id="6393156038355142111">Suggerisci password efficace</translation>
@@ -1838,6 +1843,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6708501134077648845">Opzioni password</translation>
 <translation id="6709964700841491574">Modalità di blocco</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Risposte più intelligenti e più veloci</translation>
 <translation id="6713676799463473249">Ultima modifica: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Schede ricevute</translation>
 <translation id="6722638373100589752">Per compilare automaticamente le tue informazioni, attiva "Utilizza le tessere su Google" nelle impostazioni di Wallet</translation>
@@ -1918,6 +1924,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="6938212956536472404">Questa scheda non può essere condivisa</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6946722113367118030">Faccina che pensa</translation>
+<translation id="6947751977892029882">Si è verificato un problema con questa impostazione. Aggiorna e riavvia Chrome e iOS, quindi riprova. Se l'errore persiste, l'iPhone potrebbe non supportare questa impostazione.</translation>
 <translation id="6950522403736391608">Nascoste</translation>
 <translation id="695965663642079255">Salva e gestisci i dati di pagamento per fare il checkout più velocemente</translation>
 <translation id="6962809930976936328">Chiedi informazioni a Gemini</translation>
@@ -2340,6 +2347,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Apri il menu Chrome</translation>
 <translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
+<translation id="8266370374397811600">Nuovo obiettivo sbloccato! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Stai per cambiare profilo</translation>
 <translation id="8275068909952022340">Altro…</translation>
@@ -2424,6 +2432,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8535368836838588657">Mostra password</translation>
 <translation id="8540426897269305488">Accedi con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Si è verificato un problema. Tocca il pulsante Live per riprovare ad avviare una sessione di Live.</translation>
+<translation id="8544172904312384600">Modifica o aggiungi un nuovo metodo di pagamento</translation>
 <translation id="8545276357312221485">Controlla le impostazioni del browser predefinito</translation>
 <translation id="854938212724803178">Hai 1 password compromessa. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="8551311254462607218">Nella barra degli indirizzi, tocca l'icona della fotocamera di Google Lens</translation>
@@ -2462,6 +2471,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8639963783467694461">Impostazioni di Compilazione automatica</translation>
 <translation id="8642417828095157370">Le schede vengono condivise per ricevere risposte più pertinenti</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Impossibile interrompere il monitoraggio del prezzo.</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8655861111558401309">Seleziona Elimina dati di navigazione</translation>

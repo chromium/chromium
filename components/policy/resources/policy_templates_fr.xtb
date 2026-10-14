@@ -689,6 +689,25 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Remarque : Cette règle s'applique également aux extensions de composant telles que l'extension Hangout Services.</translation>
 <translation id="148194404518916594">Activer Appuyer pour rechercher</translation>
 <translation id="1484190167468437592">Désactiver l'audio mono</translation>
+<translation id="1484391060024155139">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes de chiffrement préférés dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les algorithmes de chiffrement requis pour la conformité avec les versions 1.0 et 2.0 de la suite Commercial National Security Algorithm (CNSA 1.0 et 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses algorithmes de chiffrement par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle peut être définie pour l'appareil et pour l'utilisateur. Si elle est définie pour l'utilisateur, cette règle n'affectera que les requêtes réseau initiées par le profil utilisateur et n'affectera peut-être pas les requêtes réseau effectuées par <ph name="PRODUCT_NAME" /> pour exécuter des tâches en arrière-plan à l'échelle du navigateur. Ces tâches étant, en effet, contrôlées par la valeur définie au niveau de l'appareil. Si cette règle est définie à la fois au niveau de l'appareil et de l'utilisateur, la valeur au niveau de l'appareil s'applique, sauf si l'ordre de priorité des règles a été modifié par la règle <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Pour les versions 155 et antérieures, cette règle ne s'applique qu'au niveau de l'appareil.</translation>
 <translation id="1486021504508098388">Transmettre les informations concernant le rétroéclairage</translation>
 <translation id="1487722536912664411">Autoriser les utilisateurs à se servir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Permet de spécifier les serveurs autorisés pour l'authentification intégrée qui n'est activée que lorsque <ph name="PRODUCT_NAME" /> reçoit une demande d'authentification d'un proxy ou d'un serveur figurant sur la liste des serveurs autorisés.
@@ -3922,6 +3941,11 @@ Si <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> est définie sur "True", l
 <translation id="3485200437120267231">Désactiver l'interception de connexion</translation>
 <translation id="3485222925928396648">Google Chat (compatible depuis la version 135)</translation>
 <translation id="3487651201232258606">Messagerie native</translation>
+<translation id="3490064150371176690">Détermine si la promo concernant la note dans l'appli peut être présentée aux utilisateurs.
+
+Si cette règle est activée ou si elle n'est pas configurée, la promo concernant la note sur l'App Store peut être présentée à l'utilisateur au maximum une fois par an.
+
+Si cette règle est désactivée, l'utilisateur ne voit pas la promo concernant la note sur l'App Store.</translation>
 <translation id="3492351353716550742">Ne pas utiliser de règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>
 <translation id="3492834335089638487">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) pour un appareil.
 
@@ -8659,6 +8683,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA g
       Le clavier virtuel peut adopter une disposition compacte en fonction du mode de saisie.</translation>
 <translation id="6404064917675764807">Ne pas signaler les événements de sessions CRD</translation>
 <translation id="6404360891305375004">Autoriser les partages de fichiers en réseau</translation>
+<translation id="6406382122206104500">Permet aux utilisateurs de voir la promo concernant la note de l'appli sur <ph name="IOS_NAME" /> et <ph name="ANDROID_NAME" /></translation>
 <translation id="6407093060083181305">Configurer la liste de blocage concernant l'installation des extensions</translation>
 <translation id="640827304541402854">Désactiver la traversée de pare-feu depuis l'hôte d'accès à distance</translation>
 <translation id="6410847321564585975">Liste d'autorisation de rapports sur l'activité de site Web</translation>
@@ -10336,6 +10361,25 @@ Les valeurs réelles des données sensibles (comme les cookies ou les valeurs d'
 <translation id="7410074797376205571">Autoriser <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> à exécuter les requêtes API WebAuthn envoyées par un proxy à partir d'un hôte à distance.</translation>
 <translation id="7412456346709338637">Activer l'accès aux données des périphériques Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Aucune préférence.</translation>
+<translation id="7416280188470120885">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses méthodes d'échange de clés par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle peut être définie pour l'appareil et pour l'utilisateur. Si elle est définie pour l'utilisateur, cette règle n'affectera que les requêtes réseau initiées par le profil utilisateur et n'affectera peut-être pas les requêtes réseau effectuées par <ph name="PRODUCT_NAME" /> pour exécuter des tâches en arrière-plan à l'échelle du navigateur. Ces tâches étant, en effet, contrôlées par la valeur définie au niveau de l'appareil. Si cette règle est définie à la fois au niveau de l'appareil et de l'utilisateur, la valeur au niveau de l'appareil s'applique, sauf si l'ordre de priorité des règles a été modifié par la règle <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Pour les versions 155 et antérieures, cette règle ne s'applique qu'au niveau de l'appareil.</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>

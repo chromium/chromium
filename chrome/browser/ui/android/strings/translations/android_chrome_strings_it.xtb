@@ -135,6 +135,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1485343711570311792">Apri in <ph name="NATIVE_APP_NAME" /> • Da <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1496514951988037011">nome utente</translation>
+<translation id="1498051468374914325">Apri la console degli Strumenti per sviluppatori</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1513352483775369820">Preferiti e cronologia web</translation>
@@ -142,6 +143,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1516966594427080024">Apri una nuova finestra in modalità Incognito</translation>
 <translation id="152204906462707884">Elimina rapidamente la cronologia di navigazione e assumi maggiore controllo sulla tua privacy</translation>
 <translation id="153446405401665083">È disponibile una nuova versione di Chrome</translation>
+<translation id="1537160738459068682">Apri Elementi degli Strumenti per sviluppatori</translation>
 <translation id="1540012742443808215">Al momento la barra degli indirizzi è in alto</translation>
 <translation id="1543035591122163372">Accedi per trovare le password e altri dati del <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
@@ -2061,6 +2063,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9027728231343310283">Annulla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Sposta in\u2026</translation>
+<translation id="9038316201889095704">La funzionalità Trova nella pagina è disattivata se sono presenti modifiche non salvate.</translation>
 <translation id="904146253922032365">Tocca e tieni premuto per mostrare le schede verticalmente</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9047347135558855162">Avvia rapidamente una ricerca in Chrome</translation>

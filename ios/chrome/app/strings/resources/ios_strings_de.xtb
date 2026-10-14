@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">In Wallet öffnen?</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
 <translation id="1845230888742614096">Gruppe beibehalten</translation>
-<translation id="1853558655412913122">Du kannst die Position der Adressleiste jetzt in den Einstellungen unter „Adressleiste“ ändern</translation>
 <translation id="1853692000353488670">Neuer Inkognitotab</translation>
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
 <translation id="1860609647735325606">Von Gemini erklären lassen</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Daten aus Safari importieren</translation>
 <translation id="2526166285241366046">Passwort speichern</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
+<translation id="2530932541542751783">Bei dieser Einstellung ist ein Fehler aufgetreten. Aktualisiere Chrome und iPadOS, führe einen Neustart durch und versuche es noch einmal. Wenn dieser Fehler weiterhin auftritt, unterstützt dein iPad diese Einstellung möglicherweise nicht.</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
 <translation id="2538705697765638552">Wenn du deine Informationen speicherst, kannst du viele Dinge schneller erledigen, z. B. Formulare in Google-Produkten ausfüllen. Du kannst deine Informationen für <ph name="USER_EMAIL" /> in Google Wallet verwalten.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Als <ph name="NAME" /> fortfahren</translation>
 <translation id="3476450923187944815">In anderen Apps auf deine Passwörter zugreifen.</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
+<translation id="3481315707647070701">Visualisieren und bearbeiten</translation>
 <translation id="3485558910355485767">Neues Inkognitofenster</translation>
 <translation id="3488501490964659223">Tabs wurden geschlossen und Browserdaten gelöscht. Du wurdest abgemeldet.</translation>
 <translation id="3490396108106323715">Aktuellen Tab teilen</translation>
@@ -927,6 +928,7 @@
 <translation id="3933372629914873850">Du meldest dich bei <ph name="URL" /> an</translation>
 <translation id="3934905113567851655">Auseinander- und zusammenziehen, um die Größe anzupassen</translation>
 <translation id="393732545649378031">Konto</translation>
+<translation id="3939683043166875001">Du kannst deine Top-Websites, den Discover-Feed und mehr ein- oder ausblenden.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="3946483119107054883">Im CSV-Format herunterladen</translation>
@@ -1261,6 +1263,7 @@
 <translation id="4977176874984951085">Aktionsmenü der Seite öffnen</translation>
 <translation id="4979397965658815378">Melde dich mit deinem Google-Konto an, um deine Lesezeichen, deine Passwörter, den Verlauf und deine anderen Einstellungen auf allen Geräten abrufen zu können</translation>
 <translation id="4985921635659180565">Wenn das Löschen einer Datei geplant wurde, kann es nicht mehr abgebrochen werden.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 geteilter Tab}other{{COUNT} geteilte Tabs}}</translation>
 <translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
 <translation id="4986428648020277392">Prompt: Welche soll ich kaufen? 2 von 3</translation>
 <translation id="498768198683310172">Gemini nutzen</translation>
@@ -1720,6 +1723,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6372558618707314581">Rufe eine beliebige Seite auf</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6374514103145916800">Fragen</translation>
+<translation id="6381241974485088375">Hier kannst du die Seite „Neuer Tab“ jederzeit anpassen</translation>
 <translation id="6383719166112032471">URL öffnen…</translation>
 <translation id="6387994324662817823">Passwörter werden nur auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
@@ -1838,6 +1842,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6708501134077648845">Passwortoptionen</translation>
 <translation id="6709964700841491574">Sperrmodus</translation>
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Intelligentere, schnellere Antworten</translation>
 <translation id="6713676799463473249">Geändert: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Erhaltene Tabs</translation>
 <translation id="6722638373100589752">Wenn deine Informationen automatisch eingefügt werden sollen, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
@@ -1918,6 +1923,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="6938212956536472404">Dieser Tab kann nicht geteilt werden</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6946722113367118030">Denken</translation>
+<translation id="6947751977892029882">Bei dieser Einstellung ist ein Fehler aufgetreten. Aktualisiere Chrome und iOS, führe einen Neustart durch und versuche es noch einmal. Wenn dieser Fehler weiterhin auftritt, unterstützt dein iPhone diese Einstellung möglicherweise nicht.</translation>
 <translation id="6950522403736391608">Ausgeblendet</translation>
 <translation id="695965663642079255">Hier kannst du Zahlungsinformationen speichern und verwalten, um schneller zu bezahlen</translation>
 <translation id="6962809930976936328">Einblicke mit Gemini gewinnen</translation>
@@ -2340,6 +2346,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Öffne das Chrome-Menü</translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
+<translation id="8266370374397811600">Neuer Erfolg freigeschaltet! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Du bist dabei, das Profil zu wechseln</translation>
 <translation id="8275068909952022340">Mehr…</translation>
@@ -2462,6 +2469,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8639963783467694461">Autofill-Einstellungen</translation>
 <translation id="8642417828095157370">Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt</translation>
 <translation id="8643403533759285912">Gruppe löschen</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Tracking des Preises konnte nicht beendet werden.</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8655861111558401309">Wähle „Browserdaten löschen“ aus</translation>

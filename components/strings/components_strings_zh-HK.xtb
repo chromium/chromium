@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">顯示建議</translation>
 <translation id="1038168778161626396">只有 Encipher</translation>
 <translation id="1038842779957582377">不明名稱</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">工作表訊息</translation>
 <translation id="1044897699341250361">有什麼風險</translation>
 <translation id="1049837829250301306">根據你機構的政策，你不可貼上內容</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">EDI 合作對象名稱</translation>
 <translation id="1816436748874040213">可要求捲動和縮放已分享的分頁</translation>
 <translation id="1816707915923025275">輸入 @history 即可搜尋瀏覽記錄</translation>
+<translation id="1816771466809215784">如要在結帳時自動填入資料，請將此卡的持卡人姓名儲存至「Google 錢包」</translation>
 <translation id="1817364650920811003">角色：Chrome 提示。無障礙標籤：<ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">自動下載</translation>
 <translation id="1821930232296380041">要求或要求參數無效</translation>
@@ -1054,7 +1054,6 @@
 <translation id="2734797989819862638">不要複製</translation>
 <translation id="2738771556149464852">此日期之前</translation>
 <translation id="2740531572673183784">確定</translation>
-<translation id="275259155159336003">採用 Gemini「個人化智能」技術。你的要求、網頁標題和網址可能會送交審核，以改善加強版自動填入。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">正在上載 <ph name="COUNT" /> 個檔案至「Google 雲端硬碟」</translation>
 <translation id="2759299890026163685">請確保互聯網連線穩定，然後再試一次</translation>
 <translation id="2759825833388495838">在 <ph name="APP_NAME" /> 上填寫您的密碼</translation>
@@ -1434,7 +1433,6 @@
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3434025015623587566">「Google 密碼管理工具」需要更多存取權</translation>
 <translation id="343474037147570563">你上載或附加的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
-<translation id="3435267628744367511">在任何表格中按兩下 Ctrl 鍵即可尋找並填入資料，無需切換分頁</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3436125638121079308">要自動分享相關分頁，以在此訊息串中獲得更貼題的答覆嗎？</translation>
@@ -1879,7 +1877,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> 不支援 HTTPS 安全連線</translation>
 <translation id="4153858337812834972">最近的分頁</translation>
 <translation id="4154277373259957087">Chrome 現在將驗證您的身分，然後才填入付款方法。您可隨時在<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />變更此項目。</translation>
-<translation id="4157273919218514718">採用 Gemini「個人化智能」技術。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">安全地更新駕駛執照</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">喺新分頁度打開說明中心文章</translation>
@@ -2147,7 +2144,6 @@
 <translation id="4599572944836204718">儲存付款卡即可透過 Google Pay 加快付款速度。「Google 錢包」會加密信用卡詳情。</translation>
 <translation id="4603727370377253901">機票預訂</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
-<translation id="4607879293515681409">加強版自動填入功能現可從 Gmail 和「相片」等應用程式尋找並填入資料，例如航班編號和預約時間。</translation>
 <translation id="460848736049414407">已被管理員封鎖</translation>
 <translation id="4610279718074907952">此網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可查看您的活動</translation>
 <translation id="4612631413844865947">透過 <ph name="PAYMENT_APP_ORIGIN" /> 處理 <ph name="MERCHANT_ORIGIN" /> 的訂單時發生錯誤。</translation>
@@ -2922,7 +2918,6 @@
 <translation id="5884465125445718607">Chinese #6 信封</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
-<translation id="5887791684215121787">在任何表格中按 ⌘ ⌘ 即可尋找並填入資料，無需切換分頁</translation>
 <translation id="5889251770650310375">如要查看其他裝置上的記錄，請驗證你的身分並同步記錄和分頁。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
@@ -3538,7 +3533,6 @@
 <translation id="6936976777388162184">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
 <translation id="6942444979237658241">留言 - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">您輸入密碼的網站並非由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理。為保帳戶安全，請勿在其他應用程式和網站上使用相同的密碼。</translation>
-<translation id="6946949206576443118">在 Chrome 中搜尋網絡</translation>
 <translation id="6948051842255602737">遊戲結束，你嘅得分係 <ph name="SCORE" />。</translation>
 <translation id="6948223029286835408">在 Chrome 購物時會看到 Pix 選項</translation>
 <translation id="6948701128805548767">如要查看取貨方式和要求，請選取一個地址</translation>
@@ -4254,6 +4248,7 @@
 <translation id="813024282736408069">啟用虛擬卡以使用自動填入功能</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8135546115396015134">左鍵</translation>
+<translation id="8136385032646505126">要儲存持卡人姓名嗎？</translation>
 <translation id="8137185688006450980">比較醫療保險計劃選項</translation>
 <translation id="8138591088112729119">由「個人化智能」提供技術</translation>
 <translation id="814071672416123670">根據你機構的政策，你不可複製內容</translation>
@@ -4527,6 +4522,7 @@
 <translation id="8622864575115813231">正在聯絡金融機構…</translation>
 <translation id="8632584659860846053">關閉所有隔離視窗後，系統會刪除你的瀏覽記錄、Cookie 和網站資料、快取，以及在表格中輸入的資料</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
+<translation id="8635822281281406185">最多可加入 10 個檔案、分頁或圖片</translation>
 <translation id="8637362707224133343">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現仿冒詐騙內容<ph name="END_LINK" />。仿冒詐騙網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">如想與他人分享分頁和協作，你必須登入 Chrome</translation>
 <translation id="8641131559425911240">信封 (銅版紙)</translation>

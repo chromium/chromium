@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Отворите у апликацији <ph name="NATIVE_APP_NAME" /> • С уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
 <translation id="1496514951988037011">корисничко име</translation>
+<translation id="1498051468374914325">Отвори конзолу алатки за програмере</translation>
 <translation id="1501480321619201731">Избриши групу</translation>
 <translation id="1506061864768559482">Претраживач</translation>
 <translation id="1513352483775369820">Обележивачи и веб-историја</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Отворите нови прозор у режиму без архивирања</translation>
 <translation id="152204906462707884">Брзо избришите историју прегледања и преузмите већу контролу над приватношћу</translation>
 <translation id="153446405401665083">Доступна је нова верзија Chrome-а</translation>
+<translation id="1537160738459068682">Отвори елементе алатки за програмере</translation>
 <translation id="1540012742443808215">Трака за адресу је тренутно у врху</translation>
 <translation id="1543035591122163372">Пријавите се да бисте могли да приступате лозинкама и другом садржају са <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Начини плаћања и адресе неће бити шифровани. Историја прегледања из Chrome-а се неће синхронизовати.
@@ -2061,6 +2063,7 @@ Google налог можда има друге облике историје п�
 <translation id="9024318700713112071">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="9027728231343310283">Опозови <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Преместите у\u2026</translation>
+<translation id="9038316201889095704">Проналажење на страници је онемогућено док постоје несачуване промене.</translation>
 <translation id="904146253922032365">Додирните и задржите да бисте вертикално приказали картице</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9047347135558855162">Брзо започните претрагу у Chrome-у</translation>

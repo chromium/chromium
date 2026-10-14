@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">월렛에서 여시겠습니까?</translation>
 <translation id="183878838231635348">이 카드에는 안전 확인 기능이 자동으로 감지한 개인 정보 보호 또는 보안 문제가 표시됩니다.</translation>
 <translation id="1845230888742614096">그룹 유지</translation>
-<translation id="1853558655412913122">이제 '설정'으로 이동한 다음 '주소 표시줄'에서 주소 표시줄의 위치를 변경할 수 있습니다.</translation>
 <translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1854463785401910334">열린 탭 검색</translation>
 <translation id="1860609647735325606">Gemini로 설명</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Safari에서 데이터 가져오기</translation>
 <translation id="2526166285241366046">비밀번호 저장</translation>
 <translation id="2529021024822217800">모두 열기</translation>
+<translation id="2530932541542751783">이 설정에서 문제가 발생했습니다. Chrome 및 iPadOS를 업데이트하고 다시 시작하세요. 그런 다음, 다시 시도해 보세요. 이 오류가 계속 발생하면 iPad에서 이 설정을 지원하지 않을 수 있습니다.</translation>
 <translation id="2536991091671391962">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="2538103551183528357">숨겨짐, 비밀번호</translation>
 <translation id="2538705697765638552">정보를 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="USER_EMAIL" />의 Google 월렛에서 정보를 관리할 수 있습니다.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3476450923187944815">다른 앱에서 비밀번호에 액세스하세요.</translation>
 <translation id="3479552764303398839">나중에</translation>
+<translation id="3481315707647070701">시각화 및 수정</translation>
 <translation id="3485558910355485767">새 시크릿 창</translation>
 <translation id="3488501490964659223">탭이 닫히고, 인터넷 사용 기록이 삭제되었으며, 로그아웃되었습니다</translation>
 <translation id="3490396108106323715">현재 탭 공유</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">전체 선택</translation>
 <translation id="3679163990085797665">읽은 항목 삭제</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
+<translation id="3689746421535476813">수정할 저장된 결제 수단을 선택하거나 새 결제 수단을 추가하세요.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3700134753671613714">로그인하면 어느 기기에서나 내 북마크를 사용할 수 있습니다.</translation>
 <translation id="3701167022068948696">지금 해결하기</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850"><ph name="URL" />에 로그인합니다</translation>
 <translation id="3934905113567851655">손가락을 모으거나 벌려 크기를 조절하세요.</translation>
 <translation id="393732545649378031">계정</translation>
+<translation id="3939683043166875001">자주 방문한 사이트, 디스커버 피드 등을 숨기거나 표시합니다.</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{탭 {COUNT}개 닫기}other{탭 {COUNT}개 닫기}}</translation>
 <translation id="3946483119107054883">CSV로 다운로드</translation>
@@ -1089,6 +1092,7 @@
 <translation id="4455710003856931944">가장자리를 스와이프하여 앞으로 또는 뒤로 이동할 수 있습니다.</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
 <translation id="446314443268698477">카메라를 사용해 지금 보고 있거나 사진에 있는 항목을 쇼핑하고, 번역하고, 무엇인지 알아보세요.</translation>
+<translation id="4465941170695753889">탭 그룹을 만들려면 길게 누르세요</translation>
 <translation id="4469324811108161144">메모에는 <ph name="CHARACTER_LIMIT" />자(영문 기준)까지만 저장할 수 있습니다.</translation>
 <translation id="4470766488397113689">무엇을 하고 싶으신가요?</translation>
 <translation id="4471472356135655769">비밀번호를 내보낼 수 없음</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4977176874984951085">페이지 작업 메뉴 열기</translation>
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="4985921635659180565">파일 삭제가 예약되면 취소할 수 없습니다.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{공유된 탭 1개}other{공유된 탭 {COUNT}개}}</translation>
 <translation id="498624032394115435">링크가 있는 사용자가 모든 탭을 수정할 수 있습니다.</translation>
 <translation id="4986428648020277392">프롬프트: 어떤 걸 사야 할까? 2/3</translation>
 <translation id="498768198683310172">Gemini 사용 시작하기</translation>
@@ -1839,6 +1844,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6708501134077648845">비밀번호 옵션</translation>
 <translation id="6709964700841491574">잠금 모드</translation>
 <translation id="6710079714193676716">조직에서 관리합니다. 일부 기능은 제공되지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">더 스마트하고 빠른 대답</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />에 수정됨</translation>
 <translation id="6722623263381062480">수신된 탭</translation>
 <translation id="6722638373100589752">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에서 패스 사용'을 사용 설정하세요.</translation>
@@ -1919,6 +1925,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6938212956536472404">이 탭은 공유할 수 없습니다.</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6946722113367118030">생각 중</translation>
+<translation id="6947751977892029882">이 설정에서 문제가 발생했습니다. Chrome 및 iOS를 업데이트하고 다시 시작하세요. 그런 다음, 다시 시도해 보세요. 이 오류가 계속 발생하면 iPhone에서 이 설정을 지원하지 않을 수 있습니다.</translation>
 <translation id="6950522403736391608">숨김</translation>
 <translation id="695965663642079255">결제 정보를 저장하고 관리하여 더 빠르게 결제하세요.</translation>
 <translation id="6962809930976936328">Gemini로 유용한 정보 확인하기</translation>
@@ -2341,6 +2348,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome 메뉴 열기</translation>
 <translation id="826614135184049678">iPad 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
+<translation id="8266370374397811600">새로운 업적을 달성했습니다. 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">프로필을 전환하려고 합니다</translation>
 <translation id="8275068909952022340">더보기…</translation>
@@ -2425,6 +2433,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8535368836838588657">비밀번호 표시</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />(으)로 로그인</translation>
 <translation id="8542331710562073430">문제가 발생했습니다. Live 버튼을 탭하여 다시 Live로 전환해 보세요</translation>
+<translation id="8544172904312384600">결제 수단 수정 또는 새 결제 수단 추가</translation>
 <translation id="8545276357312221485">기본 브라우저 설정 확인</translation>
 <translation id="854938212724803178">유출된 비밀번호가 1개 있습니다. 안전을 위해 지금 문제를 해결하세요.</translation>
 <translation id="8551311254462607218">주소 표시줄에서 Google 렌즈 카메라 아이콘을 탭합니다.</translation>

@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Chcete ho otvoriť v Peňaženke?</translation>
 <translation id="183878838231635348">Na tejto karte sa zobrazujú všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás kontrola bezpečnosti automaticky zistí.</translation>
 <translation id="1845230888742614096">Ponechať skupinu</translation>
-<translation id="1853558655412913122">Panel s adresou už možno premiestniť. Stačí prejsť na Nastavenia a vybrať Panel s adresou.</translation>
 <translation id="1853692000353488670">Nová karta inkognito</translation>
 <translation id="1854463785401910334">Hľadať v otvorených kartách</translation>
 <translation id="1860609647735325606">Vysvetliť pomocou Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Preneste si údaje zo Safari</translation>
 <translation id="2526166285241366046">Uloženie hesla</translation>
 <translation id="2529021024822217800">Otvoriť všetky</translation>
+<translation id="2530932541542751783">Pri tomto nastavení sa niečo pokazilo. Aktualizujte a reštartujte Chrome aj iPadOS a skúste to znova. Ak sa táto chyba vyskytuje opakovane, váš iPad zrejme toto nastavenie nepodporuje.</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skryté, heslo</translation>
 <translation id="2538705697765638552">Uložte si údaje, aby ste ich mohli používať rýchlejšie, napríklad pri vypĺňaní formulárov v službách Googlu. Svoje informácie pre <ph name="USER_EMAIL" /> môžete spravovať v Peňaženke Google.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Majte prístup k svojim heslám v iných aplikáciách.</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
+<translation id="3481315707647070701">Vizualizujte a upravujte</translation>
 <translation id="3485558910355485767">Nové okno inkognito</translation>
 <translation id="3488501490964659223">Karty boli zatvorené a dáta prehliadania boli odstránené. Systém vás odhlásil.</translation>
 <translation id="3490396108106323715">Zdieľať aktuálnu kartu</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">Vybrať všetko</translation>
 <translation id="3679163990085797665">Odstrániť prečítané</translation>
 <translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
+<translation id="3689746421535476813">Vyberte uložený spôsob platby, ktorý chcete upraviť, alebo pridajte nový</translation>
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3700134753671613714">Ak chcete mať záložky vo všetkých svojich zariadeniach, prihláste sa.</translation>
 <translation id="3701167022068948696">Opraviť</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">Prihlásite sa na <ph name="URL" /></translation>
 <translation id="3934905113567851655">Veľkosť zmeníte stiahnutím či roztiahnutím prstov</translation>
 <translation id="393732545649378031">Účet</translation>
+<translation id="3939683043166875001">Skryte alebo zobrazte svoje najobľúbenejšie weby, feed Objaviť a ďalší obsah.</translation>
 <translation id="3940195383040445971">Sledovať ceny na kartách</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Zavrieť {COUNT} kartu}few{Zavrieť {COUNT} karty}many{Close {COUNT} tabs}other{Zavrieť {COUNT} kariet}}</translation>
 <translation id="3946483119107054883">Stiahnuť ako súbor CSV</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">Otvoriť ponuku akcií stránky</translation>
 <translation id="4979397965658815378">Prihláste sa účtom Google a používajte svoje záložky, heslá, históriu a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
 <translation id="4985921635659180565">Po naplánovaní odstránenia súboru sa už táto akcia nedá zrušiť.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 zdieľaná karta}few{{COUNT} zdieľané karty}many{{COUNT} shared tabs}other{{COUNT} zdieľaných kariet}}</translation>
 <translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
 <translation id="4986428648020277392">Pokyn: Ktoré mám kúpiť? 2 z 3</translation>
 <translation id="498768198683310172">Začať používať Gemini</translation>
@@ -1720,6 +1724,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6372558618707314581">Prejdite na ľubovoľnú stránku</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
 <translation id="6374514103145916800">Opýtať sa</translation>
+<translation id="6381241974485088375">Stránku na novej karte si môžete kedykoľvek prispôsobiť tu</translation>
 <translation id="6383719166112032471">Otvoriť umiestnenie…</translation>
 <translation id="6387994324662817823">Heslá sa ukladajú do správcu hesiel od Googlu iba v tomto zariadení.</translation>
 <translation id="6393156038355142111">Navrhnúť silné heslo</translation>
@@ -1838,6 +1843,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6708501134077648845">Možnosti hesiel</translation>
 <translation id="6709964700841491574">Režim silnej zámky</translation>
 <translation id="6710079714193676716">Spravuje vaša organizácia. Niektoré funkcie nemusia byť k dispozícii. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Inteligentnejšie a rýchlejšie odpovede</translation>
 <translation id="6713676799463473249">Upravené <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Prijaté karty</translation>
 <translation id="6722638373100589752">Ak chcete, aby sa vaše údaje dopĺňali automaticky, v nastaveniach Peňaženky zapnite možnosť Používanie kariet v službách Googlu</translation>
@@ -1918,6 +1924,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="6938212956536472404">Táto karta sa nedá zdieľať</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6946722113367118030">Zamyslená tvár</translation>
+<translation id="6947751977892029882">Pri tomto nastavení sa niečo pokazilo. Aktualizujte a reštartujte Chrome aj iOS a skúste to znova. Ak sa táto chyba vyskytuje opakovane, váš iPhone zrejme toto nastavenie nepodporuje.</translation>
 <translation id="6950522403736391608">Skryté</translation>
 <translation id="695965663642079255">Uložte si platobné údaje a spravujte ich, aby ste mohli platiť rýchlejšie</translation>
 <translation id="6962809930976936328">Získavajte štatistiky s Gemini</translation>
@@ -2340,6 +2347,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8264966119170358612">Pri porušení ochrany údajov tretej strany boli odhalené niektoré vaše heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Otvorte Ponuku Chrome</translation>
 <translation id="826614135184049678">V rámci resetu iPadu vás systém odhlásil z účtu <ph name="USER_NAME" />. Ak sa chcete znova prihlásiť, klepnite nižšie na Pokračovať.</translation>
+<translation id="8266370374397811600">Získali ste nové ocenenie! 🥳</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Chystáte sa prepnúť profily</translation>
 <translation id="8275068909952022340">Viac…</translation>
@@ -2424,6 +2432,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8535368836838588657">Odhaľte heslo</translation>
 <translation id="8540426897269305488">Prihláste sa účtom <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Niečo sa pokazilo. Ak chcete znova spustiť Live, klepnite na tlačidlo Live.</translation>
+<translation id="8544172904312384600">Upravte spôsob platby alebo pridajte nový</translation>
 <translation id="8545276357312221485">Skontrolujte nastavenia predvoleného prehliadača</translation>
 <translation id="854938212724803178">Máte jedno odhalené heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
 <translation id="8551311254462607218">Na paneli s adresou klepnite na ikonu kamery funkcie Google Lens</translation>
@@ -2462,6 +2471,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8639963783467694461">Nastavenia automatického dopĺňania</translation>
 <translation id="8642417828095157370">Karty sa zdieľajú, aby ste dostávali relevantnejšie odpovede</translation>
 <translation id="8643403533759285912">Odstrániť skupinu</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Cenu sa nepodarilo prestať sledovať.</translation>
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8655861111558401309">Vyberte Odstrániť dáta prehliadania</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">გახსნა <ph name="NATIVE_APP_NAME" />-ში • <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="1495677929897281669">ჩანართზე დაბრუნება</translation>
 <translation id="1496514951988037011">მომხმარებლის სახელი</translation>
+<translation id="1498051468374914325">დეველოპერთა ხელსაწყოების კონსოლის გახსნა</translation>
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
 <translation id="1513352483775369820">სანიშნეები და ვებ-ისტორია</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">ახალი ფანჯრის გახსნა ინკოგნიტო რეჟიმში</translation>
 <translation id="152204906462707884">სწრაფად წაშალეთ დათვალიერების ისტორია და უკეთ მართეთ თქვენი კონფიდენციალურობა</translation>
 <translation id="153446405401665083">ხელმისაწვდომია Chrome-ის ახალი ვერსია.</translation>
+<translation id="1537160738459068682">დეველოპერთა ხელსაწყოების ელემენტების გახსნა</translation>
 <translation id="1540012742443808215">მისამართთა ზოლი ამჟამად ზემოთაა</translation>
 <translation id="1543035591122163372">გაიარეთ ავტორიზაცია, რომ მიიღოთ თქვენი პაროლები და სხვა მონაცემები <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">გადახდის მეთოდები და მისამართები არ იქნება დაშიფრული. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">Chrome-ის დაყენება ნაგულისხმევად</translation>
 <translation id="9027728231343310283">მოქმედების გაუქმება <ph name="SITE" />-ისთვის</translation>
 <translation id="9035378196785279980">გადატანა:\u2026</translation>
+<translation id="9038316201889095704">გვერდზე ძიება გათიშულია, სანამ შეუნახავი ცვლილებებია.</translation>
 <translation id="904146253922032365">ხანგრძლივად შეეხეთ ჩანართების ვერტიკალურად საჩვენებლად</translation>
 <translation id="9042893549633094279">კონფიდენციალურობა და უსაფრთხოება</translation>
 <translation id="9047347135558855162">სწრაფად დაიწყეთ ძიება Chrome-ში</translation>

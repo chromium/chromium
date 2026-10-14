@@ -135,6 +135,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1485343711570311792">Agor yn <ph name="NATIVE_APP_NAME" /> • O <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Yn ôl i'r tab</translation>
 <translation id="1496514951988037011">enw defnyddiwr</translation>
+<translation id="1498051468374914325">Agor Consol Offer Datblygwr</translation>
 <translation id="1501480321619201731">Dileu grŵp</translation>
 <translation id="1506061864768559482">Peiriant chwilio</translation>
 <translation id="1513352483775369820">Nodau tudalen a hanes gwe</translation>
@@ -142,6 +143,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1516966594427080024">Agor ffenestr newydd yn y modd Anhysbys</translation>
 <translation id="152204906462707884">Dileu eich hanes pori yn gyflym a chael mwy o reolaeth dros eich preifatrwydd</translation>
 <translation id="153446405401665083">Mae fersiwn newydd o Chrome ar gael</translation>
+<translation id="1537160738459068682">Agor Elfennau Offer Datblygwr</translation>
 <translation id="1540012742443808215">Bar cyfeiriad ar y brig ar hyn o bryd</translation>
 <translation id="1543035591122163372">Mewngofnodwch i gael eich cyfrineiriau a rhagor gan <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
@@ -1070,6 +1072,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5233638681132016545">Tab newydd</translation>
 <translation id="5235196193381275927">Aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
+<translation id="5257142004843671642">Newid maint y panel ochr</translation>
 <translation id="5264813352784073502">24 awr ddiwethaf</translation>
 <translation id="5267572070504076962">Trowch Bori'n Ddiogel ymlaen i gael amddiffyniad rhag gwefannau peryglus</translation>
 <translation id="5273031377282080577">Eich gweinyddwr sy'n rheoli'r gosodiad hwn.</translation>
@@ -2062,6 +2065,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9024318700713112071">Gosod Chrome fel porwr diofyn</translation>
 <translation id="9027728231343310283">Dadwneud <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Symud i\u2026</translation>
+<translation id="9038316201889095704">Chwilio yn y dudalen wedi'i analluogi tra bod newidiadau heb eu cadw.</translation>
 <translation id="904146253922032365">Pwyswch a daliwch i ddangos tabiau'n fertigol</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
 <translation id="9047347135558855162">Dechrau chwiliad yn Chrome yn gyflym</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">በ<ph name="NATIVE_APP_NAME" /> ውስጥ ክፈት • ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">ወደ ትር ተመለስ</translation>
 <translation id="1496514951988037011">የተጠቃሚ ስም</translation>
+<translation id="1498051468374914325">የገንቢ መሣሪያዎች ኮንሶልን ይክፈቱ</translation>
 <translation id="1501480321619201731">ቡድን ሰርዝ</translation>
 <translation id="1506061864768559482">የፍለጋ ፕሮግራም</translation>
 <translation id="1513352483775369820">ዕልባቶች እና የድር ታሪክ</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">አዲስ ትር ማንነት በማያሳውቅ ሁነታ ውስጥ ይክፈቱ</translation>
 <translation id="152204906462707884">የአሰሳ ታሪክዎን በፍጥነት ይሰርዙ እና በግላዊነትዎ ላይ የበለጠ ቁጥጥር ያድርጉ</translation>
 <translation id="153446405401665083">የChrome አዲስ ሥሪት ይገኛል</translation>
+<translation id="1537160738459068682">የገንቢ መሣሪያዎች አካላትን ይክፈቱ</translation>
 <translation id="1540012742443808215">አድራሻ አሞሌ በአሁኑ ጊዜ ከላይ ይገኛል</translation>
 <translation id="1543035591122163372">የእርስዎን የይለፍ ቃላት እና ሌሎችንም ከ<ph name="DEVICE_TYPE" /> ለማግኘት በመለያ ይግቡ</translation>
 <translation id="1544084554881119930">የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChrome የአሰሳ ታሪክ አይሰምርም።
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">Chromeን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="9027728231343310283"><ph name="SITE" />ን ቀልብስ</translation>
 <translation id="9035378196785279980">አንቀሳቅስ ወደ…</translation>
+<translation id="9038316201889095704">ያልተቀመጡ ለውጦች እያሉ በገጽ ውስጥ ማግኘት ተሰናክሏል።</translation>
 <translation id="904146253922032365">ትሮችን በአቀባዊ ለማሳየት ነካ አድርገው ይያዙ</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
 <translation id="9047347135558855162">በፍጥነት Chrome ውስጥ ፍለጋ ይጀምሩ</translation>

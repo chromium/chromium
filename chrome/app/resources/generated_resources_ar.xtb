@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">استخدام الميكروفون والكاميرا</translation>
 <translation id="1005333234656240382">‏هل تريد تفعيل خيار "تصحيح الأخطاء عبر ADB"؟</translation>
 <translation id="1005671386794704751">وردي</translation>
+<translation id="1005692418949452963">إلغاء التركيز</translation>
 <translation id="1005919400326853998">عرض تفاصيل شهادة <ph name="CERT_NAME" /> في مربّع حوار جديد</translation>
 <translation id="1006033052970139968">يتم منح إذن الوصول إلى الميكروفون للتطبيقات والمواقع الإلكترونية التي لديها أذونات وصول إليه وكذلك خدمات النظام</translation>
 <translation id="1006873397406093306">يمكن لهذه الإضافة قراءة بياناتك وتغييرها على المواقع. يمكنك التحكُّم في المواقع التي يمكن لهذه الإضافة الوصول إليها.</translation>
@@ -870,7 +871,6 @@
 <translation id="1656528038316521561">درجة تعتيم الخلفية</translation>
 <translation id="1657406563541664238">‏المساعدة في تحسين <ph name="PRODUCT_NAME" /> بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="1657937299377480641">لإعادة تسجيل الدخول من أجل الوصول إلى موارد تعليمية، عليك طلب الإذن من أحد الوالدَين.</translation>
-<translation id="1657952527687824398">التركيز على مجموعة علامات التبويب</translation>
 <translation id="1658424621194652532">هذه الصفحة تحاول الدخول إلى الميكروفون.</translation>
 <translation id="1660405268563702784">يتوفّر تحديث لـ "<ph name="APP_NAME" />"</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{حلّ مشكلة علامة التبويب التي تبطئ المتصفّح}zero{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}two{حلّ مشكلة علامتَي التبويب اللتين تبطئان المتصفّح}few{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}many{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}other{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}}</translation>
@@ -2334,7 +2334,6 @@
 <translation id="2767077837043621282">‏تعذَر تحديث جهاز Chromebook. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2767127727915954024">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
 <translation id="2769174155451290427">الصورة التي تم تحميلها</translation>
-<translation id="2769715732905083104">التركيز على مجموعة علامات التبويب</translation>
 <translation id="2770082596325051055">إيقاف تنزيل "<ph name="FILE_NAME" />" مؤقتًا</translation>
 <translation id="2770465223704140727">إزالة من القائمة</translation>
 <translation id="2770690685823456775">تصدير كلمات المرور إلى مجلد آخر</translation>
@@ -2615,7 +2614,6 @@
 <translation id="2984727013951557074">‏لا تزال عملية مزامنة الملف مع Drive جارية.</translation>
 <translation id="2984923316661218534">‏يمكنك الوصول إلى مفاتيح المرور على هذا الجهاز باستخدام "مدير كلمات المرور في Google"</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{ألغَى "<ph name="APP_NAME" />" تثبيت تطبيق واحد}zero{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيق}two{ألغَى "<ph name="APP_NAME" />" تثبيت تطبيقَين}few{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيقات}many{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيقًا}other{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيق}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{التركيز على علامة تبويب واحدة}zero{التركيز على # علامة تبويب}two{التركيز على علامتَي تبويب}few{التركيز على # علامات تبويب}many{التركيز على # علامة تبويب}other{التركيز على # علامة تبويب}}</translation>
 <translation id="2988018669686457659">عارِض احتياطي</translation>
 <translation id="2988328607561082373">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر</translation>
 <translation id="2989123969927553766">تسريع التمرير عبر الماوس</translation>
@@ -3343,7 +3341,6 @@
 <translation id="3527473647192919613">نافذة تصفّح معزول جديدة</translation>
 <translation id="3528498924003805721">أهداف الاختصارات</translation>
 <translation id="35296112145429559">تثبيت أزرار الانتقال</translation>
-<translation id="3530919970074558307">إلغاء التركيز على المجموعة</translation>
 <translation id="3531070080754387701">‏يتعذّر على Microsoft 365 فتح "<ph name="FILE_NAMES" />" من هذا المجلد</translation>
 <translation id="3531883061432162622">العثور على قائمة القراءة والإشارات المرجعية لديك في "الإشارات المرجعية" و"القوائم"</translation>
 <translation id="3532521178906420528">جارٍ الاتصال بالشبكة...</translation>
@@ -4521,7 +4518,6 @@
 <translation id="4405580203042711503">علامة تبويب جديدة أدناه</translation>
 <translation id="4405781821077215583">تكبير أو تصغير العناصر على الشاشة، بما في ذلك النصوص</translation>
 <translation id="4406308048672435032">يمكنك جعل علامة التبويب هذه غير نشطة أو إعادة تحميلها للاطّلاع على القائمة الكاملة مرة أخرى</translation>
-<translation id="4406881185911439342">التركيز على المجموعة</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4406963243402726564">بيانات غير محفوظة</translation>
 <translation id="4408599188496843485">م&amp;ساعدة</translation>
@@ -5707,7 +5703,6 @@
 <translation id="5311304534597152726">تسجيل الدخول باسم</translation>
 <translation id="5312746996236433535">النسخ المطابق لمحتوى الشاشة</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{التركيز على علامة تبويب واحدة}zero{التركيز على # علامة تبويب}two{التركيز على علامتَي تبويب}few{التركيز على # علامات تبويب}many{التركيز على # علامة تبويب}other{التركيز على # علامة تبويب}}</translation>
 <translation id="5315738755890845852">قوس متعرج إضافي: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5317781812114905957">التعليمات</translation>
@@ -5983,6 +5978,7 @@
 <translation id="5533001281916885985">يريد <ph name="SITE_NAME" /></translation>
 <translation id="5533343601674003130">‏خدمة PDF</translation>
 <translation id="5535769176698670170">التبديل مع العرض العلوي</translation>
+<translation id="5536642445914063887">تبديل الملف الشخصي</translation>
 <translation id="5537725057119320332">بث</translation>
 <translation id="5541091577812545428">لم يتم تغيير كلمة المرور</translation>
 <translation id="5542132724887566711">الملف الشخصي</translation>

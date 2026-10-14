@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1005671386794704751">Rose</translation>
+<translation id="1005692418949452963">Unfocus</translation>
 <translation id="1005919400326853998">View certificate details for <ph name="CERT_NAME" /> in a new dialogue</translation>
 <translation id="1006033052970139968">Microphone access is allowed for apps, websites with the microphone permission and system services</translation>
 <translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
@@ -870,7 +871,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1656528038316521561">Background opacity</translation>
 <translation id="1657406563541664238">Help make <ph name="PRODUCT_NAME" /> better by automatically sending usage statistics and crash reports to Google.</translation>
 <translation id="1657937299377480641">To sign in again for access to educational resources, ask a parent to give you permission</translation>
-<translation id="1657952527687824398">Focus tab group</translation>
 <translation id="1658424621194652532">This page is accessing your microphone.</translation>
 <translation id="1660405268563702784">Update available for <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Fix the tab that's slowing your browser}other{Fix the tabs that are slowing your browser}}</translation>
@@ -1598,6 +1598,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2215070081105889450">To share audio, share a tab or screen instead</translation>
 <translation id="2217208085547223783">Trust state</translation>
 <translation id="2218019600945559112">Mouse and touchpad</translation>
+<translation id="2218116022473625437">You can turn off text highlighting, modify the voice and change the appearance of the page in settings.</translation>
 <translation id="2218515861914035131">Paste as plain text</translation>
 <translation id="2219007152108311874">Ask on every visit</translation>
 <translation id="2220529011494928058">Report an issue</translation>
@@ -2342,7 +2343,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2767077837043621282">Couldn't update your Chromebook. Please try again later.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> will be able to edit <ph name="FILENAME" /> until you close all tabs for this site</translation>
 <translation id="2769174155451290427">Uploaded image</translation>
-<translation id="2769715732905083104">Focus tab group</translation>
 <translation id="2770082596325051055">Pause <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Remove from list</translation>
 <translation id="2770690685823456775">Export your passwords to another folder</translation>
@@ -2624,7 +2624,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2984727013951557074">The file is still being synced to Drive.</translation>
 <translation id="2984923316661218534">Get your passkeys on this device with Google Password Manager</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> uninstalled an app}other{<ph name="APP_NAME" /> uninstalled # apps}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Focus tab}other{Focus # tabs}}</translation>
 <translation id="2988018669686457659">Spare renderer</translation>
 <translation id="2988328607561082373">You’re not reusing any passwords</translation>
 <translation id="2989123969927553766">Mouse scroll acceleration</translation>
@@ -3352,7 +3351,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3527473647192919613">New Isolated Window</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="35296112145429559">Pin scroll buttons</translation>
-<translation id="3530919970074558307">Unfocus group</translation>
 <translation id="3531070080754387701">Microsoft 365 can't open <ph name="FILE_NAMES" /> from this folder</translation>
 <translation id="3531883061432162622">Find your reading list and bookmarks in Bookmarks and Lists</translation>
 <translation id="3532521178906420528">Establishing network connection…</translation>
@@ -3773,6 +3771,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3812525830114410218">Bad certificate</translation>
 <translation id="3813296892522778813">Go to <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome help<ph name="END_LINK_CHROMIUM" /> if you can't find what you're looking for</translation>
 <translation id="3813358687923336574">Language used for translating pages and Quick Answers</translation>
+<translation id="3815509884387832993">Listen to this page like it's a podcast with AI playback using the Turn on AI playback button in the Reading mode toolbar</translation>
 <translation id="3815668647912194650">Keep this group to add tabs later, or leave it if you no longer want access to it.</translation>
 <translation id="3816118180265633665">Chrome colours</translation>
 <translation id="3817524650114746564">Open your computer's proxy settings</translation>
@@ -4157,6 +4156,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4112282889480354965">Extensions and skills</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
@@ -4530,7 +4530,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4405580203042711503">New tab below</translation>
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
-<translation id="4406881185911439342">Focus group</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406963243402726564">Unsaved data</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
@@ -5716,7 +5715,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5311304534597152726">Signing in as</translation>
 <translation id="5312746996236433535">Screen mirror</translation>
 <translation id="5313967007315987356">Add site</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Focus tab}other{Focus # tabs}}</translation>
 <translation id="5315738755890845852">Extra curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5317781812114905957">Instructions</translation>
@@ -5992,6 +5990,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
 <translation id="5533343601674003130">PDF service</translation>
 <translation id="5535769176698670170">Swap with top view</translation>
+<translation id="5536642445914063887">Switch profile</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5541091577812545428">Password wasn't changed</translation>
 <translation id="5542132724887566711">Profile</translation>
@@ -6587,6 +6586,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6006484371116297560">Classic</translation>
 <translation id="6007053304250788613">Only one display can be excluded in mirror mode</translation>
 <translation id="6007240208646052708">Voice search in your language is not available.</translation>
+<translation id="6007858579659393165">Tabs have a new transparent look</translation>
 <translation id="6010651352520077187">When on, Google Translate will offer to translate sites into your preferred language. It can also automatically translate sites.</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
@@ -8797,6 +8797,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7702463352133825032">Stop casting to <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Task</translation>
 <translation id="7705085181312584869">Help me write</translation>
+<translation id="7705230242432916648">Listen to this page like it's a podcast with AI playback</translation>
 <translation id="7705276765467986571">Could not load bookmark model.</translation>
 <translation id="7705334495398865155">Randomise your hardware's ID (BSSID) to prevent others from tracking this device.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9478,6 +9479,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8212601853154459483">This profile is managed by <ph name="PROFILE_MANAGER" /> and requires you to create a separate profile for the account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">No profiles were found. Try scanning the QR Code using your device camera or enter the activation code provided by your operator.</translation>
 <translation id="8214489666383623925">Open File...</translation>
+<translation id="8214771296778317256">Choose your preferred tab styling here</translation>
 <translation id="8215129063232901118">Access your phone's capabilities from your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Highlight pointer</translation>
 <translation id="8217399928341212914">Continue blocking automatic downloads of multiple files</translation>
@@ -10225,6 +10227,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8780123805589053431">Get image descriptions from Google</translation>
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
 <translation id="8781834595282316166">New tab in group</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, use the left and right arrow keys to move the shortcut. Press Enter or Escape to finish.</translation>
 <translation id="8781980678064919987">Shut down when lid is closed</translation>
 <translation id="8783171585655659524">Include screenshot</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -10723,6 +10726,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9154194610265714752">Updated</translation>
 <translation id="915485121129452731">Pen tablet</translation>
 <translation id="9155344700756733162">Unselect colour</translation>
+<translation id="9155515662479003830">You can always switch back to the classic style in settings</translation>
 <translation id="9157096865782046368">0.8 seconds</translation>
 <translation id="9157697743260533322">Failed to set up automatic updates for all users (preflight launch error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Printer door is open</translation>

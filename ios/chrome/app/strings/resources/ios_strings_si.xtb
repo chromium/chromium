@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Wallet තුළ විවෘත කරන්න ද?</translation>
 <translation id="183878838231635348">මෙම කාඩ්පත ඔබ වෙනුවෙන් ආරක්ෂිත පරීක්ෂාව ස්වයංක්‍රීයව අනාවරණය කරන ඕනෑම පෞද්ගලිකත්ව හෝ ආරක්ෂක ගැටලුවක් පෙන්වයි.</translation>
 <translation id="1845230888742614096">සමූහය තබා ගන්න</translation>
-<translation id="1853558655412913122">ඔබට දැන් "සැකසීම්" සහ පසුව "ලිපින තීරුව" තුළ ලිපින තීරුවේ පිහිටීම වෙනස් කළ හැක</translation>
 <translation id="1853692000353488670">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="1854463785401910334">විවෘත ටැබ සොයන්න</translation>
 <translation id="1860609647735325606">Gemini සමග පැහැදිලි කරන්න</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Safari වෙතින් ඔබේ දත්ත ගෙන එන්න</translation>
 <translation id="2526166285241366046">මුරපදයක් සුරකින්න</translation>
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
+<translation id="2530932541542751783">මෙම සැකසීම සමග යමක් වැරදී ඇත. Chrome සහ iPadOS යාවත්කාලීන කර නැවත ආරම්භ කර, නැවත උත්සාහ කරන්න. මෙම දෝෂය දිගටම සිදුවන්නේ නම්, ඔබේ iPad මෙම සැකසීමට සහාය නොදක්වයි.</translation>
 <translation id="2536991091671391962">ඔබට ඕනෑම උපාංගයක සුරැකි මුරපද භාවිත කළ හැක. ඒවා <ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත සුරැකේ.</translation>
 <translation id="2538103551183528357">සැඟවුණු, මුරපදය</translation>
 <translation id="2538705697765638552">ඔබේ තතු සුරකින්න සහ Google නිෂ්පාදන හරහා පෝරම පිරවීම වැනි දේවල් වේගයෙන් සිදු කරන්න. ඔබට <ph name="USER_EMAIL" /> සඳහා Google Wallet හි ඔබේ තතු කළමනාකරණය කළ හැක.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="3476450923187944815">වෙනත් යෙදුම් හරහා ඔබේ මුරපද වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="3479552764303398839">දැන් නොවේ</translation>
+<translation id="3481315707647070701">දෘශ්‍යකරණය සහ සංස්කරණය</translation>
 <translation id="3485558910355485767">නව අප්‍රසිද්ධ කවුළුව</translation>
 <translation id="3488501490964659223">පටිති වසා ඇති අතර බ්‍රවුස් කිරීමේ දත්ත මකා දමන ලදි. ඔබ වරනු ලැබ ඇත</translation>
 <translation id="3490396108106323715">වත්මන් පටිත්ත බෙදා ගන්න</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">සියල්ල තෝරන්න</translation>
 <translation id="3679163990085797665">කියවීම මකන්න</translation>
 <translation id="368329460027487650">වරනය විය. පුරනය වීමට විකල්ප විවෘත කරයි.</translation>
+<translation id="3689746421535476813">සංස්කරණය කිරීමට සුරකින ලද ගෙවීම් ක්‍රමයක් තෝරන්න, නැතහොත් නව ගෙවීම් ක්‍රමයක් එක් කරන්න</translation>
 <translation id="3695446226812920698">කෙසේදැයි දැන ගන්න</translation>
 <translation id="3700134753671613714">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන් ලබා ගැනීමට පුරන්න.</translation>
 <translation id="3701167022068948696">දැන් නිරාකරණ කරන්න</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">ඔබ <ph name="URL" /> වෙත පුරනු ඇත</translation>
 <translation id="3934905113567851655">ප්‍රමාණය වෙනස් කිරීමට කොණින් කොණට අදින්න</translation>
 <translation id="393732545649378031">ගිණුම</translation>
+<translation id="3939683043166875001">ඔබේ ඉහළම අඩවි, සංග්‍රහය සොයා ගැනීම, සහ තවත් දේ සඟවන්න හෝ පෙන්වන්න.</translation>
 <translation id="3940195383040445971">ටැබවල මිල ගණන් හඹා යන්න</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{ටැබ {COUNT}ක් වසන්න}one{ටැබ {COUNT}ක් වසන්න}other{ටැබ {COUNT}ක් වසන්න}}</translation>
 <translation id="3946483119107054883">CSV වෙත බාගන්න</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">පිටු ක්‍රියා මෙනුව විවෘත කරන්න</translation>
 <translation id="4979397965658815378">ඔබගේ සියලුම උපාංග මත පිටුසන්, මුරපද, ඉතිහාසය හා අනෙකුත් සැකසීම් ලබා ගැනීමට ඔබගේ Google ගිණුම සමඟ පුරනය වන්න</translation>
 <translation id="4985921635659180565">ගොනුවක් මකා දැමීමට කාලසටහන්ගත කළ පසු, එය අවලංගු කළ නොහැක.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 බෙදා ගත් පටිත්තක්}one{බෙදා ගත් පටිති {COUNT}ක්}other{බෙදා ගත් පටිති {COUNT}ක්}}</translation>
 <translation id="498624032394115435">සබැඳිය සහිත ඕනෑම අයෙකුට සියලු පටිති සංස්කරණය කළ හැක.</translation>
 <translation id="4986428648020277392">ප්‍රේරකය: මම මිල දී ගත යුත්තේ කුමක් ද? 3 න් 2</translation>
 <translation id="498768198683310172">Gemini භාවිත කිරීම ආරම්භ කරන්න</translation>
@@ -1720,6 +1724,7 @@
 <translation id="6372558618707314581">ඔබ කැමති ඕනෑම පිටුවකට යන්න</translation>
 <translation id="6374469231428023295">නැවත උත්සහ කරන්න</translation>
 <translation id="6374514103145916800">විමසන්න</translation>
+<translation id="6381241974485088375">ඔබේ නව පටිති පිටුව ඕනෑම වේලාවක මෙතැනින් අභිරුචිකරණය කරන්න</translation>
 <translation id="6383719166112032471">ස්ථානය විවෘත කරන්න…</translation>
 <translation id="6387994324662817823">මුරපද මෙම උපාංගයේ Google මුරපද කළමනාකරු තුළ පමණක් සුරැකේ.</translation>
 <translation id="6393156038355142111">ප්‍රබල මුරපදයක් යෝජනා කරන්න</translation>
@@ -1838,6 +1843,7 @@
 <translation id="6708501134077648845">මුරපද විකල්ප</translation>
 <translation id="6709964700841491574">අගුළු දැමීමේ ප්‍රකාරය</translation>
 <translation id="6710079714193676716">ඔබගේ ආයතනය විසින් කළමනාකරණය කෙරේ. සමහර විශේෂාංග ලබා ගත නොහැකි විය හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">වඩාත් දක්ෂ, වේගවත් පිළිතුරු</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> ට වෙනස් කරන ලදි</translation>
 <translation id="6722623263381062480">ලැබුණු පටිති</translation>
 <translation id="6722638373100589752">ඔබේ තතු ස්වයංව පිරවීමට, Wallet සැකසීම් තුළ “Google හරහා අවසරපත් භාවිත කරන්න” ක්‍රියාත්මක කරන්න</translation>
@@ -1918,6 +1924,7 @@
 <translation id="6938212956536472404">මෙම පටිත්ත බෙදා ගත නොහැක</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6946722113367118030">සිතමින්</translation>
+<translation id="6947751977892029882">මෙම සැකසීම සමග යමක් වැරදී ඇත. Chrome සහ iOS යාවත්කාලීන කර නැවත ආරම්භ කර, නැවත උත්සාහ කරන්න. මෙම දෝෂය දිගටම පවතින්නේ නම්, සමහරවිට ඔබේ iPhone මෙම සැකසීමට සහාය නොදක්වනවා විය හැකිය.</translation>
 <translation id="6950522403736391608">සඟවා ඇත</translation>
 <translation id="695965663642079255">වේගයෙන් ගෙවා පිටවීම සඳහා ගෙවීම් තොරතුරු සුරකින්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="6962809930976936328">Gemini සමග ඇතුළාන්ත ලබා ගන්න</translation>
@@ -2340,6 +2347,7 @@
 <translation id="8264966119170358612">ඔබේ සුරකින ලද සමහර මුරපද Google නොවන දත්ත කඩ කිරීමක දී නිරාවරණය විය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome මෙනුව විවෘත කරන්න</translation>
 <translation id="826614135184049678">ඔබේ iPad යළි සැකසීමේ කොටසක් ලෙස, ඔබ ඔබේ <ph name="USER_NAME" /> ගිණුමෙන් වරන ලදි. නැවත පුරන්නට, පහත "ඉදිරියට යන්න" වෙත තට්ටු කරන්න.</translation>
+<translation id="8266370374397811600">නව සාධනයක් අගුළු හැරිණි! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">ඔබ පැතිකඩවල් මාරු කිරීමට ආසන්නයි</translation>
 <translation id="8275068909952022340">තව…</translation>
@@ -2424,6 +2432,7 @@
 <translation id="8535368836838588657">මුරපදය අනාවරණය කරන්න</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> සමඟ පුරන්න</translation>
 <translation id="8542331710562073430">යමක් වැරදිණි නැවත සජීවී වීමට උත්සාහ කිරීමට සජීවී බොත්තම තට්ටු කරන්න.</translation>
+<translation id="8544172904312384600">සංස්කරණය කරන්න හෝ නව ගෙවීමේ ක්‍රමයක් එක් කරන්න</translation>
 <translation id="8545276357312221485">ඔබේ පෙරනිමි බ්‍රවුසර සැකසීම් පරීක්ෂා කරන්න</translation>
 <translation id="854938212724803178">ඔබට අවදානමට පත් වූ 1 මුරපදයක් ඇත. ආරක්ෂිතව සිටීමට දැන් එය නිරාකරණය කරන්න.</translation>
 <translation id="8551311254462607218">ලිපින තීරුවේ, Google Lens කැමරා නිරූපකය මත තට්ටු කරන්න</translation>
@@ -2462,6 +2471,7 @@
 <translation id="8639963783467694461">ස්වයං පිරවුම් සැකසුම්</translation>
 <translation id="8642417828095157370">වඩාත් අදාළ පිළිතුරු සඳහා පටිති බෙදා ගනු ලැබේ</translation>
 <translation id="8643403533759285912">සමූහය මකන්න</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">මිල නිරීක්ෂණය කිරීමට නොහැකි විය.</translation>
 <translation id="8654802032646794042">අවලංගු කරන්න</translation>
 <translation id="8655861111558401309">බ්‍රවුස් කිරීමේ දත්ත මකන්න තෝරන්න</translation>

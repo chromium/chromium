@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Ouvrir dans Portefeuille?</translation>
 <translation id="183878838231635348">Cette carte affiche tous les problèmes de confidentialité ou de sécurité que la Vérification de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
-<translation id="1853558655412913122">Vous pouvez désormais modifier la position de la barre d'adresse dans « Paramètres », puis « Barre d'adresse »</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1854463785401910334">Rechercher dans les onglets ouverts</translation>
 <translation id="1860609647735325606">Expliquer avec Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Importer vos données à partir de Safari</translation>
 <translation id="2526166285241366046">Enregistrer un mot de passe</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
+<translation id="2530932541542751783">Un problème est survenu avec ce réglage. Mettez Chrome et iPadOS à jour, redémarrez-les, puis réessayez. Si cette erreur persiste, votre iPad ne prend peut-être pas en charge ce réglage.</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
 <translation id="2538705697765638552">Enregistrez vos informations et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Portefeuille de <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Contin. comme <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
+<translation id="3481315707647070701">Visualiser et modifier</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
 <translation id="3490396108106323715">Partager l'onglet actuel</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">Tout sélectionner</translation>
 <translation id="3679163990085797665">Supprimer les éléments lus</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
+<translation id="3689746421535476813">Choisissez un mode de paiement enregistré à modifier ou ajoutez-en un nouveau</translation>
 <translation id="3695446226812920698">Découvrez comment</translation>
 <translation id="3700134753671613714">Connectez-vous pour synchroniser vos favoris sur tous vos appareils.</translation>
 <translation id="3701167022068948696">Corriger maintenant</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">Vous serez connecté à <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
 <translation id="393732545649378031">Compte</translation>
+<translation id="3939683043166875001">Masquez ou affichez vos sites les plus visités, votre flux Découvertes et plus encore.</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="3946483119107054883">Télécharger dans un fichier CSV</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">Ouvrir le menu des actions de la page</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier est programmée, elle ne peut plus être annulée.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 onglet partagé}one{{COUNT} onglet partagé}other{{COUNT} onglets partagés}}</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
 <translation id="4986428648020277392">Requête : Lequel devrais-je acheter? 2 sur 3</translation>
 <translation id="498768198683310172">Commencer à utiliser Gemini</translation>
@@ -1839,6 +1843,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6708501134077648845">Options de mot de passe</translation>
 <translation id="6709964700841491574">Mode Verrouillage</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Des réponses plus intelligentes et plus rapides</translation>
 <translation id="6713676799463473249">Dernière modification : <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Onglets reçus</translation>
 <translation id="6722638373100589752">Pour remplir automatiquement vos informations, activez « Utiliser des cartes partout sur Google » dans les paramètres de Portefeuille</translation>
@@ -1919,6 +1924,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="6938212956536472404">Impossible de partager cet onglet</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Pensif</translation>
+<translation id="6947751977892029882">Un problème est survenu avec ce réglage. Mettez Chrome et iPadOS à jour, redémarrez-les, puis réessayez. Si cette erreur persiste, votre iPhone ne prend peut-être pas en charge ce réglage.</translation>
 <translation id="6950522403736391608">Masquées</translation>
 <translation id="695965663642079255">Enregistrez et gérez les infos de paiement pour payer plus rapidement</translation>
 <translation id="6962809930976936328">Obtenir des informations avec Gemini</translation>
@@ -2341,6 +2347,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été exposés à une violation de données d'un tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Ouvrir le menu Chrome</translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
+<translation id="8266370374397811600">Nouvelle réussite débloquée! 🥳</translation>
 <translation id="8270320981823560179">Disque</translation>
 <translation id="8274795744553482834">Vous êtes sur le point de changer de profil</translation>
 <translation id="8275068909952022340">Plus…</translation>
@@ -2425,6 +2432,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
 <translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Un problème est survenu. Touchez le bouton Live pour réessayer de passer à Live.</translation>
+<translation id="8544172904312384600">Modifier ou ajouter un mode de paiement</translation>
 <translation id="8545276357312221485">Vérifier les paramètres de votre navigateur par défaut</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, touchez l'icône de l'appareil photo Lentille Google</translation>

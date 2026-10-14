@@ -135,6 +135,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> मा खोल्नुहोस् • <ph name="DEVICE_NAME" /> बाट</translation>
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
 <translation id="1496514951988037011">युजरनेम</translation>
+<translation id="1498051468374914325">विकासकर्ताका टुलसम्बन्धी कन्सोल खोल्नुहोस्</translation>
 <translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
@@ -142,6 +143,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1516966594427080024">इन्कोग्निटो मोडमा नयाँ विन्डो खोलियोस्</translation>
 <translation id="152204906462707884">आफ्नो ब्राउजिङ हिस्ट्री तुरुन्तै मेटाउनुहोस् र आफ्नो गोपनीयता अझ बढी नियन्त्रण गर्नुहोस्</translation>
 <translation id="153446405401665083">Chrome को नयाँ संस्करण उपलब्ध छ</translation>
+<translation id="1537160738459068682">विकासकर्ताका टुलका एलिमेन्टहरू खोल्नुहोस्</translation>
 <translation id="1540012742443808215">एड्रेस बार हाल सिरानमा छ</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> मा भएका आफ्ना पासवर्ड र थप कुराहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="1544084554881119930">भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैनन्। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
@@ -2060,6 +2062,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9024318700713112071">Chrome लाई डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> अन्डू गर्नुहोस्</translation>
 <translation id="9035378196785279980">सारेर यहाँ ल्याउनुहोस्\u2026</translation>
+<translation id="9038316201889095704">सेभ नगरिएका परिवर्तनहरू भएकाले पेजमा खोज्ने सुविधा अफ गरिएको छ।</translation>
 <translation id="904146253922032365">ट्याबहरू ठाडो रूपमा देखाउन टच गरिराख्नुहोस्</translation>
 <translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
 <translation id="9047347135558855162">Chrome मा तुरुन्तै खोज्न थाल्नुहोस्</translation>

@@ -135,6 +135,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1485343711570311792">Åpne i <ph name="NATIVE_APP_NAME" /> • fra <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Tilbake til fanen</translation>
 <translation id="1496514951988037011">brukernavn</translation>
+<translation id="1498051468374914325">Åpne konsollen for utviklerverktøy</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1513352483775369820">Bokmerker og nettlogg</translation>
@@ -142,6 +143,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1516966594427080024">Åpne et nytt vindu i Inkognitomodus</translation>
 <translation id="152204906462707884">Slett nettleserloggen raskt, og ta kontroll over personvernet ditt</translation>
 <translation id="153446405401665083">En ny versjon av Chrome er tilgjengelig</translation>
+<translation id="1537160738459068682">Åpne utviklerverktøyene for elementer</translation>
 <translation id="1540012742443808215">Adressefeltet er øverst</translation>
 <translation id="1543035591122163372">Logg på for å få passordene dine med mer fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
@@ -1069,6 +1071,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noe gikk galt under pålogging</translation>
 <translation id="5246093389635966745">Rediger snarvei på verktøyraden</translation>
+<translation id="5257142004843671642">Endre størrelsen på sidepanelet</translation>
 <translation id="5264813352784073502">de siste 24 timene</translation>
 <translation id="5267572070504076962">Slå på Safe Browsing for å beskytte deg mot farlige nettsteder</translation>
 <translation id="5273031377282080577">Administratoren din administrerer denne innstillingen.</translation>
@@ -2061,6 +2064,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9024318700713112071">Angi Chrome som standard</translation>
 <translation id="9027728231343310283">Angre <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytt til\u2026</translation>
+<translation id="9038316201889095704">«Finn på siden» er deaktivert når det finnes ulagrede endringer.</translation>
 <translation id="904146253922032365">Trykk og hold for å vise faner vertikalt</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9047347135558855162">Start et søk raskt i Chrome</translation>

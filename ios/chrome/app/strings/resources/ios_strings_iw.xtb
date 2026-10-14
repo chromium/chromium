@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">‏לפתוח ב-Wallet?</translation>
 <translation id="183878838231635348">בכרטיס הזה מוצגות כל הבעיות בפרטיות או באבטחה שזוהו באופן אוטומטי בבדיקת האבטחה.</translation>
 <translation id="1845230888742614096">שמירת הקבוצה</translation>
-<translation id="1853558655412913122">עכשיו אפשר לשנות את המיקום של סרגל הכתובות ב"הגדרות" ואז ב"סרגל הכתובות"</translation>
 <translation id="1853692000353488670">כרטיסייה אנונימית חדשה</translation>
 <translation id="1854463785401910334">חיפוש בכרטיסיות הפתוחות</translation>
 <translation id="1860609647735325606">‏הסבר בעזרת Gemini</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
 <translation id="3476450923187944815">יש לך גישה לסיסמאות שלך באפליקציות אחרות.</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
+<translation id="3481315707647070701">המחשה ועריכה</translation>
 <translation id="3485558910355485767">חלון פרטי חדש</translation>
 <translation id="3488501490964659223">הכרטיסיות נסגרו ונתוני הגלישה נמחקו. המערכת הוציאה אותך מהחשבון</translation>
 <translation id="3490396108106323715">שיתוף הכרטיסייה הנוכחית</translation>
@@ -1090,6 +1090,7 @@
 <translation id="4455710003856931944">אפשר להחליק את הקצה כדי לעבור אחורה או קדימה.</translation>
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="446314443268698477">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה או התמונות.</translation>
+<translation id="4465941170695753889">כדי ליצור קבוצת כרטיסיות, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="4470766488397113689">על מה נעבוד עכשיו?</translation>
 <translation id="4471472356135655769">אי אפשר לייצא סיסמאות</translation>
@@ -1840,6 +1841,7 @@
 <translation id="6708501134077648845">אפשרויות של סיסמאות</translation>
 <translation id="6709964700841491574">מצב נעילה</translation>
 <translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">תשובות מהירות וחכמות יותר</translation>
 <translation id="6713676799463473249">תאריך השינוי האחרון: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">כרטיסיות שהתקבלו</translation>
 <translation id="6722638373100589752">‏כדי למלא את הפרטים באופן אוטומטי, צריך להפעיל את ההגדרה "שימוש בכרטיסים בשירותי Google" בהגדרות Wallet</translation>

@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">ใช้ไมโครโฟนและกล้องถ่ายรูปของคุณ</translation>
 <translation id="1005333234656240382">เปิดใช้การแก้ไขข้อบกพร่อง ADB ใช่ไหม</translation>
 <translation id="1005671386794704751">ชมพูโรส</translation>
+<translation id="1005692418949452963">ไม่โฟกัส</translation>
 <translation id="1005919400326853998">ดูรายละเอียดใบรับรองสำหรับ <ph name="CERT_NAME" /> ในกล่องโต้ตอบใหม่</translation>
 <translation id="1006033052970139968">อนุญาตให้เข้าถึงไมโครโฟนสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงไมโครโฟน และบริการของระบบ</translation>
 <translation id="1006873397406093306">ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ต่างๆ ได้ คุณควบคุมได้ว่าส่วนขยายนี้จะเข้าถึงเว็บไซต์ใดได้บ้าง</translation>
@@ -869,7 +870,6 @@
 <translation id="1656528038316521561">ความทึบแสงของพื้นหลัง</translation>
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
-<translation id="1657952527687824398">โฟกัสกลุ่มแท็บ</translation>
 <translation id="1658424621194652532">หน้านี้กำลังเข้าถึงไมโครโฟนของคุณ</translation>
 <translation id="1660405268563702784">มีอัปเดตสำหรับ <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}other{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}}</translation>
@@ -1588,6 +1588,7 @@
 <translation id="2215070081105889450">หากต้องการแชร์เสียง ให้แชร์แท็บหรือหน้าจอแทน</translation>
 <translation id="2217208085547223783">สถานะความน่าเชื่อถือ</translation>
 <translation id="2218019600945559112">เมาส์และทัชแพด</translation>
+<translation id="2218116022473625437">คุณสามารถปิดการไฮไลต์ข้อความ ปรับแต่งเสียง และเปลี่ยนลักษณะที่ปรากฏของหน้าได้ในการตั้งค่า</translation>
 <translation id="2218515861914035131">วางเป็นข้อความธรรมดา</translation>
 <translation id="2219007152108311874">ถามทุกครั้งที่ไปยังเว็บไซต์</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2767077837043621282">อัปเดต Chromebook ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> จะแก้ไข <ph name="FILENAME" /> ได้อยู่จนกว่าคุณจะปิดทุกแท็บของเว็บไซต์นี้</translation>
 <translation id="2769174155451290427">รูปภาพที่อัปโหลด</translation>
-<translation id="2769715732905083104">โฟกัสกลุ่มแท็บ</translation>
 <translation id="2770082596325051055">หยุด <ph name="FILE_NAME" /> ชั่วคราว</translation>
 <translation id="2770465223704140727">ลบจากรายการ</translation>
 <translation id="2770690685823456775">ส่งออกรหัสผ่านไปยังโฟลเดอร์อื่น</translation>
@@ -2611,7 +2611,6 @@
 <translation id="2984727013951557074">ระบบกำลังซิงค์ไฟล์ไปยังไดรฟ์</translation>
 <translation id="2984923316661218534">รับพาสคีย์ในอุปกรณ์นี้ด้วยเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ถอนการติดตั้งแอปแล้ว 1 แอป}other{<ph name="APP_NAME" /> ถอนการติดตั้งแอปแล้ว # แอป}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{โฟกัสแท็บ}other{โฟกัส # แท็บ}}</translation>
 <translation id="2988018669686457659">โปรแกรมแสดงภาพสำรอง</translation>
 <translation id="2988328607561082373">คุณไม่ได้ใช้รหัสผ่านซ้ำ</translation>
 <translation id="2989123969927553766">การเร่งความเร็วในการเลื่อนเมาส์</translation>
@@ -3068,6 +3067,7 @@
 <translation id="3320957378743864387">ไม่ได้รับอนุญาตให้เสนอความช่วยเหลือในการเขียน</translation>
 <translation id="3321460131042519426">เปิดใช้การตัดคำ</translation>
 <translation id="3321494112580110651">หากไม่เห็นเครื่องพิมพ์ของคุณ</translation>
+<translation id="3321512411079201586">&amp;แยกต่างหาก</translation>
 <translation id="3321776060736518525">จาก <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">ติดตั้งสำหรับ Edge</translation>
 <translation id="3323521181261657960">พิเศษสุด คุณได้เวลาอยู่หน้าจอเพิ่มขึ้น</translation>
@@ -3337,7 +3337,6 @@
 <translation id="3527473647192919613">หน้าต่างแยกใหม่</translation>
 <translation id="3528498924003805721">เป้าหมายทางลัด</translation>
 <translation id="35296112145429559">ปักหมุดปุ่มเลื่อน</translation>
-<translation id="3530919970074558307">ยกเลิกการสนทนากลุ่ม</translation>
 <translation id="3531070080754387701">Microsoft 365 เปิด <ph name="FILE_NAMES" /> จากโฟลเดอร์นี้ไม่ได้</translation>
 <translation id="3531883061432162622">ค้นหาเรื่องรออ่านและบุ๊กมาร์กได้ในบุ๊กมาร์กและรายการ</translation>
 <translation id="3532521178906420528">กำลังทำการเชื่อมต่อเครือข่าย...</translation>
@@ -3758,6 +3757,7 @@
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
 <translation id="3813296892522778813">ไปที่<ph name="BEGIN_LINK_CHROMIUM" />ความช่วยเหลือของ Google Chrome<ph name="END_LINK_CHROMIUM" /> หากคุณไม่พบข้อมูลที่กำลังค้นหา</translation>
 <translation id="3813358687923336574">ภาษาที่ใช้ในการแปลหน้าเว็บและใช้กับคำตอบด่วน</translation>
+<translation id="3815509884387832993">ฟังหน้านี้เหมือนฟังพอดแคสต์โดยใช้ปุ่ม "การเล่นด้วย AI" ในแถบเครื่องมือโหมดการอ่าน</translation>
 <translation id="3815668647912194650">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
 <translation id="3816118180265633665">สีของ Chrome</translation>
 <translation id="3817524650114746564">เปิดการตั้งค่าพร็อกซีของคอมพิวเตอร์</translation>
@@ -4142,6 +4142,7 @@
 <translation id="4109135793348361820">ย้ายหน้าต่างไปยัง <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">กู้คืนคำเตือน</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ออฟไลน์)</translation>
+<translation id="4112282889480354965">ส่วนขยายและทักษะ</translation>
 <translation id="4113743276555482284">รหัสผ่านไฟล์</translation>
 <translation id="4114524937989710624">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน Google ไดรฟ์ได้อย่างง่ายดาย
         <ph name="BREAK" />
@@ -4515,7 +4516,6 @@
 <translation id="4405580203042711503">แท็บใหม่ด้านล่าง</translation>
 <translation id="4405781821077215583">ทำให้รายการในหน้าจอรวมถึงข้อความมีขนาดเล็กลงหรือใหญ่ขึ้น</translation>
 <translation id="4406308048672435032">คุณสามารถตั้งให้แท็บนี้อยู่ในสถานะไม่ทำงาน หรือจะรีเฟรชเพื่อดูรายการทั้งหมดอีกครั้งก็ได้</translation>
-<translation id="4406881185911439342">การสนทนากลุ่ม</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4406963243402726564">ข้อมูลที่ไม่ได้บันทึก</translation>
 <translation id="4408599188496843485">ความ&amp;ช่วยเหลือ</translation>
@@ -5699,7 +5699,6 @@
 <translation id="5311304534597152726">กำลังลงชื่อเข้าใช้ในชื่อ</translation>
 <translation id="5312746996236433535">มิเรอร์หน้าจอ</translation>
 <translation id="5313967007315987356">เพิ่มเว็บไซต์</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{โฟกัสแท็บ}other{โฟกัส # แท็บ}}</translation>
 <translation id="5315738755890845852">เครื่องหมายวงเล็บปีกกาที่เกินมา: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5317781812114905957">วิธีการ</translation>
@@ -5975,6 +5974,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ต้องการที่จะ</translation>
 <translation id="5533343601674003130">บริการ PDF</translation>
 <translation id="5535769176698670170">สลับกับมุมมองด้านบน</translation>
+<translation id="5536642445914063887">สลับโปรไฟล์</translation>
 <translation id="5537725057119320332">แคสต์</translation>
 <translation id="5541091577812545428">ไม่ได้เปลี่ยนรหัสผ่าน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
@@ -6567,6 +6567,7 @@
 <translation id="6006484371116297560">คลาสสิก</translation>
 <translation id="6007053304250788613">จะไม่รวมจอแสดงผลได้เพียง 1 จอเท่านั้นในโหมดมิเรอร์</translation>
 <translation id="6007240208646052708">ภาษาของคุณไม่มีการค้นหาด้วยเสียง</translation>
+<translation id="6007858579659393165">แท็บมีรูปลักษณ์ใหม่แบบโปร่งใส</translation>
 <translation id="6010651352520077187">เมื่อเปิดไว้ Google แปลภาษาจะเสนอการแปลเว็บไซต์เป็นภาษาที่คุณต้องการ และยังแปลเว็บไซต์โดยอัตโนมัติได้ด้วย</translation>
 <translation id="6011193465932186973">ลายนิ้วมือ</translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
@@ -8776,6 +8777,7 @@
 <translation id="7702463352133825032">หยุดแคสต์ไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">งาน</translation>
 <translation id="7705085181312584869">ช่วยฉันเขียน</translation>
+<translation id="7705230242432916648">ฟังหน้านี้เหมือนฟังพอดแคสต์โดยเปิดด้วย AI</translation>
 <translation id="7705276765467986571">ไม่สามารถโหลดรูปแบบบุ๊กมาร์ก</translation>
 <translation id="7705334495398865155">สุ่มรหัสของฮาร์ดแวร์ (BSSID) เพื่อป้องกันไม่ให้ผู้อื่นติดตามอุปกรณ์นี้</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9156,6 +9158,7 @@
 <translation id="7991296728590311172">การตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
 <translation id="7992080146463834191">สรุปเนื้อหา อธิบายภาษาที่ซับซ้อนให้เข้าใจง่าย หรือถามคำถาม</translation>
 <translation id="7992203134935383159">การสังเคราะห์เสียง</translation>
+<translation id="7992462686695281167">&amp;ไม่ระบุตัวตน</translation>
 <translation id="7997826902155442747">ลำดับความสำคัญของกระบวนการ</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">สร้างไฟล์ต่อไปนี้:
@@ -9457,6 +9460,7 @@
 <translation id="8212601853154459483">โปรไฟล์นี้จัดการโดย <ph name="PROFILE_MANAGER" /> และกำหนดให้คุณสร้างโปรไฟล์แยกต่างหากสำหรับบัญชี <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">ไม่พบโปรไฟล์ ลองสแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการระบุมา</translation>
 <translation id="8214489666383623925">เปิดไฟล์...</translation>
+<translation id="8214771296778317256">เลือกรูปแบบแท็บที่ต้องการที่นี่</translation>
 <translation id="8215129063232901118">เข้าถึงความสามารถของโทรศัพท์จาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">ตัวชี้แบบไฮไลต์</translation>
 <translation id="8217399928341212914">ดำเนินการบล็อกการดาวน์โหลดไฟล์หลายๆ ไฟล์โดยอัตโนมัติต่อไป</translation>
@@ -10204,6 +10208,7 @@
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>
 <translation id="8781834595282316166">แท็บใหม่ในกลุ่ม</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" /> ใช้ปุ่มลูกศรซ้ายและขวาเพื่อย้ายทางลัด กด Enter หรือ Escape เพื่อเสร็จสิ้น</translation>
 <translation id="8781980678064919987">ปิดเครื่องเมื่อปิดฝา</translation>
 <translation id="8783171585655659524">รวมภาพหน้าจอ</translation>
 <translation id="8785622406424941542">สไตลัส</translation>
@@ -10702,6 +10707,7 @@
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="915485121129452731">แท็บเล็ตสำหรับวาดรูป</translation>
 <translation id="9155344700756733162">ยกเลิกการเลือกสี</translation>
+<translation id="9155515662479003830">คุณเปลี่ยนกลับไปใช้รูปแบบคลาสสิกได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="9157096865782046368">0.8 วินาที</translation>
 <translation id="9157697743260533322">ไม่สามารถตั้งค่าการอัปเดตอัตโนมัติสำหรับผู้ใช้ทุกคน (ข้อผิดพลาดในการเปิดใช้การตรวจสอบล่วงหน้า: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">ฝาเครื่องพิมพ์เปิดอยู่</translation>

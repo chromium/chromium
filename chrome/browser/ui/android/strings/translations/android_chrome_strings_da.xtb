@@ -135,6 +135,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1485343711570311792">Åbn i <ph name="NATIVE_APP_NAME" /> • Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Tilbage til fanen</translation>
 <translation id="1496514951988037011">brugernavn</translation>
+<translation id="1498051468374914325">Åbn konsollen Udviklerværktøjer</translation>
 <translation id="1501480321619201731">Slet gruppe</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1513352483775369820">Bogmærker og webhistorik</translation>
@@ -142,6 +143,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1516966594427080024">Åbn et nyt vindue i inkognitotilstand</translation>
 <translation id="152204906462707884">Slet hurtigt din browserhistorik, og få større kontrol over din privatlivsbeskyttelse</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
+<translation id="1537160738459068682">Åbn Udviklerværktøjer i inspektion af elementer</translation>
 <translation id="1540012742443808215">Adresselinjen vises i øjeblikket øverst</translation>
 <translation id="1543035591122163372">Log ind for at få adgang til dine adgangskoder og meget mere fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
@@ -2061,6 +2063,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9024318700713112071">Angiv Chrome som din standardbrowser</translation>
 <translation id="9027728231343310283">Fortryd for <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flyt til\u2026</translation>
+<translation id="9038316201889095704">Find på siden er deaktiveret, når der er ændringer, som ikke er gemt.</translation>
 <translation id="904146253922032365">Hold fingeren nede for at se faner lodret</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9047347135558855162">Start hurtigt en søgning i Chrome</translation>

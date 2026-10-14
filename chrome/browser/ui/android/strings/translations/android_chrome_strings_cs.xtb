@@ -135,6 +135,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1485343711570311792">Otevřít v aplikaci <ph name="NATIVE_APP_NAME" /> • Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1496514951988037011">uživatelské jméno</translation>
+<translation id="1498051468374914325">Otevřít konzoli Nástrojů pro vývojáře</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1513352483775369820">Záložky a webová historie</translation>
@@ -142,6 +143,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1516966594427080024">Otevřít nové okno v anonymním režimu</translation>
 <translation id="152204906462707884">Rychle smažte historii prohlížení a získejte větší kontrolu nad svým soukromím</translation>
 <translation id="153446405401665083">K dispozici je nová verze Chromu</translation>
+<translation id="1537160738459068682">Otevřít panel Prvky v Nástrojích pro vývojáře</translation>
 <translation id="1540012742443808215">Adresní řádek je aktuálně nahoře</translation>
 <translation id="1543035591122163372">Pokud chcete získat svá hesla a další položky ze zařízení typu <ph name="DEVICE_TYPE" />, přihlaste se</translation>
 <translation id="1544084554881119930">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
@@ -2061,6 +2063,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9024318700713112071">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="9027728231343310283">Vrátit web <ph name="SITE" /> zpět</translation>
 <translation id="9035378196785279980">Přesunout do\u2026</translation>
+<translation id="9038316201889095704">Vyhledávání na stránce je deaktivováno, dokud jsou na ní neuložené změny.</translation>
 <translation id="904146253922032365">Podržením zobrazíte karty svisle</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9047347135558855162">Rychlé zahájení vyhledávání v Chromu</translation>

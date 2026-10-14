@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Коришћење микрофона и камере</translation>
 <translation id="1005333234656240382">Желите да омогућите ADB отклањање грешака?</translation>
 <translation id="1005671386794704751">Розе</translation>
+<translation id="1005692418949452963">Уклони фокус</translation>
 <translation id="1005919400326853998">Прикажите детаље сертификата за <ph name="CERT_NAME" /> у новом дијалогу</translation>
 <translation id="1006033052970139968">Приступ микрофону је дозвољен за апликације, веб-сајтове са дозволом за микрофон и системске услуге</translation>
 <translation id="1006873397406093306">Овај додатак може да чита и мења податке на сајтовима. Можете да контролишете којим сајтовима додатак може да приступа.</translation>
@@ -727,6 +728,7 @@
 <translation id="1552752544932680961">Управљајте додатком</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /> о верзији Microsoft 365 на Chromebook-у.</translation>
+<translation id="1554343363646356023">Нови &amp;изоловани прозор</translation>
 <translation id="1554640914375980459">Светло на екрану трепери када примате обавештења. Користите обавештења са треперењем опрезно ако сте осетљиви на светло.</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1556127816860282890">Активност у позадини и неки визуелни ефекти, на пример, глатко скроловање, могу да буду ограничени</translation>
@@ -869,7 +871,6 @@
 <translation id="1656528038316521561">Непрозирност позадине</translation>
 <translation id="1657406563541664238">Помозите унапређивање <ph name="PRODUCT_NAME" /> прегледача тако што ћете аутоматски слати Google-у статистику коришћења и извештаје о отказивању</translation>
 <translation id="1657937299377480641">Треба ти дозвола родитеља за поновно пријављивање ради приступа образовним ресурсима</translation>
-<translation id="1657952527687824398">Фокусирај групу картица</translation>
 <translation id="1658424621194652532">Ова страница приступа микрофону.</translation>
 <translation id="1660405268563702784">Доступно је ажурирање за <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Решите проблем са картицом која успорава прегледач}one{Решите проблем са картицама које успоравају прегледач}few{Решите проблем са картицама које успоравају прегледач}other{Решите проблем са картицама које успоравају прегледач}}</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2767077837043621282">Ажурирање Chromebook-а није успело. Пробајте поново касније.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ће моћи да мења датотеку <ph name="FILENAME" /> док не затворите све картице овог сајта</translation>
 <translation id="2769174155451290427">Отпремљена слика</translation>
-<translation id="2769715732905083104">Фокусирај групу картица</translation>
 <translation id="2770082596325051055">Паузирајте фајл <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Уклони са листе</translation>
 <translation id="2770690685823456775">Извезите лозинке у други фолдер</translation>
@@ -2611,7 +2611,6 @@
 <translation id="2984727013951557074">Фајл се још увек синхронизује са Диском.</translation>
 <translation id="2984923316661218534">Преузмите приступне кључеве на овом уређају помоћу Google менаџера лозинки</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Апликација <ph name="APP_NAME" /> је деинсталирала апликацију}one{Апликација <ph name="APP_NAME" /> је деинсталирала # апликацију}few{Апликација <ph name="APP_NAME" /> је деинсталирала # апликације}other{Апликација <ph name="APP_NAME" /> је деинсталирала # апликација}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Фокусирај картицу}one{Фокусирај # картицу}few{Фокусирај # картице}other{Фокусирај # картица}}</translation>
 <translation id="2988018669686457659">Резервни приказивач</translation>
 <translation id="2988328607561082373">Ниједну лозинку не користите за више налога</translation>
 <translation id="2989123969927553766">Убрзавање померања мишем</translation>
@@ -3070,6 +3069,7 @@
 <translation id="3320957378743864387">Није дозвољено да нуди помоћ за писање</translation>
 <translation id="3321460131042519426">Омогући прелом реда</translation>
 <translation id="3321494112580110651">Не видите штампач?</translation>
+<translation id="3321512411079201586">&amp;Изоловано</translation>
 <translation id="3321776060736518525">Од <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Инсталирај за Edge</translation>
 <translation id="3323521181261657960">Бонус! Добијаш додатно време испред екрана</translation>
@@ -3156,6 +3156,7 @@
 <translation id="3390740059150071453">Погледајте улево</translation>
 <translation id="3393554941209044235">Chrome анализа докумената</translation>
 <translation id="3394072120086516913">Рачунар користи жичану мрежу, а уређај за пребацивање је на WiFi-ју</translation>
+<translation id="3394561494170561143">Нова изолована &amp;картица</translation>
 <translation id="3394850431319394743">Дозвољена употреба идентификатора за пуштање заштићеног садржаја</translation>
 <translation id="339722927132407568">Зауставља се</translation>
 <translation id="3399432415385675819">Обавештења ће бити онемогућена</translation>
@@ -3339,7 +3340,6 @@
 <translation id="3527473647192919613">Нови изоловани прозор</translation>
 <translation id="3528498924003805721">Циљеви пречица</translation>
 <translation id="35296112145429559">Закачи дугмад за скроловање</translation>
-<translation id="3530919970074558307">Уклони фокус са групе</translation>
 <translation id="3531070080754387701">Microsoft 365 не може да отвори <ph name="FILE_NAMES" /> из овог фолдера</translation>
 <translation id="3531883061432162622">Пронађите листу за читање и обележиваче у обележивачима и листама</translation>
 <translation id="3532521178906420528">Мрежна веза се успоставља...</translation>
@@ -4519,7 +4519,6 @@
 <translation id="4405580203042711503">Нова картица у наставку</translation>
 <translation id="4405781821077215583">Умањите или увећајте ставке на екрану, укључујући текст.</translation>
 <translation id="4406308048672435032">Ову картицу можете да деактивирате или освежите да бисте поново видели комплетну листу</translation>
-<translation id="4406881185911439342">Фокусирај групу</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406963243402726564">Несачувани подаци</translation>
 <translation id="4408599188496843485">П&amp;омоћ</translation>
@@ -5704,7 +5703,6 @@
 <translation id="5311304534597152726">Пријављујете се као</translation>
 <translation id="5312746996236433535">пресликавање екрана</translation>
 <translation id="5313967007315987356">Додајте сајт</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Фокусирај картицу}one{Фокусирај # картицу}few{Фокусирај # картице}other{Фокусирај # картица}}</translation>
 <translation id="5315738755890845852">Сувишна витичаста заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5317781812114905957">Упутства</translation>
@@ -5979,6 +5977,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> жели да</translation>
 <translation id="5533343601674003130">Услуга за PDF</translation>
 <translation id="5535769176698670170">Замени горњим приказом</translation>
+<translation id="5536642445914063887">Промените профил</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5541091577812545428">Лозинка није промењена</translation>
 <translation id="5542132724887566711">Профил</translation>
@@ -6575,6 +6574,7 @@
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007053304250788613">Само један екран може да се изузме у режиму огледала</translation>
 <translation id="6007240208646052708">Гласовна претрага на вашем језику није доступна.</translation>
+<translation id="6007858579659393165">Картице имају нови прозирни изглед</translation>
 <translation id="6010651352520077187">Када је укључено, Google преводилац ће нудити да преведе сајтове на жељени језик. Може и аутоматски да преводи сајтове.</translation>
 <translation id="6011193465932186973">Дигитални отисак</translation>
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
@@ -7031,6 +7031,7 @@
 <translation id="6370021412472292592">Учитавање манифеста није могуће.</translation>
 <translation id="6370551072524410110">тастер за претрагу + shift + backspace</translation>
 <translation id="637135143619858508">Размакнуто</translation>
+<translation id="6372413553057593904">Неактивна картица у прозору <ph name="WINDOW_TITLE" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="637642201764944055">Старе верзије Chrome апликација неће се отварати на Linux уређајима после децембра 2022. Обратите се администратору да бисте ажурирали ову апликацију на нову верзију или је уклонили.</translation>
@@ -9170,6 +9171,7 @@
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
 <translation id="7992080146463834191">Резимирајте садржај, поједноставите сложен језик или постављајте питања.</translation>
 <translation id="7992203134935383159">Синтеза говора</translation>
+<translation id="7992462686695281167">&amp;Без архивирања</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
 <translation id="7998701048266085837">URL-ови</translation>
 <translation id="7999229196265990314">Направљене су следеће датотеке:
@@ -9471,6 +9473,7 @@
 <translation id="8212601853154459483">Овим профилом управља <ph name="PROFILE_MANAGER" /> и захтева да направите посебан профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Није пронађен ниједан профил. Пробајте да скенирате QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера.</translation>
 <translation id="8214489666383623925">Отвори датотеку...</translation>
+<translation id="8214771296778317256">Овде изаберите жељени стил картице</translation>
 <translation id="8215129063232901118">Приступајте могућностима телефона са уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Показивач за истицање</translation>
 <translation id="8217399928341212914">Настави да блокираш аутоматска преузимања више датотека</translation>
@@ -10717,6 +10720,7 @@
 <translation id="9154194610265714752">Ажурирано</translation>
 <translation id="915485121129452731">Таблет са оловком</translation>
 <translation id="9155344700756733162">Поништите избор боје</translation>
+<translation id="9155515662479003830">Увек можете да се вратите на класичан стил у подешавањима</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Подешавање аутоматских ажурирања за све кориснике није успело (грешка покретања при провери: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Врата штампача су отворена</translation>

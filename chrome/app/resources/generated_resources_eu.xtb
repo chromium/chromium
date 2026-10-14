@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Mikrofonoa eta kamera erabili.</translation>
 <translation id="1005333234656240382">ADB arazketa gaitu nahi duzu?</translation>
 <translation id="1005671386794704751">Arrosa</translation>
+<translation id="1005692418949452963">Kendu fokua</translation>
 <translation id="1005919400326853998">Ikusi <ph name="CERT_NAME" /> ziurtagiriaren xehetasunak beste fitxa batean</translation>
 <translation id="1006033052970139968">Mikrofonoa erabiltzeko baimena duten aplikazio eta webguneek erabil dezakete mikrofonoa, baita sistemaren zerbitzuek ere</translation>
 <translation id="1006873397406093306">Luzapen honek webguneetan dituzun datuak irakurri eta alda ditzake. Luzapenak zein webgune atzi ditzakeen kontrola dezakezu.</translation>
@@ -869,7 +870,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1656528038316521561">Atzeko planoaren opakutasuna</translation>
 <translation id="1657406563541664238">Lagundu <ph name="PRODUCT_NAME" /> hobetzen Google-ra erabilera-estatistikak eta hutsegite-txostenak bidalita</translation>
 <translation id="1657937299377480641">Hezkuntza-baliabideak atzitzeko saioa berriro hasteko, eskatu gurasoren bati baimena eman diezazula</translation>
-<translation id="1657952527687824398">Fokuratu fitxa taldea</translation>
 <translation id="1658424621194652532">Orria zure mikrofonoa atzitzen ari da.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> aplikazioaren eguneratze bat erabilgarri dago</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Konpondu arakatzailea mantsotzen duen fitxa}other{Konpondu arakatzailea mantsotzen duten fitxak}}</translation>
@@ -1587,6 +1587,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2215070081105889450">Audioa partekatzeko, partekatu fitxa bat edo pantaila</translation>
 <translation id="2217208085547223783">Fidagarritasun-egoera</translation>
 <translation id="2218019600945559112">Sagua eta ukipen-panela</translation>
+<translation id="2218116022473625437">Ezarpenetan, testuaren nabarmentzea desaktibatu, ahotsa aldatu eta orriaren itxura pertsonaliza dezakezu.</translation>
 <translation id="2218515861914035131">Itsatsi testu arrunt gisa</translation>
 <translation id="2219007152108311874">Galdetu bisita bakoitzean</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
@@ -2328,7 +2329,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2767077837043621282">Ezin izan da eguneratu Chromebook-a. Saiatu berriro geroago.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> fitxategia editatzeko baimena izango du webguneko fitxa guztiak ixten dituzun arte</translation>
 <translation id="2769174155451290427">Kargatutako irudia</translation>
-<translation id="2769715732905083104">Fokuratu fitxa taldea</translation>
 <translation id="2770082596325051055">Pausatu <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Kendu zerrendatik</translation>
 <translation id="2770690685823456775">Esportatu pasahitzak beste karpeta batera</translation>
@@ -2610,7 +2610,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2984727013951557074">Fitxategia Drive-rekin sinkronizatzen ari da oraindik ere.</translation>
 <translation id="2984923316661218534">Lortu zure sarbide-gakoak gailu honetan Google-ren Pasahitz-kudeatzailea zerbitzuari esker</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Aplikazio bat desinstalatu du <ph name="APP_NAME" /> aplikazioak}other{# aplikazio desinstalatu ditu <ph name="APP_NAME" /> aplikazioak}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Fokuratu fitxa}other{Fokuratu # fitxa}}</translation>
 <translation id="2988018669686457659">Aurretiko errendatzailea</translation>
 <translation id="2988328607561082373">Ez zara beste inon erabiltzen ari pasahitzak</translation>
 <translation id="2989123969927553766">Saguarekin gora eta behera bizkorrago egiteko aukera</translation>
@@ -3336,7 +3335,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3527473647192919613">Leiho isolatu berria</translation>
 <translation id="3528498924003805721">Lasterbideen jomugak</translation>
 <translation id="35296112145429559">Ainguratu gora eta behera egiteko botoiak</translation>
-<translation id="3530919970074558307">Kendu fokua taldeari</translation>
 <translation id="3531070080754387701">Microsoft 365-ek ezin du ireki <ph name="FILE_NAMES" /> karpeta honetatik</translation>
 <translation id="3531883061432162622">Bilatu irakurketa-zerrenda eta laster-markak Laster-markak eta zerrendak atalean</translation>
 <translation id="3532521178906420528">Sarera konektatzen…</translation>
@@ -3757,6 +3755,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3812525830114410218">Ziurtagiri txarra</translation>
 <translation id="3813296892522778813">Behar duzuna aurkitu ezin baduzu, joan <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome laguntzara<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Orriak itzultzeko eta Erantzun bizkorrak eginbiderako erabili den hizkuntza</translation>
+<translation id="3815509884387832993">Entzun orri hau podcast bat balitz bezala AA bidezko erreprodukzioari esker. Horretarako, sakatu "Aktibatu AA bidezko erreprodukzioa" irakurtzeko moduko tresna-barran.</translation>
 <translation id="3815668647912194650">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>
 <translation id="3816118180265633665">Chrome-ko koloreak</translation>
 <translation id="3817524650114746564">Ireki ordenagailuaren proxy-ezarpenak</translation>
@@ -4141,6 +4140,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4109135793348361820">Eraman leihoa <ph name="USER_NAME" /> erabiltzailearen mahaigainera (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Leheneratu abisua</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (deskonektatuta)</translation>
+<translation id="4112282889480354965">Luzapenak eta gaitasunak</translation>
 <translation id="4113743276555482284">Fitxategiko pasahitza</translation>
 <translation id="4114524937989710624">Google Drive-n egindako azken jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
         <ph name="BREAK" />
@@ -4514,7 +4514,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4405580203042711503">Fitxa berria behean</translation>
 <translation id="4405781821077215583">Handitu edo txikitu pantailako elementuak, testua barne</translation>
 <translation id="4406308048672435032">Fitxa hau inaktibo ezar dezakezu. Bestela, freskatu, zerrenda osoa berriro ikusteko.</translation>
-<translation id="4406881185911439342">Fokuratu taldea</translation>
 <translation id="4406883609789734330">Istanteko azpitituluak</translation>
 <translation id="4406963243402726564">Gorde gabeko datuak</translation>
 <translation id="4408599188496843485">&amp;Laguntza</translation>
@@ -5698,7 +5697,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5311304534597152726">Kontu honetan hasiko duzu saioa:</translation>
 <translation id="5312746996236433535">pantaila islatzeko tekla</translation>
 <translation id="5313967007315987356">Gehitu webgunea</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Fokuratu fitxa}other{Fokuratu # fitxa}}</translation>
 <translation id="5315738755890845852">Giltza gehigarria: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5317781812114905957">Argibideak</translation>
@@ -5974,6 +5972,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> webguneak hau egin nahi du:</translation>
 <translation id="5533343601674003130">PDFetarako zerbitzua</translation>
 <translation id="5535769176698670170">Aldatu goiko ikuspegiarekin</translation>
+<translation id="5536642445914063887">Aldatu profila</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5541091577812545428">Pasahitza ez da aldatu</translation>
 <translation id="5542132724887566711">Profila</translation>
@@ -6566,6 +6565,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6006484371116297560">Klasikoa</translation>
 <translation id="6007053304250788613">Pantaila bat soilik utz daiteke erabili gabe ispilu moduan</translation>
 <translation id="6007240208646052708">Ahozko bilaketa ez dago eskuragarri zure hizkuntzan.</translation>
+<translation id="6007858579659393165">Fitxek itxura garden berria dute</translation>
 <translation id="6010651352520077187">Aktibatuta badago, webguneak zure hizkuntza hobetsira itzultzea eskainiko dizu Google Translate-k. Baliteke webguneak automatikoki ere itzultzea.</translation>
 <translation id="6011193465932186973">Hatz-marka</translation>
 <translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
@@ -8774,6 +8774,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7702463352133825032">Utzi <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="7704305437604973648">Zeregina</translation>
 <translation id="7705085181312584869">Idazteko laguntza</translation>
+<translation id="7705230242432916648">Entzun orri hau podcast bat balitz bezala AA bidezko erreprodukzioari esker</translation>
 <translation id="7705276765467986571">Ezin izan da laster-marken modeloa kargatu.</translation>
 <translation id="7705334495398865155">Antolatu ausaz hardware-identifikatzailea (BSSIDa) beste pertsonei gailuaren jarraipena egitea galarazteko.</translation>
 <translation id="7705524343798198388">VPNa</translation>
@@ -9455,6 +9456,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> domeinuak kudeatzen du gailu hau, eta <ph name="USER_EMAIL_ADDRESS" /> konturako beste profil bat sortzea eskatzen du</translation>
 <translation id="8212792694174629011">Ez da aurkitu profilik. Eskaneatu QR kodea gailuaren kamera erabiliz edo idatzi operadoreak emandako aktibazio-kodea.</translation>
 <translation id="8214489666383623925">Ireki fitxategia…</translation>
+<translation id="8214771296778317256">Aukeratu fitxetarako nahiago duzun estiloa hemen</translation>
 <translation id="8215129063232901118">Atzitu telefonoaren gaitasunak <ph name="DEVICE_TYPE" /> gailutik</translation>
 <translation id="8217212468862726597">Erakuslea nabarmentzeko eginbidea</translation>
 <translation id="8217399928341212914">Jarraitu blokeatzen fitxategi bat baino gehiagoren deskarga automatikoa</translation>
@@ -10202,6 +10204,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8780123805589053431">Lortu Google-ren irudi-azalpenak</translation>
 <translation id="8780443667474968681">Desaktibatuta dago ahozko bilaketa.</translation>
 <translation id="8781834595282316166">Gehitu fitxa bat taldean</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, erabili ezkerrera eta eskuinera egiteko gezi-teklak lasterbidea mugitzeko. Amaitzeko, sakatu Sartu edo Ihes.</translation>
 <translation id="8781980678064919987">Itzali estalkia itxiz gero</translation>
 <translation id="8783171585655659524">Erantsi pantaila-argazki bat</translation>
 <translation id="8785622406424941542">Arkatza</translation>
@@ -10700,6 +10703,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9154194610265714752">Eguneratuta</translation>
 <translation id="915485121129452731">Arkatza duen tableta</translation>
 <translation id="9155344700756733162">Desautatu kolorea</translation>
+<translation id="9155515662479003830">Edonoiz itzul zaitezke estilo klasikora ezarpenetan.</translation>
 <translation id="9157096865782046368">0,8 segundo</translation>
 <translation id="9157697743260533322">Ezin izan dira konfiguratu eguneratze automatikoak erabiltzaile guztientzat (hasierako proba-eskaeraren exekuzio-errorea: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Inprimagailuaren estalkia irekita dago</translation>

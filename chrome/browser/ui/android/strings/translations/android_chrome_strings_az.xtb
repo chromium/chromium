@@ -135,6 +135,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> tətbiqində açın • <ph name="DEVICE_NAME" /> cihazından</translation>
 <translation id="1495677929897281669">Taba geri qayıdın</translation>
 <translation id="1496514951988037011">istifadəçi adı</translation>
+<translation id="1498051468374914325">Tərtibatçı Alətləri Konsolunu açın</translation>
 <translation id="1501480321619201731">Qrupu silin</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1513352483775369820">Əlfəcin və veb tarixçəsi</translation>
@@ -142,6 +143,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1516966594427080024">Anonim rejimində yeni pəncərə açın</translation>
 <translation id="152204906462707884">Brauzer tarixçənizi sürətlə silin və məxfiliyinizə daha çox nəzarət edin</translation>
 <translation id="153446405401665083">Chrome-un yeni versiyası əlçatandır</translation>
+<translation id="1537160738459068682">Tərtibatçı Alətləri Elementlərini açın</translation>
 <translation id="1540012742443808215">Ünvan paneli yuxarıdadır</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> cihazındakı parolları və daha çoxunu əldə etmək üçün daxil olun</translation>
 <translation id="1544084554881119930">Ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
@@ -1069,6 +1071,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5233638681132016545">Yeni panel</translation>
 <translation id="5235196193381275927">Giriş zamanı xəta baş verdi</translation>
 <translation id="5246093389635966745">Alətlər panelinin redaktəsi qısayolu</translation>
+<translation id="5257142004843671642">Yan panelin ölçüsünü dəyişin</translation>
 <translation id="5264813352784073502">son 24 saat</translation>
 <translation id="5267572070504076962">Təhlükəli saytlardan qorunmaq üçün Güvənli Baxışı aktiv edin</translation>
 <translation id="5273031377282080577">Administrator bu ayarı idarə edir.</translation>
@@ -2059,6 +2062,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="9024318700713112071">Chrome-u defolt kimi ayarlayın</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> üçün geri qaytarın</translation>
 <translation id="9035378196785279980">Bura köçürün\u2026</translation>
+<translation id="9038316201889095704">Yadda saxlanılmamış dəyişikliklər olduqda səhifədə tapın funksiyası deaktiv edilir.</translation>
 <translation id="904146253922032365">Tabların şaquli göstərilməsi üçün toxunub saxlayın</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9047347135558855162">Chrome-da axtarışa tez başlayın</translation>

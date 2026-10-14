@@ -135,6 +135,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1485343711570311792">Buka dalam <ph name="NATIVE_APP_NAME" /> • Daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1496514951988037011">nama pengguna</translation>
+<translation id="1498051468374914325">Buka Konsol Alatan Pembangun</translation>
 <translation id="1501480321619201731">Padamkan kumpulan</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1513352483775369820">Penanda halaman dan sejarah web</translation>
@@ -142,6 +143,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1516966594427080024">Buka tetingkap baharu dalam mod Inkognito</translation>
 <translation id="152204906462707884">Padamkan sejarah penyemakan imbas anda dengan pantas dan kawal privasi anda dengan lebih baik</translation>
 <translation id="153446405401665083">Versi baharu Chrome tersedia</translation>
+<translation id="1537160738459068682">Buka Elemen Alatan Pembangun</translation>
 <translation id="1540012742443808215">Bar alamat terletak pada bahagian atas pada masa ini</translation>
 <translation id="1543035591122163372">Log masuk untuk mendapatkan kata laluan anda dan pelbagai lagi daripada <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
@@ -1069,6 +1071,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5233638681132016545">Tab baharu</translation>
 <translation id="5235196193381275927">Kesilapan telah berlaku semasa log masuk</translation>
 <translation id="5246093389635966745">Edit pintasan bar alat</translation>
+<translation id="5257142004843671642">Ubah saiz panel sisi</translation>
 <translation id="5264813352784073502">24 jam yang lalu</translation>
 <translation id="5267572070504076962">Hidupkan Penyemakan Imbas Selamat untuk mendapatkan perlindungan terhadap laman berbahaya</translation>
 <translation id="5273031377282080577">Pentadbir anda mengurus tetapan ini.</translation>
@@ -2061,6 +2064,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9027728231343310283">Buat asal <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Alihkan ke\u2026</translation>
+<translation id="9038316201889095704">Cari dalam halaman dilumpuhkan semasa terdapat perubahan yang tidak disimpan.</translation>
 <translation id="904146253922032365">Sentuh dan tahan untuk menunjukkan tab secara menegak</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9047347135558855162">Mulakan carian dalam Chrome dengan pantas</translation>

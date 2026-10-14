@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Walletত খুলিবনে?</translation>
 <translation id="183878838231635348">এই কাৰ্ডখনে সুৰক্ষা পৰীক্ষাটোৱে আপোনাৰ বাবে স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা যিকোনো গোপনীয়তা অথবা সুৰক্ষা সম্পৰ্কীয় সমস্যা দেখুৱায়।</translation>
 <translation id="1845230888742614096">গোটটো ৰাখক</translation>
-<translation id="1853558655412913122">আপুনি এতিয়া "ছেটিং" আৰু তাৰ পাছত "ঠিকনা বাৰ"লৈ গৈ ঠিকনা বাৰৰ স্থান সলনি কৰিব পাৰে</translation>
 <translation id="1853692000353488670">নতুন ইনকগনিট’ টেব</translation>
 <translation id="1854463785401910334">খোলা থকা টেবত সন্ধান কৰক</translation>
 <translation id="1860609647735325606">Geminiৰ জৰিয়তে ব্যাখ্যা কৰক</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Safariৰ পৰা আপোনাৰ ডেটা আনক</translation>
 <translation id="2526166285241366046">এটা পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="2529021024822217800">সকলো খোলক</translation>
+<translation id="2530932541542751783">এই ছেটিংটোৰ ক্ষেত্ৰত কিবা সমস্যা হৈছে। Chrome আৰু iPadOS আপডে’ট কৰি ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক। যদি এই আসোঁৱাহটো হৈ থাকে, আপোনাৰ iPadএ এই ছেটিংটো সমৰ্থন নকৰিব পাৰে।</translation>
 <translation id="2536991091671391962">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইসমূহ <ph name="EMAIL" />ৰ Google Password Managerত ছেভ কৰা হয়।</translation>
 <translation id="2538103551183528357">লুকুৱাই ৰখা, পাছৱৰ্ড</translation>
 <translation id="2538705697765638552">আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="USER_EMAIL" />ৰ বাবে Google Walletত আপোনাৰ তথ্য পৰিচালনা কৰিব পাৰে।</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="3476450923187944815">অন্য এপ্‌সমূহত আপোনাৰ পাছৱৰ্ডসমূহ এক্সেছ কৰক।</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
+<translation id="3481315707647070701">ভিজুৱেলাইজ আৰু সম্পাদনা কৰক</translation>
 <translation id="3485558910355485767">নতুন ইনক’গনিট’ ৱিণ্ড’</translation>
 <translation id="3488501490964659223">টেবসমূহ বন্ধ কৰা হৈছে আৰু ব্ৰাউজিঙৰ ডেটা মচি পেলোৱা হৈছে। আপোনাক ছাইন আউট কৰোৱা হৈছে</translation>
 <translation id="3490396108106323715">বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰক</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">আটাইবোৰ বাছনি কৰক</translation>
 <translation id="3679163990085797665">পঢ়াৰ সূচীৰ পঢ়া প্ৰৱিষ্টি মচক</translation>
 <translation id="368329460027487650">ছাইন আউট কৰা আছে। ছাইন ইন কৰিবলৈ বিকল্পসমূহ খোলে।</translation>
+<translation id="3689746421535476813">সম্পাদনা কৰিবলৈ এটা ছেভ কৰি থোৱা পৰিশোধ পদ্ধতি বাছনি কৰক বা এটা নতুন পৰিশোধ পদ্ধতি যোগ দিয়ক</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3700134753671613714">আপোনাৰ আটাইবোৰ ডিভাইচত বুকমার্কসমূহ পাবলৈ ছাইন ইন কৰক।</translation>
 <translation id="3701167022068948696">এতিয়াই সমাধান কৰক</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">আপুনি <ph name="URL" />ত ছাইন ইন কৰিব</translation>
 <translation id="3934905113567851655">আকাৰ সলনি কৰিবলৈ পিঞ্চ কৰক</translation>
 <translation id="393732545649378031">একাউণ্ট</translation>
+<translation id="3939683043166875001">আপোনাৰ শীৰ্ষ ছাইটসমূহ, ফীড বিচাৰি পোৱা সুবিধাটো আৰু অধিক লুকুৱাওক বা দেখুৱাওক।</translation>
 <translation id="3940195383040445971">টেবত মূল্য ট্ৰেক কৰক</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} টা টেব বন্ধ কৰক}one{{COUNT} টা টেব বন্ধ কৰক}other{{COUNT} টা টেব বন্ধ কৰক}}</translation>
 <translation id="3946483119107054883">CSV হিচাপে ডাউনল’ড কৰক</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">পৃষ্ঠাৰ কাৰ্যৰ মেনু খোলক</translation>
 <translation id="4979397965658815378">আপোনাৰ সকলো ডিভাইচত বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ পাবৰ বাবে Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="4985921635659180565">কোনো ফাইল মচাৰ সময়সূচী নিৰ্ধাৰণ কৰাৰ পাছত, সেইটো বাতিল কৰিব নোৱাৰি।</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{১ টা শ্বেয়াৰ কৰা টেব}one{{COUNT} টা শ্বেয়াৰ কৰা টেব}other{{COUNT} টা শ্বেয়াৰ কৰা টেব}}</translation>
 <translation id="498624032394115435">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে।</translation>
 <translation id="4986428648020277392">প্ৰ’ম্পট্‌: মই কোনটো কিনিব লাগে? ৩ টাৰ ভিতৰত ২ নম্বৰটো</translation>
 <translation id="498768198683310172">Gemini ব্যৱহাৰ কৰা আৰম্ভ কৰক</translation>
@@ -1720,6 +1724,7 @@
 <translation id="6372558618707314581">আপুনি বিচৰা যিকোনো পৃষ্ঠালৈ যাওক</translation>
 <translation id="6374469231428023295">আকৌ চেষ্টা কৰক</translation>
 <translation id="6374514103145916800">সোধক</translation>
+<translation id="6381241974485088375">ইয়াৰ পৰা যিকোনো সময়তে আপোনাৰ নতুন টেবৰ পৃষ্ঠা কাষ্টমাইজ কৰক</translation>
 <translation id="6383719166112032471">অৱস্থান খোলক…</translation>
 <translation id="6387994324662817823">পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত থকা Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়।</translation>
 <translation id="6393156038355142111">জটিল পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক</translation>
@@ -1838,6 +1843,7 @@
 <translation id="6708501134077648845">পাছৱৰ্ডৰ বিকল্পসমূহ</translation>
 <translation id="6709964700841491574">লকডাউন ম’ড</translation>
 <translation id="6710079714193676716">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে। কিছুমান সুবিধা উপলব্ধ নহ’বও পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">স্মাৰ্ট, দ্ৰুত উত্তৰ</translation>
 <translation id="6713676799463473249">সংশোধন কৰাৰ সময় <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">লাভ কৰা টেব</translation>
 <translation id="6722638373100589752">আপোনাৰ তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, Walletৰ ছেটিঙত “সমগ্ৰ Googleত পাছ ব্যৱহাৰ কৰক” অন কৰক</translation>
@@ -1918,6 +1924,7 @@
 <translation id="6938212956536472404">এই টেবটো শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6946722113367118030">ভাবি থকা</translation>
+<translation id="6947751977892029882">এই ছেটিংটোৰ ক্ষেত্ৰত কিবা সমস্যা হৈছে। Chrome আৰু iOS আপডে’ট কৰি ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক। যদি এই আসোঁৱাহটো হৈ থাকে, আপোনাৰ iPhoneএ এই ছেটিংটো সমৰ্থন নকৰিব পাৰে।</translation>
 <translation id="6950522403736391608">লুকুওৱা হৈছে</translation>
 <translation id="695965663642079255">দ্ৰুতভাৱে চেক আউট কৰিবলৈ পৰিশোধৰ তথ্য ছেভ আৰু পৰিচালনা কৰক</translation>
 <translation id="6962809930976936328">Geminiৰ জৰিয়তে অন্তৰ্দৃষ্টি লাভ কৰক</translation>
@@ -2346,6 +2353,7 @@
 <translation id="8264966119170358612">আপোনাৰ ছেভ কৰি থোৱা কিছুমান পাছৱৰ্ড Googleৰ বাহিৰৰ এটা ডেটা উলংঘনত ফাদিল হৈছে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chromeৰ মেনুখন খোলক</translation>
 <translation id="826614135184049678">আপোনাৰ iPad ৰিছেট কৰাৰ অংশ হিচাপে আপোনাক আপোনাৰ একাউণ্ট <ph name="USER_NAME" />ৰ পৰা ছাইন আউট কৰা হৈছে। পুনৰ ছাইন ইন কৰিবলৈ তলত "অব্যাহত ৰাখক"ত টিপক।</translation>
+<translation id="8266370374397811600">নতুন কৃতিত্ব আনলক কৰা হৈছে! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">আপুনি প্ৰ’ফাইল সলনি কৰিবলৈ লৈছে</translation>
 <translation id="8275068909952022340">অধিক…</translation>
@@ -2430,6 +2438,7 @@
 <translation id="8535368836838588657">পাছৱৰ্ড প্ৰকাশ কৰক</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />ৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="8542331710562073430">কিবা ভুল হ’ল। পুনৰ লাইভ হোৱাৰ বাবে চেষ্টা কৰিবলৈ লাইভ হওক বুটামটোত টিপক।</translation>
+<translation id="8544172904312384600">সম্পাদনা কৰক বা এটা নতুন পৰিশোধ পদ্ধতি যোগ দিয়ক</translation>
 <translation id="8545276357312221485">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰৰ ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="854938212724803178">আপোনাৰ ১ টা হেক কৰা পাছৱৰ্ড আছে। সুৰক্ষিত হৈ থাকিবলৈ এইটো এতিয়াই ঠিক কৰক।</translation>
 <translation id="8551311254462607218">ঠিকনাৰ বাৰত, Google Lens কেমেৰাৰ চিহ্নত টিপক</translation>
@@ -2468,6 +2477,7 @@
 <translation id="8639963783467694461">স্বয়ংক্রিয়ভাৱে পূৰ কৰা সুবিধাৰ ছেটিং</translation>
 <translation id="8642417828095157370">অধিক প্ৰাসংগিক উত্তৰৰ বাবে টেবসমূহ শ্বেয়াৰ কৰা হয়</translation>
 <translation id="8643403533759285912">গোট মচক</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">দাম ট্ৰেক কৰাটো বাতিল কৰিব পৰা নগ’ল।</translation>
 <translation id="8654802032646794042">বাতিল কৰক</translation>
 <translation id="8655861111558401309">ব্ৰাউজিঙৰ ডেটা মচক বাছনি কৰক</translation>

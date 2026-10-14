@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Използване на микрофона и камерата ви</translation>
 <translation id="1005333234656240382">Да се активира ли отстраняването на грешки през ADB?</translation>
 <translation id="1005671386794704751">розово</translation>
+<translation id="1005692418949452963">Премахване на фокуса</translation>
 <translation id="1005919400326853998">Преглед на подробностите за сертификата за <ph name="CERT_NAME" /> в нов диалогов прозорец</translation>
 <translation id="1006033052970139968">Достъпът до микрофона е разрешен за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="1006873397406093306">Това разширение може да чете и променя данните ви на сайтовете. Можете да контролирате кои сайтове да са достъпни за него.</translation>
@@ -870,7 +871,6 @@
 <translation id="1656528038316521561">Плътност на фона</translation>
 <translation id="1657406563541664238">Помогнете ни да подобрим <ph name="PRODUCT_NAME" /> като автоматично изпращате на Google статистически данни за използването му и сигнали за сривове</translation>
 <translation id="1657937299377480641">За да влезете отново с цел достъп до образователни ресурси, помолете родител да ви предостави разрешение</translation>
-<translation id="1657952527687824398">Поставяне на фокуса върху групата раздели</translation>
 <translation id="1658424621194652532">Тази страница осъществява достъп до микрофона ви.</translation>
 <translation id="1660405268563702784">Налице е актуализация за <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Коригирайте раздела, който забавя браузъра ви}other{Коригирайте разделите, които забавят браузъра ви}}</translation>
@@ -1597,6 +1597,7 @@
 <translation id="2215070081105889450">За да споделите звук, трябва да споделите раздел или екран</translation>
 <translation id="2217208085547223783">Състояние на надеждност</translation>
 <translation id="2218019600945559112">Мишка и сензорен панел</translation>
+<translation id="2218116022473625437">Можете да изключите открояването на текста, да промените гласа и да промените облика на страницата от настройките.</translation>
 <translation id="2218515861914035131">Поставяне като неформатиран текст</translation>
 <translation id="2219007152108311874">Извеждане на запитване при всяко посещение</translation>
 <translation id="2220529011494928058">Подаване на сигнал за проблем</translation>
@@ -2341,7 +2342,6 @@
 <translation id="2767077837043621282">Вашият Chromebook не бе актуализиран. Опитайте отново по-късно.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ще може да редактира <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
 <translation id="2769174155451290427">Качено изображение</translation>
-<translation id="2769715732905083104">Поставяне на фокуса върху групата раздели</translation>
 <translation id="2770082596325051055">Поставяне на пауза на <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Премахване от списъка</translation>
 <translation id="2770690685823456775">Експортирайте паролите си в друга папка.</translation>
@@ -2623,7 +2623,6 @@
 <translation id="2984727013951557074">Файлът още се синхронизира с Диск.</translation>
 <translation id="2984923316661218534">Получете ключовете си за достъп на това устройство с Google Мениджър на пароли</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> деинсталира приложение}other{<ph name="APP_NAME" /> деинсталира # приложения}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Поставяне на фокуса върху раздела}other{Поставяне на фокуса върху # раздела}}</translation>
 <translation id="2988018669686457659">Резервен процес за рендериране</translation>
 <translation id="2988328607561082373">Не използвате повторно нито една парола</translation>
 <translation id="2989123969927553766">Ускоряване на превъртането с мишката</translation>
@@ -3082,6 +3081,7 @@
 <translation id="3320957378743864387">Сайтове без разрешение за предлагане на помощ при писане</translation>
 <translation id="3321460131042519426">Активиране на пренасянето на думи</translation>
 <translation id="3321494112580110651">Не виждате принтера си?</translation>
+<translation id="3321512411079201586">&amp;Изолирано</translation>
 <translation id="3321776060736518525">От <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Инсталиране за Edge</translation>
 <translation id="3323521181261657960">Бонус! Получихте още време на ползване</translation>
@@ -3351,7 +3351,6 @@
 <translation id="3527473647192919613">Нов изолиран прозорец</translation>
 <translation id="3528498924003805721">Цели на преките пътища</translation>
 <translation id="35296112145429559">Фиксиране на бутоните за превъртане</translation>
-<translation id="3530919970074558307">Премахване на фокуса от групата</translation>
 <translation id="3531070080754387701">Microsoft 365 не може да отвори <ph name="FILE_NAMES" /> от тази папка</translation>
 <translation id="3531883061432162622">Ще намерите списъка си за четене и отметките си в „Отметки и списъци“</translation>
 <translation id="3532521178906420528">Установява се връзка с мрежата...</translation>
@@ -3772,6 +3771,7 @@
 <translation id="3812525830114410218">Невалиден сертификат</translation>
 <translation id="3813296892522778813">Прегледайте <ph name="BEGIN_LINK_CHROMIUM" />помощното съдържание за Google Chrome<ph name="END_LINK_CHROMIUM" />, ако не можете да намерите търсеното</translation>
 <translation id="3813358687923336574">Езикът за превеждане на страници и „Бързи отговори“</translation>
+<translation id="3815509884387832993">Слушайте тази страница като подкаст емисия с функцията за възпроизвеждане от AI чрез бутона „Включване на възпроизвеждането от AI“ в лентата с инструменти на режима на четене</translation>
 <translation id="3815668647912194650">Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея.</translation>
 <translation id="3816118180265633665">Цветове на Chrome</translation>
 <translation id="3817524650114746564">Отваряне на настройките за прокси сървър на компютъра ви</translation>
@@ -4156,6 +4156,7 @@
 <translation id="4109135793348361820">Преместване на прозореца към <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112282889480354965">Разширения и умения</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -4529,7 +4530,6 @@
 <translation id="4405580203042711503">Нов раздел по-долу</translation>
 <translation id="4405781821077215583">Уголемяване или намаляване на елементите на екрана, включително на текста</translation>
 <translation id="4406308048672435032">Можете да направите този раздел неактивен или да опресните, за да видите отново пълния списък</translation>
-<translation id="4406881185911439342">Поставяне на фокуса върху групата</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406963243402726564">Незапазени данни</translation>
 <translation id="4408599188496843485">Помо&amp;щ</translation>
@@ -5715,7 +5715,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5311304534597152726">Влизате като</translation>
 <translation id="5312746996236433535">дублиране на екрана</translation>
 <translation id="5313967007315987356">Добавяне на сайт</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Поставяне на фокуса върху раздела}other{Поставяне на фокуса върху # раздела}}</translation>
 <translation id="5315738755890845852">Излишна фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5317781812114905957">Инструкции</translation>
@@ -5991,6 +5990,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> иска да</translation>
 <translation id="5533343601674003130">Услуга за PDF файлове</translation>
 <translation id="5535769176698670170">Размяна с изгледа отгоре</translation>
+<translation id="5536642445914063887">Превключване на потребителския профил</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5541091577812545428">Паролата не бе променена</translation>
 <translation id="5542132724887566711">Потребителски профил</translation>
@@ -8798,6 +8798,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7702463352133825032">Спиране на предаването към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7704305437604973648">Задача</translation>
 <translation id="7705085181312584869">Помощ при писане</translation>
+<translation id="7705230242432916648">Слушайте тази страница като подкаст емисия с функцията за възпроизвеждане от AI</translation>
 <translation id="7705276765467986571">Моделът за отметки не можа да се зареди.</translation>
 <translation id="7705334495398865155">Рандомизиране на идентификатора на хардуера ви (BSSID), за да не могат други хора да проследяват това устройство.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9178,6 +9179,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
 <translation id="7992080146463834191">Обобщавайте съдържание, опростявайте сложен изказ или задавайте въпроси.</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
+<translation id="7992462686695281167">&amp;Инкогнито</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
 <translation id="7998701048266085837">URL адреси</translation>
 <translation id="7999229196265990314">Създадени бяха следните файлове:
@@ -10227,6 +10229,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8780123805589053431">Изтегляне от Google на описания за изображенията</translation>
 <translation id="8780443667474968681">Функцията за гласово търсене е изключена.</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />: използвайте клавишите със стрелки за наляво и за надясно, за да преместите прекия път. Натиснете Enter или Escape, за да завършите.</translation>
 <translation id="8781980678064919987">Изключване при затваряне на капака</translation>
 <translation id="8783171585655659524">Включване на екранна снимка</translation>
 <translation id="8785622406424941542">Писалка</translation>

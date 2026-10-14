@@ -135,6 +135,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> uygulamasında aç • <ph name="DEVICE_NAME" /> cihazından gönderildi</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1496514951988037011">kullanıcı adı</translation>
+<translation id="1498051468374914325">Geliştirici Araçları Konsolu'nu aç</translation>
 <translation id="1501480321619201731">Grubu sil</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1513352483775369820">Yer işaretleri ve web geçmişi</translation>
@@ -142,6 +143,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1516966594427080024">Gizli modda yeni bir pencere açılır</translation>
 <translation id="152204906462707884">Tarama geçmişinizi hızlıca silin ve gizliliğiniz üzerinde daha fazla kontrol sahibi olun</translation>
 <translation id="153446405401665083">Chrome'un yeni sürümü kullanıma sunuldu</translation>
+<translation id="1537160738459068682">Geliştirici Araçları Öğeleri'ni aç</translation>
 <translation id="1540012742443808215">Adres çubuğu şu anda üstte</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> cihazınızdaki şifrelerinize ve daha fazlasına ulaşmak için oturum açın</translation>
 <translation id="1544084554881119930">Ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
@@ -2061,6 +2063,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9024318700713112071">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> sitesinin iznini geri al</translation>
 <translation id="9035378196785279980">Şuraya taşı:\u2026</translation>
+<translation id="9038316201889095704">Kaydedilmemiş değişiklikler varken sayfada bulma özelliği devre dışı bırakılır.</translation>
 <translation id="904146253922032365">Sekmeleri dikey olarak göstermek için dokunup basılı tutun</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
 <translation id="9047347135558855162">Chrome'da hızlıca arama işlemi başlatın</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Mở trong <ph name="NATIVE_APP_NAME" /> • Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
 <translation id="1496514951988037011">tên người dùng</translation>
+<translation id="1498051468374914325">Mở bảng điều khiển Công cụ cho nhà phát triển</translation>
 <translation id="1501480321619201731">Xoá nhóm</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Mở một cửa sổ mới trong chế độ Ẩn danh</translation>
 <translation id="152204906462707884">Xoá nhanh nhật ký duyệt web và kiểm soát chặt chẽ hơn quyền riêng tư của bạn</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
+<translation id="1537160738459068682">Mở tab Phần tử trong Công cụ cho nhà phát triển</translation>
 <translation id="1540012742443808215">Thanh địa chỉ hiện đang ở trên cùng</translation>
 <translation id="1543035591122163372">Đăng nhập để sử dụng mật khẩu và các nội dung khác trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
@@ -2061,6 +2063,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9024318700713112071">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="9027728231343310283">Khôi phục quyền cho <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Chuyển đến\u2026</translation>
+<translation id="9038316201889095704">Tính năng Tìm trong trang bị tắt khi có thay đổi chưa lưu.</translation>
 <translation id="904146253922032365">Chạm và giữ để hiện các thẻ theo chiều dọc</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>
 <translation id="9047347135558855162">Nhanh chóng bắt đầu tìm kiếm trong Chrome</translation>

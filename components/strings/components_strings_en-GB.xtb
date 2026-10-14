@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Show suggestions</translation>
 <translation id="1038168778161626396">Encipher Only</translation>
 <translation id="1038842779957582377">unknown name</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Job sheet message</translation>
 <translation id="1044897699341250361">What this means</translation>
 <translation id="1049837829250301306">Content couldn't be pasted due to your organisation's policies</translation>
@@ -1054,7 +1053,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2734797989819862638">Don't copy</translation>
 <translation id="2738771556149464852">Not After</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Powered by Personal Intelligence with Gemini. Your requests, page titles and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Uploading <ph name="COUNT" /> files to Google Drive</translation>
 <translation id="2759299890026163685">Make sure that you have a stable Internet connection before trying again</translation>
 <translation id="2759825833388495838">fill in your password on <ph name="APP_NAME" /></translation>
@@ -1434,7 +1432,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3434025015623587566">Google Password Manager needs more access</translation>
 <translation id="343474037147570563">Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
-<translation id="3435267628744367511">Press Ctrl twice in any form to find and fill info without switching tabs</translation>
 <translation id="3435557549311968410">Continuous (short)</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3436125638121079308">Automatically share relevant tabs for better responses in this thread?</translation>
@@ -1880,7 +1877,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4153446078232988116"><ph name="SITE" /> doesn't support a secure connection with HTTPS</translation>
 <translation id="4153858337812834972">Most recent tabs</translation>
 <translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Powered by Personal Intelligence with Gemini. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Update driving licence securely</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165422751765527461">Opens a Help Centre article in a new tab</translation>
@@ -2148,7 +2144,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4599572944836204718">Pay faster with Google Pay when your card is saved. Card details are encrypted in Google Wallet.</translation>
 <translation id="4603727370377253901">Flight reservations</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
-<translation id="4607879293515681409">Enhanced autofill can now find and fill info – like flight numbers and appointment times – from apps like Gmail and Photos</translation>
 <translation id="460848736049414407">Blocked by admin</translation>
 <translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
 <translation id="4612631413844865947">There was an error processing your order on <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2918,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5884465125445718607">Envelope Chinese no.6</translation>
 <translation id="5887400589839399685">Card saved</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
-<translation id="5887791684215121787">Press ⌘ ⌘ in any form to find and fill info without switching tabs</translation>
 <translation id="5889251770650310375">To get your history from your other devices, verify that it's you and sync your history and tabs. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5895187275912066135">Issued On</translation>
@@ -3539,7 +3533,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6936976777388162184">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
 <translation id="6942444979237658241">Comments – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
-<translation id="6946949206576443118">Search the web in Chrome</translation>
 <translation id="6948051842255602737">Game over; your score is <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">When you make purchases in Chrome, see Pix as an option</translation>
 <translation id="6948701128805548767">To see pickup methods and requirements, select an address</translation>
@@ -4528,6 +4521,7 @@ Additional details:
 <translation id="8622864575115813231">Contacting your financial institution…</translation>
 <translation id="8632584659860846053">Your browsing history, cookies and site data, cache and information entered in forms will be deleted once you close all isolated windows</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
+<translation id="8635822281281406185">Add up to 10 files, tabs or images</translation>
 <translation id="8637362707224133343">Chrome has built-in safety features to protect you while you browse – like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found phishing<ph name="END_LINK" /> on the site that you tried visiting. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think that there's been a mistake and that this site doesn't pose a danger.</translation>
 <translation id="8640996933372643759">To share tabs and collaborate with others, you must be able to sign in to Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>

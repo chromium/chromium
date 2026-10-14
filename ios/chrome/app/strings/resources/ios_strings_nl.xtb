@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Openen in Wallet?</translation>
 <translation id="183878838231635348">Deze kaart toont eventuele privacy- of beveiligingsproblemen die de Veiligheidscheck automatisch voor je opspoort.</translation>
 <translation id="1845230888742614096">Groep behouden</translation>
-<translation id="1853558655412913122">Je kunt nu de positie van de adresbalk wijzigen via Instellingen en dan Adresbalk</translation>
 <translation id="1853692000353488670">Nieuw incognitotabblad</translation>
 <translation id="1854463785401910334">Geopende tabbladen doorzoeken</translation>
 <translation id="1860609647735325606">Uitleggen met Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Je gegevens ophalen uit Safari</translation>
 <translation id="2526166285241366046">Een wachtwoord opslaan</translation>
 <translation id="2529021024822217800">Alles openen</translation>
+<translation id="2530932541542751783">Er is iets misgegaan met deze instelling. Update en herstart Chrome en iPadOS, en probeer het opnieuw. Als deze fout blijft optreden, ondersteunt je iPad deze instelling misschien niet.</translation>
 <translation id="2536991091671391962">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Verborgen, wachtwoord</translation>
 <translation id="2538705697765638552">Sla je informatie op en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt je informatie in Google Wallet beheren voor <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Krijg toegang tot je wachtwoorden in andere apps.</translation>
 <translation id="3479552764303398839">Niet nu</translation>
+<translation id="3481315707647070701">Visualiseren en bewerken</translation>
 <translation id="3485558910355485767">Nieuw incognitovenster</translation>
 <translation id="3488501490964659223">Tabbladen zijn gesloten en browsegegevens zijn verwijderd. Je bent uitgelogd.</translation>
 <translation id="3490396108106323715">Huidig tabblad delen</translation>
@@ -928,6 +929,7 @@
 <translation id="3933372629914873850">Je logt in bij <ph name="URL" /></translation>
 <translation id="3934905113567851655">Knijp om het formaat aan te passen</translation>
 <translation id="393732545649378031">Account</translation>
+<translation id="3939683043166875001">Verberg of toon je topsites, Discover-feed en meer.</translation>
 <translation id="3940195383040445971">Prijzen volgen op tabbladen</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} tabblad sluiten}other{{COUNT} tabbladen sluiten}}</translation>
 <translation id="3946483119107054883">Downloaden naar csv</translation>
@@ -1090,6 +1092,7 @@
 <translation id="4455710003856931944">Je kunt over de rand swipen om terug of vooruit te gaan.</translation>
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>
 <translation id="446314443268698477">Winkel, vertaal en identificeer wat je ziet met je camera of foto's.</translation>
+<translation id="4465941170695753889">Houd je vinger hierop om een tabbladgroep te maken</translation>
 <translation id="4469324811108161144">Notities mogen maximaal <ph name="CHARACTER_LIMIT" /> tekens bevatten.</translation>
 <translation id="4470766488397113689">Waar wil je aan werken?</translation>
 <translation id="4471472356135655769">Kan wachtwoorden niet exporteren</translation>
@@ -1262,6 +1265,7 @@
 <translation id="4977176874984951085">Menu met pagina-acties openen</translation>
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="4985921635659180565">Zodra een bestand is gepland voor verwijdering, kan dit niet worden geannuleerd.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 gedeeld tabblad}other{{COUNT} gedeelde tabbladen}}</translation>
 <translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
 <translation id="4986428648020277392">Prompt: Welke moet ik kopen? 2 van 3</translation>
 <translation id="498768198683310172">Aan de slag met Gemini</translation>
@@ -1840,6 +1844,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6708501134077648845">Wachtwoordopties</translation>
 <translation id="6709964700841491574">Lockdown-modus</translation>
 <translation id="6710079714193676716">Beheerd door je organisatie. Sommige functies zijn mogelijk niet beschikbaar. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Slimmere, snellere antwoorden</translation>
 <translation id="6713676799463473249">Aangepast: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Verkregen tabbladen</translation>
 <translation id="6722638373100589752">Als je je gegevens automatisch wilt invullen, zet je Kaarten gebruiken op Google aan in de Wallet-instellingen</translation>
@@ -1920,6 +1925,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6938212956536472404">Dit tabblad kan niet worden gedeeld</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6946722113367118030">Denken</translation>
+<translation id="6947751977892029882">Er is iets misgegaan met deze instelling. Update en herstart Chrome en iOS, en probeer het opnieuw. Als deze fout blijft optreden, ondersteunt je iPhone deze instelling misschien niet.</translation>
 <translation id="6950522403736391608">Verborgen</translation>
 <translation id="695965663642079255">Betalingsgegevens opslaan en beheren om sneller af te rekenen</translation>
 <translation id="6962809930976936328">Inzichten krijgen met Gemini</translation>
@@ -2342,6 +2348,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Het Chrome-menu openen</translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
+<translation id="8266370374397811600">Nieuwe prestatie ontgrendeld! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Je staat op het punt van profiel te wisselen</translation>
 <translation id="8275068909952022340">Meer…</translation>

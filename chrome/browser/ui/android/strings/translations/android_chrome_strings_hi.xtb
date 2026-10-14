@@ -135,6 +135,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> में खोलें • <ph name="DEVICE_NAME" /> से</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
 <translation id="1496514951988037011">उपयोगकर्ता नाम</translation>
+<translation id="1498051468374914325">डेवलपर टूल कंसोल खोलें</translation>
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
@@ -142,6 +143,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1516966594427080024">गुप्त मोड में नई विंडो खोलें</translation>
 <translation id="152204906462707884">अपने ब्राउज़िंग इतिहास को तुरंत मिटाएं और अपनी निजता को बेहतर तरीके से कंट्रोल करें</translation>
 <translation id="153446405401665083">Chrome का नया वर्शन उपलब्ध है</translation>
+<translation id="1537160738459068682">डेवलपर टूल के एलिमेंट खोलें</translation>
 <translation id="1540012742443808215">फ़िलहाल, पता बार सबसे ऊपर है</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> में मौजूद अपने पासवर्ड वगैरह ऐक्सेस करने के लिए साइन इन करें</translation>
 <translation id="1544084554881119930">पेमेंट के तरीके और पते एन्क्रिप्ट यानी सुरक्षित नहीं किए जाएंगे. Chrome के ब्राउज़िंग इतिहास को सिंक नहीं किया जाएगा.
@@ -2061,6 +2063,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="9024318700713112071">Chrome को अपने डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करें</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> से अनुमति वापस लें</translation>
 <translation id="9035378196785279980">इसमें मूव करें\u2026</translation>
+<translation id="9038316201889095704">अगर बदलाव सेव नहीं हुए हैं, तो 'पेज में ढूंढें' सुविधा बंद हो जाती है.</translation>
 <translation id="904146253922032365">टैब वर्टिकल तरीके से दिखाने के लिए, दबाकर रखें</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
 <translation id="9047347135558855162">Chrome में तेज़ी से खोजें</translation>

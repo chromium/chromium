@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Mikrofon va kameradan foydalanish</translation>
 <translation id="1005333234656240382">ADB tuzatish vositasi yoqilsinmi?</translation>
 <translation id="1005671386794704751">Rose</translation>
+<translation id="1005692418949452963">Fokusdan yechish</translation>
 <translation id="1005919400326853998">Sertifikat (<ph name="CERT_NAME" />) haqida batafsil (yangi oynada ochiladi)</translation>
 <translation id="1006033052970139968">Ilova va saytlar hamda tizim xizmatlariga mikorofondan foydalanishga ruxsat berilgan</translation>
 <translation id="1006873397406093306">Bu kengaytma sayt maʼlumotlarini koʻrishi va oʻzgartirishi mumkin Kengaytmaga qaysi sayt maʼlumotlari koʻrinishini siz boshqarasiz.</translation>
@@ -267,6 +268,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1177863135347784049">Boshqa</translation>
 <translation id="1178093605842850860">Bu saytni oʻqishi va oʻzgartirishi mumkin</translation>
 <translation id="1178357842179817577">Xavfli saytlar, yuklanmalar va kengaytmalardan himoya qiladi</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Yanada aloqador javoblar uchun varaqlar ulashiladi.<ph name="END_BOLD" /> Yangi chatni boshlaganingizda Google ochiq varaq kontenti va URL manzilidan foydalanadi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin.</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="117916940443676133">Elektron kalit PIN kod bilan himoyalanmagan. Kirish maʼlumotlarini boshqarish uchun avval PIN kod yarating.</translation>
 <translation id="1179400851034021914">IBAN raqami yaroqsiz</translation>
@@ -701,6 +703,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1535753739390684432">Kerakli matnni oʻqib eshittirish. Avval ekranning quyi qismidagi Teginib tinglash belgisini bosing va keyin matnni belgilang.</translation>
 <translation id="1536754031901697553">Uzilmoqda…</translation>
 <translation id="1536883206862903762">Bunda kengaytmalar faolsizlantiriladi va sozlamalar xavfsiz asliga qaytariladi. Varaqlar, fayllar va cookielar saqlanib qoladi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Yanada aloqador javoblar uchun varaqlar ulashiladi.<ph name="END_BOLD_1" /> Google yangi chatni boshlaganingizda ochiq varaq kontenti va URL manzilidan foydalanadi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin. <ph name="BEGIN_BOLD_2" />Tashkilot maʼlumotlari yopiq va xavfsiz saqlanadi.<ph name="END_BOLD_2" /> Bu generativ AI modellarini yaxshilash uchun ishlatilmaydi.</translation>
 <translation id="1537254971476575106">Butun ekran rejimidagi lupa</translation>
 <translation id="1538808328818992871">Kamida <ph name="MIN_LENGTH" /> ta belgi yozilishi kerak</translation>
 <translation id="1539248305642687917">Saytlarga klaviaturadagi tugmalarni almashtirishiga ruxsat berilmasin</translation>
@@ -871,7 +874,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1656528038316521561">Orqa fon shaffofligi</translation>
 <translation id="1657406563541664238">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali <ph name="PRODUCT_NAME" />’ni takomillashtirishga yordam bering</translation>
 <translation id="1657937299377480641">Taʼlim manbalaridan foydalanadigan hisobga qayta kirish uchun ota-onangizdan ruxsat oling</translation>
-<translation id="1657952527687824398">Varaqlar guruhini fokuslash</translation>
 <translation id="1658424621194652532">Bu sahifa mikrofoningizga kirmoqda.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> uchun yangilanish chiqdi</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Brauzerni sekinlashtiruvchi varaqni tuzating}other{Brauzerni sekinlashtiruvchi varaqlarni tuzating}}</translation>
@@ -1901,6 +1903,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" />dan fayl nusxalamoqchi.</translation>
 <translation id="2457842160081795172">Joriy kanal: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Hisobni yangilash, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Yanada aloqador javoblar uchun varaqlar ulashiladi. Google yangi chatni boshlaganingizda ochiq varaq kontenti va URL manzilidan foydalanadi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin. Tashkilot maʼlumotlari yopiq va xavfsiz saqlanadi. Bu generativ AI modellarini yaxshilash uchun ishlatilmaydi.</translation>
 <translation id="2459703812219683497">Aktivatsiya kodi aniqlandi</translation>
 <translation id="2459706890611560967">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini davom ettirish</translation>
 <translation id="245979889539926662">Skrinshot ulashish</translation>
@@ -2336,7 +2339,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2767077837043621282">Chromebook yangilanmadi. Keyinroq qayta urining.</translation>
 <translation id="2767127727915954024">Bu sayt uchun barcha varaqlarni yopmasangiz, <ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini tahrirlay oladi</translation>
 <translation id="2769174155451290427">Yuklangan rasm</translation>
-<translation id="2769715732905083104">Varaqlar guruhini fokuslash</translation>
 <translation id="2770082596325051055">Pauza qilish: <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Ro‘yxatdan o‘chirish</translation>
 <translation id="2770690685823456775">Parollaringizni boshqa jildga eksport qiling</translation>
@@ -2618,7 +2620,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2984727013951557074">Bu fayl Drive omboriga sinxronlanmoqda</translation>
 <translation id="2984923316661218534">Google Parollar menejeri yordamida bu qurilmadagi kirish kalitlarini oling</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> bitta ilovani oʻchirib tashladi}other{<ph name="APP_NAME" /> # ta ilovani oʻchirib tashladi}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Varaqni fokuslash}other{# ta varaqni fokuslash}}</translation>
 <translation id="2988018669686457659">Taqsimlab renderlash vositasi</translation>
 <translation id="2988328607561082373">Hech qaysi parolingiz takrorlanmagan</translation>
 <translation id="2989123969927553766">Sichqonchada varaqlashni tezlashtirish</translation>
@@ -3346,7 +3347,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3527473647192919613">Yangi izolyatsiyalangan oyna</translation>
 <translation id="3528498924003805721">Yorliq manzillari</translation>
 <translation id="35296112145429559">Varaqlash tugmalarini mahkamlash</translation>
-<translation id="3530919970074558307">Guruhni fokusdan yechish</translation>
 <translation id="3531070080754387701">Microsoft 365 <ph name="FILE_NAMES" /> faylini bu jilddan ocha olmaydi</translation>
 <translation id="3531883061432162622">Bukmarklar va mutolaa roʻyxatingizni Bukmarklar va roʻyxatlar panelidan topasiz</translation>
 <translation id="3532521178906420528">Tarmoqqa ulanmoqda...</translation>
@@ -4526,7 +4526,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4405580203042711503">Quyida yangi varaq ochish</translation>
 <translation id="4405781821077215583">Ekrandagi matn kabi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="4406308048672435032">Toʻliq roʻyxatni qayta koʻrish uchun bu varaqni nofaol qiling yoki yangilang</translation>
-<translation id="4406881185911439342">Guruhni fokuslash</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4406963243402726564">Saqlanmagan maʼlumotlar</translation>
 <translation id="4408599188496843485">&amp;Yordam</translation>
@@ -5711,7 +5710,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5311304534597152726">Kirish:</translation>
 <translation id="5312746996236433535">ekran aksi</translation>
 <translation id="5313967007315987356">Sayt qo‘shish</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Varaqni fokuslash}other{# ta varaqni fokuslash}}</translation>
 <translation id="5315738755890845852">Oʻng figurali qavs ortiqcha: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5317781812114905957">Koʻrsatmalar</translation>
@@ -5987,6 +5985,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> bunday qilmoqchi:</translation>
 <translation id="5533343601674003130">PDF xizmati</translation>
 <translation id="5535769176698670170">Yuqori panel bilan almashtirish</translation>
+<translation id="5536642445914063887">Profilni almashtirish</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5541091577812545428">Parol yangilanmadi</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -6210,6 +6209,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5724723163580775373">Katta fokus</translation>
 <translation id="5725112283692663422">AI bilan mavzu yaratish yuzasidan fikr-mulohaza yuborish</translation>
 <translation id="5727728807527375859">Kengaytma, ilova va mavzular kompyuterngizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
+<translation id="5727872803091928075">Yanada aloqador javoblar uchun varaqlar ulashiladi. Yangi chatni boshlaganingizda Google ochiq varaq kontenti va URL manzilidan foydalanadi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin.</translation>
 <translation id="5728072125198221967">Ulangan Google xizmatlari</translation>
 <translation id="5729712731028706266">&amp;Ko‘rish</translation>
 <translation id="5731247495086897348">&amp;Joylash va o‘tish</translation>
@@ -7352,6 +7352,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6613231539539868591">Saqlangan maʼlumotlar</translation>
 <translation id="6613267708691765962">Zararli dasturga tekshirilmoqda...</translation>
+<translation id="6614219106064338118">Chat boshlash</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
 <translation id="6616000047939888167">Boshqa tillardagi saytlar va PDF fayllar uchun Google Tarjima taklif qilinsin</translation>
 <translation id="6618013221808317456">Saytlarga JavaScript optimallashni taqiqlash</translation>
@@ -9734,6 +9735,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8410133743809404768">Manzillar qatorida “@history” orqali, shuningdek, Tarix sahifasidan qidirish mumkin</translation>
 <translation id="8411043186249152291">butun ekran</translation>
 <translation id="8412136526970428322">Ruxsat berildi: <ph name="PERMISSION" /> va yana <ph name="COUNT" /> ta</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google shartlari<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />Gemini ilovalari Maxfiylik eslatmasi<ph name="END_LINK2" /> amal qiladi.</translation>
 <translation id="8413795581997394485">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Sayt ochilganda Chrome himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Saytda shubhali harakatlar aniqlansa, toʻliq URL manzillar va sahifa kontentidan parcha ham yuboriladi.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytiga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hisobi bilan kirish</translation>
 <translation id="8415120635186642416">Istalgan narsani tadqiq qiling</translation>

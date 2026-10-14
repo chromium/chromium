@@ -135,6 +135,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1485343711570311792">Abrir na app <ph name="NATIVE_APP_NAME" /> • De <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
 <translation id="1496514951988037011">nome de utilizador</translation>
+<translation id="1498051468374914325">Abrir consola das Ferramentas para programadores</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1513352483775369820">Marcadores e histórico da Web</translation>
@@ -142,6 +143,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1516966594427080024">Abra uma nova janela no Modo de navegação anónima</translation>
 <translation id="152204906462707884">Elimine rapidamente o histórico de navegação e tenha mais controlo sobre a sua privacidade</translation>
 <translation id="153446405401665083">Está disponível uma nova versão do Chrome</translation>
+<translation id="1537160738459068682">Abrir elementos das Ferramentas para programadores</translation>
 <translation id="1540012742443808215">A barra de endereço está atualmente na parte superior</translation>
 <translation id="1543035591122163372">Inicie sessão para ter acesso às suas palavras-passe e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
@@ -2061,6 +2063,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9024318700713112071">Definir o Chrome como o navegador predefinido</translation>
 <translation id="9027728231343310283">Anular <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
+<translation id="9038316201889095704">A opção Localizar na página está desativada enquanto houver alterações não guardadas.</translation>
 <translation id="904146253922032365">Toque sem soltar para mostrar os separadores na vertical</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9047347135558855162">Inicie rapidamente uma pesquisa no Chrome</translation>

@@ -1020,6 +1020,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3977512764614765090">Mae'r batri ar <ph name="PERCENTAGE" />% ac yn gwefru.</translation>
 <translation id="3978162107953847778">Mewnosod dolenni o leoedd megis eich hanes pori a Google Drive. Gallwch hefyd fewnosod emojis, ffeiliau llun a rhagor. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Newid allbwn sain?</translation>
+<translation id="3983903378684256134">Steam ar Chromebook</translation>
 <translation id="3984536049089846927">Y dudalen nesaf</translation>
 <translation id="3986082989454912832">Ateb</translation>
 <translation id="3990002060657467458">Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau.</translation>
@@ -1640,6 +1641,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5727460725221669831">Os wnaethoch anghofio'ch cyfrinair neu newid cyfrinair eich Cyfrif Google yn ddiweddar, rhowch gynnig ar adfer y defnyddiwr hwn.</translation>
 <translation id="5733630091161562207">Hysbysiad croeso</translation>
 <translation id="573413375004481890">Ni allai'r ddyfais hon gefnogi'ch holl sgriniau, felly mae un wedi'i datgysylltu</translation>
+<translation id="5739548907438839901">Wedi rhyddhau <ph name="SIZE" /> o le ar y disg.</translation>
 <translation id="574392208103952083">Canolig</translation>
 <translation id="5745612484876805746">Mae Golau Nos yn troi ymlaen yn awtomatig ar fachlud haul</translation>
 <translation id="5749214722697335450">Anfon data defnydd a diagnostig. Helpwch i wella'ch profiad Android drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Bydd hyn yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os caiff eich gosodiad Gweithgarwch ar y We ac Apiau ychwanegol ei droi ymlaen, gellir cadw'r data hyn i'ch cyfrif Google. <ph name="BEGIN_LINK1" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK1_END" />Dysgu rhagor<ph name="END_LINK1" /></translation>
@@ -2219,6 +2221,7 @@ Gosodiad newydd</translation>
 <translation id="7413851974711031813">Pwyswch Escape i gau</translation>
 <translation id="7416471219712049036">Cadw'r dudalen bresennol</translation>
 <translation id="742594950370306541">Mae'r camera'n cael ei ddefnyddio.</translation>
+<translation id="7430466159639897874">Mae gennych le ar y disg heb ei ddefnyddio (<ph name="SIZE" />) wedi'i ddyrannu ar gyfer y nodwedd anghymeradwy "Steam ar Chromebook".</translation>
 <translation id="743058460480092004">Mae'r camera a'r meicroffon yn cael eu defnyddio.</translation>
 <translation id="7433708794692032816">Mewnosodwch gerdyn smart i barhau i ddefnyddio'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Search</translation>
@@ -2360,6 +2363,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7781335840981796660">Bydd yr holl gyfrifon defnyddwyr a data lleol yn cael eu tynnu.</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7787212146956232129">Mae dyfeisiau mewnbwn ac allbwn wedi'u gosod. Ewch i'r Gosodiadau i newid.</translation>
+<translation id="7790757511772316441">Rhyddhau lle ar y disg</translation>
 <translation id="7792590255364786396">Gweladwy</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>
 <translation id="7798302898096527229">Pwyswch Search neu Shift i ganslo.</translation>

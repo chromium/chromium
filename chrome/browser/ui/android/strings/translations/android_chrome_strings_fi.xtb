@@ -135,6 +135,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1485343711570311792">Avaa sovelluksella <ph name="NATIVE_APP_NAME" /> • Laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Takaisin välilehdelle</translation>
 <translation id="1496514951988037011">käyttäjätunnus</translation>
+<translation id="1498051468374914325">Avaa Kehittäjätyökalut-konsoli</translation>
 <translation id="1501480321619201731">Poista ryhmä</translation>
 <translation id="1506061864768559482">Hakukone</translation>
 <translation id="1513352483775369820">Kirjanmerkit ja verkkohistoria</translation>
@@ -142,6 +143,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1516966594427080024">Avaa uusi ikkuna incognito-tilassa</translation>
 <translation id="152204906462707884">Poista selaushistoria nopeasti ja hallitse yksityisyyttäsi paremmin</translation>
 <translation id="153446405401665083">Chromen uusi versio on saatavilla</translation>
+<translation id="1537160738459068682">Avaa Kehittäjän työkalut ‑elementit</translation>
 <translation id="1540012742443808215">Osoitepalkki on yläreunassa</translation>
 <translation id="1543035591122163372">Kirjaudu sisään, niin voit käyttää esimerkiksi salasanoja laitteelta (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1544084554881119930">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
@@ -2061,6 +2063,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9024318700713112071">Valitse Chrome oletusselaimeksi</translation>
 <translation id="9027728231343310283">Kumoa <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Siirrä\u2026</translation>
+<translation id="9038316201889095704">Sivulta haku on poistettu käytöstä, kun on tallentamattomia muutoksia.</translation>
 <translation id="904146253922032365">Näytä välilehdet pystysuunnassa koskettamalla pitkään</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
 <translation id="9047347135558855162">Aloita haku nopeasti Chromessa</translation>

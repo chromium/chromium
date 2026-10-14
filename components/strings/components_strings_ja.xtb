@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038168778161626396">暗号化のみ</translation>
 <translation id="1038842779957582377">不明な名前</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
 <translation id="1044897699341250361">このメッセージの意味</translation>
 <translation id="1049837829250301306">組織のポリシーにより、コンテンツを貼り付けられませんでした</translation>
@@ -1054,7 +1053,6 @@
 <translation id="2734797989819862638">コピーしない</translation>
 <translation id="2738771556149464852">終了時刻</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Gemini のパーソナル インテリジェンスを使用します。リクエスト、ページのタイトル、URL は、高精度の自動入力の改善に向けて確認される場合があります。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> 個のファイルを Google ドライブにアップロードしています</translation>
 <translation id="2759299890026163685">インターネット接続が安定していることを確認してからもう一度お試しください</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> でパスワードを入力しようとしています</translation>
@@ -1434,7 +1432,6 @@
 <translation id="3432601291244612633">ページを閉じる</translation>
 <translation id="3434025015623587566">Google パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="343474037147570563">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
-<translation id="3435267628744367511">フォームで Ctrl キーを 2 回押すと、タブを切り替えずに情報を検索して入力できます</translation>
 <translation id="3435557549311968410">連続（短尺）</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3436125638121079308">関連タブを自動的に共有して、このスレッドで関連性の高い回答を取得できるようにしますか？</translation>
@@ -1880,7 +1877,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> は HTTPS による安全な接続をサポートしていません</translation>
 <translation id="4153858337812834972">最近使ったタブ</translation>
 <translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は、<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />でいつでも変更できます。</translation>
-<translation id="4157273919218514718">Gemini のパーソナル インテリジェンスを使用します。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">運転免許証を安全に更新</translation>
 <translation id="4159784952369912983">紫</translation>
 <translation id="4165422751765527461">新しいタブでヘルプセンター記事を開きます</translation>
@@ -1969,7 +1965,7 @@
 <translation id="4271652479722040953">拡張機能が Chrome に追加されると、これらの拡張機能に関するデータが分析のため第三者に送信され、管理者に公開される可能性があります。こうしたデータには、名前、インストール時間、インストール元などの拡張機能に関する情報と、拡張機能に関連するアクティビティ（タブの変更、ウェブサイトへの接続、Cookie へのアクセスなど）が含まれます。このデータは、Chrome ウェブストアからインストールされた拡張機能と、ストア以外からインストールされた拡張機能の両方について収集されます。</translation>
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
-<translation id="4276974990916607331">今はしない</translation>
+<translation id="4276974990916607331">スキップ</translation>
 <translation id="4277028893293644418">パスワードを再設定</translation>
 <translation id="4277442707759481607">トピックに関する知識をテストする練習問題を作成して</translation>
 <translation id="4277529130885813215">別のデバイスを使用</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4599572944836204718">カードを保存すると、Google Pay を使用してすばやくお支払いできます。カード情報は Google ウォレットで暗号化されます。</translation>
 <translation id="4603727370377253901">フライトの予約</translation>
 <translation id="4607608436550361748">Chrome のヒントを表示</translation>
-<translation id="4607879293515681409">高精度の自動入力機能で、Gmail やフォトなどのアプリから情報（フライト番号や予約時間など）を探して入力できるようになりました</translation>
 <translation id="460848736049414407">管理者によりブロック済み</translation>
 <translation id="4610279718074907952">このサイトは、<ph name="SET_OWNER" /> により定義され、アクティビティを確認できるグループに属しています</translation>
 <translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> で <ph name="PAYMENT_APP_ORIGIN" /> 経由のご注文の処理中にエラーが発生しました。</translation>
@@ -2923,7 +2918,6 @@
 <translation id="5884465125445718607">中国 #6 封筒</translation>
 <translation id="5887400589839399685">カードが保存されました</translation>
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
-<translation id="5887791684215121787">フォームで ⌘ ⌘ を押すと、タブを切り替えずに情報を検索して入力できます</translation>
 <translation id="5889251770650310375">お使いの他のデバイスからも履歴にアクセスできるようにするには、本人確認を行って、履歴とタブを同期します。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5895187275912066135">発行日</translation>
@@ -3539,7 +3533,6 @@
 <translation id="6936976777388162184">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
 <translation id="6942444979237658241">コメント - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
-<translation id="6946949206576443118">Chrome でウェブを検索</translation>
 <translation id="6948051842255602737">ゲームオーバー、スコアは <ph name="SCORE" /> です。</translation>
 <translation id="6948223029286835408">Chrome で購入手続きのオプションとして Pix が表示されます</translation>
 <translation id="6948701128805548767">受け取り方法と要件を確認するには、住所を選択してください</translation>
@@ -4529,6 +4522,7 @@
 <translation id="8622864575115813231">金融機関に問い合わせています...</translation>
 <translation id="8632584659860846053">すべてのアイソレート ウィンドウを閉じると、閲覧履歴、Cookie とサイトデータ、キャッシュ、フォームに入力した情報は削除されます</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
+<translation id="8635822281281406185">追加できるファイル、タブ、または画像は最大 10 個です</translation>
 <translation id="8637362707224133343">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近フィッシングが検出<ph name="END_LINK" />されました。フィッシング サイトは、他のサイトになりすましてユーザーを騙そうとするサイトです。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">他のユーザーとタブを共有して共同作業を行うには、Chrome にログインする必要があります</translation>
 <translation id="8641131559425911240">封筒（ボンド）</translation>

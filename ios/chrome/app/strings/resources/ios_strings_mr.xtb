@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Wallet मध्ये उघडायची आहे का?</translation>
 <translation id="183878838231635348">हे कार्ड तुमच्यासाठी सुरक्षितता तपासणी ने आपोआप डिटेक्ट केलेली कोणतीही गोपनीयता किंवा सुरक्षितता यासंबंधित समस्या दाखवते.</translation>
 <translation id="1845230888742614096">गट कायम ठेवा</translation>
-<translation id="1853558655412913122">तुम्ही आता "सेटिंग्ज" आणि त्यानंतर "अ‍ॅड्रेस बार" मध्ये अ‍ॅड्रेस बारचे स्थान बदलू शकता</translation>
 <translation id="1853692000353488670">नवीन गुप्त टॅब</translation>
 <translation id="1854463785401910334">उघडलेल्या टॅबमध्ये शोधा</translation>
 <translation id="1860609647735325606">Gemini वापरून स्पष्ट करा</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Safari मधून तुमचा डेटा आणा</translation>
 <translation id="2526166285241366046">पासवर्ड सेव्ह करा</translation>
 <translation id="2529021024822217800">सर्व उघडा</translation>
+<translation id="2530932541542751783">या सेटिंगमध्ये काहीतरी चुकले. Chrome आणि iPadOS अपडेट करून रीस्टार्ट करा व पुन्हा प्रयत्न करा. ही एरर येत राहिल्यास, तुमचा iPad या सेटिंगला सपोर्ट करत नसू शकतो.</translation>
 <translation id="2536991091671391962">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" /> साठी Google Password Manager यामध्ये सेव्ह केले जातात.</translation>
 <translation id="2538103551183528357">लपवलेला, पासवर्ड</translation>
 <translation id="2538705697765638552">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="USER_EMAIL" /> साठी Google Wallet मध्ये तुमची माहिती व्यवस्थापित करू शकता.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3476450923187944815">इतर सर्व अ‍ॅप्सवर तुमचे पासवर्ड अ‍ॅक्सेस करा.</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
+<translation id="3481315707647070701">व्हिजुअलाइझ करा आणि संपादित करा</translation>
 <translation id="3485558910355485767">नवीन गुप्त विंडो</translation>
 <translation id="3488501490964659223">टॅब बंद केले गेले होते आणि ब्राउझिंग डेटा हटवला गेला होता. तुम्हाला साइन आउट केले गेले होते</translation>
 <translation id="3490396108106323715">सद्य टॅब शेअर करा</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">सर्व निवडा</translation>
 <translation id="3679163990085797665">वाचलेल्या एंट्री हटवा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
+<translation id="3689746421535476813">संपादित करण्यासाठी सेव्ह केलेली पेमेंट पद्धत निवडा किंवा नवीन पेमेंट पद्धत जोडा</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3700134753671613714">आपल्या सर्व डिव्हाइसेस वरील तुमचे बुकमार्क मिळविण्यासाठी साइन इन करा.</translation>
 <translation id="3701167022068948696">आता निराकरण करा</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">तुम्ही <ph name="URL" /> मध्ये साइन इन कराल</translation>
 <translation id="3934905113567851655">आकार बदलण्यासाठी पिंच करा</translation>
 <translation id="393732545649378031">खाते</translation>
+<translation id="3939683043166875001">तुमच्या टॉप साइट, Discover फीड आणि आणखी बरेच काही लपवा किंवा दाखवा.</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} टॅब बंद करा}other{{COUNT} टॅब बंद करा}}</translation>
 <translation id="3946483119107054883">CSV मध्ये डाउनलोड करा</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">पेज अ‍ॅक्‍शन मेनू उघडा</translation>
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="4985921635659180565">फाइल हटवली जाण्यासाठी शेड्यूल केल्यानंतर, ती रद्द केली जाऊ शकत नाही.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{१ शेअर केलेला टॅब}other{{COUNT} शेअर केलेले टॅब}}</translation>
 <translation id="498624032394115435">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते.</translation>
 <translation id="4986428648020277392">प्रॉम्प्ट: मी कोणते खरेदी करावे? ३ पैकी २</translation>
 <translation id="498768198683310172">Gemini वापरण्यास सुरुवात करा</translation>
@@ -1840,6 +1844,7 @@
 <translation id="6708501134077648845">पासवर्डशी संबंधित पर्याय</translation>
 <translation id="6709964700841491574">लॉकडाउन मोड</translation>
 <translation id="6710079714193676716">तुमच्या संस्थेने व्यवस्थापित केलेला. काही वैशिष्ट्ये कदाचित उपलब्ध नसतील. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">आणखी स्मार्ट, जलद उत्तरे</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> रोजी फेरबदल केला</translation>
 <translation id="6722623263381062480">मिळालेले टॅब</translation>
 <translation id="6722638373100589752">तुमची माहिती ऑटोफिल करण्यासाठी, Wallet सेटिंग्जमध्ये “संपूर्ण Google वर पास वापरा” सुरू करा</translation>
@@ -1920,6 +1925,7 @@
 <translation id="6938212956536472404">हा टॅब शेअर केला जाऊ शकत नाही</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6946722113367118030">विचार करणे</translation>
+<translation id="6947751977892029882">या सेटिंगमध्ये काहीतरी चुकले. Chrome आणि iOS अपडेट करून रीस्टार्ट करा व पुन्हा प्रयत्न करा. ही एरर येत राहिल्यास, तुमचा iPhone या सेटिंगला सपोर्ट करत नसू शकतो.</translation>
 <translation id="6950522403736391608">लपवलेली</translation>
 <translation id="695965663642079255">अधिक जलद चेक आउट करण्यासाठी पेमेंट माहिती सेव्ह करा आणि व्यवस्थापित करा</translation>
 <translation id="6962809930976936328">Gemini वापरून इनसाइट मिळवा</translation>
@@ -2342,6 +2348,7 @@
 <translation id="8264966119170358612">तुमचे सेव्ह केलेले काही पासवर्ड हे Google ऐवजी तृतीय पक्षाच्या डेटा भंगामध्ये उघड झाले होते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome मेनू उघडा</translation>
 <translation id="826614135184049678">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला <ph name="USER_NAME" /> खात्यामधून साइन आउट केले गेले होते. पुन्हा साइन इन करण्यासाठी, खाली "पुढे सुरू ठेवा" वर टॅप करा.</translation>
+<translation id="8266370374397811600">नवीन झकास कामगिरी अनलॉक केली आहे! 🥳</translation>
 <translation id="8270320981823560179">ड्राइव्ह</translation>
 <translation id="8274795744553482834">तुम्ही प्रोफाइल स्विच करणार आहात</translation>
 <translation id="8275068909952022340">आणखी…</translation>
@@ -2426,6 +2433,7 @@
 <translation id="8535368836838588657">पासवर्ड दाखवा</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> वापरून साइन इन करा</translation>
 <translation id="8542331710562073430">काहीतरी चूक झाली. पुन्हा Live जाण्याचा प्रयत्न करण्यासाठी Live बटणावर टॅप करा.</translation>
+<translation id="8544172904312384600">नवीन पेमेंट पद्धत संपादित करा किंवा जोडा</translation>
 <translation id="8545276357312221485">तुमची डीफॉल्ट ब्राउझर सेटिंग्ज तपासा</translation>
 <translation id="854938212724803178">तुमच्याकडे धोक्यात असलेला १ पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
 <translation id="8551311254462607218">अ‍ॅड्रेस बारमध्ये, Google Lens कॅमेरा आयकनवर टॅप करा</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">เปิดใน <ph name="NATIVE_APP_NAME" /> • จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1496514951988037011">ชื่อผู้ใช้</translation>
+<translation id="1498051468374914325">เปิดคอนโซลเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="1501480321619201731">ลบกลุ่ม</translation>
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1513352483775369820">บุ๊กมาร์กและประวัติเว็บ</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="152204906462707884">ลบประวัติการท่องเว็บอย่างรวดเร็วและควบคุมความเป็นส่วนตัวได้มากขึ้น</translation>
 <translation id="153446405401665083">Chrome เวอร์ชันใหม่พร้อมให้ใช้งานแล้ว</translation>
+<translation id="1537160738459068682">เปิดองค์ประกอบเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="1540012742443808215">ปัจจุบันแถบที่อยู่อยู่ด้านบน</translation>
 <translation id="1543035591122163372">ลงชื่อเข้าใช้เพื่อรับรหัสผ่านและอื่นๆ จาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
@@ -2061,6 +2063,7 @@
 <translation id="9024318700713112071">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="9027728231343310283">เลิกทำ <ph name="SITE" /></translation>
 <translation id="9035378196785279980">ย้ายไปที่\u2026</translation>
+<translation id="9038316201889095704">การค้นหาในหน้าเว็บปิดอยู่ขณะที่มีการเปลี่ยนแปลงที่ไม่ได้บันทึก</translation>
 <translation id="904146253922032365">แตะค้างไว้เพื่อแสดงแท็บในแนวตั้ง</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="9047347135558855162">เริ่มการค้นหาใน Chrome ได้อย่างรวดเร็ว</translation>

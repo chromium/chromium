@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">మీ మైక్రోఫోన్ మరియు కెమెరాను ఉపయోగించండి</translation>
 <translation id="1005333234656240382">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయాలా?</translation>
 <translation id="1005671386794704751">గులాబీ రంగు</translation>
+<translation id="1005692418949452963">ఫోకస్‌ను తీసివేయండి</translation>
 <translation id="1005919400326853998">కొత్త డైలాగ్‌లో <ph name="CERT_NAME" />‌కు సంబంధించిన సర్టిఫికెట్ వివరాల గురించి చూడండి</translation>
 <translation id="1006033052970139968">మైక్రోఫోన్ అనుమతి, సిస్టమ్ సర్వీస్‌లు గల యాప్‌లు, వెబ్‌సైట్‌లకు మైక్రోఫోన్ యాక్సెస్ అనుమతించబడింది</translation>
 <translation id="1006873397406093306">సైట్‌లలోని మీ డేటాను ఈ ఎక్స్‌టెన్షన్ చదవగలదు, అలాగే మార్చగలదు. ఏయే సైట్‌లను ఎక్స్‌టెన్షన్ యాక్సెస్ చేయవచ్చన్నది మీరు నియంత్రించవచ్చు.</translation>
@@ -870,7 +871,6 @@
 <translation id="1656528038316521561">నేపథ్య అపారదర్శకత</translation>
 <translation id="1657406563541664238">Googleకు వినియోగ గ‌ణాంకాలు, క్రాష్ రిపోర్ట్‌లను ఆటోమేటిక్‌గా పంపడం ద్వారా <ph name="PRODUCT_NAME" />ను మరింత మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="1657937299377480641">విద్యా సంబంధమైన వనరులకు యాక్సెస్ కోసం మళ్లీ సైన్ ఇన్ చేయడానికి, మీకు అనుమతి ఇవ్వాల్సిందిగా తల్లి/తండ్రిని అడగండి</translation>
-<translation id="1657952527687824398">ట్యాబ్ గ్రూప్‌పై ఫోకస్ చేయండి</translation>
 <translation id="1658424621194652532">ఈ పేజీ మీ మైక్రోఫోన్‌ను యాక్సెస్‌ చేస్తోంది.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" />‌కు సంబంధించిన అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌ను పరిష్కరించండి}other{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌లను పరిష్కరించండి}}</translation>
@@ -1596,6 +1596,7 @@
 <translation id="2215070081105889450">ఆడియోను షేర్ చేయడానికి బదులుగా ట్యాబ్ లేదా స్క్రీన్‌ను షేర్ చేయండి</translation>
 <translation id="2217208085547223783">ట్రస్ట్ స్టేట్</translation>
 <translation id="2218019600945559112">మౌస్ మరియు టచ్‌ప్యాడ్</translation>
+<translation id="2218116022473625437">మీరు సెట్టింగ్స్‌లో టెక్స్ట్ హైలైటింగ్‌ను ఆఫ్ చేయవచ్చు, వాయిస్‌ను మోడిఫై చేయవచ్చు, పేజీ రూపాన్ని మార్చవచ్చు.</translation>
 <translation id="2218515861914035131">సాధారణ టెక్స్ట్ లాగా పేస్ట్ చేయండి</translation>
 <translation id="2219007152108311874">ప్రతి సందర్శనకూ ముందు అడగాలి</translation>
 <translation id="2220529011494928058">సమస్యను రిపోర్ట్ చేయండి</translation>
@@ -2340,7 +2341,6 @@
 <translation id="2767077837043621282">మీ Chromebookను అప్‌డేట్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2767127727915954024">మీరు ఈ సైట్‌లో అన్ని ట్యాబ్‌లను మూసివేసే వరకు <ph name="ORIGIN" />, <ph name="FILENAME" />ను ఎడిట్ చేయగలదు</translation>
 <translation id="2769174155451290427">అప్‌లోడ్ చేసిన ఇమేజ్</translation>
-<translation id="2769715732905083104">ట్యాబ్ గ్రూప్‌పై ఫోకస్ చేయండి</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" />‌ను పాజ్ చేయండి</translation>
 <translation id="2770465223704140727">లిస్ట్ నుండి తొలగించండి</translation>
 <translation id="2770690685823456775">మీ పాస్‌వర్డ్‌లను మరో ఫోల్డర్‌కు ఎగుమతి చేయండి</translation>
@@ -2622,7 +2622,6 @@
 <translation id="2984727013951557074">ఫైల్ ఇంకా Driveకు సింక్ అవుతోంది.</translation>
 <translation id="2984923316661218534">Google Password Managerతో ఈ డివైజ్‌లో మీ పాస్-కీలను పొందండి</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />, ఒక యాప్‌ను అన్‌ఇన్‌స్టాల్ చేసింది}other{<ph name="APP_NAME" />, # యాప్‌లను అన్‌ఇన్‌స్టాల్ చేసింది}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{ట్యాబ్‌పై ఫోకస్ చేయండి}other{# ట్యాబ్‌లపై ఫోకస్ చేయండి}}</translation>
 <translation id="2988018669686457659">స్పేర్ రెండరర్</translation>
 <translation id="2988328607561082373">మీరు ఏ పాస్‌వర్డ్‌లను మళ్లీ ఉపయోగించడం లేదు</translation>
 <translation id="2989123969927553766">మౌస్ స్క్రోల్ యాక్సిలరేషన్</translation>
@@ -3081,6 +3080,7 @@
 <translation id="3320957378743864387">రాయడంలో సహాయం అందించడానికి అనుమతి లేదు</translation>
 <translation id="3321460131042519426">పదాల సర్దుబాటును ప్రారంభించండి</translation>
 <translation id="3321494112580110651">మీ ప్రింటర్ కనిపించలేదా?</translation>
+<translation id="3321512411079201586">&amp;ఐసోలేటెడ్</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> నుండి</translation>
 <translation id="3323288183237359315">Edgeలో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3323521181261657960">బోనస్! మీరు మరింత స్క్రీన్ వినియోగ సమయం పొందారు</translation>
@@ -3350,7 +3350,6 @@
 <translation id="3527473647192919613">కొత్త ఐసోలేటెడ్ విండో</translation>
 <translation id="3528498924003805721">షార్ట్‌కట్ లక్ష్యాలు</translation>
 <translation id="35296112145429559">స్క్రోల్ బటన్‌లను పిన్ చేయండి</translation>
-<translation id="3530919970074558307">గ్రూప్ ఫోకస్‌ను తీసివేయండి</translation>
 <translation id="3531070080754387701">Microsoft 365 ఈ ఫోల్డర్‌‌లోని <ph name="FILE_NAMES" />‌ను తెరవలేదు</translation>
 <translation id="3531883061432162622">బుక్‌మార్క్‌లు మరియు లిస్ట్‌లలో మీ చదవాల్సిన లిస్ట్, బుక్‌మార్క్‌లను కనుగొనండి</translation>
 <translation id="3532521178906420528">నెట్‌వర్క్ కనెక్షన్‌ను ఏర్పాటు చేస్తోంది...</translation>
@@ -3771,6 +3770,7 @@
 <translation id="3812525830114410218">ప్రమాణపత్రం చెల్లదు</translation>
 <translation id="3813296892522778813">మీరు వెతుకుతున్నది మీకు కనిపించకపోతే <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome సహాయం<ph name="END_LINK_CHROMIUM" />కు వెళ్లండి</translation>
 <translation id="3813358687923336574">పేజీలను అనువాదం చేయడానికి, త్వరిత సమాధానాల కోసం ఉపయోగించిన భాష</translation>
+<translation id="3815509884387832993">రీడింగ్ మోడ్ టూల్‌బార్‌లోని 'AI ప్లేబ్యాక్‌ను ఆన్ చేయండి' బటన్‌ను ఉపయోగించి, ఈ పేజీని AI ప్లేబ్యాక్‌తో ఒక పాడ్‌కాస్ట్‌లా వినండి</translation>
 <translation id="3815668647912194650">తర్వాత ట్యాబ్‌లను జోడించడానికి ఈ గ్రూప్‌ను అలాగే ఉంచుకోండి లేదా మీరు ఇకపై దీనికి యాక్సెస్ చేయకూడదనుకుంటే వదిలివేయండి.</translation>
 <translation id="3816118180265633665">Chrome రంగులు</translation>
 <translation id="3817524650114746564">మీ కంప్యూటర్ ప్రాక్సీ సెట్టింగ్‌లను తెరవండి</translation>
@@ -4155,6 +4155,7 @@
 <translation id="4109135793348361820">విండోను <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)కు తరలించు</translation>
 <translation id="4110485659976215879">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ఆఫ్‌లైన్)</translation>
+<translation id="4112282889480354965">ఎక్స్‌టెన్షన్‌లు &amp; స్కిల్స్</translation>
 <translation id="4113743276555482284">ఫైల్ పాస్‌వర్డ్</translation>
 <translation id="4114524937989710624">Google Driveలోని మీ అత్యంత ఇటీవలి యాక్టివిటీకి తిరిగి వెళ్లడంలో మీకు సహాయపడటానికి సూచించబడిన ఫైల్స్ మీకు కనిపిస్తున్నాయి.
         <ph name="BREAK" />
@@ -4528,7 +4529,6 @@
 <translation id="4405580203042711503">కింద కొత్త ట్యాబ్</translation>
 <translation id="4405781821077215583">టెక్స్ట్‌తో సహా మీ స్క్రీన్‌పై ఉన్న ఐటెమ్‌లను చిన్నదిగా లేదా పెద్దదిగా చేయండి</translation>
 <translation id="4406308048672435032">మీరు ఈ ట్యాబ్‌ను ఇన్‌యాక్టివ్‌గా చేయవచ్చు లేదా పూర్తి లిస్ట్‌ను మళ్లీ చూడటానికి రిఫ్రెష్ చేయవచ్చు</translation>
-<translation id="4406881185911439342">గ్రూప్‌పై ఫోకస్ చేయండి</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4406963243402726564">సేవ్ చేయని డేటా</translation>
 <translation id="4408599188496843485">స&amp;హాయం</translation>
@@ -5713,7 +5713,6 @@
 <translation id="5311304534597152726">ఇలా సైన్ ఇన్ చేస్తున్నారు</translation>
 <translation id="5312746996236433535">స్క్రీన్ మిర్రర్</translation>
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{ట్యాబ్‌పై ఫోకస్ చేయండి}other{# ట్యాబ్‌లపై ఫోకస్ చేయండి}}</translation>
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5317781812114905957">సూచనలు</translation>
@@ -5989,6 +5988,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది</translation>
 <translation id="5533343601674003130">PDF సర్వీస్</translation>
 <translation id="5535769176698670170">టాప్ వీక్షణతో స్వాప్ చేయండి</translation>
+<translation id="5536642445914063887">ప్రొఫైల్‌ను మార్చండి</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5541091577812545428">పాస్‌వర్డ్ మారలేదు</translation>
 <translation id="5542132724887566711">ప్రొఫైల్</translation>
@@ -6584,6 +6584,7 @@
 <translation id="6006484371116297560">క్లాసిక్</translation>
 <translation id="6007053304250788613">మిర్రర్ మోడ్‌లో ఒక డిస్‌ప్లే మాత్రమే మినహాయించబడుతుంది</translation>
 <translation id="6007240208646052708">మీ భాషలో వాయిస్ శోధన అందుబాటులో లేదు.</translation>
+<translation id="6007858579659393165">ట్యాబ్‌లు కొత్త పారదర్శక రూపాన్ని కలిగి ఉన్నాయి</translation>
 <translation id="6010651352520077187">ఆన్‌లో ఉన్నప్పుడు, Google Translate మీ ప్రాధాన్య భాషలోకి సైట్‌లను అనువదించే అవకాశాన్ని కల్పిస్తుంది. ఇది సైట్‌లను ఆటోమేటిక్‌గా కూడా అనువదించగలదు.</translation>
 <translation id="6011193465932186973">వేలిముద్ర</translation>
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
@@ -8794,6 +8795,7 @@
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని ఆపివేయండి</translation>
 <translation id="7704305437604973648">టాస్క్</translation>
 <translation id="7705085181312584869">రాయడంలో నాకు సహాయపడండి</translation>
+<translation id="7705230242432916648">AI ప్లేబ్యాక్‌తో ఈ పేజీని పాడ్‌కాస్ట్ లాగా వినండి</translation>
 <translation id="7705276765467986571">బుక్‌మార్క్ నమూనాను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="7705334495398865155">ఇతరులు ఈ డివైజ్‌ను ట్రాక్ చేయకుండా నిరోధించడానికి మీ హార్డ్‌వేర్ ID (BSSID)ని ర్యాండమైజ్ చేయండి.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9174,6 +9176,7 @@
 <translation id="7991296728590311172">Switch Access సెట్టింగ్‌లు</translation>
 <translation id="7992080146463834191">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి.</translation>
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
+<translation id="7992462686695281167">&amp;అజ్ఞాత మోడ్</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="7998701048266085837">URLలు</translation>
 <translation id="7999229196265990314">ఈ కింది ఫైళ్ళను సృష్టించింది:
@@ -9472,6 +9475,7 @@
 <translation id="8212601853154459483">ఈ ప్రొఫైల్ <ph name="PROFILE_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది, అలాగే <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం మీరు వేరే ప్రొఫైల్‌ను క్రియేట్ చేయాల్సి ఉంటుంది</translation>
 <translation id="8212792694174629011">ప్రొఫైల్స్ ఏవీ కనుగొనబడలేదు. మీ పరికర కెమెరాను ఉపయోగించి QR కోడ్‌ను స్కాన్ చేయడానికి ట్రై చేయండి లేదా మీ క్యారియర్ అందించిన యాక్టివేషన్ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="8214489666383623925">ఫైల్‌ను తెరువు...</translation>
+<translation id="8214771296778317256">మీకు నచ్చిన ట్యాబ్ స్టయిలింగ్‌ను ఇక్కడ ఎంచుకోండి</translation>
 <translation id="8215129063232901118">మీ ఫోన్ సామర్థ్యాలను <ph name="DEVICE_TYPE" /> నుండి యాక్సెస్ చేయండి</translation>
 <translation id="8217212468862726597">పాయింటర్‌ను హైలైట్ చేయండి</translation>
 <translation id="8217399928341212914">బహుళ ఫైళ్ల యొక్క ఆటోమేటిక్‌ డౌన్‌లోడ్‌లను బ్లాక్ చేయడాన్ని కొనసాగించండి</translation>
@@ -10219,6 +10223,7 @@
 <translation id="8780123805589053431">Google నుండి చిత్ర వివరణలను పొందండి</translation>
 <translation id="8780443667474968681">వాయిస్ శోధన ఆపివేయబడింది.</translation>
 <translation id="8781834595282316166">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, షార్ట్‌కట్‌ను తరలించడానికి ఎడమ వైపు, కుడి వైపు బాణం కీలను ఉపయోగించండి. పూర్తి చేయడానికి Enter లేదా Escape నొక్కండి.</translation>
 <translation id="8781980678064919987">మూత మూసినప్పుడు షట్ డౌన్ చేయండి</translation>
 <translation id="8783171585655659524">స్క్రీన్‌షాట్‌ను చేర్చు</translation>
 <translation id="8785622406424941542">స్టైలస్</translation>
@@ -10717,6 +10722,7 @@
 <translation id="9154194610265714752">అప్‌డేట్ చేయబడింది</translation>
 <translation id="915485121129452731">పెన్ టాబ్లెట్</translation>
 <translation id="9155344700756733162">రంగును ఎంపికను రద్దు చేయండి</translation>
+<translation id="9155515662479003830">మీరు ఎప్పుడైనా సెట్టింగ్‌లలో క్లాసిక్ స్టయిల్‌కు తిరిగి మారవచ్చు</translation>
 <translation id="9157096865782046368">0.8 సెకన్లు</translation>
 <translation id="9157697743260533322">వినియోగదారులందరి కోసం ఆటోమేటిక్ అప్‌డేట్‌లను సెటప్ చేయడం విఫలమైంది (ప్రీఫ్లయిట్ ప్రారంభ ఎర్రర్: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">ప్రింటర్ డోర్ తెరిచి ఉంది</translation>

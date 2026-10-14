@@ -135,6 +135,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1485343711570311792">Buksan sa <ph name="NATIVE_APP_NAME" /> • Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
 <translation id="1496514951988037011">username</translation>
+<translation id="1498051468374914325">Buksan ang Console ng Mga Tool ng Developer</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
@@ -142,6 +143,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1516966594427080024">Magbukas ng bagong window sa Incognito mode</translation>
 <translation id="152204906462707884">Mabilis na i-delete ang iyong history ng pag-browse at mas kontrolin ang privacy mo</translation>
 <translation id="153446405401665083">May available na bagong bersyon ng Chrome</translation>
+<translation id="1537160738459068682">Buksan ang Mga Element ng Mga Tool ng Developer</translation>
 <translation id="1540012742443808215">Kasalukuyang nasa itaas ang address bar</translation>
 <translation id="1543035591122163372">Mag-sign in para makuha ang iyong mga password at higit pa mula sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
@@ -2061,6 +2063,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9024318700713112071">Itakda ang Chrome bilang iyong default</translation>
 <translation id="9027728231343310283">I-undo ang <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Ilipat sa\u2026</translation>
+<translation id="9038316201889095704">Naka-disable ang Hanapin sa page habang may mga hindi na-save na pagbabago.</translation>
 <translation id="904146253922032365">Pindutin nang matagal para ipakita ang mga tab nang patayo</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9047347135558855162">Mabilis na magsimula ng paghahanap sa Chrome</translation>

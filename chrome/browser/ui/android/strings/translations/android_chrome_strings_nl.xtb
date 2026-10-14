@@ -135,6 +135,7 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1485343711570311792">Openen in <ph name="NATIVE_APP_NAME" /> • Van <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
 <translation id="1496514951988037011">gebruikersnaam</translation>
+<translation id="1498051468374914325">Console voor tools voor ontwikkelaars openen</translation>
 <translation id="1501480321619201731">Groep verwijderen</translation>
 <translation id="1506061864768559482">Zoekmachine</translation>
 <translation id="1513352483775369820">Bookmarks en webgeschiedenis</translation>
@@ -142,6 +143,7 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1516966594427080024">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="152204906462707884">Verwijder snel je browsegeschiedenis en krijg meer controle over je privacy</translation>
 <translation id="153446405401665083">Nieuwe versie van Chrome beschikbaar</translation>
+<translation id="1537160738459068682">Elementen van tools voor ontwikkelaars openen</translation>
 <translation id="1540012742443808215">Adresbalk staat op dit moment bovenaan</translation>
 <translation id="1543035591122163372">Log in om onder andere je wachtwoorden van <ph name="DEVICE_TYPE" /> te gebruiken</translation>
 <translation id="1544084554881119930">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
@@ -2061,6 +2063,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9024318700713112071">Chrome instellen als je standaardbrowser</translation>
 <translation id="9027728231343310283">Actie voor <ph name="SITE" /> ongedaan maken</translation>
 <translation id="9035378196785279980">Verplaatsen naar\u2026</translation>
+<translation id="9038316201889095704">Zoeken op pagina uitgezet terwijl er niet-opgeslagen wijzigingen zijn.</translation>
 <translation id="904146253922032365">Houd je vinger op het scherm om tabbladen verticaal te tonen</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="9047347135558855162">Start snel een zoekopdracht in Chrome</translation>

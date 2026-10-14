@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Otworzyć w Portfelu?</translation>
 <translation id="183878838231635348">Na tej karcie wyświetlają się wszelkie problemy związane z prywatnością i bezpieczeństwem, które zostały automatycznie wykryte przez kontrolę zabezpieczeń.</translation>
 <translation id="1845230888742614096">Zachowaj grupę</translation>
-<translation id="1853558655412913122">Możesz teraz zmienić położenie paska adresu, klikając „Ustawienia”, a następnie „Pasek adresu”</translation>
 <translation id="1853692000353488670">Nowa karta incognito</translation>
 <translation id="1854463785401910334">Wyszukiwanie w otwartych kartach</translation>
 <translation id="1860609647735325606">Wyjaśnij za pomocą Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Przenieś dane z Safari</translation>
 <translation id="2526166285241366046">Zapisz hasło</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
+<translation id="2530932541542751783">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iPadOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, iPad może nie obsługiwać tego ustawienia.</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
 <translation id="2538705697765638552">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Informacjami możesz zarządzać w Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
+<translation id="3481315707647070701">Wizualizuj i edytuj</translation>
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
 <translation id="3490396108106323715">Udostępnij bieżącą kartę</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">Zaznacz wszystko</translation>
 <translation id="3679163990085797665">Usuń przeczytane</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
+<translation id="3689746421535476813">Wybierz zapisaną formę płatności, którą chcesz edytować, lub dodaj nową</translation>
 <translation id="3695446226812920698">Instrukcje</translation>
 <translation id="3700134753671613714">Zaloguj się, by pobrać zakładki na wszystkie urządzenia.</translation>
 <translation id="3701167022068948696">Napraw teraz</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">Zalogujesz się w witrynie <ph name="URL" /></translation>
 <translation id="3934905113567851655">Ściągnij, aby zmienić rozmiar</translation>
 <translation id="393732545649378031">Konto</translation>
+<translation id="3939683043166875001">Ukryj lub pokaż najczęściej odwiedzane strony, karty Discover i inne elementy.</translation>
 <translation id="3940195383040445971">Monitoruj ceny na kartach</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
 <translation id="3946483119107054883">Pobierz plik CSV</translation>
@@ -1089,6 +1092,7 @@
 <translation id="4455710003856931944">Aby przejść wstecz lub do przodu, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="446314443268698477">Kupuj, tłumacz i rozpoznawaj to, co widzisz na obrazie z aparatu lub na zdjęciach.</translation>
+<translation id="4465941170695753889">Naciśnij i przytrzymaj, aby utworzyć grupę kart</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Nad czym chcesz pracować?</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4977176874984951085">Otwórz menu czynności na stronie</translation>
 <translation id="4979397965658815378">Zaloguj się na konto Google, by korzystać z zakładek, haseł, historii i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="4985921635659180565">Zaplanowanego usunięcia pliku nie można anulować.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 udostępniona karta}few{{COUNT} udostępnione karty}many{{COUNT} udostępnionych kart}other{{COUNT} udostępnionej karty}}</translation>
 <translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
 <translation id="4986428648020277392">Prompt: który mam kupić? 2 z 3</translation>
 <translation id="498768198683310172">Zacznij korzystać z Gemini</translation>
@@ -1839,6 +1844,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6708501134077648845">Opcje dotyczące haseł</translation>
 <translation id="6709964700841491574">Tryb blokady</translation>
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Szybsze i bardziej trafne odpowiedzi</translation>
 <translation id="6713676799463473249">Zmodyfikowano <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Odebrano karty</translation>
 <translation id="6722638373100589752">Aby automatycznie uzupełniać informacje, włącz opcję „Korzystanie z kart w Google” w ustawieniach Portfela</translation>
@@ -1919,6 +1925,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="6938212956536472404">Tej karty nie można udostępnić</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6946722113367118030">Myślenie</translation>
+<translation id="6947751977892029882">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, Twój iPhone może nie obsługiwać tego ustawienia.</translation>
 <translation id="6950522403736391608">Ukryte</translation>
 <translation id="695965663642079255">Zapisuj dane do płatności i zarządzaj nimi, aby płacić szybciej</translation>
 <translation id="6962809930976936328">Uzyskuj statystyki dzięki Gemini</translation>
@@ -2341,6 +2348,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Otwórz menu Chrome</translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
+<translation id="8266370374397811600">Nowe osiągnięcie odblokowane! 🥳</translation>
 <translation id="8270320981823560179">Dysk</translation>
 <translation id="8274795744553482834">Zamierzasz przełączyć profile</translation>
 <translation id="8275068909952022340">Więcej…</translation>
@@ -2425,6 +2433,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8535368836838588657">Pokaż hasło</translation>
 <translation id="8540426897269305488">Zaloguj się przez <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Coś poszło nie tak. Kliknij przycisk Live, aby spróbować ponownie włączyć tryb Live.</translation>
+<translation id="8544172904312384600">Edytuj lub dodaj nową formę płatności</translation>
 <translation id="8545276357312221485">Sprawdź ustawienia przeglądarki domyślnej</translation>
 <translation id="854938212724803178">Masz 1 przejęte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="8551311254462607218">Na pasku adresu kliknij ikonę aparatu Obiektywu Google</translation>

@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Avataanko tiedosto Walletissa?</translation>
 <translation id="183878838231635348">Kortissa näkyvät yksityisyys- tai tietoturvaongelmat, jotka turvatarkistus havaitsee puolestasi automaattisesti.</translation>
 <translation id="1845230888742614096">Säilytä ryhmä</translation>
-<translation id="1853558655412913122">Voit nyt muuttaa osoitepalkin sijaintia valitsemalla "Asetukset" ja sitten "Osoitepalkki"</translation>
 <translation id="1853692000353488670">Uusi incognito-välilehti</translation>
 <translation id="1854463785401910334">Hae avoimilta välilehdiltä</translation>
 <translation id="1860609647735325606">Selitä Geminillä</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Tuo datasi Safarista</translation>
 <translation id="2526166285241366046">Tallenna salasana</translation>
 <translation id="2529021024822217800">Avaa kaikki</translation>
+<translation id="2530932541542751783">Jotain meni pieleen asetuksen kanssa. Päivitä ja käynnistä Chrome ja iPadOS uudelleen ja yritä sitten uudelleen. Jos virhe toistuu, iPad ei ehkä tue tätä asetusta.</translation>
 <translation id="2536991091671391962">Voit käyttää tallennettuja salasanoja kaikilla laitteilla. Ne on tallennettu Google Salasanoihin sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Piilotettu salasana</translation>
 <translation id="2538705697765638552">Tallenna tietosi, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit ylläpitää tietoja Google Walletissa (<ph name="USER_EMAIL" />).</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Jatka käyttäjänä <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Käytä salasanojasi muissa sovelluksissa.</translation>
 <translation id="3479552764303398839">Ei nyt</translation>
+<translation id="3481315707647070701">Visualisoi ja muokkaa</translation>
 <translation id="3485558910355485767">Uusi incognito-ikkuna</translation>
 <translation id="3488501490964659223">Välilehdet suljettiin ja selausdata poistettiin. Sinut on kirjattu ulos</translation>
 <translation id="3490396108106323715">Jaa nykyinen välilehti</translation>
@@ -852,6 +853,7 @@
 <translation id="3672283986707092811">Valitse kaikki</translation>
 <translation id="3679163990085797665">Poista luetut</translation>
 <translation id="368329460027487650">Kirjautunut ulos. Avaa kirjautumisvaihtoehdot.</translation>
+<translation id="3689746421535476813">Valitse muokattava tallennettu maksutapa tai lisää uusi maksutapa</translation>
 <translation id="3695446226812920698">Lisätietoja</translation>
 <translation id="3700134753671613714">Kirjaudu sisään, niin voit käyttää kirjanmerkkejäsi kaikilla laitteillasi.</translation>
 <translation id="3701167022068948696">Korjaa nyt</translation>
@@ -927,6 +929,7 @@
 <translation id="3933372629914873850">Kirjaudut tänne: <ph name="URL" /></translation>
 <translation id="3934905113567851655">Muuta kokoa nipistämällä</translation>
 <translation id="393732545649378031">Tili</translation>
+<translation id="3939683043166875001">Piilota tai näytä suosituimmat sivustot, Discover-fiidi ja muuta.</translation>
 <translation id="3940195383040445971">Seuraa hintoja välilehdillä</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Sulje {COUNT} välilehti}other{Sulje {COUNT} välilehteä}}</translation>
 <translation id="3946483119107054883">Lataa CSV-tiedostoon</translation>
@@ -1261,6 +1264,7 @@
 <translation id="4977176874984951085">Avaa sivun toimintovalikko</translation>
 <translation id="4979397965658815378">Kirjaudu Google-tilillesi, niin voit käyttää kirjanmerkkejäsi, salasanojasi, historiaasi ja muuta Chrome-sisältöäsi kaikilla laitteillasi.</translation>
 <translation id="4985921635659180565">Kun tiedoston poistaminen on ajoitettu, sitä ei voi perua.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 jaettu välilehti}other{{COUNT} jaettua välilehteä}}</translation>
 <translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
 <translation id="4986428648020277392">Kehote: Kumpi minun kannattaa ostaa? 2/3</translation>
 <translation id="498768198683310172">Aloita Geminin käyttö</translation>
@@ -1839,6 +1843,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6708501134077648845">Salasanavalinnat</translation>
 <translation id="6709964700841491574">Lukitustila</translation>
 <translation id="6710079714193676716">Organisaatiosi ylläpitämä. Kaikki ominaisuudet eivät välttämättä ole saatavilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Älykkäämpiä ja nopeampia vastauksia</translation>
 <translation id="6713676799463473249">Muokattu <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Vastaanotetut välilehdet</translation>
 <translation id="6722638373100589752">Jos haluat täyttää tiedot automaattisesti, laita "Käytä kortteja Googlen palveluissa" ‑asetus päälle Walletin asetuksista</translation>
@@ -1919,6 +1924,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="6938212956536472404">Tätä välilehteä ei voi jakaa</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6946722113367118030">Ajattelu</translation>
+<translation id="6947751977892029882">Jotain meni pieleen asetuksen kanssa. Päivitä ja käynnistä Chrome ja iOS uudelleen ja yritä sitten uudelleen. Jos virhe toistuu, iPhone ei ehkä tue asetusta.</translation>
 <translation id="6950522403736391608">Piilotettu</translation>
 <translation id="695965663642079255">Tallenna ja muuta maksutietoja, niin voit maksaa nopeammin</translation>
 <translation id="6962809930976936328">Vinkkejä Geminillä</translation>
@@ -2341,6 +2347,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8264966119170358612">Osa tallennetuista salasanoistasi on paljastunut Googlen ulkopuolisen tietosuojaloukkauksen yhteydessä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Avaa Chrome-valikko</translation>
 <translation id="826614135184049678">Sinut kirjattiin ulos tililtä <ph name="USER_NAME" />, kun iPad nollattiin. Kirjaudu takaisin sisään valitsemalla Jatka.</translation>
+<translation id="8266370374397811600">Uusi saavutus avattu! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Olet vaihtamassa profiilia</translation>
 <translation id="8275068909952022340">Lisää…</translation>
@@ -2425,6 +2432,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8535368836838588657">Näytä salasana</translation>
 <translation id="8540426897269305488">Kirjaudu sisään: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Jotain meni pieleen. Yritä uudelleen napauttamalla Live-painiketta.</translation>
+<translation id="8544172904312384600">Muokkaa maksutapaa tai lisää uusi</translation>
 <translation id="8545276357312221485">Tarkista oletusselaimen asetukset</translation>
 <translation id="854938212724803178">Sinulla on 1 vaarantunut salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
 <translation id="8551311254462607218">Napauta Google Lens ‐kamerakuvaketta osoitepalkista</translation>

@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Uporabite mikrofon in kamero</translation>
 <translation id="1005333234656240382">Želite omogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
 <translation id="1005671386794704751">Rožnata</translation>
+<translation id="1005692418949452963">Premakni iz fokusa</translation>
 <translation id="1005919400326853998">Ogled podrobnosti potrdila za <ph name="CERT_NAME" /> v novem pogovornem oknu</translation>
 <translation id="1006033052970139968">Dostop do mikrofona je dovoljen aplikacijam, spletnim mestom, ki imajo dovoljenje za mikrofon, in sistemskim storitvam</translation>
 <translation id="1006873397406093306">Ta razširitev lahko bere in spreminja vaše podatke na spletnih mestih. Nadzirate lahko, do katerih spletnih mest lahko razširitev dostopa.</translation>
@@ -870,7 +871,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1656528038316521561">Neprosojnost ozadja</translation>
 <translation id="1657406563541664238">Pomagajte izboljšati <ph name="PRODUCT_NAME" /> s samodejnim pošiljanjem statističnih podatkov o uporabi in poročil o zrušitvah Googlu</translation>
 <translation id="1657937299377480641">Če se želiš znova prijaviti za dostop do izobraževalnih virov, prosi starša za dovoljenje</translation>
-<translation id="1657952527687824398">Fokus na skupino zavihkov</translation>
 <translation id="1658424621194652532">Ta stran dostopa do vašega mikrofona.</translation>
 <translation id="1660405268563702784">Na voljo je posodobitev za aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Odpravite težavo z zavihkom, ki upočasnjuje brskalnik}one{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}two{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}few{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}other{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}}</translation>
@@ -1597,6 +1597,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2215070081105889450">Če želite deliti zvok, namesto tega delite zavihek ali zaslon</translation>
 <translation id="2217208085547223783">Stanje zaupanja</translation>
 <translation id="2218019600945559112">Miška in sledilna ploščica</translation>
+<translation id="2218116022473625437">V nastavitvah lahko izklopite označevanje besedila, spremenite glas in videz strani.</translation>
 <translation id="2218515861914035131">Prilepi kot navadno besedilo</translation>
 <translation id="2219007152108311874">Vprašaj ob vsakem obisku</translation>
 <translation id="2220529011494928058">Prijavite težavo</translation>
@@ -2341,7 +2342,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2767077837043621282">Chromebooka ni bilo mogoče posodobiti. Poskusite znova pozneje.</translation>
 <translation id="2767127727915954024">Spletno mesto <ph name="ORIGIN" /> bo lahko urejalo datoteko <ph name="FILENAME" />, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
 <translation id="2769174155451290427">Naložena slika</translation>
-<translation id="2769715732905083104">Fokus na skupino zavihkov</translation>
 <translation id="2770082596325051055">Začasna zaustavitev prenosa datoteke <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Odstrani s seznama</translation>
 <translation id="2770690685823456775">Izvozite gesla v drugo mapo</translation>
@@ -2623,7 +2623,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2984727013951557074">Datoteka se še vedno sinhronizira z Googlom Drive.</translation>
 <translation id="2984923316661218534">Prejmite ključe za dostop v tej napravi z Googlovim upraviteljem gesel</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Aplikacija <ph name="APP_NAME" /> je odstranila aplikacijo}one{Aplikacija <ph name="APP_NAME" /> je odstranila # aplikacijo}two{Aplikacija <ph name="APP_NAME" /> je odstranila # aplikaciji}few{Aplikacija <ph name="APP_NAME" /> je odstranila # aplikacije}other{Aplikacija <ph name="APP_NAME" /> je odstranila # aplikacij}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Fokus na zavihek}one{Fokus na # zavihek}two{Fokus na # zavihka}few{Fokus na # zavihke}other{Fokus na # zavihkov}}</translation>
 <translation id="2988018669686457659">Rezervni upodabljalnik</translation>
 <translation id="2988328607561082373">Nimate nobenih znova uporabljenih gesel.</translation>
 <translation id="2989123969927553766">Pospeševanje pomikanja z miško</translation>
@@ -3082,6 +3081,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3320957378743864387">Ni dovoljeno ponuditi pomoči za pisanje</translation>
 <translation id="3321460131042519426">Omogočanje združevanja besed</translation>
 <translation id="3321494112580110651">Ali tiskalnika ni na seznamu?</translation>
+<translation id="3321512411079201586">&amp;Izolirano</translation>
 <translation id="3321776060736518525">Iz: <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Namesti za Edge</translation>
 <translation id="3323521181261657960">Nagrada! Čas uporabe je podaljšan.</translation>
@@ -3351,7 +3351,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3527473647192919613">Novo izolirano okno</translation>
 <translation id="3528498924003805721">Cilji bližnjic</translation>
 <translation id="35296112145429559">Pripni gumbe za pomikanje</translation>
-<translation id="3530919970074558307">Premakni skupino iz fokusa</translation>
 <translation id="3531070080754387701">Storitev Microsoft 365 ne more odpreti datoteke <ph name="FILE_NAMES" /> v tej mapi</translation>
 <translation id="3531883061432162622">Poiščite bralni seznam in zaznamke v zaznamkih in na seznamih</translation>
 <translation id="3532521178906420528">Vzpostavljanje omrežne povezave …</translation>
@@ -3772,6 +3771,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3812525830114410218">Poškodovano potrdilo</translation>
 <translation id="3813296892522778813">Odprite <ph name="BEGIN_LINK_CHROMIUM" />pomoč za Google Chrome<ph name="END_LINK_CHROMIUM" />, če ne najdete tega, kar iščete</translation>
 <translation id="3813358687923336574">Jezik, uporabljen za prevajanje strani, in hitri odgovori</translation>
+<translation id="3815509884387832993">Poslušajte to stran, kot da bi bila podkast s predvajanjem z umetno inteligenco, z gumbom za vklop predvajanja z umetno inteligenco v orodni vrstici načina za branje</translation>
 <translation id="3815668647912194650">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo zapustite, če ne želite več dostopati do nje.</translation>
 <translation id="3816118180265633665">Barve za Chrome</translation>
 <translation id="3817524650114746564">V računalniku odprite nastavitve strežnika proxy</translation>
@@ -4156,6 +4156,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4109135793348361820">Premakni okno uporabniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Obnovi opozorilo</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (brez povezave)</translation>
+<translation id="4112282889480354965">Razširitve in veščine</translation>
 <translation id="4113743276555482284">Geslo za datoteko</translation>
 <translation id="4114524937989710624">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v Googlu Drive.
         <ph name="BREAK" />
@@ -4529,7 +4530,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4405580203042711503">Nov zavihek spodaj</translation>
 <translation id="4405781821077215583">Povečajte ali pomanjšajte elemente na zaslonu, vključno z besedilom</translation>
 <translation id="4406308048672435032">Če si želite znova ogledati celoten seznam, ta zavihek lahko spremenite v neaktivnega ali ga osvežite</translation>
-<translation id="4406881185911439342">Premakni skupino v fokus</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4406963243402726564">Neshranjeni podatki</translation>
 <translation id="4408599188496843485">&amp;Pomoč</translation>
@@ -5715,7 +5715,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5311304534597152726">Prijavljanje kot</translation>
 <translation id="5312746996236433535">zrcaljenje zaslona</translation>
 <translation id="5313967007315987356">Dodajanje mesta</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Fokus na zavihek}one{Fokus na # zavihek}two{Fokus na # zavihka}few{Fokus na # zavihke}other{Fokus na # zavihkov}}</translation>
 <translation id="5315738755890845852">Odvečen zaviti zaklepaj: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5317781812114905957">Navodila</translation>
@@ -5991,6 +5990,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> želi</translation>
 <translation id="5533343601674003130">Storitev PDF</translation>
 <translation id="5535769176698670170">Zamenjava s pogledom z vrha</translation>
+<translation id="5536642445914063887">Preklop profila</translation>
 <translation id="5537725057119320332">Predvajanje</translation>
 <translation id="5541091577812545428">Geslo ni bilo spremenjeno</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -8804,6 +8804,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7702463352133825032">Ustavi predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Opravilo</translation>
 <translation id="7705085181312584869">Pomoč pri pisanju</translation>
+<translation id="7705230242432916648">Poslušajte to stran, kot da je podkast s predvajanjem z umetno inteligenco</translation>
 <translation id="7705276765467986571">Modela zaznamka ni bilo mogoče naložiti.</translation>
 <translation id="7705334495398865155">Naključno izberite ID strojne opreme (BSSID), da drugim preprečite sledenje tej napravi.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9184,6 +9185,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7991296728590311172">Nastavitve stikalnega dostopa</translation>
 <translation id="7992080146463834191">Povzemite vsebino, poenostavite zapleteno besedilo ali zastavite vprašanja.</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
+<translation id="7992462686695281167">&amp;Anonimno</translation>
 <translation id="7997826902155442747">Prednost postopkov</translation>
 <translation id="7998701048266085837">Naslovi URL</translation>
 <translation id="7999229196265990314">Ustvarjene so bile te datoteke:
@@ -10233,6 +10235,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="8780123805589053431">Pridobivanje opisov slik iz Googla</translation>
 <translation id="8780443667474968681">Glasovno iskanje je izklopljeno.</translation>
 <translation id="8781834595282316166">Novi zavihek v skupini</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, uporabite puščico levo in desno, če želite premakniti bližnjico. Za dokončanje pritisnite Enter ali Escape.</translation>
 <translation id="8781980678064919987">Zaustavitev, ko je pokrov zaprt</translation>
 <translation id="8783171585655659524">Vključi posnetek zaslona</translation>
 <translation id="8785622406424941542">Pisalo</translation>

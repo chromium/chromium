@@ -137,7 +137,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">以<ph name="USER_NAME" />的身份继续</translation>
 <translation id="138692594145659985">卡片保存选项</translation>
-<translation id="138810468159004008">访问该网站时允许</translation>
+<translation id="138810468159004008">在访问期间允许</translation>
 <translation id="1396260204083880024">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="1397144142234474689">隐藏历史记录</translation>
 <translation id="1399268420835656394">如果您不是儿童，建议检查一下此设备上的 Apple 账号中的年龄设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">在“钱包”中打开？</translation>
 <translation id="183878838231635348">此卡片会显示安全检查功能自动为您检测到的所有隐私问题或安全问题。</translation>
 <translation id="1845230888742614096">保留分组</translation>
-<translation id="1853558655412913122">现在，您可以在“设置”&gt;“地址栏”中更改地址栏的位置</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1854463785401910334">在打开的标签页中搜索</translation>
 <translation id="1860609647735325606">使用 Gemini 解释</translation>
@@ -363,7 +362,7 @@
 <translation id="205013082884273671">屏幕内容，一搜即得</translation>
 <translation id="2054044186557130763">以<ph name="NAME" /> (<ph name="EMAIL" />) 的身份登录，该账号由组织管理。</translation>
 <translation id="2059166748188874810">自治市</translation>
-<translation id="2060638295449304809">此地址仅会保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中</translation>
+<translation id="2060638295449304809">此地址仅保存在本设备上。如需在其他设备上使用，请将其保存到您的 Google 账号：<ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2067852168641682340">每次都保存到此账号</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 个标签页}other{{count} 个标签页}}</translation>
@@ -589,7 +588,7 @@
 <translation id="2761898608071930085">使用其他账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可添加 1 张图片}other{最多可添加 {COUNT} 张图片}}</translation>
-<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
+<translation id="2772667768515195373">保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3479552764303398839">以后再说</translation>
+<translation id="3481315707647070701">直观呈现，随心修改</translation>
 <translation id="3485558910355485767">打开新的无痕式窗口</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
 <translation id="3490396108106323715">分享当前标签页</translation>
@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">全选</translation>
 <translation id="3679163990085797665">删除已读项</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
+<translation id="3689746421535476813">选择已保存的支付方式进行修改，或添加新的支付方式</translation>
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3700134753671613714">登录帐号即可将您的书签同步到您的所有设备上。</translation>
 <translation id="3701167022068948696">立即修正</translation>
@@ -1032,7 +1033,7 @@
 <translation id="4278390842282768270">允许</translation>
 <translation id="4279431713294750185">滑动边缘即可前进。</translation>
 <translation id="4282944936010261425">没有需要解决的安全问题。</translation>
-<translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
+<translation id="4286718549648564014">地址已迁移到您的账号：<ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">标为已读</translation>
 <translation id="428768789042547925">新变化</translation>
 <translation id="4289309730265289297">照片库</translation>
@@ -1423,7 +1424,7 @@
 <translation id="5477188385487393357">无需复制和粘贴</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
-<translation id="5483838506518938965">一切都已就绪</translation>
+<translation id="5483838506518938965">一切就绪</translation>
 <translation id="5487521232677179737">清除数据</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5499648645977734083">管理支付方式…</translation>
@@ -1720,6 +1721,7 @@
 <translation id="6372558618707314581">前往您喜欢的任何页面</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6374514103145916800">提问</translation>
+<translation id="6381241974485088375">随时从此处自定义新标签页</translation>
 <translation id="6383719166112032471">打开位置信息…</translation>
 <translation id="6387994324662817823">系统会将密码仅保存到此设备上的 Google 密码管理工具中。</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
@@ -1838,6 +1840,7 @@
 <translation id="6708501134077648845">密码选项</translation>
 <translation id="6709964700841491574">锁定模式</translation>
 <translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">更智能、更快速的回答</translation>
 <translation id="6713676799463473249">上次修改日期：<ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">已收到标签页</translation>
 <translation id="6722638373100589752">如需自动填充您的信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
@@ -2368,7 +2371,7 @@
 <translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
-<translation id="8367705492654390392">有问题，尽管问</translation>
+<translation id="8367705492654390392">尽情提问</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368198938968349418">开启自动填充功能…</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>
@@ -2424,6 +2427,7 @@
 <translation id="8535368836838588657">显示密码</translation>
 <translation id="8540426897269305488">通过以下凭证登录：<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">出了点问题。请点按“Live”按钮，尝试重新开启 Live。</translation>
+<translation id="8544172904312384600">修改或添加新的支付方式</translation>
 <translation id="8545276357312221485">检查默认浏览器设置</translation>
 <translation id="854938212724803178">发现有 1 个密码已泄露。建议立即更改密码，确保安全。</translation>
 <translation id="8551311254462607218">在地址栏中，点按“Google 智能镜头”相机图标</translation>
@@ -2462,6 +2466,7 @@
 <translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8642417828095157370">系统会共享标签页以提供更相关的回答</translation>
 <translation id="8643403533759285912">删除标签页组</translation>
+<translation id="8646357898207744479">智能镜头</translation>
 <translation id="8647280737650867362">无法取消跟踪价格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8655861111558401309">选择“删除浏览数据”</translation>

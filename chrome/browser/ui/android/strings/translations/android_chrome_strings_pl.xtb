@@ -135,6 +135,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1485343711570311792">Otwórz w: <ph name="NATIVE_APP_NAME" /> • Od: <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
 <translation id="1496514951988037011">nazwa użytkownika</translation>
+<translation id="1498051468374914325">Otwórz konsolę Narzędzi dla programistów</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
 <translation id="1506061864768559482">Wyszukiwarka</translation>
 <translation id="1513352483775369820">Zakładki i historia online</translation>
@@ -142,6 +143,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1516966594427080024">Otwórz nowe okno w trybie incognito</translation>
 <translation id="152204906462707884">Szybko usuwaj historię przeglądania i przejmij kontrolę nad prywatnością</translation>
 <translation id="153446405401665083">Dostępna jest nowa wersja Chrome</translation>
+<translation id="1537160738459068682">Otwórz elementy Narzędzi dla programistów</translation>
 <translation id="1540012742443808215">Pasek adresu jest obecnie na górze</translation>
 <translation id="1543035591122163372">Zaloguj się, aby mieć dostęp do haseł oraz innych danych na <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
@@ -2061,6 +2063,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9024318700713112071">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="9027728231343310283">Cofnij w przypadku <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Przenieś do\u2026</translation>
+<translation id="9038316201889095704">Funkcja Znajdź na stronie jest wyłączona, gdy są niezapisane zmiany.</translation>
 <translation id="904146253922032365">Naciśnij i przytrzymaj, aby wyświetlić karty w pionie</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>
 <translation id="9047347135558855162">Szybko rozpocznij wyszukiwanie w Chrome</translation>

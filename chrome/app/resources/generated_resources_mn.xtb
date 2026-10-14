@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Микрофон болон камераа ашиглана уу</translation>
 <translation id="1005333234656240382">ADB алдаа засахыг идэвхжүүлэх үү?</translation>
 <translation id="1005671386794704751">Сарнай</translation>
+<translation id="1005692418949452963">Сонголтыг болиулах</translation>
 <translation id="1005919400326853998">Шинэ харилцах цонхонд <ph name="CERT_NAME" />-н сертификатын дэлгэрэнгүйг үзнэ үү</translation>
 <translation id="1006033052970139968">Микрофоны зөвшөөрөл, системийн үйлчилгээнүүдтэй апп, вебсайтуудад микрофонд хандахыг зөвшөөрсөн</translation>
 <translation id="1006873397406093306">Энэ өргөтгөл таны сайтууд дээрх өгөгдлийг унших болон өөрчлөх боломжтой. Та энэ өргөтгөлийн хандах боломжтой сайтуудыг хянаж болно.</translation>
@@ -728,6 +729,7 @@
 <translation id="1552752544932680961">Өргөтгөлийг удирдах</translation>
 <translation id="1553538517812678578">хязгааргүй</translation>
 <translation id="1553947773881524342">Chromebook-ийнхээ Microsoft 365-ын талаар <ph name="LINK_BEGIN" />нэмэлт мэдээлэл авна уу<ph name="LINK_END" />.</translation>
+<translation id="1554343363646356023">Шинэ &amp;тусгаарласан цонх</translation>
 <translation id="1554640914375980459">Таныг мэдэгдэл хүлээн авахад дэлгэц анивчих болно. Хэрэв та гэрэлд мэдрэг бол гэрэл анивчдаг мэдэгдлийг болгоомжтой ашиглаарай.</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1556127816860282890">Арын үйл ажиллагаа болон төвөггүйгээр гүйлгэх гэх мэт зарим визуал эффектийг ашиглахад хязгаарлагдмал байж болно</translation>
@@ -870,7 +872,6 @@
 <translation id="1656528038316521561">Арын дэвсгэрийн тод байдал</translation>
 <translation id="1657406563541664238"><ph name="PRODUCT_NAME" />-г сайжруулахад дэмжлэг үзүүлэх зорилгоор хэрэглээний статистик болон гэмтлийн тайланг автоматаар Google-д илгээх</translation>
 <translation id="1657937299377480641">Боловсролын нөөцөд хандахаар дахин нэвтрэхийн тулд эцэг эхээсээ танд зөвшөөрөл өгөхийг хүснэ үү</translation>
-<translation id="1657952527687824398">Табын бүлгийг сонгох</translation>
 <translation id="1658424621194652532">Энэ хуудас таны микрофонд хандаж байна.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" />-г шинэчлэх боломжтой</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Таны хөтчийг удаашруулж буй табыг засна уу}other{Таны хөтчийг удаашруулж буй табуудыг засна уу}}</translation>
@@ -2342,7 +2343,6 @@
 <translation id="2767077837043621282">Таны Chromebook-г шинэчилж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2767127727915954024">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FILENAME" />-г засах боломжтой байна</translation>
 <translation id="2769174155451290427">Зураг байршуулсан</translation>
-<translation id="2769715732905083104">Табын бүлэг сонгох</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" />-г түр зогсоох</translation>
 <translation id="2770465223704140727">Жагсаалтаас устгах</translation>
 <translation id="2770690685823456775">Нууц үгээ өөр фолдерт экспортлох</translation>
@@ -2624,7 +2624,6 @@
 <translation id="2984727013951557074">Файлыг Драйвт синк хийсэн хэвээр байна.</translation>
 <translation id="2984923316661218534">Google Нууц үгний менежерээр энэ төхөөрөмж дээр нэвтрэх түлхүүрээ аваарай</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> нэг апп устгасан}other{<ph name="APP_NAME" /> # апп устгасан}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Таб сонгох}other{# таб сонгох}}</translation>
 <translation id="2988018669686457659">Илүү буулгагч</translation>
 <translation id="2988328607561082373">Та ямар ч нууц үгийг дахин ашиглаагүй байна</translation>
 <translation id="2989123969927553766">Хулганын гүйлгэлтийн хурдасгуур</translation>
@@ -3083,6 +3082,7 @@
 <translation id="3320957378743864387">Бичих тусламж санал болгохыг зөвшөөрөөгүй</translation>
 <translation id="3321460131042519426">Үг хураангуйлахыг идэвхжүүлэх</translation>
 <translation id="3321494112580110651">Хэвлэгчээ харахгүй байна уу?</translation>
+<translation id="3321512411079201586">&amp;Тусгаарласан</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" />-с</translation>
 <translation id="3323288183237359315">Edge-д зориулж суулгах</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
@@ -3169,6 +3169,7 @@
 <translation id="3390740059150071453">Зүүн тийш харах</translation>
 <translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3394072120086516913">Компьютерыг утсаар холбосон бөгөөд дамжуулагч төхөөрөмж Wi-Fi-д холбогдсон</translation>
+<translation id="3394561494170561143">Шинэ тусгаарласан &amp;таб</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд танигч ашиглахыг зөвшөөрсөн</translation>
 <translation id="339722927132407568">Царцдаг</translation>
 <translation id="3399432415385675819">Мэдэгдлийг идэвхгүй болгоно</translation>
@@ -3352,7 +3353,6 @@
 <translation id="3527473647192919613">Шинэ тусгаарласан цонх</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="35296112145429559">Гүйлгэх товчнуудыг бэхлэх</translation>
-<translation id="3530919970074558307">Бүлгийн сонголтыг болиулах</translation>
 <translation id="3531070080754387701">Microsoft 365 энэ фолдероос <ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
 <translation id="3531883061432162622">Хавчуурга болон жагсаалтуудаас унших жагсаалт ба хавчуургаа олно уу</translation>
 <translation id="3532521178906420528">Сүлжээний холболтыг үүсгэж байна ...</translation>
@@ -4531,7 +4531,6 @@
 <translation id="4405580203042711503">Доорх шинэ таб</translation>
 <translation id="4405781821077215583">Текстийг оруулаад дэлгэцийнхээ зүйлсийг жижгэрүүлэх эсвэл томруулаарай</translation>
 <translation id="4406308048672435032">Та энэ табыг идэвхгүй болгож эсвэл бүрэн жагсаалтыг дахин үзэхийн тулд сэргээж болно</translation>
-<translation id="4406881185911439342">Бүлэг сонгох</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406963243402726564">Хадгалаагүй өгөгдөл</translation>
 <translation id="4408599188496843485">Тусламж</translation>
@@ -5717,7 +5716,6 @@
 <translation id="5311304534597152726">Дараахаар нэвтэрч байна</translation>
 <translation id="5312746996236433535">дэлгэцийн тусгал үүсгэх</translation>
 <translation id="5313967007315987356">Сайт нэмэх</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Таб сонгох}other{# таб сонгох}}</translation>
 <translation id="5315738755890845852">Илүү хээтэй хаалт: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5317781812114905957">Зааварчилгаа</translation>
@@ -5993,6 +5991,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />-нь дараах хүсэлтэй байна</translation>
 <translation id="5533343601674003130">PDF үйлчилгээ</translation>
 <translation id="5535769176698670170">Дээд талын харагдах байдлаар солих</translation>
+<translation id="5536642445914063887">Профайл сэлгэх</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5541091577812545428">Нууц үгийг өөрчлөөгүй</translation>
 <translation id="5542132724887566711">Танилцуулга</translation>
@@ -7045,6 +7044,7 @@
 <translation id="6370021412472292592">Мэдүүлгийг ачаалж чадсангүй.</translation>
 <translation id="6370551072524410110">хайлт + shift + ухраах</translation>
 <translation id="637135143619858508">Хол зайтай</translation>
+<translation id="6372413553057593904">"<ph name="WINDOW_TITLE" />"-н идэвхгүй таб</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Дахин оролдоно уу</translation>
 <translation id="637642201764944055">Chrome Аппын хуучин хувилбарууд 2022 оны 12-р сараас хойш Linux төхөөрөмжүүд дээр нээгдэхгүй. Шинэ хувилбар луу шинэчлэх эсвэл энэ аппыг хасахын тулд администратортайгаа холбогдоно уу.</translation>
@@ -9179,6 +9179,7 @@
 <translation id="7991296728590311172">Сэлгүүрийн тохиргоо</translation>
 <translation id="7992080146463834191">Контентыг хураангуйлж, нарийн төвөгтэй үг хэллэгийг хялбарчилж, асуулт асууна уу.</translation>
 <translation id="7992203134935383159">Ярианы синтез</translation>
+<translation id="7992462686695281167">&amp;Нууцлалтай</translation>
 <translation id="7997826902155442747">Боловсруулалтын тэргүүлэх чиглэл</translation>
 <translation id="7998701048266085837">URL-ууд</translation>
 <translation id="7999229196265990314">Дараах файлуудыг үүсгэсэн болно:

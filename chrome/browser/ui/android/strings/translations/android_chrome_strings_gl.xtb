@@ -135,6 +135,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1485343711570311792">Abrirase en <ph name="NATIVE_APP_NAME" /> • Desde <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1496514951988037011">nome de usuario</translation>
+<translation id="1498051468374914325">Abrir a consola de ferramentas de programación</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1513352483775369820">Marcadores e historial web</translation>
@@ -142,6 +143,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1516966594427080024">Abre unha nova ventá no modo de incógnito</translation>
 <translation id="152204906462707884">Elimina rapidamente o historial de navegación e obtén máis control sobre a túa privacidade</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
+<translation id="1537160738459068682">Abrir elementos de ferramentas para programadores</translation>
 <translation id="1540012742443808215">A barra de enderezos está actualmente na parte superior</translation>
 <translation id="1543035591122163372">Inicia sesión para acceder aos teus contrasinais e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
@@ -2061,6 +2063,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9024318700713112071">Define Chrome como o navegador predeterminado.</translation>
 <translation id="9027728231343310283">Desfacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="9038316201889095704">A función de buscar na páxina está desactivada mentres haxa cambios sen gardar.</translation>
 <translation id="904146253922032365">Mantén premido para mostrar as pestanas en vertical</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9047347135558855162">Inicia unha busca rápida en Chrome</translation>

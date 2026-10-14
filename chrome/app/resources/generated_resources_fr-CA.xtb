@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Utiliser votre microphone et votre caméra</translation>
 <translation id="1005333234656240382">Activer le débogage PDA?</translation>
 <translation id="1005671386794704751">Rose</translation>
+<translation id="1005692418949452963">Annuler la mise en évidence</translation>
 <translation id="1005919400326853998">Afficher les détails du certificat pour <ph name="CERT_NAME" /> dans une nouvelle boîte de dialogue</translation>
 <translation id="1006033052970139968">L'accès au microphone est autorisé pour les applications, les sites Web disposant de l'autorisation d'accéder au microphone et les services système</translation>
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur des sites. Vous pouvez contrôler à quels sites l'extension peut accéder.</translation>
@@ -869,7 +870,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Aidez-nous à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="1657937299377480641">Pour te connecter à nouveau afin d'accéder aux ressources éducatives, demande à un parent de te donner l'autorisation</translation>
-<translation id="1657952527687824398">Mettre en évidence le groupe d'onglets</translation>
 <translation id="1658424621194652532">Cette page accède à votre microphone.</translation>
 <translation id="1660405268563702784">Mise à jour disponible pour <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corriger l'onglet qui ralentit votre navigateur}one{Corriger l'onglet qui ralentit votre navigateur}other{Corriger les onglets qui ralentissent votre navigateur}}</translation>
@@ -1588,6 +1588,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2215070081105889450">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="2217208085547223783">État de confiance</translation>
 <translation id="2218019600945559112">Souris et pavé tactile</translation>
+<translation id="2218116022473625437">Vous pouvez désactiver la mise en évidence du texte, modifier la voix et changer l'apparence de la page dans les paramètres.</translation>
 <translation id="2218515861914035131">Coller sous forme de texte brut</translation>
 <translation id="2219007152108311874">Demandez à chaque visite</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
@@ -2330,7 +2331,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2767077837043621282">Impossible de mettre à jour votre Chromebook. Veuillez réessayer plus tard.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> sera en mesure de modifier le fichier <ph name="FILENAME" /> jusqu'à ce que vous fermiez tous les onglets pour ce site</translation>
 <translation id="2769174155451290427">Image téléversée</translation>
-<translation id="2769715732905083104">Mettre en évidence le groupe d'onglets</translation>
 <translation id="2770082596325051055">Interrompre <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Retirer de la liste</translation>
 <translation id="2770690685823456775">Exportez vos mots de passe dans un autre dossier</translation>
@@ -2613,7 +2613,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2984727013951557074">Le fichier est toujours en cours de synchronisation sur Disque.</translation>
 <translation id="2984923316661218534">Obtenez vos clés d'accès sur cet appareil avec le gestionnaire de mots de passe Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> a désinstallé une application}one{<ph name="APP_NAME" /> a désinstallé # application}other{<ph name="APP_NAME" /> a désinstallé # applications}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Mettre en évidence l'onglet}one{Mettre en évidence # onglet}other{Mettre en évidence # onglets}}</translation>
 <translation id="2988018669686457659">Processus de rendu de réserve</translation>
 <translation id="2988328607561082373">Vous ne réutilisez aucun mot de passe</translation>
 <translation id="2989123969927553766">Accélération du défilement de la souris</translation>
@@ -3072,6 +3071,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3320957378743864387">Ne peut pas offrir d'aide à la rédaction</translation>
 <translation id="3321460131042519426">Activer le retour à la ligne</translation>
 <translation id="3321494112580110651">Vous ne voyez pas votre imprimante?</translation>
+<translation id="3321512411079201586">&amp;Isolé</translation>
 <translation id="3321776060736518525">À partir de <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Installer pour Edge</translation>
 <translation id="3323521181261657960">Hé hé! Ton temps d'écran a été prolongé!</translation>
@@ -3341,7 +3341,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3527473647192919613">Nouvelle fenêtre isolée</translation>
 <translation id="3528498924003805721">Cibles des raccourcis</translation>
 <translation id="35296112145429559">Épingler les boutons de défilement</translation>
-<translation id="3530919970074558307">Annuler la mise en évidence du groupe</translation>
 <translation id="3531070080754387701">Microsoft 365 ne peut pas ouvrir <ph name="FILE_NAMES" /> à partir de ce dossier</translation>
 <translation id="3531883061432162622">Trouvez votre liste de lecture et vos favoris dans Favoris et listes</translation>
 <translation id="3532521178906420528">Établissement de la connexion réseau en cours…</translation>
@@ -3762,6 +3761,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3812525830114410218">Certificat non fiable</translation>
 <translation id="3813296892522778813">Accédez à l'<ph name="BEGIN_LINK_CHROMIUM" />aide Google Chrome<ph name="END_LINK_CHROMIUM" /> si vous ne parvenez pas à trouver ce que vous recherchez</translation>
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et des réponses rapides</translation>
+<translation id="3815509884387832993">Écoutez cette page comme s'il s'agissait d'un balado avec la lecture par IA en utilisant le bouton Activer la lecture par IA dans la barre d'outils du mode Lecture</translation>
 <translation id="3815668647912194650">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="3817524650114746564">Ouvrez les paramètres de mandataires de votre ordinateur</translation>
@@ -4146,6 +4146,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers le bureau de <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors ligne)</translation>
+<translation id="4112282889480354965">Extensions et compétences</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
 <translation id="4114524937989710624">Des fichiers suggérés sont affichés pour vous permettre de reprendre votre activité la plus récente dans Google Disque de façon conviviale.
         <ph name="BREAK" />
@@ -4519,7 +4520,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4405580203042711503">Nouvel onglet ci-dessous</translation>
 <translation id="4405781821077215583">Ajustez la taille des éléments affichés à l'écran, y compris le texte, pour les rendre plus petits ou plus grands</translation>
 <translation id="4406308048672435032">Vous pouvez rendre cet onglet inactif ou actualiser la liste pour revoir la liste complète</translation>
-<translation id="4406881185911439342">Mettre en évidence le groupe</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406963243402726564">Données non enregistrées</translation>
 <translation id="4408599188496843485">Aid&amp;e</translation>
@@ -5703,7 +5703,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5311304534597152726">Se connecter en tant que</translation>
 <translation id="5312746996236433535">dupliquer l'écran</translation>
 <translation id="5313967007315987356">Ajouter un site</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Mettre en évidence l'onglet}one{Mettre en évidence # onglet}other{Mettre en évidence # onglets}}</translation>
 <translation id="5315738755890845852">Accolade supplémentaire : <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5317781812114905957">Instructions</translation>
@@ -5979,6 +5978,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
 <translation id="5533343601674003130">Service PDF</translation>
 <translation id="5535769176698670170">Échanger avec l'affichage du haut</translation>
+<translation id="5536642445914063887">Changer de profil</translation>
 <translation id="5537725057119320332">Diffuser</translation>
 <translation id="5541091577812545428">Le mot de passe n'a pas été modifié</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -8786,6 +8786,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7702463352133825032">Arrêter la diffusion sur <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tâche</translation>
 <translation id="7705085181312584869">Aide à la rédaction</translation>
+<translation id="7705230242432916648">Écoutez cette page comme s'il s'agissait d'un balado avec la lecture par IA</translation>
 <translation id="7705276765467986571">Échec de chargement du modèle de favori.</translation>
 <translation id="7705334495398865155">Attribuez l’identifiant de votre matériel (BSSID) de manière aléatoire pour empêcher le suivi de cet appareil par d’autres utilisateurs.</translation>
 <translation id="7705524343798198388">RPV</translation>
@@ -9166,6 +9167,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7991296728590311172">Paramètres de Switch Access</translation>
 <translation id="7992080146463834191">Résumez du contenu, simplifiez du langage complexe ou posez des questions</translation>
 <translation id="7992203134935383159">Synthèse vocale</translation>
+<translation id="7992462686695281167">&amp;Navigation privée</translation>
 <translation id="7997826902155442747">Priorité de processus</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Les fichiers suivants ont été créés :
@@ -10214,6 +10216,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8780123805589053431">Obtenir les descriptions d'image de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, utilisez les flèches vers la gauche et vers la droite pour déplacer le raccourci. Appuyez sur Entrée ou Échap pour terminer.</translation>
 <translation id="8781980678064919987">Éteindre lorsque le couvercle est fermé</translation>
 <translation id="8783171585655659524">Inclure une capture d'écran</translation>
 <translation id="8785622406424941542">Stylet</translation>

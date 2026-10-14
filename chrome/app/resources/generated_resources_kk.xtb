@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Микрофоныңыз бен камераңызды пайдалану</translation>
 <translation id="1005333234656240382">ADB түзетуін қосу қажет пе?</translation>
 <translation id="1005671386794704751">Раушан</translation>
+<translation id="1005692418949452963">Ерекшелемеу</translation>
 <translation id="1005919400326853998"><ph name="CERT_NAME" /> сертификатының мәліметтерін жаңа диалогтік терезеден ашу</translation>
 <translation id="1006033052970139968">Микрофонды пайдалану рұқсаты бар қолданбаларға, веб-сайттарға және жүйелік қызметтерге микрофонды пайдалануға рұқсат берілді.</translation>
 <translation id="1006873397406093306">Бұл кеңейтім сайттардағы деректеріңізді оқуы және өзгертуі мүмкін. Кеңейтімнің қай сайттарға кіре алатынын басқаруыңызға болады.</translation>
@@ -869,7 +870,6 @@
 <translation id="1656528038316521561">Фон бұлдырлығы</translation>
 <translation id="1657406563541664238">Пайдалану статистикасын және бұзылу туралы есептерді Google компаниясына автоматты түрде жіберу арқылы <ph name="PRODUCT_NAME" /> өнімін жақсартуға көмектесіңіз</translation>
 <translation id="1657937299377480641">Білім беру ресурстарын пайдалануға қайта кіру үшін ата-анадан рұқсат сұрау қажет.</translation>
-<translation id="1657952527687824398">Қойындылар тобын ерекшелеу</translation>
 <translation id="1658424621194652532">Бұл бет микрофоныңызды пайдалануда.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> қолданбасы үшін жаңарту бар</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Браузердің жұмысын баяулататын қойындыға қатысты ақауларды түзетіңіз}other{Браузердің жұмысын баяулататын қойындыларға қатысты ақауларды түзетіңіз}}</translation>
@@ -1588,6 +1588,7 @@
 <translation id="2215070081105889450">Аудионы бөлісу үшін оның орнына қойындыны немесе экранды бөлісіңіз</translation>
 <translation id="2217208085547223783">Сенім күйі</translation>
 <translation id="2218019600945559112">Тінтуір мен сенсорлық тақта</translation>
+<translation id="2218116022473625437">Параметрлерден мәтінді ерекшелеу функциясын өшіруге, дауысты өзгертуге және беттің көрінісін өзгертуге болады.</translation>
 <translation id="2218515861914035131">Қарапайым мәтін ретінде қою</translation>
 <translation id="2219007152108311874">Кірген сайын сұрау</translation>
 <translation id="2220529011494928058">Ақау туралы хабарлау</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2767077837043621282">Chromebook жаңартылмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> сайтының барлық қойындысы жабылғанға дейін, ол <ph name="FILENAME" /> файлын өзгерте алады.</translation>
 <translation id="2769174155451290427">Жүктеп салынған сурет</translation>
-<translation id="2769715732905083104">Қойындылар тобын ерекшелеу</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> файлын кідірту</translation>
 <translation id="2770465223704140727">Тізімнен алып тастау</translation>
 <translation id="2770690685823456775">Құпия сөздерді басқа қалтаға экспорттаңыз</translation>
@@ -2611,7 +2611,6 @@
 <translation id="2984727013951557074">Файл Drive-пен әлі синхрондалып жатыр.</translation>
 <translation id="2984923316661218534">Google Password Manager көмегімен кіру кілттерін осы құрылғыдан алыңыз.</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> қолданбаны жойды}other{<ph name="APP_NAME" /> # қолданбаны жойды}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Қойындыны ерекшелеу}other{# қойындыны ерекшелеу}}</translation>
 <translation id="2988018669686457659">Қосалқы рендеринг құралы</translation>
 <translation id="2988328607561082373">Ешқандай құпия сөзді қайта пайдаланып жатқан жоқсыз.</translation>
 <translation id="2989123969927553766">Тінтуірдің айналдыруын жылдамдату</translation>
@@ -3337,7 +3336,6 @@
 <translation id="3527473647192919613">Жаңа оқшау терезе</translation>
 <translation id="3528498924003805721">Таңбаша нысандары</translation>
 <translation id="35296112145429559">Айналдыру түймелерін бекіту</translation>
-<translation id="3530919970074558307">Топты ерекшелемеу</translation>
 <translation id="3531070080754387701">Microsoft 365 бұл қалтадан <ph name="FILE_NAMES" /> файлын аша алмайды</translation>
 <translation id="3531883061432162622">Оқу тізімі "Бетбелгілер мен тізімдер" бөлімінде пайда болады.</translation>
 <translation id="3532521178906420528">Желі байланысы орнатылып жатыр...</translation>
@@ -3758,6 +3756,7 @@
 <translation id="3812525830114410218">Сертификат жарамсыз</translation>
 <translation id="3813296892522778813">Іздегеніңіз табылмаса, <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome анықтамасына<ph name="END_LINK_CHROMIUM" /> өтіңіз</translation>
 <translation id="3813358687923336574">Беттерді аудару және жылдам жауаптар алу үшін қолданылатын тіл</translation>
+<translation id="3815509884387832993">Оқу режимінің құралдар тақтасындағы "Жасанды интеллект аудиосын ойнату функциясын қосу" түймесін басып, жасанды интеллект аудиосын ойнату функциясы арқылы осы бетті подкаст сияқты тыңдаңыз.</translation>
 <translation id="3815668647912194650">Бұл топты кейінірек қойындылар қосу үшін қалдырыңыз. Қажет болмаса, шығыңыз.</translation>
 <translation id="3816118180265633665">Chrome түстері</translation>
 <translation id="3817524650114746564">Компьютеріңіздің прокси параметрлерін ашу</translation>
@@ -4142,6 +4141,7 @@
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112282889480354965">Кеңейтімдер және дағдылар</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
@@ -4515,7 +4515,6 @@
 <translation id="4405580203042711503">Төмендегі жаңа қойынды</translation>
 <translation id="4405781821077215583">Экрандағы элементтерді (оның ішінде мәтінді) кішірейтіңіз немесе ұлғайтыңыз.</translation>
 <translation id="4406308048672435032">Бұл қойындыны әрекетсіз қылуға болады. Толық тізімді қайта көру үшін жаңартыңыз.</translation>
-<translation id="4406881185911439342">Топты ерекшелеу</translation>
 <translation id="4406883609789734330">Автоматты субтитр</translation>
 <translation id="4406963243402726564">Сақталмаған деректер</translation>
 <translation id="4408599188496843485">А&amp;нықтама</translation>
@@ -5699,7 +5698,6 @@
 <translation id="5311304534597152726">Жүйеге кіру</translation>
 <translation id="5312746996236433535">экран көшірмесін көрсету</translation>
 <translation id="5313967007315987356">Сайт қосу</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Қойындыны ерекшелеу}other{# қойындыны ерекшелеу}}</translation>
 <translation id="5315738755890845852">Ирек жақша артық қойылған: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5317781812114905957">Нұсқаулар</translation>
@@ -5975,6 +5973,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> үшін қажетті әрекеттер:</translation>
 <translation id="5533343601674003130">PDF қызметі</translation>
 <translation id="5535769176698670170">Жоғарғы көрініспен ауыстыру</translation>
+<translation id="5536642445914063887">Профиль ауыстыру</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5541091577812545428">Құпия сөз өзгертілмеді.</translation>
 <translation id="5542132724887566711">Профиль</translation>
@@ -6567,6 +6566,7 @@
 <translation id="6006484371116297560">Классика</translation>
 <translation id="6007053304250788613">Айна режимінде тек бір дисплейді өшіруге болады.</translation>
 <translation id="6007240208646052708">Сіздің тілде дауыспен іздеу жоқ.</translation>
+<translation id="6007858579659393165">Қойындылардың жаңа мөлдір көрінісі</translation>
 <translation id="6010651352520077187">Қосулы болғанда, Google Translate сайттарды қалаған тілге аударуды ұсынады. Сондай-ақ ол сайттарды автоматты түрде аударуы мүмкін.</translation>
 <translation id="6011193465932186973">Саусақ ізі</translation>
 <translation id="6011308810877101166">Іздеу ұсыныстарын жақсарту</translation>
@@ -8775,6 +8775,7 @@
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> құрылғысына трансляциялауды тоқтату</translation>
 <translation id="7704305437604973648">Тапсырма</translation>
 <translation id="7705085181312584869">Жазуға көмек керек</translation>
+<translation id="7705230242432916648">Жасанды интеллектімен ойнату функциясы арқылы бұл бетті подкаст сияқты тыңдаңыз.</translation>
 <translation id="7705276765467986571">Бетбелгі үлгісін жүктеу мүмкін емес.</translation>
 <translation id="7705334495398865155">Басқалардың осы құрылғыны бақылауына жол бермеу үшін жабдықтың идентификаторын (BSSID) кездейсоқ өзгертіңіз.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9456,6 +9457,7 @@
 <translation id="8212601853154459483">Бұл профильді <ph name="PROFILE_MANAGER" /> басқарады, ол сізден <ph name="USER_EMAIL_ADDRESS" /> аккаунты үшін жеке профиль жасауды талап етеді.</translation>
 <translation id="8212792694174629011">Ешбір профиль табылмады. Құрылғының камерасымен QR кодын сканерлеп немесе оператор берген белсендіру кодын енгізіп көріңіз.</translation>
 <translation id="8214489666383623925">Файлды ашу…</translation>
+<translation id="8214771296778317256">Қойындының қалаған стилін осы жерден таңдаңыз</translation>
 <translation id="8215129063232901118">Телефоныңыздың мүмкіндіктерін <ph name="DEVICE_TYPE" /> құрылғысынан пайдалану</translation>
 <translation id="8217212468862726597">Меңзерді бөлектеу</translation>
 <translation id="8217399928341212914">Бірнеше файлды автоматты жүктеуге салынған тыйымды сақтау</translation>
@@ -10203,6 +10205,7 @@
 <translation id="8780123805589053431">Google-дан кескін сипаттамаларын алу</translation>
 <translation id="8780443667474968681">Дауыспен іздеу өшірілген.</translation>
 <translation id="8781834595282316166">Топқа жаңа қойынды енгізу</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />. Таңбашаны жылжыту үшін сол және оң бағыт пернелерін пайдаланыңыз. Аяқтау үшін Enter немесе Escape пернесін басыңыз.</translation>
 <translation id="8781980678064919987">Қақпағы жабылғанда өшу</translation>
 <translation id="8783171585655659524">Скриншотты қамту</translation>
 <translation id="8785622406424941542">Стилус</translation>
@@ -10701,6 +10704,7 @@
 <translation id="9154194610265714752">Жаңартылды</translation>
 <translation id="915485121129452731">Графикалық планшет</translation>
 <translation id="9155344700756733162">Түсті таңдаудан алу</translation>
+<translation id="9155515662479003830">Параметрлерге өтіп, кез келген уақытта классикалық стильге ауыса аласыз.</translation>
 <translation id="9157096865782046368">0,8 секунд</translation>
 <translation id="9157697743260533322">Барлық пайдаланушылар үшін автоматты жаңартулар орнатылмады (алдын ала орнату қатесі: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Принтердің есігі ашық.</translation>

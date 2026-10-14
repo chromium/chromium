@@ -135,6 +135,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1485343711570311792">Deschide în <ph name="NATIVE_APP_NAME" /> • De la <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
 <translation id="1496514951988037011">nume de utilizator</translation>
+<translation id="1498051468374914325">Deschide consola Instrumente pentru dezvoltatori</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1513352483775369820">Marcaje și istoric web</translation>
@@ -142,6 +143,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1516966594427080024">Deschide o fereastră nouă în modul incognito</translation>
 <translation id="152204906462707884">Șterge rapid istoricul de navigare și preia controlul asupra confidențialității</translation>
 <translation id="153446405401665083">Este disponibilă o nouă versiune Chrome</translation>
+<translation id="1537160738459068682">Deschide elementele din Instrumentele pentru dezvoltatori</translation>
 <translation id="1540012742443808215">Bara de adrese este în partea de sus</translation>
 <translation id="1543035591122163372">Conectează-te pentru a-ți accesa parolele și alte date de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
@@ -2061,6 +2063,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9024318700713112071">Setează Chrome ca prestabilit</translation>
 <translation id="9027728231343310283">Anulează <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mută în\u2026</translation>
+<translation id="9038316201889095704">Funcția Găsește în pagină este dezactivată dacă există modificări nesalvate.</translation>
 <translation id="904146253922032365">Atinge lung pentru a afișa filele pe verticală</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9047347135558855162">Începe rapid o căutare în Chrome</translation>

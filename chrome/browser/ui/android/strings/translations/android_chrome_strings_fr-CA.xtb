@@ -135,6 +135,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1485343711570311792">Ouvrir dans <ph name="NATIVE_APP_NAME" /> • à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1496514951988037011">nom d'utilisateur</translation>
+<translation id="1498051468374914325">Ouvrir la console des outils pour les développeurs</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
@@ -142,6 +143,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1516966594427080024">Ouvrir une nouvelle fenêtre en mode de navigation privée</translation>
 <translation id="152204906462707884">Supprimez rapidement votre historique de navigation et reprenez le contrôle de votre confidentialité</translation>
 <translation id="153446405401665083">Une nouvelle version de Chrome est offerte</translation>
+<translation id="1537160738459068682">Ouvrir les éléments des outils pour les développeurs</translation>
 <translation id="1540012742443808215">La barre d'adresse est présentement en haut</translation>
 <translation id="1543035591122163372">Connectez-vous pour accéder à vos mots de passe et autres éléments de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Les modes de paiement et les adresses ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
@@ -2061,6 +2063,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9027728231343310283">Annuler la révocation de l'autorisation de <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Déplacer vers\u2026</translation>
+<translation id="9038316201889095704">La recherche dans la page est désactivée lorsqu'il y a des modifications non enregistrées.</translation>
 <translation id="904146253922032365">Maintenez le doigt sur l'écran pour afficher les onglets verticalement</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9047347135558855162">Lancez rapidement une recherche dans Chrome</translation>

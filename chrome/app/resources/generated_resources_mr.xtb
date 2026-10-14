@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">तुमचा मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="1005333234656240382">ADB डीबगिंग सुरू करायचे?</translation>
 <translation id="1005671386794704751">रोझ</translation>
+<translation id="1005692418949452963">फोकस काढून टाका</translation>
 <translation id="1005919400326853998">नवीन डायलॉगमध्ये <ph name="CERT_NAME" /> यासाठी सर्टिफिकेटचे तपशील पहा</translation>
 <translation id="1006033052970139968">मायक्रोफोनची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी मायक्रोफोन ॲक्सेसची अनुमती आहे</translation>
 <translation id="1006873397406093306">हे एक्सटेंशन साइटवरील तुमचा डेटा वाचेल आणि बदलेल. एक्सटेंशन कोणत्या साइट फॉलो करते हे तुम्ही नियंत्रित करू शकता.</translation>
@@ -870,7 +871,6 @@
 <translation id="1656528038316521561">बॅकग्राउंडची अपारदर्शकता</translation>
 <translation id="1657406563541664238">वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप Google कडे पाठवून <ph name="PRODUCT_NAME" /> ला अधिक चांगले करण्यास मदत करा</translation>
 <translation id="1657937299377480641">शैक्षणिक स्रोतांच्या अ‍ॅक्सेससाठी पुन्हा साइन इन करण्याकरिता, तुम्हाला परवानगी देण्याबाबत पालकाला सांगा</translation>
-<translation id="1657952527687824398">टॅब गट यावर फोकस करा</translation>
 <translation id="1658424621194652532">हे पेज तुमचा मायक्रोफोन अ‍ॅक्सेस करत आहे.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> साठी अपडेट उपलब्ध आहे</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{तुमच्या ब्राउझरचा वेग कमी करणाऱ्या टॅबचे निराकरण करा}other{तुमच्या ब्राउझरचा वेग कमी करणाऱ्या टॅबचे निराकरण करा}}</translation>
@@ -1598,6 +1598,7 @@
 <translation id="2215070081105889450">ऑडिओ शेअर करण्यासाठी, त्याऐवजी टॅब किंवा स्क्रीन शेअर करा</translation>
 <translation id="2217208085547223783">विश्वासाची स्थिती</translation>
 <translation id="2218019600945559112">माउस आणि टचपॅड</translation>
+<translation id="2218116022473625437">तुम्ही सेटिंग्जमध्ये मजकूर हायलाइट करणे बंद करू शकता, आवाजामध्ये फेरबदल करू शकता आणि पेजचे स्वरूप बदलू शकता.</translation>
 <translation id="2218515861914035131">साधा मजकूर म्हणून पेस्ट करा</translation>
 <translation id="2219007152108311874">भेट देताना प्रत्येक वेळी विचारा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
@@ -2342,7 +2343,6 @@
 <translation id="2767077837043621282">तुमचे Chromebook अपडेट करता आले नाही. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2767127727915954024">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
 <translation id="2769174155451290427">अपलोड केलेली इमेज</translation>
-<translation id="2769715732905083104">टॅब गट यावर फोकस करा</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> चे डाउनलोड थांबवा</translation>
 <translation id="2770465223704140727">सूचीमधून काढून टाका</translation>
 <translation id="2770690685823456775">तुमचे पासवर्ड दुसर्‍या फोल्डरमध्ये एक्सपोर्ट करा</translation>
@@ -2624,7 +2624,6 @@
 <translation id="2984727013951557074">फाइल ही अद्याप Drive मध्ये सिंक केली जात आहे.</translation>
 <translation id="2984923316661218534">Google Password Manager सह या डिव्हाइसवर तुमच्या पासकी मिळवा</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ने अ‍ॅप अनइंस्टॉल केले}other{<ph name="APP_NAME" /> ने # अ‍ॅप्स अनइंस्टॉल केली}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{टॅबवर फोकस करा}other{# टॅबवर फोकस करा}}</translation>
 <translation id="2988018669686457659">स्पेअर रेंडरर</translation>
 <translation id="2988328607561082373">तुम्ही कोणतेही पासवर्ड पुन्हा वापरत नाही आहात</translation>
 <translation id="2989123969927553766">माउस स्क्रोल अ‍ॅक्सिलरेशन</translation>
@@ -3083,6 +3082,7 @@
 <translation id="3320957378743864387">लिहिण्याशी संबंधित मदत देऊ करण्याची अनुमती नाही</translation>
 <translation id="3321460131042519426">वर्ड व्रॅप सुरू करा</translation>
 <translation id="3321494112580110651">तुमचा प्रिंटर दिसत नाही का?</translation>
+<translation id="3321512411079201586">&amp;Isolated</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> कडून</translation>
 <translation id="3323288183237359315">Edge साठी इंस्टॉल करा</translation>
 <translation id="3323521181261657960">बोनस! तुम्हाला आणखी स्क्रीन वेळ मिळाला</translation>
@@ -3352,7 +3352,6 @@
 <translation id="3527473647192919613">नवीन अलिप्त विंडो</translation>
 <translation id="3528498924003805721">शॉर्टकट लक्ष्ये</translation>
 <translation id="35296112145429559">स्क्रोल बटणे पिन करा</translation>
-<translation id="3530919970074558307">गटावरील फोकस काढून टाका</translation>
 <translation id="3531070080754387701">Microsoft 365 हे या फोल्डरमधील <ph name="FILE_NAMES" /> उघडू शकत नाही</translation>
 <translation id="3531883061432162622">बुकमार्क आणि सूची येथे तुमची वाचन सूची व बुकमार्क मिळवा</translation>
 <translation id="3532521178906420528">नेटवर्क कनेक्शन स्थापित करत आहे ...</translation>
@@ -3773,6 +3772,7 @@
 <translation id="3812525830114410218">खराब सर्टिफिकेट</translation>
 <translation id="3813296892522778813">तुम्ही जे शोधत आहात ते तुम्हाला सापडले नसेल तर <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome मदत<ph name="END_LINK_CHROMIUM" /> वर जा</translation>
 <translation id="3813358687923336574">पेजचे भाषांतर आणि क्विक आन्सर्स साठी वापरली जाणारी भाषा</translation>
+<translation id="3815509884387832993">वाचन मोड टूलबारमधील AI प्लेबॅक सुरू करा बटण वापरून AI प्लेबॅकसह हे पेज पॉडकास्ट असल्यासारखे ऐका</translation>
 <translation id="3815668647912194650">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा.</translation>
 <translation id="3816118180265633665">Chrome रंग</translation>
 <translation id="3817524650114746564">तुमच्या कॉंप्युटरच्या प्रॉक्सी सेटिंग्ज उघडा</translation>
@@ -4155,6 +4155,7 @@
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) वर विंडो हलवा</translation>
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
+<translation id="4112282889480354965">एक्स्टेंशन आणि कौशल्ये</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114524937989710624">Google Drive मधील तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजपणे परत जाण्यात मदत करण्यासाठी, तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
         <ph name="BREAK" />
@@ -4528,7 +4529,6 @@
 <translation id="4405580203042711503">खाली नवीन टॅब उघडा</translation>
 <translation id="4405781821077215583">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी लहान किंवा मोठे करा</translation>
 <translation id="4406308048672435032">संपूर्ण सूची पुन्हा पाहण्यासाठी तुम्ही हा टॅब इनॅक्टिव्ह किंवा रिफ्रेश करू शकता</translation>
-<translation id="4406881185911439342">फोकस गट</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406963243402726564">सेव्ह न केलेला डेटा</translation>
 <translation id="4408599188496843485">मदत</translation>
@@ -5714,7 +5714,6 @@
 <translation id="5311304534597152726">हे म्हणून साइन करा</translation>
 <translation id="5312746996236433535">स्क्रीन मिरर करा</translation>
 <translation id="5313967007315987356">साइट जोडा</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{टॅबवर फोकस करा}other{# टॅबवर फोकस करा}}</translation>
 <translation id="5315738755890845852">अतिरिक्त महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5317781812114905957">सूचना</translation>
@@ -5990,6 +5989,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ला हे करायचे आहे</translation>
 <translation id="5533343601674003130">PDF सेवा</translation>
 <translation id="5535769176698670170">वरून दिसणाऱ्या दृश्यासह बदला</translation>
+<translation id="5536642445914063887">प्रोफाइल स्विच करा</translation>
 <translation id="5537725057119320332">कास्ट करा</translation>
 <translation id="5541091577812545428">पासवर्ड बदलला नव्हता</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
@@ -8798,6 +8798,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> वर कास्ट करणे थांबवा</translation>
 <translation id="7704305437604973648">टास्क</translation>
 <translation id="7705085181312584869">मला लिहिण्यात मदत कर</translation>
+<translation id="7705230242432916648">AI प्लेबॅक वापरून हे पेज पॉडकास्ट असल्यासारखे ऐका</translation>
 <translation id="7705276765467986571">बुकमार्क मॉडेल लोड करणे शक्य नव्हते. </translation>
 <translation id="7705334495398865155">इतरांना हे डिव्हाइस ट्रॅक करण्यापासून रोखण्यासाठी तुमच्या हार्डवेअरचा आयडी (BSSID) रँडमाइझ करा.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9178,6 +9179,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7991296728590311172">स्विच ॲक्सेस सेटिंग्ज</translation>
 <translation id="7992080146463834191">आशयाचा सारांश द्या, क्लिष्ट भाषा सोपी करा किंवा प्रश्न विचारा.</translation>
 <translation id="7992203134935383159">स्पीच सिंथेसिस</translation>
+<translation id="7992462686695281167">&amp;Incognito</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राधान्य</translation>
 <translation id="7998701048266085837">URLs</translation>
 <translation id="7999229196265990314">खालील फाइल तयार केल्या:
@@ -10227,6 +10229,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8780123805589053431">Google कडून इमेज वर्णन मिळवा</translation>
 <translation id="8780443667474968681">व्हॉइस शोध बंद केले गेले आहे.</translation>
 <translation id="8781834595282316166">गटामधील नवीन टॅब</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, शॉर्टकट हलवण्यासाठी लेफ्ट आणि राइट अ‍ॅरो की वापरा. पूर्ण करण्यासाठी एंटर किंवा एस्केप प्रेस करा.</translation>
 <translation id="8781980678064919987">झाकण बंद असताना बंद करा</translation>
 <translation id="8783171585655659524">स्क्रीनशॉट समाविष्ट करा</translation>
 <translation id="8785622406424941542">स्टायलस</translation>

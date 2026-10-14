@@ -135,6 +135,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1485343711570311792">Abrir no app <ph name="NATIVE_APP_NAME" /> • Do <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1496514951988037011">nome de usuário</translation>
+<translation id="1498051468374914325">Abrir o Console das Ferramentas para Desenvolvedores</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
@@ -142,6 +143,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1516966594427080024">Abrir uma nova janela no modo de navegação anônima</translation>
 <translation id="152204906462707884">Exclua rapidamente seu histórico de navegação e tenha mais controle sobre sua privacidade</translation>
 <translation id="153446405401665083">Uma nova versão do Chrome está disponível</translation>
+<translation id="1537160738459068682">Abrir Elementos das Ferramentas para Desenvolvedores</translation>
 <translation id="1540012742443808215">A barra de endereço está na parte de cima da tela</translation>
 <translation id="1543035591122163372">Faça login para acessar suas senhas e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
@@ -1070,6 +1072,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5235196193381275927">Algo deu errado durante o login</translation>
 <translation id="5246093389635966745">Editar atalho da barra de ferramentas</translation>
+<translation id="5257142004843671642">Redimensionar painel lateral</translation>
 <translation id="5264813352784073502">nas últimas 24 horas</translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
 <translation id="5273031377282080577">O administrador gerencia essa configuração.</translation>
@@ -2062,6 +2065,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9024318700713112071">Definir Chrome como navegador padrão</translation>
 <translation id="9027728231343310283">Desfazer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
+<translation id="9038316201889095704">A opção Localizar na Página fica desativada quando há mudanças não salvas.</translation>
 <translation id="904146253922032365">Toque e segure para mostrar as guias na vertical</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9047347135558855162">Comece uma pesquisa no Chrome</translation>

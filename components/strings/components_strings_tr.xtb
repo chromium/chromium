@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Önerileri göster</translation>
 <translation id="1038168778161626396">Yalnızca Şifrele</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
 <translation id="1044897699341250361">Bu ne anlama geliyor?</translation>
 <translation id="1049837829250301306">İçerik, kuruluşunuzun politikaları nedeniyle yapıştırılamadı</translation>
@@ -491,6 +490,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="18139523105317219">EDI Grup Adı</translation>
 <translation id="1816436748874040213">Paylaşılan sekmeleri kaydırmak ve yakınlaştırmak için izin isteyebilir</translation>
 <translation id="1816707915923025275">Tarama geçmişinizde arama yapmak için @history yazın</translation>
+<translation id="1816771466809215784">Ödeme sırasında otomatik olarak doldurulması için bu kartın sahibinin adını Google Cüzdan'a kaydedin</translation>
 <translation id="1817364650920811003">Rol: Chrome ipucu. Erişilebilirlik etiketi: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">otomatik indirmeler</translation>
 <translation id="1821930232296380041">Geçersiz istek veya istek parametreleri</translation>
@@ -1054,7 +1054,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2734797989819862638">Kopyalanmasın</translation>
 <translation id="2738771556149464852">Şundan Sonra Değil:</translation>
 <translation id="2740531572673183784">Tamam</translation>
-<translation id="275259155159336003">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir. <ph name="BEGIN_LINK" />Ayarları yönetin<ph name="END_LINK" />.</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> dosya Google Drive'a yükleniyor</translation>
 <translation id="2759299890026163685">Tekrar denemeden önce internet bağlantınızın kesintisiz olduğundan emin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> uygulamasında şifrenizi doldurmak</translation>
@@ -1434,7 +1433,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3434025015623587566">Google Şifre Yöneticisi'nin daha fazla erişime ihtiyacı var</translation>
 <translation id="343474037147570563">Yüklediğiniz veya eklediğiniz dosyalar analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, hassas veriler veya kötü amaçlı yazılım içerip içermedikleri kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
-<translation id="3435267628744367511">Sekme değiştirmeden bilgileri bulup doldurmak için herhangi bir formda Ctrl tuşuna iki kez basın</translation>
 <translation id="3435557549311968410">Kesintisiz (Kısa)</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3436125638121079308">Bu sohbet dizisinde daha iyi yanıtlar almak için alakalı sekmeler otomatik olarak paylaşılsın mı?</translation>
@@ -1880,7 +1878,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4153446078232988116"><ph name="SITE" />, HTTPS ile güvenli bağlantıları desteklemiyor</translation>
 <translation id="4153858337812834972">En son sekmeler</translation>
 <translation id="4154277373259957087">Chrome artık ödeme yöntemlerini doldurmadan önce kimliğinizi doğrulayacak. Bu ayarı istediğiniz zaman <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> bölümünden güncelleyebilirsiniz.</translation>
-<translation id="4157273919218514718">Kişisel Zeka özellikli Gemini tarafından desteklenir. <ph name="BEGIN_LINK" />Ayarları yönetin<ph name="END_LINK" />.</translation>
 <translation id="4157469997675439324">Sürücü belgesini güvenli bir şekilde güncelleyin</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4165422751765527461">Yardım Merkezi makalesini yeni bir sekmede açar</translation>
@@ -2148,7 +2145,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4599572944836204718">Kartınızı kaydederek Google Pay ile daha hızlı ödeme yapabilirsiniz. Kart bilgileri Google Cüzdan'da şifrelenir.</translation>
 <translation id="4603727370377253901">Uçuş rezervasyonları</translation>
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
-<translation id="4607879293515681409">Gelişmiş otomatik doldurma özelliği artık Gmail ve Google Fotoğraflar gibi uygulamalardaki bilgileri (ör. uçuş numaraları ve randevu saatleri) bulup doldurabilir.</translation>
 <translation id="460848736049414407">Yönetici tarafından engellendi</translation>
 <translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> üzerinden verilen <ph name="MERCHANT_ORIGIN" /> adresindeki siparişiniz işleme alınırken bir hata oluştu.</translation>
@@ -2923,7 +2919,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5884465125445718607">Zarf Chinese #6</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
 <translation id="5887687176710214216">En son dün ziyaret edildi</translation>
-<translation id="5887791684215121787">Sekme değiştirmeden bilgileri bulup doldurmak için herhangi bir formda ⌘ ⌘ tuşlarına basın</translation>
 <translation id="5889251770650310375">Diğer cihazlarınızdaki geçmişinizi görmek için kimliğinizi doğrulayıp geçmişinizi ve sekmelerinizi senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5895187275912066135">Verildiği Tarih</translation>
@@ -3539,7 +3534,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6936976777388162184">Paket halinde sunulan bu cihaz, Kiosk ve Tabela Güncellemesi'ne kaydedilemez.</translation>
 <translation id="6942444979237658241">Yorumlar - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Şifrenizi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
-<translation id="6946949206576443118">Chrome ile web'de arama yapın</translation>
 <translation id="6948051842255602737">Oyun bitti, <ph name="SCORE" /> puan aldınız.</translation>
 <translation id="6948223029286835408">Chrome'da alışveriş yaparken Pix seçeneği gösterilir</translation>
 <translation id="6948701128805548767">Alım yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
@@ -4255,6 +4249,7 @@ Ek ayrıntılar:
 <translation id="813024282736408069">Otomatik doldurma için sanal kartı etkinleştirin</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8135546115396015134">sol tuş</translation>
+<translation id="8136385032646505126">Kart sahibinin adı kaydedilsin mi?</translation>
 <translation id="8137185688006450980">Sağlık planı seçeneklerini karşılaştır</translation>
 <translation id="8138591088112729119">Kişisel Zeka destekli</translation>
 <translation id="814071672416123670">İçerik, kuruluşunuzun politikaları nedeniyle kopyalanamadı</translation>
@@ -4529,6 +4524,7 @@ Ek ayrıntılar:
 <translation id="8622864575115813231">Finans kuruluşunuzla iletişim kuruluyor...</translation>
 <translation id="8632584659860846053">Tüm yalıtılmış pencereleri kapattığınızda tarama geçmişiniz, çerezleriniz ve site verileriniz, önbelleğiniz ve formlara girdiğiniz bilgiler silinir</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">10 adede kadar dosya, sekme veya resim ekleyin</translation>
 <translation id="8637362707224133343">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede <ph name="BEGIN_LINK" />kısa süre önce kimlik avı tespit etti<ph name="END_LINK" />. Kimlik avı siteleri sizi kandırmak için başka bir siteymiş gibi davranır.<ph name="NEW_LINE" />Normalde güvenli olan siteler bile bazen saldırganlar tarafından ele geçirilebilir. Bir hata olduğunu ve bu sitenin tehlike arz etmediğini düşünüyorsanız <ph name="BEGIN_ERROR_LINK" />bize bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Sekmeleri paylaşmak ve diğer kullanıcılarla ortak çalışma yapmak için Chrome'da oturum açabilmeniz gerekir</translation>
 <translation id="8641131559425911240">Zarf (Bond)</translation>

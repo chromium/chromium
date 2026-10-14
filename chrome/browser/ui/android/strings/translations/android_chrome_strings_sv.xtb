@@ -135,6 +135,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1485343711570311792">Öppna i <ph name="NATIVE_APP_NAME" /> • Från <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1496514951988037011">användarnamn</translation>
+<translation id="1498051468374914325">Öppna konsolen för utvecklarverktyg</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1513352483775369820">Bokmärken och webbhistorik</translation>
@@ -142,6 +143,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1516966594427080024">Öppna ett nytt fönster i inkognitoläge</translation>
 <translation id="152204906462707884">Radera snabbt din webbhistorik och ta mer kontroll över din integritet</translation>
 <translation id="153446405401665083">En ny version av Chrome är tillgänglig</translation>
+<translation id="1537160738459068682">Öppna element i utvecklarverktygen</translation>
 <translation id="1540012742443808215">Adressfältet är för närvarande högst upp</translation>
 <translation id="1543035591122163372">Logga in om du vill få dina lösenord med mera från <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
@@ -1070,6 +1072,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5235196193381275927">Något gick fel vid inloggningen</translation>
 <translation id="5246093389635966745">Redigera genväg i verktygsfältet</translation>
+<translation id="5257142004843671642">Ändra storlek på sidopanelen</translation>
 <translation id="5264813352784073502">de senaste 24 timmarna</translation>
 <translation id="5267572070504076962">Aktivera Säker webbsökning för skydd mot farliga webbplatser</translation>
 <translation id="5273031377282080577">Administratören hanterar den här inställningen.</translation>
@@ -2062,6 +2065,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9024318700713112071">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="9027728231343310283">Ångra <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytta till\u2026</translation>
+<translation id="9038316201889095704">Sök på sidan har inaktiverats eftersom det finns ändringar som inte har sparats.</translation>
 <translation id="904146253922032365">Tryck länge för att visa flikar vertikalt</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9047347135558855162">Starta snabbt en sökning i Chrome</translation>

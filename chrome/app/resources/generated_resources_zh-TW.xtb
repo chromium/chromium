@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">使用你的麥克風和相機</translation>
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
 <translation id="1005671386794704751">玫瑰粉</translation>
+<translation id="1005692418949452963">移除焦點</translation>
 <translation id="1005919400326853998">在新對話方塊中查看「<ph name="CERT_NAME" />」的憑證詳細資料</translation>
 <translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
 <translation id="1006873397406093306">這項擴充功能可讀取及變更已造訪網站的相關資料。你可以設定擴充功能可存取的網站。</translation>
@@ -869,7 +870,6 @@
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓 <ph name="PRODUCT_NAME" /> 更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
-<translation id="1657952527687824398">將焦點移至分頁群組</translation>
 <translation id="1658424621194652532">這個網頁正在存取你的麥克風。</translation>
 <translation id="1660405268563702784">「<ph name="APP_NAME" />」有可用的更新</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{修正導致瀏覽器運作緩慢的分頁}other{修正導致瀏覽器運作緩慢的分頁}}</translation>
@@ -1588,6 +1588,7 @@
 <translation id="2215070081105889450">如要分享音訊，請改為分享分頁或螢幕畫面</translation>
 <translation id="2217208085547223783">信任狀態</translation>
 <translation id="2218019600945559112">滑鼠和觸控板</translation>
+<translation id="2218116022473625437">你可以前往設定頁面關閉文字醒目顯示功能、修改語音，以及變更頁面外觀。</translation>
 <translation id="2218515861914035131">以純文字貼上</translation>
 <translation id="2219007152108311874">每次造訪時都詢問</translation>
 <translation id="2220529011494928058">回報問題</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="2769174155451290427">已上傳的圖片</translation>
-<translation id="2769715732905083104">將焦點移至分頁群組</translation>
 <translation id="2770082596325051055">暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將你的密碼匯出至其他資料夾</translation>
@@ -2611,7 +2611,6 @@
 <translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
 <translation id="2984923316661218534">在這部裝置上用 Google 密碼管理工具取得密碼金鑰</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」已解除安裝 1 個應用程式}other{「<ph name="APP_NAME" />」已解除安裝 # 個應用程式}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{將焦點移至 1 個分頁}other{將焦點移至 # 個分頁}}</translation>
 <translation id="2988018669686457659">備用轉譯器</translation>
 <translation id="2988328607561082373">目前未重複使用任何密碼</translation>
 <translation id="2989123969927553766">滑鼠捲動加速</translation>
@@ -3336,7 +3335,6 @@
 <translation id="3527473647192919613">新增隔離視窗</translation>
 <translation id="3528498924003805721">捷徑目標</translation>
 <translation id="35296112145429559">固定捲動按鈕</translation>
-<translation id="3530919970074558307">將焦點移出群組</translation>
 <translation id="3531070080754387701">Microsoft 365 無法從這個資料夾開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="3531883061432162622">前往「書籤」和「清單」查看閱讀清單和書籤</translation>
 <translation id="3532521178906420528">正在建立網路連線...</translation>
@@ -3757,6 +3755,7 @@
 <translation id="3812525830114410218">錯誤的憑證</translation>
 <translation id="3813296892522778813">如果你找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">網頁譯文和快速解答功能所用語言</translation>
+<translation id="3815509884387832993">使用閱讀模式工具列中的「開啟 AI 播放功能」按鈕，透過 AI 播放內容模式朗讀網頁，就像聆聽 Podcast 一樣</translation>
 <translation id="3815668647912194650">如果保留，之後可以新增分頁；如果不會再使用，可以退出群組。</translation>
 <translation id="3816118180265633665">Chrome 顏色</translation>
 <translation id="3817524650114746564">開啟電腦的 Proxy 設定</translation>
@@ -4140,6 +4139,7 @@
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="4112282889480354965">擴充功能和技能</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面上會顯示建議的檔案，方便你繼續執行最近在 Google 雲端硬碟中的活動。
         <ph name="BREAK" />
@@ -4513,7 +4513,6 @@
 <translation id="4405580203042711503">在下方新增分頁</translation>
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406308048672435032">你可以將這個分頁設為閒置，或重新整理以便再次查看完整清單</translation>
-<translation id="4406881185911439342">將焦點移至群組</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406963243402726564">資料未儲存</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
@@ -5694,7 +5693,6 @@
 <translation id="5311304534597152726">使用以下身分登入：</translation>
 <translation id="5312746996236433535">螢幕鏡像</translation>
 <translation id="5313967007315987356">新增網站</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{將焦點移至 1 個分頁}other{將焦點移至 # 個分頁}}</translation>
 <translation id="5315738755890845852">多餘的大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5317781812114905957">指令</translation>
@@ -5970,6 +5968,7 @@
 <translation id="5533001281916885985">「<ph name="SITE_NAME" />」要求下列權限</translation>
 <translation id="5533343601674003130">PDF 服務</translation>
 <translation id="5535769176698670170">與上方畫面交換</translation>
+<translation id="5536642445914063887">切換設定檔</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5541091577812545428">密碼未變更</translation>
 <translation id="5542132724887566711">設定檔</translation>
@@ -6562,6 +6561,7 @@
 <translation id="6006484371116297560">傳統版</translation>
 <translation id="6007053304250788613">鏡像模式只能排除一個螢幕</translation>
 <translation id="6007240208646052708">無法使用你的語言進行語音搜尋。</translation>
+<translation id="6007858579659393165">分頁換上全新透明外觀</translation>
 <translation id="6010651352520077187">開啟之後，Google 翻譯會顯示語言選項，並根據你的偏好語言翻譯網站內容。此外，這項服務也可以自動翻譯網站內容。</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
@@ -8771,6 +8771,7 @@
 <translation id="7702463352133825032">停止投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7704305437604973648">工作</translation>
 <translation id="7705085181312584869">幫我寫</translation>
+<translation id="7705230242432916648">運用 AI 播放功能，像聽 Podcast 一樣聆聽此頁內容</translation>
 <translation id="7705276765467986571">無法載入書籤模型。</translation>
 <translation id="7705334495398865155">隨機設定硬體 ID (BSSID)，避免其他人追蹤這部裝置。</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9452,6 +9453,7 @@
 <translation id="8212601853154459483">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，你必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立個別的設定檔</translation>
 <translation id="8212792694174629011">找不到任何設定檔。請嘗試使用裝置攝影機掃描 QR code，或是輸入電信業者提供的啟用代碼。</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>
+<translation id="8214771296778317256">在這裡選擇偏好的分頁樣式</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機上的功能和內容</translation>
 <translation id="8217212468862726597">醒目顯示指標</translation>
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
@@ -10199,6 +10201,7 @@
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已停用。</translation>
 <translation id="8781834595282316166">在群組新增分頁</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />，使用向左鍵和向右鍵移動捷徑，按下 Enter 或 Escape 鍵即可結束。</translation>
 <translation id="8781980678064919987">蓋上機蓋時關機</translation>
 <translation id="8783171585655659524">包括螢幕截圖</translation>
 <translation id="8785622406424941542">觸控筆</translation>
@@ -10697,6 +10700,7 @@
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">繪圖板</translation>
 <translation id="9155344700756733162">取消選取顏色</translation>
+<translation id="9155515662479003830">你隨時可以前往設定切換回傳統樣式</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">無法為所有使用者設定自動更新作業 (預先啟動錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">印表機的蓋子處於開啟狀態</translation>

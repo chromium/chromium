@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038168778161626396">Kun chiffrering</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
 <translation id="1044897699341250361">Hva betyr dette?</translation>
 <translation id="1049837829250301306">Innholdet kunne ikke limes inn på grunn av retningslinjene for organisasjonen din</translation>
@@ -491,6 +490,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="18139523105317219">Navn på EDI-enhet</translation>
 <translation id="1816436748874040213">Kan be om å få rulle og zoome på delte faner</translation>
 <translation id="1816707915923025275">Skriv @history for å søke i nettleserloggen</translation>
+<translation id="1816771466809215784">For å få det fylt ut automatisk i kassen, kan du lagre kortinnehaverens navn for dette kortet i Google Wallet</translation>
 <translation id="1817364650920811003">Rolle: Chrome-tips. Tilgjengelighetsetikett: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">automatiske nedlastinger</translation>
 <translation id="1821930232296380041">Ugyldig forespørsel eller forespørselsparametere</translation>
@@ -648,6 +648,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2102495993840063010">Android-apper</translation>
 <translation id="2103210856015238101">Stamkundekort som kan fylles ut ved berøring, åpnes i full høyde.</translation>
 <translation id="2104739941682874393">Forbedret autofyll forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
+<translation id="2105237910269166838">Spør om denne siden</translation>
 <translation id="2107021941795971877">Utskriftsstøtter</translation>
 <translation id="2108755909498034140">Start datamaskinen på nytt.</translation>
 <translation id="2109845311767915560">Delt fanegruppe</translation>
@@ -1054,7 +1055,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2734797989819862638">Ikke kopier</translation>
 <translation id="2738771556149464852">Ikke etter</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Basert på personlig tilpasset intelligens med Gemini. Forespørslene, sidetitlene og nettadressene dine kan bli gjennomgått for å bidra til å gjøre forbedret autofyll bedre. <ph name="BEGIN_LINK" />Administrer innstillingene<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ingen}=1{1 ferdighet}other{# ferdigheter}}</translation>
 <translation id="2757727729385895652">Laster opp <ph name="COUNT" /> filer til Google Disk</translation>
 <translation id="2759299890026163685">Sørg for at du har stabil internettilkobling før du prøver på nytt</translation>
 <translation id="2759825833388495838">fylle ut passordet ditt på <ph name="APP_NAME" /></translation>
@@ -1434,7 +1435,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3434025015623587566">Google Passordlagring trenger mer tilgang</translation>
 <translation id="343474037147570563">Filer du laster opp eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
-<translation id="3435267628744367511">Trykk på Ctrl to ganger i et skjema for å finne og fylle ut informasjon uten å bytte fane</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3436125638121079308">Vil du dele relevante faner automatisk for å få bedre svar i denne tråden?</translation>
@@ -1880,7 +1880,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4153446078232988116"><ph name="SITE" /> støtter ikke sikker tilkobling med HTTPS</translation>
 <translation id="4153858337812834972">Nyligste faner</translation>
 <translation id="4154277373259957087">Chrome kommer nå til å bekrefte at det er deg, før betalingsmåter fylles ut. Du kan oppdatere dette når som helst i <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Basert på personlig tilpasset intelligens med Gemini. <ph name="BEGIN_LINK" />Administrer innstillingene<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Oppdater førerkortet på en sikker måte</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4165422751765527461">Åpner en brukerstøtteartikkel på en ny fane</translation>
@@ -2148,7 +2147,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4599572944836204718">Betal raskere med Google Pay når kortet er lagret. Kortinformasjonen er kryptert i Google Wallet.</translation>
 <translation id="4603727370377253901">Flybestillinger</translation>
 <translation id="4607608436550361748">Se Chrome-tips</translation>
-<translation id="4607879293515681409">Nå kan forbedret autofyll finne og fylle ut informasjon – som flynumre og avtaletider – fra apper som Gmail og Foto</translation>
 <translation id="460848736049414407">Blokkert av administrator</translation>
 <translation id="4610279718074907952">Dette nettstedet er med i en gruppe som er definert av <ph name="SET_OWNER" /> og kan se aktiviteten din</translation>
 <translation id="4612631413844865947">Det oppsto en feil under behandling av bestillingen din på <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2921,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5884465125445718607">Kinesisk konvolutt nr. 6</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
-<translation id="5887791684215121787">Trykk på ⌘ to ganger i et skjema for å finne og fylle ut informasjon uten å bytte fane</translation>
 <translation id="5889251770650310375">For å få loggen din fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5895187275912066135">Utstedt</translation>
@@ -3539,7 +3536,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6936976777388162184">Dette er en pakkeenhet og kan ikke registreres med Kiosk- og skiltoppgradering.</translation>
 <translation id="6942444979237658241">Kommentarer – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
-<translation id="6946949206576443118">Søk på nettet i Chrome</translation>
 <translation id="6948051842255602737">Spillet er over. Poengsummen din er <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Når du kjøper noe i Chrome, kan du se Pix som et alternativ</translation>
 <translation id="6948701128805548767">For å se hentemetoder og -krav, velg en adresse</translation>
@@ -3629,6 +3625,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7083258188081898530">Skuff 9</translation>
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Opplasting forespurt av bruker</translation>
+<translation id="7089745480771070611">Åpnes i sidepanelet</translation>
 <translation id="7090698782953528257">Hjelp meg med å lage et diagram av en funksjon for å visualisere den matematiske ligningen og se formen på kurven</translation>
 <translation id="7092087596499105699">Administratoren din har konfigurert koblingen for sikker gateway for å beskytte tilgangen til organisasjonens private nettapper. Den kan bruke data fra jobbprofilen til å bekrefte tilgang.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
@@ -4012,6 +4009,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7696107855583699585">Endre known traveler-nummeret</translation>
 <translation id="7698864304447945242">Vil du oppdatere Google Play-tjenester for AR?</translation>
 <translation id="7699509138503320152">Skriv om e-posten min slik at den blir mer overbevisende</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ingen}=1{1 ferdighet (synkronisert)}other{# ferdigheter (synkronisert)}}</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Fortsett til <ph name="SITE" /> (usikker side)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Hjelp meg å skrive</translation>
@@ -4254,6 +4252,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="813024282736408069">Slå på autofyll med virtuelt kort</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8135546115396015134">venstretast</translation>
+<translation id="8136385032646505126">Vil du lagre navnet på kortinnehaveren?</translation>
 <translation id="8137185688006450980">Sammenlign helseforsikringer</translation>
 <translation id="8138591088112729119">Basert på personlig tilpasset intelligens</translation>
 <translation id="814071672416123670">Innholdet kunne ikke kopieres på grunn av retningslinjene for organisasjonen din</translation>
@@ -4527,6 +4526,7 @@ Mer informasjon:
 <translation id="8622864575115813231">Kontakter finansinstitusjonen din …</translation>
 <translation id="8632584659860846053">Nettleserloggen, informasjonskapsler og nettstedsdata, bufferen og informasjon du har lagt inn i skjemaer, slettes når du lukker alle isolerte vinduer</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Legg til opptil 10 filer, faner eller bilder</translation>
 <translation id="8637362707224133343">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet nettfisking<ph name="END_LINK" /> på nettstedet du prøvde å besøke. Nettsteder som driver med nettfisking, utgir seg for å være andre nettsteder for å lure deg.<ph name="NEW_LINE" />Selv nettsteder som vanligvis er trygge, blir noen ganger kompromittert av angripere. <ph name="BEGIN_ERROR_LINK" />Gi oss beskjed<ph name="END_ERROR_LINK" /> hvis du tror det har skjedd en feil, og at dette nettstedet ikke utgjør noen fare.</translation>
 <translation id="8640996933372643759">Du må kunne logge på Chrome for å dele faner og samarbeide med andre</translation>
 <translation id="8641131559425911240">Konvolutt (obligasjon)</translation>

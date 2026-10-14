@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Sử dụng micrô và máy ảnh của bạn</translation>
 <translation id="1005333234656240382">Bật tùy chọn gỡ lỗi ADB?</translation>
 <translation id="1005671386794704751">Hồng</translation>
+<translation id="1005692418949452963">Bỏ tiêu điểm</translation>
 <translation id="1005919400326853998">Xem thông tin chi tiết về chứng chỉ <ph name="CERT_NAME" /> trong một hộp thoại mới</translation>
 <translation id="1006033052970139968">Các ứng dụng và trang web có quyền truy cập micrô cũng như các dịch vụ của hệ thống có thể sử dụng micrô</translation>
 <translation id="1006873397406093306">Tiện ích này có thể đọc và thay đổi dữ liệu của bạn trên các trang web. Bạn có thể kiểm soát việc tiện ích có thể truy cập vào các trang web nào.</translation>
@@ -870,7 +871,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1656528038316521561">Độ mờ của nền</translation>
 <translation id="1657406563541664238">Giúp cải thiện <ph name="PRODUCT_NAME" /> bằng việc tự động gửi cho Google dữ liệu thống kê về hoạt động sử dụng và báo cáo sự cố</translation>
 <translation id="1657937299377480641">Nếu bạn muốn đăng nhập lại để truy cập vào các tài nguyên giáo dục, hãy xin phép cha mẹ của bạn</translation>
-<translation id="1657952527687824398">Đặt tiêu điểm vào nhóm thẻ</translation>
 <translation id="1658424621194652532">Trang này đang truy cập micrô của bạn.</translation>
 <translation id="1660405268563702784">Đã có bản cập nhật cho <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Khắc phục thẻ làm chậm trình duyệt của bạn}other{Khắc phục các thẻ làm chậm trình duyệt của bạn}}</translation>
@@ -2343,7 +2343,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2767077837043621282">Không thể cập nhật chiếc Chromebook của bạn. Vui lòng thử lại sau.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> sẽ có thể chỉnh sửa <ph name="FILENAME" /> cho đến khi bạn đóng tất cả các thẻ cho trang web này</translation>
 <translation id="2769174155451290427">Ảnh đã tải lên</translation>
-<translation id="2769715732905083104">Đặt tiêu điểm vào nhóm thẻ</translation>
 <translation id="2770082596325051055">Tạm dừng <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Xóa khỏi danh sách</translation>
 <translation id="2770690685823456775">Xuất mật khẩu của bạn sang thư mục khác</translation>
@@ -2625,7 +2624,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2984727013951557074">Tệp này vẫn đang được đồng bộ hoá với Drive.</translation>
 <translation id="2984923316661218534">Sử dụng khoá truy cập trên thiết bị này bằng Trình quản lý mật khẩu của Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> đã gỡ cài đặt một ứng dụng}other{<ph name="APP_NAME" /> đã gỡ cài đặt # ứng dụng}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Đặt tiêu điểm vào thẻ}other{Đặt tiêu điểm vào # thẻ}}</translation>
 <translation id="2988018669686457659">Trình kết xuất dự phòng</translation>
 <translation id="2988328607561082373">Bạn không sử dụng lại bất kỳ mật khẩu nào</translation>
 <translation id="2989123969927553766">Tăng tốc độ cuộn chuột</translation>
@@ -3084,6 +3082,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3320957378743864387">Không được phép đề xuất hỗ trợ viết</translation>
 <translation id="3321460131042519426">Bật tính năng xuống dòng tự động</translation>
 <translation id="3321494112580110651">Bạn không thấy máy in của mình?</translation>
+<translation id="3321512411079201586">&amp;Biệt lập</translation>
 <translation id="3321776060736518525">Từ <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Cài đặt cho Edge</translation>
 <translation id="3323521181261657960">Phần thưởng! Bạn có thêm thời gian sử dụng thiết bị</translation>
@@ -3353,7 +3352,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3527473647192919613">Cửa sổ biệt lập mới</translation>
 <translation id="3528498924003805721">Lối tắt</translation>
 <translation id="35296112145429559">Ghim nút cuộn</translation>
-<translation id="3530919970074558307">Xoá tiêu điểm khỏi nhóm</translation>
 <translation id="3531070080754387701">Microsoft 365 không mở được <ph name="FILE_NAMES" /> từ thư mục này</translation>
 <translation id="3531883061432162622">Tìm danh sách đọc và dấu trang trong phần Dấu trang và danh sách</translation>
 <translation id="3532521178906420528">Đang thiết lập kết nối mạng...</translation>
@@ -4533,7 +4531,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4405580203042711503">Thêm thẻ mới ở dưới</translation>
 <translation id="4405781821077215583">Phóng to hoặc thu nhỏ các mục trên màn hình, bao gồm cả văn bản</translation>
 <translation id="4406308048672435032">Bạn có thể dừng hoạt động của thẻ này hoặc làm mới để xem lại danh sách đầy đủ</translation>
-<translation id="4406881185911439342">Lấy tiêu điểm vào nhóm</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4406963243402726564">Dữ liệu chưa được lưu</translation>
 <translation id="4408599188496843485">T&amp;rợ giúp</translation>
@@ -5115,7 +5112,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4853328060971905294">Bật (bật hiệu ứng đánh dấu dòng)</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
 <translation id="4854603338816296098">Đã xoá địa chỉ</translation>
-<translation id="485480310608090163">Các quyền và tuỳ chọn cài đặt khác</translation>
+<translation id="485480310608090163">Các quyền và chế độ cài đặt khác</translation>
 <translation id="4857304314344645169">Xem nội dung giải thích từng bước về mọi vấn đề</translation>
 <translation id="4857506880242459832">Hỏi Google về trang trước đó: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Phát hoặc tạm dừng nội dung nghe nhìn</translation>
@@ -5638,7 +5635,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5249818097095743806">Sử dụng khoá bảo mật của bạn</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> sử dụng vị trí của bạn để cung cấp cho bạn nội dung địa phương. Bạn có thể thay đổi cài đặt này trong <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5254233580564156835">Mức sử dụng bộ nhớ: <ph name="MEMORY_USAGE" /></translation>
-<translation id="5254678337198156877">Dữ liệu trên ứng dụng này sẽ được chia sẻ giữa "<ph name="APP_NAME" />" và các ứng dụng được cài đặt trên đó.</translation>
+<translation id="5254678337198156877">Dữ liệu trên ứng dụng này sẽ được chia sẻ giữa "<ph name="APP_NAME" />" và các ứng dụng mà ứng dụng này cài đặt.</translation>
 <translation id="5255726914791076208">Khi bạn chỉnh sửa khoá đăng nhập, tài khoản <ph name="RP_ID" /> của bạn sẽ không thay đổi</translation>
 <translation id="5256174546894739043">Hỏi khi có trang web muốn theo dõi tay bạn</translation>
 <translation id="52566111838498928">Đang tải phông chữ...</translation>
@@ -5719,7 +5716,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5311304534597152726">Đăng nhập bằng</translation>
 <translation id="5312746996236433535">phản chiếu màn hình</translation>
 <translation id="5313967007315987356">Thêm trang web</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Đặt tiêu điểm vào thẻ}other{Đặt tiêu điểm vào # thẻ}}</translation>
 <translation id="5315738755890845852">Thừa dấu ngoặc nhọn: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5317781812114905957">Hướng dẫn</translation>
@@ -5995,6 +5991,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> muốn</translation>
 <translation id="5533343601674003130">Dịch vụ PDF</translation>
 <translation id="5535769176698670170">Hoán đổi với dạng xem trên cùng</translation>
+<translation id="5536642445914063887">Chuyển đổi hồ sơ</translation>
 <translation id="5537725057119320332">Truyền</translation>
 <translation id="5541091577812545428">Mật khẩu không thay đổi</translation>
 <translation id="5542132724887566711">Cấu hình</translation>
@@ -9184,6 +9181,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7991296728590311172">Cài đặt tính năng Tiếp cận bằng công tắc</translation>
 <translation id="7992080146463834191">Tóm tắt nội dung, đơn giản hoá ngôn ngữ phức tạp hoặc đặt câu hỏi.</translation>
 <translation id="7992203134935383159">Tổng hợp giọng nói</translation>
+<translation id="7992462686695281167">&amp;Ẩn danh</translation>
 <translation id="7997826902155442747">Mức độ ưu tiên tiến trình</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Đã tạo các tệp sau:

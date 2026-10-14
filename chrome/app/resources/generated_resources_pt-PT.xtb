@@ -13,6 +13,7 @@
 <translation id="1005274289863221750">Usar o seu microfone e a câmara</translation>
 <translation id="1005333234656240382">Ativar a depuração do adb?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1005692418949452963">Retirar foco</translation>
 <translation id="1005919400326853998">Ver detalhes do certificado <ph name="CERT_NAME" /> numa nova caixa de diálogo</translation>
 <translation id="1006033052970139968">O acesso ao microfone é permitido para apps, Websites com a autorização de acesso o microfone e serviços do sistema</translation>
 <translation id="1006873397406093306">Esta extensão pode ler e alterar os seus dados em sites. É possível controlar os sites aos quais a extensão pode aceder.</translation>
@@ -869,7 +870,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1656528038316521561">Opacidade do fundo</translation>
 <translation id="1657406563541664238">Ajude a melhorar o <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de utilização e relatórios de falhas para a Google</translation>
 <translation id="1657937299377480641">Para voltares a iniciar sessão e teres acesso a recursos educativos, pede ao teu Pai ou Mãe para te darem autorização.</translation>
-<translation id="1657952527687824398">Focar grupo de separadores</translation>
 <translation id="1658424621194652532">Esta página está a aceder ao seu microfone.</translation>
 <translation id="1660405268563702784">Atualização disponível para a app <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corrija o separador que está a abrandar o navegador}other{Corrija os separadores que estão a abrandar o navegador}}</translation>
@@ -1588,6 +1588,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2215070081105889450">Para partilhar o áudio, partilhe um separador ou um ecrã</translation>
 <translation id="2217208085547223783">Estado de fidedignidade</translation>
 <translation id="2218019600945559112">Rato e touchpad</translation>
+<translation id="2218116022473625437">Pode desativar o realce de texto, modificar a voz e alterar o aspeto da página nas definições.</translation>
 <translation id="2218515861914035131">Colar como texto simples</translation>
 <translation id="2219007152108311874">Perguntar sempre</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
@@ -2329,7 +2330,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2767077837043621282">Não foi possível atualizar o seu Chromebook. Tente mais tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar o ficheiro <ph name="FILENAME" /> até fechar todos os separadores deste site.</translation>
 <translation id="2769174155451290427">Imagem carregada</translation>
-<translation id="2769715732905083104">Focar grupo de separadores</translation>
 <translation id="2770082596325051055">Pausar <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Remover da lista</translation>
 <translation id="2770690685823456775">Exportar as palavras-passe para outra pasta</translation>
@@ -2612,7 +2612,6 @@ Quer pará-lo?</translation>
 <translation id="2984727013951557074">O ficheiro ainda está a ser sincronizado com o Drive.</translation>
 <translation id="2984923316661218534">Aceda às suas chaves de acesso neste dispositivo com o Gestor de Palavras-passe da Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> desinstalou uma app}other{<ph name="APP_NAME" /> desinstalou # apps}}</translation>
-<translation id="2987777176328481585">{NUM_TABS,plural, =1{Focar separador}other{Focar # separadores}}</translation>
 <translation id="2988018669686457659">Renderizador sobresselente</translation>
 <translation id="2988328607561082373">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="2989123969927553766">Aceleração da deslocação do rato</translation>
@@ -3071,6 +3070,7 @@ Quer pará-lo?</translation>
 <translation id="3320957378743864387">Sem autorização para oferecer ajuda para escrever</translation>
 <translation id="3321460131042519426">Ativar mudança de linha</translation>
 <translation id="3321494112580110651">Não vê a sua impressora?</translation>
+<translation id="3321512411079201586">&amp;Isolado</translation>
 <translation id="3321776060736518525">De <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Instalar para o Edge</translation>
 <translation id="3323521181261657960">Bónus! Tens mais tempo de utilização</translation>
@@ -3340,7 +3340,6 @@ Quer pará-lo?</translation>
 <translation id="3527473647192919613">Nova janela isolada</translation>
 <translation id="3528498924003805721">Destinos dos atalhos</translation>
 <translation id="35296112145429559">Fixar botões de deslocamento</translation>
-<translation id="3530919970074558307">Retirar foco do grupo</translation>
 <translation id="3531070080754387701">O Microsoft 365 não consegue abrir o ficheiro <ph name="FILE_NAMES" /> a partir desta pasta</translation>
 <translation id="3531883061432162622">Encontre a sua Lista de leitura e os marcadores em Marcadores e listas</translation>
 <translation id="3532521178906420528">A estabelecer ligação de rede…</translation>
@@ -3761,6 +3760,7 @@ Quer pará-lo?</translation>
 <translation id="3812525830114410218">Certificado incorreto</translation>
 <translation id="3813296892522778813">Aceda à <ph name="BEGIN_LINK_CHROMIUM" />ajuda do Google Chrome<ph name="END_LINK_CHROMIUM" /> se não conseguir encontrar aquilo que procura.</translation>
 <translation id="3813358687923336574">Idioma utilizado para traduzir páginas e Respostas rápidas</translation>
+<translation id="3815509884387832993">Ouça esta página como se fosse um podcast com a reprodução com IA através do botão Ativar reprodução com IA na barra de ferramentas do Modo de leitura</translation>
 <translation id="3815668647912194650">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este.</translation>
 <translation id="3816118180265633665">Cores do Chrome</translation>
 <translation id="3817524650114746564">Abrir definições do proxy do seu computador</translation>
@@ -4145,6 +4145,7 @@ Quer pará-lo?</translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4112282889480354965">Extensões e competências</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -4518,7 +4519,6 @@ Quer pará-lo?</translation>
 <translation id="4405580203042711503">Novo separador abaixo</translation>
 <translation id="4405781821077215583">Aumente ou diminua o tamanho dos itens no ecrã, incluindo o texto</translation>
 <translation id="4406308048672435032">Pode tornar este separador inativo ou atualizar para ver novamente a lista completa</translation>
-<translation id="4406881185911439342">Focar grupo</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406963243402726564">Dados não guardados</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
@@ -5704,7 +5704,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5311304534597152726">A iniciar sessão como…</translation>
 <translation id="5312746996236433535">espelhamento do ecrã</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
-<translation id="531500736198839473">{NUM_TABS,plural, =1{Focar separador}other{Focar # separadores}}</translation>
 <translation id="5315738755890845852">Chaveta adicional: <ph name="ERROR_LINE" />.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5317781812114905957">Instruções</translation>
@@ -5980,6 +5979,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quer</translation>
 <translation id="5533343601674003130">Serviço de PDF</translation>
 <translation id="5535769176698670170">Trocar com vista superior</translation>
+<translation id="5536642445914063887">Mudar de perfil</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5541091577812545428">A palavra-passe não foi alterada</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -8787,6 +8787,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7702463352133825032">Parar transmissão para <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarefa</translation>
 <translation id="7705085181312584869">Ajuda-me a escrever</translation>
+<translation id="7705230242432916648">Ouça esta página como se fosse um podcast com a reprodução com IA</translation>
 <translation id="7705276765467986571">Não foi possível carregar o modelo do marcador.</translation>
 <translation id="7705334495398865155">Torne o ID do hardware (BSSID: identificador do conjunto de serviços básicos) aleatório para impedir que outras pessoas monitorizem este dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9167,6 +9168,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7991296728590311172">Definições do acesso por interruptor</translation>
 <translation id="7992080146463834191">Resuma conteúdo, simplifique linguagem complexa ou faça perguntas.</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
+<translation id="7992462686695281167">&amp;Navegação anónima</translation>
 <translation id="7997826902155442747">Prioridade do processo</translation>
 <translation id="7998701048266085837">URLs</translation>
 <translation id="7999229196265990314">Criou os seguintes ficheiros:
@@ -10216,6 +10218,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8780123805589053431">Obter descrições de imagens a partir do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
 <translation id="8781834595282316166">Novo separador no grupo</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, use as teclas de seta para a esquerda e para a direita para mover o atalho. Prima Enter ou Escape para concluir.</translation>
 <translation id="8781980678064919987">Encerrar quando a tampa for fechada</translation>
 <translation id="8783171585655659524">Incluir captura de ecrã</translation>
 <translation id="8785622406424941542">Caneta stylus</translation>
