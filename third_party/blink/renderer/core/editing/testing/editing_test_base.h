@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class Editor;
 class FrameSelection;
 class HTMLElement;
 
@@ -30,6 +31,8 @@ class EditingTestBase : public PageTestBase {
  protected:
   EditingTestBase();
   ~EditingTestBase() override;
+
+  Editor& GetEditor() const;
 
   // Returns |Position| for specified |caret_text|, which is HTML markup with
   // caret marker "|".

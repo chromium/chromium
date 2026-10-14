@@ -846,8 +846,16 @@ bool InputMethodController::ReplaceCompositionAndMoveCaret(
 
   AddImeTextSpans(ime_text_spans, root_editable_element, text_start);
 
+  int inserted_length = text.length();
+  if (RuntimeEnabledFeatures::ReplaceCompositionActualInsertedLengthEnabled()) {
+    PlainTextRange selection_offsets = GetSelectionOffsets();
+    if (selection_offsets.IsNull()) {
+      return false;
+    }
+    inserted_length = selection_offsets.End() - text_start;
+  }
   int absolute_caret_position = ComputeAbsoluteCaretPosition(
-      text_start, text.length(), relative_caret_position);
+      text_start, inserted_length, relative_caret_position);
   return MoveCaret(absolute_caret_position);
 }
 

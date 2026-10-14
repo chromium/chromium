@@ -16,7 +16,7 @@ selection_test(
         textInputController.setMarkedText('1', 0, 1);
         textInputController.insertText('x');
     },
-    '<div contenteditable>foo<br><div>b|az</div></div>',
+    '<div contenteditable>foo<br><div>|baz</div></div>',
     'InsertText frame invalidation by disconnecting anchor and focus node on textInput event');
 </script>
 

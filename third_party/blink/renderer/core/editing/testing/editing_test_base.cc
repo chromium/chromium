@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -20,6 +21,10 @@ namespace blink {
 EditingTestBase::EditingTestBase() = default;
 
 EditingTestBase::~EditingTestBase() = default;
+
+Editor& EditingTestBase::GetEditor() const {
+  return GetFrame().GetEditor();
+}
 
 Position EditingTestBase::SetCaretTextToBody(
     const std::string& selection_text) {

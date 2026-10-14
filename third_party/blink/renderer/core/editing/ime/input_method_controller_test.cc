@@ -3968,4 +3968,28 @@ TEST_F(InputMethodControllerTest, SetImeTextSpanForSpellcheckGrammarMarkers) {
   EXPECT_EQ(ui::ImeTextSpan::Type::kGrammarSuggestion, ime_text_spans[0].type);
 }
 #endif
+
+TEST_F(InputMethodControllerTest, TextareaMaxlengthFullWidthSpaceRepro) {
+  SetBodyContent("<textarea id='sample' maxlength='5'>12345</textarea>");
+  auto* textarea = To<HTMLTextAreaElement>(GetElementById("sample"));
+  textarea->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  GetEditor().ExecuteCommand("SelectAll");
+  GetEditor().ExecuteCommand("Cut");
+  GetEditor().ReplaceSelectionWithText(
+      "12345", false, false, InputEvent::InputType::kInsertFromPaste,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+  UpdateAllLifecyclePhasesForTest();
+
+  for (int i = 0; i < 3; ++i) {
+    Controller().SetComposition(String(u"\u3000"), Vector<ImeTextSpan>(), 1, 1);
+    EXPECT_TRUE(Controller().HasComposition());
+    EXPECT_EQ(String(u"12345\u3000"), textarea->Value());
+    Controller().CommitText(String(u"\u3000"), Vector<ImeTextSpan>(), 0);
+    EXPECT_FALSE(Controller().HasComposition());
+    EXPECT_EQ("12345", textarea->Value());
+  }
+}
+
 }  // namespace blink
