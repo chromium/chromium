@@ -63,7 +63,9 @@ enum class ToolId {
   kCreateTab = 21,
   // Activates an open tab by its ID.
   kActivateTab = 22,
-  kMaxValue = kActivateTab,
+  // Scrolls an element into view in the active tab.
+  kScrollTo = 23,
+  kMaxValue = kScrollTo,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

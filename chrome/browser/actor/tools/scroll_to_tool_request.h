@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_SCROLL_TO_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -18,9 +20,14 @@ class ToolRequestVisitorFunctor;
 class ScrollToToolRequest : public PageToolRequest {
  public:
   static constexpr char kName[] = "ScrollTo";
+  static constexpr std::string_view kModelFacingName = "scroll_to";
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
 
   ScrollToToolRequest(tabs::TabHandle tab_handle, const PageTarget& target);
   ~ScrollToToolRequest() override;
+
+  // Returns the `ToolId::kScrollTo` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 

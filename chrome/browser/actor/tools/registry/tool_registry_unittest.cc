@@ -26,6 +26,7 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
+#include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -325,6 +326,17 @@ TEST(ToolRegistryTest, FileUploadToolDefinition) {
               RequiresParam(FileUploadToolRequest::kFileUrlsParam));
 }
 
+TEST(ToolRegistryTest, ScrollToToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ScrollToToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kScrollTo);
+  EXPECT_EQ(definition->name, ScrollToToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScrollToToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(ScrollToToolRequest::kDomNodeIdParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -602,6 +614,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsCloseTabTool) {
                                     ToolId::kCloseTab, &ToolDefinition::id));
 }
 #endif
+
+TEST(ToolRegistryTest, GetAllToolsContainsScrollToTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kScrollTo, &ToolDefinition::id));
+}
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
