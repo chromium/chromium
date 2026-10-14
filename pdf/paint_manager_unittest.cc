@@ -19,10 +19,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRecorder.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -190,7 +190,7 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
 
     // Check if `snapshot` matches `expected_bitmap`.
     snapshot = snapshot->makeSubset(
-        skcpu::Recorder::TODO(),
+        SkRecorder::TODO(),
         SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
 
@@ -236,7 +236,7 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
 
     // Compare snapshot to `expected_png`.
     snapshot = snapshot->makeSubset(
-        skcpu::Recorder::TODO(),
+        SkRecorder::TODO(),
         SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
     EXPECT_TRUE(MatchesPngFile(*snapshot,
@@ -335,7 +335,7 @@ TEST_P(PaintManagerTest, DoPaintFirst) {
       /*fake_pending=*/{});
   ASSERT_TRUE(snapshot);
   sk_sp<SkImage> subset =
-      snapshot->makeSubset(skcpu::Recorder::TODO(), {0, 0, 400, 300}, {});
+      snapshot->makeSubset(SkRecorder::TODO(), {0, 0, 400, 300}, {});
   ASSERT_TRUE(subset);
   EXPECT_TRUE(MatchesPngFile(
       *subset, GetPaintManagerTestDataFilePath("do_paint_first.png")));

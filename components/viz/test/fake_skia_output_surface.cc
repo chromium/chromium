@@ -25,9 +25,9 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
-#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
+#include "third_party/skia/include/core/SkRecorder.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
@@ -285,7 +285,7 @@ void FakeSkiaOutputSurface::CopyOutput(
 
   GrDirectContext* direct = GrAsDirectContext(gr_context());
   auto copy_image = surface->makeImageSnapshot()->makeSubset(
-      direct ? direct->asRecorder() : skcpu::Recorder::TODO(),
+      direct ? direct->asRecorder() : SkRecorder::TODO(),
       RectToSkIRect(geometry.sampling_bounds), {});
   // Send copy request by copying into a bitmap.
   SkBitmap bitmap;
