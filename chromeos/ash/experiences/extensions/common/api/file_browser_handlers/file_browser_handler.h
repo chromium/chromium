@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_EXTENSIONS_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_
-#define CHROME_COMMON_EXTENSIONS_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_COMMON_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_
+#define CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_COMMON_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_
 
 #include <string>
 #include <vector>
@@ -53,9 +53,7 @@ class FileBrowserHandler {
 
   // Action icon path.
   const std::string& icon_path() const { return default_icon_path_; }
-  void set_icon_path(const std::string& path) {
-    default_icon_path_ = path;
-  }
+  void set_icon_path(const std::string& path) { default_icon_path_ = path; }
 
   // File access permissions.
   // Adjusts file_access_permission_flags_ to allow specified permission.
@@ -111,4 +109,4 @@ class FileBrowserHandlerParser : public extensions::ManifestHandler {
   base::span<const char* const> Keys() const override;
 };
 
-#endif  // CHROME_COMMON_EXTENSIONS_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_COMMON_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_

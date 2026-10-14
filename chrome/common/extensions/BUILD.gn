@@ -91,15 +91,6 @@ source_set("extensions") {
     "//url",
   ]
 
-  # TODO(https://crbug.com/356905053): These sources do not currently build
-  # cleanly on the experimental desktop-android configuration. Gradually include
-  # more of them, or omit them behind more targeted GN flags.
-  if (enable_extensions) {
-    public += [ "api/file_browser_handlers/file_browser_handler.h" ]
-
-    sources += [ "api/file_browser_handlers/file_browser_handler.cc" ]
-  }
-
   if (enable_platform_apps) {
     public += [ "api/url_handlers/url_handlers_parser.h" ]
     sources += [ "api/url_handlers/url_handlers_parser.cc" ]
@@ -189,10 +180,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
-      "manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
-    ]
+    sources += [ "manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc" ]
   }
 
   if (enable_platform_apps) {

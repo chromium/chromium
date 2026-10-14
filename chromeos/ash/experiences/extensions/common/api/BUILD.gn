@@ -38,6 +38,8 @@ generated_json_strings("generated_api_json_strings") {
   bundle_name = "ChromeOS"
   schema_include_rules = chromeos_extensions_api_schema_include_rules
 
+  sources += [ "file_browser_handler.json" ]
+
   root_namespace = chromeos_extensions_api_root_namespace
   deps = [ "//extensions/common/api" ]
   inputs = extensions_api_schema_files + extensions_types_only_schema_files

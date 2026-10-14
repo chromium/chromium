@@ -20,10 +20,6 @@
     "extension_types": ["extension"],
     "platforms": ["win", "mac"]
   },
-  "file_browser_handlers": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
   "minimum_chrome_version": {
     "channel": "stable",
     "extension_types": [

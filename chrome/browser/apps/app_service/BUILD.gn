@@ -164,6 +164,7 @@ source_set("app_service") {
       "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//chromeos/ash/experiences/arc:arc_features",
+      "//chromeos/ash/experiences/extensions/common",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
       "//components/image_fetcher/core",

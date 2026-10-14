@@ -826,11 +826,11 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kWebRequestAuthProvider);
   skip.insert(APIPermissionID::kDeclarativeNetRequestWithHostAccess);
 
+#if BUILDFLAG(IS_CHROMEOS)
   // This permission requires explicit user action (context menu handler)
   // so we won't prompt for it for now.
   skip.insert(APIPermissionID::kFileBrowserHandler);
 
-#if BUILDFLAG(IS_CHROMEOS)
   // These permissions require explicit user action (configuration dialog)
   // so we don't prompt for them at install time.
   skip.insert(APIPermissionID::kMediaGalleries);
@@ -1944,6 +1944,7 @@ TEST(PermissionsTest, SettingMembers) {
     EXPECT_TRUE(set.ShouldWarnAllHosts());
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   {
     // Setting API permissions adds implicit permissions.
     PermissionSet set;
@@ -1952,6 +1953,7 @@ TEST(PermissionsTest, SettingMembers) {
     set.SetAPIPermissions(std::move(new_apis));
     EXPECT_TRUE(set.HasAPIPermission(APIPermissionID::kFileBrowserHandler));
   }
+#endif
 }
 
 }  // namespace extensions

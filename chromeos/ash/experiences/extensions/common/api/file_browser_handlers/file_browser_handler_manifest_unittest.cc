@@ -5,22 +5,86 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_browser_handlers/file_browser_handler.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_provider.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extensions_client.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_test.h"
+#include "extensions/common/scoped_testing_manifest_handler_registry.h"
+#include "extensions/test/test_extensions_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_util.h"
 
 namespace errors = extensions::manifest_errors;
 
 namespace extensions {
 namespace {
 
-using FileBrowserHandlerManifestTest = ChromeManifestTest;
+class FileBrowserHandlerManifestTest : public ManifestTest {
+ public:
+  FileBrowserHandlerManifestTest()
+      : current_channel_(version_info::Channel::UNKNOWN) {
+    url::AddStandardScheme(kExtensionScheme, url::SCHEME_WITH_HOST);
+  }
+
+  // `ExtensionsClient::Set()` initializes the process-wide `PermissionsInfo`
+  // singleton, which `DCHECK`s that permissions are not registered more than
+  // once and cannot be reset between individual tests. Therefore, set it up
+  // once per test suite rather than in `SetUp()`/`TearDown()`.
+  // Bare pointers and `new`/`delete` are used for the static members to avoid
+  // static initializers and exit-time destructors.
+  static void SetUpTestSuite() {
+    ManifestTest::SetUpTestSuite();
+    scoped_manifest_handler_registry_ =
+        new ScopedTestingManifestHandlerRegistry();
+    extensions_client_ = new TestExtensionsClient();
+    extensions_client_->AddAPIProvider(
+        std::make_unique<ash::ChromeOSExtensionsAPIProvider>());
+    ExtensionsClient::Set(extensions_client_);
+  }
+
+  static void TearDownTestSuite() {
+    ExtensionsClient::Set(nullptr);
+    delete extensions_client_;
+    extensions_client_ = nullptr;
+    delete scoped_manifest_handler_registry_;
+    scoped_manifest_handler_registry_ = nullptr;
+    ManifestTest::TearDownTestSuite();
+  }
+
+ protected:
+  base::FilePath GetTestDataDir() override {
+    base::FilePath path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
+    return path.Append(FILE_PATH_LITERAL("chromeos"))
+        .Append(FILE_PATH_LITERAL("ash"))
+        .Append(FILE_PATH_LITERAL("experiences"))
+        .Append(FILE_PATH_LITERAL("extensions"))
+        .Append(FILE_PATH_LITERAL("test"))
+        .Append(FILE_PATH_LITERAL("data"));
+  }
+
+ private:
+  url::ScopedSchemeRegistryForTests scoped_scheme_registry_;
+  ScopedCurrentChannel current_channel_;
+  static ScopedTestingManifestHandlerRegistry*
+      scoped_manifest_handler_registry_;
+  static TestExtensionsClient* extensions_client_;
+};
+
+ScopedTestingManifestHandlerRegistry*
+    FileBrowserHandlerManifestTest::scoped_manifest_handler_registry_ = nullptr;
+TestExtensionsClient* FileBrowserHandlerManifestTest::extensions_client_ =
+    nullptr;
 
 TEST_F(FileBrowserHandlerManifestTest, PermissionAllowed) {
   RunTestcase(Testcase("filebrowser_valid.json"), ExpectType::kSuccess);

@@ -521,17 +521,6 @@
     "channel": "stable",
     "contexts": []
   },
-  "fileBrowserHandler": {
-    "dependencies": ["permission:fileBrowserHandler"],
-    "contexts": ["privileged_extension"],
-    "disallow_for_service_workers": true
-  },
-  "fileBrowserHandlerInternal": {
-    "internal": true,
-    "dependencies": ["permission:fileBrowserHandler"],
-    "contexts": ["privileged_extension"],
-    "disallow_for_service_workers": true
-  },
   "fontSettings": {
     "dependencies": ["permission:fontSettings"],
     "contexts": ["privileged_extension"]

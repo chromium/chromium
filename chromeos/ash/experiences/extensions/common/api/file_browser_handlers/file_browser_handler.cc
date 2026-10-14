@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_browser_handlers/file_browser_handler.h"
 
 #include <stddef.h>
 
@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
@@ -40,12 +39,15 @@ unsigned int kCreatePermission = 1 << 2;
 unsigned int kInvalidPermission = 1 << 3;
 
 unsigned int GetAccessPermissionFlagFromString(const std::string& access_str) {
-  if (access_str == kReadAccessString)
+  if (access_str == kReadAccessString) {
     return kReadPermission;
-  if (access_str == kReadWriteAccessString)
+  }
+  if (access_str == kReadWriteAccessString) {
     return kReadPermission | kWritePermission;
-  if (access_str == kCreateAccessString)
+  }
+  if (access_str == kCreateAccessString) {
     return kCreatePermission;
+  }
   return kInvalidPermission;
 }
 
@@ -70,8 +72,7 @@ FileBrowserHandlerInfo::~FileBrowserHandlerInfo() = default;
 }  // namespace
 
 FileBrowserHandler::FileBrowserHandler()
-    : file_access_permission_flags_(kPermissionsNotDefined) {
-}
+    : file_access_permission_flags_(kPermissionsNotDefined) {}
 
 FileBrowserHandler::~FileBrowserHandler() = default;
 
@@ -87,8 +88,7 @@ bool FileBrowserHandler::MatchesURL(const GURL& url) const {
   return url_set_.MatchesURL(url);
 }
 
-bool FileBrowserHandler::AddFileAccessPermission(
-    const std::string& access) {
+bool FileBrowserHandler::AddFileAccessPermission(const std::string& access) {
   file_access_permission_flags_ |= GetAccessPermissionFlagFromString(access);
   return (file_access_permission_flags_ & kInvalidPermission) != 0U;
 }
@@ -97,14 +97,15 @@ bool FileBrowserHandler::ValidateFileAccessPermissions() {
   bool is_invalid = (file_access_permission_flags_ & kInvalidPermission) != 0U;
   bool can_create = (file_access_permission_flags_ & kCreatePermission) != 0U;
   bool can_read_or_write = (file_access_permission_flags_ &
-      (kReadPermission | kWritePermission)) != 0U;
+                            (kReadPermission | kWritePermission)) != 0U;
   if (is_invalid || (can_create && can_read_or_write)) {
     file_access_permission_flags_ = kInvalidPermission;
     return false;
   }
 
-  if (file_access_permission_flags_ == kPermissionsNotDefined)
+  if (file_access_permission_flags_ == kPermissionsNotDefined) {
     file_access_permission_flags_ = kReadPermission | kWritePermission;
+  }
   return true;
 }
 
@@ -139,8 +140,9 @@ const FileBrowserHandler* FileBrowserHandler::FindForActionId(
     const extensions::Extension* extension,
     const std::string& action_id) {
   for (const auto& handler : *FileBrowserHandler::GetHandlers(extension)) {
-    if (handler->id() == action_id)
+    if (handler->id() == action_id) {
       return handler.get();
+    }
   }
   return nullptr;
 }
@@ -233,8 +235,8 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
       }
       std::string path = pattern.path();
       bool allowed = path == "/*" || path == "/*.*" ||
-          (path.compare(0, 3, "/*.") == 0 &&
-           path.find_first_of('*', 3) == std::string::npos);
+                     (path.compare(0, 3, "/*.") == 0 &&
+                      path.find_first_of('*', 3) == std::string::npos);
       if (!allowed) {
         *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidURLPatternError, filter);
@@ -271,8 +273,9 @@ bool LoadFileBrowserHandlers(const std::string& extension_id,
     }
     std::unique_ptr<FileBrowserHandler> action =
         LoadFileBrowserHandler(extension_id, dict, error);
-    if (!action)
+    if (!action) {
       return false;  // Failed to parse file browser action definition.
+    }
     result->push_back(std::move(action));
   }
   return true;

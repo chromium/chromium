@@ -183,6 +183,7 @@ static_library("file_manager") {
     "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ash/experiences/arc/mojom:notifications",
     "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/extensions/common",
     "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/components/disks:prefs",
     "//chromeos/constants",

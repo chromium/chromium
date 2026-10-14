@@ -451,11 +451,6 @@
     "channel": "stable",
     "extension_types": ["extension"]
   },
-  "fileBrowserHandler": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"]
-  },
   "fontSettings": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

@@ -59,7 +59,6 @@ constexpr const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kDisplayInNewTabPage,
     extensions::manifest_keys::kEventRules,
     extensions::manifest_keys::kExternallyConnectable,
-    extensions::manifest_keys::kFileBrowserHandlers,
     extensions::manifest_keys::kFileHandlers,
     extensions::manifest_keys::kHostPermissions,
     extensions::manifest_keys::kInputComponents,
@@ -119,6 +118,7 @@ constexpr const char* kDisallowedFeatures[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     "file_system_provider_capabilities",
     extensions::manifest_keys::kChromeOSSystemExtension,
+    extensions::manifest_keys::kFileBrowserHandlers,
 #endif
 
     // The following features have no declared constant, but are present in

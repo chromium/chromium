@@ -66,6 +66,17 @@
     "dependencies": ["permission:certificateProvider"],
     "contexts": ["privileged_extension"]
   },
+  "fileBrowserHandler": {
+    "dependencies": ["permission:fileBrowserHandler"],
+    "contexts": ["privileged_extension"],
+    "disallow_for_service_workers": true
+  },
+  "fileBrowserHandlerInternal": {
+    "internal": true,
+    "dependencies": ["permission:fileBrowserHandler"],
+    "contexts": ["privileged_extension"],
+    "disallow_for_service_workers": true
+  },
   "fileManagerPrivate": [{
     "dependencies": ["permission:fileManagerPrivate"],
     "contexts": ["privileged_extension"]

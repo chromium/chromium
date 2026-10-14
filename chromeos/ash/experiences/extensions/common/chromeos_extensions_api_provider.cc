@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "chromeos/ash/experiences/extensions/common/api/api_features.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_browser_handlers/file_browser_handler.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/ash/experiences/extensions/common/api/generated_schemas.h"
 #include "chromeos/ash/experiences/extensions/common/api/manifest_features.h"
@@ -65,6 +66,7 @@ void ChromeOSExtensionsAPIProvider::RegisterPermissions(
 
 void ChromeOSExtensionsAPIProvider::RegisterManifestHandlers(
     extensions::ManifestHandlerRegistry* registry) {
+  registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
   registry->RegisterHandler(
       std::make_unique<extensions::FileSystemProviderCapabilitiesHandler>());
 }
