@@ -16,7 +16,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -26,8 +28,11 @@
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -43,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -154,6 +160,30 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
       install_manager_observation_{this};
 };
 
+class TestOsIntegrationManager : public FakeOsIntegrationManager {
+ public:
+  explicit TestOsIntegrationManager(Profile* profile)
+      : FakeOsIntegrationManager(profile,
+                                 /*file_handler_manager=*/nullptr,
+                                 /*protocol_handler_manager=*/nullptr) {}
+  ~TestOsIntegrationManager() override = default;
+
+  void Synchronize(
+      const webapps::AppId& app_id,
+      base::OnceClosure callback,
+      std::optional<SynchronizeOsOptions> options = std::nullopt) override {
+    last_synchronize_options_ = options;
+    FakeOsIntegrationManager::Synchronize(app_id, std::move(callback), options);
+  }
+
+  const std::optional<SynchronizeOsOptions>& last_synchronize_options() const {
+    return last_synchronize_options_;
+  }
+
+ private:
+  std::optional<SynchronizeOsOptions> last_synchronize_options_;
+};
+
 }  // namespace
 
 class FinalizeInstallOrUpdateJobTest : public WebAppTest {
@@ -177,6 +207,11 @@ class FinalizeInstallOrUpdateJobTest : public WebAppTest {
     provider->SetOriginAssociationManager(
         std::make_unique<FakeWebAppOriginAssociationManager>(*profile()));
 
+    auto os_integration_manager =
+        std::make_unique<TestOsIntegrationManager>(profile());
+    os_integration_manager_ = os_integration_manager.get();
+    provider->SetOsIntegrationManager(std::move(os_integration_manager));
+
     auto mock_scheduler =
         std::make_unique<MockWebAppCommandScheduler>(*profile());
     mock_scheduler_ = mock_scheduler.get();
@@ -194,6 +229,7 @@ class FinalizeInstallOrUpdateJobTest : public WebAppTest {
   }
 
   void TearDown() override {
+    os_integration_manager_ = nullptr;
     mock_scheduler_ = nullptr;
     install_manager_observer_.reset();
     WebAppTest::TearDown();
@@ -247,6 +283,7 @@ class FinalizeInstallOrUpdateJobTest : public WebAppTest {
 
  protected:
   std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
+  raw_ptr<TestOsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<MockWebAppCommandScheduler> mock_scheduler_;
 
  private:
@@ -982,5 +1019,36 @@ TEST_F(FinalizeInstallOrUpdateJobTest,
   EXPECT_EQ(u"Extended Scope",
             updated_app->shortcuts_menu_item_infos()[0].name);
 }
+
+class FinalizeInstallOrUpdateJobShortcutReasonTest
+    : public base::test::WithFeatureOverride,
+      public FinalizeInstallOrUpdateJobTest {
+ public:
+  FinalizeInstallOrUpdateJobShortcutReasonTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {}
+};
+
+TEST_P(FinalizeInstallOrUpdateJobShortcutReasonTest,
+       UserInstallShortcutCreationReason) {
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_TRUE(os_integration_manager_->last_synchronize_options().has_value());
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(IsParamFeatureEnabled() ? SHORTCUT_CREATION_AUTOMATED
+                                    : SHORTCUT_CREATION_BY_USER,
+            os_integration_manager_->last_synchronize_options()->reason);
+#else
+  EXPECT_EQ(SHORTCUT_CREATION_BY_USER,
+            os_integration_manager_->last_synchronize_options()->reason);
+#endif
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    FinalizeInstallOrUpdateJobShortcutReasonTest);
 
 }  // namespace web_app
