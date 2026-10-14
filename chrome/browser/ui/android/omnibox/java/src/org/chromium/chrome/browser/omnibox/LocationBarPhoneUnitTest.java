@@ -35,7 +35,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
@@ -111,7 +113,8 @@ public class LocationBarPhoneUnitTest {
                 mUrlBarCoordinator,
                 mStatusCoordinator,
                 mLocationBarDataProvider,
-                mWindowAndroid);
+                mWindowAndroid,
+                new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT));
 
         mUrlBar = mLocationBar.findViewById(R.id.url_bar);
         mStatusView = mLocationBar.findViewById(R.id.location_bar_status);

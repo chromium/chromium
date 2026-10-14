@@ -135,6 +135,7 @@ public class LocationBarTabletUnitTest {
 
     private Activity mActivity;
     private TestLocationBarTablet mLocationBarTablet;
+    private OmniboxResourceProvider mResourceProvider;
     private FrameLayout mHolderView;
     private View mContainerView;
 
@@ -162,12 +163,19 @@ public class LocationBarTabletUnitTest {
                 .when(mLocationBarDataProvider)
                 .getPrimaryColor();
         mLocationBarTablet.setHolderAndContainer(mHolderView, null);
+        mResourceProvider = new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
         mLocationBarTablet.initialize(
                 mAutocompleteCoordinator,
                 mUrlBarCoordinator,
                 mStatusCoordinator,
                 mLocationBarDataProvider,
-                mWindowAndroid);
+                mWindowAndroid,
+                mResourceProvider);
+    }
+
+    private void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        mResourceProvider.setBrandedColorScheme(brandedColorScheme);
+        mLocationBarTablet.updateVisualsForState(brandedColorScheme);
     }
 
     @Test
@@ -810,7 +818,7 @@ public class LocationBarTabletUnitTest {
     @Test
     public void testUpdateVisualsForState_unfocused() {
         // TODO(https://crbug.com/495794043): Replace with a render test.
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        updateVisualsForState(BrandedColorScheme.INCOGNITO);
 
         LocationBarBackgroundDrawable background =
                 (LocationBarBackgroundDrawable) mLocationBarTablet.getBackground();
@@ -822,7 +830,7 @@ public class LocationBarTabletUnitTest {
                         mActivity, BrandedColorScheme.INCOGNITO);
         assertEquals(expectedIncognitoColor, unfocusedRect.getColor().getDefaultColor());
 
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
         background = (LocationBarBackgroundDrawable) mLocationBarTablet.getBackground();
         unfocusedRect = background.getBackgroundGradient();
         @ColorInt
@@ -837,7 +845,7 @@ public class LocationBarTabletUnitTest {
     public void testUpdateVisualsForState_focused() {
         // TODO(https://crbug.com/495794043): Replace with a render test.
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        updateVisualsForState(BrandedColorScheme.INCOGNITO);
 
         LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
         GradientDrawable outerRect =
@@ -857,7 +865,7 @@ public class LocationBarTabletUnitTest {
                         mActivity, BrandedColorScheme.INCOGNITO);
         assertEquals(expectedIncognitoInnerColor, innerRect.getColor().getDefaultColor());
 
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
 
         @ColorInt
         int expectedAppDefaultOuterColor =
@@ -875,7 +883,7 @@ public class LocationBarTabletUnitTest {
     @Test
     public void testSetIsInStandby() {
         assertNull(mLocationBarTablet.getForeground());
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
         LocationBarBackgroundDrawable background =
                 (LocationBarBackgroundDrawable) mLocationBarTablet.getBackground();
         GradientDrawable unfocusedRect = background.getBackgroundGradient();
@@ -894,7 +902,7 @@ public class LocationBarTabletUnitTest {
 
         mLocationBarTablet.setShowFocusRing(false);
         assertEquals(HairlineBehavior.NONE, background.getHairlineBehaviorForTesting());
-        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        updateVisualsForState(BrandedColorScheme.INCOGNITO);
         mLocationBarTablet.setShowFocusRing(true);
         assertEquals(HairlineBehavior.SOLID, background.getHairlineBehaviorForTesting());
         @ColorInt

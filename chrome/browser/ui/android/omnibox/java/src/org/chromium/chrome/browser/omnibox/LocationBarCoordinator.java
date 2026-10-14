@@ -520,7 +520,8 @@ public class LocationBarCoordinator
                 mUrlCoordinator,
                 mStatusCoordinator,
                 locationBarDataProvider,
-                mWindowAndroid);
+                mWindowAndroid,
+                mResourceProvider);
 
         Callback<Profile> profileObserver =
                 new Callback<>() {
