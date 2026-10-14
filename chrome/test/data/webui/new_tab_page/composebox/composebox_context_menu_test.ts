@@ -11,19 +11,43 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {ADD_TAB_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, MockInputState, setupComposeboxTest} from './test_support.js';
+
+// Browser tests don't guarantee window focus, and an OS-generated window blur
+// or resize closes the context menu mid-test. Drop those events; synthetic
+// ones dispatched by tests are not trusted and still go through.
+function dropTrustedWindowEvent(e: Event) {
+  if (e.isTrusted && e.target === window) {
+    console.info(`Dropped OS-generated window ${e.type} event.`);
+    e.stopImmediatePropagation();
+  }
+}
 
 suite('NewTabPageComposeboxContextMenuTest', () => {
   const testProxy = setupComposeboxTest();
 
   suite('Context menu', () => {
+    const mockTimer = new MockTimer();
+
     suiteSetup(() => {
       loadTimeData.overrideValues({
         composeboxShowRecentTabChip: true,
         composeboxShowContextMenu: true,
       });
+    });
+
+    setup(() => {
+      window.addEventListener('blur', dropTrustedWindowEvent, true);
+      window.addEventListener('resize', dropTrustedWindowEvent, true);
+    });
+
+    teardown(() => {
+      window.removeEventListener('blur', dropTrustedWindowEvent, true);
+      window.removeEventListener('resize', dropTrustedWindowEvent, true);
+      mockTimer.uninstall();
     });
 
     test('context button visible', () => {
@@ -241,55 +265,54 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           assertEquals(contextualActionMenu.recentTabId, 42);
         });
 
-    test(
-        'context menu opens below anchor when space is sufficient',
-        async () => {
-          createComposeboxElement(testProxy);
+    test('context menu opens below anchor when space is sufficient', () => {
+      createComposeboxElement(testProxy);
 
-          // Get the contextual action menu element.
-          const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
-              'cr-composebox-contextual-entrypoint-and-menu');
-          assertTrue(!!entrypointAndMenu);
-          const contextActionMenu = entrypointAndMenu.shadowRoot.querySelector(
-              'cr-composebox-contextual-action-menu');
-          assertTrue(!!contextActionMenu);
+      // Get the contextual action menu element.
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextActionMenu = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-action-menu');
+      assertTrue(!!contextActionMenu);
 
-          // Create a fake anchor near the viewport top to guarantee
-          // sufficient space below.
-          const fakeAnchor = document.createElement('div');
-          fakeAnchor.style.cssText = `
+      // Create a fake anchor near the viewport top to guarantee
+      // sufficient space below.
+      const fakeAnchor = document.createElement('div');
+      fakeAnchor.style.cssText = `
           position: fixed;
           top: 10px;
           left: 100px;
           height: 36px;
           width: 40px;
         `;
-          document.body.appendChild(fakeAnchor);
+      document.body.appendChild(fakeAnchor);
 
-          // Open the menu at the fake anchor.
-          contextActionMenu.showAt(fakeAnchor);
-          await microtasksFinished();
+      // Open the menu at the fake anchor. `showAt()` positions the menu
+      // synchronously, so assert right away: yielding lets a stray window
+      // blur or resize close the menu first.
+      contextActionMenu.showAt(fakeAnchor);
 
-          try {
-            // Access the dialog.
-            const crActionMenu =
-                contextActionMenu.shadowRoot.querySelector('#menu');
-            assertTrue(!!crActionMenu);
-            const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
-            assertTrue(!!dialog);
-            assertTrue(dialog.open);
+      try {
+        // Access the dialog.
+        const crActionMenu =
+            contextActionMenu.shadowRoot.querySelector('#menu');
+        assertTrue(!!crActionMenu);
+        const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
 
-            // Assert: menu should open below the anchor.
-            const anchorRect = fakeAnchor.getBoundingClientRect();
-            const dialogRect = dialog.getBoundingClientRect();
-            assertTrue(dialogRect.height > 0);
-            assertTrue(dialogRect.top >= anchorRect.bottom - 1);
-          } finally {
-            // Clean even if the assertions fail.
-            contextActionMenu.close();
-            fakeAnchor.remove();
-          }
-        });
+        // Assert: menu should open below the anchor.
+        const anchorRect = fakeAnchor.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        assertTrue(dialogRect.height > 0);
+        assertTrue(dialogRect.top >= anchorRect.bottom - 1);
+      } finally {
+        // Clean even if the assertions fail.
+        contextActionMenu.close();
+        fakeAnchor.remove();
+      }
+    });
 
     test('context menu flips above when insufficient space below', async () => {
       createComposeboxElement(testProxy);
@@ -323,9 +346,10 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         `;
       document.body.appendChild(fakeAnchor);
 
-      // Open the menu anchored to the fake element.
+      // Open the menu anchored to the fake element. `showAt()` positions the
+      // menu synchronously, so assert right away: yielding lets a stray window
+      // blur or resize close the menu first.
       contextActionMenu.showAt(fakeAnchor);
-      await microtasksFinished();
 
       try {
         // Access the dialog.
@@ -343,6 +367,37 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         assertTrue(dialogRect.top < anchorRect.top);
       } finally {
         // Clean even if the assertions fail.
+        contextActionMenu.close();
+        fakeAnchor.remove();
+      }
+    });
+
+    test('context menu closes on window blur', () => {
+      createComposeboxElement(testProxy);
+
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextActionMenu = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-action-menu');
+      assertTrue(!!contextActionMenu);
+
+      const fakeAnchor = document.createElement('div');
+      fakeAnchor.style.cssText = `
+          position: fixed;
+          top: 10px;
+          left: 100px;
+          height: 36px;
+          width: 40px;
+        `;
+      document.body.appendChild(fakeAnchor);
+
+      contextActionMenu.showAt(fakeAnchor);
+      try {
+        assertTrue(contextActionMenu.open);
+        window.dispatchEvent(new Event('blur'));
+        assertFalse(contextActionMenu.open);
+      } finally {
         contextActionMenu.close();
         fakeAnchor.remove();
       }
@@ -553,6 +608,9 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
               '.share-tabs-flyout .dropdown-item[data-index="0"]');
       assertTrue(!!item);
+      // Drive the menu timers with a mock clock so the checks below don't
+      // race real time.
+      mockTimer.install();
       item.click();
 
       await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
@@ -560,8 +618,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       // Simulate leaving the flyout while tab is being added.
       flyout.dispatchEvent(new PointerEvent('pointerleave'));
 
-      // Wait 1200ms (FIRST_TAB_DELAY is 1000ms).
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // Advance 1200ms (FIRST_TAB_DELAY is 1000ms).
+      mockTimer.tick(1200);
 
       // Should still be open because firstTabBeingAdded_ is true (5000ms
       // safety timer).
@@ -569,7 +627,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       // Resolve the add tab call.
       resolveAddTab(FAKE_TOKEN_STRING);
-      await microtasksFinished();
 
       // Simulate the mixin updating addedTabsIds.
       testProxy.element.addedTabsIds = new Map([[1, FAKE_TOKEN_STRING]]);
@@ -577,9 +634,9 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       await entrypointAndMenu.updateComplete;
       await contextualActionMenu.updateComplete;
 
-      // Wait for both firstTabBeingAdded timer (1000ms) and close timer
-      // (300ms) + buffer.
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Advance past both the firstTabBeingAdded timer (1000ms) and the close
+      // timer (300ms).
+      mockTimer.tick(1500);
 
       // Should now be closed automatically because pointer left and tab
       // was added.
