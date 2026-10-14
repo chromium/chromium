@@ -11,12 +11,15 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/quiet_mutation_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -319,6 +322,59 @@ TEST_F(CSSStyleSheetResourceSimTest, CopyOnWriteSharedContentsCrash) {
 
   // Copy-on-write should have happened:
   EXPECT_NE(sheet0->Contents(), sheet1->Contents());
+}
+
+// Restoring the original contents at the end of a QuietMutationScope (as
+// InspectorGhostRules does) must not move the already loaded CSSStyleSheet back
+// to the loading state. Otherwise the cached StyleSheetContents stops being
+// cacheable while it is still referenced from the resource, and the next cache
+// hit fails a DCHECK in HasFailedOrCanceledSubresources().
+TEST_F(CSSStyleSheetResourceSimTest, QuietMutationKeepsCachedContentsLoaded) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest::Params params;
+  params.response_http_headers = {{"Cache-Control", "max-age=3600"}};
+  SimSubresourceRequest css_resource("https://example.com/style.css",
+                                     "text/css", params);
+
+  LoadURL("https://example.com");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
+    <div></div>
+  )HTML");
+  css_resource.Complete("div { color: green; }");
+  test::RunPendingTasks();
+
+  ASSERT_EQ(2u, GetDocument().StyleSheets().length());
+  auto* sheet0 = To<CSSStyleSheet>(GetDocument().StyleSheets().item(0));
+  auto* sheet1 = To<CSSStyleSheet>(GetDocument().StyleSheets().item(1));
+  StyleSheetContents* contents = sheet0->Contents();
+  ASSERT_EQ(contents, sheet1->Contents());
+  ASSERT_TRUE(contents->IsReferencedFromResource());
+  EXPECT_TRUE(contents->IsCacheableForResource());
+
+  {
+    QuietMutationScope scope;
+    scope.Add(*sheet0);
+    EXPECT_NE(contents, sheet0->Contents());
+  }
+  EXPECT_EQ(contents, sheet0->Contents());
+  EXPECT_TRUE(sheet0->LoadCompleted());
+  EXPECT_TRUE(contents->LoadCompleted());
+  EXPECT_TRUE(contents->IsCacheableForResource());
+
+  // Another <link> to the same stylesheet hits the cache. (Don't crash.)
+  auto* link = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  link->setAttribute(html_names::kRelAttr, AtomicString("stylesheet"));
+  link->setAttribute(html_names::kHrefAttr, AtomicString("style.css"));
+  GetDocument().body()->AppendChild(link);
+  test::RunPendingTasks();
+
+  ASSERT_EQ(3u, GetDocument().StyleSheets().length());
+  EXPECT_EQ(contents,
+            To<CSSStyleSheet>(GetDocument().StyleSheets().item(2))->Contents());
 }
 
 }  // namespace

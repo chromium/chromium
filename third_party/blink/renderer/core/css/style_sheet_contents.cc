@@ -731,6 +731,14 @@ void StyleSheetContents::RegisterClient(CSSStyleSheet* sheet) {
     // https://drafts.csswg.org/cssom/#dom-cssstylesheet-replacesync
     // https://drafts.csswg.org/cssom/#dom-cssstylesheet-replace
     completed_clients_.insert(sheet);
+  } else if (sheet->LoadCompleted()) {
+    // The sheet has already finished loading and is now switching contents,
+    // e.g. copy-on-write in CSSStyleSheet::WillMutateRules(), or restoring
+    // the original contents in CSSStyleSheet::EndQuietMutation(). Nothing
+    // will call ClientLoadCompleted() for it again, so registering it as a
+    // loading client would make LoadCompleted() return false (and thus
+    // IsCacheableForResource()) for these contents forever.
+    completed_clients_.insert(sheet);
   } else {
     loading_clients_.insert(sheet);
   }
