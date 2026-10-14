@@ -1316,20 +1316,6 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
   canvas()->SetNeedsCompositingUpdate();
 }
 
-void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
-    std::unique_ptr<Canvas2DResourceProvider> provider,
-    const gfx::Size& size) {
-  canvas()->DiscardResources();
-  canvas()->SetSize(size);
-  hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ResetBacking();
-  ResetRecorder();
-  SetSharedImageProviderForTesting(std::move(provider));
-  if (GetSharedImageProvider()) {
-    ConfigureRecorder(size, GetSharedImageProvider()->IsGraphite());
-  }
-}
-
 void CanvasRenderingContext2D::CreateSoftwareSurfaceForTesting() {
   canvas()->DiscardResources();
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);

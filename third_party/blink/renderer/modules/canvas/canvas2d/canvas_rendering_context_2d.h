@@ -236,9 +236,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SendContextLostEventIfNeeded() override;
 
   bool InitializeBacking() override;
-  void SetCanvas2DResourceProviderForTesting(
-      std::unique_ptr<Canvas2DResourceProvider> provider,
-      const gfx::Size& size);
   void CreateSoftwareSurfaceForTesting();
 
   // TODO(crbug.com/352263194): Migrate canvas_rendering_context_2d_test.cc

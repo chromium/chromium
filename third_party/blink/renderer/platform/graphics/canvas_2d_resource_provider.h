@@ -190,31 +190,31 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
 
-  virtual scoped_refptr<CanvasResource> ProduceCanvasResource();
+  scoped_refptr<CanvasResource> ProduceCanvasResource();
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
 
   bool IsValid() const;
-  virtual scoped_refptr<StaticBitmapImage> Snapshot(
+  scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
-  virtual bool WritePixels(const SkImageInfo& orig_info,
-                           const void* pixels,
-                           size_t row_bytes,
-                           int x,
-                           int y);
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y);
 
   void SetResourceRecyclingEnabled(bool value);
 
-  virtual void RasterRecord(
+  void RasterRecord(
       cc::PaintRecord last_recording,
       cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback);
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGraphite() const;
   void RecordingCleared();
 
- protected:
+ private:
   Canvas2DResourceProvider(gfx::Size,
                            viz::SharedImageFormat,
                            SkAlphaType,
@@ -235,7 +235,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);
 
- private:
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
 
@@ -256,7 +255,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   SkSurface* GetSkSurface() const;
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
- private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
     return context_provider_wrapper_;
@@ -284,7 +282,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void WillDrawUnaccelerated();
 
   SkSurfaceProps GetSkSurfaceProps() const;
-  virtual sk_sp<SkSurface> CreateSkSurface() const;
+  sk_sp<SkSurface> CreateSkSurface() const;
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 

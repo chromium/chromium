@@ -278,11 +278,6 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
                           WrapWeakPersistent(Host())));
 }
 
-void BaseRenderingContext2D::SetSharedImageProviderForTesting(
-    std::unique_ptr<Canvas2DResourceProvider> provider) {
-  shared_image_provider_ = std::move(provider);
-}
-
 void BaseRenderingContext2D::CreateSoftwareSurface() {
   const gfx::Size size = Host()->Size();
   const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();

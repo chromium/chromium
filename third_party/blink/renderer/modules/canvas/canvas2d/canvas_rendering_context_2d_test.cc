@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/layers/texture_layer.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
@@ -44,6 +45,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -457,13 +459,51 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   }
 };
 
+class MockRasterInterface : public viz::TestRasterInterface {
+ public:
+  void RasterCHROMIUM(const cc::DisplayItemList* list,
+                      cc::ImageProvider* provider,
+                      const gfx::Size& content_size,
+                      const gfx::Rect& full_raster_rect,
+                      const gfx::Rect& playback_rect,
+                      const gfx::Vector2dF& post_translate,
+                      const gfx::Vector2dF& post_scale,
+                      bool requires_clear,
+                      const ScrollOffsetMap* raster_inducing_scroll_offsets,
+                      size_t* max_op_size_hint,
+                      base::RepeatingCallback<void(SkCanvas*, uint32_t)>
+                          custom_raster_callback) override {
+    CHECK_EQ(list->paint_op_buffer().size(), 1u);
+    const cc::PaintOp& op = list->paint_op_buffer().GetFirstOp();
+    CHECK_EQ(op.GetType(), cc::PaintOpType::kDrawRecord);
+    RasterRecord(static_cast<const cc::DrawRecordOp&>(op).record);
+  }
+
+  MOCK_METHOD(void, RasterRecord, (cc::PaintRecord));
+  MOCK_METHOD(void,
+              WritePixels,
+              (const gpu::Mailbox& dest_mailbox,
+               int dst_x_offset,
+               int dst_y_offset,
+               GLenum texture_target,
+               const SkPixmap& src_sk_pixmap),
+              (override));
+};
+
 class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
  public:
   void CreateContextProvider(SetIsContextLost set_context_lost) override {
-    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_ = viz::TestContextProvider::CreateRaster(
+        std::make_unique<testing::NiceMock<MockRasterInterface>>());
     InitializeSharedGpuContext(test_context_provider_.get(),
                                /*cache=*/nullptr, set_context_lost);
     ConfigureContextProvider(*test_context_provider_);
+  }
+
+ protected:
+  MockRasterInterface* test_raster_interface() const {
+    return static_cast<MockRasterInterface*>(
+        test_context_provider_->GetTestRasterInterface());
   }
 };
 
@@ -601,65 +641,6 @@ void CanvasRenderingContext2DTestBase::TearDown() {
 }
 
 //============================================================================
-
-class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
- public:
-  FakeCanvasResourceProvider(gfx::Size size, RasterModeHint hint)
-      : Canvas2DResourceProvider(
-            size,
-            GetN32FormatForCanvas(),
-            kPremul_SkAlphaType,
-            gfx::ColorSpace::CreateSRGB(),
-            gfx::HDRMetadata(),
-            SharedGpuContext::ContextProviderWrapper(),
-            /*is_accelerated=*/hint != RasterModeHint::kPreferCPU,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE) {
-    ON_CALL(*this, Snapshot)
-        .WillByDefault([this](ImageOrientation orientation) {
-          return UnacceleratedSnapshot(orientation);
-        });
-  }
-  ~FakeCanvasResourceProvider() override = default;
-  scoped_refptr<CanvasResource> ProduceCanvasResource() override {
-    return scoped_refptr<CanvasResource>(
-        CanvasResourceSharedImage::CreateForTesting(
-            Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-            GetSharedImageUsageFlags(),
-            /*is_software=*/false, IsAccelerated(),
-            weak_ptr_factory_.GetWeakPtr(),
-            SharedGpuContext::ContextProviderWrapper(),
-            /*shared_image_interface_provider=*/nullptr));
-  }
-  sk_sp<SkSurface> CreateSkSurface() const override {
-    const auto info =
-        SkImageInfo::Make(Size().width(), Size().height(),
-                          viz::ToClosestSkColorType(GetSharedImageFormat()),
-                          GetAlphaType(), GetColorSpace().ToSkColorSpace());
-    return SkSurfaces::Raster(info);
-  }
-
-  MOCK_METHOD((void),
-              RasterRecord,
-              (cc::PaintRecord last_recording,
-               cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback),
-              (override));
-
-  MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
-              Snapshot,
-              (ImageOrientation orientation));
-
-  MOCK_METHOD(bool,
-              WritePixels,
-              (const SkImageInfo& orig_info,
-               const void* pixels,
-               size_t row_bytes,
-               int x,
-               int y));
-
- private:
-  base::WeakPtrFactory<FakeCanvasResourceProvider> weak_ptr_factory_{this};
-};
 
 // Sets up an accelerated CanvasResourceProvider, accelerated compositing, and a
 // CcLayer on the passed-in HTMLCanvasElement and context. Returns false if the
@@ -1343,18 +1324,13 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Clipped) {
 TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
-
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
+  Context2D()->InitializeBacking();
 
   // The recording will be cleared, so nothing will be rastered before
   // `WritePixels` is called.
   InSequence s;
-  EXPECT_CALL(*provider, RasterRecord).Times(0);
-  EXPECT_CALL(*provider, WritePixels).Times(1);
-
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  EXPECT_CALL(*test_raster_interface(), RasterRecord).Times(0);
+  EXPECT_CALL(*test_raster_interface(), WritePixels).Times(1);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(3, 3, 1, 1);
@@ -1371,20 +1347,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
 TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
-
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
+  Context2D()->InitializeBacking();
 
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
   // `WritePixels` is called.
   InSequence s;
-  EXPECT_CALL(*provider,
-              RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>()), _))
+  EXPECT_CALL(*test_raster_interface(),
+              RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>())))
       .Times(1);
-  EXPECT_CALL(*provider, WritePixels).Times(1);
-
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  EXPECT_CALL(*test_raster_interface(), WritePixels).Times(1);
 
   // `putImageData` forces a flush, which clears the recording.
   NonThrowableExceptionState exception_state;
@@ -3311,19 +3282,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
   gfx::Size size(200, 200);
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU);
+  CanvasElement().SetSize(size);
+  Context2D()->InitializeBacking();
 
-  // Recorded draw ops are resterized on hibernation. The provider gets replaced
-  // when getting out of hibernation, so this mock will not see the later calls
-  // to `RasterRecord`.
+  // Recorded draw ops are rasterized on hibernation.
   cc::PaintRecord hibernation_raster;
-  EXPECT_CALL(*provider, Snapshot(_)).Times(1);
-  EXPECT_CALL(*provider, RasterRecord)
+  EXPECT_CALL(*test_raster_interface(), RasterRecord)
       .Times(1)
       .WillOnce(SaveArg<0>(&hibernation_raster));
-
-  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
   ThreadScheduler::Current()->PostIdleTask(
       FROM_HERE, BindOnce(
@@ -3358,6 +3324,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
+  Mock::VerifyAndClearExpectations(test_raster_interface());
+  EXPECT_TRUE(Context2D()->GetHibernationHandler()->IsHibernating());
   EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   // Hibernating should have rastered paint ops preceding `beginLayer`.

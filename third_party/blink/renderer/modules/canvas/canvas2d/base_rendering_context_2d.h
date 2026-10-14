@@ -367,8 +367,6 @@ class MODULES_EXPORT BaseRenderingContext2D
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags);
   void CreateSharedImageProviderForSoftwareCompositor();
-  void SetSharedImageProviderForTesting(
-      std::unique_ptr<Canvas2DResourceProvider> provider);
   void CreateSoftwareSurface();
   void RecordBackingHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
