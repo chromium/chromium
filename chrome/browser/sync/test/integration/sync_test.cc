@@ -113,6 +113,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
@@ -404,6 +405,14 @@ void SyncTest::PostCreateThreads() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->profile_manager());
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Client 0 may reuse the primary user profile, which has
+  // ChromeShelfController attached. Once app list sync starts, it would
+  // pre-allocate pin positions for uninstalled default apps in
+  // AppListSyncableService.
+  ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(false);
+#endif
 
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER: {

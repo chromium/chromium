@@ -158,7 +158,7 @@ class ChromeShelfPrefsTest : public testing::Test {
   void TearDown() override {
     shelf_prefs_.reset();
     scoped_user_manager_.reset();
-    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(false);
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(std::nullopt);
     profile_.reset();
   }
 

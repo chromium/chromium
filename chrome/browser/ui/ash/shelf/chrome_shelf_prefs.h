@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -78,8 +79,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
                       const ash::ShelfID& shelf_id_before,
                       base::span<const ash::ShelfID> shelf_ids_after);
 
-  // Makes ShouldAddDefaultApps() return true if set to true.
-  static void SetShouldAddDefaultAppsForTest(bool value);
+  // Overrides the return value of ShouldAddDefaultApps() if set; `std::nullopt`
+  // restores the default behavior.
+  static void SetShouldAddDefaultAppsForTest(std::optional<bool> value);
 
   // In multi-user login, it's possible for the profile to change during a
   // session. This requires resetting all migrations. This method is also called
