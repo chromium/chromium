@@ -878,9 +878,12 @@ if (!is_android) {
         "//ash/public/cpp",
         "//chrome/browser/ash/app_restore",
         "//chrome/browser/ash/input_method",
+        "//chrome/browser/ash/ownership",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/services/device_sync:test_support",
+        "//chromeos/dbus/constants",
+        "//components/ownership",
         "//ui/display",
       ]
     }
