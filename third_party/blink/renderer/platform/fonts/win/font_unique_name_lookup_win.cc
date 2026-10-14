@@ -162,7 +162,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromMatchResult(
         match_result->typeface_data->get_region().Map());
     if (mapping->IsValid()) {
       data = SkData::MakeWithProc(
-          mapping->memory(), mapping->size(),
+          mapping->data(), mapping->size(),
           [](const void*, void* ctx) {
             delete static_cast<base::ReadOnlySharedMemoryMapping*>(ctx);
           },

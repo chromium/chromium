@@ -239,15 +239,7 @@ class RefCountedWritableSharedMemoryMapping
   RefCountedWritableSharedMemoryMapping& operator=(
       const RefCountedWritableSharedMemoryMapping&) = delete;
 
-  const base::span<const uint8_t> AsSpan() const { return mapping_; }
-  const base::span<uint8_t> AsSpan() { return mapping_; }
-
-  const unsigned char* front() const {
-    return static_cast<const unsigned char*>(mapping_.memory());
-  }
-  unsigned char* front() {
-    return static_cast<unsigned char*>(mapping_.memory());
-  }
+  base::span<const uint8_t> AsSpan() const { return mapping_; }
   size_t size() const { return mapping_.size(); }
 
  private:
@@ -271,7 +263,7 @@ class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
     DCHECK(reuse_buffer_callback_);
     std::move(reuse_buffer_callback_).Run();
   }
-  const uint8_t* data() const override { return mapping_->front(); }
+  const uint8_t* data() const override { return mapping_->AsSpan().data(); }
   size_t size() const override { return size_; }
 
  private:
