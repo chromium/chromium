@@ -712,6 +712,31 @@ TEST_F(JXLImageDecoderTest, AnimationRepetitionCount) {
       << "Animation should not report kAnimationNone";
 }
 
+TEST_F(JXLImageDecoderTest, AnimationDecodeSecondFrameFirst) {
+  auto decoder = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "image_decoder_frame_one_crash.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  ASSERT_GT(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(1);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+
+  auto sequential = CreateJXLDecoder();
+  sequential->SetData(data.get(), true);
+  ImageFrame* first_frame = sequential->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(first_frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, first_frame->GetStatus());
+  ImageFrame* sequential_frame = sequential->DecodeFrameBufferAtIndex(1);
+  ASSERT_TRUE(sequential_frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, sequential_frame->GetStatus());
+  EXPECT_EQ(HashBitmap(sequential_frame->Bitmap()),
+            HashBitmap(frame->Bitmap()));
+}
+
 // Test random frame access (not sequential).
 // JXL requires sequential decoding internally, but the API supports random
 // access by rewinding and re-decoding when needed.

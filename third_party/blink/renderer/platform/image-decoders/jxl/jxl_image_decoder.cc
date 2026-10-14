@@ -371,12 +371,10 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
     }
   }
 
-  // If we want to decode a frame that is *not* the next frame, seek to that
-  // frame, unless decoding forward from where the decoder is gets there with
-  // less work (see CanDecodeForwardTo()).
-  if (basic_info_->have_animation && index != next_frame_to_decode_ &&
-      !CanDecodeForwardTo(index)) {
-    CHECK_GE(decoder_state_, DecoderState::kHaveBasicInfo);
+  // A new decoder must process the image header before it can seek.
+  if (basic_info_->have_animation &&
+      decoder_state_ >= DecoderState::kHaveBasicInfo &&
+      index != next_frame_to_decode_ && !CanDecodeForwardTo(index)) {
     SeekToFrame(index);
   }
 

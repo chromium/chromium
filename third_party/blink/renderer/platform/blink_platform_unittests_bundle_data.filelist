@@ -591,6 +591,7 @@
 ../../web_tests/images/resources/ihdr50_actl_fctl30_idat.png
 ../../web_tests/images/resources/ihdr50_actl_idat_fctl30_fdat.png
 ../../web_tests/images/resources/ihdr50_fctl30_idat.png
+../../web_tests/images/resources/image_decoder_frame_one_crash.jxl
 ../../web_tests/images/resources/invalid-animated-webp.webp
 ../../web_tests/images/resources/invalid-animated-webp2.webp
 ../../web_tests/images/resources/invalid-animated-webp3.webp
