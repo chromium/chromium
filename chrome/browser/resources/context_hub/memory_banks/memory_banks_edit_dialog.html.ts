@@ -4,13 +4,22 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {EntryType} from '../context_hub.mojom-webui.js';
+
 import type {MemoryBanksEditDialogElement} from './memory_banks_edit_dialog.js';
 
 export function getHtml(this: MemoryBanksEditDialogElement) {
+  // clang-format off
   return html`
     <cr-dialog id="dialog" show-on-attach @close="${this.onDialogClose_}">
       <div slot="title">Edit memory</div>
       <div slot="body" class="edit-dialog-sections">
+        ${this.entry?.type === EntryType.kImage && this.entry?.imageUrl ? html`
+          <div class="edit-image-preview">
+            <img is="cr-auto-img" class="preview-image"
+                auto-src="${this.entry.imageUrl}" alt="">
+          </div>
+        ` : ''}
         <!-- Collection Section -->
         <div class="edit-form-section">
           <div class="edit-section-header">
@@ -121,4 +130,5 @@ export function getHtml(this: MemoryBanksEditDialogElement) {
       </div>
     </cr-dialog>
   `;
+  // clang-format on
 }

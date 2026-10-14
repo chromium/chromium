@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';

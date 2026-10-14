@@ -12,6 +12,7 @@ import type {MemoryBanksElement} from './memory_banks.js';
 
 export function getHtml(
     this: MemoryBanksElement, entry: MemoryBankEntry, index: number) {
+  // clang-format off
   return html`
     <a class="card ${this.isSelected(entry.id) ? 'selected' : ''}"
         href="${entry.url}" target="_blank">
@@ -21,17 +22,22 @@ export function getHtml(
           @change="${this.onCheckboxChange}"
           @click="${this.onCheckboxClick}">
       </cr-checkbox>
-      ${
-      entry.type === EntryType.kTextSelection ? html`
+      ${entry.type === EntryType.kImage && entry.imageUrl ? html`
+        <div class="card-body image-type">
+          <img is="cr-auto-img" class="card-image-preview"
+              auto-src="${entry.imageUrl}" alt="">
+        </div>
+      ` : ''}
+      ${entry.type === EntryType.kTextSelection ? html`
         <div class="card-body">
           <p class="text-preview">"${entry.selectedText || ''}"</p>
         </div>
-      ` :
-                                                html`
+      ` : ''}
+      ${entry.type === EntryType.kTab ? html`
         <div class="card-body tab-type">
           <cr-icon icon="cr:draft-filled"></cr-icon>
         </div>
-      `}
+      ` : ''}
       <div class="card-footer">
         <div class="footer-main">
           <div class="favicon"
@@ -61,4 +67,5 @@ export function getHtml(
       </div>
     </a>
   `;
+  // clang-format on
 }

@@ -5,9 +5,12 @@
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {EntryType} from '../context_hub.mojom-webui.js';
+
 import type {MemoryBanksElement} from './memory_banks.js';
 
 export function getHtml(this: MemoryBanksElement) {
+  // clang-format off
   return html`
     <div class="table-container">
       <table class="memories-table">
@@ -44,10 +47,15 @@ export function getHtml(this: MemoryBanksElement) {
               </td>
               <td class="col-title">
                 <div class="title-cell-content">
-                  <div class="table-favicon"
-                      style="background-image: ${
-              getFaviconForPageURL(item.url, true)}">
-                  </div>
+                  ${item.type === EntryType.kImage && item.imageUrl ? html`
+                    <img is="cr-auto-img" class="table-image-thumb"
+                        auto-src="${item.imageUrl}" alt="">
+                  ` : html`
+                    <div class="table-favicon"
+                        style="background-image: ${getFaviconForPageURL(
+                            item.url, true)}">
+                    </div>
+                  `}
                   <a class="table-title-link"
                       href="${item.url}"
                       target="_blank"
@@ -124,4 +132,5 @@ export function getHtml(this: MemoryBanksElement) {
       </div>
     </div>
   `;
+  // clang-format on
 }

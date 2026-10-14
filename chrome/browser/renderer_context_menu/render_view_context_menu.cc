@@ -2364,6 +2364,9 @@ void RenderViewContextMenu::AppendImageItems() {
     AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/false,
                               /*add_separator=*/false);
   }
+  if (CanSaveImageToMemoryBanks()) {
+    AppendSaveToMemoryBanksItem();
+  }
 }
 
 void RenderViewContextMenu::AppendSearchWebForImageItems() {
@@ -2919,10 +2922,17 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
 }
 
 void RenderViewContextMenu::AppendSaveToMemoryBanksItem() {
-  if (base::FeatureList::IsEnabled(context_hub::features::kMemoryBanks)) {
+  if (base::FeatureList::IsEnabled(context_hub::features::kMemoryBanks) &&
+      !menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS)
+           .has_value()) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS,
                                     IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS);
   }
+}
+
+bool RenderViewContextMenu::CanSaveImageToMemoryBanks() const {
+  return params_.media_type == ContextMenuDataMediaType::kImage &&
+         params_.has_image_contents && params_.src_url.SchemeIsHTTPOrHTTPS();
 }
 
 void RenderViewContextMenu::AppendGlicItems() {
@@ -5106,6 +5116,16 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
   }
 
   std::string tab_title = base::UTF16ToUTF8(source_web_contents_->GetTitle());
+  if (CanSaveImageToMemoryBanks()) {
+    context_hub_service->SetPendingMemoryBankEntry(context_hub::MemoryBankEntry(
+        context_hub::MemoryBankType::kImage, params_.page_url, tab_title,
+        /*selected_text=*/std::nullopt, params_.src_url));
+    SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
+        source_web_contents_)
+        ->ShowBubble();
+    return;
+  }
+
   std::string selected_text = base::UTF16ToUTF8(params_.selection_text);
 
   if (!selected_text.empty()) {

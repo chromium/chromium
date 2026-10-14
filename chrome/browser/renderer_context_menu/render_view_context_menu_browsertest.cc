@@ -4788,6 +4788,172 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
+                       SaveToMemoryBanksImage) {
+  GURL page_url("data:text/html,Hello%20World");
+  GURL image_url("http://foo.com/image.png");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeImage(image_url);
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS));
+
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
+
+  std::string expected_title = base::UTF16ToUTF8(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+  std::optional<context_hub::MemoryBankEntry> pending =
+      service->GetPendingMemoryBankEntry();
+  ASSERT_TRUE(pending.has_value());
+  EXPECT_EQ(context_hub::MemoryBankType::kImage, pending->type);
+  EXPECT_EQ(page_url, pending->url);
+  EXPECT_EQ(expected_title, pending->tab_title);
+  EXPECT_FALSE(pending->selected_text.has_value());
+  EXPECT_EQ(image_url, pending->image_url);
+  EXPECT_TRUE(service->SavePendingMemoryBankEntry(/*tags=*/{"image_tag"}));
+
+  base::test::TestFuture<std::vector<context_hub::MemoryBankEntry>>
+      entries_future;
+  service->GetAllEntries(entries_future.GetCallback());
+  std::vector<context_hub::MemoryBankEntry> entries = entries_future.Take();
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(context_hub::MemoryBankType::kImage, entries[0].type);
+  EXPECT_EQ(page_url, entries[0].url);
+  EXPECT_EQ(expected_title, entries[0].tab_title);
+  EXPECT_FALSE(entries[0].selected_text.has_value());
+  EXPECT_EQ(image_url, entries[0].image_url);
+  EXPECT_THAT(entries[0].tags, testing::ElementsAre("image_tag"));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())) {
+    controller->CloseBubble();
+  }
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(
+    MemoryBanksContextMenuBrowserTest,
+    SaveToMemoryBanksUnloadedImageWithoutSelectionHidesMenuItem) {
+  GURL page_url("data:text/html,Hello%20World");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  params.src_url = GURL("http://foo.com/broken.png");
+  params.has_image_contents = false;
+  params.page_url = page_url;
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuFromParams(params);
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    MemoryBanksContextMenuBrowserTest,
+    SaveToMemoryBanksNonHttpImageWithoutSelectionHidesMenuItem) {
+  GURL page_url("data:text/html,Hello%20World");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  params.src_url = GURL("data:image/png;base64,iVBORw0KGgo=");
+  params.has_image_contents = true;
+  params.page_url = page_url;
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuFromParams(params);
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    MemoryBanksContextMenuBrowserTest,
+    SaveToMemoryBanksUnloadedImageWithSelectionSavesSelectedText) {
+  GURL page_url("data:text/html,Hello%20World");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  params.src_url = GURL("http://foo.com/broken.png");
+  params.has_image_contents = false;
+  params.selection_text = u"Selected text on broken image";
+  params.page_url = page_url;
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuFromParams(params);
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS));
+
+  auto* service =
+      ContextHubServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
+
+  std::optional<context_hub::MemoryBankEntry> pending =
+      service->GetPendingMemoryBankEntry();
+  ASSERT_TRUE(pending.has_value());
+  EXPECT_EQ(context_hub::MemoryBankType::kTextSelection, pending->type);
+  EXPECT_EQ("Selected text on broken image", pending->selected_text);
+  EXPECT_FALSE(pending->image_url.has_value());
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())) {
+    controller->CloseBubble();
+  }
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
+                       SaveToMemoryBanksImageWithSelectionDoesNotDuplicate) {
+  GURL page_url("data:text/html,Hello%20World");
+  GURL image_url("http://foo.com/image.png");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  params.src_url = image_url;
+  params.has_image_contents = true;
+  params.selection_text = u"Selected text with image";
+  params.page_url = page_url;
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuFromParams(params);
+
+  int count = 0;
+  const ui::SimpleMenuModel& model = menu->menu_model();
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
+    if (model.GetCommandIdAt(i) == IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS) {
+      count++;
+    }
+  }
+  EXPECT_EQ(1, count);
+
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
+
+  std::optional<context_hub::MemoryBankEntry> pending =
+      service->GetPendingMemoryBankEntry();
+  ASSERT_TRUE(pending.has_value());
+  EXPECT_EQ(context_hub::MemoryBankType::kImage, pending->type);
+  EXPECT_FALSE(pending->selected_text.has_value());
+  EXPECT_EQ(image_url, pending->image_url);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())) {
+    controller->CloseBubble();
+  }
+#endif
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          MemoryBanksContextMenuBrowserTest,
                          testing::Bool());

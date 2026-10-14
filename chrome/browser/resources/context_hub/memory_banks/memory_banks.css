@@ -320,6 +320,14 @@ h2 {
   width: 16px;
 }
 
+.table-image-thumb {
+  border-radius: 2px;
+  flex-shrink: 0;
+  height: 16px;
+  object-fit: contain;
+  width: 16px;
+}
+
 .table-title-link {
   color: var(--cr-primary-text-color);
   font-weight: 500;
@@ -521,6 +529,19 @@ h2 {
   color: var(--cr-link-color);
   height: var(--cr-icon-size);
   width: var(--cr-icon-size);
+}
+
+.card-body.image-type {
+  align-items: center;
+  background: var(--cr-fallback-color-surface5);
+  justify-content: center;
+  padding: 0;
+}
+
+.card-image-preview {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
 }
 
 .text-preview {

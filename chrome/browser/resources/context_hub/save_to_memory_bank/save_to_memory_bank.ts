@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
@@ -35,6 +36,7 @@ export class SaveToMemoryBankElement extends CrLitElement {
       title: {type: String},
       url: {type: String},
       snippet: {type: String},
+      imageUrl: {type: String},
       note: {type: String},
       collection: {type: String},
       collections: {type: Array},
@@ -67,6 +69,7 @@ export class SaveToMemoryBankElement extends CrLitElement {
       this.title = context.tabTitle || '';
       this.url = context.url || '';
       this.snippet = context.selectedText || '';
+      this.imageUrl = context.imageUrl || '';
     }
 
     this.collections = collections || [];
@@ -76,6 +79,7 @@ export class SaveToMemoryBankElement extends CrLitElement {
   override accessor title: string = '';
   accessor url: string = '';
   accessor snippet: string = '';
+  accessor imageUrl: string = '';
   accessor note: string = '';
   accessor collection: string = '';
   accessor collections: string[] = [];

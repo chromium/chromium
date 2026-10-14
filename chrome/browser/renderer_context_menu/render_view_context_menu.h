@@ -360,6 +360,7 @@ class RenderViewContextMenu
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendSaveToMemoryBanksItem();
+  bool CanSaveImageToMemoryBanks() const;
   void AppendGlicItems();
   void AppendRotationItems();
   void AppendSpellingAndSearchSuggestionItems();

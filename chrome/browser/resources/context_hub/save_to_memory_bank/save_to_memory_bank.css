@@ -46,6 +46,21 @@
   overflow: hidden;
 }
 
+.card-image-preview {
+  background: var(--color-sys-surface-variant);
+  display: flex;
+  height: 80px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.preview-image {
+  height: 100%;
+  min-width: 0;
+  object-fit: contain;
+  width: 100%;
+}
+
 .card-snippet {
   padding-block: 12px;
   padding-inline: 16px;

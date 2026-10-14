@@ -8,6 +8,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SaveToMemoryBankElement} from './save_to_memory_bank.js';
 
 export function getHtml(this: SaveToMemoryBankElement) {
+  // clang-format off
   return html`
     <div class="dialog-container">
       <div class="content-area">
@@ -16,6 +17,12 @@ export function getHtml(this: SaveToMemoryBankElement) {
 
         <!-- Card Preview -->
         <div class="card-preview">
+          ${this.imageUrl ? html`
+            <div class="card-image-preview">
+              <img is="cr-auto-img" class="preview-image"
+                  auto-src="${this.imageUrl}" alt="">
+            </div>
+          ` : ''}
           <!-- Snippet -->
           ${
       this.snippet ? html`
@@ -182,4 +189,5 @@ export function getHtml(this: SaveToMemoryBankElement) {
       </div>
     </div>
   `;
+  // clang-format on
 }

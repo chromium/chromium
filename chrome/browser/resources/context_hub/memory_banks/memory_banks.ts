@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';

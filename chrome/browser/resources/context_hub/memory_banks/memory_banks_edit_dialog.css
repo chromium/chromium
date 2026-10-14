@@ -24,6 +24,20 @@ cr-dialog {
   gap: 16px;
 }
 
+.edit-image-preview {
+  display: flex;
+  justify-content: center;
+}
+
+.preview-image {
+  background: var(--cr-fallback-color-surface5);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 8px;
+  height: 120px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .edit-form-section {
   display: flex;
   flex-direction: column;
