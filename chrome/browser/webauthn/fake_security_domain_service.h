@@ -77,6 +77,10 @@ class FakeSecurityDomainService {
   // Updates the PIN member metadata wrapped PIN.
   virtual void SetPinMemberWrappedPin(std::string wrapped_pin) = 0;
 
+  // Corrupts the wrapped security domain keys of all iCloud Keychain members so
+  // that they can no longer be decrypted.
+  virtual void CorruptICloudKeychainMemberKeys() = 0;
+
   virtual size_t num_physical_members() const = 0;
   virtual size_t num_pin_members() const = 0;
   virtual std::string GetPinMemberPublicKey() const = 0;

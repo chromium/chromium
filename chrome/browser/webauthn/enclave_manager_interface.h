@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 
@@ -107,6 +108,14 @@ class EnclaveManagerInterface : public KeyedService {
   [[nodiscard]] virtual std::unique_ptr<
       trusted_vault::TrustedVaultConnection::Request>
   CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) = 0;
+
+#if BUILDFLAG(IS_MAC)
+  // Downloads the authentication factors registration state and attempts to
+  // recover the security domain secret using local iCloud Keychain recovery
+  // keys, storing the recovered key in EnclaveManager on success and reporting
+  // whether recovery succeeded via `callback`.
+  virtual void RecoverWithICloudKeychain(Callback callback) = 0;
+#endif  // BUILDFLAG(IS_MAC)
 
   virtual void LoadAfterDelay(base::TimeDelta delay,
                               base::OnceClosure closure) = 0;

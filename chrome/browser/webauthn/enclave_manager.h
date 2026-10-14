@@ -198,7 +198,13 @@ class EnclaveManager : public EnclaveManagerInterface {
     // security domain update could not be parsed or failed invariants check in
     // `ConsiderSecurityDomainState`.
     kConsiderSecurityDomainStateNotStartedWrappedPinParsingError = 46,
-    kMaxValue = kConsiderSecurityDomainStateNotStartedWrappedPinParsingError,
+    kDoNextActionFailedICloudKeychainKeyAlreadyReady = 47,
+    kDoDownloadingAccountStateForICloudRecoveryFailedTrustedVaultErrorResponse =
+        48,
+    kDoDownloadingAccountStateForICloudRecoveryFailedNoICloudKeysInAccount = 49,
+    kDoRecoveringWithICloudKeychainFailedNoMatchingLocalICloudKey = 50,
+    kDoRecoveringWithICloudKeychainFailedDecryptionFailed = 51,
+    kMaxValue = kDoRecoveringWithICloudKeychainFailedDecryptionFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:EnclaveManagerActionOutcome)
 
@@ -212,6 +218,7 @@ class EnclaveManager : public EnclaveManagerInterface {
     kChangePIN,
 #if BUILDFLAG(IS_MAC)
     kAddICloudRecoveryKey,
+    kRecoverWithICloudKeychain,
 #endif  // BUILDFLAG(IS_MAC)
     kUnenroll,
     kConsiderSecurityDomainState,
@@ -415,6 +422,10 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
   CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;
+
+#if BUILDFLAG(IS_MAC)
+  void RecoverWithICloudKeychain(Callback callback) override;
+#endif  // BUILDFLAG(IS_MAC)
 
   // Checks whether UserVerifyingKeyCreationCallback() is available to be
   // called, returning true if not. There should only be one key creation

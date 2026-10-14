@@ -194,6 +194,18 @@ chromium-metrics-reviews@google.com.
   <int value="46"
       label="Failed to parse wrapped PIN or PIN invariants check failed in
              ConsiderSecurityDomainState"/>
+  <int value="47"
+      label="iCloud Keychain recovery not needed because key is already ready
+             in DoNextAction"/>
+  <int value="48"
+      label="Downloading authentication factors registration state resulted
+             in error in DoDownloadingAccountStateForICloudRecovery"/>
+  <int value="49"
+      label="No iCloud keys in account in
+             DoDownloadingAccountStateForICloudRecovery"/>
+  <int value="50"
+      label="No matching local iCloud key in DoRecoveringWithICloudKeychain"/>
+  <int value="51" label="Decryption failed in DoRecoveringWithICloudKeychain"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:EnclaveManagerActionOutcome) -->

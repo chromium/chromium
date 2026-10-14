@@ -120,6 +120,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/webauthn/icloud_recovery.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -153,6 +154,9 @@ std::string ToString(EnclaveManager::ActionForUMA action) {
 #if BUILDFLAG(IS_MAC)
     case EnclaveManager::ActionForUMA::kAddICloudRecoveryKey:
       action_string = "AddICloudRecoveryKey";
+      break;
+    case EnclaveManager::ActionForUMA::kRecoverWithICloudKeychain:
+      action_string = "RecoverWithICloudKeychain";
       break;
 #endif  // BUILDFLAG(IS_MAC)
     case EnclaveManager::ActionForUMA::kUnenroll:
@@ -192,6 +196,7 @@ struct EnclaveManager::PendingAction {
   std::optional<std::string> pin_public_key;  // the current PIN PK in the SDS.
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key;
+  bool recover_with_icloud_keychain = false;
 #endif                      // BUILDFLAG(IS_MAC)
   bool unregister = false;  // whether to unregister from the enclave.
 };
@@ -1354,6 +1359,21 @@ class EnclaveManager::StateMachine {
       case ActionOutcome::
           kConsiderSecurityDomainStateNotStartedWrappedPinParsingError:
         return "ConsiderSecurityDomainStateNotStartedWrappedPinParsingError";
+      case ActionOutcome::kDoNextActionFailedICloudKeychainKeyAlreadyReady:
+        return "DoNextActionFailedICloudKeychainKeyAlreadyReady";
+      case ActionOutcome::
+          kDoDownloadingAccountStateForICloudRecoveryFailedTrustedVaultErrorResponse:
+        return "DoDownloadingAccountStateForICloudRecoveryFailedTrustedVaultErr"
+               "orResponse";
+      case ActionOutcome::
+          kDoDownloadingAccountStateForICloudRecoveryFailedNoICloudKeysInAccount:
+        return "DoDownloadingAccountStateForICloudRecoveryFailedNoICloudKeysInA"
+               "ccount";
+      case ActionOutcome::
+          kDoRecoveringWithICloudKeychainFailedNoMatchingLocalICloudKey:
+        return "DoRecoveringWithICloudKeychainFailedNoMatchingLocalICloudKey";
+      case ActionOutcome::kDoRecoveringWithICloudKeychainFailedDecryptionFailed:
+        return "DoRecoveringWithICloudKeychainFailedDecryptionFailed";
     }
   }
 
@@ -1378,6 +1398,8 @@ class EnclaveManager::StateMachine {
     kJoiningUpdatedPINToDomain,
 #if BUILDFLAG(IS_MAC)
     kJoiningICloudKeychainToDomain,
+    kDownloadingAccountStateForICloudRecovery,
+    kRecoveringWithICloudKeychain,
 #endif  // BUILDFLAG(IS_MAC)
     // Setting the PIN using `recovery_key_store/wrap_pin_and_secret`.
     kSettingPIN,
@@ -1436,6 +1458,9 @@ class EnclaveManager::StateMachine {
       Response,
       trusted_vault::RecoveryKeyStoreStatus,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult,
+#if BUILDFLAG(IS_MAC)
+      webauthn::ICloudRecoveryResult,
+#endif  // BUILDFLAG(IS_MAC)
       OpportunisticRetrievalCheckResult>;
 
   void Process(Event event) {
@@ -1521,6 +1546,14 @@ class EnclaveManager::StateMachine {
 #if BUILDFLAG(IS_MAC)
       case State::kJoiningICloudKeychainToDomain:
         DoJoiningICloudKeychainToDomain(std::move(event));
+        break;
+
+      case State::kDownloadingAccountStateForICloudRecovery:
+        DoDownloadingAccountStateForICloudRecovery(std::move(event));
+        break;
+
+      case State::kRecoveringWithICloudKeychain:
+        DoRecoveringWithICloudKeychain(std::move(event));
         break;
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1621,6 +1654,10 @@ class EnclaveManager::StateMachine {
 #if BUILDFLAG(IS_MAC)
       case State::kJoiningICloudKeychainToDomain:
         return "JoiningICloudKeychainToDomain";
+      case State::kDownloadingAccountStateForICloudRecovery:
+        return "DownloadingAccountStateForICloudRecovery";
+      case State::kRecoveringWithICloudKeychain:
+        return "RecoveringWithICloudKeychain";
 #endif  // BUILDFLAG(IS_MAC)
       case State::kWaitingForEnclaveTokenForUnregister:
         return "WaitingForEnclaveTokenForUnregister";
@@ -1717,6 +1754,12 @@ class EnclaveManager::StateMachine {
                    ToString(result.state), " ", "has_gpm_pin: ",
                    result.gpm_pin_metadata.has_value() ? "yes" : "no", ")"});
             },
+#if BUILDFLAG(IS_MAC)
+            [](const webauthn::ICloudRecoveryResult& result) {
+              return base::StrCat({"ICloudRecoveryResult(",
+                                   result.has_value() ? "ok" : "error", ")"});
+            },
+#endif  // BUILDFLAG(IS_MAC)
             [](const OpportunisticRetrievalCheckResult& result) {
               const bool has_pin =
                   result.account_state.gpm_pin_metadata &&
@@ -1759,6 +1802,16 @@ class EnclaveManager::StateMachine {
       Stop(ActionOutcome::kSuccess);
       return;
     }
+
+#if BUILDFLAG(IS_MAC)
+    if (action_->recover_with_icloud_keychain) {
+      // Cleared so that the next DoNextAction() pass stores the recovered key.
+      action_->recover_with_icloud_keychain = false;
+      state_ = State::kDownloadingAccountStateForICloudRecovery;
+      StartICloudKeychainRecovery();
+      return;
+    }
+#endif  // BUILDFLAG(IS_MAC)
 
     if (action_->opportunistic_store_keys_args) {
       state_ = State::kStoringOpportunisticallyRetrievedKey;
@@ -3011,6 +3064,100 @@ class EnclaveManager::StateMachine {
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  void StartICloudKeychainRecovery() {
+    if (!user_->wrapped_security_domain_secrets().empty()) {
+      Stop(ActionOutcome::kDoNextActionFailedICloudKeychainKeyAlreadyReady);
+      return;
+    }
+    download_account_state_request_ =
+        manager_->trusted_vault_conn_
+            ->DownloadAuthenticationFactorsRegistrationState(
+                *primary_account_info_,
+                trusted_vault::SecurityDomainId::kPasskeys,
+                base::BindOnce(
+                    [](base::WeakPtr<EnclaveManager::StateMachine> machine,
+                       trusted_vault::
+                           DownloadAuthenticationFactorsRegistrationStateResult
+                               result) {
+                      if (!machine) {
+                        return;
+                      }
+                      machine->Process(std::move(result));
+                    },
+                    weak_ptr_factory_.GetWeakPtr()),
+                /*keep_alive_callback=*/base::DoNothing());
+  }
+
+  void DoDownloadingAccountStateForICloudRecovery(Event event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    CHECK(std::holds_alternative<
+          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+        event))
+        << ToString(event);
+    download_account_state_request_.reset();
+    auto& result = std::get<
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+        event);
+    if (result.state ==
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kError) {
+      Stop(
+          ActionOutcome::
+              kDoDownloadingAccountStateForICloudRecoveryFailedTrustedVaultErrorResponse);
+      return;
+    }
+    if (result.icloud_keys.empty()) {
+      Stop(
+          ActionOutcome::
+              kDoDownloadingAccountStateForICloudRecoveryFailedNoICloudKeysInAccount);
+      return;
+    }
+    icloud_recovery_keys_ = std::move(result.icloud_keys);
+    state_ = State::kRecoveringWithICloudKeychain;
+    icloud_recovery_ = std::make_unique<webauthn::ICloudRecovery>(
+        icloud_recovery_keys_,
+        base::BindOnce(
+            [](base::WeakPtr<StateMachine> machine,
+               webauthn::ICloudRecoveryResult recovery_result) {
+              if (!machine) {
+                return;
+              }
+              machine->Process(std::move(recovery_result));
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+    icloud_recovery_->Start();
+  }
+
+  void DoRecoveringWithICloudKeychain(Event event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    CHECK(std::holds_alternative<webauthn::ICloudRecoveryResult>(event))
+        << ToString(event);
+    icloud_recovery_.reset();
+    icloud_recovery_keys_.clear();
+    auto& result = std::get<webauthn::ICloudRecoveryResult>(event);
+    if (!result.has_value()) {
+      switch (result.error()) {
+        case webauthn::ICloudRecoveryError::kKeyNotFound:
+          Stop(
+              ActionOutcome::
+                  kDoRecoveringWithICloudKeychainFailedNoMatchingLocalICloudKey);
+          return;
+        case webauthn::ICloudRecoveryError::kDecryptionFailed:
+          Stop(ActionOutcome::
+                   kDoRecoveringWithICloudKeychainFailedDecryptionFailed);
+          return;
+      }
+    }
+
+    auto pending_keys = std::make_unique<StoreKeysArgs>();
+    pending_keys->gaia_id = primary_account_info_->gaia;
+    pending_keys->keys.push_back(std::move(*result));
+    action_->opportunistic_store_keys_args = std::move(pending_keys);
+    state_ = State::kNextAction;
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   // Constructed a wrapped version of the hashed PIN that will be part of the
@@ -3100,6 +3247,10 @@ class EnclaveManager::StateMachine {
   std::optional<trusted_vault::MemberKeysSource> member_keys_source_;
   // When uploading a PIN, this contains the pending `WrappedPIN`.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin_proto_;
+#if BUILDFLAG(IS_MAC)
+  std::vector<trusted_vault::VaultMember> icloud_recovery_keys_;
+  std::unique_ptr<webauthn::ICloudRecovery> icloud_recovery_;
+#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<device::enclave::EnclaveTransaction> pending_transaction_;
 
@@ -4009,6 +4160,19 @@ EnclaveManager::CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) {
           std::move(callback)),
       base::DoNothing());
 }
+
+#if BUILDFLAG(IS_MAC)
+void EnclaveManager::RecoverWithICloudKeychain(
+    EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto action = std::make_unique<PendingAction>();
+  action->recover_with_icloud_keychain = true;
+  action->callback = ToActionOutcomeCallback(
+      std::move(callback), ActionForUMA::kRecoverWithICloudKeychain);
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 void EnclaveManager::AreUserVerifyingKeysSupported(Callback callback) {

@@ -406,6 +406,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ChangePIN" summary="changing the GPM PIN"/>
     <variant name="ConsiderSecurityDomainState"
         summary="processing security domain state updates"/>
+    <variant name="RecoverWithICloudKeychain"
+        summary="recovering the security domain secret from iCloud Keychain"/>
     <variant name="RegisterIfNeeded"
         summary="registering the enclave if needed"/>
     <variant name="SetPIN" summary="setting a GPM PIN"/>

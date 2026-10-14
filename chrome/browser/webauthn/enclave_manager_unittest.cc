@@ -94,7 +94,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/webauthn/icloud_recovery.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
@@ -2036,6 +2038,312 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.Enclave.ActionOutcome.AddICloudRecoveryKey",
       EnclaveManager::ActionOutcome::kSuccess, 1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainSuccess) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+  std::optional<std::pair<int32_t, std::vector<uint8_t>>> expected_secret =
+      manager_.TakeSecret();
+  ASSERT_TRUE(expected_secret.has_value());
+
+  // Simulate another device (or a cleared local registration) recovering from
+  // iCloud Keychain.
+  manager_.ClearRegistrationForTesting();
+  manager_.ClearCachedKeysForTesting();
+  ASSERT_FALSE(manager_.IsRegistered());
+  ASSERT_FALSE(manager_.IsReady());
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_TRUE(recovery_future.Get());
+  EXPECT_TRUE(manager_.IsReady());
+  EXPECT_TRUE(manager_.is_idle());
+  EXPECT_EQ(manager_.TakeSecret(), expected_secret);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainKeyAlreadyReady) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_TRUE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoNextActionFailedICloudKeychainKeyAlreadyReady,
+      1);
+}
+
+TEST_F(EnclaveManagerTest,
+       RecoverWithICloudKeychainDownloadAccountStateFailed) {
+  security_domain_service_->fail_all_requests();
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoDownloadingAccountStateForICloudRecoveryFailedTrustedVaultErrorResponse,
+      1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainNoICloudKeysInAccount) {
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoDownloadingAccountStateForICloudRecoveryFailedNoICloudKeysInAccount,
+      1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainNoMatchingLocalICloudKey) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  // Add an iCloud recovery key to the account that is not stored in the local
+  // keychain.
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      trusted_vault::ICloudRecoveryKey::CreateForTest();
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+
+  manager_.ClearRegistrationForTesting();
+  manager_.ClearCachedKeysForTesting();
+  ASSERT_FALSE(manager_.IsReady());
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoRecoveringWithICloudKeychainFailedNoMatchingLocalICloudKey,
+      1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainDecryptionFailed) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+
+  manager_.ClearRegistrationForTesting();
+  manager_.ClearCachedKeysForTesting();
+  ASSERT_FALSE(manager_.IsReady());
+
+  security_domain_service_->CorruptICloudKeychainMemberKeys();
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoRecoveringWithICloudKeychainFailedDecryptionFailed,
+      1);
+}
+
+TEST_F(EnclaveManagerTest, RecoverWithICloudKeychainStoreKeysFailed) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+
+  manager_.ClearRegistrationForTesting();
+  manager_.ClearCachedKeysForTesting();
+  ASSERT_FALSE(manager_.IsReady());
+
+  security_domain_service_->fail_join_requests_matching(base::BindRepeating(
+      [](const trusted_vault_pb::JoinSecurityDomainsRequest&) {
+        return true;
+      }));
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::
+          kDoJoiningDomainFailedTrustedVaultRegistrationError,
+      1);
+}
+
+TEST_F(EnclaveManagerTest,
+       RecoverWithICloudKeychainPrimaryAccountChangedCancelsRecovery) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv;
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain{
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup};
+
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  BoolFuture add_icloud_future;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                add_icloud_future.GetCallback());
+  ASSERT_TRUE(add_icloud_future.Wait());
+  ASSERT_TRUE(add_icloud_future.Get());
+
+  manager_.ClearRegistrationForTesting();
+  manager_.ClearCachedKeysForTesting();
+  ASSERT_FALSE(manager_.IsReady());
+
+  base::HistogramTester histogram_tester;
+  BoolFuture recovery_future;
+  manager_.RecoverWithICloudKeychain(recovery_future.GetCallback());
+  identity_test_env_.MakePrimaryAccountAvailable("other@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(recovery_future.Wait());
+  EXPECT_FALSE(recovery_future.Get());
+  EXPECT_FALSE(manager_.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::kStateMachineHasBeenDestroyed, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 

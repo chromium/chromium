@@ -123,6 +123,20 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
         ->set_encrypted_pin_hash(std::move(wrapped_pin));
   }
 
+  void CorruptICloudKeychainMemberKeys() override {
+    for (auto& member : members_) {
+      if (member.member_type() !=
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN) {
+        continue;
+      }
+      for (auto& membership : *member.mutable_memberships()) {
+        for (auto& key : *membership.mutable_keys()) {
+          key.set_wrapped_key("corrupted_ciphertext");
+        }
+      }
+    }
+  }
+
   size_t num_physical_members() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
