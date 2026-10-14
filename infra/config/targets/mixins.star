@@ -462,6 +462,7 @@ targets.mixin(
     name = "emulator-4-cores",
     swarming = targets.swarming(
         dimensions = {
+            "cpu": "x86-64",
             "device_os": None,
             "device_type": None,
             "pool": "chromium.tests.avd",
@@ -474,6 +475,7 @@ targets.mixin(
     name = "emulator-8-cores",
     swarming = targets.swarming(
         dimensions = {
+            "cpu": "x86-64-n4|x86-64",
             "device_os": None,
             "device_type": None,
             "pool": "chromium.tests.avd",

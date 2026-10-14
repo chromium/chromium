@@ -551,7 +551,6 @@ _rebaseline_builder(
             "15-x64-emulator",
             "emulator-8-cores",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "android_chrome_wpt_tests": targets.mixin(

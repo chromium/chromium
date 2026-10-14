@@ -287,7 +287,6 @@ nightly_coverage_builder(
             "10-x86-emulator",
             "emulator-4-cores",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             # Keep this same as android-10-x86-rel
@@ -685,7 +684,6 @@ nightly_coverage_builder(
             "14-x64-emulator",
             "emulator-8-cores",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
@@ -753,7 +751,6 @@ nightly_coverage_builder(
             "14-x64-emulator",
             "emulator-8-cores",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(

@@ -1244,7 +1244,6 @@ try_.builder(
             "12-x64-emulator",
             "emulator-8-cores",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(

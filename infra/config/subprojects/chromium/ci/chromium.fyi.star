@@ -712,7 +712,6 @@ ci.builder(
             "12-x64-emulator",
             "emulator-8-cores",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
@@ -2565,7 +2564,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(

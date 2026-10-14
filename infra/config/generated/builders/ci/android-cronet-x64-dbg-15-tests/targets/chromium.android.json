@@ -28,7 +28,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -77,7 +77,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -126,7 +126,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -175,7 +175,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -225,7 +225,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -276,7 +276,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",
@@ -325,7 +325,7 @@
         "swarming": {
           "dimensions": {
             "cores": "8",
-            "cpu": "x86-64",
+            "cpu": "x86-64-n4|x86-64",
             "device_os": null,
             "device_type": null,
             "os": "Ubuntu-22.04",

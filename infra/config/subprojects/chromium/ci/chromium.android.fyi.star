@@ -88,7 +88,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "chrome_public_wpt": targets.mixin(
@@ -156,7 +155,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "android_webview_wpt_tests": targets.mixin(
@@ -222,7 +220,6 @@ ci.builder(
             "emulator-4-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "chrome_public_test_apk": targets.mixin(
@@ -305,7 +302,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
@@ -377,7 +373,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
         },
@@ -441,7 +436,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
@@ -580,7 +574,6 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
         per_test_modifications = {
             "telemetry_perf_unittests_android_chrome": targets.mixin(
@@ -647,7 +640,6 @@ ci.thin_tester(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
@@ -694,7 +686,6 @@ ci.thin_tester(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
@@ -742,7 +733,6 @@ ci.thin_tester(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
@@ -805,7 +795,6 @@ ci.builder(
             "emulator-4-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
-            "x86-64",
         ],
     ),
     targets_settings = targets.settings(
