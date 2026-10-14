@@ -1866,22 +1866,6 @@ Avoids unnecessary `this` argument for functors, improving performance.
 
 The following C++23 library features are allowed in the Chromium codebase.
 
-### std::basic_string::contains <sup>[allowed]</sup>
-
-```c++
-if (str.contains("foo")) ...
-```
-
-**Description:** More concise substring check.
-
-**Documentation:**
-[std::basic_string::contains](https://en.cppreference.com/w/cpp/string/basic_string/contains)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/2RuNgRdeeYg)
-***
-
 ### std::byteswap <sup>[allowed]</sup>
 
 ```c++
@@ -1925,26 +1909,6 @@ std::ranges::fold_left_first_with_iter
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/wZg3s5m6rOE).
 Migration of base::Contains() tracked [here](https://crbug.com/470391351).
-***
-
-### Constructing containers with std::from_range <sup>[allowed]</sup>
-
-```c++
-std::set<int> a_very_long_container_name = {1, 2, 3};
-std::vector<int> old_way(
-  a_very_long_container_name.begin(), a_very_long_container_name.end());
-std::vector<int> new_way(std::from_range, a_very_long_container_name);
-```
-
-**Description:** More concise conversion from one container type to another.
-
-**Documentation:**
-[std::from_range](https://en.cppreference.com/w/cpp/ranges/from_range.html)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ).
-See also std::ranges::to which offers something similar.
 ***
 
 ### std::out_ptr, std::inout_ptr <sup>[allowed]</sup>
@@ -2047,22 +2011,6 @@ auto x = std::to_underlying(enum_val);
 **Notes:**
 *** promo
 Migration from `base::to_underlying` is tracked in https://crbug.com/470039537.
-***
-
-### Monadic operations for std::optional <sup>[allowed]</sup>
-
-```c++
-opt.and_then(f).transform(g).or_else(h);
-```
-
-**Description:** `and_then`, `transform`, `or_else` member functions.
-
-**Documentation:**
-[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/7V8Oe67I6WE).
 ***
 
 ## C++23 TBD Language Features {#core-review-23}
