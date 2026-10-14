@@ -736,6 +736,34 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Web Extension Loading Delay</string>
+			<key>Key</key>
+			<string>WebExtensionLoadDelay</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>NoDelayFail</string>
+				<string>Delay1s</string>
+				<string>Delay1sFail</string>
+				<string>Delay5s</string>
+				<string>Delay5sFail</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>No delay</string>
+				<string>No delay fail</string>
+				<string>delay 1s</string>
+				<string>delay 1s fail</string>
+				<string>delay 5s</string>
+				<string>delay 5s fail</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Enterprise Settings</string>
