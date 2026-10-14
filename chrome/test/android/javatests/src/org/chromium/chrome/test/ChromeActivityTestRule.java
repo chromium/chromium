@@ -19,8 +19,11 @@ import org.hamcrest.Matchers;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Holder;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -566,6 +569,25 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     protected void waitForFirstFrame() {
         final Coordinates coord = Coordinates.createFor(getWebContents());
         CriteriaHelper.pollUiThread(
-                coord::frameInfoUpdated, "FrameInfo has not been updated in time.");
+                () -> {
+                    // TODO(crbug.com/573354424): On Android Desktop emulators, the
+                    // ChromeLauncherActivity trampoline task's DesktopTasksTransitionHandler
+                    // transition can abort after ChromeLauncherActivity finishes, returning focus
+                    // to QuickstepLauncher and stopping ChromeTabbedActivity.
+                    if (DeviceInfo.isDesktop()) {
+                        T activity = getActivity();
+                        if (activity == null) return false;
+                        @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
+                        if (state != ActivityState.RESUMED) {
+                            ApiCompatibilityUtils.moveTaskToFront(
+                                    activity, activity.getTaskId(), 0);
+                            return false;
+                        }
+                    }
+                    return coord.frameInfoUpdated();
+                },
+                "FrameInfo has not been updated in time.",
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
