@@ -6,6 +6,7 @@ package org.chromium.components.omnibox;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 
@@ -423,7 +424,8 @@ public class OmniboxFeatures {
      * enabled on Android.
      */
     public static boolean isPrefetchSelectedSuggestionsOmtAndroidEnabled() {
-        return sPrefetchSelectedSuggestionsOmtAndroid.isEnabled();
+        return sPrefetchSelectedSuggestionsOmtAndroid.isEnabled()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA;
     }
 
     /**

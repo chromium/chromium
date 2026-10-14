@@ -32,12 +32,16 @@ public class SuggestionsOmtInputAnchor {
     /**
      * Transfers active touch gesture from the overlay surface token to the main window token.
      *
+     * <p>Invoked from native code on the background input thread upon intercepting ACTION_DOWN.
+     *
      * @param fromToken Input transfer token of the source overlay surface.
      * @param toToken Input transfer token of the destination main Chrome window.
+     * @param onTouchTransferred Callback invoked when the touch gesture transfer succeeds.
      * @return Whether the touch gesture transfer request succeeded.
      */
     @CalledByNative
-    public static boolean transferTouch(InputTransferToken fromToken, InputTransferToken toToken) {
+    static boolean transferTouch(
+            InputTransferToken fromToken, InputTransferToken toToken, Runnable onTouchTransferred) {
         // Gated to Android 16+ (Baklava / API Level 36+) to avoid the AInputReceiver_release()
         // crash bug present in Android 15 (https://crbug.com/368251173).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
@@ -47,6 +51,9 @@ public class SuggestionsOmtInputAnchor {
                 boolean result = windowManager.transferTouchGesture(fromToken, toToken);
                 RecordHistogram.recordBooleanHistogram(
                         "Android.Omnibox.OMTPrefetch.TouchTransferSuccess", result);
+                if (result) {
+                    onTouchTransferred.run();
+                }
                 return result;
             }
         }
@@ -58,15 +65,24 @@ public class SuggestionsOmtInputAnchor {
         /**
          * Registers a native AInputReceiver on the background thread's ALooper.
          *
+         * <p>Must be invoked on the background HandlerThread where the ALooper is active.
+         *
          * @param surfaceControl Native surface control backing the overlay SurfaceView.
          * @param mainWindowToken Main window input transfer token to pair with the receiver.
+         * @param onTouchTransferred Callback invoked when a touch gesture is transferred from the
+         *     overlay surface to the main window.
          * @return Memory address of the allocated native OmtInputReceiverState instance.
          */
         long registerInputReceiver(
-                SurfaceControl surfaceControl, InputTransferToken mainWindowToken);
+                SurfaceControl surfaceControl,
+                InputTransferToken mainWindowToken,
+                Runnable onTouchTransferred);
 
         /**
          * Releases the native AInputReceiver and frees the associated receiver state.
+         *
+         * <p>Must be invoked on the same background HandlerThread to satisfy NDK thread
+         * constraints.
          *
          * @param stateAddress Memory address of the native OmtInputReceiverState to release.
          */

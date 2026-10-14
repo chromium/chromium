@@ -75,7 +75,8 @@ bool ProcessMotionEvent(void* context,
     // Transfer the touch gesture focus back to the main Chrome window to
     // continue normal touch dispatch.
     Java_SuggestionsOmtInputAnchor_transferTouch(env, state->overlay_token,
-                                                 state->main_window_token);
+                                                 state->main_window_token,
+                                                 state->transfer_callback);
   }
 
   return true;
@@ -123,7 +124,8 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
     JNIEnv* env,
     const jni_zero::JavaRef<::android::view::JSurfaceControl>& surface_control,
     const jni_zero::JavaRef<::android::window::JInputTransferToken>&
-        main_window_token) {
+        main_window_token,
+    const jni_zero::JavaRef<jobject>& on_touch_transferred) {
   const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
   if (!compat.IsSupportAvailable()) {
     return 0;
@@ -203,6 +205,7 @@ static int64_t JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
 
   state->overlay_token.Reset(env, receiver_token_java);
   state->main_window_token.Reset(env, main_window_token);
+  state->transfer_callback.Reset(env, on_touch_transferred);
   state->input_receiver = receiver;
   state->callbacks = callbacks;
 

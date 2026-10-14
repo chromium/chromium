@@ -24,6 +24,8 @@ struct OmtInputReceiverState {
   base::android::ScopedJavaGlobalRef<jobject> overlay_token;
   // Global reference to the Java InputTransferToken of the main Chrome window.
   base::android::ScopedJavaGlobalRef<jobject> main_window_token;
+  // Global reference to a Java Runnable invoked when touch transfer succeeds.
+  base::android::ScopedJavaGlobalRef<jobject> transfer_callback;
 
   // Pointer to the native input receiver registering the input channel.
   // RAW_PTR_EXCLUSION: Opaque NDK C handles managed by the Android system
@@ -37,6 +39,7 @@ struct OmtInputReceiverState {
 };
 
 // Handles a motion event intercepted on the background looper thread.
+// Must be invoked on the background HandlerThread where the ALooper is active.
 // Exposed for unit testing and NDK callback routing.
 bool ProcessMotionEvent(void* context,
                         int32_t event_type,
@@ -45,6 +48,7 @@ bool ProcessMotionEvent(void* context,
                         bool trigger_transfer = true);
 
 // NDK motion event callback matching AInputReceiverCallbacks signature.
+// Invoked by the Android NDK input subsystem on the background HandlerThread.
 bool OnMotionEvent(void* context, AInputEvent* motion_event);
 
 }  // namespace omnibox
