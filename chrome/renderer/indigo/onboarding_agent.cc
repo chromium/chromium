@@ -34,8 +34,8 @@ class OnboardingContext final : public gin::Wrappable<OnboardingContext> {
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
     return Wrappable<OnboardingContext>::GetObjectTemplateBuilder(isolate)
-        .SetMethod("acknowledgeChromeDisclaimer",
-                   &OnboardingContext::AcknowledgeChromeDisclaimer);
+        .SetMethod<&OnboardingContext::AcknowledgeChromeDisclaimer>(
+            "acknowledgeChromeDisclaimer");
   }
 
  private:

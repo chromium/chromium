@@ -125,15 +125,16 @@ void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
 gin::ObjectTemplateBuilder
 SupervisedUserErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<
-      SupervisedUserErrorPageController>::GetObjectTemplateBuilder(isolate)
-          .SetMethod("goBack", &SupervisedUserErrorPageController::GoBack)
-          .SetMethod("requestUrlAccessRemote",
-                     &SupervisedUserErrorPageController::RequestUrlAccessRemote)
-          .SetMethod("requestUrlAccessLocal",
-                     &SupervisedUserErrorPageController::RequestUrlAccessLocal)
+  return gin::Wrappable<SupervisedUserErrorPageController>::
+      GetObjectTemplateBuilder(isolate)
+          .SetMethod<&SupervisedUserErrorPageController::GoBack>("goBack")
+          .SetMethod<
+              &SupervisedUserErrorPageController::RequestUrlAccessRemote>(
+              "requestUrlAccessRemote")
+          .SetMethod<&SupervisedUserErrorPageController::RequestUrlAccessLocal>(
+              "requestUrlAccessLocal")
 #if BUILDFLAG(IS_ANDROID)
-          .SetMethod("learnMore", &SupervisedUserErrorPageController::LearnMore)
+          .SetMethod<&SupervisedUserErrorPageController::LearnMore>("learnMore")
 #endif  // BUILDFLAG(IS_ANDROID)
       ;
 }

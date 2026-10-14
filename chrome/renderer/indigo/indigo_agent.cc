@@ -46,13 +46,13 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final {
     return Wrappable<IndigoContext>::GetObjectTemplateBuilder(isolate)
-        .SetMethod("setup", &IndigoContext::Setup)
-        .SetMethod("startImageReplacement",
-                   &IndigoContext::StartImageReplacement)
-        .SetMethod("notifyNoPrimaryImageFound",
-                   &IndigoContext::NotifyNoPrimaryImageFound)
-        .SetMethod("isReplacedByUserAgent",
-                   &IndigoContext::IsReplacedByUserAgent);
+        .SetMethod<&IndigoContext::Setup>("setup")
+        .SetMethod<&IndigoContext::StartImageReplacement>(
+            "startImageReplacement")
+        .SetMethod<&IndigoContext::NotifyNoPrimaryImageFound>(
+            "notifyNoPrimaryImageFound")
+        .SetMethod<&IndigoContext::IsReplacedByUserAgent>(
+            "isReplacedByUserAgent");
   }
 
   void Trace(cppgc::Visitor* visitor) const final {

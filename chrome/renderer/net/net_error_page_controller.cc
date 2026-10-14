@@ -105,24 +105,25 @@ NetErrorPageController::~NetErrorPageController() = default;
 
 gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<NetErrorPageController>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("downloadButtonClick",
-                 &NetErrorPageController::DownloadButtonClick)
-      .SetMethod("reloadButtonClick",
-                 &NetErrorPageController::ReloadButtonClick)
-      .SetMethod("detailsButtonClick",
-                 &NetErrorPageController::DetailsButtonClick)
-      .SetMethod("diagnoseErrorsButtonClick",
-                 &NetErrorPageController::DiagnoseErrorsButtonClick)
-      .SetMethod("portalSigninButtonClick",
-                 &NetErrorPageController::PortalSigninButtonClick)
-      .SetMethod("trackEasterEgg", &NetErrorPageController::TrackEasterEgg)
-      .SetMethod("updateEasterEggHighScore",
-                 &NetErrorPageController::UpdateEasterEggHighScore)
-      .SetMethod("resetEasterEggHighScore",
-                 &NetErrorPageController::ResetEasterEggHighScore)
-      .SetMethod("savePageForLater", &NetErrorPageController::SavePageForLater)
-      .SetMethod("cancelSavePage", &NetErrorPageController::CancelSavePage);
+  return gin::Wrappable<NetErrorPageController>::GetObjectTemplateBuilder(
+             isolate)
+      .SetMethod<&NetErrorPageController::DownloadButtonClick>(
+          "downloadButtonClick")
+      .SetMethod<&NetErrorPageController::ReloadButtonClick>(
+          "reloadButtonClick")
+      .SetMethod<&NetErrorPageController::DetailsButtonClick>(
+          "detailsButtonClick")
+      .SetMethod<&NetErrorPageController::DiagnoseErrorsButtonClick>(
+          "diagnoseErrorsButtonClick")
+      .SetMethod<&NetErrorPageController::PortalSigninButtonClick>(
+          "portalSigninButtonClick")
+      .SetMethod<&NetErrorPageController::TrackEasterEgg>("trackEasterEgg")
+      .SetMethod<&NetErrorPageController::UpdateEasterEggHighScore>(
+          "updateEasterEggHighScore")
+      .SetMethod<&NetErrorPageController::ResetEasterEggHighScore>(
+          "resetEasterEggHighScore")
+      .SetMethod<&NetErrorPageController::SavePageForLater>("savePageForLater")
+      .SetMethod<&NetErrorPageController::CancelSavePage>("cancelSavePage");
 }
 
 const gin::WrapperInfo* NetErrorPageController::wrapper_info() const {

@@ -53,14 +53,13 @@ gin::ObjectTemplateBuilder PDFPluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
       gin::Wrappable<PDFPluginPlaceholder>::GetObjectTemplateBuilder(isolate)
-          .SetMethod<void (PDFPluginPlaceholder::*)()>(
-              "openPDF", &PDFPluginPlaceholder::OpenPDFCallback);
+          .SetMethod<&PDFPluginPlaceholder::OpenPDFCallback>("openPDF");
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePluginPlaceholderTesting)) {
-    builder.SetMethod<void (PDFPluginPlaceholder::*)()>(
-        "notifyPlaceholderReadyForTesting",
-        &PDFPluginPlaceholder::NotifyPlaceholderReadyForTestingCallback);
+    builder.SetMethod<static_cast<void (PDFPluginPlaceholder::*)()>(
+        &PDFPluginPlaceholder::NotifyPlaceholderReadyForTestingCallback)>(
+        "notifyPlaceholderReadyForTesting");
   }
 
   return builder;

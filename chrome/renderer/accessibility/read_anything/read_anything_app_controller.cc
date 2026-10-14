@@ -1228,281 +1228,282 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
              isolate)
-      .SetProperty("rootId", &ReadAnythingAppController::RootId)
-      .SetProperty("startNodeId", &ReadAnythingAppController::StartNodeId)
-      .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)
-      .SetProperty("endNodeId", &ReadAnythingAppController::EndNodeId)
-      .SetProperty("endOffset", &ReadAnythingAppController::EndOffset)
-      .SetProperty("hasValidSelection",
-                   &ReadAnythingAppController::HasValidSelection)
-      .SetProperty("fontName", &ReadAnythingAppController::FontName)
-      .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
-      .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
-      .SetProperty("imagesEnabled", &ReadAnythingAppController::ImagesEnabled)
-      .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
-      .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
-      .SetProperty("standardLineSpacing",
-                   &ReadAnythingAppController::StandardLineSpacing)
-      .SetProperty("looseLineSpacing",
-                   &ReadAnythingAppController::LooseLineSpacing)
-      .SetProperty("veryLooseLineSpacing",
-                   &ReadAnythingAppController::VeryLooseLineSpacing)
-      .SetProperty("standardLetterSpacing",
-                   &ReadAnythingAppController::StandardLetterSpacing)
-      .SetProperty("wideLetterSpacing",
-                   &ReadAnythingAppController::WideLetterSpacing)
-      .SetProperty("veryWideLetterSpacing",
-                   &ReadAnythingAppController::VeryWideLetterSpacing)
-      .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
-      .SetProperty("highlightGranularity",
-                   &ReadAnythingAppController::HighlightGranularity)
-      .SetProperty("lastNonDisabledLineFocus",
-                   &ReadAnythingAppController::LastNonDisabledLineFocus)
-      .SetProperty("isLineFocusOn", &ReadAnythingAppController::IsLineFocusOn)
-      .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
-      .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
-      .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
-      .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
-      .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
-      .SetProperty("highContrastTheme",
-                   &ReadAnythingAppController::HighContrastTheme)
-      .SetProperty("lowContrastLightTheme",
-                   &ReadAnythingAppController::LowContrastLightTheme)
-      .SetProperty("lowContrastDarkTheme",
-                   &ReadAnythingAppController::LowContrastDarkTheme)
-      .SetProperty("autoHighlighting",
-                   &ReadAnythingAppController::AutoHighlighting)
-      .SetProperty("wordHighlighting",
-                   &ReadAnythingAppController::WordHighlighting)
-      .SetProperty("phraseHighlighting",
-                   &ReadAnythingAppController::PhraseHighlighting)
-      .SetProperty("sentenceHighlighting",
-                   &ReadAnythingAppController::SentenceHighlighting)
-      .SetProperty("noHighlighting", &ReadAnythingAppController::NoHighlighting)
-      .SetProperty("pauseButtonStopSource",
-                   &ReadAnythingAppController::PauseButtonStopSource)
-      .SetProperty("keyboardShortcutStopSource",
-                   &ReadAnythingAppController::KeyboardShortcutStopSource)
-      .SetProperty("engineInterruptStopSource",
-                   &ReadAnythingAppController::EngineInterruptStopSource)
-      .SetProperty("engineErrorStopSource",
-                   &ReadAnythingAppController::EngineErrorStopSource)
-      .SetProperty("contentFinishedStopSource",
-                   &ReadAnythingAppController::ContentFinishedStopSource)
-      .SetProperty("isSpeechTreeInitialized",
-                   &ReadAnythingAppController::IsSpeechTreeInitialized)
-      .SetProperty(
-          "unexpectedUpdateContentStopSource",
-          &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
-      .SetProperty("lineFocusOff", &ReadAnythingAppController::LineFocusOff)
-      .SetProperty("lineFocusSmallStaticWindow",
-                   &ReadAnythingAppController::LineFocusSmallStaticWindow)
-      .SetProperty("lineFocusMediumStaticWindow",
-                   &ReadAnythingAppController::LineFocusMediumStaticWindow)
-      .SetProperty("lineFocusLargeStaticWindow",
-                   &ReadAnythingAppController::LineFocusLargeStaticWindow)
-      .SetProperty("lineFocusSmallCursorWindow",
-                   &ReadAnythingAppController::LineFocusSmallCursorWindow)
-      .SetProperty("lineFocusMediumCursorWindow",
-                   &ReadAnythingAppController::LineFocusMediumCursorWindow)
-      .SetProperty("lineFocusLargeCursorWindow",
-                   &ReadAnythingAppController::LineFocusLargeCursorWindow)
-      .SetProperty("lineFocusStaticLine",
-                   &ReadAnythingAppController::LineFocusStaticLine)
-      .SetProperty("lineFocusCursorLine",
-                   &ReadAnythingAppController::LineFocusCursorLine)
-      .SetProperty("maxLineWidth", &ReadAnythingAppController::MaxLineWidth)
-      .SetProperty("activePresentationState",
-                   &ReadAnythingAppController::ActivePresentationState)
-      .SetProperty("inHiddenPresentationState",
-                   &ReadAnythingAppController::InHiddenPresentationState)
-      .SetProperty("inSidePanelPresentationState",
-                   &ReadAnythingAppController::InSidePanelPresentationState)
-      .SetProperty(
-          "inImmersiveOverlayPresentationState",
-          &ReadAnythingAppController::InImmersiveOverlayPresentationState)
-      .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
-      .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
-      .SetProperty("isPdf", &ReadAnythingAppController::IsPdf)
-      .SetProperty("isContentTranslated",
-                   &ReadAnythingAppController::IsContentTranslated)
-      .SetProperty("isImprovedReadAloudEnabled",
-                   &ReadAnythingAppController::IsImprovedReadAloudEnabled)
-      .SetProperty("isReadAnythingImprovedUiEnabled",
-                   &ReadAnythingAppController::IsReadAnythingImprovedUiEnabled)
-      .SetProperty(
-          "isReadAnythingTranslateEntryPointEnabled",
-          &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled)
-      .SetProperty("isTranslatePdfEnabled",
-                   &ReadAnythingAppController::IsTranslatePdfEnabled)
-      .SetProperty("isReadAnythingReadAloudExperimentalPlaybackUiEnabled",
-                   &ReadAnythingAppController::
-                       IsReadAnythingReadAloudExperimentalPlaybackUiEnabled)
-      .SetProperty("isReadabilityEnabled",
-                   &ReadAnythingAppController::IsReadabilityEnabled)
-      .SetProperty("isReadabilitySelectTextEnabled",
-                   &ReadAnythingAppController::IsReadabilitySelectTextEnabled)
-      .SetProperty("activeDistillationMethod",
-                   &ReadAnythingAppController::GetDistillationMethod)
-      .SetProperty("isLineFocusEnabled",
-                   &ReadAnythingAppController::IsLineFocusEnabled)
-      .SetProperty("baseLanguageForSpeech",
-                   &ReadAnythingAppController::GetLanguageCodeForSpeech)
-      .SetProperty("requiresDistillation",
-                   &ReadAnythingAppController::RequiresDistillation)
-      .SetProperty("defaultLanguageForSpeech",
-                   &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
-      .SetProperty("isPhraseHighlightingEnabled",
-                   &ReadAnythingAppController::IsPhraseHighlightingEnabled)
-      .SetProperty("htmlTitle",
-                   &ReadAnythingAppController::GetDomDistillerTitle)
-      .SetProperty("documentUrl", &ReadAnythingAppController::GetDocumentUrl)
-      .SetProperty("htmlContent",
-                   &ReadAnythingAppController::GetDomDistillerContentHtml)
-      .SetProperty("axTreeAnchors",
-                   &ReadAnythingAppController::GetDomDistillerAnchors)
-      .SetProperty("distillationTypeScreen2x",
-                   &ReadAnythingAppController::DistillationTypeScreen2x)
-      .SetProperty("distillationTypeReadability",
-                   &ReadAnythingAppController::DistillationTypeReadability)
-      .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
-      .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
-      .SetMethod("getTextDirection",
-                 &ReadAnythingAppController::GetTextDirection)
-      .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
-      .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
-      .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
-      .SetMethod("getPrefixText", &ReadAnythingAppController::GetPrefixText)
-      .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
-      .SetMethod("getHtmlId", &ReadAnythingAppController::GetHtmlId)
-      .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
-      .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
-      .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
-      .SetMethod("isSuperscript", &ReadAnythingAppController::IsSuperscript)
-      .SetMethod("isSubscript", &ReadAnythingAppController::IsSubscript)
-      .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
-      .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
-      .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
-      .SetMethod("onNoTextContent", &ReadAnythingAppController::OnNoTextContent)
-      .SetMethod("updateWordsSeen", &ReadAnythingAppController::UpdateWordsSeen)
-      .SetMethod("logEmptyState", &ReadAnythingAppController::LogEmptyState)
-      .SetMethod("updateWordsHeard",
-                 &ReadAnythingAppController::UpdateWordsHeard)
-      .SetMethod("onFontSizeChanged",
-                 &ReadAnythingAppController::OnFontSizeChanged)
-      .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
-      .SetMethod("onImagesEnabledToggled",
-                 &ReadAnythingAppController::OnImagesEnabledToggled)
-      .SetMethod("onLinksEnabledToggled",
-                 &ReadAnythingAppController::OnLinksEnabledToggled)
-      .SetMethod("onTranslationRequested",
-                 &ReadAnythingAppController::OnTranslationRequested)
-      .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
-      .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
-      .SetMethod("onLetterSpacingChange",
-                 &ReadAnythingAppController::OnLetterSpacingChange)
-      .SetMethod("onLineSpacingChange",
-                 &ReadAnythingAppController::OnLineSpacingChange)
-      .SetMethod("onThemeChange", &ReadAnythingAppController::OnThemeChange)
-      .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
-      .SetMethod("onSpeechRateChange",
-                 &ReadAnythingAppController::OnSpeechRateChange)
-      .SetMethod("getStoredVoice", &ReadAnythingAppController::GetStoredVoice)
-      .SetMethod("onVoiceChange", &ReadAnythingAppController::OnVoiceChange)
-      .SetMethod("logExtensionState",
-                 &ReadAnythingAppController::LogExtensionState)
-      .SetMethod("onLanguagePrefChange",
-                 &ReadAnythingAppController::OnLanguagePrefChange)
-      .SetMethod("getLanguagesEnabledInPref",
-                 &ReadAnythingAppController::GetLanguagesEnabledInPref)
-      .SetMethod("onHighlightGranularityChanged",
-                 &ReadAnythingAppController::OnHighlightGranularityChanged)
-      .SetMethod("onLineFocusChanged",
-                 &ReadAnythingAppController::OnLineFocusChanged)
-      .SetMethod("getLineSpacingValue",
-                 &ReadAnythingAppController::GetLineSpacingValue)
-      .SetMethod("getLetterSpacingValue",
-                 &ReadAnythingAppController::GetLetterSpacingValue)
-      .SetMethod("onSelectionChange",
-                 &ReadAnythingAppController::OnSelectionChange)
-      .SetMethod("onCollapseSelection",
-                 &ReadAnythingAppController::OnCollapseSelection)
-      .SetMethod("onDistilled", &ReadAnythingAppController::OnDistilled)
-      .SetProperty("supportedFonts",
-                   &ReadAnythingAppController::GetSupportedFonts)
-      .SetProperty("allFonts", &ReadAnythingAppController::GetAllFonts)
-      .SetMethod("initAxPositionWithNode",
-                 &ReadAnythingAppController::InitAXPositionWithNode)
-      .SetMethod("resetGranularityIndex",
-                 &ReadAnythingAppController::ResetGranularityIndex)
-      .SetMethod("getCurrentTextContent",
-                 &ReadAnythingAppController::GetCurrentTextContent)
-      .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
-      .SetMethod("getOriginalPageMetrics",
-                 &ReadAnythingAppController::GetOriginalPageMetrics)
-      .SetMethod("getKeyPointsRegex",
-                 &ReadAnythingAppController::GetKeyPointsRegex)
-      .SetMethod("onIsSpeechActiveChanged",
-                 &ReadAnythingAppController::OnIsSpeechActiveChanged)
-      .SetMethod("onIsAudioCurrentlyPlayingChanged",
-                 &ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged)
-      .SetMethod("onAiPlaybackStateChanged",
-                 &ReadAnythingAppController::OnAiPlaybackStateChanged)
-      .SetMethod("getAccessibleBoundary",
-                 &ReadAnythingAppController::GetAccessibleBoundary)
-      .SetMethod("movePositionToNextGranularity",
-                 &ReadAnythingAppController::MovePositionToNextGranularity)
-      .SetMethod("movePositionToPreviousGranularity",
-                 &ReadAnythingAppController::MovePositionToPreviousGranularity)
-      .SetMethod("requestImageData",
-                 &ReadAnythingAppController::RequestImageData)
-      .SetMethod("getImageBitmap", &ReadAnythingAppController::GetImageBitmap)
-      .SetMethod("getDisplayNameForLocale",
-                 &ReadAnythingAppController::GetDisplayNameForLocale)
-      .SetMethod("incrementMetricCount",
-                 &ReadAnythingAppController::IncrementMetricCount)
-      .SetMethod("logSpeechStop", &ReadAnythingAppController::LogSpeechStop)
-      .SetMethod("startLineFocusSession",
-                 &ReadAnythingAppController::StartLineFocusSession)
-      .SetMethod("logLineFocusSession",
-                 &ReadAnythingAppController::LogLineFocusSession)
-      .SetMethod("addLineFocusScrollDistance",
-                 &ReadAnythingAppController::AddLineFocusScrollDistance)
-      .SetMethod("addLineFocusMouseDistance",
-                 &ReadAnythingAppController::AddLineFocusMouseDistance)
-      .SetMethod("incrementLineFocusKeyboardLines",
-                 &ReadAnythingAppController::IncrementLineFocusKeyboardLines)
-      .SetMethod("incrementLineFocusSpeechLines",
-                 &ReadAnythingAppController::IncrementLineFocusSpeechLines)
-      .SetMethod("sendGetVoicePackInfoRequest",
-                 &ReadAnythingAppController::SendGetVoicePackInfoRequest)
-      .SetMethod("sendInstallVoicePackRequest",
-                 &ReadAnythingAppController::SendInstallVoicePackRequest)
-      .SetMethod("sendUninstallVoiceRequest",
-                 &ReadAnythingAppController::SendUninstallVoiceRequest)
-      .SetMethod("getCurrentTextSegments",
-                 &ReadAnythingAppController::GetCurrentTextSegments)
-      .SetMethod("getHighlightForCurrentSegmentIndex",
-                 &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
-      .SetMethod("getValidatedFontName",
-                 &ReadAnythingAppController::GetValidatedFontName)
-      .SetMethod("sendGetPresentationStateRequest",
-                 &ReadAnythingAppController::SendGetPresentationStateRequest)
-      .SetMethod("togglePresentation",
-                 &ReadAnythingAppController::TogglePresentation)
-      .SetMethod("close", &ReadAnythingAppController::CloseUI)
-      .SetMethod("togglePinState", &ReadAnythingAppController::TogglePinState)
-      .SetMethod("sendPinStateRequest",
-                 &ReadAnythingAppController::SendPinStateRequest)
-      .SetMethod("onSpeechEngineFirstStall",
-                 &ReadAnythingAppController::OnSpeechEngineFirstStall)
-      .SetMethod("onSpeechEngineStalled",
-                 &ReadAnythingAppController::OnSpeechEngineStalled)
-      .SetMethod("onRenderedTextBlocksAvailable",
-                 &ReadAnythingAppController::OnRenderedTextBlocksAvailable)
-      .SetMethod("getAxMapping", &ReadAnythingAppController::GetAXMapping)
-      .SetMethod("attemptLogEarlySelection",
-                 &ReadAnythingAppController::AttemptLogEarlySelection);
+      .SetProperty<&ReadAnythingAppController::RootId>("rootId")
+      .SetProperty<&ReadAnythingAppController::StartNodeId>("startNodeId")
+      .SetProperty<&ReadAnythingAppController::StartOffset>("startOffset")
+      .SetProperty<&ReadAnythingAppController::EndNodeId>("endNodeId")
+      .SetProperty<&ReadAnythingAppController::EndOffset>("endOffset")
+      .SetProperty<&ReadAnythingAppController::HasValidSelection>(
+          "hasValidSelection")
+      .SetProperty<&ReadAnythingAppController::FontName>("fontName")
+      .SetProperty<&ReadAnythingAppController::FontSize>("fontSize")
+      .SetProperty<&ReadAnythingAppController::LinksEnabled>("linksEnabled")
+      .SetProperty<&ReadAnythingAppController::ImagesEnabled>("imagesEnabled")
+      .SetProperty<&ReadAnythingAppController::LetterSpacing>("letterSpacing")
+      .SetProperty<&ReadAnythingAppController::LineSpacing>("lineSpacing")
+      .SetProperty<&ReadAnythingAppController::StandardLineSpacing>(
+          "standardLineSpacing")
+      .SetProperty<&ReadAnythingAppController::LooseLineSpacing>(
+          "looseLineSpacing")
+      .SetProperty<&ReadAnythingAppController::VeryLooseLineSpacing>(
+          "veryLooseLineSpacing")
+      .SetProperty<&ReadAnythingAppController::StandardLetterSpacing>(
+          "standardLetterSpacing")
+      .SetProperty<&ReadAnythingAppController::WideLetterSpacing>(
+          "wideLetterSpacing")
+      .SetProperty<&ReadAnythingAppController::VeryWideLetterSpacing>(
+          "veryWideLetterSpacing")
+      .SetProperty<&ReadAnythingAppController::ColorTheme>("colorTheme")
+      .SetProperty<&ReadAnythingAppController::HighlightGranularity>(
+          "highlightGranularity")
+      .SetProperty<&ReadAnythingAppController::LastNonDisabledLineFocus>(
+          "lastNonDisabledLineFocus")
+      .SetProperty<&ReadAnythingAppController::IsLineFocusOn>("isLineFocusOn")
+      .SetProperty<&ReadAnythingAppController::DefaultTheme>("defaultTheme")
+      .SetProperty<&ReadAnythingAppController::LightTheme>("lightTheme")
+      .SetProperty<&ReadAnythingAppController::DarkTheme>("darkTheme")
+      .SetProperty<&ReadAnythingAppController::YellowTheme>("yellowTheme")
+      .SetProperty<&ReadAnythingAppController::BlueTheme>("blueTheme")
+      .SetProperty<&ReadAnythingAppController::HighContrastTheme>(
+          "highContrastTheme")
+      .SetProperty<&ReadAnythingAppController::LowContrastLightTheme>(
+          "lowContrastLightTheme")
+      .SetProperty<&ReadAnythingAppController::LowContrastDarkTheme>(
+          "lowContrastDarkTheme")
+      .SetProperty<&ReadAnythingAppController::AutoHighlighting>(
+          "autoHighlighting")
+      .SetProperty<&ReadAnythingAppController::WordHighlighting>(
+          "wordHighlighting")
+      .SetProperty<&ReadAnythingAppController::PhraseHighlighting>(
+          "phraseHighlighting")
+      .SetProperty<&ReadAnythingAppController::SentenceHighlighting>(
+          "sentenceHighlighting")
+      .SetProperty<&ReadAnythingAppController::NoHighlighting>("noHighlighting")
+      .SetProperty<&ReadAnythingAppController::PauseButtonStopSource>(
+          "pauseButtonStopSource")
+      .SetProperty<&ReadAnythingAppController::KeyboardShortcutStopSource>(
+          "keyboardShortcutStopSource")
+      .SetProperty<&ReadAnythingAppController::EngineInterruptStopSource>(
+          "engineInterruptStopSource")
+      .SetProperty<&ReadAnythingAppController::EngineErrorStopSource>(
+          "engineErrorStopSource")
+      .SetProperty<&ReadAnythingAppController::ContentFinishedStopSource>(
+          "contentFinishedStopSource")
+      .SetProperty<&ReadAnythingAppController::IsSpeechTreeInitialized>(
+          "isSpeechTreeInitialized")
+      .SetProperty<
+          &ReadAnythingAppController::UnexpectedUpdateContentStopSource>(
+          "unexpectedUpdateContentStopSource")
+      .SetProperty<&ReadAnythingAppController::LineFocusOff>("lineFocusOff")
+      .SetProperty<&ReadAnythingAppController::LineFocusSmallStaticWindow>(
+          "lineFocusSmallStaticWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusMediumStaticWindow>(
+          "lineFocusMediumStaticWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusLargeStaticWindow>(
+          "lineFocusLargeStaticWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusSmallCursorWindow>(
+          "lineFocusSmallCursorWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusMediumCursorWindow>(
+          "lineFocusMediumCursorWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusLargeCursorWindow>(
+          "lineFocusLargeCursorWindow")
+      .SetProperty<&ReadAnythingAppController::LineFocusStaticLine>(
+          "lineFocusStaticLine")
+      .SetProperty<&ReadAnythingAppController::LineFocusCursorLine>(
+          "lineFocusCursorLine")
+      .SetProperty<&ReadAnythingAppController::MaxLineWidth>("maxLineWidth")
+      .SetProperty<&ReadAnythingAppController::ActivePresentationState>(
+          "activePresentationState")
+      .SetProperty<&ReadAnythingAppController::InHiddenPresentationState>(
+          "inHiddenPresentationState")
+      .SetProperty<&ReadAnythingAppController::InSidePanelPresentationState>(
+          "inSidePanelPresentationState")
+      .SetProperty<
+          &ReadAnythingAppController::InImmersiveOverlayPresentationState>(
+          "inImmersiveOverlayPresentationState")
+      .SetProperty<&ReadAnythingAppController::SpeechRate>("speechRate")
+      .SetProperty<&ReadAnythingAppController::IsGoogleDocs>("isGoogleDocs")
+      .SetProperty<&ReadAnythingAppController::IsPdf>("isPdf")
+      .SetProperty<&ReadAnythingAppController::IsContentTranslated>(
+          "isContentTranslated")
+      .SetProperty<&ReadAnythingAppController::IsImprovedReadAloudEnabled>(
+          "isImprovedReadAloudEnabled")
+      .SetProperty<&ReadAnythingAppController::IsReadAnythingImprovedUiEnabled>(
+          "isReadAnythingImprovedUiEnabled")
+      .SetProperty<
+          &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled>(
+          "isReadAnythingTranslateEntryPointEnabled")
+      .SetProperty<&ReadAnythingAppController::IsTranslatePdfEnabled>(
+          "isTranslatePdfEnabled")
+      .SetProperty<&ReadAnythingAppController::
+                       IsReadAnythingReadAloudExperimentalPlaybackUiEnabled>(
+          "isReadAnythingReadAloudExperimentalPlaybackUiEnabled")
+      .SetProperty<&ReadAnythingAppController::IsReadabilityEnabled>(
+          "isReadabilityEnabled")
+      .SetProperty<&ReadAnythingAppController::IsReadabilitySelectTextEnabled>(
+          "isReadabilitySelectTextEnabled")
+      .SetProperty<&ReadAnythingAppController::GetDistillationMethod>(
+          "activeDistillationMethod")
+      .SetProperty<&ReadAnythingAppController::IsLineFocusEnabled>(
+          "isLineFocusEnabled")
+      .SetProperty<&ReadAnythingAppController::GetLanguageCodeForSpeech>(
+          "baseLanguageForSpeech")
+      .SetProperty<&ReadAnythingAppController::RequiresDistillation>(
+          "requiresDistillation")
+      .SetProperty<&ReadAnythingAppController::GetDefaultLanguageCodeForSpeech>(
+          "defaultLanguageForSpeech")
+      .SetProperty<&ReadAnythingAppController::IsPhraseHighlightingEnabled>(
+          "isPhraseHighlightingEnabled")
+      .SetProperty<&ReadAnythingAppController::GetDomDistillerTitle>(
+          "htmlTitle")
+      .SetProperty<&ReadAnythingAppController::GetDocumentUrl>("documentUrl")
+      .SetProperty<&ReadAnythingAppController::GetDomDistillerContentHtml>(
+          "htmlContent")
+      .SetProperty<&ReadAnythingAppController::GetDomDistillerAnchors>(
+          "axTreeAnchors")
+      .SetProperty<&ReadAnythingAppController::DistillationTypeScreen2x>(
+          "distillationTypeScreen2x")
+      .SetProperty<&ReadAnythingAppController::DistillationTypeReadability>(
+          "distillationTypeReadability")
+      .SetMethod<&ReadAnythingAppController::IsHighlightOn>("isHighlightOn")
+      .SetMethod<&ReadAnythingAppController::GetChildren>("getChildren")
+      .SetMethod<&ReadAnythingAppController::GetTextDirection>(
+          "getTextDirection")
+      .SetMethod<&ReadAnythingAppController::GetHtmlTag>("getHtmlTag")
+      .SetMethod<&ReadAnythingAppController::GetLanguage>("getLanguage")
+      .SetMethod<&ReadAnythingAppController::GetTextContent>("getTextContent")
+      .SetMethod<&ReadAnythingAppController::GetPrefixText>("getPrefixText")
+      .SetMethod<&ReadAnythingAppController::GetUrl>("getUrl")
+      .SetMethod<&ReadAnythingAppController::GetHtmlId>("getHtmlId")
+      .SetMethod<&ReadAnythingAppController::GetAltText>("getAltText")
+      .SetMethod<&ReadAnythingAppController::ShouldBold>("shouldBold")
+      .SetMethod<&ReadAnythingAppController::IsOverline>("isOverline")
+      .SetMethod<&ReadAnythingAppController::IsSuperscript>("isSuperscript")
+      .SetMethod<&ReadAnythingAppController::IsSubscript>("isSubscript")
+      .SetMethod<&ReadAnythingAppController::IsLeafNode>("isLeafNode")
+      .SetMethod<&ReadAnythingAppController::OnConnected>("onConnected")
+      .SetMethod<&ReadAnythingAppController::OnCopy>("onCopy")
+      .SetMethod<&ReadAnythingAppController::OnNoTextContent>("onNoTextContent")
+      .SetMethod<&ReadAnythingAppController::UpdateWordsSeen>("updateWordsSeen")
+      .SetMethod<&ReadAnythingAppController::LogEmptyState>("logEmptyState")
+      .SetMethod<&ReadAnythingAppController::UpdateWordsHeard>(
+          "updateWordsHeard")
+      .SetMethod<&ReadAnythingAppController::OnFontSizeChanged>(
+          "onFontSizeChanged")
+      .SetMethod<&ReadAnythingAppController::OnFontSizeReset>("onFontSizeReset")
+      .SetMethod<&ReadAnythingAppController::OnImagesEnabledToggled>(
+          "onImagesEnabledToggled")
+      .SetMethod<&ReadAnythingAppController::OnLinksEnabledToggled>(
+          "onLinksEnabledToggled")
+      .SetMethod<&ReadAnythingAppController::OnTranslationRequested>(
+          "onTranslationRequested")
+      .SetMethod<&ReadAnythingAppController::OnScroll>("onScroll")
+      .SetMethod<&ReadAnythingAppController::OnLinkClicked>("onLinkClicked")
+      .SetMethod<&ReadAnythingAppController::OnLetterSpacingChange>(
+          "onLetterSpacingChange")
+      .SetMethod<&ReadAnythingAppController::OnLineSpacingChange>(
+          "onLineSpacingChange")
+      .SetMethod<&ReadAnythingAppController::OnThemeChange>("onThemeChange")
+      .SetMethod<&ReadAnythingAppController::OnFontChange>("onFontChange")
+      .SetMethod<&ReadAnythingAppController::OnSpeechRateChange>(
+          "onSpeechRateChange")
+      .SetMethod<&ReadAnythingAppController::GetStoredVoice>("getStoredVoice")
+      .SetMethod<&ReadAnythingAppController::OnVoiceChange>("onVoiceChange")
+      .SetMethod<&ReadAnythingAppController::LogExtensionState>(
+          "logExtensionState")
+      .SetMethod<&ReadAnythingAppController::OnLanguagePrefChange>(
+          "onLanguagePrefChange")
+      .SetMethod<&ReadAnythingAppController::GetLanguagesEnabledInPref>(
+          "getLanguagesEnabledInPref")
+      .SetMethod<&ReadAnythingAppController::OnHighlightGranularityChanged>(
+          "onHighlightGranularityChanged")
+      .SetMethod<&ReadAnythingAppController::OnLineFocusChanged>(
+          "onLineFocusChanged")
+      .SetMethod<&ReadAnythingAppController::GetLineSpacingValue>(
+          "getLineSpacingValue")
+      .SetMethod<&ReadAnythingAppController::GetLetterSpacingValue>(
+          "getLetterSpacingValue")
+      .SetMethod<&ReadAnythingAppController::OnSelectionChange>(
+          "onSelectionChange")
+      .SetMethod<&ReadAnythingAppController::OnCollapseSelection>(
+          "onCollapseSelection")
+      .SetMethod<&ReadAnythingAppController::OnDistilled>("onDistilled")
+      .SetProperty<&ReadAnythingAppController::GetSupportedFonts>(
+          "supportedFonts")
+      .SetProperty<&ReadAnythingAppController::GetAllFonts>("allFonts")
+      .SetMethod<&ReadAnythingAppController::InitAXPositionWithNode>(
+          "initAxPositionWithNode")
+      .SetMethod<&ReadAnythingAppController::ResetGranularityIndex>(
+          "resetGranularityIndex")
+      .SetMethod<&ReadAnythingAppController::GetCurrentTextContent>(
+          "getCurrentTextContent")
+      .SetMethod<&ReadAnythingAppController::ShouldShowUI>("shouldShowUi")
+      .SetMethod<&ReadAnythingAppController::GetOriginalPageMetrics>(
+          "getOriginalPageMetrics")
+      .SetMethod<&ReadAnythingAppController::GetKeyPointsRegex>(
+          "getKeyPointsRegex")
+      .SetMethod<&ReadAnythingAppController::OnIsSpeechActiveChanged>(
+          "onIsSpeechActiveChanged")
+      .SetMethod<&ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged>(
+          "onIsAudioCurrentlyPlayingChanged")
+      .SetMethod<&ReadAnythingAppController::OnAiPlaybackStateChanged>(
+          "onAiPlaybackStateChanged")
+      .SetMethod<&ReadAnythingAppController::GetAccessibleBoundary>(
+          "getAccessibleBoundary")
+      .SetMethod<&ReadAnythingAppController::MovePositionToNextGranularity>(
+          "movePositionToNextGranularity")
+      .SetMethod<&ReadAnythingAppController::MovePositionToPreviousGranularity>(
+          "movePositionToPreviousGranularity")
+      .SetMethod<&ReadAnythingAppController::RequestImageData>(
+          "requestImageData")
+      .SetMethod<&ReadAnythingAppController::GetImageBitmap>("getImageBitmap")
+      .SetMethod<&ReadAnythingAppController::GetDisplayNameForLocale>(
+          "getDisplayNameForLocale")
+      .SetMethod<&ReadAnythingAppController::IncrementMetricCount>(
+          "incrementMetricCount")
+      .SetMethod<&ReadAnythingAppController::LogSpeechStop>("logSpeechStop")
+      .SetMethod<&ReadAnythingAppController::StartLineFocusSession>(
+          "startLineFocusSession")
+      .SetMethod<&ReadAnythingAppController::LogLineFocusSession>(
+          "logLineFocusSession")
+      .SetMethod<&ReadAnythingAppController::AddLineFocusScrollDistance>(
+          "addLineFocusScrollDistance")
+      .SetMethod<&ReadAnythingAppController::AddLineFocusMouseDistance>(
+          "addLineFocusMouseDistance")
+      .SetMethod<&ReadAnythingAppController::IncrementLineFocusKeyboardLines>(
+          "incrementLineFocusKeyboardLines")
+      .SetMethod<&ReadAnythingAppController::IncrementLineFocusSpeechLines>(
+          "incrementLineFocusSpeechLines")
+      .SetMethod<&ReadAnythingAppController::SendGetVoicePackInfoRequest>(
+          "sendGetVoicePackInfoRequest")
+      .SetMethod<&ReadAnythingAppController::SendInstallVoicePackRequest>(
+          "sendInstallVoicePackRequest")
+      .SetMethod<&ReadAnythingAppController::SendUninstallVoiceRequest>(
+          "sendUninstallVoiceRequest")
+      .SetMethod<&ReadAnythingAppController::GetCurrentTextSegments>(
+          "getCurrentTextSegments")
+      .SetMethod<
+          &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex>(
+          "getHighlightForCurrentSegmentIndex")
+      .SetMethod<&ReadAnythingAppController::GetValidatedFontName>(
+          "getValidatedFontName")
+      .SetMethod<&ReadAnythingAppController::SendGetPresentationStateRequest>(
+          "sendGetPresentationStateRequest")
+      .SetMethod<&ReadAnythingAppController::TogglePresentation>(
+          "togglePresentation")
+      .SetMethod<&ReadAnythingAppController::CloseUI>("close")
+      .SetMethod<&ReadAnythingAppController::TogglePinState>("togglePinState")
+      .SetMethod<&ReadAnythingAppController::SendPinStateRequest>(
+          "sendPinStateRequest")
+      .SetMethod<&ReadAnythingAppController::OnSpeechEngineFirstStall>(
+          "onSpeechEngineFirstStall")
+      .SetMethod<&ReadAnythingAppController::OnSpeechEngineStalled>(
+          "onSpeechEngineStalled")
+      .SetMethod<&ReadAnythingAppController::OnRenderedTextBlocksAvailable>(
+          "onRenderedTextBlocksAvailable")
+      .SetMethod<&ReadAnythingAppController::GetAXMapping>("getAxMapping")
+      .SetMethod<&ReadAnythingAppController::AttemptLogEarlySelection>(
+          "attemptLogEarlySelection");
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {

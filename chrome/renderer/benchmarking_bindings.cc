@@ -172,22 +172,22 @@ gin::ObjectTemplateBuilder BenchmarkingBindings::GetObjectTemplateBuilder(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           variations::switches::kEnableBenchmarkingApi)) {
-    builder.SetMethod("isSingleProcess", &BenchmarkingBindings::IsSingleProcess)
-        .SetMethod("getRendererPid", &BenchmarkingBindings::GetRendererPid)
-        .SetMethod("getRendererMainTid",
-                   &BenchmarkingBindings::GetRendererMainTid)
-        .SetMethod("hiResTime", &BenchmarkingBindings::HiResTime)
-        .SetMethod("getMarkFunctions", &BenchmarkingBindings::GetMarkFunctions);
+    builder.SetMethod<&BenchmarkingBindings::IsSingleProcess>("isSingleProcess")
+        .SetMethod<&BenchmarkingBindings::GetRendererPid>("getRendererPid")
+        .SetMethod<&BenchmarkingBindings::GetRendererMainTid>(
+            "getRendererMainTid")
+        .SetMethod<&BenchmarkingBindings::HiResTime>("hiResTime")
+        .SetMethod<&BenchmarkingBindings::GetMarkFunctions>("getMarkFunctions");
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNetBenchmarking)) {
-    builder.SetMethod("clearCache", &BenchmarkingBindings::ClearCache)
-        .SetMethod("clearHostResolverCache",
-                   &BenchmarkingBindings::ClearHostResolverCache)
-        .SetMethod("clearPredictorCache",
-                   &BenchmarkingBindings::ClearPredictorCache)
-        .SetMethod("closeConnections", &BenchmarkingBindings::CloseConnections);
+    builder.SetMethod<&BenchmarkingBindings::ClearCache>("clearCache")
+        .SetMethod<&BenchmarkingBindings::ClearHostResolverCache>(
+            "clearHostResolverCache")
+        .SetMethod<&BenchmarkingBindings::ClearPredictorCache>(
+            "clearPredictorCache")
+        .SetMethod<&BenchmarkingBindings::CloseConnections>("closeConnections");
   }
 
   return builder;

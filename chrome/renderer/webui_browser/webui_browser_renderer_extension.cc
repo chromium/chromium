@@ -123,9 +123,9 @@ void WebUIBrowserRendererExtension::InjectScript() {
 
   v8::Local<v8::ObjectTemplate> browser_template =
       gin::ObjectTemplateBuilder(isolate)
-          .SetMethod("allowCustomElementRegistration",
-                     &AllowCustomElementNameRegistration)
-          .SetMethod("attachIframeGuest", &AttachIframeGuest)
+          .SetMethod<&AllowCustomElementNameRegistration>(
+              "allowCustomElementRegistration")
+          .SetMethod<&AttachIframeGuest>("attachIframeGuest")
           .Build();
   chrome_obj
       ->Set(context, gin::StringToV8(isolate, "browser"),

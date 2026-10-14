@@ -335,19 +335,19 @@ gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
       gin::Wrappable<ChromePluginPlaceholder>::GetObjectTemplateBuilder(isolate)
-          .SetMethod<void (ChromePluginPlaceholder::*)()>(
-              "hide", &ChromePluginPlaceholder::HideCallback)
-          .SetMethod<void (ChromePluginPlaceholder::*)()>(
-              "load", &ChromePluginPlaceholder::LoadCallback)
-          .SetMethod<void (ChromePluginPlaceholder::*)()>(
-              "didFinishLoading",
-              &ChromePluginPlaceholder::DidFinishLoadingCallback);
+          .SetMethod<static_cast<void (ChromePluginPlaceholder::*)()>(
+              &ChromePluginPlaceholder::HideCallback)>("hide")
+          .SetMethod<static_cast<void (ChromePluginPlaceholder::*)()>(
+              &ChromePluginPlaceholder::LoadCallback)>("load")
+          .SetMethod<static_cast<void (ChromePluginPlaceholder::*)()>(
+              &ChromePluginPlaceholder::DidFinishLoadingCallback)>(
+              "didFinishLoading");
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePluginPlaceholderTesting)) {
-    builder.SetMethod<void (ChromePluginPlaceholder::*)()>(
-        "notifyPlaceholderReadyForTesting",
-        &ChromePluginPlaceholder::NotifyPlaceholderReadyForTestingCallback);
+    builder.SetMethod<static_cast<void (ChromePluginPlaceholder::*)()>(
+        &ChromePluginPlaceholder::NotifyPlaceholderReadyForTestingCallback)>(
+        "notifyPlaceholderReadyForTesting");
   }
 
   return builder;

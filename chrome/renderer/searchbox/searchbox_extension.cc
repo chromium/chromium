@@ -410,14 +410,14 @@ SearchBoxBindings::~SearchBoxBindings() = default;
 gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<SearchBoxBindings>::GetObjectTemplateBuilder(isolate)
-      .SetProperty("rtl", &base::i18n::IsRTL)
-      .SetProperty("isFocused", &SearchBoxBindings::IsFocused)
-      .SetProperty("isKeyCaptureEnabled",
-                   &SearchBoxBindings::IsKeyCaptureEnabled)
-      .SetMethod("startCapturingKeyStrokes",
-                 &SearchBoxBindings::StartCapturingKeyStrokes)
-      .SetMethod("stopCapturingKeyStrokes",
-                 &SearchBoxBindings::StopCapturingKeyStrokes);
+      .SetProperty<&base::i18n::IsRTL>("rtl")
+      .SetProperty<&SearchBoxBindings::IsFocused>("isFocused")
+      .SetProperty<&SearchBoxBindings::IsKeyCaptureEnabled>(
+          "isKeyCaptureEnabled")
+      .SetMethod<&SearchBoxBindings::StartCapturingKeyStrokes>(
+          "startCapturingKeyStrokes")
+      .SetMethod<&SearchBoxBindings::StopCapturingKeyStrokes>(
+          "stopCapturingKeyStrokes");
 }
 
 const gin::WrapperInfo* SearchBoxBindings::wrapper_info() const {
@@ -507,22 +507,22 @@ NewTabPageBindings::~NewTabPageBindings() = default;
 gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<NewTabPageBindings>::GetObjectTemplateBuilder(isolate)
-      .SetProperty("isInputInProgress", &NewTabPageBindings::IsInputInProgress)
-      .SetProperty("mostVisited", &NewTabPageBindings::GetMostVisited)
-      .SetProperty("mostVisitedAvailable",
-                   &NewTabPageBindings::GetMostVisitedAvailable)
-      .SetProperty("ntpTheme", &NewTabPageBindings::GetNtpTheme)
+      .SetProperty<&NewTabPageBindings::IsInputInProgress>("isInputInProgress")
+      .SetProperty<&NewTabPageBindings::GetMostVisited>("mostVisited")
+      .SetProperty<&NewTabPageBindings::GetMostVisitedAvailable>(
+          "mostVisitedAvailable")
+      .SetProperty<&NewTabPageBindings::GetNtpTheme>("ntpTheme")
       // TODO(crbug.com/40656475): remove "themeBackgroundInfo" legacy
       // name when we're sure no third-party NTP needs it.
-      .SetProperty("themeBackgroundInfo", &NewTabPageBindings::GetNtpTheme)
-      .SetMethod("deleteMostVisitedItem",
-                 &NewTabPageBindings::DeleteMostVisitedItem)
-      .SetMethod("undoAllMostVisitedDeletions",
-                 &NewTabPageBindings::UndoAllMostVisitedDeletions)
-      .SetMethod("undoMostVisitedDeletion",
-                 &NewTabPageBindings::UndoMostVisitedDeletion)
-      .SetMethod("getMostVisitedItemData",
-                 &NewTabPageBindings::GetMostVisitedItemData);
+      .SetProperty<&NewTabPageBindings::GetNtpTheme>("themeBackgroundInfo")
+      .SetMethod<&NewTabPageBindings::DeleteMostVisitedItem>(
+          "deleteMostVisitedItem")
+      .SetMethod<&NewTabPageBindings::UndoAllMostVisitedDeletions>(
+          "undoAllMostVisitedDeletions")
+      .SetMethod<&NewTabPageBindings::UndoMostVisitedDeletion>(
+          "undoMostVisitedDeletion")
+      .SetMethod<&NewTabPageBindings::GetMostVisitedItemData>(
+          "getMostVisitedItemData");
 }
 
 const gin::WrapperInfo* NewTabPageBindings::wrapper_info() const {
