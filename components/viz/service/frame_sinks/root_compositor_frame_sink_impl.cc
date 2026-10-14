@@ -743,9 +743,16 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+  const bool use_mixed_fixed_interval_matcher =
+      features::IsMixedFixedIntervalMatcherEnabled();
+  // MixedFixedIntervalMatcher, registered below, also covers these.
+  if (!use_mixed_fixed_interval_matcher) {
+    matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+    if (supports_adaptive_refresh_rate_) {
+      matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+    }
+  }
   if (supports_adaptive_refresh_rate_) {
-    matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
     matchers.push_back(
         std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
   }
@@ -761,6 +768,15 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   if (enable_video_conference_matcher_) {
     matchers.push_back(std::make_unique<VideoConferenceMatcher>());
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // After VideoConferenceMatcher, so frames with multiple videos keep its
+  // vote (the fastest video's interval) instead of a common cadence of all
+  // streams, which can be a much higher refresh rate.
+  if (use_mixed_fixed_interval_matcher) {
+    matchers.push_back(std::make_unique<MixedFixedIntervalMatcher>());
+  }
+#endif
 
   FrameIntervalDecider::Settings settings = decider->settings();
   if (interval_decider_use_fixed_intervals_) {
