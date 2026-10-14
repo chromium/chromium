@@ -5,11 +5,15 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Default height of the logo in fullscreen signin -->
     <dimen name="fullscreen_signin_logo_default_height">110dp</dimen>
     <!-- Signin promo dimensions -->
     <dimen name="sync_promo_account_image_size">44dp</dimen>
+    <!-- sync_promo_account_image_size + 2 * (ai_tier_ring_thickness_large + ai_tier_ring_spacing) -->
+    <!-- TODO(crbug.com/522145863): Remove tools:ignore once used. -->
+    <dimen name="sync_promo_account_image_size_with_ai_tier_ring"
+        tools:ignore="UnusedResources">54dp</dimen>
     <dimen name="seamless_signin_promo_account_image_size_compact">40dp</dimen>
     <dimen name="signin_promo_desc_margin_top_signed_in_compact">6dp</dimen>
     <dimen name="signin_promo_button_margin_two_buttons">20dp</dimen>
