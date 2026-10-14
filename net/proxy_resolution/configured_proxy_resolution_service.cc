@@ -1324,6 +1324,7 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
         !pac_retry_throttler_.HasFailedDuringCurrentLoad()) {
       ResetPacRetryThrottler();
     }
+    net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
   } else {
     net_log.AddEventWithNetErrorCode(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
@@ -1366,6 +1367,10 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
       }
     }
 
+    // End the NetLog event before resetting the config, as synchronous
+    // re-initialization can destroy the completing request (and `net_log`).
+    net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
+
     if (reset_config) {
       ResetProxyConfig(false);
       if (!pending_requests_.empty()) {
@@ -1377,7 +1382,6 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
     }
   }
 
-  net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
   return result_code;
 }
 
