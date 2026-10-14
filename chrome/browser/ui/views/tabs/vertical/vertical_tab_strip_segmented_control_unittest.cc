@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/common/pref_names.h"
@@ -210,4 +211,10 @@ TEST_F(VerticalTabStripSegmentedControlTest, ContextMenuOnlyOnOrganizerButton) {
   EXPECT_EQ(model->GetCommandIdAt(0), IDC_TAB_SEARCH_TOGGLE_PIN);
   EXPECT_EQ(model->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_TAB_SEARCH_BUTTON_CXMENU_PIN));
+}
+
+TEST_F(VerticalTabStripSegmentedControlTest, BackgroundColor) {
+  ASSERT_NE(control()->GetBackground(), nullptr);
+  EXPECT_EQ(control()->GetBackground()->color(),
+            ui::ColorVariant(kColorNewTabButtonCRBackgroundFrameActive));
 }

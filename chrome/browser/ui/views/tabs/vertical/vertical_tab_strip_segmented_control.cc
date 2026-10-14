@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -57,7 +58,8 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
   CHECK(browser_);
   SetProperty(views::kElementIdentifierKey, kSegmentedControlElementId);
 
-  SetBackground(views::CreatePillBackground(ui::kColorSysSurface));
+  SetBackground(
+      views::CreatePillBackground(kColorNewTabButtonCRBackgroundFrameActive));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
@@ -196,10 +198,14 @@ void VerticalTabStripSegmentedControl::UpdateButtonIcons() {
 }
 
 void VerticalTabStripSegmentedControl::UpdateSegmentBackgrounds() {
+  const bool is_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+  const ui::ColorId container_bg_color =
+      is_active ? kColorNewTabButtonCRBackgroundFrameActive
+                : kColorNewTabButtonCRBackgroundFrameInactive;
+  SetBackground(views::CreatePillBackground(container_bg_color));
+
   const ui::ColorId active_bg_color =
-      GetWidget() && GetWidget()->ShouldPaintAsActive()
-          ? ui::kColorFrameActive
-          : ui::kColorFrameInactive;
+      is_active ? ui::kColorFrameActive : ui::kColorFrameInactive;
   auto update_segment_background = [&](Segment segment) {
     if (views::ImageButton* button = GetButton(segment)) {
       button->SetBackground(active_segment_ == segment
