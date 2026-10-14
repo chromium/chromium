@@ -54,12 +54,16 @@
 
 // Returns a matcher for Page Info's Security Subpage back button.
 - (id<GREYMatcher>)securityBackButton {
-  return grey_allOf(
-      testing::NavigationBarBackButton(),
-      grey_kindOfClassName(@"_UIButtonBarButton"),
-      grey_ancestor(grey_accessibilityID(
-          kPageInfoSecurityViewNavigationBarAccessibilityIdentifier)),
-      nil);
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:
+          grey_ancestor(grey_accessibilityID(
+              kPageInfoSecurityViewNavigationBarAccessibilityIdentifier))];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
+  }
+  return grey_allOf(testing::NavigationBarBackButton(),
+                    grey_anyOfMatchers(ancestors), nil);
 }
 
 // Tests that the correct connection label is displayed and that the learn more
