@@ -927,3 +927,6 @@ ad14f9bebfdee678ba25da9430c2d5c3b00d6a11
 
 # [crypto] Migrate SignatureAlgorithm to sign::SignatureKind
 8c07454d98be17b42e5c7b272163f4e9ff021d71
+
+# [cleanup] clang-format core/timing and core/paint/timing in Blink
+d10205b37d082c39bc8daf27bf849c29a01f19e2
