@@ -12,13 +12,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/features.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -38,6 +41,23 @@
 
 namespace base {
 namespace {
+
+class ScopedI18nOptimizationsFeature {
+ public:
+  explicit ScopedI18nOptimizationsFeature(bool enable) {
+    features_.InitWithFeatureState(features::kI18nOptimizations, enable);
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+  ~ScopedI18nOptimizationsFeature() {
+    features_.Reset();
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+
+ private:
+  test::ScopedFeatureList features_;
+};
 
 class NumberFormatWorkerThread : public base::SimpleThread {
  public:
@@ -222,31 +242,41 @@ TEST(NumberFormattingTest, FormatPercent) {
        "1,024\u200e%\u200e", "\u0661\u066c\u0660\u0662\u0664\u066a\u061c"},
   };
 
-  for (const auto& i : cases) {
-    {
-      i18n::ScopedDefaultIcuLocale scoped_locale(
-          i18n::GetKnownLanguageTag("en"));
-      EXPECT_EQ(ASCIIToUTF16(i.expected_english), FormatPercent(i.number));
-    }
-    {
-      i18n::ScopedDefaultIcuLocale scoped_locale(
-          i18n::GetKnownLanguageTag("de"));
-      EXPECT_EQ(UTF8ToUTF16(i.expected_german), FormatPercent(i.number));
-    }
-    {
-      i18n::ScopedDefaultIcuLocale scoped_locale(
-          i18n::GetKnownLanguageTag("fa"));
-      EXPECT_EQ(UTF8ToUTF16(i.expected_persian), FormatPercent(i.number));
-    }
-    {
-      i18n::ScopedDefaultIcuLocale scoped_locale(
-          i18n::GetKnownLanguageTag("ar"));
-      EXPECT_EQ(UTF8ToUTF16(i.expected_arabic), FormatPercent(i.number));
-    }
-    {
-      i18n::ScopedDefaultIcuLocale scoped_locale(
-          i18n::GetKnownLanguageTag("ar-EG"));
-      EXPECT_EQ(UTF8ToUTF16(i.expected_arabic_egypt), FormatPercent(i.number));
+  for (bool enable_feature : {false, true}) {
+    ScopedI18nOptimizationsFeature scoped_feature(enable_feature);
+    for (const auto& i : cases) {
+      {
+        i18n::ScopedDefaultIcuLocale scoped_locale(
+            i18n::GetKnownLanguageTag("en"));
+        EXPECT_EQ(ASCIIToUTF16(i.expected_english), FormatPercent(i.number));
+        EXPECT_EQ(ASCIIToUTF16(i.expected_english), FormatPercent(i.number));
+      }
+      {
+        i18n::ScopedDefaultIcuLocale scoped_locale(
+            i18n::GetKnownLanguageTag("de"));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_german), FormatPercent(i.number));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_german), FormatPercent(i.number));
+      }
+      {
+        i18n::ScopedDefaultIcuLocale scoped_locale(
+            i18n::GetKnownLanguageTag("fa"));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_persian), FormatPercent(i.number));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_persian), FormatPercent(i.number));
+      }
+      {
+        i18n::ScopedDefaultIcuLocale scoped_locale(
+            i18n::GetKnownLanguageTag("ar"));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_arabic), FormatPercent(i.number));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_arabic), FormatPercent(i.number));
+      }
+      {
+        i18n::ScopedDefaultIcuLocale scoped_locale(
+            i18n::GetKnownLanguageTag("ar-EG"));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_arabic_egypt),
+                  FormatPercent(i.number));
+        EXPECT_EQ(UTF8ToUTF16(i.expected_arabic_egypt),
+                  FormatPercent(i.number));
+      }
     }
   }
 }
