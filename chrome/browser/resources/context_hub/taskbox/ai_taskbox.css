@@ -81,6 +81,11 @@ h1 {
   gap: 4px;
 }
 
+.first-party-refresh-container {
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
 .refresh-container cr-icon-button {
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 0;

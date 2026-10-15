@@ -70,38 +70,38 @@ ${this.showingReadingList_ ? html`
         </cr-tabs>
 
         ${this.selectedTab_ === 0 ? html`
-        <div class="columns-container">
-            <!-- Gmail Todos Section -->
-            <section class="todo-column">
-                <div class="column-header">
-                    <h2>Workspace Todos</h2>
-                    <div class="refresh-container">
-                      <span class="last-updated-text">
-                        ${
+        <div class="refresh-container first-party-refresh-container">
+          <span class="last-updated-text">
+            ${
           this.isGeneratingGmailTodos_ ?
               'Generating...' :
               this.hasGmailGenerationError_ ?
                   'Failed to generate' :
                   this.getFormattedTimeAgo_(this.lastGmailGenerationTime_)}
-                      </span>
-                      <cr-icon-button
-                          iron-icon="cr:sync"
-                          title="Refresh"
-                          aria-label="Refresh Workspace Todos"
-                          ?disabled="${
+          </span>
+          <cr-icon-button
+              iron-icon="cr:sync"
+              title="Refresh"
+              aria-label="Refresh Workspace & History Todos"
+              ?disabled="${
           !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
-                          @click="${this.onGenerateGmailTodosClick_}">
-                      </cr-icon-button>
-                      <cr-icon-button
-                          id="workspaceDropdownButton"
-                          iron-icon="cr:arrow-drop-down"
-                          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
-                          aria-label="Clear ALL Workspace Todos"
-                          ?disabled="${
+              @click="${this.onGenerateGmailTodosClick_}">
+          </cr-icon-button>
+          <cr-icon-button
+              id="workspaceDropdownButton"
+              iron-icon="cr:arrow-drop-down"
+              title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+              aria-label="Clear ALL Workspace & History Todos"
+              ?disabled="${
           !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
-                          @click="${this.onWorkspaceMenuClick_}">
-                      </cr-icon-button>
-                    </div>
+              @click="${this.onWorkspaceMenuClick_}">
+          </cr-icon-button>
+        </div>
+        <div class="columns-container">
+            <!-- Gmail Todos Section -->
+            <section class="todo-column">
+                <div class="column-header">
+                    <h2>Workspace Todos</h2>
                 </div>
 
                 <div class="todo-list">
@@ -215,24 +215,6 @@ ${this.showingReadingList_ ? html`
             <section class="todo-column">
                 <div class="column-header">
                     <h2>History Todos</h2>
-                    <div class="refresh-container">
-                      <span class="last-updated-text">Generate</span>
-                      <cr-icon-button
-                          iron-icon="cr:sync"
-                          title="Refresh"
-                          aria-label="Refresh History Todos"
-                          disabled
-                          @click="${this.onGenerateGmailTodosClick_}">
-                      </cr-icon-button>
-                      <cr-icon-button
-                          id="historyDropdownButton"
-                          iron-icon="cr:arrow-drop-down"
-                          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
-                          aria-label="Clear ALL Workspace & History Todos"
-                          disabled
-                          @click="${this.onWorkspaceMenuClick_}">
-                      </cr-icon-button>
-                    </div>
                 </div>
 
                 <div class="todo-list">
@@ -254,9 +236,21 @@ ${this.showingReadingList_ ? html`
                       </todo-item>
                     `)}
                   ` : html`
-                    <div class="placeholder-card">
-                      <p class="placeholder-text">No History Todos</p>
-                    </div>
+                    ${this.hasGmailGenerationError_ ? html`
+                      <div class="placeholder-card">
+                        <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
+                      </div>
+                    ` : html`
+                      ${this.hasGeneratedGmail_ ? html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">You're all caught up!</p>
+                        </div>
+                      ` : html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">No History Todos yet.</p>
+                        </div>
+                      `}
+                    `}
                   `}
                 </div>
 
@@ -546,7 +540,7 @@ ${this.showingReadingList_ ? html`
           <button class="dropdown-item"
               title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
               @click="${this.onClearWorkspaceTodosClick_}">
-            Clear ALL Workspace Todos
+            Clear ALL Workspace & History Todos
           </button>
         </cr-action-menu>
 
