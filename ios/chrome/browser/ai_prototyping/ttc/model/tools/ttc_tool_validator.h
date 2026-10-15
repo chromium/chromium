@@ -9,13 +9,12 @@
 
 #import "base/types/expected.h"
 #import "base/values.h"
+#import "components/ttc/app/public/tool_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 
 namespace ttc {
 
 // Canonical error messages for tool validation, sorted alphabetically.
-inline constexpr char kErrorMessageEmptyToolCalls[] =
-    "Tool calls array cannot be empty.";
 inline constexpr char kErrorMessageInvalidArguments[] =
     "Invalid tool arguments.";
 inline constexpr char kErrorMessageInvalidToolCall[] = "Invalid tool call.";
@@ -36,24 +35,15 @@ class TtcToolValidator {
  public:
   TtcToolValidator() = delete;
 
-  // Validates the tool name and arguments syntactically. Returns `base::ok()`
-  // on success, or an error message describing the violation.
+  // Validates `tool_request` syntactically. Returns `base::ok()` on success, or
+  // an error message describing the violation.
   static base::expected<void, std::string> ValidateToolCall(
-      const std::string& name,
-      const base::DictValue& arguments);
+      const ttc::ToolRequest& tool_request);
 
-  // Validates a tool call and creates an actuation request containing the
+  // Validates `tool_request` and creates an actuation request containing the
   // serialized `optimization_guide::proto::Action` proto.
   static base::expected<TtcActuationRequest, std::string>
-  CreateActuationRequest(const std::string& name,
-                         const base::DictValue& arguments);
-
-  // Validates a batch of tool call dictionaries and creates an actuation
-  // request containing all serialized `optimization_guide::proto::Action`
-  // protos. Each dictionary in `tool_calls` must contain `"name"` and optional
-  // `"args"`.
-  static base::expected<TtcActuationRequest, std::string>
-  CreateActuationRequestWithToolCalls(const base::ListValue& tool_calls);
+  CreateActuationRequest(const ttc::ToolRequest& tool_request);
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_VALIDATOR_H_

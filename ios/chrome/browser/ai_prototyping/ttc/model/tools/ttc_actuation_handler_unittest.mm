@@ -152,8 +152,9 @@ TEST_F(TtcActuationHandlerTest, TestCreateTaskWithIncognitoWebState) {
 // Tests dispatching an actuation request when the task has gone away.
 TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestTaskWentAway) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
-  auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
@@ -190,10 +191,12 @@ TEST_F(TtcActuationHandlerTest,
   actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
   ASSERT_TRUE(task_id);
 
-  auto request_result_1 = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
-  auto request_result_2 = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result_1 =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
+  auto request_result_2 =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result_1.has_value());
   ASSERT_TRUE(request_result_2.has_value());
 
@@ -237,8 +240,9 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestSuccess) {
   actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
   ASSERT_TRUE(task_id);
 
-  auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
@@ -258,8 +262,9 @@ TEST_F(TtcActuationHandlerTest,
   actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
   ASSERT_TRUE(task_id);
 
-  auto first_request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/1"));
+  auto first_request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/1")});
   ASSERT_TRUE(first_request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> first_future;
@@ -270,8 +275,9 @@ TEST_F(TtcActuationHandlerTest,
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, first_response.result_code);
 
   // Dispatch a second actuation using the exact same task ID.
-  auto second_request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/2"));
+  auto second_request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/2")});
   ASSERT_TRUE(second_request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> second_future;
@@ -293,8 +299,9 @@ TEST_F(TtcActuationHandlerTest, TestStopTask) {
 
   handler->StopTask(task_id, actor::ActorTaskStoppedReason::kTaskComplete);
 
-  auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
@@ -315,8 +322,9 @@ TEST_F(TtcActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
   actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
   ASSERT_TRUE(task_id);
 
-  auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
@@ -394,8 +402,8 @@ TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
 
   // Attempting to dispatch to disconnected handler or closed task fails.
   base::DictValue empty_args;
-  auto request_result =
-      TtcToolValidator::CreateActuationRequest(ttc::kToolGoBack, empty_args);
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::ToolRequest{ttc::kToolGoBack, std::move(empty_args)});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
@@ -415,8 +423,9 @@ TEST_F(TtcActuationHandlerTest,
   actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
   ASSERT_TRUE(task_id);
 
-  auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"));
+  auto request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
