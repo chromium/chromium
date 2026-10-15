@@ -195,7 +195,7 @@ class DeliveryOptimizationDownloader : public CrxDownloader {
   // The last download status retrieved from DO, and the largest byte counts
   // seen so far. These are retained for reporting since a finalized download
   // may no longer report its byte counts.
-  DO_DOWNLOAD_STATUS last_status_ = {};
+  std::optional<DO_DOWNLOAD_STATUS> last_status_;
   int64_t downloaded_bytes_ = -1;
   int64_t total_bytes_ = -1;
 

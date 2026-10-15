@@ -40,6 +40,14 @@ chromium-metrics-reviews@google.com.
   <variant name="RegularBoot" summary="subsequent boot after first boot"/>
 </variants>
 
+<variants name="CrxDownloaderType">
+  <variant name="BackgroundMac" summary="NSURLSession background (Mac)"/>
+  <variant name="Bits" summary="BITS (Windows)"/>
+  <variant name="DeliveryOptimization"
+      summary="Delivery Optimization (Windows)"/>
+  <variant name="UrlFetcher" summary="URL fetcher"/>
+</variants>
+
 <variants name="DynamicPatchInstallLevel">
   <variant name="SystemLevel"
       summary="system-level install, via Google Update's elevated
@@ -5656,6 +5664,72 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="UpdateClient.CrxDownloader.FinalDownloader"
+    enum="CrxDownloaderType" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    The downloader in the CrxDownloader chain which produced the downloaded
+    file, or None if every downloader failed. Recorded once per non-cancelled
+    CRX download operation, after all downloaders in the chain have been tried.
+    Used to measure how often a download falls through from one downloader to
+    the next, for instance from Delivery Optimization to BITS on Windows.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.CrxDownloader.{CrxDownloaderType}.DownloadTime"
+    units="ms" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    The time taken by the {CrxDownloaderType} downloader to download a CRX file.
+    Recorded once per successful download attempt made by that downloader.
+    Failed attempts are not recorded.
+  </summary>
+  <token key="CrxDownloaderType" variants="CrxDownloaderType"/>
+</histogram>
+
+<histogram name="UpdateClient.CrxDownloader.{CrxDownloaderType}.Error"
+    enum="Hresult" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    The error code with which a download attempt made by the {CrxDownloaderType}
+    downloader failed. Recorded once per failed download attempt made by that
+    downloader during a non-cancelled download operation; successful attempts
+    are not recorded. Only recorded for the Windows background downloaders,
+    whose error codes are HRESULTs, except for post-transfer hash verification
+    failures, which are recorded as CrxDownloaderError::BAD_HASH (12), and
+    queue-limit failures, which use custom FACILITY_ITF HRESULTs
+    (BITS_TOO_MANY_JOBS = 0x8004001E, DO_TOO_MANY_DOWNLOADS = 0x80040026). For
+    Delivery Optimization, errors such as REGDB_E_CLASSNOTREG or E_ACCESSDENIED
+    indicate that the service is not available on the host.
+  </summary>
+  <token key="CrxDownloaderType">
+    <variant name="Bits" summary="BITS (Windows)"/>
+    <variant name="DeliveryOptimization"
+        summary="Delivery Optimization (Windows)"/>
+  </token>
+</histogram>
+
+<histogram name="UpdateClient.CrxDownloader.{CrxDownloaderType}.Result"
+    enum="BooleanSuccess" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    Whether a download attempt made by the {CrxDownloaderType} downloader
+    succeeded. Recorded once per download attempt made by that downloader during
+    a non-cancelled download operation. A single CRX download may record several
+    samples across the downloaders in the chain, since a failed attempt is
+    handed over to the next downloader.
+  </summary>
+  <token key="CrxDownloaderType" variants="CrxDownloaderType"/>
+</histogram>
+
 <histogram name="UpdateClient.CupValidationResult" enum="BooleanSuccess"
     expires_after="2027-07-21">
   <owner>deckerjames@google.com</owner>
@@ -5680,6 +5754,42 @@ should be kept until we use this API.  -->
     UpdateClient.CupValidationResult, for both successful and failed
     validations. Granularity is 1 ms, so sub-millisecond validations all record
     in the minimum bucket.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.DeliveryOptimization.FinalDownloadState"
+    enum="DeliveryOptimizationFinalDownloadState" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    The state of the Windows Delivery Optimization (DO) download at the time the
+    DO downloader stopped handling it, either because the file was transferred
+    and finalized or because the downloader gave up on it. Recorded once per
+    download attempt made by the DO downloader. Finalized indicates that DO
+    finalized the download (normally on completion, or if the file was
+    unexpectedly missing after finalizing or already finalized externally).
+    Transferred indicates that the transfer succeeded but completing or
+    finalizing the download failed before DO finalized it. Created, Paused or
+    Transferring indicate that the stuck download detector fired or a 5xx
+    response was received, Aborted that DO failed the download, Unknown that DO
+    reported an unrecognized state or that querying the download status failed
+    before any state was observed, and No download that no DO download object
+    existed, for instance because DO is not available on the host.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.DeliveryOptimization.ManagerCreateResult"
+    enum="Hresult" expires_after="2027-07-21">
+  <owner>ganesh@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/update_client/OWNERS</owner>
+  <summary>
+    The HRESULT of creating the Windows Delivery Optimization (DO) manager COM
+    object, recorded once per download attempt made by the DO downloader, which
+    is the first thing it does. Measures the availability of DO on the host:
+    REGDB_E_CLASSNOTREG means that the OS does not provide the DO COM API and
+    E_ACCESSDENIED that the caller may not use it.
   </summary>
 </histogram>
 

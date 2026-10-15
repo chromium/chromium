@@ -34,13 +34,18 @@ namespace update_client {
 class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
  public:
   struct DownloadMetrics {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(CrxDownloaderType)
     enum Downloader {
       kNone = 0,
-      kUrlFetcher,
-      kBits,
-      kBackgroundMac,
-      kDeliveryOptimization,
+      kUrlFetcher = 1,
+      kBits = 2,
+      kBackgroundMac = 3,
+      kDeliveryOptimization = 4,
+      kMaxValue = kDeliveryOptimization,
     };
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:CrxDownloaderType)
 
     GURL url;
 

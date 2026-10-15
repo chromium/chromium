@@ -120,6 +120,16 @@ void DownloadComplete(
     return;
   }
 
+  CrxDownloader::DownloadMetrics::Downloader final_downloader =
+      CrxDownloader::DownloadMetrics::kNone;
+  for (const auto& metric : crx_downloader->download_metrics()) {
+    metrics::RecordCrxDownloadAttempt(metric);
+    if (metric.error == 0) {
+      final_downloader = metric.downloader;
+    }
+  }
+  metrics::RecordCrxDownloadFinalDownloader(final_downloader);
+
   if (download_result.error) {
     CHECK(download_result.response.empty());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

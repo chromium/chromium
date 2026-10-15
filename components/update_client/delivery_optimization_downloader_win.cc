@@ -37,6 +37,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -339,6 +340,62 @@ bool DownloadOlderThanDaysPredicate(
   return info.creation_time + base::Days(num_days) < base::Time::Now();
 }
 
+// The DO state of a download at the time this downloader stops handling it.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DeliveryOptimizationFinalDownloadState)
+enum class FinalDownloadState {
+  // No DO download object exists: DO was unavailable, the queue was full, or
+  // creating or starting the download failed.
+  kNoDownload = 0,
+  kCreated = 1,
+  kTransferring = 2,
+  kTransferred = 3,
+  kFinalized = 4,
+  kAborted = 5,
+  kPaused = 6,
+  kUnknown = 7,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:DeliveryOptimizationFinalDownloadState)
+
+void RecordFinalDownloadState(
+    bool has_download,
+    const std::optional<DO_DOWNLOAD_STATUS>& last_status) {
+  FinalDownloadState state = FinalDownloadState::kNoDownload;
+  if (has_download) {
+    if (!last_status) {
+      state = FinalDownloadState::kUnknown;
+    } else {
+      switch (last_status->State) {
+        case DODownloadState_Created:
+          state = FinalDownloadState::kCreated;
+          break;
+        case DODownloadState_Transferring:
+          state = FinalDownloadState::kTransferring;
+          break;
+        case DODownloadState_Transferred:
+          state = FinalDownloadState::kTransferred;
+          break;
+        case DODownloadState_Finalized:
+          state = FinalDownloadState::kFinalized;
+          break;
+        case DODownloadState_Aborted:
+          state = FinalDownloadState::kAborted;
+          break;
+        case DODownloadState_Paused:
+          state = FinalDownloadState::kPaused;
+          break;
+        default:
+          state = FinalDownloadState::kUnknown;
+          break;
+      }
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "UpdateClient.DeliveryOptimization.FinalDownloadState", state);
+}
+
 // Allows the DO service to impersonate the caller on calls made through
 // `proxy`. DO creates and writes the download file on behalf of the caller,
 // which requires an impersonation level of at least RPC_C_IMP_LEVEL_IMPERSONATE
@@ -372,6 +429,8 @@ HRESULT CreateDeliveryOptimizationManager(
                             CLSCTX_LOCAL_SERVER,
                             IID_PPV_ARGS(&local_do_manager));
   }
+  base::UmaHistogramSparse(
+      "UpdateClient.DeliveryOptimization.ManagerCreateResult", hr);
 
   if (FAILED(hr)) {
     VLOG(1) << "Delivery Optimization is not available: " << std::hex << hr;
@@ -527,7 +586,7 @@ void DeliveryOptimizationDownloader::BeginDownload(const GURL& url) {
   job_stuck_begin_time_ = download_start_time_;
   last_resume_time_ = download_start_time_;
   stuck_baseline_bytes_ = 0;
-  last_status_ = {};
+  last_status_.reset();
   downloaded_bytes_ = -1;
   total_bytes_ = -1;
   response_.clear();
@@ -643,14 +702,18 @@ void DeliveryOptimizationDownloader::EndDownload(
   // byte counts, and since |download_| is null when the download could not be
   // started at all.
 
+  const HRESULT extended_error =
+      last_status_ ? last_status_->ExtendedError : S_OK;
+
   // Consider the url handled if it has been successfully downloaded or a
   // 5xx has been received.
   if (FAILED(error) && !http_status) {
-    http_status =
-        GetDownloadHttpStatus(download_, error, last_status_.ExtendedError);
+    http_status = GetDownloadHttpStatus(download_, error, extended_error);
   }
   const bool is_handled =
       SUCCEEDED(error) || IsHttpServerError(http_status.value_or(0));
+
+  RecordFinalDownloadState(download_ != nullptr, last_status_);
 
   if (FAILED(error)) {
     CleanupDownload(download_);
@@ -666,9 +729,7 @@ void DeliveryOptimizationDownloader::EndDownload(
   download_metrics.downloader = DownloadMetrics::kDeliveryOptimization;
   download_metrics.error = error_to_report;
   download_metrics.extra_code1 =
-      FAILED(error) && last_status_.ExtendedError != error
-          ? last_status_.ExtendedError
-          : 0;
+      FAILED(error) && extended_error != error ? extended_error : 0;
   download_metrics.downloaded_bytes = downloaded_bytes_;
   download_metrics.total_bytes = total_bytes_;
   download_metrics.download_time_ms = download_time.InMilliseconds();
@@ -1063,13 +1124,15 @@ HRESULT DeliveryOptimizationDownloader::CompleteDownload() {
   // cleaned up. |last_status_| was recorded by |OnDownloading| just before
   // this call and is used instead of querying DO again; this also preserves
   // the byte counts, which a finalized download may no longer report.
-  CHECK_EQ(last_status_.State, DODownloadState_Transferred);
+  CHECK(last_status_);
+  CHECK_EQ(last_status_->State, DODownloadState_Transferred);
 
   // The byte counts must match since the entire file was requested.
-  if (last_status_.BytesTotal == 0 ||
-      last_status_.BytesTotal != last_status_.BytesTransferred) {
+  if (last_status_->BytesTotal == 0 ||
+      last_status_->BytesTotal != last_status_->BytesTransferred) {
     VLOG(1) << "Transferred download has inconsistent byte counts: "
-            << last_status_.BytesTransferred << "/" << last_status_.BytesTotal;
+            << last_status_->BytesTransferred << "/"
+            << last_status_->BytesTotal;
     return E_UNEXPECTED;
   }
 
@@ -1092,6 +1155,7 @@ HRESULT DeliveryOptimizationDownloader::CompleteDownload() {
     VLOG(1) << "Failed to finalize DO download: 0x" << std::hex << hr;
     return hr;
   }
+  last_status_->State = DODownloadState_Finalized;
   if (!base::PathExists(local_path)) {
     VLOG(1) << "DO download file is missing after finalizing: " << local_path;
     return E_UNEXPECTED;

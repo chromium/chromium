@@ -39,6 +39,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -373,6 +374,7 @@ class DeliveryOptimizationDownloaderIntegrationTest : public testing::Test {
 };
 
 TEST_F(DeliveryOptimizationDownloaderIntegrationTest, DownloadsFile) {
+  base::HistogramTester histograms;
   const std::string content(100'000, 'A');
   const GURL url = Serve(content);
 
@@ -405,6 +407,12 @@ TEST_F(DeliveryOptimizationDownloaderIntegrationTest, DownloadsFile) {
             base::checked_cast<int64_t>(content.size()));
   EXPECT_EQ(metrics[0].total_bytes,
             base::checked_cast<int64_t>(content.size()));
+
+  histograms.ExpectUniqueSample(
+      "UpdateClient.DeliveryOptimization.ManagerCreateResult", S_OK, 1);
+  // 4 is FinalDownloadState::kFinalized.
+  histograms.ExpectUniqueSample(
+      "UpdateClient.DeliveryOptimization.FinalDownloadState", 4, 1);
 
   // The file is handed over to the caller, who owns it from now on.
   EXPECT_TRUE(base::DeleteFile(result.response));
