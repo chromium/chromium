@@ -13,6 +13,7 @@
 #import "base/check.h"
 #import "base/containers/heap_array.h"
 #import "base/memory/free_deleter.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 
 namespace {
@@ -124,7 +125,7 @@ GetConformingProtocols(Protocol* protocol) {
 - (void)stopDispatchingToTarget:(id)target {
   std::vector<SEL> selectorsToErase;
   for (auto& kv : _forwardingTargets) {
-    if (kv.second == target) {
+    if (kv.second == target || kv.second == nil) {
       selectorsToErase.push_back(kv.first);
     }
   }
@@ -143,8 +144,7 @@ GetConformingProtocols(Protocol* protocol) {
   BOOL conforming = YES;
   for (const objc_method_description& method : GetRequiredMethods(protocol)) {
     SEL selector = method.name;
-    BOOL targetFound = _forwardingTargets.contains(selector);
-    if (!targetFound && ![self shouldFailSilentlyForSelector:selector]) {
+    if (![self hasTargetForSelector:selector]) {
       conforming = NO;
       break;
     }
@@ -165,7 +165,7 @@ GetConformingProtocols(Protocol* protocol) {
 }
 
 - (CommandDispatcher*)strictCallableForProtocol:(Protocol*)protocol {
-  CHECK([self dispatchingForProtocol:protocol])
+  CHECK([self dispatchingForProtocol:protocol], base::NotFatalUntil::M160)
       << "Dispatcher failed protocol conformance";
   return self;
 }
@@ -188,7 +188,7 @@ GetConformingProtocols(Protocol* protocol) {
 
 // Overriden to return YES for any registered method.
 - (BOOL)respondsToSelector:(SEL)selector {
-  if ([self targetForSelector:selector]) {
+  if ([self hasTargetForSelector:selector]) {
     return YES;
   }
   return [super respondsToSelector:selector];
@@ -212,7 +212,7 @@ GetConformingProtocols(Protocol* protocol) {
 // Returns the target registered to receive messeages for `selector`.
 - (id)targetForSelector:(SEL)selector {
   auto target = _forwardingTargets.find(selector);
-  if (target == _forwardingTargets.end()) {
+  if (target == _forwardingTargets.end() || target->second == nil) {
     if ([self shouldFailSilentlyForSelector:selector]) {
       return [[SilentlyFailingObject alloc] init];
     }
@@ -221,8 +221,20 @@ GetConformingProtocols(Protocol* protocol) {
   return target->second;
 }
 
+// Returns whether a live target is registered for `selector`, or whether
+// `selector` should fail silently. Unlike `-targetForSelector:`, the target is
+// not returned, so it is not autoreleased and its lifetime is not extended.
+- (BOOL)hasTargetForSelector:(SEL)selector {
+  auto target = _forwardingTargets.find(selector);
+  if (target != _forwardingTargets.end() && target->second != nil) {
+    return YES;
+  }
+  return [self shouldFailSilentlyForSelector:selector];
+}
+
 - (BOOL)shouldFailSilentlyForSelector:(SEL)selector {
-  return _preparingForShutdown && _silentlyFailingTargets.contains(selector);
+  return _preparingForShutdown && (_silentlyFailingTargets.contains(selector) ||
+                                   _forwardingTargets.contains(selector));
 }
 
 @end

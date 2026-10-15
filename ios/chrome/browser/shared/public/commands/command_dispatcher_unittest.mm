@@ -516,3 +516,44 @@ TEST_F(CommandDispatcherTest, HandlerForProtocol) {
       HandlerForProtocol(dispatcher, EmptyContainerProtocol);
   EXPECT_EQ(container_handler, dispatcher);
 }
+
+// Test that `-dispatchingForProtocol:` and `-respondsToSelector:` return NO
+// when the registered target has been deallocated.
+TEST_F(CommandDispatcherTest, DeallocatedTarget) {
+  id dispatcher = [[CommandDispatcher alloc] init];
+  @autoreleasepool {
+    CommandDispatcherTestSimpleTarget* target =
+        [[CommandDispatcherTestSimpleTarget alloc] init];
+    [dispatcher startDispatchingToTarget:target
+                             forProtocol:@protocol(ShowProtocol)];
+    EXPECT_TRUE([dispatcher dispatchingForProtocol:@protocol(ShowProtocol)]);
+    EXPECT_TRUE([dispatcher respondsToSelector:@selector(show)]);
+  }
+
+  EXPECT_FALSE([dispatcher dispatchingForProtocol:@protocol(ShowProtocol)]);
+  EXPECT_FALSE([dispatcher respondsToSelector:@selector(show)]);
+}
+
+// Test that an exception is not thrown when `-prepareForShutdown` was called
+// before the registered target was deallocated.
+TEST_F(CommandDispatcherTest,
+       PrepareForShutdownLetsDeallocatedTargetFailSilently) {
+  id dispatcher = [[CommandDispatcher alloc] init];
+  @autoreleasepool {
+    CommandDispatcherTestSimpleTarget* target =
+        [[CommandDispatcherTestSimpleTarget alloc] init];
+    [dispatcher startDispatchingToTarget:target
+                             forProtocol:@protocol(HideProtocol)];
+    [dispatcher prepareForShutdown];
+  }
+
+  EXPECT_TRUE([dispatcher dispatchingForProtocol:@protocol(HideProtocol)]);
+  bool exception_caught = false;
+  @try {
+    [dispatcher hide];
+  } @catch (NSException* exception) {
+    exception_caught = true;
+  }
+
+  EXPECT_FALSE(exception_caught);
+}
