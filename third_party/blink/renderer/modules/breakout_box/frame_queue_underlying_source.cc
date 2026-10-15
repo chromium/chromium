@@ -475,7 +475,11 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::EnqueueBlinkFrame(
     ScriptWrappable* blink_frame) const {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  if (GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed()) {
+  // Controller() is null until the stream starts this source. For example, a
+  // transferred source is only started after the stream it is concatenated
+  // with has been fully read.
+  if (Controller() && GetExecutionContext() &&
+      !GetExecutionContext()->IsContextDestroyed()) {
     Controller()->Enqueue(blink_frame);
   }
 }
