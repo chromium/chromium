@@ -44,7 +44,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -158,21 +157,8 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testTilesLayoutAppearance_DisableMvtCustomization(boolean nightModeEnabled)
-            throws Exception {
-        doTilesLayoutAppearanceTest("_v1");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"NewTabPage", "RenderTest"})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testTilesLayoutAppearance_EnableMvtCustomization(boolean nightModeEnabled)
-            throws Exception {
+    public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         doTilesLayoutAppearanceTest("_with_add_new_button_v1");
     }
 
@@ -187,20 +173,8 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testModernTilesLayoutAppearance_Full_DisableMvtCustomization()
-            throws IOException, InterruptedException {
-        doModernTilesLayoutAppearanceTest_Full("_v1");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"NewTabPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testModernTilesLayoutAppearance_Full_EnableMvtCustomization()
-            throws IOException, InterruptedException {
+    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
         doModernTilesLayoutAppearanceTest_Full("_with_add_new_button_v1");
     }
 

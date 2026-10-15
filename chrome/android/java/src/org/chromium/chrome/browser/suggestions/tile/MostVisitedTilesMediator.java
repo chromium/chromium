@@ -20,7 +20,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -333,8 +332,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     }
 
     private void maybeTriggerCustomizationIph(List<Tile> tiles) {
-        if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()) return;
-
         if (tiles.isEmpty()) return;
 
         Tile firstTile = tiles.get(0);

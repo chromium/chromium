@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -330,10 +329,6 @@ public class TileRenderer {
     }
 
     boolean shouldShowAddNewButton(List<Tile> sectionTiles) {
-        if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()) {
-            return false;
-        }
-
         if (sectionTiles.isEmpty()) {
             // Still show the Add Custom Link Button, even if no suggestions exist. We might make
             // this configurable.

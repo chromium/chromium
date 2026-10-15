@@ -3459,12 +3459,6 @@ inline constexpr char kMobilePromoOnDesktopWithReminderWave2Description[] =
     "eligible users. This version highlights thematic areas as opposed to "
     "specific features.";
 
-inline constexpr char kMostVisitedTilesCustomizationName[] =
-    "Customize Most Visiteid Tiles";
-inline constexpr char kMostVisitedTilesCustomizationDescription[] =
-    "Adds long-click menu to fix the title and URL of a Most Visited Tile; "
-    "enables MVT reordering.";
-
 inline constexpr char kMostVisitedTilesReselectName[] =
     "Most Visited Tiles Reselect";
 inline constexpr char kMostVisitedTilesReselectDescription[] =

@@ -10,7 +10,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -33,9 +32,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * @param profile The profile for which to fetch most visited sites.
      */
     public MostVisitedSitesBridge(Profile profile) {
-        boolean enableCustomLinks = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
-        mNativeMostVisitedSitesBridge =
-                MostVisitedSitesBridgeJni.get().init(profile, enableCustomLinks);
+        mNativeMostVisitedSitesBridge = MostVisitedSitesBridgeJni.get().init(profile);
     }
 
     // CustomLinkOperations -> MostVisitedSites implementation.
@@ -192,7 +189,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("Profile*") Profile profile, boolean enableCustomLinks);
+        long init(@JniType("Profile*") Profile profile);
 
         boolean addCustomLinkTo(
                 long nativeMostVisitedSitesBridge,

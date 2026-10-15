@@ -33,11 +33,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
@@ -95,12 +90,11 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
       ChromeMostVisitedSitesFactory::NewForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
   // Custom links on Android: ntp_prefs::kNtpCustomLinksVisible is
-  // unavailable. Use feature list instead.
+  // unavailable.
   most_visited_sites->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
           .with_top_sites(true)
-          .with_custom_links(base::FeatureList::IsEnabled(
-              chrome::android::kMostVisitedTilesCustomization)));
+          .with_custom_links(true));
 #else
   // Custom links on Desktop.
   auto enabled_types = GetEnabledTileTypes(profile);

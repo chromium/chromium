@@ -166,15 +166,14 @@ void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
   Java_MostVisitedSitesBridge_onIconMadeAvailable(env, observer_, site_url);
 }
 
-MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
-                                               bool enable_custom_links)
+MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
   CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   most_visited_->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
           .with_top_sites(true)
-          .with_custom_links(enable_custom_links));
+          .with_custom_links(true));
 }
 
 MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;
@@ -280,10 +279,9 @@ double MostVisitedSitesBridge::GetSuggestionScore(const GURL& url) {
   return most_visited_->GetSuggestionScore(url);
 }
 
-static int64_t JNI_MostVisitedSitesBridge_Init(Profile* profile,
-                                               bool enable_custom_links) {
+static int64_t JNI_MostVisitedSitesBridge_Init(Profile* profile) {
   MostVisitedSitesBridge* most_visited_sites =
-      new MostVisitedSitesBridge(profile, enable_custom_links);
+      new MostVisitedSitesBridge(profile);
   return reinterpret_cast<intptr_t>(most_visited_sites);
 }
 

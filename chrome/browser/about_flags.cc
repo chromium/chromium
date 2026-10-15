@@ -8001,11 +8001,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabSearchForDesktopDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabSearchForDesktop)},
 
-    {"most-visited-tiles-customization",
-     flag_descriptions::kMostVisitedTilesCustomizationName,
-     flag_descriptions::kMostVisitedTilesCustomizationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesCustomization)},
-
     {"enable-most-visited-tiles-reselect",
      flag_descriptions::kMostVisitedTilesReselectName,
      flag_descriptions::kMostVisitedTilesReselectDescription, kOsAndroid,

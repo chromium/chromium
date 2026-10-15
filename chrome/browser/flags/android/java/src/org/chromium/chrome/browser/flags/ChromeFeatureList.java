@@ -681,7 +681,6 @@ public abstract class ChromeFeatureList {
             "MediaCaptureNotificationRefreshMediaTypes";
     public static final String MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE =
             "MigrateManagementPageToWebUIOnMobile";
-    public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER =
             "MoveToFrontInLaunchIntentDispatcher";
@@ -1309,11 +1308,6 @@ public abstract class ChromeFeatureList {
                     MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sMostVisitedTilesCustomization =
-            newCachedFlag(
-                    MOST_VISITED_TILES_CUSTOMIZATION,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMoveToFrontInLaunchIntentDispatcher =
@@ -1624,7 +1618,6 @@ public abstract class ChromeFeatureList {
                     sLockTopControlsOnLargeTabletsV2,
                     sMaliciousApkDownloadCheck,
                     sMigrateManagementToWebUIOnMobile,
-                    sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMoveToFrontInLaunchIntentDispatcher,
                     sNewTabPageCustomizationThemeSync,

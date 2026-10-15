@@ -26,7 +26,6 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
@@ -48,16 +47,6 @@ bool ShouldCreatePopularSites(Profile* profile) {
   return false;
 #endif
 }
-
-bool ShouldCreateCustomLinksManager() {
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
-  return true;
-#else
-  return base::FeatureList::IsEnabled(
-      chrome::android::kMostVisitedTilesCustomization);
-#endif
-}
-
 bool ShouldCreateEnterpriseShortcutsManager() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -100,9 +89,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
       ShouldCreatePopularSites(profile)
           ? ChromePopularSitesFactory::NewForProfile(profile)
           : nullptr,
-      ShouldCreateCustomLinksManager()
-          ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
-          : nullptr,
+      ChromeCustomLinksManagerFactory::NewForProfile(profile),
       ShouldCreateEnterpriseShortcutsManager()
           ? ChromeEnterpriseShortcutsManagerFactory::NewForProfile(profile)
           : nullptr,

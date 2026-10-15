@@ -7099,11 +7099,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "most-visited-tiles-customization",
-    "owners": [ "clank-start@google.com", "huangs@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "most-visited-tiles-new-scoring",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "huangs@chromium.org" ],
     "expiry_milestone": 150

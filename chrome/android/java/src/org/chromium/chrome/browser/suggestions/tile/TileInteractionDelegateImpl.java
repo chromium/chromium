@@ -13,7 +13,6 @@ import android.view.View;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
@@ -315,8 +314,7 @@ class TileInteractionDelegateImpl
     }
 
     boolean isCustomizationEnabledForTileSection() {
-        return ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()
-                && mTile.getSectionType() == TileSectionType.PERSONALIZED;
+        return mTile.getSectionType() == TileSectionType.PERSONALIZED;
     }
 
     boolean isCustomLink() {
