@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/base/constants.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,6 +164,87 @@ TEST_F(ChromotingHostServicesClientTest,
   ASSERT_NE(client_->GetSessionServices(), nullptr);
   WaitForSessionServicesBound();
   ASSERT_EQ(session_services_receivers_.size(), 1u);
+}
+
+TEST_F(ChromotingHostServicesClientTest, ParseAgentStatusArgs) {
+  using AgentInfo = protocol::TerminalControl::AgentInfo;
+  // 1. Explicit --agent-status, --terminal-title, and --terminal-id switches.
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "working");
+    cmd.AppendSwitchASCII(kTerminalTitleSwitchName, "My Title");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "3");
+    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(status.has_value());
+    EXPECT_TRUE(status->has_terminal_id());
+    EXPECT_EQ(status->terminal_id(), 3);
+    EXPECT_EQ(status->agent_state(), AgentInfo::WORKING);
+    EXPECT_EQ(status->conversation_title(), "My Title");
+  }
+
+  // 2. --agent-status and --terminal-id without title.
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "tool_use");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "5");
+    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(status.has_value());
+    EXPECT_TRUE(status->has_terminal_id());
+    EXPECT_EQ(status->terminal_id(), 5);
+    EXPECT_EQ(status->agent_state(), AgentInfo::TOOL_USE);
+    EXPECT_FALSE(status->has_conversation_title());
+  }
+
+  // 3. Title-only update with --terminal-id.
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kTerminalTitleSwitchName, "Custom Tab");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "7");
+    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(status.has_value());
+    EXPECT_TRUE(status->has_terminal_id());
+    EXPECT_EQ(status->terminal_id(), 7);
+    EXPECT_FALSE(status->has_agent_state());
+    EXPECT_EQ(status->conversation_title(), "Custom Tab");
+  }
+
+  // 4. Missing --terminal-id returns std::nullopt.
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "idle");
+    EXPECT_FALSE(
+        ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd).has_value());
+  }
+
+  // 5. Invalid state or invalid terminal ID returns std::nullopt.
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "unspecified");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "1");
+    EXPECT_FALSE(
+        ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd).has_value());
+  }
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "unknown_state");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "1");
+    EXPECT_FALSE(
+        ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd).has_value());
+  }
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "1:working");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "1");
+    EXPECT_FALSE(
+        ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd).has_value());
+  }
+  {
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitchASCII(kAgentStatusSwitchName, "working");
+    cmd.AppendSwitchASCII(kTerminalIdSwitchName, "-1");
+    EXPECT_FALSE(
+        ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd).has_value());
+  }
 }
 
 }  // namespace remoting

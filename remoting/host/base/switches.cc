@@ -66,4 +66,8 @@ const char kCheckScreenRecordingPermissionSwitchName[] =
 const char kListAudioDevicesSwitchName[] = "list-audio-devices";
 #endif  // BUILDFLAG(IS_APPLE)
 
+const char kAgentStatusSwitchName[] = "agent-status";
+const char kTerminalIdSwitchName[] = "terminal-id";
+const char kTerminalTitleSwitchName[] = "terminal-title";
+
 }  // namespace remoting

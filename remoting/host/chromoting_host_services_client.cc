@@ -4,11 +4,20 @@
 
 #include "remoting/host/chromoting_host_services_client.h"
 
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/check.h"
+#include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -18,6 +27,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/constants.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
@@ -28,6 +38,24 @@
 namespace remoting {
 
 namespace {
+
+std::optional<protocol::TerminalControl::AgentInfo::AgentState>
+ParseAgentStateString(std::string_view state_str) {
+  using AgentInfo = protocol::TerminalControl::AgentInfo;
+  static constexpr auto kAgentStateMap =
+      base::MakeFixedFlatMap<std::string_view, AgentInfo::AgentState>({
+          {"authenticating", AgentInfo::AUTHENTICATING},
+          {"error", protocol::TerminalControl_AgentInfo_AgentState_ERROR},
+          {"idle", AgentInfo::IDLE},
+          {"initializing", AgentInfo::INITIALIZING},
+          {"reviewing", AgentInfo::REVIEWING},
+          {"tool_use", AgentInfo::TOOL_USE},
+          {"working", AgentInfo::WORKING},
+      });
+  auto it = kAgentStateMap.find(state_str);
+  return it != kAgentStateMap.end() ? std::make_optional(it->second)
+                                    : std::nullopt;
+}
 
 mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     const std::vector<mojo::NamedPlatformChannel::ServerName>& server_names) {
@@ -75,6 +103,48 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
 }
 
 }  // namespace
+
+// static
+std::optional<protocol::TerminalControl::AgentInfo>
+ChromotingHostServicesClient::ParseAgentStatusArgs(
+    const base::CommandLine* command_line) {
+  if (!command_line || !command_line->HasSwitch(kTerminalIdSwitchName) ||
+      (!command_line->HasSwitch(kAgentStatusSwitchName) &&
+       !command_line->HasSwitch(kTerminalTitleSwitchName))) {
+    return std::nullopt;
+  }
+
+  std::string terminal_id_str =
+      command_line->GetSwitchValueASCII(kTerminalIdSwitchName);
+  int terminal_id;
+  if (!base::StringToInt(terminal_id_str, &terminal_id) || terminal_id < 0) {
+    LOG(ERROR) << "Invalid --" << kTerminalIdSwitchName << ": "
+               << terminal_id_str;
+    return std::nullopt;
+  }
+
+  std::optional<protocol::TerminalControl::AgentInfo::AgentState> state;
+  if (command_line->HasSwitch(kAgentStatusSwitchName)) {
+    std::string status_arg =
+        command_line->GetSwitchValueASCII(kAgentStatusSwitchName);
+    state = ParseAgentStateString(status_arg);
+    if (!state.has_value()) {
+      LOG(ERROR) << "Unknown agent status: " << status_arg;
+      return std::nullopt;
+    }
+  }
+
+  protocol::TerminalControl::AgentInfo status;
+  status.set_terminal_id(terminal_id);
+  if (state.has_value()) {
+    status.set_agent_state(*state);
+  }
+  if (command_line->HasSwitch(kTerminalTitleSwitchName)) {
+    status.set_conversation_title(
+        command_line->GetSwitchValueUTF8(kTerminalTitleSwitchName));
+  }
+  return status;
+}
 
 ChromotingHostServicesClient::ChromotingHostServicesClient()
     : ChromotingHostServicesClient(

@@ -104,6 +104,16 @@ extern const char kCheckScreenRecordingPermissionSwitchName[];
 extern const char kListAudioDevicesSwitchName[];
 #endif  // BUILDFLAG(IS_APPLE)
 
+// Reports the AI agent state to the running host via Mojo IPC.
+extern const char kAgentStatusSwitchName[];
+
+// Specifies the terminal ID associated with `--agent-status` or
+// `--terminal-title`.
+extern const char kTerminalIdSwitchName[];
+
+// Sets the title of the terminal tab via Mojo IPC.
+extern const char kTerminalTitleSwitchName[];
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_BASE_SWITCHES_H_

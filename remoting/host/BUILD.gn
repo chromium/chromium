@@ -215,7 +215,9 @@ source_set("chromoting_host_services_client") {
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/base",
+    "//remoting/host/base",
     "//remoting/host/mojom",
+    "//remoting/proto",
   ]
   if (is_win) {
     deps += [ "//remoting/host/win:acl_util" ]
@@ -1377,6 +1379,13 @@ if (enable_me2me_host) {
       "//remoting/host/base",
       "//remoting/host/setup:common",
     ]
+    if (!is_chromeos) {
+      deps += [
+        ":chromoting_host_services_client",
+        "//remoting/host/mojom",
+        "//remoting/proto",
+      ]
+    }
   }
 
   # Windows defines its own entry point function.
