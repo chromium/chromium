@@ -23,8 +23,6 @@ source_set("side_panel") {
     "history_clusters/history_clusters_side_panel_controller_utils.h",
     "history_clusters/history_clusters_side_panel_coordinator.cc",
     "history_clusters/history_clusters_side_panel_coordinator.h",
-    "history_clusters/history_clusters_side_panel_utils.cc",
-    "history_clusters/history_clusters_side_panel_utils.h",
     "history_clusters/history_clusters_tab_helper.cc",
     "history_clusters/history_clusters_tab_helper.h",
     "reading_list/read_later_side_panel_web_view.cc",
