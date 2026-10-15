@@ -227,6 +227,68 @@ TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
                       ExtensionIconSet::Match::kExactly));
 }
 
+// Tests that an extension using only `icons` still gets an empty path for
+// unmatched sizes, since only `icon_variants` can set an "any" fallback.
+TEST_F(IconVariantsManifestTest, IconsKeyHasNoAnyFallback) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "icons.16.png"
+        }
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
+  EXPECT_TRUE(icons.any().empty());
+  EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                          ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                          ExtensionIconSet::Match::kBigger));
+  EXPECT_EQ("", icons.Get(8, ExtensionIconSet::Match::kSmaller));
+  EXPECT_TRUE(IconsInfo::GetIconResource(extension.get(),
+                                         extension_misc::EXTENSION_ICON_MEDIUM,
+                                         ExtensionIconSet::Match::kExactly)
+                  .empty());
+  EXPECT_TRUE(IconsInfo::GetIconURL(extension.get(),
+                                    extension_misc::EXTENSION_ICON_MEDIUM,
+                                    ExtensionIconSet::Match::kExactly)
+                  .is_empty());
+}
+
+// Tests that an "any" icon in `icon_variants` isn't returned when the feature
+// flag is disabled on a channel that otherwise allows the key, so callers keep
+// using `icons` and get an empty path for unmatched sizes.
+TEST_F(NoIconVariantsManifestTest, AnyIgnoredWhenDisabled) {
+  ScopedCurrentChannel current_channel(version_info::Channel::CANARY);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionIconVariants);
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "icons.16.png"
+        },
+        "icon_variants": [{
+          "any": "icon_variants.any.svg"
+        }]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  EXPECT_FALSE(IconVariantsInfo::HasIconVariants(extension.get()));
+  const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
+  EXPECT_EQ("icons.16.png", icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                                      ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                          ExtensionIconSet::Match::kExactly));
+  EXPECT_FALSE(icons.ContainsPath("icon_variants.any.svg"));
+}
+
 TEST_F(IconVariantsManifestTest, MultipleDictionaries) {
   scoped_refptr<Extension> extension(LoadAndExpectSuccess(GetManifestData(
       R"([
