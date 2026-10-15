@@ -1202,7 +1202,6 @@ public class AwContents implements SmartClipProvider {
             mScrollAccessibilityHelper = new ScrollAccessibilityHelper(mContainerView);
 
             setOverScrollMode(mContainerView.getOverScrollMode());
-            setScrollBarStyle(mCurrentInternalAccessAdapter.super_getScrollBarStyle());
 
             mAwDarkMode = new AwDarkMode(this);
             mStylusWritingController = new StylusWritingController(context.getApplicationContext());
@@ -1513,7 +1512,6 @@ public class AwContents implements SmartClipProvider {
         if (mDisplayCutoutController != null) {
             mDisplayCutoutController.setCurrentContainerView(mContainerView);
         }
-        setScrollBarStyle(mCurrentInternalAccessAdapter.super_getScrollBarStyle());
     }
 
     public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
@@ -2944,57 +2942,6 @@ public class AwContents implements SmartClipProvider {
     public void setOverScrollMode(int mode) {
         if (TRACE) Log.i(TAG, "%s setOverScrollMode", this);
         mOverScrollHelper.setOverScrollMode(mode, mContext);
-    }
-
-    // TODO(mkosiba): In WebViewClassic these appear in some of the scroll extent calculation
-    // methods but toggling them has no visiual effect on the content (in other words the scrolling
-    // code behaves as if the scrollbar-related padding is in place but the onDraw code doesn't
-    // take that into consideration).
-    // http://crbug.com/269032
-    private boolean mOverlayHorizontalScrollbar = true;
-    private boolean mOverlayVerticalScrollbar;
-
-    /**
-     * @see View#setScrollBarStyle(int)
-     */
-    public void setScrollBarStyle(int style) {
-        if (TRACE) Log.i(TAG, "%s setScrollBarStyle", this);
-        boolean scrollbars =
-                style == View.SCROLLBARS_INSIDE_OVERLAY || style == View.SCROLLBARS_OUTSIDE_OVERLAY;
-        mOverlayHorizontalScrollbar = scrollbars;
-        mOverlayVerticalScrollbar = scrollbars;
-    }
-
-    /**
-     * @see View#setHorizontalScrollbarOverlay(boolean)
-     */
-    public void setHorizontalScrollbarOverlay(boolean overlay) {
-        if (TRACE) Log.i(TAG, "%s setHorizontalScrollbarOverlay=%s", this, overlay);
-        mOverlayHorizontalScrollbar = overlay;
-    }
-
-    /**
-     * @see View#setVerticalScrollbarOverlay(boolean)
-     */
-    public void setVerticalScrollbarOverlay(boolean overlay) {
-        if (TRACE) Log.i(TAG, "%s setVerticalScrollbarOverlay=%s", this, overlay);
-        mOverlayVerticalScrollbar = overlay;
-    }
-
-    /**
-     * @see View#overlayHorizontalScrollbar()
-     */
-    public boolean overlayHorizontalScrollbar() {
-        if (TRACE) Log.i(TAG, "%s overlayHorizontalScrollbar", this);
-        return mOverlayHorizontalScrollbar;
-    }
-
-    /**
-     * @see View#overlayVerticalScrollbar()
-     */
-    public boolean overlayVerticalScrollbar() {
-        if (TRACE) Log.i(TAG, "%s overlayVerticalScrollbar", this);
-        return mOverlayVerticalScrollbar;
     }
 
     /**

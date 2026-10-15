@@ -389,108 +389,22 @@ class WebViewChromium
         mSharedWebViewChromium.forbidBuilderConfiguration();
     }
 
+    // Since Android M, android.webkit.WebView implements these four deprecated methods itself and
+    // never calls the provider. WebView's minSdkVersion is above M, so they're unreachable.
     @Override
-    public void setHorizontalScrollbarOverlay(final boolean overlay) {
-        forbidBuilderConfiguration();
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            setHorizontalScrollbarOverlay(overlay);
-                        }
-                    });
-            return;
-        }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.SET_HORIZONTAL_SCROLLBAR_OVERLAY")) {
-            ApiCallLogger.recordWebViewApiCall(
-                    ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_SET_HORIZONTAL_SCROLLBAR_OVERLAY);
-            mAwContents.setHorizontalScrollbarOverlay(overlay);
-        }
-    }
+    public void setHorizontalScrollbarOverlay(boolean overlay) {}
 
     @Override
-    public void setVerticalScrollbarOverlay(final boolean overlay) {
-        forbidBuilderConfiguration();
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            setVerticalScrollbarOverlay(overlay);
-                        }
-                    });
-            return;
-        }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.SET_VERTICAL_SCROLLBAR_OVERLAY")) {
-            ApiCallLogger.recordWebViewApiCall(
-                    ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_SET_VERTICAL_SCROLLBAR_OVERLAY);
-            mAwContents.setVerticalScrollbarOverlay(overlay);
-        }
-    }
+    public void setVerticalScrollbarOverlay(boolean overlay) {}
 
     @Override
     public boolean overlayHorizontalScrollbar() {
-        forbidBuilderConfiguration();
-        if (!mStartupController.isChromiumInitialized()) {
-            return true;
-        }
-        if (checkNeedsPost()) {
-            boolean ret =
-                    mFactory.runOnUiThreadBlocking(
-                            new Callable<Boolean>() {
-                                @Override
-                                public Boolean call() {
-                                    return overlayHorizontalScrollbar();
-                                }
-                            });
-            return ret;
-        }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.OVERLAY_HORIZONTAL_SCROLLBAR")) {
-            ApiCallLogger.recordWebViewApiCall(
-                    ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR);
-            return mAwContents.overlayHorizontalScrollbar();
-        }
+        return true;
     }
 
-    // TODO(b/509906038): We currently have a bug here. Consider the following sequence of calls:
-    // 1. App creates a WebView and we don't trigger startup.
-    // 2. App calls `setVerticalScrollBarOverlay(true)`. We just post a task to the run queue to set
-    // it lazily.
-    // 3. App calls `overlayVerticalScrollbar()` and we return false because startup still hasn't
-    // happened.
-    // We need to audit the code to ensure we don't have such issues in other setter/getter pairs
-    // too.
     @Override
     public boolean overlayVerticalScrollbar() {
-        forbidBuilderConfiguration();
-        if (!mStartupController.isChromiumInitialized()) {
-            return false;
-        }
-        if (checkNeedsPost()) {
-            boolean ret =
-                    mFactory.runOnUiThreadBlocking(
-                            new Callable<Boolean>() {
-                                @Override
-                                public Boolean call() {
-                                    return overlayVerticalScrollbar();
-                                }
-                            });
-            return ret;
-        }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.OVERLAY_VERTICAL_SCROLLBAR")) {
-            ApiCallLogger.recordWebViewApiCall(
-                    ApiCall.OVERLAY_VERTICAL_SCROLLBAR,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR);
-            return mAwContents.overlayVerticalScrollbar();
-        }
+        return false;
     }
 
     @Override
@@ -2429,23 +2343,8 @@ class WebViewChromium
 
     @Override
     public void setScrollBarStyle(final int style) {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            setScrollBarStyle(style);
-                        }
-                    });
-            return;
-        }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.SET_SCROLL_BAR_STYLE")) {
-            ApiCallLogger.recordWebViewApiCall(
-                    ApiCall.SET_SCROLL_BAR_STYLE,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_SET_SCROLL_BAR_STYLE);
-            mAwContents.setScrollBarStyle(style);
-        }
+        // WebView doesn't track the scrollbar style; android.webkit.WebView applies it to the View
+        // via super.setScrollBarStyle().
     }
 
     @Override
