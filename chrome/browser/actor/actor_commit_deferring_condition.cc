@@ -10,12 +10,12 @@
 #include "base/feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -67,8 +67,9 @@ ActorCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
-  const auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
+  const ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(web_contents);
+  if (actor_surface_handle.is_null()) {
     return nullptr;
   }
 
@@ -78,7 +79,8 @@ ActorCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
-  const ActorTask* task = actor_service->GetTaskFromTab(*tab);
+  const ActorTask* task =
+      actor_service->GetTaskFromActorSurface(actor_surface_handle);
   if (!task) {
     return nullptr;
   }

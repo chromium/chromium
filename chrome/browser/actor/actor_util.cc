@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -136,12 +137,8 @@ bool HasActorTaskPreventingNewWebContents(content::RenderFrameHost* rfh) {
     return false;
   }
 
-  const auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(wc);
-  if (!tab_interface) {
-    return false;
-  }
-
-  const ActorTask* task = actor_service->GetTaskFromTab(*tab_interface);
+  const ActorTask* task =
+      actor_service->GetTaskFromActorSurface(ActorSurfaceHandle::From(wc));
   if (!task) {
     return false;
   }
