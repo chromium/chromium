@@ -9,10 +9,13 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/android/window_android.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -148,6 +151,13 @@ void SelectFileDialogImpl::SelectFileImpl(Type type,
     if (listener_) {
       listener_->FileSelectionCanceled();
     }
+    return;
+  }
+
+  if (!owning_window) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&SelectFileDialogImpl::OnFileNotSelected,
+                                  this, nullptr));
     return;
   }
 
