@@ -432,6 +432,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tab.CloseAllTabsDialog.AlsoClosePinnedTabs" enum="Boolean"
+    expires_after="2027-04-12">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    Records whether the user checked the &quot;Also close pinned tabs&quot;
+    checkbox when confirming the &quot;Close all tabs&quot; confirmation dialog.
+    Only recorded on Android when the dialog is shown with at least one pinned
+    tab and confirmed via the positive button.
+  </summary>
+</histogram>
+
 <histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs.{CloseType}"
     enum="Boolean" expires_after="2027-04-12">
   <owner>ckitagawa@chromium.org</owner>

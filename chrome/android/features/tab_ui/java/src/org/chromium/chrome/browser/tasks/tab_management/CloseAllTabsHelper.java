@@ -8,9 +8,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -31,11 +33,13 @@ public class CloseAllTabsHelper {
      *
      * @param tabModelSelector {@link TabModelSelector} for the activity.
      * @param allowUndo See {@link TabClosureParams#allowUndo}.
+     * @param closePinnedTabs Whether pinned tabs should also be closed when the feature flag is
+     *     enabled.
      */
     public static void closeAllTabsHidingTabGroups(
-            TabModelSelector tabModelSelector, boolean allowUndo) {
+            TabModelSelector tabModelSelector, boolean allowUndo, boolean closePinnedTabs) {
         closeAllTabsHidingTabGroups(
-                tabModelSelector, allowUndo, TabClosingSource.GRID_TAB_SWITCHER);
+                tabModelSelector, allowUndo, TabClosingSource.GRID_TAB_SWITCHER, closePinnedTabs);
     }
 
     /**
@@ -44,11 +48,14 @@ public class CloseAllTabsHelper {
      * @param tabModelSelector {@link TabModelSelector} for the activity.
      * @param allowUndo See {@link TabClosureParams#allowUndo}.
      * @param closingSource The closing source of the tab closure.
+     * @param closePinnedTabs Whether pinned tabs should also be closed when the feature flag is
+     *     enabled.
      */
     public static void closeAllTabsHidingTabGroups(
             TabModelSelector tabModelSelector,
             boolean allowUndo,
-            @TabClosingSource int closingSource) {
+            @TabClosingSource int closingSource,
+            boolean closePinnedTabs) {
         tabModelSelector
                 .getModel(/* incognito= */ true)
                 .getTabRemover()
@@ -59,6 +66,12 @@ public class CloseAllTabsHelper {
                                 .tabClosingSource(closingSource)
                                 .build(),
                         /* allowDialog= */ false);
+
+        TabModel regularTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        boolean retainPinnedTabs =
+                !closePinnedTabs
+                        && ChromeFeatureList.sAndroidCloseAllTabsRetainsPinnedTabs.isEnabled()
+                        && regularTabModel.getPinnedTabsCount() > 0;
 
         // To support CloseAllTabs for archived tabs, the tabs are restored/deleted but remain
         // cached. If a user undos the operation, then those tabs are re-archived. It's possible
@@ -71,13 +84,23 @@ public class CloseAllTabsHelper {
         Runnable restoreArchivedTabsRunnable =
                 removeArchivedTabsAndGetUndoRunnable(archivedOrchestrator, tabModelSelector);
 
-        tabModelSelector
-                .getModel(/* incognito= */ false)
+        TabClosureParams.Builder paramsBuilder;
+        if (retainPinnedTabs) {
+            List<Tab> unpinnedTabs = TabModelUtils.getUnpinnedTabs(regularTabModel);
+            if (unpinnedTabs.isEmpty()) {
+                return;
+            }
+            paramsBuilder = TabClosureParams.closeTabs(unpinnedTabs);
+        } else {
+            paramsBuilder = TabClosureParams.closeAllTabs();
+        }
+
+        regularTabModel
                 .getTabRemover()
                 .closeTabs(
-                        TabClosureParams.closeAllTabs()
-                                .allowUndo(allowUndo)
+                        paramsBuilder
                                 .hideTabGroups(true)
+                                .allowUndo(allowUndo)
                                 .withUndoRunnable(restoreArchivedTabsRunnable)
                                 .tabClosingSource(closingSource)
                                 .build(),
@@ -85,19 +108,24 @@ public class CloseAllTabsHelper {
     }
 
     /**
-     * Create a runnable to close all tabs using appropriate animations where applicable.
+     * Create a callback to close all tabs, accepting a boolean indicating whether pinned tabs
+     * should also be closed.
      *
      * @param tabModelSelector The {@link TabModelSelector} for the activity.
      * @param isIncognitoOnly Whether to only close incognito tabs.
      * @param allowUndo See {@link TabClosureParams#allowUndo}.
      */
-    public static Runnable buildCloseAllTabsRunnable(
+    public static Callback<Boolean> buildCloseAllTabsCallback(
             TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
-        return () -> closeAllTabs(tabModelSelector, isIncognitoOnly, allowUndo);
+        return (closePinnedTabs) ->
+                closeAllTabs(tabModelSelector, isIncognitoOnly, allowUndo, closePinnedTabs);
     }
 
     private static void closeAllTabs(
-            TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
+            TabModelSelector tabModelSelector,
+            boolean isIncognitoOnly,
+            boolean allowUndo,
+            boolean closePinnedTabs) {
         if (isIncognitoOnly) {
             tabModelSelector
                     .getModel(/* incognito= */ true)
@@ -110,7 +138,10 @@ public class CloseAllTabsHelper {
                             /* allowDialog= */ false);
         } else {
             closeAllTabsHidingTabGroups(
-                    tabModelSelector, allowUndo, TabClosingSource.GRID_TAB_SWITCHER);
+                    tabModelSelector,
+                    allowUndo,
+                    TabClosingSource.GRID_TAB_SWITCHER,
+                    closePinnedTabs);
         }
     }
 

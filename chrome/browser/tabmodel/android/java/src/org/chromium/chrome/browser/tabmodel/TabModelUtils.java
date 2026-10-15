@@ -330,4 +330,33 @@ public class TabModelUtils {
         }
         return ret;
     }
+
+    /**
+     * Returns whether the given {@link TabModel} contains at least one unpinned tab.
+     *
+     * @param tabModel The {@link TabModel} to check.
+     * @return True if {@code tabModel} has one or more unpinned tabs, false otherwise.
+     */
+    public static boolean hasUnpinnedTabs(TabModel tabModel) {
+        return tabModel.getCount() > tabModel.getPinnedTabsCount();
+    }
+
+    /**
+     * Returns all unpinned tabs in {@code tabModel}.
+     *
+     * @param tabModel The {@link TabModel} to enumerate.
+     * @return A list of unpinned {@link Tab}s in {@code tabModel}.
+     */
+    public static List<Tab> getUnpinnedTabs(TabModel tabModel) {
+        int count = tabModel.getCount();
+        int unpinnedCount = Math.max(0, count - tabModel.getPinnedTabsCount());
+        List<Tab> tabs = new ArrayList<>(unpinnedCount);
+        for (int i = 0; i < count; i++) {
+            Tab tab = tabModel.getTabAt(i);
+            if (tab != null && !tab.getIsPinned()) {
+                tabs.add(tab);
+            }
+        }
+        return tabs;
+    }
 }

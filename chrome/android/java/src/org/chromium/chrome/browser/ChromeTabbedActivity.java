@@ -2400,7 +2400,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             CloseAllTabsHelper.closeAllTabsHidingTabGroups(
                     assertNonNull(getTabModelSelectorSupplier().get()),
                     /* allowUndo= */ true,
-                    TabClosingSource.UNKNOWN);
+                    TabClosingSource.UNKNOWN,
+                    /* closePinnedTabs= */ true);
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
@@ -4764,28 +4765,30 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             // Close both incognito and normal tabs.
             TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
-            Runnable closeAllTabsRunnable =
-                    CloseAllTabsHelper.buildCloseAllTabsRunnable(
+            Callback<Boolean> closeAllTabsCallback =
+                    CloseAllTabsHelper.buildCloseAllTabsCallback(
                             tabModelSelector, /* isIncognitoOnly= */ false, allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier().asNonNull(),
                     tabModelSelector,
-                    closeAllTabsRunnable);
+                    closeAllTabsCallback,
+                    /* isIncognitoOnly= */ false);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
 
             // Close only incognito tabs
             TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
-            Runnable closeAllTabsRunnable =
-                    CloseAllTabsHelper.buildCloseAllTabsRunnable(
+            Callback<Boolean> closeAllTabsCallback =
+                    CloseAllTabsHelper.buildCloseAllTabsCallback(
                             tabModelSelector, /* isIncognitoOnly= */ true, allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier().asNonNull(),
                     tabModelSelector,
-                    closeAllTabsRunnable);
+                    closeAllTabsCallback,
+                    /* isIncognitoOnly= */ true);
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible =

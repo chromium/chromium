@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -11,9 +14,11 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -21,6 +26,7 @@ import android.view.MotionEvent;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +40,16 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -148,6 +158,68 @@ public class CloseAllTabsDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertUndoSnackbar(/* wasCloseAllTabsConfirmed= */ true));
         CriteriaHelper.pollUiThread(() -> 0 == selector.getModel(mIsIncognito).getCount());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
+    public void testCloseAllTabs_RetainsPinnedTabsWhenCheckboxUnchecked() {
+        Assume.assumeFalse(mIsIncognito);
+
+        TabModelSelector selector =
+                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
+        TabModel regularModel = setUpPinnedAndUnpinnedRegularTabs(selector);
+
+        navigateToCloseAllTabsDialog(selector);
+        onViewWaiting(withId(R.id.modal_dialog_checkbox)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, regularModel.getCount());
+                    assertTrue(regularModel.getTabAt(0).getIsPinned());
+                    assertUndoSnackbar(/* wasCloseAllTabsConfirmed= */ true);
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
+    public void testCloseAllTabs_ClosesPinnedTabsWhenCheckboxChecked() {
+        Assume.assumeFalse(mIsIncognito);
+
+        TabModelSelector selector =
+                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
+        TabModel regularModel = setUpPinnedAndUnpinnedRegularTabs(selector);
+
+        navigateToCloseAllTabsDialog(selector);
+        onViewWaiting(withId(R.id.modal_dialog_checkbox)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(0, regularModel.getCount());
+                    assertUndoSnackbar(/* wasCloseAllTabsConfirmed= */ true);
+                });
+    }
+
+    private TabModel setUpPinnedAndUnpinnedRegularTabs(TabModelSelector selector) {
+        TabModel regularModel = selector.getModel(/* incognito= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int initialTabId = regularModel.getTabAt(0).getId();
+                    regularModel.pinTab(initialTabId, /* showUngroupDialog= */ false);
+                });
+        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), /* isIncognito= */ false, 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(2, regularModel.getCount());
+                    assertEquals(1, regularModel.getPinnedTabsCount());
+                    assertEquals(1, TabModelUtils.getUnpinnedTabs(regularModel).size());
+                });
+        return regularModel;
     }
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {

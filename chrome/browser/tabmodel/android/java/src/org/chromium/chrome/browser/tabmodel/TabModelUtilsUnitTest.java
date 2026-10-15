@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.tabmodel;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -39,6 +42,8 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.MockitoHelper;
+
+import java.util.List;
 
 /** Tests for {@link TabModelUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -245,5 +250,28 @@ public class TabModelUtilsUnitTest {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabModel tabModel = TabModelUtils.getTabModelByTab(mArchivedTab);
         assertEquals(mTabModelSelector.getCurrentModel(), tabModel);
+    }
+
+    @Test
+    public void testHasUnpinnedTabs() {
+        assertTrue(TabModelUtils.hasUnpinnedTabs(mTabModel));
+        when(mTab.getIsPinned()).thenReturn(true);
+        assertFalse(TabModelUtils.hasUnpinnedTabs(mTabModel));
+    }
+
+    @Test
+    public void testGetUnpinnedTabs() {
+        Tab unpinnedTab = mock(Tab.class);
+        when(unpinnedTab.getId()).thenReturn(10);
+        when(unpinnedTab.getIsPinned()).thenReturn(false);
+        when(mTab.getIsPinned()).thenReturn(true);
+        mTabModel.addTab(
+                unpinnedTab,
+                TabList.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_LINK,
+                TabCreationState.LIVE_IN_BACKGROUND);
+
+        List<Tab> unpinnedOnly = TabModelUtils.getUnpinnedTabs(mTabModel);
+        assertEquals(List.of(unpinnedTab), unpinnedOnly);
     }
 }
