@@ -102,7 +102,7 @@
   padding: 4px;
   padding-inline-start: 12px;
   transition: background-color 150ms ease;
-  width: 183px;
+  width: 219px;
 }
 
 .dropdown-trigger:has(.keys-container) {
@@ -125,6 +125,7 @@
 .dropdown-caret {
   --cr-icon-size: 20px;
   color: var(--color-sys-on-surface-subtle);
+  flex-shrink: 0;
   height: 24px;
   pointer-events: none;
   width: 24px;
