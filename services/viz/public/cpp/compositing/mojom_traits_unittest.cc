@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -89,6 +90,7 @@
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -1678,6 +1680,46 @@ TEST_F(CompositingStructTraitsTest, CopyOutputResult_Bitmap) {
                                    out_bitmap.colorSpace()));
 
   EXPECT_EQ(output->GetTrackedElementRects(), tracked_element_rects);
+}
+
+TEST_F(CompositingStructTraitsTest, CopyOutputResult_BitmapWithPaddedRows) {
+  constexpr std::array<SkColor, 3> kRowColors = {SK_ColorRED, SK_ColorGREEN,
+                                                 SK_ColorBLUE};
+  const gfx::Rect result_rect(0, 0, 2, 3);
+  const SkImageInfo info =
+      SkImageInfo::MakeN32Premul(2, 3, SkColorSpace::MakeSRGB());
+  const size_t row_bytes = info.minRowBytes() + 8;
+  SkBitmap bitmap;
+  bitmap.allocPixels(info, row_bytes);
+  // Only the rows before the last one need padding in the source allocation.
+  ASSERT_EQ(bitmap.computeByteSize(), 2 * row_bytes + info.minRowBytes());
+  for (int y = 0; y < result_rect.height(); ++y) {
+    bitmap.eraseArea(SkIRect::MakeXYWH(0, y, result_rect.width(), 1),
+                     kRowColors[y]);
+  }
+
+  std::unique_ptr<CopyOutputResult> input =
+      std::make_unique<CopyOutputSkBitmapResult>(result_rect,
+                                                 std::move(bitmap));
+  std::unique_ptr<CopyOutputResult> output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(
+      input, output));
+  input.reset();
+
+  ASSERT_TRUE(output);
+  ASSERT_FALSE(output->IsEmpty());
+  EXPECT_EQ(output->rect(), result_rect);
+  auto scoped_bitmap = output->ScopedAccessSkBitmap();
+  const SkBitmap out_bitmap = scoped_bitmap.bitmap();
+  ASSERT_TRUE(out_bitmap.readyToDraw());
+  ASSERT_EQ(out_bitmap.width(), result_rect.width());
+  ASSERT_EQ(out_bitmap.height(), result_rect.height());
+  EXPECT_EQ(out_bitmap.rowBytes(), info.minRowBytes());
+  for (int y = 0; y < result_rect.height(); ++y) {
+    for (int x = 0; x < result_rect.width(); ++x) {
+      EXPECT_EQ(out_bitmap.getColor(x, y), kRowColors[y]);
+    }
+  }
 }
 
 TEST_F(CompositingStructTraitsTest, TrackedElementRects) {

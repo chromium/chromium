@@ -26,7 +26,7 @@ bool ShmCountBase::IsInitialized() const {
 }
 
 volatile ShmCountBase::AtomicType* ShmCountBase::AsAtomic() {
-  return reinterpret_cast<volatile AtomicType*>(mapping_.memory());
+  return mapping_.GetMemoryAs<volatile AtomicType>();
 }
 
 GpuProcessShmCount::GpuProcessShmCount() = default;

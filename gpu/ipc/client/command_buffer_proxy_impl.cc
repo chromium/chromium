@@ -800,8 +800,7 @@ void CommandBufferProxyImpl::TryUpdateStateDontReportError() {
 
 const gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state()
     const {
-  return reinterpret_cast<const gpu::CommandBufferSharedState*>(
-      shared_state_mapping_.memory());
+  return shared_state_mapping_.GetMemoryAs<gpu::CommandBufferSharedState>();
 }
 
 base::HistogramBase*

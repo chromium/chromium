@@ -4,10 +4,10 @@
 
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 
-#include <cstdint>
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace {
 
@@ -57,19 +57,20 @@ StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
       return std::nullopt;
     }
 
-    auto* src_pixels = static_cast<const uint8_t*>(sk_bitmap.getPixels());
+    const auto src_pixels = gfx::SkPixmapToSpan(sk_bitmap.pixmap());
     size_t src_stride = sk_bitmap.rowBytes();
-    auto* dst_pixels = static_cast<uint8_t*>(mapping.memory());
+    auto dst_pixels = base::span(mapping);
 
     // If source and destination stride are the same use a single copy
     // operation, otherwise do a row-by-row copy.
     if (src_stride == min_row_bytes) {
-      UNSAFE_TODO(memcpy(dst_pixels, src_pixels, byte_size));
+      dst_pixels.copy_from(src_pixels.first(byte_size));
     } else {
       for (int y = 0; y < sk_bitmap.height(); ++y) {
-        UNSAFE_TODO(memcpy(dst_pixels, src_pixels, min_row_bytes));
-        UNSAFE_TODO(src_pixels += src_stride);
-        UNSAFE_TODO(dst_pixels += min_row_bytes);
+        size_t src_offset = y * src_stride;
+        size_t dst_offset = y * min_row_bytes;
+        dst_pixels.subspan(dst_offset, min_row_bytes)
+            .copy_from(src_pixels.subspan(src_offset, min_row_bytes));
       }
     }
   }
@@ -104,7 +105,7 @@ bool StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::Read(
 
   // Skia guarantees that it will call release proc, so we pass release()'ed
   // pointer into it.
-  void* bitmap_memory = mapping_ptr->memory();
+  void* bitmap_memory = mapping_ptr->data();
   if (!sk_bitmap->installPixels(
           image_info, bitmap_memory, image_info.minRowBytes(),
           &DeleteSharedMemoryMapping, mapping_ptr.release())) {
