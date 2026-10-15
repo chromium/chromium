@@ -1229,7 +1229,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="39" label="TrustedWebActivityIssue::kUnavailableOffline"/>
   <int value="40" label="TrustedWebActivityIssue::kDigitalAssetLinks"/>
   <int value="41" label="LowTextContrastIssue"/>
-  <int value="42" label="CorsIssue::InsecurePrivateNetwork"/>
+  <int value="42" label="CorsIssue::InsecureLocalNetwork"/>
   <int value="43" label="CorsIssue::InsecurePrivateNetworkPreflight"/>
   <int value="44" label="CorsIssue::InvalidHeaders"/>
   <int value="45" label="CorsIssue::WildcardOriginWithCredentials"/>
@@ -1333,6 +1333,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="115" label="GenericIssue::AutofillPolicyControlledFeatureInfo"/>
   <int value="116" label="GenericIssue::ManualTextPolicyControlledFeatureInfo"/>
   <int value="117" label="GenericIssue::GeolocationPromptWithoutUserGesture"/>
+  <int value="118" label="CorsIssue::InvalidLocalNetworkAccess"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
