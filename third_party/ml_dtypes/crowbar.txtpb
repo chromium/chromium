@@ -1,9 +1,9 @@
 upstream {
-  commit: "ce57c03112ff4a95c275c3d2c3622acaa53663bd"
+  version: "v0.6.0"
   artifacts {
     git {
       repository: "https://github.com/jax-ml/ml_dtypes"
-      commit: "ce57c03112ff4a95c275c3d2c3622acaa53663bd"
+      commit: "6bc762dd106292e1aa0d5de98d3867d6b642f209"
     }
   }
 }
@@ -12,4 +12,11 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  semver {}
+  git {
+    repository: "https://github.com/jax-ml/ml_dtypes"
+    tags {}
+  }
 }

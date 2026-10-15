@@ -1196,32 +1196,6 @@ std::ostream& operator<<(std::ostream& os, const float8_base<Float8>& f8) {
 // Inline conversion routines between float8 and other types.
 //==============================================================================
 
-template <typename T>
-bool constexpr IsPowerOfTwo(T x) {
-  return (x != 0) && ((x & (x - 1)) == 0);
-}
-// Helper for getting a bytes size which is a power of two.
-template <int Size>
-struct NextPowerOfTwo {
-  static constexpr int value = Size;
-};
-template <>
-struct NextPowerOfTwo<3> {
-  static constexpr int value = 4;
-};
-template <>
-struct NextPowerOfTwo<5> {
-  static constexpr int value = 8;
-};
-template <>
-struct NextPowerOfTwo<6> {
-  static constexpr int value = 8;
-};
-template <>
-struct NextPowerOfTwo<7> {
-  static constexpr int value = 8;
-};
-
 // Helper for getting a bit representation provided a byte size.
 template <int kNumBytes>
 using GetUnsignedInteger =
@@ -1284,13 +1258,12 @@ struct Traits<float8_e5m2fnuz> : public TraitsBase<float8_e5m2fnuz> {
 template <>
 struct Traits<float8_e8m0fnu> : public TraitsBase<float8_e8m0fnu> {
   using Base = TraitsBase<float8_e8m0fnu>;
-  // No zero in E8MO OCP MX format description.
+  // No zero in E8M0 OCP MX format description.
   static constexpr bool kHasZero = false;
 };
 
 template <typename Bits>
-constexpr inline Bits RoundBitsToNearestEven(Bits bits, int roundoff,
-                                             bool use_implicit_bit) {
+constexpr inline Bits RoundBitsToNearestEven(Bits bits, int roundoff) {
   // Round to nearest even by adding a bias term.
   // Consider a bit pattern
   //   FFF...FLRTT...T,
@@ -1299,12 +1272,7 @@ constexpr inline Bits RoundBitsToNearestEven(Bits bits, int roundoff,
   // - L is 1, R is 1, OR
   // - L is 0, R is 1, any T is one.
   // We do this by adding L to a bit pattern consisting of all T = 1.
-  //
-  // When rounding to zero mantissa (E8M0 type), the L bit is implicitly 1 (do
-  // not use the exponent bits for rounding). Add only the R bit in this case.
-  Bits bias = !use_implicit_bit
-                  ? ((bits >> roundoff) & 1) + (Bits{1} << (roundoff - 1)) - 1
-                  : Bits{1} << (roundoff - 1);
+  Bits bias = ((bits >> roundoff) & 1) + (Bits{1} << (roundoff - 1)) - 1;
   return bits + bias;
 }
 
@@ -1380,204 +1348,172 @@ struct ConvertImpl<From, To, kSaturate, kTruncate,
   static constexpr int kFromMantissaBits = FromTraits::kMantissaBits;
   static constexpr int kFromExponentBits = FromTraits::kExponentBits;
   static constexpr int kFromExponentBias = FromTraits::kExponentBias;
-  static constexpr FromBits kFromExponentMask = FromTraits::kExponentMask;
+  // FromBits has to be able to hold the implicit bit at `kFromMantissaBits +
+  // 1` and handle shifts wide enough to clear the implicit bit.
+  static_assert(std::numeric_limits<FromBits>::digits > kFromMantissaBits + 1);
 
   using ToTraits = Traits<To>;
   using ToBits = typename ToTraits::BitsType;
   static constexpr bool kToIsSigned = ToTraits::kIsSigned;
   static constexpr bool kToHasZero = ToTraits::kHasZero;
-  static constexpr int kToBits = ToTraits::kBits;
   static constexpr int kToMantissaBits = ToTraits::kMantissaBits;
   static constexpr int kToExponentBits = ToTraits::kExponentBits;
   static constexpr int kToExponentBias = ToTraits::kExponentBias;
-  static constexpr ToBits kToExponentMask = ToTraits::kExponentMask;
-
-  // `WideBits` is wide enough to accommodate the largest exponent and mantissa
-  // in either `From` or `To`.
-  static constexpr int kWideBits =
-      (std::max(kToMantissaBits, kFromMantissaBits)) +  // Max significand.
-      (std::max(kToExponentBits, kFromExponentBits));   // Max exponent.
-  static constexpr int kWideBytesRaw = (kWideBits + (CHAR_BIT - 1)) / CHAR_BIT;
-  // Need a power of two (i.e. not 3 bytes).
-  static constexpr int kWideBytes = NextPowerOfTwo<kWideBytesRaw>::value;
-
-  using WideBits = GetUnsignedInteger<kWideBytes>;
-  static_assert(!std::is_void_v<WideBits>,
-                "`WideBits` type can not be void type.");
-
-  static constexpr int kExponentOffset = kToExponentBias - kFromExponentBias;
-  static constexpr int kDigitShift = kToMantissaBits - kFromMantissaBits;
 
   static EIGEN_DEVICE_FUNC inline To run(From from) {
-    // Shift bits to destination type, without sign bit.
-    const bool from_sign_bit =
+    const bool from_sign =
         Eigen::numext::bit_cast<FromBits>(from) >> (kFromBits - 1) &&
         kFromIsSigned;
-    const FromBits from_bits =
-        Eigen::numext::bit_cast<FromBits>(Eigen::numext::abs(from));
+    From from_abs = Eigen::numext::abs(from);
+    FromBits from_abs_bits = Eigen::numext::bit_cast<FromBits>(from_abs);
 
-    // Special values, preserving sign.
-    if (Eigen::numext::isinf(from)) {
-      return from_sign_bit ? -Eigen::NumTraits<To>::infinity()
-                           : Eigen::NumTraits<To>::infinity();
+    // 1. Handle non-finite values (Infinity and NaN).
+    if (Eigen::numext::isinf(from_abs)) {
+      return from_sign ? -Eigen::NumTraits<To>::infinity()
+                       : Eigen::NumTraits<To>::infinity();
     }
-    if (Eigen::numext::isnan(from)) {
-      return from_sign_bit ? -Eigen::NumTraits<To>::quiet_NaN()
-                           : Eigen::NumTraits<To>::quiet_NaN();
+    if (Eigen::numext::isnan(from_abs)) {
+      return from_sign ? -Eigen::NumTraits<To>::quiet_NaN()
+                       : Eigen::NumTraits<To>::quiet_NaN();
     }
-    // Dealing with zero, when `From` has one.
-    if (from_bits == 0 && kFromHasZero) {
+
+    // 2. Handle Zero.
+    // Note: Types without zero (e.g., E8M0 where kFromHasZero=false) encode
+    // values in 0x00 and pass through as normal numbers.
+    if (from_abs_bits == 0 && kFromHasZero) {
       if constexpr (kToHasZero) {
-        // Keep the sign, if `To` supports it.
-        return from_sign_bit && kToIsSigned ? -To{} : To{};
+        To zero = Eigen::numext::bit_cast<To>(ToBits{0});
+        return from_sign && kToIsSigned ? -zero : zero;
       } else {
+        // If the target has no zero (e.g., E8M0), we saturate to the minimum
+        // denormalized value.
         return kSaturate ? std::numeric_limits<To>::denorm_min()
                          : Eigen::NumTraits<To>::quiet_NaN();
       }
     }
+
     // `To` unsigned floating format: NaN or saturate.
-    if constexpr (!kToIsSigned && kFromIsSigned) {
-      if (from_sign_bit) {
+    if constexpr (kFromIsSigned && !kToIsSigned) {
+      if (from_sign) {
         return kSaturate ? std::numeric_limits<To>::lowest()
                          : Eigen::NumTraits<To>::quiet_NaN();
       }
     }
 
-    const int biased_from_exponent = from_bits >> kFromMantissaBits;
-    const bool to_zero_mantissa = kToMantissaBits == 0;
+    // 3. Unpack and Normalize Input.
+    // We convert the input into a normalized (unbiased_exponent, mantissa)
+    // pair. The mantissa is shifted such that the implicit leading 1 is at
+    // bit `kFromMantissaBits`.
+    int unbiased_exponent;
+    FromBits normalized_mantissa;
 
-    // `To` supports more exponents near zero which means that some subnormal
-    // values in `From` may become normal.
-    if constexpr (std::numeric_limits<To>::min_exponent <
-                  std::numeric_limits<From>::min_exponent) {
-      if (biased_from_exponent == 0) {
-        // Subnormals.
-        WideBits bits = from_bits;
+    const FromBits from_biased_exp = from_abs_bits >> kFromMantissaBits;
+    const FromBits from_fraction = from_abs_bits & FromTraits::kMantissaMask;
 
-        // Determine exponent in target type.
-        const int msb =
-            sizeof(from_bits) * CHAR_BIT - countl_zero(from_bits) - 1;
-        const int normalization_factor = kFromMantissaBits - msb;
-        const int biased_exponent = kExponentOffset - normalization_factor + 1;
-        if (biased_exponent <= 0) {
-          // Result is subnormal.  Adjust the subnormal bits to account for
-          // the difference in exponent bias.
-          if constexpr (kExponentOffset < sizeof(WideBits) * CHAR_BIT) {
-            bits <<= kExponentOffset;
-          }
-        } else {
-          // Result is normal. Shift the mantissa to account for the number of
-          // leading zero digits, and clear the hidden bit.
-          bits <<= normalization_factor;
-          bits &= ~(WideBits{1} << kFromMantissaBits);
-          // Insert the exponent bits.
-          bits |= static_cast<WideBits>(biased_exponent) << kFromMantissaBits;
-        }
+    constexpr FromBits kImplicitBit = FromBits{1} << kFromMantissaBits;
+    if (from_biased_exp != 0 || !kFromHasZero) {
+      // Normal number (or E8M0).
+      unbiased_exponent = from_biased_exp - kFromExponentBias;
+      normalized_mantissa = kImplicitBit | from_fraction;
+    } else {
+      // Input is subnormal. We normalize it by shifting the fraction until the
+      // MSB is 1, adjusting the exponent accordingly.
+      // `countl_zero` counts from the MSB of the storage type, so we adjust
+      // based on the actual bit width of the type.
+      int type_leading_zeros = countl_zero(from_fraction);
+      int storage_bits = sizeof(FromBits) * CHAR_BIT;
+      int fraction_leading_zeros =
+          type_leading_zeros - (storage_bits - kFromMantissaBits);
 
-        // Truncate/round mantissa if necessary.
-        if constexpr (kDigitShift >= 0) {
-          bits <<= kDigitShift;
-        } else {
-          if constexpr (!kTruncate) {
-            // When converting float to e8m0, the bits represent a denormal,
-            // so don't use the implicit mantissa bit for rounding.
-            bits = RoundBitsToNearestEven(
-                bits, -kDigitShift, to_zero_mantissa && kExponentOffset != 0);
-          }
-          bits >>= -kDigitShift;
-        }
-        To to = Eigen::numext::bit_cast<To>(static_cast<ToBits>(bits));
-        return from_sign_bit ? -to : to;
-      }
-    }
-    // `To` supports fewer exponents near zero which means that some values in
-    // `From` may become subnormal.
-    if constexpr (std::numeric_limits<To>::min_exponent >
-                  std::numeric_limits<From>::min_exponent) {
-      const int unbiased_exponent = biased_from_exponent - kFromExponentBias;
-      const int biased_to_exponent = unbiased_exponent + kToExponentBias;
-      // Subnormals and zero.
-      if (biased_to_exponent <= 0) {
-        // Round and shift mantissa down.
-        // Zero exponent valid if From has no zero representation.
-        FromBits from_has_leading_one =
-            (biased_from_exponent > 0 || !kFromHasZero ? 1 : 0);
-        int exponent_shift =
-            -kDigitShift - biased_to_exponent + from_has_leading_one;
-        // Insert the implicit leading 1 bit on the mantissa for normalized
-        // inputs.
-        FromBits rounded_from_bits =
-            (from_bits & FromTraits::kMantissaMask) |
-            (from_has_leading_one << kFromMantissaBits);
-        ToBits bits = 0;
-        if (exponent_shift > 0) {
-          // To avoid UB, limit rounding and shifting to the full mantissa plus
-          // leading 1.
-          if (exponent_shift <= kFromMantissaBits + 1) {
-            if constexpr (!kTruncate) {
-              // NOTE: we need to round again from the original from_bits,
-              // otherwise the lower precision bits may already be lost.  There
-              // is an edge-case where rounding to a normalized value would
-              // normally round down, but for a subnormal, we need to round up.
-              rounded_from_bits = RoundBitsToNearestEven(rounded_from_bits,
-                                                         exponent_shift, false);
-            }
-            bits = rounded_from_bits >> exponent_shift;
-          }
-        } else {
-          bits = rounded_from_bits << -exponent_shift;
-        }
-        // Insert sign and return.
-        To to = Eigen::numext::bit_cast<To>(bits);
-        return from_sign_bit ? -to : to;
-      }
+      int normalization_shift = fraction_leading_zeros + 1;
+      normalized_mantissa = from_fraction << normalization_shift;
+      unbiased_exponent = (1 - kFromExponentBias) - normalization_shift;
     }
 
-    // Round the mantissa if it is shrinking.
-    WideBits rounded_from_bits = from_bits;
-    if constexpr (kDigitShift < 0) {
+    // 4. Calculate Target Parameters.
+    // We calculate `target_biased_exponent_base` representing:
+    // `BiasedExp - 1`.
+    //
+    // The "-1" is critical to the packing algorithm (Step 6). We maintain the
+    // mantissa with its implicit leading 1. When we eventually add the
+    // mantissa to the exponent bits, that leading 1 acts as `1 <<
+    // kToMantissaBits`, effectively adding 1 to the exponent.
+    //
+    // If the result is negative, it indicates the value is too small for the
+    // normal range of the target (underflow), requiring denormalization.
+    int target_biased_exponent_base = unbiased_exponent + kToExponentBias - 1;
+
+    // 5. Apply Shift and Rounding.
+    // We calculate the shift needed to align the source mantissa to the target
+    // mantissa.
+    // Positive shift: Right shift (truncation/rounding needed).
+    // Negative shift: Left shift (padding needed).
+    const int denormal_adjustment = std::max(0, -target_biased_exponent_base);
+    // A shift of `kFromMantissaBits + 1` removes the implicit bit, but the
+    // result may still round to 1. A shift of `kFromMantissaBits + 2`
+    // guarantees a result of 0 after rounding. We clamp the shift to this
+    // value.
+    const int alignment_shift =
+        std::min((kFromMantissaBits - kToMantissaBits) + denormal_adjustment,
+                 kFromMantissaBits + 2);
+
+    ToBits aligned_mantissa;
+    if (alignment_shift > 0) {
       if constexpr (!kTruncate) {
-        rounded_from_bits =
-            RoundBitsToNearestEven(from_bits, -kDigitShift, to_zero_mantissa);
+        // Rounding may cause a carry (e.g., 1.11... -> 10.00...).
+        // This carry will naturally flow into the exponent during packing.
+        normalized_mantissa =
+            RoundBitsToNearestEven(normalized_mantissa, alignment_shift);
       }
-      // Zero-out tail bits.
-      rounded_from_bits &= ~((WideBits{1} << (-kDigitShift)) - 1);
+      aligned_mantissa = normalized_mantissa >> alignment_shift;
+    } else {
+      aligned_mantissa = static_cast<ToBits>(normalized_mantissa)
+                         << -alignment_shift;
     }
 
-    // Re-bias the exponent.
-    rounded_from_bits += static_cast<WideBits>(kExponentOffset)
-                         << kFromMantissaBits;
+    // 6. Pack and Handle Overflow.
+    // Clamp the exponent bits to 0 (for subnormals).
+    const ToBits target_exp_bits =
+        static_cast<ToBits>(std::max(0, target_biased_exponent_base));
 
-    ToBits bits;
-    // Check for overflows by aligning the significands. We always align the
-    // narrower significand to the wider significand.
-    const WideBits kToHighestRep =
+    // Reassemble the bits using integer addition.
+    //
+    // As noted in Step 4, `target_exp_bits` holds `BiasedExp- 1`.
+    // The `aligned_mantissa` variable still holds the implicit leading 1 at
+    // position `kToMantissaBits`.
+    //
+    // Therefore:
+    //   (BiasedExp - 1) << Shift  +  (1 << Shift | Fraction)
+    //   = ((BiasedExp - 1) + 1) << Shift  +  Fraction
+    //   = BiasedExp << Shift  +  Fraction
+    //
+    // This addition also handles rounding overflow automatically. If rounding
+    // created a carry (mantissa = 2.0), it adds an extra 1 to the exponent
+    // (creating `BiasedExp + 1`).
+    ToBits result_bits =
+        aligned_mantissa + (target_exp_bits << kToMantissaBits);
+
+    const ToBits kToMaxFinite =
         Eigen::numext::bit_cast<ToBits>(Eigen::NumTraits<To>::highest());
-    WideBits aligned_highest{kToHighestRep};
-    if constexpr (kDigitShift < 0) {
-      aligned_highest <<= -kDigitShift;
-      // Shift down, all dropped bits should already be zero.
-      bits = static_cast<ToBits>(rounded_from_bits >> -kDigitShift);
-    } else if constexpr (kDigitShift >= 0) {
-      // Shift up, inserting zeros in the newly created digits.
-      rounded_from_bits <<= kDigitShift;
-      bits = static_cast<ToBits>(rounded_from_bits);
-    }
 
-    To to = Eigen::numext::bit_cast<To>(bits);
-    // `From` supports larger values than `To`, we may overflow.
-    if constexpr (std::make_pair(std::numeric_limits<To>::max_exponent,
-                                 std::numeric_limits<To>::digits) <
-                  std::make_pair(std::numeric_limits<From>::max_exponent,
-                                 std::numeric_limits<From>::digits)) {
-      if (rounded_from_bits > aligned_highest) {
-        // Overflowed values map to highest or infinity depending on kSaturate.
-        to = kSaturate ? Eigen::NumTraits<To>::highest()
-                       : Eigen::NumTraits<To>::infinity();
+    // Check for overflow.
+    // Condition 1: Exponent calculated exceeds target max.
+    // Condition 2: The final packed bits exceed the max finite representation
+    // (handles cases where rounding pushed a max-value into infinity).
+    if (target_biased_exponent_base >=
+            std::numeric_limits<To>::max_exponent + kToExponentBias ||
+        result_bits > kToMaxFinite) {
+      if constexpr (kSaturate) {
+        result_bits = kToMaxFinite;
+      } else {
+        result_bits =
+            Eigen::numext::bit_cast<ToBits>(Eigen::NumTraits<To>::infinity());
       }
     }
-    // Insert sign bit.
-    return from_sign_bit ? -to : to;
+
+    // 7. Apply Sign
+    To result = Eigen::numext::bit_cast<To>(result_bits);
+    return from_sign ? -result : result;
   }
 };
 
@@ -1608,7 +1544,7 @@ struct ConvertImpl<Eigen::half, float8_e5m2, kSaturate, kTruncate> {
     }
 
     if constexpr (!kTruncate) {
-      from_bits = RoundBitsToNearestEven(from_bits, 8, false);
+      from_bits = RoundBitsToNearestEven(from_bits, 8);
       // Rounding can cause an overflow to infinity. Clamp to the largest finite
       // value if saturation is requested.
       if constexpr (kSaturate) {
