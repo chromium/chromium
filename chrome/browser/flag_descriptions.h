@@ -2519,9 +2519,8 @@ inline constexpr char kManagedConfigurationRecoverFromFailedFetchesName[] =
     "Managed Configuration API recover from failed fetches";
 inline constexpr char
     kManagedConfigurationRecoverFromFailedFetchesDescription[] =
-        "Enables retry with exponential backoff, network reconnection "
-        "recovery, and in-flight read queuing for the Managed Configuration "
-        "Web API.";
+        "Enables retry with exponential backoff and network reconnection "
+        "recovery for the Managed Configuration Web API.";
 
 inline constexpr char kEnablePixelCanvasRecordingName[] =
     "Enable pixel canvas recording";

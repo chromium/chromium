@@ -246,11 +246,7 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
 class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
                                     public ManagedConfigurationAPI::Observer {
  public:
-  explicit ManagedConfigurationAPITest(bool enable_recovery = true) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kManagedConfigurationRecoverFromFailedFetches,
-        enable_recovery);
-  }
+  ManagedConfigurationAPITest() = default;
   ManagedConfigurationAPITest(const ManagedConfigurationAPITest&) = delete;
   ManagedConfigurationAPITest& operator=(const ManagedConfigurationAPITest&) =
       delete;
@@ -286,7 +282,6 @@ class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
   const url::Origin& GetOrigin() const override { return origin(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   bool updated_ = false;
   std::unique_ptr<base::RunLoop> loop_update_;
 };
@@ -960,8 +955,13 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 class ManagedConfigurationAPIRecoveryDisabledTest
     : public ManagedConfigurationAPITest {
  public:
-  ManagedConfigurationAPIRecoveryDisabledTest()
-      : ManagedConfigurationAPITest(/*enable_recovery=*/false) {}
+  ManagedConfigurationAPIRecoveryDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kManagedConfigurationRecoverFromFailedFetches);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that when `kManagedConfigurationRecoverFromFailedFetches` is
