@@ -648,7 +648,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       }
     }
 
-    // TODO (crbug.com/470381025): Fix cursor style when settings menu is open
     let isInsideSubmenu = false;
     let isInsideMain = false;
     const path = e.composedPath();
