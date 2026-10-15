@@ -6,6 +6,9 @@
 
 #include <lib/sys/cpp/component_context.h>
 
+#include <utility>
+
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -89,11 +92,10 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
 
   auto buffer_span = base::span(*buffer);
   size_t samples = buffer_span.size() / 3;
-  scoped_refptr<media::DecoderBuffer> result =
-      base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
+  auto output_data = base::HeapArray<uint8_t>::Uninit(samples * 4);
 
   base::SpanReader reader(buffer_span);
-  auto result_writer = base::SpanWriter(result->writable_span());
+  auto result_writer = base::SpanWriter(output_data.as_span());
 
   for (size_t i = 0; i < samples; ++i) {
     auto sample = reader.Read<3u>();
@@ -104,6 +106,7 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
     CHECK(result_writer.WriteU32LittleEndian(val));
   }
 
+  auto result = media::DecoderBuffer::FromArray(std::move(output_data));
   result->set_timestamp(buffer->timestamp());
   result->set_duration(buffer->duration());
 
