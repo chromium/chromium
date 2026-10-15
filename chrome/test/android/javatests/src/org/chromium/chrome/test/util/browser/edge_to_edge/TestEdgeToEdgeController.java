@@ -38,6 +38,11 @@ public class TestEdgeToEdgeController implements EdgeToEdgeController {
     }
 
     @Override
+    public boolean tabShouldDrawFullTopEdgeToEdge() {
+        return false;
+    }
+
+    @Override
     public void destroy() {}
 
     @Override

@@ -104,6 +104,11 @@ public class SimpleEdgeToEdgeController implements EdgeToEdgeController {
     }
 
     @Override
+    public boolean tabShouldDrawFullTopEdgeToEdge() {
+        return false;
+    }
+
+    @Override
     public void registerObserver(ChangeObserver changeObserver) {
         mObservers.addObserver(changeObserver);
         changeObserver.onToEdgeChange(mBottomInset, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());

@@ -717,7 +717,7 @@ public class EdgeToEdgeUtils {
      * @return True if the tab is a native page that supports top edge to edge, false otherwise.
      */
     public static boolean tabSupportsTopEdgeToEdge(@Nullable Tab tab) {
-        // TODO(crbug.com/498302496): Currently top edge-to-edge is only supported on native pages.
+        // TODO(crbug.com/573617460): Currently top edge-to-edge is only supported on native pages.
         // Support for web pages (e.g. viewport-fit=cover) will be added in future iterations and
         // will check isTopEdgeToEdgeEnabled().
         if (!isEdgeToEdgeRefactorEnabled() || tab == null) {
@@ -728,6 +728,19 @@ public class EdgeToEdgeUtils {
             return isNativeTabDrawingToTopEdge(tab);
         }
 
+        return false;
+    }
+
+    /**
+     * Returns whether the given Tab supports drawing top edge to edge with no top scalp.
+     *
+     * @param tab The Tab to check.
+     * @return True if the tab supports drawing top edge to edge with no top scalp, false otherwise.
+     */
+    public static boolean tabShouldDrawFullTopEdgeToEdge(@Nullable Tab tab) {
+        if (tab != null && tab.isNativePage()) {
+            return isNativeTabDrawingToTopEdge(tab);
+        }
         return false;
     }
 

@@ -501,6 +501,11 @@ public class EdgeToEdgeControllerImpl
         return mIsPageOptedIntoBottomEdgeToEdge;
     }
 
+    @Override
+    public boolean tabShouldDrawFullTopEdgeToEdge() {
+        return EdgeToEdgeUtils.tabShouldDrawFullTopEdgeToEdge(mCurrentTab);
+    }
+
     // BrowserControlsStateProvider.Observer
 
     @Override

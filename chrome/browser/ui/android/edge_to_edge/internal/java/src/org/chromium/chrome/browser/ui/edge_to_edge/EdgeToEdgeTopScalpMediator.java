@@ -110,11 +110,12 @@ class EdgeToEdgeTopScalpMediator
         // be added in a follow-up crbug.com/505803562).
         boolean isTopE2eEnabled = EdgeToEdgeUtils.isTopEdgeToEdgeEnabled();
         boolean isFullscreen = mFullscreenManager.getPersistentFullscreenMode();
+        boolean isFullTopEdgeToEdge = mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge();
         int newHeight =
                 (isTopE2eEnabled && !isFullscreen)
                         ? mEdgeToEdgeController.getSystemTopInsetPx()
                         : 0;
-        boolean newCanShow = newHeight > 0;
+        boolean newCanShow = !isFullTopEdgeToEdge && newHeight > 0;
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
         boolean visibilityChanged = mCanShow != newCanShow;

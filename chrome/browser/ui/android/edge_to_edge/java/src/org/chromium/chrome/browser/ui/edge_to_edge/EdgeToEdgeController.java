@@ -69,6 +69,12 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier, T
      */
     boolean isPageOptedIntoEdgeToEdge();
 
+    /**
+     * @return Whether the current tab supports drawing top edge-to-edge with no top scalp (e.g. a
+     *     native page that supports top edge-to-edge).
+     */
+    boolean tabShouldDrawFullTopEdgeToEdge();
+
     @Override
     default void addObserver(TopInsetProvider.Observer observer) {}
 

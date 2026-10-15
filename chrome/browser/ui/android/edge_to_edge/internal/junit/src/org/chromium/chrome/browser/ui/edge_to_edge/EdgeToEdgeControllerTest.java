@@ -2427,6 +2427,48 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTabShouldDrawFullTopEdgeToEdge_NullTab() {
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTabShouldDrawFullTopEdgeToEdge_StandardWebTab() {
+        Tab webTab =
+                createMockTab(
+                        JUnitTestGURLs.HTTP_URL,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ false);
+        mTabProvider.set(webTab);
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTabShouldDrawFullTopEdgeToEdge_DefaultNtpTab() {
+        Tab defaultNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ false);
+        mTabProvider.set(defaultNtpTab);
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTabShouldDrawFullTopEdgeToEdge_CustomNtpTab() {
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        mTabProvider.set(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testSetStatusIndicatorVisible() {
         Tab tab =
                 createMockTab(

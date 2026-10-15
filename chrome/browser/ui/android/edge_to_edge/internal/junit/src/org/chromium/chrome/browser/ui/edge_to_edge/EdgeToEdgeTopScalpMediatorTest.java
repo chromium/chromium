@@ -284,4 +284,28 @@ public class EdgeToEdgeTopScalpMediatorTest {
         assertTrue(mModel.get(EdgeToEdgeTopScalpProperties.IS_VISIBLE));
         verify(mTopControlsStacker).requestLayerUpdatePost(false);
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testToggleFullTopEdgeToEdge() {
+        when(mEdgeToEdgeController.getSystemTopInsetPx()).thenReturn(100);
+        when(mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge()).thenReturn(false);
+        mMediator = createMediator();
+        assertEquals(TopControlVisibility.VISIBLE, mMediator.getTopControlVisibility());
+        assertTrue(mModel.get(EdgeToEdgeTopScalpProperties.IS_VISIBLE));
+
+        // Drawing full top edge-to-edge should hide the Top Scalp.
+        when(mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge()).thenReturn(true);
+        mMediator.onToEdgeChange(
+                /* bottomInset= */ 0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+        assertEquals(TopControlVisibility.HIDDEN, mMediator.getTopControlVisibility());
+        assertFalse(mModel.get(EdgeToEdgeTopScalpProperties.IS_VISIBLE));
+
+        // Disabling full top edge-to-edge should show the Top Scalp.
+        when(mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge()).thenReturn(false);
+        mMediator.onToEdgeChange(
+                /* bottomInset= */ 0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertEquals(TopControlVisibility.VISIBLE, mMediator.getTopControlVisibility());
+        assertTrue(mModel.get(EdgeToEdgeTopScalpProperties.IS_VISIBLE));
+    }
 }
