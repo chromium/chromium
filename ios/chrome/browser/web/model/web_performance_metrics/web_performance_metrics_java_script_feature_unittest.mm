@@ -167,9 +167,11 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureTest, LogInteractionToNextPaint) {
       ->LogInteractionToNextPaint(&fake_web_state, zero_count_dict,
                                   /*is_main_frame=*/false);
 
-  // Trigger navigation flush.
+  // Trigger the flush by committing a navigation.
   web::FakeNavigationContext navigation_context;
   fake_web_state.OnNavigationStarted(&navigation_context);
+  navigation_context.SetHasCommitted(true);
+  fake_web_state.OnNavigationFinished(&navigation_context);
 
   histogram_tester.ExpectUniqueTimeSample(
       web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,
@@ -203,9 +205,11 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
       ->LogInteractionToNextPaint(&fake_web_state, main_dict,
                                   /*is_main_frame=*/true);
 
-  // Trigger navigation flush.
+  // Trigger the flush by committing a navigation.
   web::FakeNavigationContext navigation_context;
   fake_web_state.OnNavigationStarted(&navigation_context);
+  navigation_context.SetHasCommitted(true);
+  fake_web_state.OnNavigationFinished(&navigation_context);
 
   histogram_tester.ExpectUniqueTimeSample(
       web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,

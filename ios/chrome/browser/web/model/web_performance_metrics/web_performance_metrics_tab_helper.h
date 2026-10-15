@@ -94,6 +94,8 @@ class WebPerformanceMetricsTabHelper
 
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void WasHidden(web::WebState* web_state) override;
 
   // Manages the tab helper's connection to the WebState

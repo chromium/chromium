@@ -18,7 +18,7 @@
 using WebPerformanceMetricsTabHelperTest = PlatformTest;
 
 // Tests that Interaction to Next Paint is buffered in TabHelper and flushed
-// exactly once on the subsequent navigation start.
+// exactly once when the subsequent cross-document navigation commits.
 TEST_F(WebPerformanceMetricsTabHelperTest,
        InteractionToNextPaint_DeferredFlushOnNavigation) {
   base::HistogramTester histogram_tester;
@@ -41,7 +41,11 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
                                       /*interaction_count=*/2,
                                       /*is_main_frame=*/true);
 
-  // No histogram sample should be recorded prior to navigation completion.
+  // Simulate the next navigation starting.
+  web::FakeNavigationContext navigation_context;
+  fake_web_state.OnNavigationStarted(&navigation_context);
+
+  // No histogram sample should be recorded prior to navigation commit.
   histogram_tester.ExpectTotalCount(
       web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
   histogram_tester.ExpectTotalCount(
@@ -49,9 +53,9 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   histogram_tester.ExpectTotalCount(
       web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 0);
 
-  // Simulate next navigation starting to log the metric.
-  web::FakeNavigationContext navigation_context;
-  fake_web_state.OnNavigationStarted(&navigation_context);
+  // Simulate the next navigation committing to log the metric.
+  navigation_context.SetHasCommitted(true);
+  fake_web_state.OnNavigationFinished(&navigation_context);
 
   histogram_tester.ExpectUniqueTimeSample(
       web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
@@ -134,7 +138,7 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
 }
 
 // Tests that when no user interactions occurred on the page, no aggregate
-// histogram sample is recorded on navigation start.
+// histogram sample is recorded on navigation commit.
 TEST_F(WebPerformanceMetricsTabHelperTest,
        InteractionToNextPaint_NoInteraction_NoFlush) {
   base::HistogramTester histogram_tester;
@@ -142,7 +146,9 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
 
   web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
   fake_web_state.OnNavigationStarted(&navigation_context);
+  fake_web_state.OnNavigationFinished(&navigation_context);
 
   histogram_tester.ExpectTotalCount(
       web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
@@ -180,7 +186,9 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
 
   web::FakeNavigationContext same_document_context;
   same_document_context.SetIsSameDocument(true);
+  same_document_context.SetHasCommitted(true);
   fake_web_state.OnNavigationStarted(&same_document_context);
+  fake_web_state.OnNavigationFinished(&same_document_context);
 
   histogram_tester.ExpectTotalCount(
       web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
@@ -196,9 +204,18 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
                                       /*interaction_count=*/2,
                                       /*is_main_frame=*/true);
 
-  // Perform a cross-document navigation to flush the metrics.
+  // Perform a cross-document navigation. Starting it resets the FID, FCP and
+  // hidden state; committing it flushes the INP metrics.
   web::FakeNavigationContext cross_document_context;
+  cross_document_context.SetHasCommitted(true);
   fake_web_state.OnNavigationStarted(&cross_document_context);
+  EXPECT_FALSE(tab_helper->GetFirstInputDelayLoggingStatus());
+  EXPECT_EQ(std::numeric_limits<double>::max(),
+            tab_helper->GetAggregateAbsoluteFirstContentfulPaint());
+  EXPECT_FALSE(tab_helper->HasBeenHiddenSinceNavigationStarted());
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
+  fake_web_state.OnNavigationFinished(&cross_document_context);
 
   histogram_tester.ExpectUniqueTimeSample(
       web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
@@ -210,4 +227,58 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   EXPECT_EQ(std::numeric_limits<double>::max(),
             tab_helper->GetAggregateAbsoluteFirstContentfulPaint());
   EXPECT_FALSE(tab_helper->HasBeenHiddenSinceNavigationStarted());
+}
+
+// Tests that uncommitted navigations do not flush INP and that the page keeps
+// accumulating interactions until a later navigation commits.
+TEST_F(WebPerformanceMetricsTabHelperTest,
+       InteractionToNextPaint_UncommittedNavigation_NoFlush) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState fake_web_state;
+  WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(&fake_web_state);
+
+  tab_helper->SetFrameInteractionData("main_frame", {base::Milliseconds(70)},
+                                      /*interaction_count=*/1,
+                                      /*is_main_frame=*/true);
+  // The subframe data is not updated after the uncommitted navigation, so it is
+  // only logged if the buffered pre-navigation data survives.
+  tab_helper->SetFrameInteractionData("sub_frame_1", {base::Milliseconds(50)},
+                                      /*interaction_count=*/1,
+                                      /*is_main_frame=*/false);
+
+  web::FakeNavigationContext uncommitted_context;
+  uncommitted_context.SetHasCommitted(false);
+  fake_web_state.OnNavigationStarted(&uncommitted_context);
+  fake_web_state.OnNavigationFinished(&uncommitted_context);
+
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 0);
+
+  // The page keeps accumulating interactions, and the buffered data (including
+  // interactions recorded before the uncommitted navigation) is logged once
+  // when a later navigation commits.
+  tab_helper->SetFrameInteractionData("main_frame", {base::Milliseconds(140)},
+                                      /*interaction_count=*/2,
+                                      /*is_main_frame=*/true);
+
+  web::FakeNavigationContext committed_context;
+  committed_context.SetHasCommitted(true);
+  fake_web_state.OnNavigationStarted(&committed_context);
+  fake_web_state.OnNavigationFinished(&committed_context);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
+      base::Milliseconds(140), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,
+      base::Milliseconds(140), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram,
+      base::Milliseconds(50), 1);
 }
