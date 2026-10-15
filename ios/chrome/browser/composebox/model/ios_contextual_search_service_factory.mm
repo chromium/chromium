@@ -27,31 +27,16 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "services/network/public/mojom/cookie_manager.mojom.h"
 
-// static
-contextual_search::ContextualSearchService*
-ContextualSearchServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<contextual_search::ContextualSearchService*>(
-      GetInstance()
-          ->GetServiceForProfileAs<contextual_search::ContextualSearchService>(
-              profile, /*create=*/true));
-}
-
-// static
-ContextualSearchServiceFactory* ContextualSearchServiceFactory::GetInstance() {
-  static base::NoDestructor<ContextualSearchServiceFactory> instance;
-  return instance.get();
-}
-
-ContextualSearchServiceFactory::ContextualSearchServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ContextualSearchService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    TestingCreation::kCreateService) {
+ContextualSearchServiceFactory::ContextualSearchServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ContextualSearchService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          TestingCreation::kCreateService) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(VariationsClientServiceFactory::GetInstance());
 }
-
-ContextualSearchServiceFactory::~ContextualSearchServiceFactory() = default;
 
 namespace {
 

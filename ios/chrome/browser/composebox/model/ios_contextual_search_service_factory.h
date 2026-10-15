@@ -5,29 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_IOS_CONTEXTUAL_SEARCH_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_IOS_CONTEXTUAL_SEARCH_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-namespace contextual_search {
-class ContextualSearchService;
-}
+#import "components/contextual_search/contextual_search_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all ContextualSearchService and associates them
 // with ProfileIOS.
-class ContextualSearchServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class ContextualSearchServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ContextualSearchServiceFactory,
+          contextual_search::ContextualSearchService> {
  public:
-  static contextual_search::ContextualSearchService* GetForProfile(
-      ProfileIOS* profile);
-
-  static ContextualSearchServiceFactory* GetInstance();
+  explicit ContextualSearchServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ContextualSearchServiceFactory>;
-
-  ContextualSearchServiceFactory();
-  ~ContextualSearchServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
