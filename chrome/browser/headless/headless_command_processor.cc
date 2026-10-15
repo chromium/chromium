@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/browser_context.h"
@@ -28,12 +27,6 @@ void ProcessHeadlessCommands(
     const GURL& target_url,
     HeadlessCommandHandler::DoneCallback done_callback) {
   CHECK(browser_context, base::NotFatalUntil::M161);
-
-  // Ensure lazy loaded content is being captured by the commands.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kDisableLazyLoading)) {
-    command_line->AppendSwitch(switches::kDisableLazyLoading);
-  }
 
   auto keepalive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::HEADLESS_COMMAND, KeepAliveRestartOption::DISABLED);

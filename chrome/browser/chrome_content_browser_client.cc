@@ -582,6 +582,7 @@
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/loader/features.h"
 #include "chrome/browser/loader/fetch_keepalive_process_manager.h"
@@ -4945,7 +4946,11 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableLazyLoading)) {
+          switches::kDisableLazyLoading)
+#if !BUILDFLAG(IS_ANDROID)
+      || headless::ShouldProcessHeadlessCommands()
+#endif
+  ) {
     web_prefs->lazy_load_enabled = false;
   } else {
     web_prefs->lazy_load_enabled =
