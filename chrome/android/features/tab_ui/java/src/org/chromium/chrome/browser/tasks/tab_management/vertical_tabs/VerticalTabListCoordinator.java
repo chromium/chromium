@@ -1298,7 +1298,11 @@ public class VerticalTabListCoordinator {
 
                     return this::dismissActiveContextMenus;
                 });
-        touchHelperCallback.setOnDragStartCallback(this::dismissActiveContextMenus);
+        touchHelperCallback.setOnDragStartCallback(
+                () -> {
+                    dismissActiveContextMenus();
+                    mTabItemHoverController.resetHoverState();
+                });
 
         RecyclerView.OnItemTouchListener beforeTouchListener =
                 VerticalTabListItemTouchHelperCallback.createBeforeOnItemTouchListener(

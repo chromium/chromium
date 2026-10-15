@@ -2017,6 +2017,21 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
+    public void testHoverCard_InListDragStart_HidesHoverCard() {
+        prepareAndShowHoverCard(mMockTab1);
+
+        VerticalTabListItemTouchHelperCallback callback =
+                mCoordinator.getMainTouchHelperCallbackForTesting();
+        assertNotNull(callback);
+        Runnable onDragStartCallback = callback.getOnDragStartCallbackForTesting();
+        assertNotNull(onDragStartCallback);
+        onDragStartCallback.run();
+
+        verify(mTabHoverCardView).hide();
+        verify(mMockChildView).setHovered(false);
+    }
+
+    @Test
     public void testHoverCard_RailCollapse_HidesHoverCard() {
         prepareAndShowHoverCard(mMockTab1);
 
