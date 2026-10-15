@@ -16,6 +16,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 
@@ -62,8 +65,10 @@ class DawnImageBackingFactoryTest : public SharedImageTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Basic DISABLED_Basic
+#define MAYBE_UploadAndReadback DISABLED_UploadAndReadback
 #else
 #define MAYBE_Basic Basic
+#define MAYBE_UploadAndReadback UploadAndReadback
 #endif
 TEST_F(DawnImageBackingFactoryTest, MAYBE_Basic) {
   auto mailbox = Mailbox::Generate();
@@ -112,6 +117,54 @@ TEST_F(DawnImageBackingFactoryTest, MAYBE_Basic) {
   scoped_access.reset();
   dawn_representation.reset();
   shared_image.reset();
+}
+
+TEST_F(DawnImageBackingFactoryTest, MAYBE_UploadAndReadback) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  // Use a width whose row bytes (60 * 4 = 240) is not a multiple of 256 to
+  // exercise 256-byte staging buffer row alignment during readback.
+  gfx::Size size(60, 40);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "DawnImageBackingFactoryTest"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  static_cast<DawnImageBacking*>(backing.get())
+      ->InitializeForTesting(dawn_device_);
+
+  SkImageInfo info = backing->AsSkImageInfo();
+  SkBitmap src_bitmap;
+  ASSERT_TRUE(src_bitmap.tryAllocPixels(info));
+  for (int y = 0; y < size.height(); ++y) {
+    for (int x = 0; x < size.width(); ++x) {
+      *src_bitmap.getAddr32(x, y) =
+          SkColorSetARGB(0xFF, x % 256, y % 256, (x + y) % 256);
+    }
+  }
+
+  ASSERT_TRUE(backing->UploadFromMemory({src_bitmap.pixmap()}));
+
+  SkBitmap dst_bitmap;
+  ASSERT_TRUE(dst_bitmap.tryAllocPixels(info));
+  dst_bitmap.eraseColor(SK_ColorTRANSPARENT);
+
+  ASSERT_TRUE(backing->ReadbackToMemory({dst_bitmap.pixmap()}));
+
+  for (int y = 0; y < size.height(); ++y) {
+    for (int x = 0; x < size.width(); ++x) {
+      ASSERT_EQ(*dst_bitmap.getAddr32(x, y), *src_bitmap.getAddr32(x, y))
+          << "Mismatch at (" << x << ", " << y << ")";
+    }
+  }
 }
 
 }  // namespace gpu

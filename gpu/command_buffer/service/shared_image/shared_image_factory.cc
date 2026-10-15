@@ -256,10 +256,10 @@ SharedImageFactory::SharedImageFactory(
   factory_ref_ = base::MakeRefCounted<SharedImageFactoryRef>(this);
   copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
   copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
-  copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
 #if BUILDFLAG(USE_DAWN)
   copy_manager_->AddStrategy(std::make_unique<DawnCopyStrategy>());
 #endif
+  copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
 
   auto shared_memory_backing_factory =
       std::make_unique<SharedMemoryImageBackingFactory>();

@@ -43,6 +43,11 @@ class GPU_GLES2_EXPORT DawnImageBacking : public SharedImageBacking {
       std::vector<wgpu::TextureFormat> view_formats,
       scoped_refptr<SharedContextState> context_state) final;
   void Update(gfx::GpuFenceHandle in_fence) override;
+  bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
+
+  wgpu::Texture CreateTexture(const wgpu::Device& device,
+                              std::vector<wgpu::TextureFormat> view_formats);
 
   wgpu::Device device_;
   wgpu::Texture texture_;
