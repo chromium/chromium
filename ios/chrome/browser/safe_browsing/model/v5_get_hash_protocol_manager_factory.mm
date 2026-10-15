@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "build/branding_buildflags.h"
 #import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #import "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
@@ -25,24 +24,11 @@ inline constexpr std::string_view kClientName = "chromium";
 #endif
 }  // namespace
 
-// static
-safe_browsing::V5GetHashProtocolManager*
-V5GetHashProtocolManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<safe_browsing::V5GetHashProtocolManager>(
-          profile, /*create=*/true);
-}
-
-// static
-V5GetHashProtocolManagerFactory*
-V5GetHashProtocolManagerFactory::GetInstance() {
-  static base::NoDestructor<V5GetHashProtocolManagerFactory> instance;
-  return instance.get();
-}
-
-V5GetHashProtocolManagerFactory::V5GetHashProtocolManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("V5GetHashProtocolManager",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+V5GetHashProtocolManagerFactory::V5GetHashProtocolManagerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "V5GetHashProtocolManager",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(V5SearchHashesCacheFactory::GetInstance());
 }
 

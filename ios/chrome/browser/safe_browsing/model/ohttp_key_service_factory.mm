@@ -40,29 +40,17 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<safe_browsing::OhttpKeyService>(
-      profile, /*create=*/true);
-}
-
-// static
-OhttpKeyServiceFactory* OhttpKeyServiceFactory::GetInstance() {
-  static base::NoDestructor<OhttpKeyServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 OhttpKeyServiceFactory::TestingFactory
 OhttpKeyServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOhttpKeyService);
 }
 
 // The service is created early to start async key fetch.
-OhttpKeyServiceFactory::OhttpKeyServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("OhttpKeyService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {}
+OhttpKeyServiceFactory::OhttpKeyServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "OhttpKeyService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

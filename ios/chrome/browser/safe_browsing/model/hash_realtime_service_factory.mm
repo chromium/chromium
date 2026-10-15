@@ -22,22 +22,9 @@ network::mojom::NetworkContext* GetNetworkContext() {
 
 }  // namespace
 
-// static
-safe_browsing::HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<safe_browsing::HashRealTimeService>(
-          profile, /*create=*/true);
-}
-
-// static
-HashRealTimeServiceFactory* HashRealTimeServiceFactory::GetInstance() {
-  static base::NoDestructor<HashRealTimeServiceFactory> instance;
-  return instance.get();
-}
-
-HashRealTimeServiceFactory::HashRealTimeServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("HashRealTimeService") {
+HashRealTimeServiceFactory::HashRealTimeServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "HashRealTimeService") {
   DependsOn(V5SearchHashesCacheFactory::GetInstance());
   DependsOn(OhttpKeyServiceFactory::GetInstance());
 }

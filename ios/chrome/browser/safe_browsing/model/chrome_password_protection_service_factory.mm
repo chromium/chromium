@@ -16,24 +16,13 @@
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-// static
-ChromePasswordProtectionService*
-ChromePasswordProtectionServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ChromePasswordProtectionService>(
-      profile, /*create=*/true);
-}
-
-// static
-ChromePasswordProtectionServiceFactory*
-ChromePasswordProtectionServiceFactory::GetInstance() {
-  static base::NoDestructor<ChromePasswordProtectionServiceFactory> instance;
-  return instance.get();
-}
-
-ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ChromePasswordProtectionService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ChromePasswordProtectionService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());

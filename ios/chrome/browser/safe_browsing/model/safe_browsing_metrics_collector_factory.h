@@ -5,29 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace safe_browsing {
-class SafeBrowsingMetricsCollector;
-}
+#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Used to construct a SafeBrowsingMetricsCollector. Returns null for
 // incognito profiles.
 class SafeBrowsingMetricsCollectorFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SafeBrowsingMetricsCollectorFactory,
+          safe_browsing::SafeBrowsingMetricsCollector> {
  public:
-  // Returns null if `profile` is in Incognito mode.
-  static safe_browsing::SafeBrowsingMetricsCollector* GetForProfile(
-      ProfileIOS* profile);
-  static SafeBrowsingMetricsCollectorFactory* GetInstance();
+  explicit SafeBrowsingMetricsCollectorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SafeBrowsingMetricsCollectorFactory>;
-
-  SafeBrowsingMetricsCollectorFactory();
-  ~SafeBrowsingMetricsCollectorFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

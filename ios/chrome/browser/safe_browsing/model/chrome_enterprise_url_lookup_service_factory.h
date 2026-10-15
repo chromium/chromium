@@ -5,35 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace safe_browsing {
-class ChromeEnterpriseRealTimeUrlLookupService;
 
 // Singleton that owns ChromeEnterpriseRealTimeUrlLookupService objects, one for
 // each active profile. It returns nullptr for Incognito profiles.
 class ChromeEnterpriseRealTimeUrlLookupServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ChromeEnterpriseRealTimeUrlLookupServiceFactory,
+          ChromeEnterpriseRealTimeUrlLookupService> {
  public:
-  // Returns null if `profile` is in Incognito mode.
-  static ChromeEnterpriseRealTimeUrlLookupService* GetForProfile(
-      ProfileIOS* profile);
-
-  // Get the singleton instance.
-  static ChromeEnterpriseRealTimeUrlLookupServiceFactory* GetInstance();
-
-  ChromeEnterpriseRealTimeUrlLookupServiceFactory(
-      const ChromeEnterpriseRealTimeUrlLookupServiceFactory&) = delete;
-  ChromeEnterpriseRealTimeUrlLookupServiceFactory& operator=(
-      const ChromeEnterpriseRealTimeUrlLookupServiceFactory&) = delete;
+  explicit ChromeEnterpriseRealTimeUrlLookupServiceFactory(PassKey key);
 
  private:
-  friend base::NoDestructor<ChromeEnterpriseRealTimeUrlLookupServiceFactory>;
-
-  ChromeEnterpriseRealTimeUrlLookupServiceFactory();
-  ~ChromeEnterpriseRealTimeUrlLookupServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

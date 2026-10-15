@@ -11,29 +11,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-safe_browsing::ClientSideDetectionService*
-ClientSideDetectionServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<safe_browsing::ClientSideDetectionService>(
-          profile, true);
-}
-
-// static
-ClientSideDetectionServiceFactory*
-ClientSideDetectionServiceFactory::GetInstance() {
-  static base::NoDestructor<ClientSideDetectionServiceFactory> instance;
-  return instance.get();
-}
-
-ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ClientSideDetectionService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ClientSideDetectionService",
+          ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
-
-ClientSideDetectionServiceFactory::~ClientSideDetectionServiceFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 ClientSideDetectionServiceFactory::BuildServiceInstanceFor(

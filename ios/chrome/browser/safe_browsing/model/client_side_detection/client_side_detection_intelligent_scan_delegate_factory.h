@@ -7,41 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class ProfileIOS;
-
-namespace safe_browsing {
-class IntelligentScanDelegate;
-}  // namespace safe_browsing
+#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns `IntelligentScanDelegate` objects, one for each active
 // Profile.
 class ClientSideDetectionIntelligentScanDelegateFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ClientSideDetectionIntelligentScanDelegateFactory,
+          safe_browsing::IntelligentScanDelegate> {
  public:
-  // Creates the service if it doesn't exist already for the given `profile`.
-  // If the service already exists, return its pointer.
-  static safe_browsing::IntelligentScanDelegate* GetForProfile(
-      ProfileIOS* profile);
-
-  // Returns the singleton instance of this factory.
-  static ClientSideDetectionIntelligentScanDelegateFactory* GetInstance();
-
-  ClientSideDetectionIntelligentScanDelegateFactory(
-      const ClientSideDetectionIntelligentScanDelegateFactory&) = delete;
-  ClientSideDetectionIntelligentScanDelegateFactory& operator=(
-      const ClientSideDetectionIntelligentScanDelegateFactory&) = delete;
+  explicit ClientSideDetectionIntelligentScanDelegateFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<
-      ClientSideDetectionIntelligentScanDelegateFactory>;
-
-  ClientSideDetectionIntelligentScanDelegateFactory();
-  ~ClientSideDetectionIntelligentScanDelegateFactory() override;
-
   // `ProfileKeyedServiceFactoryIOS` implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

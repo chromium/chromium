@@ -8,23 +8,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 
-// static
-safe_browsing::SafeBrowsingMetricsCollector*
-SafeBrowsingMetricsCollectorFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<safe_browsing::SafeBrowsingMetricsCollector>(
-          profile, /*create=*/true);
-}
-
-// static
-SafeBrowsingMetricsCollectorFactory*
-SafeBrowsingMetricsCollectorFactory::GetInstance() {
-  static base::NoDestructor<SafeBrowsingMetricsCollectorFactory> instance;
-  return instance.get();
-}
-
-SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
-    : ProfileKeyedServiceFactoryIOS("SafeBrowsingMetricsCollector") {}
+SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SafeBrowsingMetricsCollector") {}
 
 std::unique_ptr<KeyedService>
 SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(

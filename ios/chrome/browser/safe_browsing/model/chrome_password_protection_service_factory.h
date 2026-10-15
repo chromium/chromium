@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ChromePasswordProtectionService;
-class KeyedService;
-class ProfileIOS;
+#include "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns ChromePasswordProtectionService objects, one for each
 // active Profile.
 class ChromePasswordProtectionServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ChromePasswordProtectionServiceFactory,
+          ChromePasswordProtectionService> {
  public:
-  // Returns the instance of ChromePasswordProtectionService associated with
-  // this profile, creating one if none exists.
-  static ChromePasswordProtectionService* GetForProfile(ProfileIOS* profile);
-
-  // Returns the singleton instance of ChromePasswordProtectionServiceFactory.
-  static ChromePasswordProtectionServiceFactory* GetInstance();
+  explicit ChromePasswordProtectionServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ChromePasswordProtectionServiceFactory>;
-
-  ChromePasswordProtectionServiceFactory();
-  ~ChromePasswordProtectionServiceFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

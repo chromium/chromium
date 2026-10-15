@@ -5,26 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_SEARCH_HASHES_CACHE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_SEARCH_HASHES_CACHE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace safe_browsing {
-class V5SearchHashesCache;
-}
+#import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns V5SearchHashesCache objects, one for each active profile.
-class V5SearchHashesCacheFactory : public ProfileKeyedServiceFactoryIOS {
+class V5SearchHashesCacheFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                       V5SearchHashesCacheFactory,
+                                       safe_browsing::V5SearchHashesCache> {
  public:
-  static safe_browsing::V5SearchHashesCache* GetForProfile(ProfileIOS* profile);
-  // Returns the singleton instance of V5SearchHashesCacheFactory.
-  static V5SearchHashesCacheFactory* GetInstance();
+  explicit V5SearchHashesCacheFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<V5SearchHashesCacheFactory>;
-
-  V5SearchHashesCacheFactory();
-  ~V5SearchHashesCacheFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

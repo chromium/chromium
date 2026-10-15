@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -52,22 +51,11 @@ safe_browsing::RealTimeUrlLookupServiceBase* GetUrlLookupService(
 
 }  // namespace
 
-// static
-SafeBrowsingClient* SafeBrowsingClientFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<SafeBrowsingClient>(
-      profile, /*create=*/true);
-}
-
-// static
-SafeBrowsingClientFactory* SafeBrowsingClientFactory::GetInstance() {
-  static base::NoDestructor<SafeBrowsingClientFactory> instance;
-  return instance.get();
-}
-
-SafeBrowsingClientFactory::SafeBrowsingClientFactory()
-    : ProfileKeyedServiceFactoryIOS("SafeBrowsingClient",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+SafeBrowsingClientFactory::SafeBrowsingClientFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "SafeBrowsingClient",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(HashRealTimeServiceFactory::GetInstance());
   DependsOn(V5GetHashProtocolManagerFactory::GetInstance());
   DependsOn(ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance());

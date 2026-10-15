@@ -4,29 +4,16 @@
 
 #import "ios/chrome/browser/safe_browsing/model/v5_search_hashes_cache_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-safe_browsing::V5SearchHashesCache* V5SearchHashesCacheFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<safe_browsing::V5SearchHashesCache>(
-          profile, /*create=*/true);
-}
-
-// static
-V5SearchHashesCacheFactory* V5SearchHashesCacheFactory::GetInstance() {
-  static base::NoDestructor<V5SearchHashesCacheFactory> instance;
-  return instance.get();
-}
-
-V5SearchHashesCacheFactory::V5SearchHashesCacheFactory()
-    : ProfileKeyedServiceFactoryIOS("V5SearchHashesCache",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+V5SearchHashesCacheFactory::V5SearchHashesCacheFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "V5SearchHashesCache",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 

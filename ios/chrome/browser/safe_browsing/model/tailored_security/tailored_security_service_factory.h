@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace safe_browsing {
-class TailoredSecurityService;
-}
+#import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns TailoredSecurityService objects, one for each active
 // profile. It returns nullptr for Incognito profiles.
-class TailoredSecurityServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TailoredSecurityServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          TailoredSecurityServiceFactory,
+          safe_browsing::TailoredSecurityService> {
  public:
-  static safe_browsing::TailoredSecurityService* GetForProfile(
-      ProfileIOS* profile);
-
-  // Returns the singleton instance of TailoredSecurityServiceFactory.
-  static TailoredSecurityServiceFactory* GetInstance();
+  explicit TailoredSecurityServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TailoredSecurityServiceFactory>;
-
-  TailoredSecurityServiceFactory();
-  ~TailoredSecurityServiceFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

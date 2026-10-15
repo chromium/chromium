@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_GET_HASH_PROTOCOL_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_GET_HASH_PROTOCOL_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace safe_browsing {
-class V5GetHashProtocolManager;
-}
+#import "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns V5GetHashProtocolManager objects, one for each active
 // profile.
-class V5GetHashProtocolManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class V5GetHashProtocolManagerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          V5GetHashProtocolManagerFactory,
+          safe_browsing::V5GetHashProtocolManager> {
  public:
-  static safe_browsing::V5GetHashProtocolManager* GetForProfile(
-      ProfileIOS* profile);
-
-  // Returns the singleton instance of V5GetHashProtocolManagerFactory.
-  static V5GetHashProtocolManagerFactory* GetInstance();
+  explicit V5GetHashProtocolManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<V5GetHashProtocolManagerFactory>;
-
-  V5GetHashProtocolManagerFactory();
-  ~V5GetHashProtocolManagerFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

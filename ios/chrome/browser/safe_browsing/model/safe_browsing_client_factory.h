@@ -7,25 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class SafeBrowsingClient;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
 // Singleton that owns all SafeBrowsingClients and associates them with
 // a profile.
-class SafeBrowsingClientFactory : public ProfileKeyedServiceFactoryIOS {
+class SafeBrowsingClientFactory
+    : public TypedProfileKeyedServiceFactoryIOS<SafeBrowsingClientFactory,
+                                                SafeBrowsingClient> {
  public:
-  static SafeBrowsingClient* GetForProfile(ProfileIOS* profile);
-  static SafeBrowsingClientFactory* GetInstance();
+  explicit SafeBrowsingClientFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SafeBrowsingClientFactory>;
-
-  SafeBrowsingClientFactory();
-  ~SafeBrowsingClientFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
