@@ -34,18 +34,15 @@ using Transport = core::ipcz_driver::Transport;
 using TransportPair =
     std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>;
 
+// Creates a transport pair for connecting a `ThreadLocalNode` to the ipcz
+// network. `transports.first` is always the endpoint passed to the broker
+// (directly in a broker process, or via IPCZ_CONNECT_NODE_SHARE_BROKER in a
+// non-broker process) and `transports.second` is always the
+// `ThreadLocalNode`'s endpoint.
 TransportPair CreateTransportPair() {
-  const Transport::EndpointType global_node_type =
-      core::GetIpczNodeOptions().is_broker
-          ? Transport::EndpointType::kBroker
-          : Transport::EndpointType::kNonBroker;
-  const Transport::EndpointType local_node_type =
-      Transport::EndpointType::kNonBroker;
-
-  TransportPair transports =
-      Transport::CreatePair(global_node_type, local_node_type);
+  TransportPair transports = Transport::CreatePair(
+      Transport::EndpointType::kBroker, Transport::EndpointType::kNonBroker);
   transports.first->set_remote_process(base::Process::Current());
-  transports.second->set_remote_process(base::Process::Current());
   return transports;
 }
 
@@ -159,7 +156,6 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>) {
   CHECK_EQ(create_result, IPCZ_RESULT_OK);
   node_.reset(Handle(node));
 
-  // Create a new transport pair to connect the two nodes.
   const core::IpczNodeOptions& global_node_options = core::GetIpczNodeOptions();
   IpczConnectNodeFlags local_connect_flags;
   IpczConnectNodeFlags global_connect_flags;

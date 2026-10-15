@@ -88,8 +88,10 @@ class MojoIpczInProcessTestNodeController
 
     Transport::FromHandle(transports.ours)
         ->set_remote_process(base::Process::Current());
-    Transport::FromHandle(transports.theirs)
-        ->set_remote_process(base::Process::Current());
+    if (is_broker_) {
+      Transport::FromHandle(transports.theirs)
+          ->set_remote_process(base::Process::Current());
+    }
     return transports;
   }
 

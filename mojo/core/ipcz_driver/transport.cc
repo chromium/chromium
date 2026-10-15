@@ -187,7 +187,6 @@ bool EncodeHandle(PlatformHandle& handle,
 // INVALID_HANDLE_VALUE is one of the problematic handle values that a caller
 // might misinterpret.
 std::optional<PlatformHandle> DecodeHandle(HandleData data,
-                                           const base::Process& remote_process,
                                            HandleOwner handle_owner,
                                            Transport& from_transport) {
   const HANDLE handle = DataToHandle(data);
@@ -201,13 +200,10 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
   }
 
   if (handle_owner == HandleOwner::kRecipient) {
-    // Senders can only duplicate handles into this (receiving) process in
-    // two scenarios:
-    // - The sender is at least as privileged as this process; see
-    //   Transport::CanAcceptReceiverOwnedHandles().
-    // - The sender is in the same process, i.e. for `mojo::DirectReceiver`.
-    if (!from_transport.CanAcceptReceiverOwnedHandles() &&
-        !remote_process.is_current()) {
+    // Senders can only duplicate handles into this (receiving) process if the
+    // sender is at least as privileged as this process; see
+    // Transport::CanAcceptReceiverOwnedHandles().
+    if (!from_transport.CanAcceptReceiverOwnedHandles()) {
       return std::nullopt;
     }
     // Verify that this is a handle to a valid object. We do not yet know the
@@ -219,6 +215,7 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
     return PlatformHandle(base::win::ScopedHandle(handle));
   }
 
+  const base::Process& remote_process = from_transport.remote_process();
   if (!remote_process.IsValid()) {
     return std::nullopt;
   }
@@ -580,7 +577,7 @@ IpczResult Transport::DeserializeObject(
   platform_handles.resize(num_handles);
   for (size_t i = 0; i < num_handles; ++i) {
 #if BUILDFLAG(IS_WIN)
-    auto h = DecodeHandle(handle_data[i], remote_process_, handle_owner, *this);
+    auto h = DecodeHandle(handle_data[i], handle_owner, *this);
     if (!h.has_value()) {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
@@ -788,11 +785,10 @@ void Transport::OnChannelDestroyed() {
 bool Transport::CanTransmitHandles() const {
 #if BUILDFLAG(IS_WIN)
   // On Windows, we can transmit handles only if at least one endpoint is a
-  // broker, or if we have a handle to the remote process, or if the both ends
-  // of the transport are held by the same process.
+  // broker, or if we have a handle to the remote process and are trusted by the
+  // peer.
   return destination_type() == kBroker || source_type() == kBroker ||
-         (remote_process_.IsValid() && is_trusted_by_peer()) ||
-         remote_process_.is_current();
+         (remote_process_.IsValid() && is_trusted_by_peer());
 #else
   return true;
 #endif
