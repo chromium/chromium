@@ -72,11 +72,8 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
     return SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  // Check if preference is policy or primary-user controlled.
-  if (ash::system::TimeZoneResolverManager::
-          IsTimeZoneResolutionPolicyControlled(
-              CHECK_DEREF(g_browser_process->local_state())) ||
-      !profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
+  // Check if preference is policy, primary-user, or parent controlled.
+  if (!IsTimeZonePrefModifiable()) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 

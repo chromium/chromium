@@ -9,15 +9,24 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/login/ui/pin_request_widget.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
+#include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
+#include "chrome/browser/extensions/api/settings_private/prefs_util.h"
+#include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/date_time/new_date_time_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
@@ -25,9 +34,39 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::parent_access {
+
+namespace {
+
+class TestDateTimePage : public settings::date_time::mojom::Page {
+ public:
+  TestDateTimePage() = default;
+  ~TestDateTimePage() override = default;
+
+  mojo::PendingRemote<settings::date_time::mojom::Page> BindAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  bool WaitForParentAccessValidation() { return validation_future_.Get(); }
+
+  // settings::date_time::mojom::Page:
+  void OnSystemClockCanSetTimeChanged(bool is_allowed) override {}
+  void OnParentAccessValidationComplete(bool success) override {
+    validation_future_.SetValue(success);
+  }
+
+ private:
+  base::test::TestFuture<bool> validation_future_;
+  mojo::Receiver<settings::date_time::mojom::Page> receiver_{this};
+};
+
+}  // namespace
 
 // Stores information about results of the access code validation.
 struct CodeValidationResults {
@@ -331,6 +370,80 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
       ParentAccessService::IsApprovalRequired(SupervisedAction::kUpdateClock));
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
       SupervisedAction::kUpdateTimezone));
+}
+
+IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
+                       TimezoneModificationRequiresParentApproval) {
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  ASSERT_TRUE(active_user);
+  ASSERT_TRUE(active_user->IsChild());
+  const AccountId& account_id = active_user->GetAccountId();
+  Profile* child_profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+  ASSERT_TRUE(child_profile);
+
+  extensions::PrefsUtil prefs_util(child_profile);
+  EXPECT_FALSE(ParentAccessService::Get().IsTimezoneChangeApproved(account_id));
+
+  base::Value auto_detect_off(false);
+  base::Value resolve_method(3);
+  base::Value timezone_1("America/Los_Angeles");
+
+  // Without parent access approval, child user cannot modify timezone prefs.
+  EXPECT_EQ(
+      prefs_util.SetPref(
+          extensions::settings_private::kResolveTimezoneByGeolocationOnOff,
+          &auto_detect_off),
+      extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(prefs_util.SetPref(extensions::settings_private::
+                                   kResolveTimezoneByGeolocationMethodShort,
+                               &resolve_method),
+            extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_1),
+            extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+
+  // Simulate opening Date & Time settings and completing parent access
+  // validation.
+  TestDateTimePage test_page;
+  mojo::Remote<settings::date_time::mojom::PageHandler> handler_remote;
+  auto handler = std::make_unique<settings::NewDateTimeHandler>(
+      handler_remote.BindNewPipeAndPassReceiver(), test_page.BindAndGetRemote(),
+      /*web_ui=*/nullptr, child_profile);
+
+  handler_remote->ShowParentAccessForTimezone();
+  handler_remote.FlushForTesting();
+  ASSERT_TRUE(PinRequestWidget::Get());
+  PinRequestWidget::Get()->Close(true);
+  EXPECT_TRUE(test_page.WaitForParentAccessValidation());
+  EXPECT_TRUE(ParentAccessService::Get().IsTimezoneChangeApproved(account_id));
+
+  // After parent access approval, child user can modify timezone prefs.
+  EXPECT_EQ(prefs_util.SetPref(extensions::settings_private::
+                                   kResolveTimezoneByGeolocationMethodShort,
+                               &resolve_method),
+            extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(
+      prefs_util.SetPref(
+          extensions::settings_private::kResolveTimezoneByGeolocationOnOff,
+          &auto_detect_off),
+      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_1),
+            extensions::settings_private::SetPrefResult::SUCCESS);
+
+  // Destroying NewDateTimeHandler (closing the Settings page) invalidates the
+  // approval.
+  handler.reset();
+  EXPECT_FALSE(ParentAccessService::Get().IsTimezoneChangeApproved(account_id));
+
+  base::Value auto_detect_on(true);
+  base::Value timezone_2("Asia/Tokyo");
+  EXPECT_EQ(
+      prefs_util.SetPref(
+          extensions::settings_private::kResolveTimezoneByGeolocationOnOff,
+          &auto_detect_on),
+      extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_2),
+            extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
 
 }  // namespace ash::parent_access

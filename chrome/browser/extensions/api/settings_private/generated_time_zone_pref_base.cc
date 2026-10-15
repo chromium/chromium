@@ -5,12 +5,14 @@
 #include "chrome/browser/extensions/api/settings_private/generated_time_zone_pref_base.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -21,6 +23,17 @@ namespace extensions {
 namespace settings_api = api::settings_private;
 
 namespace settings_private {
+
+bool IsTimezoneChangeAllowed(Profile* profile) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user) {
+    return false;
+  }
+  return !user->IsChild() ||
+         ash::parent_access::ParentAccessService::Get()
+             .IsTimezoneChangeApproved(user->GetAccountId());
+}
 
 GeneratedTimeZonePrefBase::GeneratedTimeZonePrefBase(
     const std::string& pref_name,
@@ -64,6 +77,16 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
   // Time zone settings can be policy-bound (for all users), or primary-user
   // bound (for secondary users in multiprofile mode). Otherwise do not modify
   // default values.
+}
+
+bool GeneratedTimeZonePrefBase::IsTimeZonePrefModifiable() const {
+  if (ash::system::TimeZoneResolverManager::
+          IsTimeZoneResolutionPolicyControlled(
+              CHECK_DEREF(g_browser_process->local_state())) ||
+      !profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
+    return false;
+  }
+  return IsTimezoneChangeAllowed(profile_);
 }
 
 }  // namespace settings_private

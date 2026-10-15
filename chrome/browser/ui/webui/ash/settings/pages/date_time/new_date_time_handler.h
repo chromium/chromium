@@ -40,11 +40,13 @@ class NewDateTimeHandler : public date_time::mojom::PageHandler,
   void ShowParentAccessForTimezone() override;
   void GetTimezones(GetTimezonesCallback callback) override;
   void ShowSetDateTimeUI() override;
+  void OnSubpageClosed() override;
 
   // SystemClockClient::Observer implementation.
   void SystemClockCanSetTimeChanged(bool can_set_time) override;
 
   void OnParentAccessValidation(bool success);
+  void InvalidateTimezoneChangeApproval();
 
   const raw_ptr<content::WebUI> web_ui_;
   const raw_ptr<Profile> profile_;

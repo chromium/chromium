@@ -1347,6 +1347,7 @@ source_set("extensions") {
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/certificate_provider",
       "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/parent_access_code",
       "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
@@ -2286,6 +2287,7 @@ source_set("unit_tests") {
       "//ash/webui/os_feedback_ui:url_constants",
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/ash/child_accounts/parent_access_code",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/login/quick_unlock",
       "//chrome/browser/ash/login/smart_lock",
@@ -2310,6 +2312,7 @@ source_set("unit_tests") {
       "//chromeos/components/kiosk:test_support",
       "//chromeos/dbus/missive",
       "//components/account_id:test_support",
+      "//components/session_manager/test:test_support",
       "//extensions/browser/api/system_display:display_info_provider",
       "//ui/file_manager:resources_grit",
     ]
@@ -2326,7 +2329,6 @@ source_set("unit_tests") {
         "//chrome/browser/ash/printing/print_management",
         "//chrome/browser/chromeos/printing:test_support",
         "//chromeos/printing",
-        "//components/session_manager/test:test_support",
       ]
     }
   }

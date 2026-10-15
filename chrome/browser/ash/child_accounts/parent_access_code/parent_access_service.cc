@@ -147,6 +147,20 @@ void ParentAccessService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool ParentAccessService::IsTimezoneChangeApproved(
+    const AccountId& account_id) const {
+  return timezone_change_approved_users_.contains(account_id);
+}
+
+void ParentAccessService::SetTimezoneChangeApproved(const AccountId& account_id,
+                                                    bool is_approved) {
+  if (is_approved) {
+    timezone_change_approved_users_.insert(account_id);
+  } else {
+    timezone_change_approved_users_.erase(account_id);
+  }
+}
+
 void ParentAccessService::NotifyObservers(
     ParentCodeValidationResult validation_result,
     const AccountId& account_id) {

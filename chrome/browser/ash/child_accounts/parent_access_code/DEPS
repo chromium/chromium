@@ -21,6 +21,8 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   "parent_access_service_browsertest\\.cc": [
+    "+chrome/browser/extensions/api/settings_private",
     "+chrome/browser/profiles",
+    "+chrome/browser/ui/webui/ash/settings/pages/date_time",
   ],
 }

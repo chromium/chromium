@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -76,12 +77,17 @@ class ParentAccessService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool IsTimezoneChangeApproved(const AccountId& account_id) const;
+  void SetTimezoneChangeApproved(const AccountId& account_id, bool is_approved);
+
  private:
   void NotifyObservers(ParentCodeValidationResult validation_result,
                        const AccountId& account_id);
 
   // Provides configurations to be used for validation of access codes.
   ConfigSource config_source_;
+
+  std::set<AccountId> timezone_change_approved_users_;
 
   base::ObserverList<Observer> observers_;
 };

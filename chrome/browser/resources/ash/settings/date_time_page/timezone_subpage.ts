@@ -139,7 +139,13 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
    * 'access-code-validation-complete' event is triggered which invokes
    * enableTimeZoneSetting_.
    */
-  override currentRouteChanged(newRoute: Route, _oldRoute?: Route): void {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    if (oldRoute === routes.DATETIME_TIMEZONE_SUBPAGE) {
+      if (isChild()) {
+        this.disableTimeZoneSetting_();
+        this.pageHandler.onSubpageClosed();
+      }
+    }
     if (newRoute !== routes.DATETIME_TIMEZONE_SUBPAGE) {
       return;
     }

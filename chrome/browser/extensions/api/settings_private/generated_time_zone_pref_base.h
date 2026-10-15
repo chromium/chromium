@@ -16,6 +16,11 @@ class Profile;
 namespace extensions {
 namespace settings_private {
 
+// Returns true if the user associated with `profile` is allowed to change the
+// timezone (either because the user is not a child user, or because parental
+// approval has been granted for the user).
+bool IsTimezoneChangeAllowed(Profile* profile);
+
 // Base class for several generated Time Zone preferences.
 class GeneratedTimeZonePrefBase
     : public GeneratedPref,
@@ -35,6 +40,8 @@ class GeneratedTimeZonePrefBase
 
   void UpdateTimeZonePrefControlledBy(
       api::settings_private::PrefObject* out_pref) const;
+
+  bool IsTimeZonePrefModifiable() const;
 
   const std::string pref_name_;
 

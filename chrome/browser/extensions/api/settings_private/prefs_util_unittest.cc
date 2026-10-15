@@ -22,6 +22,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif
+
 namespace extensions {
 
 class PrefsUtilTest : public testing::Test {
@@ -125,5 +136,48 @@ TEST_F(PrefsUtilTest, FindAndFillWithGeminiSettingsReadOnly) {
           optimization_guide::prefs::kFindAndFillWithGeminiSettings, &value),
       settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrefsUtilTest, ChildUserTimezoneRequiresParentApproval) {
+  ash::test::UserSessionTestEnvironment user_session_test_environment(
+      TestingBrowserProcess::GetGlobal()->local_state());
+  ash::ProfileUserManagerController profile_user_manager_controller(
+      profile_manager_.profile_manager(), user_manager::UserManager::Get());
+  ash::parent_access::ParentAccessService parent_access_service(
+      TestingBrowserProcess::GetGlobal()->local_state());
+
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("child@example.com", GaiaId("12345"));
+  ASSERT_TRUE(user_session_test_environment.AddChildUser(account_id));
+  user_session_test_environment.LogIn(account_id);
+
+  ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                          account_id);
+  TestingProfile* child_profile = profile_manager_.CreateTestingProfile(
+      std::string(account_id.GetUserEmail()));
+  {
+    PrefsUtil child_prefs_util(child_profile);
+
+    base::Value timezone_1("America/Los_Angeles");
+    EXPECT_EQ(child_prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_1),
+              settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+
+    parent_access_service.SetTimezoneChangeApproved(account_id, true);
+    EXPECT_EQ(child_prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_1),
+              settings_private::SetPrefResult::SUCCESS);
+    EXPECT_EQ(child_profile->GetPrefs()->GetString(ash::prefs::kUserTimezone),
+              "America/Los_Angeles");
+
+    parent_access_service.SetTimezoneChangeApproved(account_id, false);
+    base::Value timezone_2("Asia/Tokyo");
+    EXPECT_EQ(child_prefs_util.SetPref(ash::prefs::kUserTimezone, &timezone_2),
+              settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+    EXPECT_EQ(child_profile->GetPrefs()->GetString(ash::prefs::kUserTimezone),
+              "America/Los_Angeles");
+  }
+
+  profile_manager_.DeleteTestingProfile(std::string(account_id.GetUserEmail()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

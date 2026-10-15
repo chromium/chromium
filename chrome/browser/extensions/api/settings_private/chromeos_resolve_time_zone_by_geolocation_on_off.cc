@@ -71,12 +71,9 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
     return SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  // Check if preference is policy or primary-user controlled, and therefore
-  // cannot deactivate automatic timezone.
-  if (ash::system::TimeZoneResolverManager::
-          IsTimeZoneResolutionPolicyControlled(
-              CHECK_DEREF(g_browser_process->local_state())) ||
-      !profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
+  // Check if preference is policy, primary-user, or parent controlled, and
+  // therefore cannot deactivate automatic timezone.
+  if (!IsTimeZonePrefModifiable()) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 

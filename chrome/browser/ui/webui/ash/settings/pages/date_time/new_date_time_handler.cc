@@ -36,6 +36,7 @@ NewDateTimeHandler::NewDateTimeHandler(
 }
 
 NewDateTimeHandler::~NewDateTimeHandler() {
+  InvalidateTimezoneChangeApproval();
   scoped_observation_.Reset();
 }
 
@@ -79,14 +80,29 @@ void NewDateTimeHandler::ShowSetDateTimeUI() {
       web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 }
 
+void NewDateTimeHandler::OnSubpageClosed() {
+  InvalidateTimezoneChangeApproval();
+}
+
 void NewDateTimeHandler::SystemClockCanSetTimeChanged(bool can_set_time) {
   page_->OnSystemClockCanSetTimeChanged(can_set_time);
 }
 
 void NewDateTimeHandler::OnParentAccessValidation(bool success) {
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  parent_access::ParentAccessService::Get().SetTimezoneChangeApproved(
+      user.GetAccountId(), success);
   if (success) {
     page_->OnParentAccessValidationComplete(true);
   }
+}
+
+void NewDateTimeHandler::InvalidateTimezoneChangeApproval() {
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  parent_access::ParentAccessService::Get().SetTimezoneChangeApproved(
+      user.GetAccountId(), false);
 }
 
 }  // namespace ash::settings
