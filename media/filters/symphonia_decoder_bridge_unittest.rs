@@ -383,6 +383,38 @@ fn test_flac_init_with_other_block() {
     expect_ne!(result.status, ffi::SymphoniaInitStatus::Ok);
 }
 
+// Verify that Vorbis decoder initialization rejects a length-ordered codebook
+// that assigns a codeword length greater than 32 bits instead of panicking.
+// Regression test for https://crbug.com/573034095.
+#[gtest(SymphoniaDecoderBridgeTest, VorbisInitRejectsOverlongCodewordLength)]
+fn test_vorbis_init_rejects_overlong_codeword_length() {
+    let extra_data = [
+        &[2u8, 30, 16] as &[u8],
+        b"\x01vorbis",
+        &[0, 0, 0, 0, 2, 0x80, 0xBB, 0, 0],
+        &[0; 12],
+        &[0xB8, 1],
+        b"\x03vorbis",
+        &[0, 0, 0, 0, 0, 0, 0, 0, 1],
+        b"\x05vorbis",
+        &[0, 0x42, 0x43, 0x56, 1, 0, 2, 0, 0, 0x7F, 0x01],
+    ]
+    .concat();
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Vorbis,
+        extra_data: &extra_data,
+        bytes_per_sample: 4,
+        channel_mask: 3,
+        channel_count: 2,
+        sample_rate: 48000,
+    };
+
+    let result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::SymphoniaDecodeError);
+    expect_true!(result.error_str.contains("codeword length exceeds 32 bits"));
+}
+
 // Verify that stereo F32 data is output in planar layout (channel planes).
 #[gtest(SymphoniaDecoderBridgeTest, StereoPlanarF32)]
 fn test_stereo_planar_f32() {

@@ -132,8 +132,10 @@ fn synthesize_codewords(code_lens: &[u8]) -> Result<Vec<u32>> {
     let mut next_codeword = [0u32; 33];
 
     for &len in code_lens.iter() {
-        // This should always be true.
-        debug_assert!(len <= 32);
+        // The Vorbis I specification limits codewords to 32 bits.
+        if len > 32 {
+            return decode_error("vorbis: codebook codeword length exceeds 32 bits");
+        }
 
         // Zero length codewords are invalid and ignored.
         if len == 0 {
@@ -284,6 +286,10 @@ impl VorbisCodebook {
             let mut cur_len = bs.read_bits_leq32(5)? + 1;
 
             loop {
+                if cur_len > 32 {
+                    return decode_error("vorbis: codebook codeword length exceeds 32 bits");
+                }
+
                 let num_bits = if codebook_entries > cur_entry {
                     ilog(codebook_entries - cur_entry)
                 }

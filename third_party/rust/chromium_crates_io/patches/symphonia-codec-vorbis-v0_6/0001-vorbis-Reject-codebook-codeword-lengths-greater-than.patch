@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Syed AbuTalib <lowkey@google.com>
+Date: Wed, 14 Oct 2026 18:19:24 +0000
+Subject: [PATCH] vorbis: Reject codebook codeword lengths greater than 32
+
+The Vorbis I specification (section 3.2.1) limits codeword lengths to
+32 bits. When reading a length-ordered codebook, `VorbisCodebook::read`
+kept incrementing `cur_len` for every iteration in which the bitstream
+signaled zero entries, so a crafted setup header could assign codeword
+lengths well beyond 32 to real entries. `synthesize_codewords` only
+guarded against that with a `debug_assert!` before indexing its fixed
+33-entry `next_codeword` table, which panics with an index out of
+bounds in release builds.
+
+Return a `DecodeError` from both the ordered-codebook reader and
+`synthesize_codewords` instead, matching libvorbis and FFmpeg, which
+reject such codebooks.
+Upstream issue: https://github.com/pdeljanov/Symphonia/issues/588
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/589
+Chromium bug: https://issues.chromium.org/issues/573034095
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/codebook.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/codebook.rs
+index 6a478182ae3ac..ea54aaa025adb 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/codebook.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_6/src/codebook.rs
+@@ -132,8 +132,10 @@ fn synthesize_codewords(code_lens: &[u8]) -> Result<Vec<u32>> {
+     let mut next_codeword = [0u32; 33];
+ 
+     for &len in code_lens.iter() {
+-        // This should always be true.
+-        debug_assert!(len <= 32);
++        // The Vorbis I specification limits codewords to 32 bits.
++        if len > 32 {
++            return decode_error("vorbis: codebook codeword length exceeds 32 bits");
++        }
+ 
+         // Zero length codewords are invalid and ignored.
+         if len == 0 {
+@@ -284,6 +286,10 @@ impl VorbisCodebook {
+             let mut cur_len = bs.read_bits_leq32(5)? + 1;
+ 
+             loop {
++                if cur_len > 32 {
++                    return decode_error("vorbis: codebook codeword length exceeds 32 bits");
++                }
++
+                 let num_bits = if codebook_entries > cur_entry {
+                     ilog(codebook_entries - cur_entry)
+                 }
+-- 
+2.42.0.869.gea05f2083d-goog
