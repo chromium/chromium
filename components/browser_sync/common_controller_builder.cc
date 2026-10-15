@@ -81,7 +81,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_data_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_tab_context/tab_context_data_type_controller.h"
+#include "components/sync_tab_context/tab_context_container_data_type_controller.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
 #include "components/sync_user_events/user_event_data_type_controller.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -521,8 +521,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::ENCRYPTED_TAB_CONTEXT_ITEM)) {
-    add_controller(
-        CreateEncryptedTabContextItemDataTypeController(sync_service));
+    add_controller(CreateEncryptedTabContextItemDataTypeController());
   }
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA)) {
@@ -896,8 +895,8 @@ CommonControllerBuilder::CreateEncryptedTabContextContainerDataTypeController(
       tab_context_sync_service_.value()
           ->GetSyncControllerDelegateForContainer()
           .get();
-  return std::make_unique<sync_tab_context::TabContextDataTypeController>(
-      syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
+  return std::make_unique<
+      sync_tab_context::TabContextContainerDataTypeController>(
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
@@ -906,8 +905,7 @@ CommonControllerBuilder::CreateEncryptedTabContextContainerDataTypeController(
 }
 
 std::unique_ptr<syncer::DataTypeController>
-CommonControllerBuilder::CreateEncryptedTabContextItemDataTypeController(
-    syncer::SyncService* sync_service) {
+CommonControllerBuilder::CreateEncryptedTabContextItemDataTypeController() {
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEncryptedTabContextContainer) ||
       !tab_context_sync_service_.value()) {
@@ -917,13 +915,12 @@ CommonControllerBuilder::CreateEncryptedTabContextItemDataTypeController(
       tab_context_sync_service_.value()
           ->GetSyncControllerDelegateForItem()
           .get();
-  return std::make_unique<sync_tab_context::TabContextDataTypeController>(
+  return std::make_unique<syncer::DataTypeController>(
       syncer::ENCRYPTED_TAB_CONTEXT_ITEM,
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
-      sync_service);
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
 std::unique_ptr<syncer::DataTypeController>
