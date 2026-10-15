@@ -322,10 +322,11 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       if (!can_simplify) {
         break;
       }
-      float value = operand_pixels.size() == 1u
-                        ? std::log(operand_pixels.front())
-                        : std::log2(operand_pixels.front()) /
-                              std::log2(operand_pixels.back());
+      std::optional<float> b;
+      if (operand_pixels.size() == 2u) {
+        b = operand_pixels.back();
+      }
+      float value = EvaluateLogFunction(operand_pixels.front(), b);
       return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
           PixelsAndPercent(value));
     }
@@ -348,7 +349,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       }
       float value = 0;
       for (float operand : operand_pixels) {
-        value = std::hypot(value, operand);
+        value = EvaluateHypotIteration(value, operand);
       }
       return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
           PixelsAndPercent(value));
@@ -431,7 +432,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       if (!children.front()->IsNumber() || !children.back()->IsNumber()) {
         break;
       }
-      float value = std::pow(
+      float value = EvaluatePowFunction(
           To<CalculationExpressionNumberNode>(*children.front()).Value(),
           To<CalculationExpressionNumberNode>(*children.back()).Value());
       return MakeGarbageCollected<CalculationExpressionNumberNode>(value);
@@ -565,17 +566,19 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kLog: {
       DCHECK_GE(children_.size(), 1u);
       DCHECK_LE(children_.size(), 2u);
-      return children_.size() == 1u
-                 ? std::log(children_.front()->Evaluate(max_value, input))
-                 : std::log2(children_.front()->Evaluate(max_value, input)) /
-                       std::log2(children_.back()->Evaluate(max_value, input));
+      float a = children_.front()->Evaluate(max_value, input);
+      std::optional<float> b;
+      if (children_.size() == 2u) {
+        b = children_.back()->Evaluate(max_value, input);
+      }
+      return EvaluateLogFunction(a, b);
     }
     case CalculationOperator::kHypot: {
       DCHECK_GE(children_.size(), 1u);
       float value = 0;
       for (const Member<const CalculationExpressionNode>& operand : children_) {
         float a = operand->Evaluate(max_value, input);
-        value = std::hypot(value, a);
+        value = EvaluateHypotIteration(value, a);
       }
       return value;
     }
@@ -626,7 +629,7 @@ float CalculationExpressionOperationNode::Evaluate(
       DCHECK_EQ(children_.size(), 2u);
       float a = children_[0]->Evaluate(max_value, input);
       float b = children_[1]->Evaluate(max_value, input);
-      return std::pow(a, b);
+      return EvaluatePowFunction(a, b);
     }
     case CalculationOperator::kSin:
     case CalculationOperator::kCos:

@@ -2058,7 +2058,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
         std::optional<double> b = operands[1]->ComputeValueInCanonicalUnit();
         CHECK(a.has_value());
         CHECK(b.has_value());
-        value = std::pow(a.value(), b.value());
+        value = EvaluatePowFunction(a.value(), b.value());
       } else {
         return MakeGarbageCollected<CSSMathExpressionOperation>(
             category, std::move(operands), CSSMathOperator::kPow,
@@ -2088,7 +2088,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
         for (const CSSMathExpressionNode* operand : operands) {
           std::optional<double> a = operand->ComputeValueInCanonicalUnit();
           DCHECK(a.has_value());
-          value = std::hypot(value, a.value());
+          value = EvaluateHypotIteration(value, a.value());
         }
         unit_type = CSSPrimitiveValue::CanonicalUnit(
             operands.front()->ResolvedUnitType());
@@ -2112,12 +2112,11 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
             CSSMathType());
       }
       double a = ValueAsNumber(operands[0], error);
+      std::optional<double> b;
       if (operands.size() == 2) {
-        double b = ValueAsNumber(operands[1], error);
-        value = std::log2(a) / std::log2(b);
-      } else {
-        value = std::log(a);
+        b = ValueAsNumber(operands[1], error);
       }
+      value = EvaluateLogFunction(a, b);
       break;
     }
     case CSSValueID::kExp: {
@@ -3717,10 +3716,11 @@ double CSSMathExpressionOperation::EvaluateOperator(
     case CSSMathOperator::kLog: {
       DCHECK_GE(operands.size(), 1u);
       DCHECK_LE(operands.size(), 2u);
+      std::optional<double> b;
       if (operands.size() == 2) {
-        return std::log2(operands.front()) / std::log2(operands.back());
+        b = operands.back();
       }
-      return std::log(operands.front());
+      return EvaluateLogFunction(operands.front(), b);
     }
     case CSSMathOperator::kSqrt: {
       DCHECK_EQ(operands.size(), 1u);
@@ -3730,7 +3730,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       DCHECK_GE(operands.size(), 1u);
       double value = 0;
       for (double operand : operands) {
-        value = std::hypot(value, operand);
+        value = EvaluateHypotIteration(value, operand);
       }
       return value;
     }
@@ -3762,10 +3762,9 @@ double CSSMathExpressionOperation::EvaluateOperator(
       // But for now just handle the simplest case.
       return operands[1];
     }
-    case CSSMathOperator::kPow: {
-      DCHECK_EQ(operands.size(), 2u);
-      return std::pow(operands[0], operands[1]);
-    }
+    case CSSMathOperator::kPow:
+      CHECK_EQ(operands.size(), 2u);
+      return EvaluatePowFunction(operands[0], operands[1]);
     case CSSMathOperator::kSin:
     case CSSMathOperator::kCos:
     case CSSMathOperator::kTan:

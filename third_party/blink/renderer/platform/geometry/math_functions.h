@@ -56,6 +56,10 @@ template <class OperatorType, typename ValueType>
 std::optional<ValueType> PreCheckSteppedValueFunctionArguments(OperatorType op,
                                                                ValueType a,
                                                                ValueType b) {
+  // If A or B is NaN, the result is NaN.
+  if (std::isnan(a) || std::isnan(b)) {
+    return std::numeric_limits<ValueType>::quiet_NaN();
+  }
   // In round(A, B), if B is 0, the result is NaN.
   // In mod(A, B) or rem(A, B), if B is 0, the result is NaN.
   // If A and B are both infinite, the result is NaN.
@@ -280,6 +284,54 @@ template <typename ValueType>
   requires std::floating_point<ValueType>
 ValueType EvaluateSignFunction(ValueType v) {
   return (v == 0 || std::isnan(v)) ? v : ((v > 0) ? 1 : -1);
+}
+
+// https://drafts.csswg.org/css-values-4/#exponent-infinities
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluateLogFunction(ValueType a, std::optional<ValueType> b) {
+  // If B is 1 or negative the result is NaN. std::log2(...) will handle the
+  // latter.
+  if (b == 1) {
+    return std::numeric_limits<ValueType>::quiet_NaN();
+  }
+  // If A is 1, the result is 0+.
+  if (a == 1) {
+    return 0;
+  }
+  if (b) {
+    return std::log2(a) / std::log2(*b);
+  }
+  return std::log(a);
+}
+
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluatePowFunction(ValueType a, ValueType b) {
+  // std::pow(...) would produce non-NaN in a few cases (a==1/b==0), while CSS
+  // says it should produce NaN.
+  if (std::isnan(a) || std::isnan(b)) {
+    return std::numeric_limits<ValueType>::quiet_NaN();
+  }
+  // If a == +/-1 and b == +/-Infinity then return NaN.
+  if (std::abs(a) == 1 && std::isinf(b)) {
+    return std::numeric_limits<ValueType>::quiet_NaN();
+  }
+  return std::pow(a, b);
+}
+
+// An iteration of evaluation for the hypot() function. `a` is the result of
+// the previous iteration or zero (for the first iteration). `b` is the current
+// operand value.
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluateHypotIteration(ValueType a, ValueType b) {
+  // std::hypot(...) would produce Infinity for hypot(Infinity, NaN) (or vice
+  // versa), while CSS says that it should produce NaN.
+  if (std::isnan(a) || std::isnan(b)) {
+    return std::numeric_limits<ValueType>::quiet_NaN();
+  }
+  return std::hypot(a, b);
 }
 
 // https://drafts.csswg.org/css-values-5/#random-evaluation
