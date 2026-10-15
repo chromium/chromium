@@ -616,7 +616,12 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
   if (new_state != ui::mojom::WindowShowState::kFullscreen &&
       new_state != ui::mojom::WindowShowState::kMinimized &&
       app_window()->IsFullscreen()) {
+    base::WeakPtr<extensions::AppWindow> weak_app_window =
+        app_window()->GetWeakPtr();
     app_window()->Restore();
+    if (!weak_app_window) {
+      return;
+    }
   }
 
   // Usually OnNativeWindowChanged() is called when the window bounds are

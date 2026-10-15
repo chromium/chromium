@@ -337,6 +337,7 @@ void AppWindow::Init(const GURL& url,
 
   AppWindowRegistry::Get(browser_context_)->AddAppWindow(this);
 
+  base::WeakPtr<AppWindow> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (new_params.hidden) {
     // Although the window starts hidden by default, calling Hide() here
     // notifies observers of the window being hidden.
@@ -352,7 +353,17 @@ void AppWindow::Init(const GURL& url,
       Minimize();
     }
 
+    // `Fullscreen()` (or another state transition) can synchronously close the
+    // window and destroy `this`.
+    if (!weak_this) {
+      return;
+    }
+
     Show(new_params.focused ? SHOW_ACTIVE : SHOW_INACTIVE);
+  }
+
+  if (!weak_this) {
+    return;
   }
 
   OnNativeWindowChanged();

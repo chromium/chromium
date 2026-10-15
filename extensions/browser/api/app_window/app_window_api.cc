@@ -385,12 +385,19 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (!app_window)
     return RespondNow(Error(app_window_constants::kAppWindowCreationFailed));
 
+  base::WeakPtr<AppWindow> weak_app_window = app_window->GetWeakPtr();
   app_window->Init(url, std::make_unique<AppWindowContentsImpl>(app_window),
                    render_frame_host(), create_params);
+  if (!weak_app_window) {
+    return RespondNow(Error(app_window_constants::kPrematureWindowClose));
+  }
 
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode() &&
       !app_window->is_ime_window()) {
     app_window->ForcedFullscreen();
+    if (!weak_app_window) {
+      return RespondNow(Error(app_window_constants::kPrematureWindowClose));
+    }
   }
 
   if (AppWindowRegistry::Get(browser_context())
