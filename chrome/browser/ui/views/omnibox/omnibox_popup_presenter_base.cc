@@ -683,6 +683,12 @@ void OmniboxPopupPresenterBase::ResetPermissionPromptShowingState() {
 
 void OmniboxPopupPresenterBase::HandlePermissionPromptDismissal() {
   SetPermissionPromptShowing(false);
+  // If the prompt was removed because the popup widget itself was hidden (e.g.
+  // during browser window teardown), do not enter dismissal mode or refocus the
+  // location bar.
+  if (!IsShown()) {
+    return;
+  }
   is_handling_prompt_dismissal_ = true;
   if (location_bar()) {
     location_bar()->FocusLocation(/*is_user_initiated=*/false,

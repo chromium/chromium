@@ -235,6 +235,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, ResetsOnAllClosureStates) {
 }
 
 TEST_F(OmniboxPopupPresenterBaseTest, PermissionPromptShowingStateAndReset) {
+  ShowWidget();
   EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
 
   // Calling `SetPermissionPromptShowing(true)` locks presenter via
@@ -246,7 +247,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, PermissionPromptShowingStateAndReset) {
   presenter_->ResetPermissionPromptShowingState();
   EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
 
-  // `OnPromptRemoved` puts it in dismissal mode.
+  // `OnPromptRemoved` puts it in dismissal mode when shown.
   presenter_->OnPromptRemoved();
   EXPECT_TRUE(presenter_->IsPermissionPromptPreventingClose());
 
@@ -268,6 +269,15 @@ TEST_F(OmniboxPopupPresenterBaseTest, PermissionPromptShowingStateAndReset) {
 
   // Resetting clears state.
   presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+
+  // When the popup widget is hidden externally (e.g. during window teardown),
+  // `OnPromptRemoved` should clear `is_prompt_showing_` without entering
+  // dismissal mode.
+  presenter_->SetPermissionPromptShowing(true);
+  widget_ptr_->Hide();
+  EXPECT_FALSE(presenter_->IsShown());
+  presenter_->OnPromptRemoved();
   EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
 }
 
