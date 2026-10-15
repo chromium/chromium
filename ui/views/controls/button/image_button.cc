@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -217,13 +216,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
   InkDrop::Get(icon_button.get())->SetMode(views::InkDropHost::InkDropMode::ON);
   icon_button->SetHasInkDropActionOnClick(true);
   icon_button->SetShowInkDropWhenHotTracked(true);
-  InkDrop::Get(icon_button.get())
-      ->SetBaseColorCallback(base::BindRepeating(
-          [](ImageButton* host) {
-            return host->GetColorProvider()->GetColor(
-                ui::kColorSysOnSurfaceSubtle);
-          },
-          icon_button.get()));
+  InkDrop::Get(icon_button.get())->SetBaseColor(ui::kColorSysOnSurfaceSubtle);
 
   icon_button->GetViewAccessibility().SetName(accessible_name);
   icon_button->SetTooltipText(accessible_name);
