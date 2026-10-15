@@ -45,8 +45,6 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   std::string DebugString() const override;
   GURL JournalURL() const override;
   std::string JournalEvent() const override;
-  void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:

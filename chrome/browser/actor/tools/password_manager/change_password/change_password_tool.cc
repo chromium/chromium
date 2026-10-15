@@ -105,13 +105,6 @@ ChangePasswordTool::GetObservationDelayer(
       *rfh, task_id(), journal(), std::move(page_stability_config));
 }
 
-void ChangePasswordTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                                ToolCallback callback) const {
-  // TODO(b/573357545): Probably unneeded
-  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
-}
-
 ActorSurfaceHandle ChangePasswordTool::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }

@@ -55,8 +55,6 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
   // content::WebContentsObserver

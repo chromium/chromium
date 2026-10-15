@@ -56,8 +56,6 @@ class AttemptFormFillingTool : public Tool,
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
-  void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
 
   const std::string& credit_card_opaque_token() const {
     return credit_card_opaque_token_;

@@ -53,9 +53,6 @@ class AttemptOtpFillingTool : public Tool {
       override;
   void Invoke(ToolCallback callback) override;
 
-  void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
-
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(

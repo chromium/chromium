@@ -17,7 +17,6 @@ class GURL;
 namespace actor {
 
 class ActorSurface;
-class ActorTask;
 
 // Highlights matching text in a tab and scrolls it into view.
 class FindAndHighlightTool : public Tool {
@@ -37,8 +36,6 @@ class FindAndHighlightTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
   const std::string& query() const { return query_; }

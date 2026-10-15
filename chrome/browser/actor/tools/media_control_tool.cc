@@ -123,13 +123,6 @@ MediaControlTool::GetObservationDelayer(
       journal(), page_stability_config);
 }
 
-void MediaControlTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                              ToolCallback callback) const {
-  // TODO(b/573357545): Probably unneeded
-  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
-}
-
 ActorSurfaceHandle MediaControlTool::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }

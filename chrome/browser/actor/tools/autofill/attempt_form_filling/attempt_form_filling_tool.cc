@@ -230,14 +230,6 @@ ActorSurfaceHandle AttemptFormFillingTool::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }
 
-void AttemptFormFillingTool::UpdateTaskBeforeInvoke(
-    ActorTask& task,
-    ToolCallback callback) const {
-  // TODO(b/573357545): Probably unneeded
-  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
-}
-
 void AttemptFormFillingTool::OnSuggestionsRetrieved(
     ToolCallback invoke_callback,
     base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>

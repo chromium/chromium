@@ -237,13 +237,6 @@ std::string ScriptToolHost::JournalEvent() const {
   return DebugString();
 }
 
-void ScriptToolHost::UpdateTaskBeforeInvoke(ActorTask& task,
-                                            ToolCallback callback) const {
-  // TODO(b/573357545): Probably unneeded
-  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
-}
-
 ActorSurfaceHandle ScriptToolHost::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }

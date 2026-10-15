@@ -654,14 +654,6 @@ void AttemptOtpFillingTool::LogJournalEvent(
                 std::move(journal_details));
 }
 
-void AttemptOtpFillingTool::UpdateTaskBeforeInvoke(
-    ActorTask& task,
-    ToolCallback callback) const {
-  // TODO(b/573357545): Probably unneeded
-  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
-}
-
 std::string AttemptOtpFillingTool::DebugString() const {
   // This ends up in chrome://actor-internals and will be used for debugging.
   return "AttemptOtpFillingTool";

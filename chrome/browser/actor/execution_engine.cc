@@ -1449,9 +1449,7 @@ void ExecutionEngine::KickOffNextAction() {
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      // TODO(b/573357545): Probably unneeded
-      task_->AddActorSurface(actor_surface->GetHandle(),
-                             /*stop_task_on_detach=*/true, base::DoNothing());
+      CHECK(task_->IsActingOnActorSurface(actor_surface->GetHandle()));
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
                                  /*requires_page_stabilization=*/false,
                                  "Renderer crashed."),
@@ -1541,7 +1539,9 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
                       .Build());
-    FailedOnTabBeforeToolCreation();
+    CHECK(
+        GetNextAction().GetActorSurfaceHandle().is_null() ||
+        task_->IsActingOnActorSurface(GetNextAction().GetActorSurfaceHandle()));
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                                /*requires_page_stabilization=*/false,
                                "Acting after cross-origin navigation occurred"),
@@ -1553,7 +1553,9 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     journal_->Log(
         GetNextAction().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
-    FailedOnTabBeforeToolCreation();
+    CHECK(
+        GetNextAction().GetActorSurfaceHandle().is_null() ||
+        task_->IsActingOnActorSurface(GetNextAction().GetActorSurfaceHandle()));
     CompleteActions(MakeResult(result_code,
                                /*requires_page_stabilization=*/false,
                                "URL blocked for actions"),
@@ -1562,22 +1564,6 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   ExecuteNextAction();
-}
-
-void ExecutionEngine::FailedOnTabBeforeToolCreation() {
-  journal_->Log(
-      GetNextAction().GetURLForJournal(), task_->id(), "Act Failed",
-      JournalDetailsBuilder()
-          .Add("tabId", GetNextAction().GetTabForValidation().raw_value())
-          .AddError("Associating tab for failed action")
-          .Build());
-  ActorSurfaceHandle actuation_actor_surface_handle =
-      GetNextAction().GetActorSurfaceHandle();
-  if (!actuation_actor_surface_handle.is_null()) {
-    // TODO(b/573357545): Probably unneeded
-    task_->AddActorSurface(actuation_actor_surface_handle,
-                           /*stop_task_on_detach=*/true, base::DoNothing());
-  }
 }
 
 void ExecutionEngine::ExecuteNextAction() {

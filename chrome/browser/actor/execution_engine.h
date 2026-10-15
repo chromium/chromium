@@ -382,11 +382,6 @@ class ExecutionEngine : public ToolDelegate,
   void DidFinishAsyncSafetyChecks(const url::Origin& committed_origin,
                                   mojom::ActionResultCode result_code);
 
-  // If a failure occurs before the next action starts, we associate the tab
-  // that the action would have acted on with the task, so that we can provide
-  // tab observations back to the client.
-  void FailedOnTabBeforeToolCreation();
-
   // Synchronously executes the next action. There are several types of actions,
   // including renderer-scoped actions, tab-scoped actions, and global actions.
   void ExecuteNextAction();
