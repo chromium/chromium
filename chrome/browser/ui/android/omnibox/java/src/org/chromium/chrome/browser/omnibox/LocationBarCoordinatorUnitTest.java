@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link LocationBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -233,12 +235,27 @@ public class LocationBarCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_hiddenOnNtp() {
         ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();
-        when(mNewTabPageDelegate.isCurrentlyVisible()).thenReturn(true);
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        lenient().doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
 
         mCoordinator.updateOptionalButton(buttonData);
 
         verify(mOptionalButtonCoordinator).hideButton();
         verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_shownWhenNtpNativePageNotYetHidden() {
+        ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        // The NTP native page is still attached when the URL first commits to a non-NTP URL.
+        lenient().doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+
+        mCoordinator.updateOptionalButton(buttonData);
+
+        verify(mOptionalButtonCoordinator).updateButton(buttonData, /* isIncognito= */ false);
+        verify(mOptionalButtonCoordinator, never()).hideButton();
     }
 
     /**

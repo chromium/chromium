@@ -1501,10 +1501,8 @@ public class LocationBarCoordinator
             return false;
         }
         boolean isNtp =
-                mLocationBarMediator
-                        .getLocationBarDataProvider()
-                        .getNewTabPageDelegate()
-                        .isCurrentlyVisible();
+                OmniboxUrlUtils.isNtpUrl(
+                        mLocationBarMediator.getLocationBarDataProvider().getCurrentGurl());
         return !isNtp && !mLocationBarMediator.isUrlBarFocused() && !mMiniOriginMode;
     }
 

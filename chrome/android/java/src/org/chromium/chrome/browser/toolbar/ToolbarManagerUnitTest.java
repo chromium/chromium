@@ -351,7 +351,15 @@ public class ToolbarManagerUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         SceneLayerJni.setInstanceForTesting(mSceneLayerNatives);
         when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(anyLong()))
-                .thenReturn(GURL.emptyGURL());
+                .thenAnswer(
+                        invocation -> {
+                            Tab tab =
+                                    mActivityTabProvider != null
+                                            ? mActivityTabProvider.get()
+                                            : null;
+                            GURL url = tab != null ? tab.getUrl() : null;
+                            return url != null ? url : GURL.emptyGURL();
+                        });
         when(mLocationBarModelNatives.getFormattedFullURL(anyLong())).thenReturn("");
         when(mLocationBarModelNatives.getURLForDisplay(anyLong())).thenReturn("");
         TopToolbarSceneLayerJni.setInstanceForTesting(mTopToolbarSceneLayerNatives);
