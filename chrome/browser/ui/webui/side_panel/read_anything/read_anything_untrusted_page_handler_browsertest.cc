@@ -52,6 +52,7 @@
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"
+#include "components/translate/content/browser/translate_waiter.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -292,10 +293,20 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
+    // Wait for both load stop and language determination so that an in-flight
+    // RegisterPage IPC from the initial about:blank navigation does not arrive
+    // mid-test and overwrite language or translation state set by the test.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
+    content::WebContents* contents = GetReadAnythingWebContents();
+    translate::TranslateWaiter translate_waiter(
+        GetChromeTranslateClient()->translate_driver(),
+        translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
+    ASSERT_TRUE(content::WaitForLoadStop(contents));
+    content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(contents);
+    translate_waiter.Wait();
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(browser()->GetProfile()));
