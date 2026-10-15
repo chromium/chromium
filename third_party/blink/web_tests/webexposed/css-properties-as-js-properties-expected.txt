@@ -222,6 +222,7 @@ fill
 fillOpacity
 fillRule
 filter
+fitTolerance
 flex
 flexBasis
 flexDirection
@@ -233,7 +234,6 @@ flexWrap
 float
 floodColor
 floodOpacity
-flowTolerance
 font
 fontDisplay
 fontFamily

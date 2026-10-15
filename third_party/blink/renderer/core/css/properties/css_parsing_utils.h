@@ -721,9 +721,9 @@ CSSValue* ParseGridLanesTemplateAreasValue(
     bool is_for_columns);
 CSSValue* ParseGridLanesDirection(CSSParserTokenStream&);
 
-CSSValue* ConsumeFlowTolerance(CSSParserTokenStream&,
-                               const CSSParserContext&,
-                               CSSParserLocalContext&);
+CSSValue* ConsumeFitTolerance(CSSParserTokenStream&,
+                              const CSSParserContext&,
+                              CSSParserLocalContext&);
 
 bool ConsumeGapDecorationsRuleInsetCapJunctionShorthand(
     bool important,

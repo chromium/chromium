@@ -29,7 +29,7 @@ class CounterStyle;
 class CSSNumericLiteralValue;
 class CSSStyleValue;
 class CSSValue;
-class FlowTolerance;
+class FitTolerance;
 class FontFamily;
 class PositionArea;
 class StyleColor;
@@ -168,8 +168,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&,
                                          bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
-  static CSSValue* ValueForFlowTolerance(const FlowTolerance&,
-                                         const ComputedStyle&);
+  static CSSValue* ValueForFitTolerance(const FitTolerance&,
+                                        const ComputedStyle&);
   static CSSValue* ValueForGridLanesDirection(const GridLanesDirection&,
                                               const ComputedStyle&);
   static std::optional<gfx::SizeF> UsedBoxSize(const LayoutObject&);

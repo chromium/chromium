@@ -570,8 +570,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return ValueEquals(a.ForcedColorAdjust(), b.ForcedColorAdjust());
     case CSSPropertyID::kFieldSizing:
       return ValueEquals(a.FieldSizing(), b.FieldSizing());
-    case CSSPropertyID::kFlowTolerance:
-      return ValueEquals(a.GetFlowTolerance(), b.GetFlowTolerance());
+    case CSSPropertyID::kFitTolerance:
+      return ValueEquals(a.GetFitTolerance(), b.GetFitTolerance());
     case CSSPropertyID::kFrameSizing:
       return ValueEquals(a.FrameSizing(), b.FrameSizing());
     case CSSPropertyID::kGridAutoColumns:

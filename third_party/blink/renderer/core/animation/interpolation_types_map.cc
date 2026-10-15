@@ -148,8 +148,8 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kRowRuleInsetJunctionStart:
       case CSSPropertyID::kCx:
       case CSSPropertyID::kCy:
+      case CSSPropertyID::kFitTolerance:
       case CSSPropertyID::kFlexBasis:
-      case CSSPropertyID::kFlowTolerance:
       case CSSPropertyID::kHeight:
       case CSSPropertyID::kLeft:
       case CSSPropertyID::kLetterSpacing:

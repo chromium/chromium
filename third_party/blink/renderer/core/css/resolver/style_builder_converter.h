@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/flow_tolerance.h"
+#include "third_party/blink/renderer/core/style/fit_tolerance.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/max_lines_data.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
@@ -225,8 +225,8 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static GridTrackList ConvertGridTrackSizeList(StyleResolverState&,
                                                 const CSSValue&);
-  static FlowTolerance ConvertFlowTolerance(const StyleResolverState&,
-                                            const CSSValue&);
+  static FitTolerance ConvertFitTolerance(const StyleResolverState&,
+                                          const CSSValue&);
   static GridLanesDirection ConvertGridLanesDirection(const StyleResolverState&,
                                                       const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(

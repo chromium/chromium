@@ -192,6 +192,7 @@ All changes to this list should go through Blink's feature review process: http:
     fill-opacity
     fill-rule
     filter
+    fit-tolerance
     flex-basis
     flex-direction
     flex-grow
@@ -201,7 +202,6 @@ All changes to this list should go through Blink's feature review process: http:
     float
     flood-color
     flood-opacity
-    flow-tolerance
     font-family
     font-feature-settings
     font-kerning

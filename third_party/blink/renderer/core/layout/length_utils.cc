@@ -1373,24 +1373,22 @@ LayoutUnit ResolveRowGapForMulticol(const ComputedStyle& style,
       .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));
 }
 
-std::optional<LayoutUnit> ResolveFlowToleranceLength(
-    const ComputedStyle& style,
-    LayoutUnit available_size) {
-  // TODO (celestepan): Account for when flow-tolerance is set to infinite.
-  const FlowTolerance& flow_tolerance = style.GetFlowTolerance();
-  if (flow_tolerance.IsNormal()) {
+std::optional<LayoutUnit> ResolveFitToleranceLength(const ComputedStyle& style,
+                                                    LayoutUnit available_size) {
+  const FitTolerance& fit_tolerance = style.GetFitTolerance();
+  if (fit_tolerance.IsNormal()) {
     return std::nullopt;
   }
-  if (flow_tolerance.IsInfinite()) {
+  if (fit_tolerance.IsInfinite()) {
     return LayoutUnit::Max();
   }
-  return MinimumValueForLength(flow_tolerance.GetLength(),
+  return MinimumValueForLength(fit_tolerance.GetLength(),
                                available_size.ClampIndefiniteToZero());
 }
 
-LayoutUnit ResolveFlowToleranceForGridLanes(const ComputedStyle& style,
-                                            const LogicalSize& available_size) {
-  return ResolveFlowToleranceLength(
+LayoutUnit ResolveFitToleranceForGridLanes(const ComputedStyle& style,
+                                           const LogicalSize& available_size) {
+  return ResolveFitToleranceLength(
              style, (style.GridLanesTrackSizingDirection() == kForColumns)
                         ? available_size.inline_size
                         : available_size.block_size)

@@ -2326,15 +2326,15 @@ CSSValue* ComputedStyleUtils::ValueForHangingPunctuation(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForFlowTolerance(
-    const FlowTolerance& flow_tolerance,
+CSSValue* ComputedStyleUtils::ValueForFitTolerance(
+    const FitTolerance& fit_tolerance,
     const ComputedStyle& style) {
-  if (flow_tolerance.IsNormal()) {
+  if (fit_tolerance.IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
-  } else if (flow_tolerance.IsInfinite()) {
+  } else if (fit_tolerance.IsInfinite()) {
     return CSSIdentifierValue::Create(CSSValueID::kInfinite);
   }
-  return ZoomAdjustedPixelValueForLength(flow_tolerance.GetLength(), style);
+  return ZoomAdjustedPixelValueForLength(fit_tolerance.GetLength(), style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForGridLanesDirection(

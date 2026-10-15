@@ -153,7 +153,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 
     GridLanesRunningPositions running_positions(
         track_collection, style,
-        ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
+        ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_));
     // Placement takes a subtree view of the local `sizing_tree`, or uses
     // `layout_subtree` when geometry is inherited.
     const GridSizingSubtree sizing_subtree =
@@ -311,7 +311,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     if (!grid_items->IsEmpty()) {
       GridLanesRunningPositions running_positions(
           track_collection, style,
-          ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_),
+          ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_),
           grid_items->HasStackingAxisAlignment());
 
       GridLanesDataVector* out_grid_lanes =
@@ -3251,7 +3251,7 @@ void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
   // can be properly aligned and placed.
   GridLanesRunningPositions running_positions(
       track_collection, style,
-      ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
+      ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_));
 
   // Use a dummy baseline accumulator since we only care about storing
   // baselines on the track collection, not accumulating container baselines.

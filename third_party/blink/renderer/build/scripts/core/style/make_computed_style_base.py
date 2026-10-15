@@ -60,7 +60,7 @@ ALIGNMENT_ORDER = [
     'StyleTriggerScope',
     # Aligns like float (32 bits)
     'DynamicRangeLimit',
-    'FlowTolerance',
+    'FitTolerance',
     'Length',
     'LengthBox',
     'LengthPoint',

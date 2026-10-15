@@ -189,6 +189,7 @@ fill: rgb(0, 128, 0)
 fill-opacity: 1
 fill-rule: nonzero
 filter: none
+fit-tolerance: normal
 flex-basis: auto
 flex-direction: row
 flex-grow: 0
@@ -198,7 +199,6 @@ flex-wrap: nowrap
 float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
-flow-tolerance: normal
 font-feature-settings: normal
 font-kerning: auto
 font-language-override: normal
