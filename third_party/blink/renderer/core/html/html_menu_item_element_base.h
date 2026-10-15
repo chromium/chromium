@@ -111,25 +111,19 @@ class CORE_EXPORT HTMLMenuItemCheckableElementBase
 template <>
 struct DowncastTraits<HTMLMenuItemElementBase> {
   static bool AllowFrom(const Node& node) {
-    const HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-    return html_element && AllowFrom(*html_element);
-  }
-  static bool AllowFrom(const HTMLElement& html_element) {
-    return html_element.HasTagName(html_names::kMenuitemTag) ||
-           html_element.HasTagName(html_names::kMenuitemcheckboxTag) ||
-           html_element.HasTagName(html_names::kMenuitemradioTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLMenuItemElement ||
+           type == ElementType::kHTMLMenuItemCheckboxElement ||
+           type == ElementType::kHTMLMenuItemRadioElement;
   }
 };
 
 template <>
 struct DowncastTraits<HTMLMenuItemCheckableElementBase> {
   static bool AllowFrom(const Node& node) {
-    const HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-    return html_element && AllowFrom(*html_element);
-  }
-  static bool AllowFrom(const HTMLElement& html_element) {
-    return html_element.HasTagName(html_names::kMenuitemcheckboxTag) ||
-           html_element.HasTagName(html_names::kMenuitemradioTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLMenuItemCheckboxElement ||
+           type == ElementType::kHTMLMenuItemRadioElement;
   }
 };
 

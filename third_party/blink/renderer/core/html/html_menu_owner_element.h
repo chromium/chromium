@@ -75,8 +75,9 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
 template <>
 struct DowncastTraits<HTMLMenuOwnerElement> {
   static bool AllowFrom(const Node& node) {
-    return node.HasTagName(html_names::kMenulistTag) ||
-           node.HasTagName(html_names::kMenubarTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLMenuListElement ||
+           type == ElementType::kHTMLMenuBarElement;
   }
 };
 
