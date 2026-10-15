@@ -135,6 +135,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1485343711570311792">Open in <ph name="NATIVE_APP_NAME" /> • From <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Back to tab</translation>
 <translation id="1496514951988037011">username</translation>
+<translation id="1498051468374914325">Open Developer Tools console</translation>
 <translation id="1501480321619201731">Delete group</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
@@ -142,6 +143,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1516966594427080024">Open a new window in Incognito mode</translation>
 <translation id="152204906462707884">Quickly delete your browsing history and take more control over your privacy</translation>
 <translation id="153446405401665083">New version of Chrome is available</translation>
+<translation id="1537160738459068682">Open Developer Tools elements</translation>
 <translation id="1540012742443808215">Address bar currently on top</translation>
 <translation id="1543035591122163372">Sign in to get your passwords and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
@@ -1069,6 +1071,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
+<translation id="5257142004843671642">Resize side panel</translation>
 <translation id="5264813352784073502">last 24 hours</translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5273031377282080577">Your administrator manages this setting.</translation>
@@ -2061,6 +2064,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9027728231343310283">Undo <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Move to\u2026</translation>
+<translation id="9038316201889095704">Find in page is disabled while there are unsaved changes.</translation>
 <translation id="904146253922032365">Touch and hold to show tabs vertically</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9047347135558855162">Quickly start a search in Chrome</translation>

@@ -268,6 +268,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1178093605842850860">Diizinkan membaca &amp; mengubah situs ini</translation>
 <translation id="1178357842179817577">Melindungi Anda dari situs, download, dan ekstensi berbahaya</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Tab dibagikan untuk menghasilkan jawaban yang lebih relevan.<ph name="END_BOLD" /> Google menggunakan konten dan URL tab yang terbuka saat Anda memulai percakapan baru. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="117916940443676133">Kunci keamanan Anda tidak dilindungi PIN. Untuk mengelola data login, buat PIN terlebih dahulu.</translation>
 <translation id="1179400851034021914">IBAN tidak valid</translation>
@@ -702,6 +703,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1535753739390684432">Dengarkan teks tertentu dibacakan secara lisan. Pilih ikon Klik untuk Diucapkan di bagian bawah layar terlebih dulu, lalu tandai teks.</translation>
 <translation id="1536754031901697553">Memutuskan sambungan...</translation>
 <translation id="1536883206862903762">Tindakan ini akan menonaktifkan ekstensi dan mereset setelan Anda ke setelan default yang aman. Tab, file, dan cookie akan disimpan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Tab dibagikan untuk menghasilkan jawaban yang lebih relevan.<ph name="END_BOLD_1" /> Google menggunakan konten dan URL tab yang terbuka saat Anda memulai percakapan baru. Anda dapat mengubah setelan ini kapan saja. <ph name="BEGIN_BOLD_2" />Privasi dan keamanan data organisasi Anda tetap terjaga.<ph name="END_BOLD_2" /> Data Anda tidak akan digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="1537254971476575106">Kaca pembesar layar penuh</translation>
 <translation id="1538808328818992871">Minimal <ph name="MIN_LENGTH" /> karakter</translation>
 <translation id="1539248305642687917">Jangan izinkan situs mengganti input keyboard Anda</translation>
@@ -729,6 +731,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1552752544932680961">Kelola ekstensi</translation>
 <translation id="1553538517812678578">tidak terbatas</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /> Microsoft 365 di Chromebook.</translation>
+<translation id="1554343363646356023">Jendela &amp;terisolasi baru</translation>
 <translation id="1554640914375980459">Aktifkan flash layar saat Anda menerima notifikasi. Gunakan notifikasi flash dengan hati-hati jika Anda sensitif terhadap cahaya.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1556127816860282890">Aktivitas latar belakang dan beberapa efek visual, seperti scroll yang lancar, mungkin dibatasi</translation>
@@ -1907,6 +1910,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ingin menyalin file dari <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Saat ini berada di saluran <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Perbarui akun, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Tab dibagikan untuk menghasilkan jawaban yang lebih relevan. Google menggunakan konten dan URL tab yang terbuka saat Anda memulai percakapan baru. Anda dapat mengubah setelan ini kapan saja. Privasi dan keamanan data organisasi Anda tetap terjaga. Data Anda tidak akan digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="2459703812219683497">Kode aktivasi terdeteksi</translation>
 <translation id="2459706890611560967">Lanjutkan transmisi tab ke <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Bagikan screenshot</translation>
@@ -3168,6 +3172,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3390740059150071453">Melirik ke kiri</translation>
 <translation id="3393554941209044235">Analisis Dokumen Chrome</translation>
 <translation id="3394072120086516913">PC menggunakan kabel dan perangkat transmisi menggunakan Wi-Fi</translation>
+<translation id="3394561494170561143">Tab terisolasi &amp;baru</translation>
 <translation id="3394850431319394743">Diizinkan menggunakan ID untuk memutar konten yang dilindungi</translation>
 <translation id="339722927132407568">Berhenti berputar</translation>
 <translation id="3399432415385675819">Notifikasi akan dinonaktifkan</translation>
@@ -6214,6 +6219,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5724723163580775373">Fokus besar</translation>
 <translation id="5725112283692663422">Kirim masukan untuk Buat tema dengan AI</translation>
 <translation id="5727728807527375859">Ekstensi, aplikasi, dan tema dapat membahayakan komputer. Yakin ingin lanjut?</translation>
+<translation id="5727872803091928075">Tab dibagikan untuk menghasilkan jawaban yang lebih relevan. Google menggunakan konten dan URL tab yang terbuka saat Anda memulai percakapan baru. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="5728072125198221967">Layanan Google tertaut</translation>
 <translation id="5729712731028706266">&amp;Lihat</translation>
 <translation id="5731247495086897348">Tem&amp;pel dan Buka</translation>
@@ -7043,6 +7049,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6370021412472292592">Tidak dapat memuat manifes.</translation>
 <translation id="6370551072524410110">penelusuran + shift + backspace</translation>
 <translation id="637135143619858508">Longgar</translation>
+<translation id="6372413553057593904">Tab tidak aktif di "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Coba Lagi</translation>
 <translation id="637642201764944055">Aplikasi Chrome versi lama tidak dapat dibuka di perangkat Linux setelah Desember 2022. Hubungi administrator untuk mengupdate ke versi baru atau hapus aplikasi ini.</translation>
@@ -7355,6 +7362,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
 <translation id="6613231539539868591">Data Persisten</translation>
 <translation id="6613267708691765962">Memindai malware...</translation>
+<translation id="6614219106064338118">Mulai percakapan</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
 <translation id="6616000047939888167">Tawarkan Google Terjemahan untuk situs dan PDF dalam bahasa lain</translation>
 <translation id="6618013221808317456">Jangan izinkan situs menggunakan pengoptimalan JavaScript</translation>
@@ -9737,6 +9745,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8410133743809404768">Anda dapat menelusuri di kolom URL menggunakan "@histori", juga dari halaman Histori</translation>
 <translation id="8411043186249152291">layar penuh</translation>
 <translation id="8412136526970428322">Mengizinkan <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Persyaratan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Pemberitahuan Privasi Aplikasi Gemini<ph name="END_LINK2" /> berlaku.</translation>
 <translation id="8413795581997394485">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Saat Anda membuka situs, Chrome mengirimkan bagian URL yang disamarkan ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
 <translation id="8414396119627470038">Login ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Riset apa saja</translation>

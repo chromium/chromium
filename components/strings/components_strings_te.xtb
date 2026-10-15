@@ -643,6 +643,7 @@
 <translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2103210856015238101">'టచ్ చేసి నింపడానికి అందుబాటులో ఉన్న లాయల్టీ కార్డ్‌లు' పూర్తి స్థాయిలో తెరవబడ్డాయి.</translation>
 <translation id="2104739941682874393">మెరుగైన ఆటోఫిల్ ఫీచర్ ఫారమ్‌లను బాగా అర్థం చేసుకుంటుంది, మీ కోసం వాటిని వేగంగా ఆటోఫిల్ చేయగలదు</translation>
+<translation id="2105237910269166838">ఈ పేజీ గురించి అడగండి</translation>
 <translation id="2107021941795971877">ప్రింట్ మద్దతులు</translation>
 <translation id="2108755909498034140">మీ కంప్యూటర్‌ను పునఃప్రారంభించండి</translation>
 <translation id="2109845311767915560">ట్యాబ్ గ్రూప్‌లో షేర్ చేయబడింది</translation>
@@ -1049,6 +1050,7 @@
 <translation id="2734797989819862638">కాపీ చేయవద్దు</translation>
 <translation id="2738771556149464852">తర్వాత కాదు</translation>
 <translation id="2740531572673183784">సరే</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{ఏవీ లేవు}=1{1 స్కిల్}other{# స్కిల్స్}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> ఫైల్స్‌ను Google Driveకు అప్‌లోడ్ చేస్తోంది</translation>
 <translation id="2759299890026163685">మళ్లీ ట్రై చేయడానికి ముందు మీ వద్ద స్థిరమైన ఇంటర్నెట్ కనెక్షన్ ఉందని నిర్ధారించుకోండి</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />పై మీ పాస్‌వర్డ్‌ను పూర్తి చేయండి</translation>
@@ -3618,6 +3620,7 @@
 <translation id="7083258188081898530">ట్రే 9</translation>
 <translation id="70846382339153529">OpenDocument టెక్స్ట్</translation>
 <translation id="7086090958708083563">అప్‌లోడ్‌ను యూజర్ రిక్వెస్ట్ చేశారు</translation>
+<translation id="7089745480771070611">సైడ్ ప్యానెల్‌లో తెరుచుకుంటుంది</translation>
 <translation id="7090698782953528257">గణిత సమీకరణాన్ని విజువలైజ్ చేయడానికి, వక్రరేఖ ఆకారాన్ని చూసేలా ఒక ఫంక్షన్‌ను గ్రాఫ్ చేయడంలో నాకు హెల్ప్ చేయి</translation>
 <translation id="7092087596499105699">మీ సంస్థకు చెందిన ప్రైవేట్ వెబ్ అప్లికేషన్‌లను సురక్షితంగా యాక్సెస్ చేయడం కోసం, మీ అడ్మినిస్ట్రేటర్ 'సెక్యూర్ గేట్‌వే కనెక్టర్'ను కాన్ఫిగర్ చేశారు. యాక్సెస్‌ను వెరిఫై చేయడానికి ఇది మీ వర్క్ ప్రొఫైల్ నుండి డేటాను ఉపయోగించవచ్చు.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో అనుమతులను మేనేజ్ చేయడానికి, అలాగే సైట్‌ల అంతటా స్టోర్ చేయబడిన డేటాను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
@@ -4002,6 +4005,7 @@
 <translation id="7696107855583699585">తెలిసిన ప్రయాణీకుల నంబర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="7698864304447945242">Google Play Services for ARను అప్‌డేట్ చేయాలా?</translation>
 <translation id="7699509138503320152">నా ఈమెయిల్‌ను మరింత ఒప్పించేలా తిరిగి రాయి</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{ఏవీ లేవు}=1{1 స్కిల్ (సింక్ అయింది)}other{# నైపుణ్యాలు (సింక్ అయ్యాయి)}}</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" />కి కొనసాగించండి (అసురక్షితం)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">రాయడంలో నాకు సహాయపడండి</translation>

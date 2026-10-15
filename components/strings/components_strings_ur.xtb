@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2103210856015238101">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں جو پوری اونچائی پر کھلے ہیں۔</translation>
 <translation id="2104739941682874393">بہتر کردہ آٹو فل خصوصیت فارمز کو بہتر طور پر سمجھتی ہے اور آپ کے لیے انہیں تیزی سے آٹو فل کر سکتی ہے</translation>
+<translation id="2105237910269166838">اس صفحہ کے بارے میں پوچھیں</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
 <translation id="2109845311767915560">اشتراک کردہ ٹیب گروپ</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">کاپی نہ کریں</translation>
 <translation id="2738771556149464852">بعد میں نہیں</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{کوئی نہیں}=1{‫1 مہارت}other{‫# مہارتیں}}</translation>
 <translation id="2757727729385895652">‏‫<ph name="COUNT" /> فائلز کو Google Drive میں اپ لوڈ کیا جا رہا ہے</translation>
 <translation id="2759299890026163685">دوبارہ کوشش کرنے سے پہلے یہ یقینی بنائیں کہ آپ کا انٹرنیٹ کنکشن مستحکم ہے</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> پر اپنا پاس ورڈ پُر کریں</translation>
@@ -3625,6 +3627,7 @@
 <translation id="7083258188081898530">ٹرے 9</translation>
 <translation id="70846382339153529">‏‫OpenDocument ٹیکسٹ</translation>
 <translation id="7086090958708083563">صارف کے ذریعے اپ لوڈ کی درخواست کی گئی</translation>
+<translation id="7089745480771070611">سائیڈ پینل میں کھلتا ہے</translation>
 <translation id="7090698782953528257">ریاضیاتی مساوات کو ویژوئلائز کرنے اور منحنی خطوط کی شکل دیکھنے کے لیے فنکشن کا گراف بنانے میں میری مدد کریں</translation>
 <translation id="7092087596499105699">آپ کے منتظم نے آپ کی تنظیم کی نجی ویب ایپلیکیشنز تک رسائی کی حفاظت کے لیے محفوظ گیٹ وے کنیکٹر کو کنفیگر کیا ہے۔ یہ رسائی کی توثیق کے لیے آپ کی ورق پروفائل سے ڈیٹا استعمال کر سکتا ہے۔</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
@@ -4008,6 +4011,7 @@
 <translation id="7696107855583699585">معلوم مسافر نمبر میں ترمیم کریں</translation>
 <translation id="7698864304447945242">‏Google Play سروسز برائے AR کو اپ ڈیٹ کریں؟</translation>
 <translation id="7699509138503320152">میری ای میل کو مزید مُحرک بنانے کے لیے دوبارہ لکھیں</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{کوئی نہیں}=1{‫1 مہارت (مطابقت پذیر)}other{‫# مہارتیں (مطابقت پذیر)}}</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> کی طرف بڑھیں (غیر محفوظ)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">لکھنے میں میری مدد کریں</translation>

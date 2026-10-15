@@ -1020,6 +1020,7 @@
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
 <translation id="3978162107953847778">閲覧履歴や Google ドライブなどからリンクを挿入したり、絵文字や画像ファイルなどを挿入したりできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">オーディオ出力を切り替えますか？</translation>
+<translation id="3983903378684256134">Steam on Chromebook</translation>
 <translation id="3984536049089846927">次のページ</translation>
 <translation id="3986082989454912832">応答</translation>
 <translation id="3990002060657467458">Wi-Fi、Bluetooth、音量など、よく使用するコントロールはクイック設定に表示されます。クイック設定からスクリーンショットを撮ることもできます。</translation>
@@ -1636,6 +1637,7 @@
 <translation id="5727460725221669831">パスワードを忘れた場合や Google アカウントのパスワードを最近変更した場合は、このユーザーを復元してみてください。</translation>
 <translation id="5733630091161562207">ようこそ通知</translation>
 <translation id="573413375004481890">このデバイスでサポートできるディスプレイの上限数を超えたため、ディスプレイが 1 台切断されました</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> のディスク容量を解放しました。</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="5749214722697335450">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK1" />統計情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@
 <translation id="7413851974711031813">Esc キーを押して閉じます</translation>
 <translation id="7416471219712049036">現在のページを保存する</translation>
 <translation id="742594950370306541">カメラが使用中です。</translation>
+<translation id="7430466159639897874">非推奨の機能「Steam on Chromebook」に割り当てられた未使用のディスク容量（<ph name="SIZE" />）があります。</translation>
 <translation id="743058460480092004">カメラとマイクが使用中です。</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> を引き続き使用するにはスマートカードを挿入してください</translation>
 <translation id="7440404390546433462">Google 検索</translation>
@@ -2353,6 +2356,7 @@
 <translation id="7781335840981796660">すべてのユーザー アカウントとローカル データは削除されます。</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7787212146956232129">入力デバイスと出力デバイスが設定されています。変更するには [設定] に移動してください。</translation>
+<translation id="7790757511772316441">ディスク容量を解放</translation>
 <translation id="7792590255364786396">表示</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>

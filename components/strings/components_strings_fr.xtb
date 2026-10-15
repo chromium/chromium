@@ -490,6 +490,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="18139523105317219">Nom de partie EDI</translation>
 <translation id="1816436748874040213">Peut demander à faire défiler les onglets partagés et à zoomer dessus</translation>
 <translation id="1816707915923025275">Saisissez @historique pour faire une recherche dans votre historique de navigation</translation>
+<translation id="1816771466809215784">Pour renseigner automatiquement le nom du titulaire de cette carte lors du paiement, enregistrez-le dans Google Wallet</translation>
 <translation id="1817364650920811003">Rôle : Astuce Chrome. Libellé d'accessibilité : <ph name="CHROME_TIP" />.</translation>
 <translation id="182139138257690338">téléchargements automatiques</translation>
 <translation id="1821930232296380041">La demande ou ses paramètres ne sont pas valides.</translation>
@@ -647,6 +648,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2103210856015238101">Liste des cartes de fidélité à saisir de façon tactile, ouverte à pleine hauteur.</translation>
 <translation id="2104739941682874393">La saisie automatique améliorée comprend mieux les formulaires et peut les compléter automatiquement plus rapidement pour vous</translation>
+<translation id="2105237910269166838">Question sur page</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrez l'ordinateur</translation>
 <translation id="2109845311767915560">Groupe d'onglets partagé</translation>
@@ -1053,6 +1055,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2734797989819862638">Ne pas copier</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Aucune}=1{1 compétence}one{# compétence}other{# compétences}}</translation>
 <translation id="2757727729385895652">Importation de <ph name="COUNT" /> fichiers dans Google Drive…</translation>
 <translation id="2759299890026163685">Vérifiez que votre connexion Internet est stable avant de réessayer</translation>
 <translation id="2759825833388495838">de renseigner votre mot de passe sur <ph name="APP_NAME" /></translation>
@@ -2400,7 +2403,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5018422839182700155">Impossible d'ouvrir cette page</translation>
 <translation id="5018802455907704660">16 x 20 pouces</translation>
 <translation id="5019198164206649151">L'espace de stockage destiné à la sauvegarde est en mauvais état.</translation>
-<translation id="5019293549442035120">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci sera enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019293549442035120">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Celle-ci sera enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">capteurs de mouvement et de luminosité</translation>
 <translation id="5019952743397118625">La règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est définie. La règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne contrôlera plus la disponibilité du mode développeur sur la page des extensions.</translation>
 <translation id="5020862932518041900">Si vous sélectionnez ou ignorez une suggestion, Chrome s'adaptera pour vous proposer uniquement des contenus pertinents</translation>
@@ -3622,6 +3625,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7083258188081898530">Bac 9</translation>
 <translation id="70846382339153529">Texte OpenDocument</translation>
 <translation id="7086090958708083563">Importation demandée par l'utilisateur</translation>
+<translation id="7089745480771070611">S'ouvre dans le panneau latéral</translation>
 <translation id="7090698782953528257">Aide-moi à tracer une fonction pour visualiser une équation mathématique et visualiser la forme de la courbe</translation>
 <translation id="7092087596499105699">Votre administrateur a configuré le connecteur de passerelle sécurisée pour protéger l'accès aux applications Web privées de votre organisation. Des données de votre profil professionnel peuvent être utilisées pour valider l'accès.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les autorisations et les données stockées sur les sites dans les paramètres Chrome</translation>
@@ -4007,6 +4011,7 @@ Informations supplémentaires :
 <translation id="7696107855583699585">Modifier le Known Traveler Number</translation>
 <translation id="7698864304447945242">Mettre à jour les services Google Play pour la RA ?</translation>
 <translation id="7699509138503320152">Réécris mon e-mail pour qu'il soit plus convaincant</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Aucune}=1{1 compétence (synchronisée)}one{# compétence (synchronisée)}other{# compétences (synchronisées)}}</translation>
 <translation id="7701040980221191251">Désactivé</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuer vers le site <ph name="SITE" /> (dangereux)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Aide-moi à écrire</translation>
@@ -4249,6 +4254,7 @@ Informations supplémentaires :
 <translation id="813024282736408069">Activez une carte virtuelle pour la saisie automatique</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8135546115396015134">touche gauche</translation>
+<translation id="8136385032646505126">Enregistrer le nom du titulaire de la carte ?</translation>
 <translation id="8137185688006450980">Compare les options d'assurance-santé</translation>
 <translation id="8138591088112729119">Optimisée par l'Intelligence personnalisée</translation>
 <translation id="814071672416123670">Impossible de copier le contenu à cause des règles de votre organisation</translation>

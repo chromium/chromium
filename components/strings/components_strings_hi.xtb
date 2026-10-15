@@ -649,6 +649,7 @@
 <translation id="2102495993840063010">Android ऐप्लिकेशन</translation>
 <translation id="2103210856015238101">टच करके भरे जाने वाले लॉयल्टी कार्ड की सूची, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="2104739941682874393">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा, फ़ॉर्म को बेहतर तरीके से समझती है और फ़ॉर्म में तुरंत और ऑटोमैटिक तरीके से जानकारी भर सकती है.</translation>
+<translation id="2105237910269166838">पेज के बारे में पूछें</translation>
 <translation id="2107021941795971877">प्रिंट सहायता</translation>
 <translation id="2108755909498034140">अपना कंप्यूटर फिर से चालू करें</translation>
 <translation id="2109845311767915560">शेयर किया गया टैब ग्रुप</translation>
@@ -665,6 +666,7 @@
 <translation id="2126374524350484896">पीडीएफ़ प्रोड्यूसर:</translation>
 <translation id="2127090458081644412">इस डिवाइस में पासवर्ड सेव किया गया</translation>
 <translation id="2127747486437921899">इटैलिक</translation>
+<translation id="2129163794581571479">यह सुविधा, Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. बेहतर ऑटोफ़िल की सुविधा को और बेहतर बनाने के लिए, आपके अनुरोधों, पेज के टाइटल, और यूआरएल की समीक्षा की जा सकती है. <ph name="BEGIN_LINK" />सेटिंग मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">आपकी ओर से तय किए गए टेम्प्लेट, DnsOverHttpsMode नीति के सेट न हाेने की वजह से लागू नहीं हो सकते.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">'पेमेंट की जानकारी ऑटोमैटिक तरीके से भरने की सुविधा चालू करें' बॉटम शीट पूरी स्क्रीन पर खुली है.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="2734797989819862638">इसे कॉपी न करें</translation>
 <translation id="2738771556149464852">बाद में नहीं</translation>
 <translation id="2740531572673183784">ठीक है</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{कोई स्किल नहीं है}=1{1 स्किल}one{# स्किल}other{# स्किल}}</translation>
 <translation id="2757727729385895652">Google Drive में <ph name="COUNT" /> फ़ाइलें अपलोड की जा रही हैं</translation>
 <translation id="2759299890026163685">फिर से कोशिश करने से पहले, पक्का करें कि आपके पास बेहतर इंटरनेट कनेक्शन हो</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> पर अपना पासवर्ड भरने की अनुमति दें</translation>
@@ -1573,6 +1576,7 @@
 <translation id="3655670868607891010">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="HELP_LINK" /> को आज़माएं.</translation>
 <translation id="3658742229777143148">पुनरीक्षण</translation>
 <translation id="3659521826520353662">एडमिन की बनाई हुई कौनसी वेबसाइटें देखी गई हैं और कब: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">यह सुविधा, Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. <ph name="BEGIN_LINK" />सेटिंग मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">इस प्रॉडक्ट को बेचने वाले दूसरे स्टोर से खरीदारी के ज़्यादा विकल्प खोजें.</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3670030362669914947">कार्ड नंबर</translation>
@@ -1593,6 +1597,7 @@
 <translation id="3693516565203081475">पेमेंट का तरीका चुनें</translation>
 <translation id="3698353241727597930">आपके एडमिन ने, एंटरप्राइज़ से मैनेज किए जाने वाले आपके <ph name="CLOUD_STORAGE" /> स्टोरेज में <ph name="FILES" /> को सेव करने के लिए उन्हें कॉन्फ़िगर किया है. इन फ़ाइलों की निगरानी की जा सकती है, इन्हें ऑडिट किया जा सकता है, और मिटाए जाने के बाद भी इनकी कॉपी सेव रहेगी.</translation>
 <translation id="3698629142018988477">'साइट बनाएं' बटन, Google Sites में जल्दी से नई साइट बनाने के लिए इसे चालू करें</translation>
+<translation id="3698708128812719147">ज़्यादा जानकारी खोजने और उसे भरने के लिए, वेब पर कहीं भी दो बार Ctrl दबाएं</translation>
 <translation id="3700094625653511150">बाद में पेमेंट करने के विकल्पों को छिपाने के लिए <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> पर जाएं</translation>
 <translation id="3700966190175650601">आपने पासवर्ड डालने के लिए, फ़िंगरप्रिंट का इस्तेमाल किया है</translation>
 <translation id="3701427423622901115">रीसेट स्वीकार किया गया.</translation>
@@ -1896,6 +1901,7 @@
 <translation id="4185037616931963178">रीड्रेस नंबर को सुरक्षित तरीके से अपडेट करें</translation>
 <translation id="4186035307311647330">कीमत ट्रैक न करें</translation>
 <translation id="4191334393248735295">अवधि</translation>
+<translation id="4192770747482479191">ज़्यादा जानकारी खोजने और उसे भरने के लिए, वेब पर कहीं भी दो बार ⌘ दबाएं</translation>
 <translation id="4195459680867822611">'Chrome से जुड़ी सलाह देखें' बटन, Chrome की सुविधाओं के बारे में जानने के लिए इसे चालू करें</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4196861286325780578">&amp;ले जाना फिर से करें</translation>
@@ -2844,6 +2850,7 @@
 <translation id="573974402615125334">टैब ग्रुप को शेयर करने, उनमें शामिल होने, और उनमें साथ मिलकर काम करने के लिए, Chrome के इतिहास और टैब को सिंक करें</translation>
 <translation id="5740911612628596808">C9 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="574392208103952083">मीडियम</translation>
+<translation id="5744350700955456407">बेहतर ऑटोफ़िल की सुविधा, अब Gmail और Photos जैसे ऐप्लिकेशन से आपकी जानकारी को ढूंढकर उसे ऑटोमैटिक तरीके से भर सकती है. जैसे, ऑर्डर नंबर और फ़्लाइट की पुष्टि करने वाले कोड</translation>
 <translation id="5745586894920491759">Chrome, क्लाउड में पेजों के टाइटल और यूआरएल प्रोसेस करता है</translation>
 <translation id="5745733273847572235">साइट, आपकी जगह की जानकारी जानने की अनुमति मांग सकती है</translation>
 <translation id="5750869797196646528">हाथ ट्रैक करने की सुविधा</translation>
@@ -3623,6 +3630,7 @@
 <translation id="7083258188081898530">ट्रे 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">उपयोगकर्ता ने अपलोड का अनुरोध किया</translation>
+<translation id="7089745480771070611">साइड पैनल में खुलता है</translation>
 <translation id="7090698782953528257">गणित के समीकरण को विज़ुअलाइज़ करने और कर्व का आकार देखने के लिए, फ़ंक्शन का ग्राफ़ बनाने में मेरी मदद करो</translation>
 <translation id="7092087596499105699">आपके एडमिन ने आपके संगठन के निजी वेब ऐप्लिकेशन के ऐक्सेस को सुरक्षित रखने के लिए, सुरक्षित गेटवे कनेक्टर कॉन्फ़िगर किया है. ऐक्सेस की पुष्टि करने के लिए, यह आपकी वर्क प्रोफ़ाइल के डेटा का इस्तेमाल कर सकता है.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियां मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -4007,6 +4015,7 @@
 <translation id="7696107855583699585">नोन ट्रैवलर नंबर बदलें</translation>
 <translation id="7698864304447945242">Google Play Services for AR को अपडेट करें?</translation>
 <translation id="7699509138503320152">मेरे ईमेल को दोबारा लिखकर इसे ज़्यादा असरदार बनाओ</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{कोई स्किल सिंक नहीं की गई है}=1{1 स्किल (सिंक की गई)}one{# स्किल (सिंक की गई)}other{# स्किल (सिंक की गई)}}</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> में आगे बढ़ें (असुरक्षित)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">लिखने में मेरी मदद करो</translation>

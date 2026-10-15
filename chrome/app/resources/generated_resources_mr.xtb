@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178093605842850860">ही साइट वाचण्याची आणि तिच्यामध्ये बदल करण्याची अनुमती दिली आहे</translation>
 <translation id="1178357842179817577">तुम्हाला धोकादायक साइट, डाउनलोड आणि एक्स्टेंशन पासून तुमचे संरक्षण करते</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />आणखी सुसंबद्ध उत्तरांसाठी टॅब शेअर केले जातात.<ph name="END_BOLD" /> तुम्ही नवीन चॅट सुरू करता, तेव्हा Google तुमच्या उघड्या टॅबचा आशय आणि URL वापरते. तुम्ही हे सेटिंग कधीही बदलू शकता.</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="117916940443676133">तुमची सिक्युरिटी की पिनने संरक्षित केलेली नाही. साइन इन डेटा व्यवस्थापित करण्यासाठी, प्रथम पिन तयार करा.</translation>
 <translation id="1179400851034021914">IBAN चुकीचा आहे</translation>
@@ -702,6 +703,7 @@
 <translation id="1535753739390684432">मोठ्याने वाचलेला विशिष्ट मजकूर ऐका. प्रथम, तुमच्या स्क्रीनच्या तळाशी असलेला बोलण्यासाठी निवडा आयकन निवडा, त्यानंतर मजकूर हायलाइट करा.</translation>
 <translation id="1536754031901697553">डिस्कनेक्ट करत आहे...</translation>
 <translation id="1536883206862903762">यामुळे एक्स्टेंशन बंद होतील आणि तुमची सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट केली जातील. टॅब, फाइल आणि कुकी कायम ठेवली जातील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />आणखी सुसंबद्ध उत्तरांसाठी टॅब शेअर केले जातात.<ph name="END_BOLD_1" /> तुम्ही नवीन चॅट सुरू करता, तेव्हा Google तुमच्या उघड्या टॅबचा आशय आणि URL वापरते. तुम्ही हे सेटिंग कधीही बदलू शकता. <ph name="BEGIN_BOLD_2" />तुमच्या संस्थेचा डेटा खाजगी आणि सुरक्षित आहे.<ph name="END_BOLD_2" /> जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तो वापरला जाणार नाही.</translation>
 <translation id="1537254971476575106">क्षेत्रे भिंग</translation>
 <translation id="1538808328818992871">किमान <ph name="MIN_LENGTH" /> वर्ण असावेत</translation>
 <translation id="1539248305642687917">साइटना तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची अनुमती देऊ नका</translation>
@@ -729,6 +731,7 @@
 <translation id="1552752544932680961">विस्तार व्यवस्थापित करा</translation>
 <translation id="1553538517812678578">अमर्यादित</translation>
 <translation id="1553947773881524342">तुमच्या Chromebook वरील Microsoft 365 बद्दल <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" />.</translation>
+<translation id="1554343363646356023">नवीन &amp;अलिप्त विंडोज</translation>
 <translation id="1554640914375980459">तुम्हाला नोटिफिकेशन मिळाल्यावर स्क्रीन फ्लॅश करा. तुम्ही प्रकाशाबाबत संवेदनशील असल्यास, फ्लॅश नोटिफिकेशन सावधगिरीपूर्वक वापरा.</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1556127816860282890">बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे स्क्रोल करणे यांसारखे काही व्हिज्युअल इफेक्ट मर्यादित असू शकतात</translation>
@@ -1908,6 +1911,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> वरून कॉपी करू इच्छित आहे.</translation>
 <translation id="2457842160081795172">सध्या <ph name="CHANNEL_NAME" /> चॅनेलवर आहे</translation>
 <translation id="2458379781610688953"><ph name="EMAIL" /> खाते अपडेट करा</translation>
+<translation id="2458545895994128057">आणखी सुसंबद्ध उत्तरांसाठी टॅब शेअर केले जातात. तुम्ही नवीन चॅट सुरू करता, तेव्हा Google तुमच्या उघड्या टॅबचा आशय आणि URL वापरते. तुम्ही हे सेटिंग कधीही बदलू शकता. तुमच्या संस्थेचा डेटा खाजगी आणि सुरक्षित आहे. जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तो वापरला जाणार नाही.</translation>
 <translation id="2459703812219683497">अ‍ॅक्टिव्हेशन कोड सापडला</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="245979889539926662">स्क्रीनशॉट शेअर करा</translation>
@@ -3169,6 +3173,7 @@
 <translation id="3390740059150071453">डावीकडे पहा</translation>
 <translation id="3393554941209044235">Chrome दस्तऐवज विश्लेषण</translation>
 <translation id="3394072120086516913">PC वायर केलेला आहे आणि कास्टिंग डिव्‍हाइस वाय-फायशी कनेक्ट केले आहे</translation>
+<translation id="3394561494170561143">नवीन अलिप्त केलेला &amp;टॅब</translation>
 <translation id="3394850431319394743">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती आहे</translation>
 <translation id="339722927132407568">थांबतो</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
@@ -6213,6 +6218,7 @@
 <translation id="5724723163580775373">मोठ्या उंचीवरील फोकस</translation>
 <translation id="5725112283692663422">AI वापरून थीम तयार करा यासाठीचा फीडबॅक पाठवा</translation>
 <translation id="5727728807527375859">एक्स्टेंशन, ॲप्लिकेशन आणि थीम तुमच्या कॉंप्युटरला हानी पोहोचवू शकतात. तुमची खात्री आहे की तुम्ही सुरू ठेवू इच्छिता?</translation>
+<translation id="5727872803091928075">आणखी सुसंबद्ध उत्तरांसाठी टॅब शेअर केले जातात. तुम्ही नवीन चॅट सुरू करता, तेव्हा Google तुमच्या उघड्या टॅबचा आशय आणि URL वापरते. तुम्ही हे सेटिंग कधीही बदलू शकता.</translation>
 <translation id="5728072125198221967">लिंक केलेल्या Google सेवा</translation>
 <translation id="5729712731028706266">&amp;दृश्य</translation>
 <translation id="5731247495086897348">पे&amp;स्ट करा आणि जा</translation>
@@ -7044,6 +7050,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6370021412472292592">मॅनिफेस्ट लोड करू शकलो नाही.</translation>
 <translation id="6370551072524410110">search + shift + backspace</translation>
 <translation id="637135143619858508">अंतर आहे</translation>
+<translation id="6372413553057593904">"<ph name="WINDOW_TITLE" />" मधील इनॅक्टिव्ह टॅब</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">पुन्हा प्रयत्न करा</translation>
 <translation id="637642201764944055">Chrome ॲप्सच्या जुन्या आवृत्त्या डिसेंबर २०२२ नंतर Linux डिव्हाइसवर उघडणार नाहीत. नवीन आवृत्तीवर अपडेट करण्यासाठी किंवा हे अ‍ॅप काढून टाकण्यासाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -7356,6 +7363,7 @@ I feel - विटांची इमारत</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6613231539539868591">न बदललेला डेटा</translation>
 <translation id="6613267708691765962">मालवेअरसाठी स्कॅन करत आहे…</translation>
+<translation id="6614219106064338118">चॅट सुरू करा</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
 <translation id="6616000047939888167">इतर भाषांमधील वेबसाइट आणि PDFs साठी Google Translate ची सुविधा द्या</translation>
 <translation id="6618013221808317456">साइटना JavaScript ऑप्टिमायझेशन वापरण्याची अनुमती देऊ नका</translation>
@@ -9739,6 +9747,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8410133743809404768">तुम्ही "@history" वापरून ॲड्रेस बारमध्ये, त्याचप्रमाणे इतिहास पेजवरून शोधू शकता</translation>
 <translation id="8411043186249152291">फुलस्क्रीन</translation>
 <translation id="8412136526970428322">अनुमती असलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Gemini अ‍ॅप्स गोपनीयता नोटिस<ph name="END_LINK2" /> लागू.</translation>
 <translation id="8413795581997394485">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण करते. तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे Google ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8415120635186642416">कोणत्याही गोष्टीबाबत संशोधन करा</translation>

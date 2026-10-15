@@ -648,6 +648,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2102495993840063010">Aplikacije za Android</translation>
 <translation id="2103210856015238101">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom, odprte pri polni višini.</translation>
 <translation id="2104739941682874393">Izboljšano samodejno izpolnjevanje bolje razume obrazce in jih lahko hitreje samodejno izpolni</translation>
+<translation id="2105237910269166838">Vprašajte o strani</translation>
 <translation id="2107021941795971877">Podpora za tiskanje</translation>
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
 <translation id="2109845311767915560">Deljena skupina zavihkov</translation>
@@ -1054,6 +1055,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2734797989819862638">Ne kopiraj</translation>
 <translation id="2738771556149464852">Ne po</translation>
 <translation id="2740531572673183784">V redu</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Nobena}=1{1 veščina}one{# veščina}two{# veščini}few{# veščine}other{# veščin}}</translation>
 <translation id="2757727729385895652">Nalaganje datotek (<ph name="COUNT" />) v Google Drive</translation>
 <translation id="2759299890026163685">Pred vnovičnim poskusom poskrbite, da je internetna povezava stabilna</translation>
 <translation id="2759825833388495838">vnesti geslo v aplikaciji <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7083258188081898530">Pladenj 9</translation>
 <translation id="70846382339153529">Besedilo OpenDocument</translation>
 <translation id="7086090958708083563">Nalaganje je zahteval uporabnik</translation>
+<translation id="7089745480771070611">Odpre se v stranskem podoknu</translation>
 <translation id="7090698782953528257">Pomagaj mi narisati graf funkcije, da si bom lahko predstavljal(-a) matematično enačbo in videl(-a) obliko krivulje</translation>
 <translation id="7092087596499105699">Skrbnik je konfiguriral povezovalnik varnega prehoda, da zaščiti dostop do zasebnih spletnih aplikacij vaše organizacije. Za preverjanje dostopa lahko uporabi podatke iz delovnega profila.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter, če želite upravljati dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
@@ -4007,6 +4010,7 @@ Dodatne podrobnosti:
 <translation id="7696107855583699585">Urejanje številke rednega potnika</translation>
 <translation id="7698864304447945242">Želite posodobiti aplikacijo Storitve Google Play za RR?</translation>
 <translation id="7699509138503320152">Preoblikuj moje e-poštno sporočilo, da bo bolj prepričljivo</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Nobena}=1{1 veščina (sinhronizirano)}one{# veščina (sinhronizirano)}two{# veščini (sinhronizirano)}few{# veščine (sinhronizirano)}other{# veščin (sinhronizirano)}}</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Nadaljuj na spletno mesto <ph name="SITE" /> (ni varno)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Pomoč pri pisanju</translation>

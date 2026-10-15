@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Đã cập nhật mục</translation>
 <translation id="1018804590490383958">Quét và tự động điền</translation>
 <translation id="1019990162050689579">Hoạt động trên Các ứng dụng Gemini</translation>
+<translation id="102471647093736603">Nhấn và giữ để di chuyển</translation>
 <translation id="102645702181682900">Đã bắt đầu nhiệm vụ</translation>
 <translation id="102916930470544692">Khoá truy cập</translation>
 <translation id="1030376737535466765">Mở Trình quản lý mật khẩu</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Một số nội dung có thể không phù hợp với một số người.</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 địa chỉ}other{# địa chỉ}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Hoàn thành 1 nhiệm vụ để lên cấp}other{Hoàn thành {count} nhiệm vụ để lên cấp}}</translation>
 <translation id="1605405588277479165">Tắt – Không khuyến nghị</translation>
 <translation id="1605658421715042784">Sao chép ảnh</translation>
 <translation id="1606899876897213121">Đóng phần tóm tắt hoạt động gần đây</translation>
@@ -362,7 +364,7 @@
 <translation id="205013082884273671">Tìm kiếm nội dung bất kỳ trên màn hình</translation>
 <translation id="2054044186557130763">Đăng nhập bằng <ph name="NAME" /> <ph name="EMAIL" /> do tổ chức của bạn quản lý.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
-<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
+<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng địa chỉ này trên các thiết bị khác, hãy lưu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Bộ chọn loại đơn vị</translation>
 <translation id="2067852168641682340">Luôn lưu vào tài khoản này</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 thẻ}other{{count} thẻ}}</translation>
@@ -921,6 +923,7 @@
 <translation id="3914173277599553213">Bắt buộc</translation>
 <translation id="3914640181019354363">Phát hiện địa chỉ</translation>
 <translation id="391904960191284041">Bài đánh giá sản phẩm</translation>
+<translation id="3920165976616657606">Đã hoàn thành nhiệm vụ "Khám phá tính năng Duyệt web an toàn có tăng cường bảo vệ"!</translation>
 <translation id="3921585859122905677">Vị trí của thanh địa chỉ</translation>
 <translation id="3922185497376658606">Tải trước trang web</translation>
 <translation id="3926703470020109118">Đã huỷ tải xuống</translation>
@@ -1092,6 +1095,7 @@
 <translation id="4455710003856931944">Bạn có thể vuốt từ mép này để quay lại mục trước hoặc chuyển đến mục tiếp theo.</translation>
 <translation id="4460014764210899310">Huỷ nhóm</translation>
 <translation id="446314443268698477">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng bạn thấy bằng camera hoặc ảnh.</translation>
+<translation id="4465941170695753889">Nhấn và giữ để tạo một nhóm thẻ</translation>
 <translation id="4469324811108161144">Ghi chú có thể lưu tối đa <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="4470766488397113689">Bạn muốn làm việc nào?</translation>
 <translation id="4471472356135655769">Không xuất được mật khẩu</translation>
@@ -1207,6 +1211,7 @@
 <translation id="4808744395915275922">Bản cập nhật</translation>
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4821595350501541683">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web</translation>
+<translation id="4823322556950229674">Bạn có thể nhấn và giữ để di chuyển thanh địa chỉ và nút quay lại xuống dưới cùng</translation>
 <translation id="4824480232751123840">Thể tích</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>

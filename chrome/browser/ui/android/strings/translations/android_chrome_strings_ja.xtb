@@ -135,6 +135,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> で開く • 送信元: <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">タブに戻る</translation>
 <translation id="1496514951988037011">ユーザー名</translation>
+<translation id="1498051468374914325">デベロッパー ツールのコンソールを開く</translation>
 <translation id="1501480321619201731">グループを削除</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1513352483775369820">ブックマークとウェブ履歴</translation>
@@ -142,6 +143,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1516966594427080024">新しいウィンドウをシークレット モードで開く</translation>
 <translation id="152204906462707884">閲覧履歴をすばやく削除し、プライバシーをより細かく管理できます</translation>
 <translation id="153446405401665083">Chrome の新しいバージョンをご利用いただけます</translation>
+<translation id="1537160738459068682">デベロッパー ツールの要素を開く</translation>
 <translation id="1540012742443808215">現在アドレスバーは上部にあります</translation>
 <translation id="1543035591122163372">ログインすると、<ph name="DEVICE_TYPE" /> で保存したパスワードなどを使用できます</translation>
 <translation id="1544084554881119930">お支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
@@ -1069,6 +1071,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5235196193381275927">ログイン中に問題が発生しました</translation>
 <translation id="5246093389635966745">ツールバー ショートカットの編集</translation>
+<translation id="5257142004843671642">サイドパネルのサイズを変更</translation>
 <translation id="5264813352784073502">過去 24 時間</translation>
 <translation id="5267572070504076962">セーフ ブラウジングをオンにすると危険なサイトから保護されます</translation>
 <translation id="5273031377282080577">管理者がこの設定を管理しています。</translation>
@@ -2061,6 +2064,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9024318700713112071">Chrome をデフォルトにする</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> を取消</translation>
 <translation id="9035378196785279980">\u2026 に移動</translation>
+<translation id="9038316201889095704">保存されていない変更があるため、ページ内検索は無効になっています。</translation>
 <translation id="904146253922032365">長押しするとタブを縦方向に表示できます</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9047347135558855162">Chrome ですばやく検索を開始</translation>

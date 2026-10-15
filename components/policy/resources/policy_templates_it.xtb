@@ -410,6 +410,14 @@ I pattern corrispondenti alle origini di questa policy non possono però contene
 <translation id="1272798957154751008">Attiva la migrazione dei dispositivi Chromad nella gestione del cloud</translation>
 <translation id="1274997165432133392">Cookie e altri dati dei siti</translation>
 <translation id="1277411517984768103">Consenti l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
+<translation id="1281420319219324116">Questa policy configura il certificato client gestito di cui viene fatto il provisioning quando l'opzione <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> è attivata.
+
+Il campo <ph name="COMMON_NAME_SOURCE_FIELD" /> specifica l'origine del Subject Common Name (CN) del certificato:
+- Se non è configurato o se è impostato su <ph name="DEVICE_ID_VALUE" />, il Subject Common Name del certificato viene impostato sull'ID dispositivo virtuale del browser gestito.
+
+- Se viene impostata su <ph name="COMPUTER_NAME_VALUE" />, il Subject Common Name del certificato corrisponde al nome host della macchina.
+
+Questa policy non ha effetto se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> è disattivata o non è configurata.</translation>
 <translation id="1285819498003746288">L'API Event.path non sarà disponibile.</translation>
 <translation id="1290722184971934486">Se la policy viene impostata su <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valore 2), per impostazione predefinita viene automaticamente negata ai siti l'autorizzazione per la gestione delle finestre. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
@@ -5738,6 +5746,15 @@ Per i dispositivi non gestiti, questa policy non si applica e gli utenti possono
       Se non viene configurata, <ph name="PRODUCT_NAME" /> usa la dimensione predefinita. Gli utenti possono modificare l'impostazione usando il flag --disk-cache-size.
 
       Nota: il valore specificato in questa policy viene usato come hint per diversi sottosistemi della cache nel browser. Pertanto il consumo totale corrente del disco di tutte le cache sarà superiore, ma all'interno dello stesso ordine di grandezza specificato dal valore.</translation>
+<translation id="4582488040806837065">Questa policy configura il certificato client gestito di cui viene fatto il provisioning quando l'opzione <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> è attivata.
+
+Il campo <ph name="COMMON_NAME_SOURCE_FIELD" /> specifica l'origine del Subject Common Name (CN) del certificato:
+
+- Se non è configurato o se è impostato su <ph name="PROFILE_ID_VALUE" />, il Subject Common Name del certificato corrisponde all'ID del profilo del browser.
+
+- Se viene impostata su <ph name="COMPUTER_NAME_VALUE" />, il Subject Common Name del certificato corrisponde al nome host della macchina. Nota: l'impostazione di questa proprietà su <ph name="COMPUTER_NAME_VALUE" /> utilizza un parametro a livello di dispositivo in un certificato con ambito profilo; ciò comporta rischi per la privacy sui dispositivi non gestiti o condivisi, poiché il nome host della macchina verrà incluso nel certificato.
+
+Questa policy non ha effetto se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> è disattivata o non è configurata.</translation>
 <translation id="4591366717022345234">Fornisce agli utenti una build di correzione rapida</translation>
 <translation id="4593391169954484940">L'hash SHA-256 del file.</translation>
 <translation id="4594027034164195984">Consenti la visualizzazione di immagini di terze parti in un prompt di autenticazione</translation>

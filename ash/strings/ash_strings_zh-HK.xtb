@@ -1020,6 +1020,7 @@
 <translation id="3977512764614765090">電量有 <ph name="PERCENTAGE" />%，宜家差緊電。</translation>
 <translation id="3978162107953847778">從瀏覽記錄和「Google 雲端硬碟」等位置插入連結。你亦可插入 Emoji、圖像檔案等內容。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">要切換音訊輸出裝置嗎？</translation>
+<translation id="3983903378684256134">Chromebook 版 Steam</translation>
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3990002060657467458">「快速設定」內含 Wi-Fi、藍牙和音量等常用控制項，你亦可透過「快速設定」擷取螢幕截圖。</translation>
@@ -1635,6 +1636,7 @@
 <translation id="5727460725221669831">如果您忘記密碼，或最近曾變更 Google 帳戶密碼，請嘗試復原此使用者密碼。</translation>
 <translation id="5733630091161562207">歡迎通知</translation>
 <translation id="573413375004481890">此裝置無法支援所有顯示屏，因此已取消連接其中一個</translation>
+<translation id="5739548907438839901">已騰出 <ph name="SIZE" /> 磁碟空間。</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5745612484876805746">「夜燈模式」會在日落時自動開啟</translation>
 <translation id="5749214722697335450">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善你的 Android 使用體驗。這些資料將有助改善系統和應用程式的穩定性及其他功能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟「其他網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至你的 Google 帳戶。<ph name="BEGIN_LINK1" />進一步瞭解數據<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -2209,6 +2211,7 @@
 <translation id="7413851974711031813">㩒 Escape 掣就可以閂咗佢</translation>
 <translation id="7416471219712049036">儲存目前頁面</translation>
 <translation id="742594950370306541">相機正在使用中。</translation>
+<translation id="7430466159639897874">已淘汰的功能「Chromebook 版 Steam」仍有未使用的磁碟空間 (<ph name="SIZE" />)。</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
 <translation id="7433708794692032816">插入智能卡才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google 搜尋</translation>
@@ -2350,6 +2353,7 @@
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機數據。</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">已設定輸入和輸出裝置。如要變更，請前往「設定」。</translation>
+<translation id="7790757511772316441">騰出磁碟空間</translation>
 <translation id="7792590255364786396">顯示</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>

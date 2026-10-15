@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1178093605842850860">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
 <translation id="1178357842179817577">ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />ระบบจะแชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น<ph name="END_BOLD" /> Google จะใช้เนื้อหาและ URL ของแท็บที่เปิดอยู่เมื่อคุณเริ่มแชทใหม่ คุณเปลี่ยนแปลงการตั้งค่านี้ได้ทุกเมื่อ</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="117916940443676133">คีย์ความปลอดภัยไม่มีการป้องกันด้วย PIN หากต้องการจัดการข้อมูลการลงชื่อเข้าใช้ ให้สร้าง PIN ขึ้นมาก่อน</translation>
 <translation id="1179400851034021914">IBAN ไม่ถูกต้อง</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">ฟังการอ่านออกเสียงข้อความที่เจาะจง ก่อนอื่นให้เลือกไอคอน "เลือกเพื่อให้อ่าน" ที่ด้านล่างของหน้าจอแล้วไฮไลต์ข้อความ</translation>
 <translation id="1536754031901697553">กำลังยกเลิกการเชื่อมต่อ...</translation>
 <translation id="1536883206862903762">การดำเนินการนี้จะเป็นการปิดใช้ส่วนขยายและรีเซ็ตการตั้งค่าเป็นค่าเริ่มต้นที่ปลอดภัย โดยแท็บ ไฟล์ และคุกกี้จะยังคงอยู่ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />ระบบจะแชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น<ph name="END_BOLD_1" /> Google จะใช้เนื้อหาและ URL ของแท็บที่เปิดอยู่เมื่อคุณเริ่มแชทใหม่ คุณเปลี่ยนแปลงการตั้งค่านี้ได้ทุกเมื่อ <ph name="BEGIN_BOLD_2" />ข้อมูลขององค์กรคุณจะปลอดภัยและเป็นส่วนตัว<ph name="END_BOLD_2" /> ระบบจะไม่นำข้อมูลดังกล่าวไปใช้เพื่อปรับปรุงโมเดล Generative AI</translation>
 <translation id="1537254971476575106">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="1538808328818992871">ต้องมีอักขระอย่างน้อย <ph name="MIN_LENGTH" /> ตัว</translation>
 <translation id="1539248305642687917">ไม่อนุญาตให้เว็บไซต์ต่างๆ ลบล้างอินพุตจากแป้นพิมพ์</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">จัดการส่วนขยาย</translation>
 <translation id="1553538517812678578">ไม่จำกัด</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" />เกี่ยวกับ Microsoft 365 ใน Chromebook</translation>
+<translation id="1554343363646356023">หน้าต่างแยกใหม่</translation>
 <translation id="1554640914375980459">กะพริบหน้าจอเมื่อคุณได้รับการแจ้งเตือน ใช้การแจ้งเตือนด้วยแฟลชอย่างระมัดระวัง หากคุณมีภาวะดวงตาไวต่อแสง</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1556127816860282890">ระบบอาจจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพบางอย่าง เช่น การเลื่อนอย่างราบรื่น</translation>
@@ -1895,6 +1898,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ต้องการคัดลอกไฟล์จาก <ph name="VOLUME_NAME" /></translation>
 <translation id="2457842160081795172">ขณะนี้อยู่ที่ช่อง <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">อัปเดตบัญชี <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">ระบบจะแชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น Google จะใช้เนื้อหาและ URL ของแท็บที่เปิดอยู่เมื่อคุณเริ่มแชทใหม่ คุณเปลี่ยนแปลงการตั้งค่านี้ได้ทุกเมื่อ ข้อมูลขององค์กรคุณจะปลอดภัยและเป็นส่วนตัว ระบบจะไม่นำข้อมูลดังกล่าวไปใช้เพื่อปรับปรุงโมเดล Generative AI</translation>
 <translation id="2459703812219683497">ตรวจพบรหัสเปิดใช้งาน</translation>
 <translation id="2459706890611560967">แคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
 <translation id="245979889539926662">แชร์ภาพหน้าจอ</translation>
@@ -3154,6 +3158,7 @@
 <translation id="3390740059150071453">มองทางซ้าย</translation>
 <translation id="3393554941209044235">การวิเคราะห์เอกสารของ Chrome</translation>
 <translation id="3394072120086516913">PC ใช้สายและอุปกรณ์แคสต์ใช้ Wi-Fi</translation>
+<translation id="3394561494170561143">แท็บแยกใหม่</translation>
 <translation id="3394850431319394743">ได้รับอนุญาตให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="339722927132407568">ค้าง</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
@@ -6196,6 +6201,7 @@
 <translation id="5724723163580775373">โฟกัสขนาดใหญ่</translation>
 <translation id="5725112283692663422">ส่งความคิดเห็นเกี่ยวกับการสร้างธีมด้วย AI</translation>
 <translation id="5727728807527375859">ส่วนขยาย แอปพลิเคชัน และธีมอาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณได้ คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ</translation>
+<translation id="5727872803091928075">ระบบจะแชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น Google จะใช้เนื้อหาและ URL ของแท็บที่เปิดอยู่เมื่อคุณเริ่มแชทใหม่ คุณเปลี่ยนแปลงการตั้งค่านี้ได้ทุกเมื่อ</translation>
 <translation id="5728072125198221967">บริการของ Google ที่ลิงก์ไว้</translation>
 <translation id="5729712731028706266">&amp;มุมมอง</translation>
 <translation id="5731247495086897348">&amp;วางแล้วไป</translation>
@@ -7024,6 +7030,7 @@
 <translation id="6370021412472292592">ไม่สามารถโหลดไฟล์ Manifest</translation>
 <translation id="6370551072524410110">ค้นหา + Shift + Backspace</translation>
 <translation id="637135143619858508">ห่าง</translation>
+<translation id="6372413553057593904">แท็บที่ไม่ได้ใช้งานใน "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="637642201764944055">แอป Chrome เวอร์ชันเก่าจะเปิดใช้งานในอุปกรณ์ Linux ไม่ได้แล้วหลังเดือนธันวาคม 2022 โปรดแจ้งให้ผู้ดูแลระบบอัปเดตเป็นเวอร์ชันใหม่หรือนำแอปนี้ออก</translation>
@@ -7336,6 +7343,7 @@
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6613231539539868591">ข้อมูลที่คงอยู่</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
+<translation id="6614219106064338118">เริ่มแชท</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
 <translation id="6616000047939888167">เสนอ Google แปลภาษาสำหรับเว็บไซต์และไฟล์ PDF ในภาษาอื่นๆ</translation>
 <translation id="6618013221808317456">ไม่อนุญาตให้เว็บไซต์ใช้การเพิ่มประสิทธิภาพ JavaScript</translation>
@@ -9718,6 +9726,7 @@
 <translation id="8410133743809404768">คุณสามารถค้นหาในแถบที่อยู่โดยใช้ "@history" รวมถึงจากหน้าประวัติการเข้าชมได้</translation>
 <translation id="8411043186249152291">เต็มหน้าจอ</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
+<translation id="8413685856004704642">การใช้งานต้องเป็นไปตาม<ph name="BEGIN_LINK1" />ข้อกำหนดของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของแอป Gemini<ph name="END_LINK2" /></translation>
 <translation id="8413795581997394485">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย เมื่อคุณเข้าชมเว็บไซต์ Chrome จะนำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">ค้นคว้าข้อมูลอะไรก็ได้</translation>

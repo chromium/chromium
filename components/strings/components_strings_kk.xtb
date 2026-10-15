@@ -490,6 +490,7 @@
 <translation id="18139523105317219">EDI тарабының атауы</translation>
 <translation id="1816436748874040213">Ортақ қойындыларды айналдыру мен масштабтауды сұрай алады</translation>
 <translation id="1816707915923025275">Браузерді қолдану тарихынан іздеу үшін @history деп теріңіз.</translation>
+<translation id="1816771466809215784">Төлеу кезінде автоматты түрде толтыру үшін осы карта иесінің атын Google Wallet-ке сақтаңыз.</translation>
 <translation id="1817364650920811003">Рөл: Chrome кеңесі. Арнайы мүмкіндіктер белгішесі: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">автоматты жүктеулер</translation>
 <translation id="1821930232296380041">Жарамсыз сұрау немесе сұрау параметрлері</translation>
@@ -647,6 +648,7 @@
 <translation id="2102495993840063010">Android қолданбалары</translation>
 <translation id="2103210856015238101">Толығымен ашылған, түрту арқылы толтыруға болатын тұрақты клиент карталары.</translation>
 <translation id="2104739941682874393">Дұрысталған автотолтыру функциясы үлгілерді жақсы түсінеді және сізден де жылдам толтыра алады.</translation>
+<translation id="2105237910269166838">Осы бет жайында</translation>
 <translation id="2107021941795971877">Баспаны қолдау</translation>
 <translation id="2108755909498034140">Компьютерді қайта іске қосу</translation>
 <translation id="2109845311767915560">Ортақ қойындылар тобы</translation>
@@ -1053,6 +1055,7 @@
 <translation id="2734797989819862638">Көшірмеу</translation>
 <translation id="2738771556149464852">Кейін емес</translation>
 <translation id="2740531572673183784">Жарайды</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Жоқ}=1{1 дағды}other{# дағды}}</translation>
 <translation id="2757727729385895652">Google Drive-қа <ph name="COUNT" /> файл жүктеп салынып жатыр.</translation>
 <translation id="2759299890026163685">Әрекетті қайталамас бұрын, интернет байланысының тұрақты екеніне көз жеткізіңіз.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
@@ -3621,6 +3624,7 @@
 <translation id="7083258188081898530">9-науа</translation>
 <translation id="70846382339153529">OpenDocument мәтіні</translation>
 <translation id="7086090958708083563">Пайдаланушы жүктеп салуды сұрады.</translation>
+<translation id="7089745480771070611">Бүйірлік панельде ашылады.</translation>
 <translation id="7090698782953528257">Математикалық теңдеуді визуализациялау және қисық сызықтың пішінін көру үшін функцияның графигін салуға көмектес</translation>
 <translation id="7092087596499105699">Әкімші ұйымыңыздың жеке веб-қолданбаларына кіру рұқсатын қорғау үшін қауіпсіз шлюз коннекторын конфигурациялады. Ол кіру рұқсатын тексеру үшін жұмыс профиліндегі деректерді пайдалануы мүмкін.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
@@ -4004,6 +4008,7 @@
 <translation id="7696107855583699585">Белгілі жолаушы нөмірін өзгерту</translation>
 <translation id="7698864304447945242">Google Play Services for AR қолданбасын жаңарту керек пе?</translation>
 <translation id="7699509138503320152">Электрондық хатымды сендіретіндей етіп қайта жаз</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Жоқ}=1{1 дағды (синхрондалды)}other{# дағды (синхрондалды)}}</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> сайтына өту (қауіпті)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Жазуға көмек керек</translation>
@@ -4246,6 +4251,7 @@
 <translation id="813024282736408069">Автоматты түрде толтыру үшін виртуалдық картаны қосыңыз</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
+<translation id="8136385032646505126">Карта иесінің аты-жөнін сақтау керек пе?</translation>
 <translation id="8137185688006450980">Медициналық сақтандыру жоспарларын салыстыр</translation>
 <translation id="8138591088112729119">Personal Intelligence функциясымен істейді.</translation>
 <translation id="814071672416123670">Ұйымыңыздың саясаттарына сәйкес, контентті көшіру мүмкін емес.</translation>

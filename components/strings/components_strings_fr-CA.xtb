@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2103210856015238101">Cartes de fidélité qui peuvent être remplies d'un toucher, ouvertes à pleine hauteur.</translation>
 <translation id="2104739941682874393">Le remplissage automatique amélioré comprend mieux les formulaires et peut les remplir automatiquement pour vous plus rapidement</translation>
+<translation id="2105237910269166838">Poser une question à propos de cette page</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrer l'ordinateur</translation>
 <translation id="2109845311767915560">Groupe d'onglets partagé</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Ne pas copier</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Aucune}=1{1 compétence}one{# compétence}other{# compétences}}</translation>
 <translation id="2757727729385895652">Téléversement de <ph name="COUNT" /> fichiers vers Google Disque en cours…</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7083258188081898530">Bac 9</translation>
 <translation id="70846382339153529">Texte OpenDocument</translation>
 <translation id="7086090958708083563">Téléversement demandé par l'utilisateur</translation>
+<translation id="7089745480771070611">S'ouvre dans le panneau latéral</translation>
 <translation id="7090698782953528257">Aide-moi à tracer le graphique d'une fonction pour visualiser l'équation mathématique et voir la forme de la courbe</translation>
 <translation id="7092087596499105699">Votre administrateur a configuré le connecteur de passerelle sécurisée pour protéger l'accès aux applications Web privées de votre organisation. Il peut utiliser les données de votre profil professionnel pour vérifier l'accès.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée afin de gérer les autorisations et les données stockées pour les sites dans les paramètres de Chrome</translation>
@@ -4006,6 +4009,7 @@ Détails supplémentaires :
 <translation id="7696107855583699585">Modifier le numéro de voyageur connu</translation>
 <translation id="7698864304447945242">Mettre à jour les services Google Play pour la RA?</translation>
 <translation id="7699509138503320152">Réécris mon courriel pour le rendre plus persuasif</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Aucune}=1{1 compétence (synchronisée)}one{# compétence (synchronisée)}other{# compétences (synchronisées)}}</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuer vers <ph name="SITE" /> (non recommandé)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Aide à la rédaction</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">在<ph name="NATIVE_APP_NAME" />中打开 • 来自“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1496514951988037011">用户名</translation>
+<translation id="1498051468374914325">打开开发者工具控制台</translation>
 <translation id="1501480321619201731">删除标签页组</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">在无痕模式下打开新窗口</translation>
 <translation id="152204906462707884">快速删除浏览记录，更好地掌控自己的隐私</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1537160738459068682">打开开发者工具元素</translation>
 <translation id="1540012742443808215">地址栏目前位于顶部</translation>
 <translation id="1543035591122163372">登录即可获取<ph name="DEVICE_TYPE" />中的密码等信息</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
@@ -1069,6 +1071,7 @@
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
+<translation id="5257142004843671642">调整侧边栏大小</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
@@ -2059,6 +2062,7 @@
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9027728231343310283">重新授权 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="9038316201889095704">存在未保存的更改时，无法使用“在当前页面中查找”。</translation>
 <translation id="904146253922032365">轻触并按住即可垂直显示标签页</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9047347135558855162">在 Chrome 中快速发起搜索</translation>

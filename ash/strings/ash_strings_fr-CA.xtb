@@ -1020,6 +1020,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3977512764614765090">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge.</translation>
 <translation id="3978162107953847778">Insérez des liens à partir d'endroits tels que votre historique de navigation et Google Disque. Vous pouvez également insérer des émojis, des fichiers d'image et plus. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Changer la sortie audio?</translation>
+<translation id="3983903378684256134">Steam sur Chromebook</translation>
 <translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3990002060657467458">Les commandes fréquemment utilisées comme le Wi-Fi, le Bluetooth et le volume se trouvent dans les paramètres rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
@@ -1636,6 +1637,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5727460725221669831">Si vous avez oublié votre mot de passe ou modifié le mot de passe de votre compte Google récemment, essayez de récupérer cet utilisateur.</translation>
 <translation id="5733630091161562207">Notification de bienvenue</translation>
 <translation id="573413375004481890">Cet appareil ne prend pas en charge tous vos écrans, alors l'un d'eux a été déconnecté</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> d'espace disque libéré.</translation>
 <translation id="574392208103952083">Moyenne</translation>
 <translation id="5745612484876805746">La fonction Éclairage nocturne s'active automatiquement au coucher du soleil</translation>
 <translation id="5749214722697335450">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les mesures<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Nouvelle installation</translation>
 <translation id="7413851974711031813">Appuyez sur Échap pour fermer la fenêtre</translation>
 <translation id="7416471219712049036">Enregistrer la page actuelle</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
+<translation id="7430466159639897874">Vous disposez d'un espace disque inutilisé (<ph name="SIZE" />) alloué à la fonctionnalité obsolète « Steam sur Chromebook ».</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
 <translation id="7433708794692032816">Insérez votre carte à puce pour continuer à utiliser votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Recherche Google</translation>
@@ -2353,6 +2356,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7781335840981796660">Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7787212146956232129">Les périphériques d'entrée et de sortie sont définis. Accédez aux paramètres pour effectuer des modifications.</translation>
+<translation id="7790757511772316441">Libérer de l'espace disque</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>

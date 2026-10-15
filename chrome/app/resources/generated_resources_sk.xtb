@@ -268,6 +268,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1177863135347784049">Vlastné</translation>
 <translation id="1178093605842850860">Má povolené čítať a meniť tento web</translation>
 <translation id="1178357842179817577">Chráni vás pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Karty sa zdieľajú, aby ste dostávali relevantnejšie odpovede.<ph name="END_BOLD" /> Keď začnete nový čet, Google používa obsah a webovú adresu otvorenej karty. Toto nastavenie môžete kedykoľvek zmeniť.</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="117916940443676133">Váš bezpečnostný kľúč nie je chránený kódom PIN. Ak chcete spravovať prihlasovacie údaje, najprv vytvorte PIN.</translation>
 <translation id="1179400851034021914">Číslo IBAN je neplatné</translation>
@@ -701,6 +702,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1535753739390684432">Vypočujte si konkrétny text nahlas. Najprv vyberte ikonu počúvania vybraného textu v dolnej časti obrazovky a potom zvýraznite text.</translation>
 <translation id="1536754031901697553">Odpája sa...</translation>
 <translation id="1536883206862903762">Deaktivujete tým rozšírenia a obnovíte bezpečné predvolené nastavenia. Karty, súbory a súbory cookie budú zachované. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Karty sa zdieľajú, aby ste dostávali relevantnejšie odpovede.<ph name="END_BOLD_1" /> Keď začnete nový čet, Google používa obsah a webovú adresu otvorenej karty. Toto nastavenie môžete kedykoľvek zmeniť. <ph name="BEGIN_BOLD_2" />Údaje vašej organizácie sú súkromné a zabezpečené.<ph name="END_BOLD_2" /> Nebudú sa používať na zlepšovanie modelov generatívnej umelej inteligencie.</translation>
 <translation id="1537254971476575106">Lupa celej obrazovky</translation>
 <translation id="1538808328818992871">Minimálny počet znakov je <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Nepovoliť webom prepísať vstup klávesnice</translation>
@@ -728,6 +730,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1552752544932680961">Spravovať rozšírenie</translation>
 <translation id="1553538517812678578">bez obmedzenia</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /> o súprave Microsoft 365 v Chromebooku</translation>
+<translation id="1554343363646356023">Nové &amp;izolované okno</translation>
 <translation id="1554640914375980459">Nastavte si blikanie obrazovky, keď dostanete upozornenie. Ak patríte medzi osoby citlivé na svetlo, používajte svetelné upozornenia obozretne.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556127816860282890">Aktivita na pozadí a niektoré vizuálne efekty, napríklad plynulé posúvanie, môžu byť obmedzené</translation>
@@ -1895,6 +1898,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2457246892030921239">Aplikácia <ph name="APP_NAME" /> chce kopírovať súbory z média <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Momentálne používate verziu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2458379781610688953">Aktualizovať účet, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Karty sa zdieľajú, aby ste dostávali relevantnejšie odpovede. Keď začnete nový čet, Google používa obsah a webovú adresu otvorenej karty. Toto nastavenie môžete kedykoľvek zmeniť. Údaje vašej organizácie sú súkromné a zabezpečené. Nebudú sa používať na zlepšovanie modelov generatívnej umelej inteligencie.</translation>
 <translation id="2459703812219683497">Aktivačný kód bol rozpoznaný</translation>
 <translation id="2459706890611560967">Pokračovať v prenose karty do zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Zdieľanie snímky obrazovky</translation>
@@ -3156,6 +3160,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3390740059150071453">Pozrite sa doľava</translation>
 <translation id="3393554941209044235">Analýza dokumentov Chromu</translation>
 <translation id="3394072120086516913">Počítač je pripojený k pevnej sieti káblom a zariadenie na prenos je pripojené k sieti Wi‐Fi</translation>
+<translation id="3394561494170561143">Nová izolovaná kar&amp;ta</translation>
 <translation id="3394850431319394743">Prehrávanie chráneného obsahu pomocou identifikátorov je povolené</translation>
 <translation id="339722927132407568">Zamŕza</translation>
 <translation id="3399432415385675819">Upozornenia budú zakázané</translation>
@@ -6200,6 +6205,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5724723163580775373">Veľké zameranie</translation>
 <translation id="5725112283692663422">Odoslanie spätnej väzby k vytváraniu motívu pomocou umelej inteligencie</translation>
 <translation id="5727728807527375859">Rozšírenia, aplikácie a motívy môžu poškodiť váš počítač. Naozaj chcete pokračovať?</translation>
+<translation id="5727872803091928075">Karty sa zdieľajú, aby ste dostávali relevantnejšie odpovede. Keď začnete nový čet, Google používa obsah a webovú adresu otvorenej karty. Toto nastavenie môžete kedykoľvek zmeniť.</translation>
 <translation id="5728072125198221967">Prepojené služby Googlu</translation>
 <translation id="5729712731028706266">&amp;Zobraziť</translation>
 <translation id="5731247495086897348">Prilepiť a &amp;otvoriť</translation>
@@ -7029,6 +7035,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6370021412472292592">Manifest sa nepodarilo načítať.</translation>
 <translation id="6370551072524410110">kláves vyhľadávania + Shift + Backspace</translation>
 <translation id="637135143619858508">Veľké</translation>
+<translation id="6372413553057593904">Neaktívna karta v okne <ph name="WINDOW_TITLE" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
 <translation id="637642201764944055">Staré verzie aplikácií pre Chrome sa po decembri 2022 nebudú dať otvoriť v zariadeniach so systémom Linux. Kontaktujte svojho správcu a požiadajte ho o inováciu na novú verziu alebo túto aplikáciu odstráňte.</translation>
@@ -7345,6 +7352,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="661266467055912436">Zvyšuje zabezpečenie na internete pre vás aj ostatných.</translation>
 <translation id="6613231539539868591">Trvalé údaje</translation>
 <translation id="6613267708691765962">Kontroluje sa prítomnosť malvéru…</translation>
+<translation id="6614219106064338118">Začať čet</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6616000047939888167">Ponúkať Prekladač Google v prípade webov a súborov PDF v iných jazykoch</translation>
 <translation id="6618013221808317456">Nepovoliť webom používať optimalizáciu JavaScriptu</translation>
@@ -9727,6 +9735,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8410133743809404768">Môžete vyhľadávať na paneli s adresou pomocou výrazu @history, ale aj na stránke História</translation>
 <translation id="8411043186249152291">celá obrazovka</translation>
 <translation id="8412136526970428322">Je aktivované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
+<translation id="8413685856004704642">Platia <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />oznámenie o ochrane súkromia v aplikáciách Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Chráni pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami. Keď navštívite určitý web, Chrome odošle Googlu znejasnenú časť webovej adresy prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>
 <translation id="8414396119627470038">Prihláste sa na webe <ph name="SITE_ETLD_PLUS_ONE" /> pomocou poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Prehľadávajte čokoľvek</translation>

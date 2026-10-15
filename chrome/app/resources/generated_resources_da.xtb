@@ -268,6 +268,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178093605842850860">Har tilladelse til at læse og ændre dette website</translation>
 <translation id="1178357842179817577">Beskytter dig mod skadelige websites, downloads og udvidelser</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Faner deles, så du kan få mere relevante svar.<ph name="END_BOLD" /> Google bruger indholdet på og webadressen for din åbne fane, når du starter en ny chat. Du kan til enhver tid ændre denne indstilling.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="117916940443676133">Din sikkerhedsnøgle er ikke beskyttet med en pinkode. Opret en pinkode for at administrere logindata.</translation>
 <translation id="1179400851034021914">IBAN er ugyldigt</translation>
@@ -702,6 +703,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1535753739390684432">Få oplæst en bestemt tekst. Start med at vælge ikonet for Tekstoplæsning nederst på skærmen, og fremhæv derefter teksten.</translation>
 <translation id="1536754031901697553">Afbryder forbindelsen...</translation>
 <translation id="1536883206862903762">Dette deaktiverer udvidelser og nulstiller dine indstillinger, så du får de sikre standardindstillinger. Faner, filer og cookies bevares. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Faner deles, så du kan få mere relevante svar.<ph name="END_BOLD_1" /> Google bruger indholdet på og webadressen for din åbne fane, når du starter en ny chat. Du kan til enhver tid ændre denne indstilling. <ph name="BEGIN_BOLD_2" />Din organisations data beskyttes og holdes fortrolige.<ph name="END_BOLD_2" /> De bruges ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="1537254971476575106">Forstørrelse af fuld skærm</translation>
 <translation id="1538808328818992871">Skal være mindst <ph name="MIN_LENGTH" /> tegn</translation>
 <translation id="1539248305642687917">Tillad ikke, at websites tilsidesætter dit tastaturinput</translation>
@@ -729,6 +731,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1552752544932680961">Administrer udvidelse</translation>
 <translation id="1553538517812678578">ubegrænset</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /> om Microsoft 365 på din Chromebook.</translation>
+<translation id="1554343363646356023">Nyt &amp;isoleret vindue</translation>
 <translation id="1554640914375980459">Blink med skærmens lys, når du modtager notifikationer. Vær forsigtig med at bruge lysnotifikationer, hvis du er lysfølsom.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556127816860282890">Baggrundsaktivitet og visse visuelle effekter som f.eks. jævn rulning kan være begrænset</translation>
@@ -1909,6 +1912,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ønsker at kopiere filer fra <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">I øjeblikket på <ph name="CHANNEL_NAME" />-kanalen.</translation>
 <translation id="2458379781610688953">Opdater konto, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Faner deles, så du kan få mere relevante svar. Google bruger indholdet på og webadressen for din åbne fane, når du starter en ny chat. Du kan til enhver tid ændre denne indstilling. Din organisations data beskyttes og holdes fortrolige. De bruges ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="2459703812219683497">Aktiveringskoden blev registreret</translation>
 <translation id="2459706890611560967">Genoptag casting af fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Del et screenshot</translation>
@@ -3170,6 +3174,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3390740059150071453">Kig til venstre</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394072120086516913">Pc'en er tilsluttet via et kabel, og Cast-enheden er tilsluttet Wi-Fi</translation>
+<translation id="3394561494170561143">Ny isoleret &amp;fane</translation>
 <translation id="3394850431319394743">Har tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
 <translation id="339722927132407568">Fryser</translation>
 <translation id="3399432415385675819">Notifikationer deaktiveres</translation>
@@ -6171,7 +6176,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5684181005476681636">Info om Wi-Fi</translation>
 <translation id="5687340364605915800">Websites vurderer selv, om de vil besvare denne anmodning</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
-<translation id="5689516760719285838">Placering</translation>
+<translation id="5689516760719285838">Lokation</translation>
 <translation id="568984110402742489">Der kan ikke sendes feedback</translation>
 <translation id="56907980372820799">Link data</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
@@ -6216,6 +6221,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5724723163580775373">Bredt fokus</translation>
 <translation id="5725112283692663422">Send feedback om Opret tema ved hjælp af AI</translation>
 <translation id="5727728807527375859">Udvidelser, programmer og temaer kan beskadige din computer. Er du sikker på, at du vil fortsætte?</translation>
+<translation id="5727872803091928075">Faner deles, så du kan få mere relevante svar. Google bruger indholdet på og webadressen for din åbne fane, når du starter en ny chat. Du kan til enhver tid ændre denne indstilling.</translation>
 <translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
 <translation id="5729712731028706266">&amp;Vis</translation>
 <translation id="5731247495086897348">Ind&amp;sæt og fortsæt</translation>
@@ -7045,6 +7051,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6370021412472292592">Manifestet kunne ikke indlæses.</translation>
 <translation id="6370551072524410110">søgetasten + Shift + Backspace</translation>
 <translation id="637135143619858508">Stor linjeafstand</translation>
+<translation id="6372413553057593904">Inaktiv fane i "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Prøv igen</translation>
 <translation id="637642201764944055">Gamle versioner af Chrome-apps kan ikke åbnes på Linux-enheder efter december 2022. Kontakt din administrator, hvis du vil opdatere til en ny version af denne app eller fjerne den.</translation>
@@ -7359,6 +7366,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6613231539539868591">Gemte data</translation>
 <translation id="6613267708691765962">Søger efter malware…</translation>
+<translation id="6614219106064338118">Start chat</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6616000047939888167">Gør Google Oversæt tilgængelig for websites og PDF-filer på andre sprog</translation>
 <translation id="6618013221808317456">Tillad ikke, at websites anvender JavaScript-optimering</translation>
@@ -9742,6 +9750,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8410133743809404768">Du kan søge i adresselinjen ved at bruge "@historik" og via siden Historik</translation>
 <translation id="8411043186249152291">fuld skærm</translation>
 <translation id="8412136526970428322">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev tilladt</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />privatlivsmeddelelsen for Gemini-apps<ph name="END_LINK2" /> er gældende.</translation>
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Undersøg hvad som helst</translation>

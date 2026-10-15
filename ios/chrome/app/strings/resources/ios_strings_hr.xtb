@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Neki sadržaji možda nisu prikladni za sve.</translation>
 <translation id="1601560923496285236">Primijeni</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Dovršite 1 zadatak da biste prešli na višu razinu}one{Dovršite {count} zadatak da biste prešli na višu razinu}few{Dovršite {count} zadatka da biste prešli na višu razinu}other{Dovršite {count} zadataka da biste prešli na višu razinu}}</translation>
 <translation id="1605405588277479165">Isključeno – ne preporučuje se</translation>
 <translation id="1605658421715042784">Kopiraj sliku</translation>
 <translation id="1606899876897213121">Zatvori sažetak nedavne aktivnosti</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Obavezno</translation>
 <translation id="3914640181019354363">Otkrij adrese</translation>
 <translation id="391904960191284041">Recenzije proizvoda</translation>
+<translation id="3920165976616657606">Istraživanje poboljšanog sigurnog pregledavanja je dovršeno!</translation>
 <translation id="3921585859122905677">Položaj adresne trake</translation>
 <translation id="3922185497376658606">Predučitavanje web-stranica</translation>
 <translation id="3926703470020109118">Preuzimanje je otkazano</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Možete prijeći prstom po rubu da biste se vratili ili nastavili.</translation>
 <translation id="4460014764210899310">Razgrupiraj</translation>
 <translation id="446314443268698477">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere ili fotografija.</translation>
+<translation id="4465941170695753889">Pritisnite i zadržite da biste izradili grupu kartica</translation>
 <translation id="4469324811108161144">Broj znakova u bilješkama ne smije biti veći od <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Na što se želite usredotočiti?</translation>
 <translation id="4471472356135655769">Izvoz zaporki nije uspio</translation>

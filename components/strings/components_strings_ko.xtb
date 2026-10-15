@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android 앱</translation>
 <translation id="2103210856015238101">터치하여 입력할 수 있는 포인트 카드가 전체 높이로 열렸습니다.</translation>
 <translation id="2104739941682874393">향상된 자동 완성 기능은 양식을 정확하게 파악한 후, 빠르고 정확하게 자동 입력해 줍니다.</translation>
+<translation id="2105237910269166838">이 페이지에 대해 질문하기</translation>
 <translation id="2107021941795971877">인쇄 지지대</translation>
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
 <translation id="2109845311767915560">공유된 탭 그룹</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">복사 안함</translation>
 <translation id="2738771556149464852">만료:</translation>
 <translation id="2740531572673183784">확인</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{없음}=1{스킬 1개}other{스킬 #개}}</translation>
 <translation id="2757727729385895652">파일 <ph name="COUNT" />개를 Google Drive에 업로드하는 중</translation>
 <translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">트레이 9</translation>
 <translation id="70846382339153529">OpenDocument 텍스트</translation>
 <translation id="7086090958708083563">사용자가 요청한 업로드</translation>
+<translation id="7089745480771070611">측면 패널에서 열기</translation>
 <translation id="7090698782953528257">수학 방정식을 시각화하고 곡선의 모양을 볼 수 있도록 함수를 그래프로 나타내 줘.</translation>
 <translation id="7092087596499105699">관리자가 조직의 비공개 웹 애플리케이션에 대한 액세스를 보호하기 위해 보안 게이트웨이 커넥터를 구성했습니다. 액세스를 확인하기 위해 직장 프로필의 데이터를 사용할 수 있습니다.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">KTN(Known Traveler Number) 수정</translation>
 <translation id="7698864304447945242">Google Play AR 서비스를 업데이트하시겠습니까?</translation>
 <translation id="7699509138503320152">이메일을 더 설득력 있게 다시 작성해 줘</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{없음}=1{스킬 1개(동기화됨)}other{스킬 #개(동기화됨)}}</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" />(안전하지 않음)<ph name="END_LINK" />(으)로 이동</translation>
 <translation id="7705085181312584869">글쓰기 도우미</translation>

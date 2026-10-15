@@ -410,6 +410,15 @@ diinstal.</translation>
 <translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
 <translation id="1274997165432133392">Cookie dan data situs lainnya</translation>
 <translation id="1277411517984768103">Izinkan <ph name="BOREALIS_NAME" /> dijalankan untuk pengguna</translation>
+<translation id="1281420319219324116">Kebijakan ini mengonfigurasi sertifikat klien terkelola yang disediakan saat <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> diaktifkan.
+
+Kolom <ph name="COMMON_NAME_SOURCE_FIELD" /> menentukan sumber Nama Umum (CN) Subjek sertifikat:
+
+- Jika kebijakan tidak disetel atau disetel ke <ph name="DEVICE_ID_VALUE" />, Nama Umum Subjek sertifikat akan disetel ke ID perangkat virtual browser terkelola.
+
+- Jika kebijakan disetel ke <ph name="COMPUTER_NAME_VALUE" />, Nama Umum Subjek sertifikat akan disetel ke nama host perangkat.
+
+Kebijakan ini tidak akan berpengaruh jika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> dinonaktifkan atau tidak disetel.</translation>
 <translation id="1285819498003746288">Event.path API tidak akan tersedia.</translation>
 <translation id="1290722184971934486">Jika kebijakan ini disetel ke <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (nilai 2), izin pengelolaan jendela untuk situs akan otomatis ditolak secara default. Hal ini akan membatasi kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
@@ -5867,6 +5876,15 @@ Untuk perangkat yang tidak dikelola, kebijakan ini tidak berlaku, dan pengguna d
       Jika tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan ukuran default. Pengguna dapat mengubah setelan tersebut menggunakan tanda --disk-cache-size.
 
       Catatan: Nilai yang ditentukan dalam kebijakan ini digunakan sebagai petunjuk untuk berbagai subsistem cache di browser. Oleh karena itu, total pemakaian disk semua cache yang sebenarnya akan lebih tinggi tetapi dalam orde magnitudo yang sama dengan nilai yang ditentukan.</translation>
+<translation id="4582488040806837065">Kebijakan ini mengonfigurasi sertifikat klien terkelola yang disediakan saat <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> diaktifkan.
+
+Kolom <ph name="COMMON_NAME_SOURCE_FIELD" /> menentukan sumber Nama Umum (CN) Subjek sertifikat:
+
+- Jika kebijakan tidak disetel atau disetel ke <ph name="PROFILE_ID_VALUE" />, Nama Umum Subjek sertifikat akan disetel ke ID profil browser.
+
+- Jika kebijakan disetel ke <ph name="COMPUTER_NAME_VALUE" />, Nama Umum Subjek sertifikat akan disetel ke nama host perangkat. Catatan: Menyetel properti ini ke <ph name="COMPUTER_NAME_VALUE" /> akan menggunakan properti tingkat perangkat dalam sertifikat dengan cakupan profil. Hal ini berdampak pada privasi di perangkat bersama atau yang tidak dikelola karena nama host mesin akan dicantumkan dalam sertifikat tersebut.
+
+Kebijakan ini tidak akan berpengaruh jika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> dinonaktifkan atau tidak disetel.</translation>
 <translation id="4591366717022345234">Sediakan Quick Fix Build untuk pengguna</translation>
 <translation id="4593391169954484940">Hash SHA-256 file.</translation>
 <translation id="4594027034164195984">Izinkan gambar pihak ketiga menampilkan perintah autentikasi</translation>

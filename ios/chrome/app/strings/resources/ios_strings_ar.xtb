@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">قد يكون بعض المحتوى غير مناسب للجميع.</translation>
 <translation id="1601560923496285236">تطبيق</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{عنوان واحد}zero{‫# عنوان}two{عنوانان}few{‫# عناوين}many{‫# عنوانًا}other{‫# عنوان}}</translation>
+<translation id="160477039162785330">{count,plural, =1{يجب إكمال مَهمّة واحدة للانتقال إلى مستوى أعلى}zero{يجب إكمال {count} مَهمّة للانتقال إلى مستوى أعلى}two{يجب إكمال مَهمّتَين ({count}) للانتقال إلى مستوى أعلى}few{يجب إكمال {count} مهام للانتقال إلى مستوى أعلى}many{يجب إكمال {count} مَهمّة للانتقال إلى مستوى أعلى}other{يجب إكمال {count} مَهمّة للانتقال إلى مستوى أعلى}}</translation>
 <translation id="1605405588277479165">غير مفعّل - (غير مستحسَن)</translation>
 <translation id="1605658421715042784">نسخ الصورة</translation>
 <translation id="1606899876897213121">إغلاق ملخّص الأنشطة الحديثة</translation>
@@ -511,6 +512,7 @@
 <translation id="2524699375503213836">‏انقل بياناتك من Safari</translation>
 <translation id="2526166285241366046">حفظ كلمة مرور</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
+<translation id="2530932541542751783">‏حدث خطأ أثناء ضبط هذا الإعداد. يُرجى تحديث Chrome وiPadOS وإعادة تشغيلهما، ثم إعادة المحاولة. في حال استمرار ظهور هذا الخطأ، قد لا يكون جهاز iPad متوافقًا مع هذا الإعداد.</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
 <translation id="2538705697765638552">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. ويمكنك إدارة بياناتك في حساب <ph name="USER_EMAIL" /> على "محفظة Google".</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">مطلوبة</translation>
 <translation id="3914640181019354363">رصد العناوين</translation>
 <translation id="391904960191284041">مراجعات المنتجات</translation>
+<translation id="3920165976616657606">اكتملت مهمة "استكشاف ميزة الحماية المحسّنة للتصفّح الآمن".</translation>
 <translation id="3921585859122905677">موضع شريط العناوين</translation>
 <translation id="3922185497376658606">تحميل صفحات الويب مُسبقًا</translation>
 <translation id="3926703470020109118">تم إلغاء عملية التنزيل</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850">سيتم تسجيل دخولك إلى <ph name="URL" />.</translation>
 <translation id="3934905113567851655">يمكنك تصغير أو تكبير الصورة بإصبعين لتغيير حجمها</translation>
 <translation id="393732545649378031">الحساب</translation>
+<translation id="3939683043166875001">يمكنك إخفاء أو إظهار المواقع الإلكترونية الأكثر زيارة وخلاصة "الاقتراحات" والمزيد.</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
 <translation id="3946483119107054883">‏التنزيل كملف CSV</translation>
@@ -1090,6 +1094,7 @@
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="446314443268698477">يمكنك التسوّق وترجمة النصوص والتعرّف على ما تراه إمّا باستخدام الكاميرا أو الصور.</translation>
+<translation id="4465941170695753889">يجب الضغط مع الاستمرار لإنشاء مجموعة علامات تبويب</translation>
 <translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">ما هو المطلوب إنجازه؟</translation>
 <translation id="4471472356135655769">يتعذّر تصدير كلمات المرور</translation>
@@ -1262,6 +1267,7 @@
 <translation id="4977176874984951085">فتح قائمة إجراءات الصفحة</translation>
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4985921635659180565">بعد تحديد موعد لحذف ملف، لا يمكن إلغاء ذلك.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{تمت مشاركة علامة تبويب واحدة}zero{تمت مشاركة {COUNT} علامة تبويب}two{تمت مشاركة علامتَي تبويب ({COUNT})}few{تمت مشاركة {COUNT} علامات تبويب}many{تمت مشاركة {COUNT} علامة تبويب}other{تمت مشاركة {COUNT} علامة تبويب}}</translation>
 <translation id="498624032394115435">يمكن لأي مستخدم لديه الرابط تعديل جميع علامات التبويب.</translation>
 <translation id="4986428648020277392">الطلب: أيّ منتج يجب أن أشتري؟ 2 من 3</translation>
 <translation id="498768198683310172">‏البدء باستخدام Gemini</translation>
@@ -1919,6 +1925,7 @@
 <translation id="6938212956536472404">لا يمكن مشاركة علامة التبويب هذه</translation>
 <translation id="6945221475159498467">اختيار</translation>
 <translation id="6946722113367118030">تفكير</translation>
+<translation id="6947751977892029882">‏حدث خطأ أثناء ضبط هذا الإعداد. يُرجى تحديث Chrome وiOS وإعادة تشغيلهما، ثم إعادة المحاولة. في حال استمرار ظهور هذا الخطأ، قد لا يكون جهاز iPhone متوافقًا مع هذا الإعداد.</translation>
 <translation id="6950522403736391608">مخفي</translation>
 <translation id="695965663642079255">يمكنك حفظ معلومات الدفع وإدارتها لإتمام عمليات الدفع بسرعة أكبر</translation>
 <translation id="6962809930976936328">‏عرض أهم النقاط باستخدام Gemini</translation>
@@ -2342,6 +2349,7 @@
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">‏افتح قائمة Chrome</translation>
 <translation id="826614135184049678">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط جهاز iPad. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
+<translation id="8266370374397811600">تم تحقيق إنجاز جديد. 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">أنت على وشك التبديل بين الملفات الشخصية</translation>
 <translation id="8275068909952022340">المزيد…</translation>

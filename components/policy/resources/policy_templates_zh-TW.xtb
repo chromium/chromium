@@ -395,6 +395,15 @@
 <translation id="1272798957154751008">允許將 Chromad 裝置遷移至雲端管理服務</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
 <translation id="1277411517984768103">允許使用者執行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="1281420319219324116">這項政策會設定啟用 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> 時佈建的受管理用戶端憑證。
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> 欄位會指定憑證主體通用名稱 (CN) 的來源：
+
+- 如果未設定或設為 <ph name="DEVICE_ID_VALUE" />，憑證的主體通用名稱會設為受管理瀏覽器的虛擬裝置 ID。
+
+- 如果設為 <ph name="COMPUTER_NAME_VALUE" />，憑證的主體通用名稱會設為機器的主機名稱。
+
+如果停用或未設定 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />，這項政策就不會有任何作用。</translation>
 <translation id="1285819498003746288">Event.path API 將無法使用。</translation>
 <translation id="1290722184971934486">如果將這項政策設為 <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (值 2)，系統預設會自動拒絕將視窗管理權限授予網站。這項政策會限制網站執行以下操作：查看裝置畫面相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
 
@@ -771,6 +780,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 
       如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://chromeenterprise.google/policies/url-patterns。指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1539343118617844331">學校</translation>
+<translation id="154021430160122148">設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址 (Beta 版)</translation>
 <translation id="1542491165152947087">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="1542958897137600427">啟用用戶端憑證佈建作業</translation>
 <translation id="1550295162561011575">如果設定這項政策，系統管理員將可指定要在 <ph name="PRODUCT_NAME" /> 裝置上自動啟動的應用程式。這些應用程式可在使用者登入時啟動，使用者也可以透過啟動器一起啟動這些應用程式。</translation>
@@ -4772,6 +4782,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
 
 擴充功能可用性仍會受其他政策控制。</translation>
+<translation id="4109107305343689466">為使用者或設定檔設定受管理的用戶端憑證</translation>
 <translation id="4112585124048467596">如果設定這項政策，所有的指定資料類型都會從同步處理作業中排除 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業)。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
 
       這項政策目前的資料類型為：「apps」、「autofill」、「bookmarks」、「extensions」、「preferences」、「passwords」、「payments」、「productComparison」、「readingList」、「tabs」、「themes」、「typedUrls」和「wifiConfigurations」。這些名稱有大小寫之分！
@@ -5519,6 +5530,15 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
       如果未設定，<ph name="PRODUCT_NAME" /> 會使用預設大小，使用者可透過 --disk-cache-size 旗標來變更這項設定。
 
       注意：在這項政策中指定的值是用來提示瀏覽器中各種快取子系統可佔用的快取大小。因此，所有快取的實際總磁碟佔用量會更高，但會落在與指定值相同的數量級內。</translation>
+<translation id="4582488040806837065">這項政策會設定啟用 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 時佈建的受管理用戶端憑證。
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> 欄位會指定憑證主體通用名稱 (CN) 的來源：
+
+- 如果未設定或設為 <ph name="PROFILE_ID_VALUE" />，憑證的主體通用名稱會設為瀏覽器設定檔 ID。
+
+- 如果設為 <ph name="COMPUTER_NAME_VALUE" />，憑證的主體通用名稱會設為機器的主機名稱。注意：如果將這項屬性設為 <ph name="COMPUTER_NAME_VALUE" />，系統會在設定檔範圍的憑證中使用裝置層級屬性，這會對未受管理的裝置或共用裝置造成隱私權影響，因為憑證中會包含電腦主機名稱。
+
+如果 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 政策已停用或未設定，這項政策就不會有任何作用。</translation>
 <translation id="4591366717022345234">提供「快速修復版本」給使用者</translation>
 <translation id="4593391169954484940">檔案的 SHA-256 雜湊值。</translation>
 <translation id="4594027034164195984">允許第三方映像檔顯示驗證提示</translation>
@@ -8404,6 +8424,17 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果將這項政策設為 False，系統將無法載入 Signed HTTP Exchange。</translation>
 <translation id="6368011194414932347">設定首頁網址</translation>
 <translation id="6368403635025849609">允許這些網站的 JavaScript</translation>
+<translation id="6368652917086795891">設定 <ph name="PRODUCT_NAME" /> 的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 連線設定。
+
+這項政策將由 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 政策取代。如果兩者皆已設定，系統會優先採用 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />。
+
+這項政策會透過 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址，該網址必須有效，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
+
+如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="6368671810229507360">網頁即時通訊</translation>
 <translation id="6370742079247037704">禁止使用內建的 AI API。</translation>
 <translation id="6371005337713685988">相關網站集設定</translation>
@@ -8914,6 +8945,17 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6659877981632400997">內容選單不會提供可將圖片分享至 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />的選單項目。</translation>
 <translation id="6661178198729301029">啟用受管理設定檔的雲端報告功能</translation>
 <translation id="666203515318060501">允許使用強化版自動填入功能，但不協助改良 AI 模型。</translation>
+<translation id="6663125232571868480"><ph name="ALR_FEATURE_NAME" /> 功能已停用，因此這項政策已淘汰，從 M157 起不再有效。<ph name="AL_HEADER_NAME" /> HTTP 要求標頭和 JavaScript <ph name="JS_GETTER_NAME" /> getter 會繼續提供完整的已設定語言清單。
+
+在 M157 之前，基於隱私權考量，我們計劃減少使用 <ph name="AL_HEADER_NAME" /> HTTP 要求標頭和 JavaScript <ph name="JS_GETTER_NAME" /> getter。
+為了方便測試及確保相容性，你可以透過這項政策啟用或停用「<ph name="ALR_FEATURE_NAME" />」功能。
+
+如果將這項政策設為啟用或不設定，系統會透過實測套用「<ph name="ALR_FEATURE_NAME" />」。
+如果將這項政策設為停用，實測就無法啟用「<ph name="ALR_FEATURE_NAME" />」。
+
+歡迎前往 https://github.com/explainers-by-googlers/reduce-accept-language 進一步瞭解這項功能。
+
+注意：在瀏覽器執行期間，只有新啟動的轉譯器程序會套用這項政策的變更。</translation>
 <translation id="6665670272107384733">設定使用者使用快速解鎖功能時需輸入密碼的頻率</translation>
 <translation id="6667586534922258705">在登入畫面和鎖定畫面上啟用密碼顯示按鈕</translation>
 <translation id="6668559639284945695">這項政策可回到舊的 Cookie 範圍行為。
@@ -9346,6 +9388,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6953246833109449226">設定線上密碼不符時的處理方式</translation>
 <translation id="695532899547292238">啟用資訊站應用程式記錄收集功能</translation>
 <translation id="6956272732789158625">不允許任何網站使用金鑰產生功能</translation>
+<translation id="6956741245151252020">設定瀏覽器的受管理用戶端憑證</translation>
 <translation id="6960996423652450945">在登入畫面上停用插入點醒目顯示功能</translation>
 <translation id="6961602002757991199">如果將這項政策設為有效的網址，<ph name="PRODUCT_NAME" /> 會從該網址下載網站清單，然後按照 <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> 政策中的設定套用規則。這些政策會禁止 <ph name="PRODUCT_NAME" /> 和替代瀏覽器相互開啟。
 
@@ -10131,6 +10174,19 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
 在 155 以下版本，這項政策僅適用於機器層級。</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
+<translation id="7417697379573574567">這項政策已在 M157 中淘汰，請改用 <ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME" />。
+
+指定使用者能否讓 <ph name="PRODUCT_NAME" /> 使用生成式 AI 進一步辨識表單，協助填寫更多欄位。
+
+0 = 效果與 1 相同。在 M153 之前，這項設定允許 Google 運用相關資料改良 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用相關資料 (包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7417972229667085380">簡報模式中的閒置延遲時間延長百分比 (已不適用)</translation>
 <translation id="7421230730436851224">一律不在沙箱中處理音訊</translation>
 <translation id="7421483919690710988">設定媒體磁碟快取大小 (以位元組為單位)</translation>
@@ -10165,6 +10221,15 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
 如果未設定這項政策，在功能上等同於針對一般使用者設為「<ph name="ALLOWED_NAME" />」；針對企業版使用者，未設定政策的預設值會是「<ph name="DISALLOWED_NAME" />」。</translation>
 <translation id="7438982301540282785">自動設定 <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7441961773829108385">設定 <ph name="PRODUCT_NAME" /> 所連線的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址。
+
+值必須是有效的網址，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
+
+如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="7443356543619955157">你可以透過這項政策將網路設定強制套用至 <ph name="PRODUCT_OS_NAME" />裝置上的所有使用者。這個網路設定是根據「開放網路設定」格式所定義的 JSON 格式字串。</translation>
 <translation id="744349502210151344">預設值：XSLT 可用性取決於瀏覽器預設值和實測。</translation>
 <translation id="7446978687387327623">允許透過 Proxy 執行安全瀏覽即時檢查</translation>

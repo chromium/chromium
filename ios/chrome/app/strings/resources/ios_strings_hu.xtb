@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Előfordulhat, hogy egyes tartalmak nem mindenki számára megfelelők.</translation>
 <translation id="1601560923496285236">Alkalmaz</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 cím}other{# cím}}</translation>
+<translation id="160477039162785330">{count,plural, =1{A szintlépéshez végezzen el 1 feladatot}other{A szintlépéshez végezzen el {count} feladatot}}</translation>
 <translation id="1605405588277479165">Kikapcsolva – Nem javasolt</translation>
 <translation id="1605658421715042784">Kép másolása</translation>
 <translation id="1606899876897213121">A legutóbbi tevékenységek összefoglalójának bezárása</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Kötelező</translation>
 <translation id="3914640181019354363">Címek észlelése</translation>
 <translation id="391904960191284041">Termékvélemények</translation>
+<translation id="3920165976616657606">A „Biztonságos Böngészés fokozott védelemmel funkció felfedezése” feladat befejeződött.</translation>
 <translation id="3921585859122905677">Címsáv pozíciója</translation>
 <translation id="3922185497376658606">Weboldalak előtöltése</translation>
 <translation id="3926703470020109118">Letöltés megszakítva</translation>

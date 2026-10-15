@@ -648,6 +648,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2103210856015238101">Kartice vjernosti dostupne za unos dodirom otvorene su preko cijelog zaslona.</translation>
 <translation id="2104739941682874393">Poboljšano automatsko popunjavanje bolje razumije obrasce i može ih brže automatski popuniti</translation>
+<translation id="2105237910269166838">Postavite pitanje o ovoj stranici</translation>
 <translation id="2107021941795971877">Podrška ispisu</translation>
 <translation id="2108755909498034140">Ponovo pokrenite računalo</translation>
 <translation id="2109845311767915560">Dijeljena grupa kartica</translation>
@@ -1054,6 +1055,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2734797989819862638">Nemoj kopirati</translation>
 <translation id="2738771556149464852">Ne nakon</translation>
 <translation id="2740531572673183784">U redu</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Nijedna vještina}=1{1 vještina}one{# vještina}few{# vještine}other{# vještina}}</translation>
 <translation id="2757727729385895652">Prijenos ovoliko datoteka na Google disk: <ph name="COUNT" /></translation>
 <translation id="2759299890026163685">Prije no što pokušate ponovo, provjerite imate li stabilnu internetsku vezu</translation>
 <translation id="2759825833388495838">unijeti zaporku u aplikaciju <ph name="APP_NAME" /></translation>
@@ -3622,6 +3624,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="7083258188081898530">Ladica 9</translation>
 <translation id="70846382339153529">OpenDocument tekst</translation>
 <translation id="7086090958708083563">Korisnik je zatražio prijenos</translation>
+<translation id="7089745480771070611">Otvara se na bočnoj ploči</translation>
 <translation id="7090698782953528257">Pomozi mi nacrtati graf funkcije kako bih vizualizirao matematičku jednadžbu i vidio oblik krivulje</translation>
 <translation id="7092087596499105699">Vaš je administrator konfigurirao poveznik sigurnog pristupnika radi zaštite pristupa privatnim web-aplikacijama vaše organizacije. Može upotrijebiti podatke s vašeg poslovnog profila za potvrdu pristupa.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste u postavkama Chromea upravljali dopuštenjima i podacima koji se pohranjuju na web-lokacijama</translation>
@@ -4006,6 +4009,7 @@ Dodatne pojedinosti:
 <translation id="7696107855583699585">Uredite broj poznatog putnika</translation>
 <translation id="7698864304447945242">Želite li ažurirati Google Play usluge za AR?</translation>
 <translation id="7699509138503320152">Prepravi moju e-poruku tako da bude uvjerljivija</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Nijedna vještina}=1{1 vještina (sinkronizirano)}one{# vještina (sinkronizirano)}few{# vještine (sinkronizirano)}other{# vještina (sinkronizirano)}}</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Idi na web-lokaciju <ph name="SITE" /> (nije sigurno)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Pomoć pri pisanju</translation>

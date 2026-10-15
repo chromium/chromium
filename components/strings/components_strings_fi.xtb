@@ -648,6 +648,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2102495993840063010">Android-sovellukset</translation>
 <translation id="2103210856015238101">Kosketusnäytöllä täytettävissä olevat kanta-asiakaskortit avattu koko näytön korkeudella.</translation>
 <translation id="2104739941682874393">Parannettu automaattinen täyttö tulkitsee lomakkeita paremmin ja voi täyttää ne automaattisesti nopeammin</translation>
+<translation id="2105237910269166838">Kysy tästä sivusta</translation>
 <translation id="2107021941795971877">Tulostustuet</translation>
 <translation id="2108755909498034140">Käynnistä tietokone uudelleen.</translation>
 <translation id="2109845311767915560">Jaettu välilehtiryhmä</translation>
@@ -664,6 +665,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2126374524350484896">PDF-luontiohjelma:</translation>
 <translation id="2127090458081644412">Salasana tallennettu tälle laitteelle</translation>
 <translation id="2127747486437921899">Kursivoitu</translation>
+<translation id="2129163794581571479">Hyödyntää Geminin henkilökohtaista älyä. Pyynnöt, sivujen otsikot ja URL-osoitteet voidaan tarkistaa parannetun automaattisen täytön kehittämiseksi. <ph name="BEGIN_LINK" />Muuta asetuksia<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">"Ota maksujen automaattinen täyttö käyttöön" avattu koko näytön kokoisena.</translation>
@@ -1054,6 +1056,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2734797989819862638">Älä kopioi</translation>
 <translation id="2738771556149464852">Ei tämän jälkeen</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ei yhtään}=1{1 taito}other{# taitoa}}</translation>
 <translation id="2757727729385895652">Ladataan <ph name="COUNT" /> tiedostoa Google Driveen</translation>
 <translation id="2759299890026163685">Varmista, että sinulla on vakaa internetyhteys, ennen kuin yrität uudelleen</translation>
 <translation id="2759825833388495838">täyttää salasanojasi sovelluksessa: <ph name="APP_NAME" /></translation>
@@ -1574,6 +1577,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Jos näet tämän usein, kokeile näitä <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Päivitetty versio</translation>
 <translation id="3659521826520353662">Millä järjestelmänvalvojan määrittämillä verkkosivustoilla käydään ja milloin: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Hyödyntää Geminin henkilökohtaista älyä. <ph name="BEGIN_LINK" />Muuta asetuksia<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Hae lisää ostovaihtoehtoja muista tätä tuotetta myyvistä kaupoista.</translation>
 <translation id="3664782872746246217">Avainsanat:</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -1594,6 +1598,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Valitse maksutapa</translation>
 <translation id="3698353241727597930">Järjestelmänvalvoja on määrittänyt, että <ph name="FILES" /> tallennetaan yrityksen ylläpitämään tallennustilaan (<ph name="CLOUD_STORAGE" />). Poistettavia tiedostoja saatetaan seurata, tarkistaa ja säilyttää.</translation>
 <translation id="3698629142018988477">Luo sivusto ‑painike, aktivoi luodaksesi uusi sivusto nopeasti Google Sitesissa</translation>
+<translation id="3698708128812719147">Paina Ctrl-näppäintä kahdesti missä tahansa verkossa, niin voit hakea ja täyttää lisää tietoja</translation>
 <translation id="3700094625653511150">Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry tänne: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Käytät sormenjälkeä salasanojen täyttämiseen</translation>
 <translation id="3701427423622901115">Palautus hyväksyttiin.</translation>
@@ -1897,6 +1902,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4185037616931963178">Päivitä korjausnumero turvallisesti</translation>
 <translation id="4186035307311647330">Lopeta hinnan seuraaminen</translation>
 <translation id="4191334393248735295">Pituus</translation>
+<translation id="4192770747482479191">Paina ⌘ kahdesti missä tahansa verkossa, niin voit hakea ja täyttää lisätietoja</translation>
 <translation id="4195459680867822611">Katso Chromen vinkkejä ‑painike, aktivoi katsoaksesi lisätietoa Chromen ominaisuuksista</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4196861286325780578">&amp;Toista siirto</translation>
@@ -2845,6 +2851,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="573974402615125334">Synkronoi historia ja välilehdet, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="5740911612628596808">Kirjekuori C9</translation>
 <translation id="574392208103952083">Keskivahva</translation>
+<translation id="5744350700955456407">Parannettu automaattinen täyttö voi nyt löytää ja täyttää tietoja (esim. tilausnumeroita ja lentojen vahvistuskoodeja) sovelluksista, kuten Gmailista ja Kuvista</translation>
 <translation id="5745586894920491759">Chrome käsittelee sivujen otsikoita ja URL-osoitteita pilvessä</translation>
 <translation id="5745733273847572235">Saa pyytää sijaintiasi</translation>
 <translation id="5750869797196646528">Käsien seuranta</translation>
@@ -3624,6 +3631,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7083258188081898530">Lokero 9</translation>
 <translation id="70846382339153529">OpenDocument-tekstitiedosto</translation>
 <translation id="7086090958708083563">Käyttäjä pyysi lataamista</translation>
+<translation id="7089745480771070611">Avautuu sivupaneelissa</translation>
 <translation id="7090698782953528257">Auta minua piirtämään funktion kuvaaja, jotta voin visualisoida matemaattisen yhtälön ja nähdä käyrän muodon</translation>
 <translation id="7092087596499105699">Järjestelmänvalvoja on määrittänyt suojatun yhdyskäytäväliittimen suojaamaan pääsyä organisaation yksityisiin verkkosovelluksiin. Se voi käyttää työprofiilisi dataa pääsyn vahvistamiseen.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit ylläpitää sivustoille tallennettuja lupia ja dataa Chromen asetuksista</translation>
@@ -4008,6 +4016,7 @@ Lisätietoja:
 <translation id="7696107855583699585">Muokkaa "known traveler number" ‑numeroa</translation>
 <translation id="7698864304447945242">Päivitetäänkö Google Play Services for AR?</translation>
 <translation id="7699509138503320152">Kirjoita sähköposti uudelleen vakuuttavammaksi</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ei yhtään}=1{1 taito (synkronoitu)}other{# taitoa (synkronoitu)}}</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Siirry sivustoon <ph name="SITE" /> (tämä ei ole turvallista)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Auta minua kirjoittamaan</translation>

@@ -268,6 +268,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1177863135347784049">Po meri</translation>
 <translation id="1178093605842850860">Dovoljeno branje in spreminjanje tega spletnega mesta</translation>
 <translation id="1178357842179817577">Ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov.<ph name="END_BOLD" /> Google na začetku novega klepeta uporabi vsebino in URL odprtega zavihka. To nastavitev lahko kadar koli spremenite.</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="117916940443676133">Vaš varnostni ključ ni zaščiten s kodo PIN. Če želite upravljati podatke za prijavo, naprej ustvarite kodo PIN.</translation>
 <translation id="1179400851034021914">Številka IBAN ni veljavna</translation>
@@ -702,6 +703,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1535753739390684432">Branje določenega besedila na glas. Najprej na dnu zaslona izberite ikono storitve Izberite in poslušajte, nato označite besedilo.</translation>
 <translation id="1536754031901697553">Prekinjanje povezave ...</translation>
 <translation id="1536883206862903762">S tem boste onemogočili razširitve in ponastavili nastavitve na varne privzete nastavitve. Zavihki, datoteke in piškotki bodo ohranjeni. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov.<ph name="END_BOLD_1" /> Google na začetku novega klepeta uporabi vsebino in URL odprtega zavihka. To nastavitev lahko kadar koli spremenite. <ph name="BEGIN_BOLD_2" />Podatki vaše organizacije so zasebni in varni.<ph name="END_BOLD_2" /> Ne bodo se uporabljali za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="1537254971476575106">Celozaslonska lupa</translation>
 <translation id="1538808328818992871">Vsebovati mora vsaj toliko znakov: <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Spletnim mestom ni dovoljeno preglasiti vnosa s tipkovnico</translation>
@@ -729,6 +731,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1552752544932680961">Upravljanje razširitve</translation>
 <translation id="1553538517812678578">neomejeno</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Preberite več<ph name="LINK_END" /> o storitvi Microsoft 365 v Chromebooku.</translation>
+<translation id="1554343363646356023">Novo &amp;izolirano okno</translation>
 <translation id="1554640914375980459">Utripanje zaslona ob prejemu obvestil. Obveščanje z utripanjem uporabljajte previdno, če ste občutljivi na svetlobo.</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1556127816860282890">Dejavnost v ozadju in nekateri vizualni učinki (denimo gladko drsenje) bodo morda omejeni.</translation>
@@ -1907,6 +1910,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2457246892030921239"><ph name="APP_NAME" /> želi kopirati datoteke z nosilca <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Trenutno v kanalu <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Posodobite račun, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov. Google na začetku novega klepeta uporabi vsebino in URL odprtega zavihka. To nastavitev lahko kadar koli spremenite. Podatki vaše organizacije so zasebni in varni. Ne bodo se uporabljali za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="2459703812219683497">Zaznana je bila koda za aktiviranje</translation>
 <translation id="2459706890611560967">Nadaljuj predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Deljenje posnetka zaslona z drugimi</translation>
@@ -3168,6 +3172,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3390740059150071453">Pogled levo</translation>
 <translation id="3393554941209044235">Chromova analiza dokumentov</translation>
 <translation id="3394072120086516913">Osebni računalnik v žičnem omrežju, naprava za predvajanje v omrežju Wi-Fi</translation>
+<translation id="3394561494170561143">Novi izolirani &amp;zavihek</translation>
 <translation id="3394850431319394743">Dovoljena uporaba identifikatorjev za predvajanje zaščitene vsebine</translation>
 <translation id="339722927132407568">Zmrzne</translation>
 <translation id="3399432415385675819">Obvestila bodo onemogočena</translation>
@@ -6215,6 +6220,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5724723163580775373">Velik fokus</translation>
 <translation id="5725112283692663422">Pošljite povratne informacije o ustvarjanju teme z umetno inteligenco</translation>
 <translation id="5727728807527375859">Razširitve, aplikacije in teme lahko škodujejo računalniku. Ali ste prepričani, da želite nadaljevati?</translation>
+<translation id="5727872803091928075">Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov. Google na začetku novega klepeta uporabi vsebino in URL odprtega zavihka. To nastavitev lahko kadar koli spremenite.</translation>
 <translation id="5728072125198221967">Povezane Googlove storitve</translation>
 <translation id="5729712731028706266">&amp;Pogled</translation>
 <translation id="5731247495086897348">&amp;Prilepi in nadaljuj</translation>
@@ -7044,6 +7050,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6370021412472292592">Manifesta ni bilo mogoče naložiti.</translation>
 <translation id="6370551072524410110">tipka za iskanje + tipka Shift + vračalka</translation>
 <translation id="637135143619858508">Velik razmik</translation>
+<translation id="6372413553057593904">Neaktiven zavihek v oknu »<ph name="WINDOW_TITLE" />«</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="637642201764944055">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Linux. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
@@ -7362,6 +7369,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
 <translation id="6613231539539868591">Trajni podatki</translation>
 <translation id="6613267708691765962">Iskanje zlonamerne programske opreme …</translation>
+<translation id="6614219106064338118">Začni klepet</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6616000047939888167">Ponudi Prevajalnik Google za spletna mesta in PDF-je v drugih jezikih</translation>
 <translation id="6618013221808317456">Spletnim mestom ni dovoljena uporaba optimizacije za JavaScript</translation>
@@ -9745,6 +9753,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8410133743809404768">V naslovni vrstici lahko iščete s »@history« in na strani »Zgodovina«</translation>
 <translation id="8411043186249152291">celozaslonski način</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Veljajo <ph name="BEGIN_LINK1" />Googlovi pogoji<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />obvestilo o zasebnosti za aplikacije Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Raziščite kar koli</translation>

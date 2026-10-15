@@ -268,6 +268,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1177863135347784049">Vlastní</translation>
 <translation id="1178093605842850860">Má povoleno číst a měnit tento web</translation>
 <translation id="1178357842179817577">Chrání vás před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Pro relevantnější odpovědi se sdílí karty.<ph name="END_BOLD" /> Google používá obsah a adresu URL karty otevřené při zahájení nového chatu. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="117916940443676133">Váš bezpečnostní klíč není chráněn kódem PIN. Chcete-li spravovat přihlašovací údaje, nejdříve nastavte PIN.</translation>
 <translation id="1179400851034021914">Číslo IBAN není platné</translation>
@@ -701,6 +702,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1535753739390684432">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text.</translation>
 <translation id="1536754031901697553">Odpojování...</translation>
 <translation id="1536883206862903762">Tímto deaktivujete rozšíření a resetujete nastavení na bezpečné výchozí hodnoty. Karty, soubory a cookies zůstanou zachovány. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Pro relevantnější odpovědi se sdílí karty.<ph name="END_BOLD_1" /> Google používá obsah a adresu URL karty otevřené při zahájení nového chatu. Toto nastavení můžete kdykoli změnit. <ph name="BEGIN_BOLD_2" />Data vaší organizace jsou soukromá a zabezpečená.<ph name="END_BOLD_2" /> Nepoužívají se k vylepšování modelů generativní umělé inteligence.</translation>
 <translation id="1537254971476575106">Zvětšení obrazovky</translation>
 <translation id="1538808328818992871">Musí mít nejméně tento počet znaků: <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Nepovolovat webům přepisovat vstup z klávesnice</translation>
@@ -728,6 +730,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1552752544932680961">Správa rozšíření</translation>
 <translation id="1553538517812678578">neomezené</translation>
 <translation id="1553947773881524342">Přečtěte si <ph name="LINK_BEGIN" />další informace<ph name="LINK_END" /> o sadě Microsoft 365 na Chromebooku.</translation>
+<translation id="1554343363646356023">Nové &amp;izolované okno</translation>
 <translation id="1554640914375980459">Při přijetí oznámení zablikat obrazovkou. Pokud jste citliví na světlo, používejte světelná oznámení opatrně.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556127816860282890">Aktivita na pozadí a některé vizuální efekty, například plynulé posouvání, mohou být omezeny.</translation>
@@ -1895,6 +1898,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2457246892030921239">Aplikace <ph name="APP_NAME" /> chce zkopírovat souboru ze svazku <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Aktuální kanál: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Aktualizovat účet, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Pro relevantnější odpovědi se sdílí karty. Google používá obsah a adresu URL karty otevřené při zahájení nového chatu. Toto nastavení můžete kdykoli změnit. Data vaší organizace jsou soukromá a zabezpečená. Nepoužívají se k vylepšování modelů generativní umělé inteligence.</translation>
 <translation id="2459703812219683497">Byl zjištěn aktivační kód</translation>
 <translation id="2459706890611560967">Obnovit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Sdílet snímek obrazovky</translation>
@@ -3154,6 +3158,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3390740059150071453">Podívejte se doleva</translation>
 <translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
 <translation id="3394072120086516913">Počítač je připojen kabelem a streamovací zařízení je na Wi-Fi</translation>
+<translation id="3394561494170561143">Nová izolovaná &amp;karta</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
 <translation id="339722927132407568">Zamrzá</translation>
 <translation id="3399432415385675819">Oznámení budou zakázána</translation>
@@ -6195,6 +6200,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5724723163580775373">Velký výběr</translation>
 <translation id="5725112283692663422">Odeslat zpětnou vazbu k vytváření motivů pomocí umělé inteligence</translation>
 <translation id="5727728807527375859">Rozšíření, aplikace nebo motivy mohou poškodit váš počítač. Chcete pokračovat?</translation>
+<translation id="5727872803091928075">Pro relevantnější odpovědi se sdílí karty. Google používá obsah a adresu URL karty otevřené při zahájení nového chatu. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
 <translation id="5729712731028706266">&amp;Zobrazit</translation>
 <translation id="5731247495086897348">Vl&amp;ožit a přejít</translation>
@@ -7023,6 +7029,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6370021412472292592">Načtení manifestu se nezdařilo.</translation>
 <translation id="6370551072524410110">hledat + shift + backspace</translation>
 <translation id="637135143619858508">Velká</translation>
+<translation id="6372413553057593904">Neaktivní karta v okně <ph name="WINDOW_TITLE" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="637642201764944055">Po prosinci 2022 již na zařízeních s Linuxem nebude možné otevírat staré verze aplikací pro Chrome. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
@@ -7339,6 +7346,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
 <translation id="6613231539539868591">Uložená data</translation>
 <translation id="6613267708691765962">Vyhledávání malwaru…</translation>
+<translation id="6614219106064338118">Zahájit chat</translation>
 <translation id="6615455863669487791">Ukázat</translation>
 <translation id="6616000047939888167">U webů a souborů PDF v jiných jazycích nabízet Překladač Google</translation>
 <translation id="6618013221808317456">Nepovolovat webům používat optimalizaci JavaScriptu</translation>
@@ -9721,6 +9729,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8410133743809404768">Můžete vyhledávat na adresním řádku pomocí slova @history a také na stránce Historie</translation>
 <translation id="8411043186249152291">celá obrazovka</translation>
 <translation id="8412136526970428322">Povoleno oprávnění <ph name="PERMISSION" /> a další (<ph name="COUNT" />)</translation>
+<translation id="8413685856004704642">Platí <ph name="BEGIN_LINK1" />smluvní podmínky společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />upozornění ve věci ochrany soukromí v aplikacích s Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Když navštívíte nějaký web, Chrome odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>
 <translation id="8414396119627470038">Přihlaste se k webu <ph name="SITE_ETLD_PLUS_ONE" /> pomocí účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Prozkoumejte cokoli</translation>

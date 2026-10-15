@@ -268,6 +268,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178093605842850860">Dozvoljeno joj je da čita i mijenja web lokaciju</translation>
 <translation id="1178357842179817577">Štiti vas od opasnih web lokacija, preuzimanja i ekstenzija</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Kartice se dijele radi relevantnijih odgovora.<ph name="END_BOLD" /> Google koristi sadržaj i URL otvorene kartice kada pokrenete novi chat. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="117916940443676133">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje podacima za prijavu, najprije kreirajte PIN.</translation>
 <translation id="1179400851034021914">IBAN nije važeći</translation>
@@ -702,6 +703,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1535753739390684432">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst.</translation>
 <translation id="1536754031901697553">Prekidanje veze…</translation>
 <translation id="1536883206862903762">Ovim će se onemogućiti ekstenzije i postavke vratiti na sigurne zadane. Zadržat će se kartice, fajlovi i kolačići. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Kartice se dijele radi relevantnijih odgovora.<ph name="END_BOLD_1" /> Google koristi sadržaj i URL otvorene kartice kada pokrenete novi chat. Možete promijeniti ovu postavku bilo kada. <ph name="BEGIN_BOLD_2" />Podaci vaše organizacije su privatni i zaštićeni.<ph name="END_BOLD_2" /> Neće se koristiti za poboljšavanje generativnih AI modela.</translation>
 <translation id="1537254971476575106">Povećalo za cijeli ekran</translation>
 <translation id="1538808328818992871">Broj znakova mora biti najmanje <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Nemoj dozvoliti web lokacijama da nadjačaju unos tastaturom</translation>
@@ -729,6 +731,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1552752544932680961">Upravljajte ekstenzijom</translation>
 <translation id="1553538517812678578">neograničeno</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /> o softveru Microsoft 365 na Chromebooku.</translation>
+<translation id="1554343363646356023">Novi &amp;izolirani prozor</translation>
 <translation id="1554640914375980459">Ekran blica kada primite obavještenje. Oprezno koristite obavještenja blicanjem ako ste osjetljivi na svjetlost.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1556127816860282890">Aktivnost u pozadini i neki vizuelni efekti poput glatkog klizanja mogu biti ograničeni</translation>
@@ -1905,6 +1908,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> želi kopirati fajlove s uređaja <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Trenutno na <ph name="CHANNEL_NAME" /> kanalu</translation>
 <translation id="2458379781610688953">Ažurirajte račun, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Kartice se dijele radi relevantnijih odgovora. Google koristi sadržaj i URL otvorene kartice kada pokrenete novi chat. Možete promijeniti ovu postavku bilo kada. Podaci vaše organizacije su privatni i zaštićeni. Neće se koristiti za poboljšavanje generativnih AI modela.</translation>
 <translation id="2459703812219683497">Otkriven je kôd za aktivaciju</translation>
 <translation id="2459706890611560967">Nastavljanje emitiranja kartice na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Podijeli snimak ekrana</translation>
@@ -3166,6 +3170,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3390740059150071453">Pogled ulijevo</translation>
 <translation id="3393554941209044235">Chromeova analiza dokumenta</translation>
 <translation id="3394072120086516913">Računar je povezan, a uređaj za emitiranje na WiFi mreži</translation>
+<translation id="3394561494170561143">Nova izolirana &amp;kartica</translation>
 <translation id="3394850431319394743">Dozvoljeno je korištenje identifikatora radi reproduciranja zaštićenog sadržaja</translation>
 <translation id="339722927132407568">Zamrzava</translation>
 <translation id="3399432415385675819">Obavještenja će biti onemogućena</translation>
@@ -6212,6 +6217,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5724723163580775373">Široki fokus</translation>
 <translation id="5725112283692663422">Pošaljite povratne informacije o kreiranju teme pomoću AI-ja</translation>
 <translation id="5727728807527375859">Ekstenzije, aplikacije i teme mogu oštetiti vaš računar. Jeste li sigurni da želite nastaviti?</translation>
+<translation id="5727872803091928075">Kartice se dijele radi relevantnijih odgovora. Google koristi sadržaj i URL otvorene kartice kada pokrenete novi chat. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
 <translation id="5729712731028706266">&amp;Prikaz</translation>
 <translation id="5731247495086897348">Za&amp;lijepi i kreni</translation>
@@ -7041,6 +7047,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6370021412472292592">Učitavanje deklaracije nije uspjelo.</translation>
 <translation id="6370551072524410110">tipka za pretraživanje + Shift + Backspace</translation>
 <translation id="637135143619858508">Razmaknuto</translation>
+<translation id="6372413553057593904">Neaktivna kartica u prozoru "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="637642201764944055">Stare verzije Chromeovih aplikacija se neće moći otvarati na Linux uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
@@ -7357,6 +7364,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
 <translation id="6613231539539868591">Trajni podaci</translation>
 <translation id="6613267708691765962">Skeniranje radi provjere prisustva zlonamjernog softvera…</translation>
+<translation id="6614219106064338118">Pokreni chat</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6616000047939888167">Ponudi Google Prevodioca za web lokacije i PDF-ove na drugim jezicima</translation>
 <translation id="6618013221808317456">Nemoj dozvoliti web lokacijama da koriste optimizaciju JavaScripta</translation>
@@ -9740,6 +9748,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8410133743809404768">Možete pretraživati u traci za adresu pomoću oznake "@history", kao i na stranici Historija</translation>
 <translation id="8411043186249152291">prikaz preko cijelog ekrana</translation>
 <translation id="8412136526970428322">Dozvoljeno: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Primjenjuju se <ph name="BEGIN_LINK1" />Googleovi Uslovi<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Obavještenje o privatnosti za aplikacije Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Kada posjetite neku web lokaciju, Chrome šalje prikriveni dio URL-a Googleu putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija učini nešto sumnjivo, šalju se i puni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="8414396119627470038">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /> pomoću <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Istražite bilo šta</translation>

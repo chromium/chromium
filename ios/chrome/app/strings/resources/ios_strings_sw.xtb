@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Huenda baadhi ya maudhui yasifae kwa kila mtu.</translation>
 <translation id="1601560923496285236">Tekeleza</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{Anwani 1}other{Anwani #}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Kamilisha jukumu 1 ili upande kiwango}other{Kamilisha majukumu {count} ili upande kiwango}}</translation>
 <translation id="1605405588277479165">Kimezimwa - Haipendekezwi</translation>
 <translation id="1605658421715042784">Nakili Picha</translation>
 <translation id="1606899876897213121">Funga muhtasari wa shughuli za hivi majuzi</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Inahitajika</translation>
 <translation id="3914640181019354363">Kutambua anwani</translation>
 <translation id="391904960191284041">Maoni kuhusu bidhaa</translation>
+<translation id="3920165976616657606">Umekamilisha jukumu la "Gundua Kipengele cha Kuvinjari Salama Kilichoboreshwa"!</translation>
 <translation id="3921585859122905677">Nafasi ya Sehemu ya Anwani</translation>
 <translation id="3922185497376658606">Pakia mapema kurasa za wavuti</translation>
 <translation id="3926703470020109118">Imeacha Kupakua</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Unaweza kutelezesha kidole kwenye ukingo ili urudi nyuma au uende mbele.</translation>
 <translation id="4460014764210899310">Ondoa kwenye kundi</translation>
 <translation id="446314443268698477">Nunua, tafsiri na utambue unachokiona kwenye kamera au picha zako.</translation>
+<translation id="4465941170695753889">Bonyeza na ushikilie ili ufungue kikundi cha vichupo</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Ungependa kushughulikia jambo gani?</translation>
 <translation id="4471472356135655769">Imeshindwa kuhamisha manenosiri</translation>

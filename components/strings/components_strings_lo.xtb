@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">ໂປຣແກຣມສ້າງ PDF:</translation>
 <translation id="2127090458081644412">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນອຸປະກອນເຄື່ອງນີ້</translation>
 <translation id="2127747486437921899">ໂຕອຽງ</translation>
+<translation id="2129163794581571479">ຂັບເຄື່ອນໂດຍ Gemini ພ້ອມກັບ Personal Intelligence. ລະບົບອາດກວດສອບຄຳຮ້ອງຂໍ, ຊື່ໜ້າ ແລະ URL ຂອງທ່ານເພື່ອປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ. <ph name="BEGIN_LINK" />ຈັດການການຕັ້ງຄ່າ<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">ແມ່ແບບທີ່ທ່ານລະບຸອາດຈະນຳໃຊ້ບໍ່ໄດ້ຍ້ອນບໍ່ໄດ້ຕັ້ງຄ່ານະໂຍບາຍ DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">ເປີດແຜງ “ເປີດການນຳໃຊ້ການຕື່ມຂໍ້ມູນການຈ່າຍເງິນອັດຕະໂນມັດ” ເຕັມຄວາມສູງແລ້ວ.</translation>
@@ -1575,6 +1576,7 @@
 <translation id="3655670868607891010">ຖ້າ​​ທ່ານ​ເຫັນອັນນີ້ເລື້ອຍໆ​, ລອງ <ph name="HELP_LINK" /> ​ເຫຼົ່າ​ນີ້.</translation>
 <translation id="3658742229777143148">ການ​ດັດ​ແກ້</translation>
 <translation id="3659521826520353662">ຜູ້ເບິ່ງແຍງລະບົບກຳນົດວ່າຜູ້ໃຊ້ສາມາດເຂົ້າເບິ່ງເວັບໄຊໃດ ແລະ ເມື່ອໃດ: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">ຂັບເຄື່ອນໂດຍ Gemini ພ້ອມກັບ Personal Intelligence. <ph name="BEGIN_LINK" />ຈັດການການຕັ້ງຄ່າ<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">ຊອກຫາຕົວເລືອກການຊື້ເພີ່ມເຕີມຈາກຮ້ານຄ້າອື່ນໆທີ່ຂາຍຜະລິດຕະພັນນີ້.</translation>
 <translation id="3664782872746246217">ຄີເວີດ:</translation>
 <translation id="3670030362669914947">ໝາຍເລກ</translation>
@@ -1595,6 +1597,7 @@
 <translation id="3693516565203081475">ເລືອກວິທີການຈ່າຍເງິນ</translation>
 <translation id="3698353241727597930">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ບັນທຶກ <ph name="FILES" /> ໄວ້ໃນບ່ອນຈັດເກັບຂໍ້ມູນ <ph name="CLOUD_STORAGE" /> ທີ່ອົງກອນຂອງທ່ານເປັນຜູ້ຈັດການ. ໄຟລ໌ເຫຼົ່ານີ້ອາດຖືກຕິດຕາມ, ກວດສອບ ແລະ ເກັບຮັກສາໄວ້ເມື່ອທ່ານລຶບອອກ.</translation>
 <translation id="3698629142018988477">ປຸ່ມສ້າງເວັບໄຊ, ເປີດນຳໃຊ້ເພື່ອສ້າງເວັບໄຊໃໝ່ໃນ Google Sites ຢ່າງວ່ອງໄວ</translation>
+<translation id="3698708128812719147">ກົດ Ctrl ສອງເທື່ອຢູ່ບ່ອນໃດກໍໄດ້ຢູ່ເວັບເພື່ອຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="3700094625653511150">ເພື່ອເຊື່ອງຕົວເລືອກຈ່າຍພາຍຫຼັງ, ໃຫ້ໄປຫາ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">ທ່ານກຳລັງໃຊ້ລາຍນິ້ວມືຂອງຕົນເອງເພື່ອຕື່ມຂໍ້ມູນລະຫັດຜ່ານ</translation>
 <translation id="3701427423622901115">ຮັບຮູ້ການຣີເຊັດແລ້ວ.</translation>
@@ -1898,6 +1901,7 @@
 <translation id="4185037616931963178">ອັບເດດໝາຍເລກແກ້ໄຂບັນຫາຜູ້ເດີນທາງຢ່າງປອດໄພ</translation>
 <translation id="4186035307311647330">ເຊົາຕິດຕາມລາຄາ</translation>
 <translation id="4191334393248735295">ຄວາມຍາວ</translation>
+<translation id="4192770747482479191">ກົດ ⌘ ສອງເທື່ອຢູ່ບ່ອນໃດກໍໄດ້ຢູ່ເວັບເພື່ອຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="4195459680867822611">ປຸ່ມເບິ່ງເຄັດລັບໃນການໃຊ້ Chrome, ເປີດນຳໃຊ້ເພື່ອສຶກສາກ່ຽວກັບຄຸນສົມບັດຕ່າງໆຂອງ Chrome</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4196861286325780578">ເຮັດຄືນຄໍາສັ່ງຍ້າຍ</translation>
@@ -2846,6 +2850,7 @@
 <translation id="573974402615125334">ເພື່ອແບ່ງປັນ, ເຂົ້າຮ່ວມ ແລະ ຮ່ວມມືໃນກຸ່ມແຖບ, ໃຫ້ຊິ້ງປະຫວັດ ແລະ ແຖບຂອງທ່ານ</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
+<translation id="5744350700955456407">ຕອນນີ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນສາມາດຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນ ເຊັ່ນ: ໝາຍເລກຄຳສັ່ງຊື້ ແລະ ລະຫັດຢືນຢັນຖ້ຽວບິນຈາກແອັບຕ່າງໆ ເຊັ່ນ: Gmail ແລະ ຮູບພາບ ໄດ້ແລ້ວ</translation>
 <translation id="5745586894920491759">Chrome ຈະປະມວນຜົນຊື່ໜ້າ ແລະ URL ໃນຄລາວ</translation>
 <translation id="5745733273847572235">ສາມາດຂໍສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>

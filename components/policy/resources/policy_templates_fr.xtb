@@ -402,6 +402,15 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
 <translation id="1272798957154751008">Activez la migration des appareils Chromad vers la gestion dans le cloud</translation>
 <translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="1277411517984768103">Autoriser <ph name="BOREALIS_NAME" /> à s'exécuter pour un utilisateur</translation>
+<translation id="1281420319219324116">Cette règle configure le certificat client géré provisionné lorsque <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> est activée.
+
+Le champ <ph name="COMMON_NAME_SOURCE_FIELD" /> spécifie la source du nom commun (CN) de l'objet du certificat :
+
+- S'il n'est pas configuré ou s'il est défini sur <ph name="DEVICE_ID_VALUE" />, le nom commun de l'objet du certificat correspond à l'ID d'appareil virtuel du navigateur géré.
+
+- S'il est défini sur <ph name="COMPUTER_NAME_VALUE" />, le nom commun du sujet du certificat correspond au nom d'hôte de l'appareil.
+
+Cette règle n'a aucun effet si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> est désactivée ou n'est pas définie.</translation>
 <translation id="1285819498003746288">L'API Event.path sera indisponible.</translation>
 <translation id="1290722184971934486">Si cette règle est définie sur <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valeur 2), l'autorisation de gestion des fenêtres est par défaut automatiquement refusée aux sites. Cela limite la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
@@ -784,6 +793,7 @@ Si la règle n'est pas configurée, son comportement est déterminé par la règ
 
       Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1539343118617844331">Scolaire</translation>
+<translation id="154021430160122148">Configurer l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BÊTA)</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1542958897137600427">Activer le provisionnement des certificats client</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
@@ -4882,6 +4892,7 @@ Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
+<translation id="4109107305343689466">Configurer un certificat client géré pour un utilisateur ou un profil</translation>
 <translation id="4112585124048467596">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec <ph name="CHROME_SYNC_NAME" /> ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs <ph name="CHROME_SYNC_NAME" />.
 
       Les types de données actuels pour cette règle sont : "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" et "wifiConfigurations". Ces noms sont sensibles à la casse.
@@ -5649,6 +5660,15 @@ Pour les appareils non gérés, cette règle ne s'applique pas, et les utilisate
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la taille de cache par défaut. L'utilisateur peut modifier ce paramètre via le flag "--disk-cache-size".
 
       Remarque : La valeur spécifiée dans cette règle aide à optimiser divers sous-systèmes de cache dans le navigateur. La consommation totale réelle de tous les caches sur le disque sera ainsi plus élevée, mais dans le même ordre de grandeur que la valeur spécifiée.</translation>
+<translation id="4582488040806837065">Cette règle configure le certificat client géré provisionné lorsque <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> est activée.
+
+Le champ <ph name="COMMON_NAME_SOURCE_FIELD" /> spécifie la source du nom commun (CN) de l'objet du certificat :
+
+- S'il n'est pas configuré ou s'il est défini sur <ph name="PROFILE_ID_VALUE" />, le nom commun de l'objet du certificat correspond à l'ID du profil du navigateur.
+
+- S'il est défini sur <ph name="COMPUTER_NAME_VALUE" />, le nom commun du sujet du certificat correspond au nom d'hôte de l'appareil. Remarque : Si vous définissez cette propriété sur <ph name="COMPUTER_NAME_VALUE" />, une propriété au niveau de l'appareil est utilisée dans un certificat au niveau du profil, ce qui a des implications sur la confidentialité des appareils non gérés ou partagés, car le nom d'hôte de l'appareil sera inclus dans le certificat.
+
+Cette règle n'a aucun effet si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> est désactivée ou n'est pas définie.</translation>
 <translation id="4591366717022345234">Fournir le build Quick Fix aux utilisateurs</translation>
 <translation id="4593391169954484940">Hachage SHA-256 du fichier.</translation>
 <translation id="4594027034164195984">Autoriser les images tierces à afficher une commande d'authentification</translation>
@@ -8594,6 +8614,17 @@ Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
 <translation id="6368011194414932347">Configurer l'URL de la page d'accueil</translation>
 <translation id="6368403635025849609">Autoriser JavaScript sur ces sites</translation>
+<translation id="6368652917086795891">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />.
+
+Cette règle est remplacée par la règle <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Si les deux sont définies, la règle <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> prévaut.
+
+La règle configure l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> via <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, qui doit être une URL valide utilisant le schéma https, redirige vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> et n'inclut pas de nom d'utilisateur ni de mot de passe. Si elle ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte ou navigateur géré.
+
+Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
+
+Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Interdire l'utilisation des API d'IA intégrées.</translation>
 <translation id="6371005337713685988">Paramètres de la fonctionnalité d'ensembles de sites Web associés</translation>
@@ -9126,6 +9157,17 @@ Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</transla
 <translation id="6659877981632400997">Le menu contextuel ne comportera pas d'élément de menu permettant de partager des images avec <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Activer la création de rapports cloud pour un profil géré</translation>
 <translation id="666203515318060501">Autoriser la saisie automatique améliorée sans améliorer les modèles d'IA.</translation>
+<translation id="6663125232571868480">Cette règle est obsolète et n'a aucun effet à partir de M157, car la fonctionnalité <ph name="ALR_FEATURE_NAME" /> a été abandonnée. L'en-tête de requête HTTP <ph name="AL_HEADER_NAME" /> et le getter JavaScript <ph name="JS_GETTER_NAME" /> continuent de fournir la liste complète des langues configurées.
+
+Avant M157, la réduction de l'en-tête de requête HTTP <ph name="AL_HEADER_NAME" /> et du getter JavaScript <ph name="JS_GETTER_NAME" /> était programmée pour des raisons de confidentialité.
+Pour faciliter les tests et assurer la compatibilité, cette règle vous permettait d'activer ou de désactiver la fonctionnalité <ph name="ALR_FEATURE_NAME" />.
+
+Si cette règle était activée ou n'était pas configurée, la fonctionnalité <ph name="ALR_FEATURE_NAME" /> était appliquée via des tests en conditions réelles.
+Si cette règle était désactivée, les tests en conditions réelles ne pouvaient pas activer la fonctionnalité <ph name="ALR_FEATURE_NAME" />.
+
+Pour en savoir plus sur cette fonctionnalité, consultez https://github.com/explainers-by-googlers/reduce-accept-language.
+
+REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
 <translation id="6668559639284945695">Cette règle permet de rétablir l'ancien comportement du champ d'application des cookies.
@@ -9572,6 +9614,7 @@ Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression ho
 <translation id="6953246833109449226">Configurer le comportement en cas de non-concordance des mots de passe en ligne</translation>
 <translation id="695532899547292238">Activer la collecte des journaux d'applis kiosque</translation>
 <translation id="6956272732789158625">Interdire à tous les sites d'utiliser la génération de clé</translation>
+<translation id="6956741245151252020">Configurer un certificat client géré pour le navigateur</translation>
 <translation id="6960996423652450945">Désactiver la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>
 <translation id="6961602002757991199">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Ces instructions empêchent <ph name="PRODUCT_NAME" /> et le navigateur secondaire de s'ouvrir l'un l'autre.
 
@@ -10381,6 +10424,19 @@ Cette règle peut être définie pour l'appareil et pour l'utilisateur. Si elle 
 
 Pour les versions 155 et antérieures, cette règle ne s'applique qu'au niveau de l'appareil.</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
+<translation id="7417697379573574567">Cette règle étant obsolète depuis M157, veuillez utiliser la règle <ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME" /> à la place.
+
+Indique si les utilisateurs peuvent autoriser <ph name="PRODUCT_NAME" /> à utiliser l'IA générative pour mieux comprendre les formulaires et les aider à remplir plus de champs.
+
+0 = Même effet que 1. Avant M153, le paramètre autorisait Google à utiliser les données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide de données pertinentes (y compris les prompts, les entrées, les sorties, les sources et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
@@ -10419,6 +10475,15 @@ Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", le flux <ph nam
 
 Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards. Pour les utilisateurs de la version Enterprise, si cette règle n'est pas configurée, elle est définie par défaut sur "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="7438982301540282785">Automatiser la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7441961773829108385">Configure l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> à laquelle <ph name="PRODUCT_NAME" /> se connecte.
+
+La valeur doit être une URL valide qui utilise le schéma https, redirige vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> et n'inclut pas de nom d'utilisateur ni de mot de passe. Si elle ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte ou navigateur géré.
+
+Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
+
+Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7443356543619955157">Si cette règle est activée, la configuration réseau est appliquée à tous les utilisateurs d'un appareil <ph name="PRODUCT_OS_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="744349502210151344">Par défaut : la disponibilité de XSLT est déterminée par les paramètres par défaut du navigateur et les tests en conditions réelles.</translation>
 <translation id="7446978687387327623">Autoriser les vérifications en temps réel via proxy pour la navigation sécurisée</translation>

@@ -648,6 +648,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2102495993840063010">Mga Android app</translation>
 <translation id="2103210856015238101">Mga loyalty card na available na mapunan kapag pinindot na nakabukas nang buo.</translation>
 <translation id="2104739941682874393">Mas naiintindihan ng pinahusay na autofill ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo</translation>
+<translation id="2105237910269166838">Tungkol sa page</translation>
 <translation id="2107021941795971877">Mga suporta sa pag-print</translation>
 <translation id="2108755909498034140">I-restart ang iyong computer</translation>
 <translation id="2109845311767915560">Naka-share na grupo ng tab</translation>
@@ -1054,6 +1055,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2734797989819862638">Huwag kopyahin</translation>
 <translation id="2738771556149464852">Hindi Pagkatapos</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Wala}=1{1 skill}one{# skill}other{# na skill}}</translation>
 <translation id="2757727729385895652">Nag-a-upload ng <ph name="COUNT" /> (na) file sa Google Drive</translation>
 <translation id="2759299890026163685">Tiyaking stable ang iyong koneksyon sa internet bago subukan ulit</translation>
 <translation id="2759825833388495838">ilagay ang iyong password sa <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="7083258188081898530">Tray 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Hiniling ng user ang pag-upload</translation>
+<translation id="7089745480771070611">Bubukas sa panel sa gilid</translation>
 <translation id="7090698782953528257">Tulungan akong mag-graph ng function para ma-visualize ang mathematical equation at makita ang hugis ng curve</translation>
 <translation id="7092087596499105699">Na-configure ng iyong administrator ang secure gateway connector para protektahan ang access sa mga pribadong web application ng organisasyon mo. Posibleng gumamit ito ng data mula sa iyong profile sa trabaho para i-verify ang access.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab pagkatapos ay ang Enter para pamahalaan ang mga pahintulot at data na naka-store sa lahat ng site sa mga setting ng Chrome</translation>
@@ -4007,6 +4010,7 @@ Mga karagdagang detalye:
 <translation id="7696107855583699585">I-edit ang Known Traveler Number</translation>
 <translation id="7698864304447945242">I-update ang Google Play Services para sa AR?</translation>
 <translation id="7699509138503320152">I-rewrite ang aking email para gawing mas nakakakumbinsi ito</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Wala}=1{1 skill (naka-sync)}one{# skill (naka-sync)}other{# na skill (naka-sync)}}</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Magpatuloy sa <ph name="SITE" /> (hindi ligtas)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Tulungan Akong Magsulat</translation>

@@ -268,6 +268,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178093605842850860">Toestemming om deze site te lezen en te wijzigen</translation>
 <translation id="1178357842179817577">Beschermt je tegen gevaarlijke sites, downloads en extensies</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Tabbladen worden gedeeld voor relevantere antwoorden.<ph name="END_BOLD" /> Als je een nieuw gesprek begint, gebruikt Google de content en URL van je open tabblad. Je kunt deze instelling op elk moment aanpassen.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="117916940443676133">Je beveiligingssleutel is niet beveiligd met een pincode. Maak eerst een pincode als je de inloggegevens wilt beheren.</translation>
 <translation id="1179400851034021914">IBAN is ongeldig</translation>
@@ -701,6 +702,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1536883206862903762">Hiermee zet je extensies uit en zet je de instellingen terug naar veilige standaardwaarden. Tabbladen, bestanden en cookies blijven bewaard. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Tabbladen worden gedeeld voor relevantere antwoorden.<ph name="END_BOLD_1" /> Als je een nieuw gesprek begint, gebruikt Google de content en URL van je open tabblad. Je kunt deze instelling op elk moment aanpassen. <ph name="BEGIN_BOLD_2" />De gegevens van je organisatie zijn privé en beschermd.<ph name="END_BOLD_2" /> De gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
 <translation id="1538808328818992871">Moet minstens <ph name="MIN_LENGTH" /> tekens lang zijn</translation>
 <translation id="1539248305642687917">Niet toestaan dat sites je toetsenbordinvoer overschrijven</translation>
@@ -1896,6 +1898,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil bestanden van <ph name="VOLUME_NAME" /> kopiëren.</translation>
 <translation id="2457842160081795172">Momenteel op het kanaal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Account updaten, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Tabbladen worden gedeeld voor relevantere antwoorden. Als je een nieuw gesprek begint, gebruikt Google de content en URL van je open tabblad. Je kunt deze instelling op elk moment aanpassen. De gegevens van je organisatie zijn privé en beschermd. De gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="2459703812219683497">Activeringscode waargenomen</translation>
 <translation id="2459706890611560967">Tabblad casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
 <translation id="245979889539926662">Een screenshot delen</translation>
@@ -1945,7 +1948,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2484743711056182585">Toegang intrekken</translation>
 <translation id="2484909293434545162">Als een site cookies gebruikt, komt deze hier te staan</translation>
 <translation id="2485394160472549611">De beste keuzes voor jou</translation>
-<translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="2485422356828889247">Verwijderen</translation>
 <translation id="248676429071089168">Swipe omhoog om de pagina omlaag te verplaatsen</translation>
 <translation id="2487067538648443797">Nieuwe bookmark toevoegen</translation>
 <translation id="2487602042876349837"><ph name="VIEW_ONE_ORIENTATION" /> Nu bekijken is <ph name="VIEW_ONE_PERCENT" /> breed, <ph name="VIEW_TWO_ORIENTATION" /> Nu bekijken is <ph name="VIEW_TWO_PERCENT" /> breed.</translation>
@@ -6197,6 +6200,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5724723163580775373">Grote focus</translation>
 <translation id="5725112283692663422">Stuur feedback voor Thema maken met AI</translation>
 <translation id="5727728807527375859">Extensies, applicaties en thema's kunnen schade toebrengen aan je computer. Weet je zeker dat je wilt doorgaan?</translation>
+<translation id="5727872803091928075">Tabbladen worden gedeeld voor relevantere antwoorden. Als je een nieuw gesprek begint, gebruikt Google de content en URL van je open tabblad. Je kunt deze instelling op elk moment aanpassen.</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
 <translation id="5729712731028706266">&amp;Weergave</translation>
 <translation id="5731247495086897348">Pla&amp;kken en gaan</translation>
@@ -7338,6 +7342,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
 <translation id="6613231539539868591">Persistente gegevens</translation>
 <translation id="6613267708691765962">Scannen op malware...</translation>
+<translation id="6614219106064338118">Chat starten</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="6616000047939888167">Google Translate aanbieden voor websites en pdf's in andere talen</translation>
 <translation id="6618013221808317456">Niet toestaan dat sites JavaScript-optimalisatie gebruiken</translation>
@@ -9720,6 +9725,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8410133743809404768">Je kunt zoeken in de adresbalk met @geschiedenis. Je kunt ook naar de pagina Geschiedenis gaan.</translation>
 <translation id="8411043186249152291">volledig scherm</translation>
 <translation id="8412136526970428322">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere toegestaan</translation>
+<translation id="8413685856004704642">De <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />Privacyverklaring van Gemini Apps<ph name="END_LINK2" /> zijn van toepassing.</translation>
 <translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>
 <translation id="8414396119627470038">Log in bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Alles opzoeken</translation>

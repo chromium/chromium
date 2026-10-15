@@ -1020,6 +1020,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3977512764614765090">Akumulator je <ph name="PERCENTAGE" />-% napolnjen in se polni.</translation>
 <translation id="3978162107953847778">Vstavite povezave z mest, kot sta zgodovina brskanja in Google Drive. Prav tako lahko vstavite emodžije, slikovne datoteke in drugo.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Želite preklopiti zvočni izhod?</translation>
+<translation id="3983903378684256134">Steam v Chromebooku</translation>
 <translation id="3984536049089846927">Naslednja stran</translation>
 <translation id="3986082989454912832">Odgovor</translation>
 <translation id="3990002060657467458">Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona.</translation>
@@ -1639,6 +1640,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5727460725221669831">Če ste pozabili geslo ali nedavno spremenili geslo za račun Google, poskusite obnoviti tega uporabnika.</translation>
 <translation id="5733630091161562207">Pozdravno obvestilo</translation>
 <translation id="573413375004481890">Ta naprava ne podpira vseh zaslonov, zato je bila z enim prekinjena povezava</translation>
+<translation id="5739548907438839901">Prostor na disku (<ph name="SIZE" />) je sproščen.</translation>
 <translation id="574392208103952083">Srednji</translation>
 <translation id="5745612484876805746">Nočna svetloba se samodejno vklopi ob sončnem zahodu</translation>
 <translation id="5749214722697335450">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste vklopili nastavitev dodatne dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google. <ph name="BEGIN_LINK1" />Preberite več o meritvah<ph name="BEGIN_LINK1_END" />Več o tem<ph name="END_LINK1" />.</translation>
@@ -2217,6 +2219,7 @@ Nova namestitev</translation>
 <translation id="7413851974711031813">Pritisnite Escape, če želite zapreti</translation>
 <translation id="7416471219712049036">Shranjevanje trenutne strani</translation>
 <translation id="742594950370306541">Kamera je v uporabi.</translation>
+<translation id="7430466159639897874">Imate neuporabljen prostor na disku (<ph name="SIZE" />), dodeljen zastareli funkcij »Steam v Chromebooku«.</translation>
 <translation id="743058460480092004">Kamera in mikrofon sta v uporabi.</translation>
 <translation id="7433708794692032816">Vstavite pametno kartico, če želite še naprej uporabljati napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Iskanje Google</translation>
@@ -2358,6 +2361,7 @@ Nova namestitev</translation>
 <translation id="7781335840981796660">Odstranjeni bodo vsi uporabniški računi in lokalni podatki.</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7787212146956232129">Vhodne in izhodne naprave so nastavljene. To lahko spremenite v nastavitvah.</translation>
+<translation id="7790757511772316441">Nezasedeni prostor na disku</translation>
 <translation id="7792590255364786396">Vidno</translation>
 <translation id="7796735576426975947">Novo obvestilo je skrito</translation>
 <translation id="7798302898096527229">Za preklic pritisnite tipko za iskanje ali Shift.</translation>

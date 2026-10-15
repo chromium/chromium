@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2103210856015238101">Картичките за лојалност достапни за пополнување на допир се отворени на целосна висина.</translation>
 <translation id="2104739941682874393">„Подобрено автоматско пополнување“ подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас</translation>
+<translation id="2105237910269166838">Прашајте нешто за страницава</translation>
 <translation id="2107021941795971877">Поддршка на печатењето</translation>
 <translation id="2108755909498034140">Рестартирајте го компјутерот</translation>
 <translation id="2109845311767915560">споделената група картички</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Не копирај</translation>
 <translation id="2738771556149464852">Не отпосле</translation>
 <translation id="2740531572673183784">Во ред</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Нема}=1{1 вештина}one{# вештина}other{# вештини}}</translation>
 <translation id="2757727729385895652">Се прикачуваат <ph name="COUNT" /> датотеки во Google Drive</translation>
 <translation id="2759299890026163685">Пред да се обидете повторно, погрижете се да имате стабилна интернет-врска</translation>
 <translation id="2759825833388495838">пополнете ја лозинката на <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">Фиока 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Побарано е прикачување од корисникот</translation>
+<translation id="7089745480771070611">Се отвора во страничната табла</translation>
 <translation id="7090698782953528257">Помогни ми да нацртам графикон на функција за да ја визуализирам математичката равенка и да го видам обликот на кривата</translation>
 <translation id="7092087596499105699">Администраторот го конфигурирал конекторот за безбеден премин за да го заштити пристапот до приватните веб-апликации на вашата организација. Може да користи податоци од вашиот работен профил за да го потврди пристапот.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">Изменете го бројот на познат патник</translation>
 <translation id="7698864304447945242">Да се ажурираат „Услуги на Google Play за AR“?</translation>
 <translation id="7699509138503320152">Преработи ја мојата е-порака за да биде поубедлива</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Нема}=1{1 вештина (синхронизирана)}one{# вештина (синхронизирани)}other{# вештина (синхронизирани)}}</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Продолжете до <ph name="SITE" /> (небезбедно)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Помогни ми да напишам</translation>

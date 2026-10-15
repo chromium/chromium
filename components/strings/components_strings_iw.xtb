@@ -490,6 +490,7 @@
 <translation id="18139523105317219">‏שם צד EDI</translation>
 <translation id="1816436748874040213">האתר יכול לבקש הרשאה לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="1816707915923025275">‏צריך להקליד ‎@history כדי לחפש בהיסטוריית הגלישה</translation>
+<translation id="1816771466809215784">‏כדי למלא את הפרטים באופן אוטומטי בקופה, צריך לשמור את שם בעל הכרטיס הזה ב-Google Wallet</translation>
 <translation id="1817364650920811003">‏תפקיד: טיפ ל-Chrome. תווית הנגישות: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">הורדות אוטומטיות</translation>
 <translation id="1821930232296380041">הבקשה או הפרמטרים של הבקשה אינם חוקיים</translation>
@@ -647,6 +648,7 @@
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
 <translation id="2103210856015238101">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בגובה המלא של המסך.</translation>
 <translation id="2104739941682874393">התכונה "מילוי אוטומטי משופר" מבינה את הטפסים טוב יותר ויכולה למלא אותם אוטומטית מהר יותר</translation>
+<translation id="2105237910269166838">שאלה לגבי הדף הזה</translation>
 <translation id="2107021941795971877">תמיכות להדפסה</translation>
 <translation id="2108755909498034140">אתחול המחשב</translation>
 <translation id="2109845311767915560">קבוצת כרטיסיות משותפת</translation>
@@ -1053,6 +1055,7 @@
 <translation id="2734797989819862638">לא להעתיק</translation>
 <translation id="2738771556149464852">לא אחרי</translation>
 <translation id="2740531572673183784">אישור</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{אין}=1{סקיל אחד}one{‫# סקילים}two{‫# סקילים}other{‫# סקילים}}</translation>
 <translation id="2757727729385895652">‏מתבצעת העלאה של <ph name="COUNT" /> קבצים ל-Google Drive</translation>
 <translation id="2759299890026163685">לפני שמנסים שוב, צריך לוודא שיש חיבור יציב לאינטרנט</translation>
 <translation id="2759825833388495838">למלא את הסיסמה שלך באפליקציה <ph name="APP_NAME" /></translation>
@@ -3627,6 +3630,7 @@ Del</translation>
 <translation id="7083258188081898530">מגש 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">ההעלאה התבקשה על ידי המשתמש</translation>
+<translation id="7089745480771070611">התוצאות ייפתחו בחלונית הצד</translation>
 <translation id="7090698782953528257">תעזור לי ליצור גרף של פונקציה כדי להמחיש את המשוואה המתמטית ולראות את צורת העקומה</translation>
 <translation id="7092087596499105699">כדי להגן על אפליקציות האינטרנט הפרטיות של הארגון, האדמין הגדיר את המחבר של שער הגישה המאובטח. כדי לאמת את הגישה, יכול להיות שהאפליקציה תשתמש בנתונים מפרופיל העבודה שלך.</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
@@ -4011,6 +4015,7 @@ Del</translation>
 <translation id="7696107855583699585">‏עריכת מספר ה-KTN</translation>
 <translation id="7698864304447945242">‏לעדכן את Google Play Services למציאות רבודה?</translation>
 <translation id="7699509138503320152">תשכתב את האימייל שלי כך שהוא יהיה משכנע יותר</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{אין}=1{סקיל אחד (מסונכרן)}one{‫# סקילים (מסונכרנים)}two{‫# סקילים (מסונכרנים)}other{‫# סקילים (מסונכרנים)}}</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />המשך אל <ph name="SITE" /> (לא בטוח)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">עזרה בכתיבה</translation>
@@ -4253,6 +4258,7 @@ Del</translation>
 <translation id="813024282736408069">הפעלת כרטיס וירטואלי למילוי אוטומטי</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8135546115396015134">מקש שמאלי</translation>
+<translation id="8136385032646505126">לשמור את שם בעל הכרטיס?</translation>
 <translation id="8137185688006450980">תשווה בין תוכניות ביטוח בריאות</translation>
 <translation id="8138591088112729119">‏מבוסס על AI מותאם אישית</translation>
 <translation id="814071672416123670">בגלל מדיניות הארגון, אי אפשר להעתיק את התוכן</translation>

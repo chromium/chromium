@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Baliteke eduki batzuk guztientzat egokiak ez izatea.</translation>
 <translation id="1601560923496285236">Aplikatu</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Mailaz igotzeko, osatu zeregin bat}other{Mailaz igotzeko, osatu {count} zeregin}}</translation>
 <translation id="1605405588277479165">Desaktibatuta: ez da gomendagarria</translation>
 <translation id="1605658421715042784">Kopiatu irudia</translation>
 <translation id="1606899876897213121">Itxi azkenaldiko jardueren laburpena</translation>
@@ -511,6 +512,7 @@
 <translation id="2524699375503213836">Ekarri zure datuak Safari-tik</translation>
 <translation id="2526166285241366046">Gorde pasahitz bat</translation>
 <translation id="2529021024822217800">Ireki guztiak</translation>
+<translation id="2530932541542751783">Arazoren bat izan da ezarpen honekin. Eguneratu eta berrabiarazi Chrome eta iPadOS, eta saiatu berriro. Errorea behin eta berriro gertatzen bada, baliteke iPad-ak ez onartzea ezarpen hau.</translation>
 <translation id="2536991091671391962">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
 <translation id="2538103551183528357">Ezkutatuta, pasahitza</translation>
 <translation id="2538705697765638552">Gorde informazioa gauzak bizkorrago egiteko, hala nola Google-ren produktuetan inprimakiak betetzeko. <ph name="USER_EMAIL" /> kontuko informazioa Google Wallet-en kudea dezakezu.</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">Nahitaezkoa</translation>
 <translation id="3914640181019354363">Hauteman helbideak</translation>
 <translation id="391904960191284041">Produktuei buruzko iritziak</translation>
+<translation id="3920165976616657606">"Arakatu Arakatze seguru hobetua" osatu da!</translation>
 <translation id="3921585859122905677">Helbide-barraren posizioa</translation>
 <translation id="3922185497376658606">Kargatu web-orriak aldez aurretik</translation>
 <translation id="3926703470020109118">Deskarga bertan behera utzi da</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850"><ph name="URL" /> webgunean hasiko duzu saioa</translation>
 <translation id="3934905113567851655">Atximurkatu tamaina aldatzeko</translation>
 <translation id="393732545649378031">Kontua</translation>
+<translation id="3939683043166875001">Ezkutatu edo erakutsi webgune nagusiak, Discover jarioa eta abar.</translation>
 <translation id="3940195383040445971">Egin prezioen jarraipena fitxetan</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
 <translation id="3946483119107054883">Deskargatu CSV gisa</translation>
@@ -1090,6 +1094,7 @@
 <translation id="4455710003856931944">Aurrera edo atzera egiteko, hatza ertzetik pasa dezakezu.</translation>
 <translation id="4460014764210899310">Desegin taldea</translation>
 <translation id="446314443268698477">Arakatu produktuak, eta itzuli eta identifikatu ikusten duzuna kameraren edo argazkien bidez.</translation>
+<translation id="4465941170695753889">Eduki sakatuta fitxa talde bat sortzeko</translation>
 <translation id="4469324811108161144">Oharrek <ph name="CHARACTER_LIMIT" /> karaktere izan ditzakete gehienez.</translation>
 <translation id="4470766488397113689">Zertan egin nahi duzu lan?</translation>
 <translation id="4471472356135655769">Ezin dira esportatu pasahitzak</translation>
@@ -1262,6 +1267,7 @@
 <translation id="4977176874984951085">Ireki orriko ekintza-menua</translation>
 <translation id="4979397965658815378">Hasi saioa Google-ko kontuarekin laster-markak, historia, pasahitzak eta bestelako ezarpenak gailu guztietan eskura izateko</translation>
 <translation id="4985921635659180565">Fitxategi bat ezabatzeko programatzen denean, ezin da bertan behera utzi.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 fitxa partekatu}other{{COUNT} fitxa partekatu}}</translation>
 <translation id="498624032394115435">Esteka duten guztiek fitxa guztiak edita ditzakete.</translation>
 <translation id="4986428648020277392">Eskaera-mezua: zein erosi beharko nuke? Hirutik bigarrena.</translation>
 <translation id="498768198683310172">Hasi Gemini erabiltzen</translation>
@@ -1921,6 +1927,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="6938212956536472404">Ezin da partekatu fitxa</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6946722113367118030">Pentsatzen</translation>
+<translation id="6947751977892029882">Arazoren bat izan da ezarpen honekin. Eguneratu eta berrabiarazi Chrome eta iOS, eta saiatu berriro. Errorea behin eta berriro gertatzen bada, baliteke iPhone-ak ez onartzea ezarpen hau.</translation>
 <translation id="6950522403736391608">Ezkutatuta</translation>
 <translation id="695965663642079255">Gorde eta kudeatu ordainketa-informazioa ordainketa-prozesua bizkortzeko</translation>
 <translation id="6962809930976936328">Lortu estatistikak Gemini-rekin</translation>
@@ -2343,6 +2350,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8264966119170358612">Gordeta zeneuzkan pasahitzetako batzuk ikusgai jarri dira, datuen isilpekotasuna urratu delako Google-tik kanpo. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Ireki Chrome-ko menua</translation>
 <translation id="826614135184049678">iPad-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
+<translation id="8266370374397811600">Lorpen berri bat desblokeatu duzu! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profila aldatzera zoaz</translation>
 <translation id="8275068909952022340">Gehiago…</translation>

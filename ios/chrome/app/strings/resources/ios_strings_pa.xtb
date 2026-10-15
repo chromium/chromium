@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੁਝ ਸਮੱਗਰੀ ਹਰੇਕ ਲਈ ਢੁਕਵੀਂ ਨਾ ਹੋਵੇ।</translation>
 <translation id="1601560923496285236">ਲਾਗੂ ਕਰੋ</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ਪਤਾ}one{# ਪਤਾ}other{# ਪਤੇ}}</translation>
+<translation id="160477039162785330">{count,plural, =1{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ 1 ਕਾਰਜ ਪੂਰਾ ਕਰੋ}one{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ {count} ਕਾਰਜ ਪੂਰਾ ਕਰੋ}other{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ {count} ਕਾਰਜ ਪੂਰੇ ਕਰੋ}}</translation>
 <translation id="1605405588277479165">ਬੰਦ ਹੈ - ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="1605658421715042784">ਚਿੱਤਰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1606899876897213121">ਹਾਲੀਆ ਸਰਗਰਮੀ ਦੇ ਸਾਰਾਂਸ਼ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">ਲੁੜੀਂਦਾ</translation>
 <translation id="3914640181019354363">ਪਤਿਆਂ ਦਾ ਪਤਾ ਲਗਾਓ</translation>
 <translation id="391904960191284041">ਉਤਪਾਦ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ</translation>
+<translation id="3920165976616657606">"ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਦੀ ਪੜਚੋਲ ਕਰੋ" ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="3921585859122905677">ਪਤਾ ਬਾਰ ਸਥਿਤੀ</translation>
 <translation id="3922185497376658606">ਵੈੱਬ-ਪੰਨੇ ਪ੍ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="3926703470020109118">ਡਾਊਨਲੋਡ ਰੱਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">ਤੁਸੀਂ ਪਿੱਛੇ ਜਾਂ ਅੱਗੇ ਜਾਣ ਲਈ ਕੋਨੇ 'ਤੇ ਸਵਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4460014764210899310">ਗਰੁੱਪ ਹਟਾਓ</translation>
 <translation id="446314443268698477">ਤੁਹਾਨੂੰ ਜਿਹੜੀਆਂ ਚੀਜ਼ਾਂ ਦਿਖਾਈ ਦੇ ਰਹੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨੂੰ ਕੈਮਰੇ ਜਾਂ ਫ਼ੋਟੋਆਂ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਖਰੀਦੋ, ਉਨ੍ਹਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਕਰੋ।</translation>
+<translation id="4465941170695753889">ਟੈਬ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="4469324811108161144">ਨੋਟ-ਕਥਨਾਂ ਵਿੱਚ <ph name="CHARACTER_LIMIT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹ ਤੱਕ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4470766488397113689">ਤੁਸੀਂ ਕਿਸ ਚੀਜ਼ 'ਤੇ ਕੰਮ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4471472356135655769">ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ</translation>

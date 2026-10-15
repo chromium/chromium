@@ -490,6 +490,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="18139523105317219">EDI-osapoole nimi</translation>
 <translation id="1816436748874040213">Saab küsida luba jagatud vahelehtede kerimiseks ja suumimiseks</translation>
 <translation id="1816707915923025275">Sirvimisajaloo otsimiseks sisestage @history</translation>
+<translation id="1816771466809215784">Salvestage selle kaardi omaniku nimi Google Walletisse, et see maksmisel automaatselt täidetaks.</translation>
 <translation id="1817364650920811003">Roll: Chrome'i nõuanne. Hõlbustussilt: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">automaatsed allalaadimised</translation>
 <translation id="1821930232296380041">Taotlus või selle parameetrid on kehtetud</translation>
@@ -647,6 +648,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2102495993840063010">Androidi rakendused</translation>
 <translation id="2103210856015238101">Saadaolevad kliendikaardid, mis täidetakse puudutamisel, on avatud täiskõrgusel.</translation>
 <translation id="2104739941682874393">Täiustatud automaattäide mõistab vorme paremini ja saab need teie eest automaatselt täita.</translation>
+<translation id="2105237910269166838">Küsige lehe kohta</translation>
 <translation id="2107021941795971877">Prinditeenuste toed</translation>
 <translation id="2108755909498034140">Taaskäivitage oma arvuti</translation>
 <translation id="2109845311767915560">Jagatud vahelehegrupp</translation>
@@ -1053,6 +1055,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2734797989819862638">Ära kopeeri</translation>
 <translation id="2738771556149464852">Mitte pärast</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ühtegi}=1{1 oskus}other{# oskust}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> faili üleslaadimine Google Drive'i</translation>
 <translation id="2759299890026163685">Enne uuesti proovimist veenduge, et internetiühendus oleks stabiilne</translation>
 <translation id="2759825833388495838">sisestada rakenduses <ph name="APP_NAME" /> teie parooli</translation>
@@ -3622,6 +3625,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7083258188081898530">Salv 9</translation>
 <translation id="70846382339153529">OpenDocumenti tekst</translation>
 <translation id="7086090958708083563">Kasutaja taotles üleslaadimist</translation>
+<translation id="7089745480771070611">Avaneb külgpaneelil.</translation>
 <translation id="7090698782953528257">Aita mul funktsiooni graafikut koostada, et visualiseerida matemaatiline võrrand ja näha kõvera kuju</translation>
 <translation id="7092087596499105699">Teie administraator seadistas turvalise lüüsi konnektori, et kaitsta juurdepääsu teie organisatsiooni privaatsetele veebirakendustele. See võib juurdepääsu kinnitamiseks kasutada teie tööprofiili andmeid.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes lubade ja mitmel saidil talletatud andmete haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
@@ -4006,6 +4010,7 @@ Lisateave:
 <translation id="7696107855583699585">Known Traveler Numberi muutmine</translation>
 <translation id="7698864304447945242">Kas värskendada rakendust Google Play Services for AR?</translation>
 <translation id="7699509138503320152">Kirjuta mu e-kiri ümber, et see oleks veenvam</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ühtegi}=1{1 oskus (sünkroonitud)}other{# oskust (sünkroonitud)}}</translation>
 <translation id="7701040980221191251">Pole</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Edasiliikumine saidile <ph name="SITE" /> (ebaturvaline)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Aita mul kirjutada</translation>
@@ -4248,6 +4253,7 @@ Lisateave:
 <translation id="813024282736408069">Automaattäite funktsioonis virtuaalkaardi sisselülitamine</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8135546115396015134">vasak klahv</translation>
+<translation id="8136385032646505126">Kas salvestada kaardiomaniku nimi?</translation>
 <translation id="8137185688006450980">Võrdle tervisepakette</translation>
 <translation id="8138591088112729119">Toimib Personal Intelligence'i platvormil</translation>
 <translation id="814071672416123670">Sisu ei saanud teie organisatsiooni eeskirjade tõttu kopeerida</translation>

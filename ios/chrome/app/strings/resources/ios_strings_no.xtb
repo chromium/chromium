@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
 <translation id="1018804590490383958">Skann og fyll ut automatisk</translation>
 <translation id="1019990162050689579">Aktivitet i Gemini-apper</translation>
+<translation id="102471647093736603">Trykk og hold for å flytte</translation>
 <translation id="102645702181682900">Oppgaven er startet</translation>
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030376737535466765">Åpne Passordlagring</translation>
@@ -1094,6 +1095,7 @@
 <translation id="4455710003856931944">Du kan sveipe på kanten for å gå frem eller tilbake.</translation>
 <translation id="4460014764210899310">Fjern gruppering</translation>
 <translation id="446314443268698477">Kjøp, oversett og identifiser det du ser, med kameraet eller bilder.</translation>
+<translation id="4465941170695753889">Trykk og hold for å opprette en fanegruppe</translation>
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4470766488397113689">Hva vil du jobbe med?</translation>
 <translation id="4471472356135655769">Kan ikke eksportere passordene</translation>
@@ -1209,6 +1211,7 @@
 <translation id="4808744395915275922">Oppdateringer</translation>
 <translation id="4813345808229079766">Tilkobling</translation>
 <translation id="4821595350501541683">Faner ble lukket, og nettlesingsdata ble slettet</translation>
+<translation id="4823322556950229674">Du kan trykke og holde for å flytte adressefeltet og tilbakeknappen til bunnen av skjermen</translation>
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>

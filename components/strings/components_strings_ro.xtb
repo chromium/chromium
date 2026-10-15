@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2103210856015238101">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
 <translation id="2104739941682874393">Completarea automată îmbunătățită înțelege mai bine formularele și le poate completa automat mai rapid</translation>
+<translation id="2105237910269166838">Întreabă despre această pagină</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
 <translation id="2109845311767915560">Grup de file comun</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Nu copia</translation>
 <translation id="2738771556149464852">Nu după</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Niciuna}=1{O abilitate}few{# abilități}other{# de abilități}}</translation>
 <translation id="2757727729385895652">Se încarcă <ph name="COUNT" /> fișiere în Google Drive</translation>
 <translation id="2759299890026163685">Asigură-te că ai o conexiune stabilă la internet înainte de a încerca din nou</translation>
 <translation id="2759825833388495838">completează parola pe <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7083258188081898530">Tava 9</translation>
 <translation id="70846382339153529">Text OpenDocument</translation>
 <translation id="7086090958708083563">Utilizatorul a solicitat încărcarea</translation>
+<translation id="7089745480771070611">Se deschide în panoul lateral</translation>
 <translation id="7090698782953528257">Ajută-mă să reprezint grafic o funcție pentru a vizualiza ecuația matematică și a vedea forma curbei</translation>
 <translation id="7092087596499105699">Administratorul a configurat conectorul gateway-ului securizat pentru a proteja accesul la aplicațiile web private ale organizației. Poate folosi date din profilul tău de serviciu pentru a verifica accesul.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona permisiunile și datele stocate pe toate site-urile din setările Chrome</translation>
@@ -4007,6 +4010,7 @@ Detalii suplimentare:
 <translation id="7696107855583699585">Editează numărul de călător cunoscut</translation>
 <translation id="7698864304447945242">Actualizezi Serviciile Google Play pentru realitate augmentată?</translation>
 <translation id="7699509138503320152">Rescrie e-mailul pentru a fi mai convingător</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Niciuna}=1{O abilitate (sincronizată)}few{# abilități (sincronizate)}other{# de abilități (sincronizate)}}</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Accesați <ph name="SITE" /> (nesigur)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Ajută-mă să scriu</translation>

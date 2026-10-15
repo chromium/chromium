@@ -1021,6 +1021,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3977512764614765090">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse.</translation>
 <translation id="3978162107953847778">Sisestage linke näiteks oma sirvimisajaloost ja Google Drive'ist. Samuti saate sisestada emotikone, pildifaile ja muud. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Kas vahetada heliväljundit?</translation>
+<translation id="3983903378684256134">Steam Chromebookis</translation>
 <translation id="3984536049089846927">Järgmine leht</translation>
 <translation id="3986082989454912832">Vasta</translation>
 <translation id="3990002060657467458">Sageli kasutatavad juhtelemendid, näiteks WiFi, Bluetooth ja helitugevus, asuvad kiirseadetes. Siin saate teha ka ekraanipilte.</translation>
@@ -1637,6 +1638,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5727460725221669831">Kui unustasite parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
 <translation id="5733630091161562207">Tervitusmärguanne</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
+<translation id="5739548907438839901">Vabastati <ph name="SIZE" /> kettaruumi.</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
 <translation id="5749214722697335450">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Uus installimine</translation>
 <translation id="7413851974711031813">Sulgemiseks vajutage paoklahvi</translation>
 <translation id="7416471219712049036">Praeguse lehe salvestamine</translation>
 <translation id="742594950370306541">Kaamera on kasutusel.</translation>
+<translation id="7430466159639897874">Teil on kasutamata kettaruumi (<ph name="SIZE" />), mis on eraldatud katkestatud toega funktsioonile „Steam Chromebookis“.</translation>
 <translation id="743058460480092004">Kaamera ja mikrofon on kasutusel.</translation>
 <translation id="7433708794692032816">Sisestage kiipkaart, et jätkata seadme <ph name="DEVICE_TYPE" /> kasutamist</translation>
 <translation id="7440404390546433462">Google’i otsing</translation>
@@ -2353,6 +2356,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7781335840981796660">Kõik kasutajakontod ja kohalikud andmed eemaldatakse.</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7787212146956232129">Sisend- ja väljundseadmed on määratud. Muutmiseks avage menüü Seaded.</translation>
+<translation id="7790757511772316441">Vabasta kettaruum</translation>
 <translation id="7792590255364786396">Nähtav</translation>
 <translation id="7796735576426975947">Uus märguanne on peidetud</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>

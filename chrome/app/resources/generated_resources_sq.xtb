@@ -268,6 +268,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1177863135347784049">E personalizuar</translation>
 <translation id="1178093605842850860">Lejohet të lexojë dhe të ndryshojë këtë sajt</translation>
 <translation id="1178357842179817577">Të mbron nga sajtet, shkarkimet dhe shtesat e rrezikshme</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Skedat ndahen për përgjigje më të përshtatshme.<ph name="END_BOLD" /> Google përdor përmbajtjen dhe URL-në e skedës që ke hapur kur ti fillon një bisedë të re. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="117916940443676133">Çelësi yt i sigurisë nuk është i mbrojtur me një kod PIN. Për të menaxhuar të dhënat e identifikimit, në fillim krijo një kod PIN.</translation>
 <translation id="1179400851034021914">IBAN është i pavlefshëm</translation>
@@ -701,6 +702,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1535753739390684432">Dëgjoje tekstin specifik të lexuar me zë të lartë. Në fillim zgjidh ikonën e veçorisë "Zgjidh që të thuhet" në fund të ekranit dhe më pas thekso tekstin.</translation>
 <translation id="1536754031901697553">Po shkëputet...</translation>
 <translation id="1536883206862903762">Kjo do të çaktivizojë shtesat dhe do t'i rivendosë cilësimet te parazgjedhjet e sigurta. Skedat, skedarët dhe kukit do të ruhen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Skedat ndahen për përgjigje më të përshtatshme.<ph name="END_BOLD_1" /> Google përdor përmbajtjen dhe URL-në e skedës që ke hapur kur ti fillon një bisedë të re. Mund ta ndryshosh këtë cilësim në çdo kohë. <ph name="BEGIN_BOLD_2" />Të dhënat e organizatës sate janë private dhe të sigurta.<ph name="END_BOLD_2" /> Ato nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="1537254971476575106">Zmadhuesi i ekranit të plotë</translation>
 <translation id="1538808328818992871">Duhet të ketë të paktën <ph name="MIN_LENGTH" /> karaktere</translation>
 <translation id="1539248305642687917">Mos lejo që sajtet të zëvendësojnë hyrjen e tastierës sate</translation>
@@ -728,6 +730,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1552752544932680961">Menaxho shtesën</translation>
 <translation id="1553538517812678578">e pakufizuar</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /> për Microsoft 365 në Chromebook.</translation>
+<translation id="1554343363646356023">Dritare e re e izoluar (&amp;I)</translation>
 <translation id="1554640914375980459">Ndiz blicin e ekranit kur merr njoftime. Përdori me kujdes njoftimet me blic nëse je i ndjeshëm ndaj dritës.</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1556127816860282890">Aktiviteti në sfond dhe disa efekte vizuale, si p.sh. lëvizja e butë, mund të jenë të kufizuara</translation>
@@ -1895,6 +1898,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> dëshiron të kopjojë skedarë nga <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Aktualisht në kanalin <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Përditëso llogarinë, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Skedat ndahen për përgjigje më të përshtatshme. Google përdor përmbajtjen dhe URL-në e skedës që ke hapur kur ti fillon një bisedë të re. Mund ta ndryshosh këtë cilësim në çdo kohë. Të dhënat e organizatës sate janë private dhe të sigurta. Ato nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="2459703812219683497">U zbulua kod aktivizimi</translation>
 <translation id="2459706890611560967">Vazhdo transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Ndaj një pamje ekrani</translation>
@@ -3156,6 +3160,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3390740059150071453">Shiko në të majtë</translation>
 <translation id="3393554941209044235">Analiza e dokumentit e Chrome</translation>
 <translation id="3394072120086516913">Kompjuteri është i lidhur me tel dhe pajisja e transmetimit është në Wi-Fi</translation>
+<translation id="3394561494170561143">Skedë e re e izoluar (&amp;T)</translation>
 <translation id="3394850431319394743">Lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
 <translation id="339722927132407568">Ngrin</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
@@ -6200,6 +6205,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5724723163580775373">Fokus i madh</translation>
 <translation id="5725112283692663422">Dërgo komente për "Krijo temë me IA"</translation>
 <translation id="5727728807527375859">Shtesat, aplikacionet dhe temat mund ta dëmtojnë kompjuterin tënd. Je i sigurt se dëshiron të vazhdosh?</translation>
+<translation id="5727872803091928075">Skedat ndahen për përgjigje më të përshtatshme. Google përdor përmbajtjen dhe URL-në e skedës që ke hapur kur ti fillon një bisedë të re. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
 <translation id="5729712731028706266">&amp;Shiko</translation>
 <translation id="5731247495086897348">Ngj&amp;it dhe vazhdo</translation>
@@ -7029,6 +7035,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6370021412472292592">Manifesti nuk mund të ngarkohej.</translation>
 <translation id="6370551072524410110">kërko + shift + backspace</translation>
 <translation id="637135143619858508">E lirshme</translation>
+<translation id="6372413553057593904">Skedë joaktive në "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="637642201764944055">Versionet e vjetra të aplikacioneve të Chrome nuk do të hapen në pajisjet me Linux pas dhjetorit 2022. Kontakto me administratorin për ta përditësuar me një version të ri ose hiqe këtë aplikacion.</translation>
@@ -7341,6 +7348,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6613231539539868591">Të dhënat e qëndrueshme</translation>
 <translation id="6613267708691765962">Po skanon për softuerë keqdashës...</translation>
+<translation id="6614219106064338118">Fillo një bisedë</translation>
 <translation id="6615455863669487791">Ma trego</translation>
 <translation id="6616000047939888167">Ofro "Përkthe me Google" për uebsajtet dhe skedarët PDF në gjuhë të tjera</translation>
 <translation id="6618013221808317456">Mos lejo që sajtet të përdorin optimizimin e JavaScript</translation>
@@ -9723,6 +9731,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8410133743809404768">Mund të kërkosh në shiritin e adresave duke përdorur "@history", si dhe nga faqja e "Historikut"</translation>
 <translation id="8411043186249152291">ekrani i plotë</translation>
 <translation id="8412136526970428322">Të lejuara: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
+<translation id="8413685856004704642">Zbatohen <ph name="BEGIN_LINK1" />"Kushtet" e Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Njoftimi i privatësisë për aplikacionet Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="8414396119627470038">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Kërko gjithçka</translation>

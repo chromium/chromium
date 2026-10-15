@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">יכול להיות שחלק מהתוכן לא מתאים לכולם.</translation>
 <translation id="1601560923496285236">החלה</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{כתובת אחת}one{‫# כתובות}two{‫# כתובות}other{‫# כתובות}}</translation>
+<translation id="160477039162785330">{count,plural, =1{כדי להתקדם לרמה הבאה, צריך לסיים משימה אחת}one{כדי להתקדם לרמה הבאה, צריך לסיים {count} משימות}two{כדי להתקדם לרמה הבאה, צריך לסיים {count} משימות}other{כדי להתקדם לרמה הבאה, צריך לסיים {count} משימות}}</translation>
 <translation id="1605405588277479165">כבויה – לא מומלץ</translation>
 <translation id="1605658421715042784">העתקת התמונה</translation>
 <translation id="1606899876897213121">סגירת הסיכום של הפעילות האחרונה</translation>
@@ -511,6 +512,7 @@
 <translation id="2524699375503213836">‏שליפת הנתונים שלך מ-Safari</translation>
 <translation id="2526166285241366046">שמירת סיסמה</translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
+<translation id="2530932541542751783">‏הייתה בעיה בהגדרה הזו. צריך לעדכן ולהפעיל מחדש את Chrome ואת iPadOS, ואז לנסות שוב. אם השגיאה הזו ממשיכה להופיע, יכול להיות שהאייפד שלך לא תומך בהגדרה הזו.</translation>
 <translation id="2536991091671391962">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות ב'מנהל הסיסמאות של Google' לחשבון <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">נסתר, סיסמה</translation>
 <translation id="2538705697765638552">‏אפשר לשמור את הפרטים ולבצע פעולות מהר יותר, כמו מילוי טפסים במוצרי Google. אפשר לערוך את המידע ב-Google Wallet בחשבון <ph name="USER_EMAIL" />.</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">נדרש</translation>
 <translation id="3914640181019354363">זיהוי כתובות</translation>
 <translation id="391904960191284041">ביקורות על מוצרים</translation>
+<translation id="3920165976616657606">סיימת את המשימה "מידע על הגרסה המשופרת של הגלישה הבטוחה"!</translation>
 <translation id="3921585859122905677">המיקום של סרגל הכתובות</translation>
 <translation id="3922185497376658606">טעינה מראש של דפי אינטרנט</translation>
 <translation id="3926703470020109118">ההורדה בוטלה</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850">הכניסה תהיה אל <ph name="URL" /></translation>
 <translation id="3934905113567851655">כדי לשנות את הגודל, פותחים או סוגרים את האצבעות</translation>
 <translation id="393732545649378031">חשבון</translation>
+<translation id="3939683043166875001">‏אפשר להסתיר או להציג את האתרים המובילים, את פיד Discover ועוד.</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
 <translation id="3946483119107054883">‏הורדה כקובץ CSV</translation>
@@ -1263,6 +1267,7 @@
 <translation id="4977176874984951085">פתיחת תפריט הפעולות בדף</translation>
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4985921635659180565">אחרי שקובעים מועד מחיקה לקובץ, אי אפשר לבטל את המחיקה.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{כרטיסייה משותפת אחת}one{‫{COUNT} כרטיסיות משותפות}two{‫{COUNT} כרטיסיות משותפות}other{‫{COUNT} כרטיסיות משותפות}}</translation>
 <translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
 <translation id="4986428648020277392">פרומפט: מה כדאי לי לקנות? ‫2 מתוך 3</translation>
 <translation id="498768198683310172">‏אני רוצה להתחיל להשתמש ב-Gemini</translation>
@@ -1922,6 +1927,7 @@
 <translation id="6938212956536472404">אי אפשר לשתף את הכרטיסייה הזו</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6946722113367118030">הרהור</translation>
+<translation id="6947751977892029882">‏הייתה בעיה בהגדרה הזו. צריך לעדכן ולהפעיל מחדש את Chrome ואת iOS, ואז לנסות שוב. אם השגיאה הזו ממשיכה להופיע, יכול להיות שהאייפון שלך לא תומך בהגדרה הזו.</translation>
 <translation id="6950522403736391608">מוסתרים</translation>
 <translation id="695965663642079255">כדי לשלם מהר יותר, אפשר לשמור ולנהל את פרטי התשלום</translation>
 <translation id="6962809930976936328">‏תובנות מ-Gemini</translation>
@@ -2344,6 +2350,7 @@
 <translation id="8264966119170358612">‏חלק מהסיסמאות השמורות שלך נחשפו ברשומות שאינן של Google עקב פרצה באבטחת מידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">‏פתיחת תפריט Chrome</translation>
 <translation id="826614135184049678">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPad. כדי להיכנס שוב לחשבון צריך ללחוץ על 'המשך' למטה.</translation>
+<translation id="8266370374397811600">הגעת להישג חדש! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">תיכף מתבצע מעבר לפרופיל אחר</translation>
 <translation id="8275068909952022340">עוד…</translation>

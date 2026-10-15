@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2103210856015238101">Списъкът с карти за лоялност, данните за които могат да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
 <translation id="2104739941682874393">Подобрената функция за автоматично попълване разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас</translation>
+<translation id="2105237910269166838">Задайте въпрос за тази страница</translation>
 <translation id="2107021941795971877">Опори при отпечатване</translation>
 <translation id="2108755909498034140">Рестартирайте компютъра си.</translation>
 <translation id="2109845311767915560">Споделена група раздели</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Без копиране</translation>
 <translation id="2738771556149464852">Не след</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Няма}=1{1 умение}other{# умения}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> файла се качват в Google Диск</translation>
 <translation id="2759299890026163685">Преди да опитате отново, уверете се, че имате стабилна връзка с интернет</translation>
 <translation id="2759825833388495838">попълни паролата ви в(ъв) <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">Тава 9</translation>
 <translation id="70846382339153529">Текст във формат OpenDocument</translation>
 <translation id="7086090958708083563">Качване, заявено от потребител</translation>
+<translation id="7089745480771070611">Отваря се в страничния панел</translation>
 <translation id="7090698782953528257">Помогни ми да изразя графично функция, за да визуализирам математическото уравнение и да видя формата на кривата</translation>
 <translation id="7092087596499105699">Администраторът ви е конфигурирал конектора за защитен шлюз, за да защити достъпа до частните уеб приложения на организацията ви. Той може да използва данни от служебния ви потребителски профил, за да потвърди достъпа.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате разрешенията и съхраняваните данни от сайтовете от настройките на Chrome</translation>
@@ -4007,6 +4010,7 @@
 <translation id="7696107855583699585">Редактиране на известния номер на пътника</translation>
 <translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
 <translation id="7699509138503320152">Пренапиши имейла ми, за да бъде по-убедителен</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Няма}=1{1 умение (синхронизирано)}other{# умения (синхронизирани)}}</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Продължаване към <ph name="SITE" /> (опасно)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Помощ при писане</translation>

@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2103210856015238101">کارت‌های وفاداری دردسترس که با لمس کردن تکمیل می‌شود به‌صورت کامل باز شده است.</translation>
 <translation id="2104739941682874393">«تکمیل خودکار بهبودیافته» فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند</translation>
+<translation id="2105237910269166838">پرسش از این صفحه</translation>
 <translation id="2107021941795971877">پشتیبان‌های چاپ</translation>
 <translation id="2108755909498034140">رایانه را راه‌اندازی مجدد کنید</translation>
 <translation id="2109845311767915560">گروه زبانه هم‌رسانی‌شده</translation>
@@ -1055,6 +1056,7 @@
 <translation id="2734797989819862638">کپی نکردن</translation>
 <translation id="2738771556149464852">نه بعد از</translation>
 <translation id="2740531572673183784">تأیید</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{هیچ‌کدام}=1{‫۱ مهارت}one{‫# مهارت}other{‫# مهارت}}</translation>
 <translation id="2757727729385895652">‏درحال بارگذاری <ph name="COUNT" /> فایل در Google Drive</translation>
 <translation id="2759299890026163685">پیش‌از امتحان مجدد، مطمئن شوید اتصال اینترنت پایداری دارید</translation>
 <translation id="2759825833388495838">گذرواژه‌تان را در <ph name="APP_NAME" /> وارد کنید</translation>
@@ -3624,6 +3626,7 @@
 <translation id="7083258188081898530">سینی ۹</translation>
 <translation id="70846382339153529">‏نوشتار OpenDocument</translation>
 <translation id="7086090958708083563">بارگذاری درخواست‌شده توسط کاربر</translation>
+<translation id="7089745480771070611">در قاب کناری باز می‌شود</translation>
 <translation id="7090698782953528257">کمک کن تابعی را نموداری کنم تا معادله ریاضی را دیداری و شکل منحنی را ببینم</translation>
 <translation id="7092087596499105699">سرپرست شما رابط دروازه امن را برای محافظت از دسترسی به برنامه‌های وب خصوصی سازمانتان پیکربندی کرده است. ممکن است از داده‌های نمایه کاری شما برای درستی‌سنجی دسترسی استفاده کند.</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اجازه‌ها و داده‌های ذخیره‌شده در سایت‌ها را در تنظیمات Chrome مدیریت کنید</translation>
@@ -4008,6 +4011,7 @@
 <translation id="7696107855583699585">ویرایش کردن شناسه مسافر شناخته‌شده</translation>
 <translation id="7698864304447945242">‏«خدمات Google Play ویژه واقعیت افزوده» به‌روزرسانی شود؟</translation>
 <translation id="7699509138503320152">ایمیلم را بازنویسی کنید تا متقاعدکننده‌تر شود</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{هیچ‌کدام}=1{‫۱ مهارت (همگام‌سازی‌شده)}one{‫# مهارت (همگام‌سازی‌شده)}other{‫# مهارت (همگام‌سازی‌شده)}}</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />ادامه به <ph name="SITE" /> (غیرایمن)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">کمک به نوشتن</translation>

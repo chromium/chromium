@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">É posible que algúns contidos non sexan adecuados para todo o mundo.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Completa 1 tarefa para subir de nivel}other{Completa {count} tarefas para subir de nivel}}</translation>
 <translation id="1605405588277479165">Desactivada (non se recomenda)</translation>
 <translation id="1605658421715042784">Copiar imaxe</translation>
 <translation id="1606899876897213121">Pechar o resumo da actividade recente</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Obrigatorio</translation>
 <translation id="3914640181019354363">Detectar enderezos</translation>
 <translation id="391904960191284041">Recensións de produtos</translation>
+<translation id="3920165976616657606">Completouse Explorar Navegación segura mellorada</translation>
 <translation id="3921585859122905677">Posición da barra de enderezos</translation>
 <translation id="3922185497376658606">Precargar páxinas web</translation>
 <translation id="3926703470020109118">Descarga cancelada</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Podes pasar o dedo polo bordo para avanzar ou retroceder.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compra, traduce e identifica o que vexas mediante a cámara ou nas fotos.</translation>
+<translation id="4465941170695753889">Para crear un grupo de pestanas, mantén premida unha</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
 <translation id="4470766488397113689">En que queres traballar?</translation>
 <translation id="4471472356135655769">Non se puideron exportar os contrasinais</translation>

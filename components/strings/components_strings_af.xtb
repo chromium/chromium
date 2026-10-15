@@ -648,6 +648,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2102495993840063010">Android-programme</translation>
 <translation id="2103210856015238101">Lojaliteitskaarte wat beskikbaar is om met aanraking in te vul, word teen volle hoogte oopgemaak.</translation>
 <translation id="2104739941682874393">Verbeterde outovul verstaan vorms beter en kan hulle vinniger vir jou outovul</translation>
+<translation id="2105237910269166838">Vra oor dié bladsy</translation>
 <translation id="2107021941795971877">Drukondersteuning</translation>
 <translation id="2108755909498034140">Herbegin jou rekenaar</translation>
 <translation id="2109845311767915560">Gedeelde oortjiegroep</translation>
@@ -1054,6 +1055,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2734797989819862638">Moenie kopieer nie</translation>
 <translation id="2738771556149464852">Nie na die tyd nie</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Geen}=1{1 vaardigheid}other{# vaardighede}}</translation>
 <translation id="2757727729385895652">Laai tans <ph name="COUNT" /> na Google Drive toe op</translation>
 <translation id="2759299890026163685">Maak seker dat jy ’n stabiele internetverbinding het voordat jy weer probeer</translation>
 <translation id="2759825833388495838">vul jou wagwoord in op <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="7083258188081898530">Laai 9</translation>
 <translation id="70846382339153529">OpenDocument-teks</translation>
 <translation id="7086090958708083563">Oplaai deur gebruiker versoek</translation>
+<translation id="7089745480771070611">Maak in kantpaneel oop</translation>
 <translation id="7090698782953528257">Help my om ’n funksie grafies voor te stel om die wiskundige vergelyking te visualiseer en die vorm van die kurwe te sien</translation>
 <translation id="7092087596499105699">Jou admin het die veilige deurgangverbinder opgestel om toegang tot jou organisasie se privaat webapps te beskerm. Dit kan data uit jou werkprofiel gebruik om toegang te verifieer.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om toestemmings en data wat op werwe geberg is in Chrome-instellings te bestuur</translation>
@@ -4006,6 +4009,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7696107855583699585">Wysig bekende reisigernommer</translation>
 <translation id="7698864304447945242">Wil jy Google Play Dienste vir AR opdateer?</translation>
 <translation id="7699509138503320152">Herskryf my e-pos om meer oortuigend te wees</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Geen}=1{1 vaardigheid (gesinkroniseer)}other{# vaardighede (gesinkroniseer)}}</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Gaan voort na <ph name="SITE" /> (onveilig)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Help my skryf</translation>

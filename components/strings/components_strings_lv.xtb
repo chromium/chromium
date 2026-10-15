@@ -648,6 +648,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2102495993840063010">Android lietotnes</translation>
 <translation id="2103210856015238101">Lojalitātes kartes, kas pieejamas aizpildīšanai pieskaroties, ir atvērtas pilnā augstumā.</translation>
 <translation id="2104739941682874393">Uzlabota automātiskā aizpilde labāk izprot veidlapas un var tās ātrāk automātiski aizpildīt.</translation>
+<translation id="2105237910269166838">Jautājiet par šo lapu</translation>
 <translation id="2107021941795971877">Balsta struktūras drukāšana</translation>
 <translation id="2108755909498034140">Restartējiet datoru</translation>
 <translation id="2109845311767915560">Kopīgotā ciļņu grupa</translation>
@@ -1054,6 +1055,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2734797989819862638">Nekopēt</translation>
 <translation id="2738771556149464852">Nevis pēc</translation>
 <translation id="2740531572673183784">Labi</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Nav}=1{1 prasme}zero{# prasmes}one{# prasme}other{# prasmes}}</translation>
 <translation id="2757727729385895652">Notiek <ph name="COUNT" /> failu augšupielāde Google diskā…</translation>
 <translation id="2759299890026163685">Pirms mēģināt vēlreiz, pārbaudiet, vai ir izveidots stabils interneta savienojums</translation>
 <translation id="2759825833388495838">ievadīt jūsu paroli lietotnē <ph name="APP_NAME" /></translation>
@@ -3621,6 +3623,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7083258188081898530">9. paplāte</translation>
 <translation id="70846382339153529">OpenDocument teksts</translation>
 <translation id="7086090958708083563">Augšupielādi pieprasīja lietotājs.</translation>
+<translation id="7089745480771070611">Tiek atvērts sānu panelī</translation>
 <translation id="7090698782953528257">Palīdzi man izveidot funkcijas grafiku, lai vizualizētu matemātisko vienādojumu un attēlotu līknes formu.</translation>
 <translation id="7092087596499105699">Jūsu administrators konfigurēja drošās vārtejas savienotāju, lai aizsargātu piekļuvi jūsu organizācijas privātajām tīmekļa lietojumprogrammām. Lai verificētu piekļuvi, var tikt izmantoti dati no jūsu darba profila.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu atļaujas un datus, kas tiek glabāti vietnēs.</translation>
@@ -4005,6 +4008,7 @@ Papildu informācija:
 <translation id="7696107855583699585">Zināmā ceļotāja numura rediģēšana</translation>
 <translation id="7698864304447945242">Vai atjaunināt Google Play PR pakalpojumus?</translation>
 <translation id="7699509138503320152">Pārraksti manu e-pasta ziņojumu, lai tas būtu pārliecinošāks</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Nav}=1{1 prasme (sinhronizēta)}zero{# prasmes (sinhronizētas)}one{# prasme (sinhronizēta)}other{# prasmes (sinhronizētas)}}</translation>
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Apmeklēt vietni <ph name="SITE" /> (nav droša)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Palīdzība rakstīšanā</translation>

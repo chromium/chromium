@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178093605842850860">이 사이트를 읽고 변경할 수 있음</translation>
 <translation id="1178357842179817577">위험한 사이트, 다운로드, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />더 관련성 높은 답변을 제공하기 위해 탭이 공유됩니다.<ph name="END_BOLD" /> 사용자가 새 채팅을 시작하면 Google에서는 열려 있는 탭의 콘텐츠와 URL을 사용합니다. 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
 <translation id="1179400851034021914">IBAN이 잘못되었습니다.</translation>
@@ -702,6 +703,7 @@
 <translation id="1535753739390684432">특정 텍스트를 소리 내어 읽어줍니다. 먼저 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 다음 텍스트를 강조표시하세요.</translation>
 <translation id="1536754031901697553">연결을 해제하는 중...</translation>
 <translation id="1536883206862903762">확장 프로그램이 사용 중지되고 설정이 안전한 기본값으로 재설정됩니다. 탭, 파일, 쿠키는 그대로 유지됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />더 관련성 높은 답변을 제공하기 위해 탭이 공유됩니다.<ph name="END_BOLD_1" /> 사용자가 새 채팅을 시작하면 Google에서는 열려 있는 탭의 콘텐츠와 URL을 사용합니다. 언제든지 이 설정을 변경할 수 있습니다. <ph name="BEGIN_BOLD_2" />조직의 데이터는 비공개로 안전하게 유지됩니다.<ph name="END_BOLD_2" /> 생성형 AI 모델을 개선하는 데 데이터가 사용되지 않습니다.</translation>
 <translation id="1537254971476575106">전체화면 돋보기</translation>
 <translation id="1538808328818992871"><ph name="MIN_LENGTH" />자 이상(영문 기준)이어야 합니다.</translation>
 <translation id="1539248305642687917">사이트에서 키보드 입력을 재정의하도록 허용하지 않음</translation>
@@ -1910,6 +1912,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 있는 파일을 복사하려고 합니다.</translation>
 <translation id="2457842160081795172"><ph name="CHANNEL_NAME" /> 채널 사용 중</translation>
 <translation id="2458379781610688953">계정 업데이트, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">더 관련성 높은 답변을 제공하기 위해 탭이 공유됩니다. 사용자가 새 채팅을 시작하면 Google에서는 열려 있는 탭의 콘텐츠와 URL을 사용합니다. 언제든지 이 설정을 변경할 수 있습니다. 조직의 데이터는 비공개로 안전하게 유지됩니다. 생성형 AI 모델을 개선하는 데 데이터가 사용되지 않습니다.</translation>
 <translation id="2459703812219683497">활성화 코드 감지됨</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> 기기로 탭 전송 재개</translation>
 <translation id="245979889539926662">스크린샷 공유</translation>
@@ -6216,6 +6219,7 @@
 <translation id="5724723163580775373">넓은 초점</translation>
 <translation id="5725112283692663422">AI로 테마 만들기에 관한 의견 보내기</translation>
 <translation id="5727728807527375859">확장 프로그램, 애플리케이션, 테마로 인해 컴퓨터가 손상될 수 있습니다. 계속하시겠습니까?</translation>
+<translation id="5727872803091928075">더 관련성 높은 답변을 제공하기 위해 탭이 공유됩니다. 사용자가 새 채팅을 시작하면 Google에서는 열려 있는 탭의 콘텐츠와 URL을 사용합니다. 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="5728072125198221967">연결된 Google 서비스</translation>
 <translation id="5729712731028706266">보기(&amp;V)</translation>
 <translation id="5731247495086897348">붙여넣어 바로가기(&amp;S)</translation>
@@ -7358,6 +7362,7 @@
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6613231539539868591">지속형 데이터</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
+<translation id="6614219106064338118">채팅 시작</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6616000047939888167">다른 언어로 표시되는 웹사이트 및 PDF에 Google 번역 제공</translation>
 <translation id="6618013221808317456">사이트에서 JavaScript 최적화를 사용하도록 허용하지 않음</translation>
@@ -9740,6 +9745,7 @@
 <translation id="8410133743809404768">"@history"를 사용하여 주소 표시줄에서 검색할 수 있으며 방문 기록 페이지에서도 검색할 수 있습니다.</translation>
 <translation id="8411043186249152291">전체 화면</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Gemini 앱 개인정보처리방침<ph name="END_LINK2" />이 적용됩니다.</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8415120635186642416">무엇이든 조사해 보세요</translation>

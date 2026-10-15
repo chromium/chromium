@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2103210856015238101">ერთგული კლიენტის ბარათების შეხებით შევსება შესაძლებელია, მათი სრულად გახსნისას.</translation>
 <translation id="2104739941682874393">გაძლიერებული ავტომატური შევსება ფორმებს უკეთესად იგებს და თქვენთვის მათი ავტომატური შევსება უფრო სწრაფად შეუძლია</translation>
+<translation id="2105237910269166838">იკითხეთ ამ გვერდის შესახებ</translation>
 <translation id="2107021941795971877">ბეჭდვის დამხმარე საშუალებები</translation>
 <translation id="2108755909498034140">თქვენი კომპიუტერის გადატვირთვა</translation>
 <translation id="2109845311767915560">ჩანართების გაზიარებული ჯგუფი</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">არ დაკოპირდეს</translation>
 <translation id="2738771556149464852">არა შემდეგ</translation>
 <translation id="2740531572673183784">კარგი</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{არცერთი}=1{1 უნარი}other{# უნარი}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> ფაილი იტვირთება Google Drive-ზე</translation>
 <translation id="2759299890026163685">სანამ ხელახლა ცდით, შეამოწმეთ, რომ ინტერნეტ-კავშირი სტაბილურია</translation>
 <translation id="2759825833388495838">შეავსეთ თქვენი პაროლი <ph name="APP_NAME" />-ში</translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">ლანგარი 9</translation>
 <translation id="70846382339153529">OpenDocument ტექსტი</translation>
 <translation id="7086090958708083563">ატვირთვა მოთხოვნილია მომხმარებლის მიერ</translation>
+<translation id="7089745480771070611">გაიხსნება გვერდით პანელში</translation>
 <translation id="7090698782953528257">დამეხმარე ფუნქციის გრაფიკულად წარმოდგენაში, რათა მოვახდინო მათემატიკური განტოლების ვიზუალიზაცია და ვნახო მრუდის ფორმა</translation>
 <translation id="7092087596499105699">თქვენმა ადმინისტრატორმა დააყენა უსაფრთხო გეითვეის დამაკაშირებლის პარამეტრები, რათა დაიცვას წვდომა თქვენი ორგანიზაციის კერძო ვებ-აპებზე. მან წვდომის დასადასტურებლად შეიძლება გამოიყენოს თქვენი სამსახურის პროფილის მონაცემები.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ნებართვებისა და სხვადასხვა საიტზე შენახული მონაცემების Chrome-ის პარამეტრებიდან სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">აღიარებული მგზავრის ნომრის რედაქტირება</translation>
 <translation id="7698864304447945242">გსურთ, განაახლოთ Google Play Services AR-ისთვის?</translation>
 <translation id="7699509138503320152">გადაწერე ჩემი ელფოსტა, რომ უფრო დამაჯერებელი გახდეს</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{არცერთი}=1{1 უნარი (სინქრონიზებული)}other{# უნარი (სინქრონიზებული)}}</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />გადასვლა <ph name="SITE" />-ზე (არასაიმედო)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">დაწერაში დახმარება</translation>

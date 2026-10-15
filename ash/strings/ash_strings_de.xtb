@@ -1020,6 +1020,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3977512764614765090">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen.</translation>
 <translation id="3978162107953847778">Füge Links ganz einfach hinzu, etwa aus deinem Browserverlauf oder Google Drive. Du kannst auch Emojis, Bilddateien und weitere Elemente einfügen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Audioausgabe wechseln?</translation>
+<translation id="3983903378684256134">Steam auf Chromebook</translation>
 <translation id="3984536049089846927">Nächste Seite</translation>
 <translation id="3986082989454912832">Annehmen</translation>
 <translation id="3990002060657467458">Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen.</translation>
@@ -1636,6 +1637,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5727460725221669831">Wenn du dein Passwort vergessen oder das Passwort für dein Google-Konto vor Kurzem geändert hast, versuche, diesen Nutzer wiederherzustellen.</translation>
 <translation id="5733630091161562207">Willkommensbenachrichtigung</translation>
 <translation id="573413375004481890">Dieses Gerät kann nicht alle deine Displays unterstützen. Daher wurde die Verbindung zu einem Display getrennt.</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> Speicherplatz freigegeben.</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5745612484876805746">Die Funktion "Nachtlicht" wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="5749214722697335450">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Neuinstallation</translation>
 <translation id="7413851974711031813">Drücke zum Schließen die Escape-Taste</translation>
 <translation id="7416471219712049036">Aktuelle Seite speichern</translation>
 <translation id="742594950370306541">Kamera wird verwendet.</translation>
+<translation id="7430466159639897874">Du hast ungenutzten Speicherplatz (<ph name="SIZE" />), der der nicht mehr unterstützten Funktion „Steam auf Chromebook“ zugewiesen ist.</translation>
 <translation id="743058460480092004">Kamera und Mikrofon werden verwendet.</translation>
 <translation id="7433708794692032816">Smartcard einstecken, um <ph name="DEVICE_TYPE" /> weiterhin zu verwenden</translation>
 <translation id="7440404390546433462">Google Suche</translation>
@@ -2352,6 +2355,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7781335840981796660">Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7787212146956232129">Eingabe- und Ausgabegeräte sind festgelegt. Gehe zu den Einstellungen, um Änderungen vorzunehmen.</translation>
+<translation id="7790757511772316441">Speicherplatz freigeben</translation>
 <translation id="7792590255364786396">Sichtbar</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>
 <translation id="7798302898096527229">Drücke die Such-Taste oder Umschalttaste, um die Aktivierung aufzuheben.</translation>

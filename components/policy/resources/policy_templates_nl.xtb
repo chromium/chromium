@@ -401,6 +401,15 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
 <translation id="1277411517984768103">Toestaan dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
+<translation id="1281420319219324116">Met dit beleid wordt het beheerde clientcertificaat ingesteld dat wordt ingericht als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> wordt toegepast.
+
+Het veld <ph name="COMMON_NAME_SOURCE_FIELD" /> geeft de bron aan van de Subject Common Name (CN) van het certificaat:
+
+- Als dit niet is ingesteld of is ingesteld op <ph name="DEVICE_ID_VALUE" />, wordt de Subject Common Name van het certificaat ingesteld op de virtuele apparaat-ID van de beheerde browser.
+
+- Als je dit instelt op <ph name="COMPUTER_NAME_VALUE" />, wordt de algemene naam van het onderwerp van het certificaat ingesteld op de hostnaam van het apparaat.
+
+Dit beleid heeft geen effect als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> uitstaat of niet is ingesteld.</translation>
 <translation id="1285819498003746288">Event.path API is niet beschikbaar.</translation>
 <translation id="1290722184971934486">Als je het beleid instelt op <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (waarde 2), wordt het recht voor vensterbeheer standaard geweigerd voor alle sites. Dit beperkt de mogelijkheid van sites om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
@@ -5638,6 +5647,15 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardgrootte. Gebruikers kunnen deze instelling wijzigen met de optie --disk-cache-size.
 
       Opmerking: De waarde die je in dit beleid opgeeft, wordt gebruikt als hint voor verschillende cachesubsystemen in de browser. Daarom ligt het werkelijke totale schijfverbruik van alle caches hoger, maar in dezelfde orde van grootte als de opgegeven waarde.</translation>
+<translation id="4582488040806837065">Met dit beleid wordt het beheerde clientcertificaat ingesteld dat wordt ingericht als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> wordt toegepast.
+
+Het veld <ph name="COMMON_NAME_SOURCE_FIELD" /> geeft de bron aan van de Subject Common Name (CN) van het certificaat:
+
+- Als dit niet is ingesteld of is ingesteld op <ph name="PROFILE_ID_VALUE" />, wordt de Subject Common Name van het certificaat ingesteld op de browserprofiel-ID.
+
+- Als je dit instelt op <ph name="COMPUTER_NAME_VALUE" />, wordt de algemene naam van het onderwerp van het certificaat ingesteld op de hostnaam van het apparaat. Opmerking: Als je deze property instelt op <ph name="COMPUTER_NAME_VALUE" />, wordt een property op apparaatniveau gebruikt in een certificaat met profielbereik. Dit heeft privacygevolgen voor onbeheerde of gedeelde apparaten, omdat de hostnaam van het apparaat wordt opgenomen in het certificaat.
+
+Dit beleid heeft geen effect als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> uitstaat of niet is ingesteld.</translation>
 <translation id="4591366717022345234">Gebruikers Quick Fix Build bieden</translation>
 <translation id="4593391169954484940">De SHA-256-hash van het bestand.</translation>
 <translation id="4594027034164195984">Toestaan dat afbeeldingen van derden een verificatieprompt tonen</translation>

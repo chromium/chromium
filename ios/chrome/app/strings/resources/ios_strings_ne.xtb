@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">केही सामग्री सबैका लागि उपयुक्त नहुन सक्छन्।</translation>
 <translation id="1601560923496285236">लागू गर्नुहोस्</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{एउटा ठेगाना}other{# वटा ठेगाना}}</translation>
+<translation id="160477039162785330">{count,plural, =1{लेभल बढाउन एउटा कार्य पूरा गर्नुहोस्}other{लेभल बढाउन {count} वटा कार्य पूरा गर्नुहोस्}}</translation>
 <translation id="1605405588277479165">अफ छ - सिफारिस गरिँदैन</translation>
 <translation id="1605658421715042784">तस्बिर कपी गर्नुहोस्</translation>
 <translation id="1606899876897213121">हालसालैको गतिविधिको सारांश बन्द गर्नुहोस्</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914640181019354363">ठेगानाहरू पत्ता लगाउने सुविधासम्बन्धी सेटिङ</translation>
 <translation id="391904960191284041">उत्पादनसम्बन्धी रिभ्यूहरू</translation>
+<translation id="3920165976616657606">"परिष्कृत सुरक्षित ब्राउजिङका बारेमा जान्नुहोस्" पूरा भएको छ!</translation>
 <translation id="3921585859122905677">एड्रेस बारको पोजिसन</translation>
 <translation id="3922185497376658606">वेबपेजहरू प्रिलोड गर्नुहोस्</translation>
 <translation id="3926703470020109118">डाउनलोड रद्द गरियो</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">तपाईं किनारा स्वाइप गरेर पछाडि वा अगाडि जान सक्नुहुन्छ।</translation>
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
 <translation id="446314443268698477">क्यामेरा वा फोटोमा देखिएका कुराहरू किनमेल, अनुवाद तथा पहिचान गर्नुहोस्।</translation>
+<translation id="4465941170695753889">ट्याब समूह बनाउन थिचिराख्नुहोस्</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4470766488397113689">तपाईं के कुरामा काम गर्न चाहनुहुन्छ?</translation>
 <translation id="4471472356135655769">पासवर्डहरू एक्स्पोर्ट गर्न सकिएन</translation>

@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል።</translation>
 <translation id="1601560923496285236">ተግብር</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 አድራሻ}one{# አድራሻ}other{# አድራሻዎች}}</translation>
+<translation id="160477039162785330">{count,plural, =1{ደረጃ ከፍ ለማድረግ 1 ተግባር ያጠናቅቁ}one{ደረጃ ከፍ ለማድረግ {count} ተግባር ያጠናቅቁ}other{ደረጃ ከፍ ለማድረግ {count} ተግባራትን ያጠናቅቁ}}</translation>
 <translation id="1605405588277479165">አጥፋ - አይመከርም</translation>
 <translation id="1605658421715042784">ምስሉን ገልብጥ</translation>
 <translation id="1606899876897213121">የቅርብ ጊዜ እንቅስቃሴ ማጠቃለያን ዝጋ</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">የሚያስፈልግ</translation>
 <translation id="3914640181019354363">አድራሻዎችን ይወቁ</translation>
 <translation id="391904960191284041">የምርት ግምገማዎች</translation>
+<translation id="3920165976616657606">«የተሻሻለ የደኅንነት አሰሳን አስስ» ተጠናቅቋል!</translation>
 <translation id="3921585859122905677">የአድራሻ አሞሌ አቀማመጥ</translation>
 <translation id="3922185497376658606">ድረ-ገፆችን አስቀድመው ይጫኑ</translation>
 <translation id="3926703470020109118">ማውረድ ተሰርዟል</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">ወደ ኋላ ወይም ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="4460014764210899310">ነጥል</translation>
 <translation id="446314443268698477">በካሜራዎ ወይም በፎቶዎችዎ የሚያዩትን ይሸምቱ፣ ይተርጉሙ እና ይለዩ</translation>
+<translation id="4465941170695753889">የትር ቡድን ለመፍጠር ተጭነው ይያዙ</translation>
 <translation id="4469324811108161144">ማስታወሻዎች እስከ <ph name="CHARACTER_LIMIT" /> ቁምፊዎች ድረስ ማስቀመጥ ይችላሉ።</translation>
 <translation id="4470766488397113689">ምን ላይ መሥራት ይፈልጋሉ?</translation>
 <translation id="4471472356135655769">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>

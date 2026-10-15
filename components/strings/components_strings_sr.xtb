@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android апликације</translation>
 <translation id="2103210856015238101">Картице лојалности доступне за унос додиром отворене су у пуној висини.</translation>
 <translation id="2104739941682874393">Побољшано аутоматско попуњавање боље разуме обрасце и може брже аутоматски да их попуњава за вас</translation>
+<translation id="2105237910269166838">Поставите питање о овој страници</translation>
 <translation id="2107021941795971877">Подршка за штампање</translation>
 <translation id="2108755909498034140">Поново покрените рачунар</translation>
 <translation id="2109845311767915560">Дељена група картица</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Не копирај</translation>
 <translation id="2738771556149464852">Не после</translation>
 <translation id="2740531572673183784">Потврди</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ништа}=1{1 вештина}one{# вештина}few{# вештине}other{# вештина}}</translation>
 <translation id="2757727729385895652">Број фајлова који се отпрема на Google диск: <ph name="COUNT" /></translation>
 <translation id="2759299890026163685">Уверите се да имате стабилну интернет везу пре него што пробате поново</translation>
 <translation id="2759825833388495838">унесе лозинку на <ph name="APP_NAME" /></translation>
@@ -3622,6 +3624,7 @@
 <translation id="7083258188081898530">9. фиока</translation>
 <translation id="70846382339153529">OpenDocument текст</translation>
 <translation id="7086090958708083563">Корисник је тражио отпремање</translation>
+<translation id="7089745480771070611">Отвара се на бочној табли</translation>
 <translation id="7090698782953528257">Помози ми да направим графикон функције за визуелизацију математичке једначине и преглед облика криве</translation>
 <translation id="7092087596499105699">Администратор је конфигурисао конектор безбедног мрежног пролаза ради заштите приступа приватним веб-апликацијама организације. Може да користи податке с вашег пословног профила за верификацију приступа.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали дозволама и подацима сачуваним на различитим сајтовима у подешавањима Chrome-а</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">Измените број регистрованог путника</translation>
 <translation id="7698864304447945242">Желите да ажурирате Google Play услуге за ПР?</translation>
 <translation id="7699509138503320152">Преформулиши ми имејл тако да буде убедљивији</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ништа}=1{1 вештина (синхронизовано)}one{# вештина (синхронизовано)}few{# вештине (синхронизовано)}other{# вештина (синхронизовано)}}</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Настави на <ph name="SITE" /> (није безбедно)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Помоћ при писању</translation>

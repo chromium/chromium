@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">ہو سکتا ہے کچھ مواد سبھی کیلئے موزوں نہ ہو۔</translation>
 <translation id="1601560923496285236">لاگو کریں</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 پتہ}other{# پتے}}</translation>
+<translation id="160477039162785330">{count,plural, =1{لیول میں اضافہ کے لیے 1 ٹاسک مکمل کریں}other{لیول میں اضافہ کے لیے {count} ٹاسکس مکمل کریں}}</translation>
 <translation id="1605405588277479165">آف ہے - تجویز کردہ نہیں ہے</translation>
 <translation id="1605658421715042784">تصویر کاپی کریں</translation>
 <translation id="1606899876897213121">حالیہ سرگرمی کا خلاصہ بند کریں</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">مطلوب</translation>
 <translation id="3914640181019354363">پتے کا پتہ لگائیں</translation>
 <translation id="391904960191284041">پروڈکٹ کے جائزے</translation>
+<translation id="3920165976616657606">‫"بہتر کردہ محفوظ براؤزنگ کو دریافت کریں" مکمل ہو گیا!</translation>
 <translation id="3921585859122905677">ایڈریس بار پوزیشن</translation>
 <translation id="3922185497376658606">ویب صفحات پہلے سے لوڈ کریں</translation>
 <translation id="3926703470020109118">ڈاؤن لوڈ منسوخ ہو گیا</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">آپ پیچھے یا آگے جانے کے لیے کنارے کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
 <translation id="446314443268698477">نظر آنے والی چیزوں کو اپنے کیمرا یا تصاویر کے ساتھ انہیں خریدیں، ان کا ترجمہ کریں اور ان کی شناخت کریں۔</translation>
+<translation id="4465941170695753889">ٹیب گروپ بنانے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4470766488397113689">آپ کس چیز پر کام کرنا چاہتے ہیں؟</translation>
 <translation id="4471472356135655769">پاس ورڈز برآمد نہیں ہو سکتے</translation>

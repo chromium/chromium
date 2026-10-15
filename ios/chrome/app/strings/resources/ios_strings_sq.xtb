@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elementi u përditësua</translation>
 <translation id="1018804590490383958">Skano dhe plotëso automatikisht</translation>
 <translation id="1019990162050689579">Aktiviteti i aplikacioneve Gemini</translation>
+<translation id="102471647093736603">Shtyp dhe mbaj shtypur për të zhvendosur</translation>
 <translation id="102645702181682900">Detyra u fillua</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1030376737535466765">Hap "Menaxherin e fjalëkalimeve"</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë.</translation>
 <translation id="1601560923496285236">Zbato</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresë}other{# adresa}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Përfundo 1 detyrë për t'u ngjitur në nivel}other{Përfundo {count} detyra për t'u ngjitur në nivel}}</translation>
 <translation id="1605405588277479165">Joaktiv - Nuk rekomandohet</translation>
 <translation id="1605658421715042784">Kopjo imazhin</translation>
 <translation id="1606899876897213121">Mbyll përmbledhjen e aktivitetit të fundit</translation>
@@ -921,6 +923,7 @@
 <translation id="3914173277599553213">Kërkohet</translation>
 <translation id="3914640181019354363">Zbulo adresat</translation>
 <translation id="391904960191284041">Komentet për produktet</translation>
+<translation id="3920165976616657606">"Eksploro 'Shfletimin e sigurt të përmirësuar'" përfundoi!</translation>
 <translation id="3921585859122905677">Pozicioni i Shiritit të Adresave</translation>
 <translation id="3922185497376658606">Ngarko paraprakisht faqet e uebit</translation>
 <translation id="3926703470020109118">Shkarkimi u anulua</translation>
@@ -1092,6 +1095,7 @@
 <translation id="4455710003856931944">Mund të rrëshqasësh shpejt anash për të kaluar pas dhe para.</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="446314443268698477">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde ose fotografitë e tua.</translation>
+<translation id="4465941170695753889">Shtyp dhe mbaj shtypur për të krijuar një grup skedash</translation>
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="4470766488397113689">Çfarë dëshiron të bësh më pas?</translation>
 <translation id="4471472356135655769">Fjalëkalimet nuk mund të eksportohen</translation>
@@ -1207,6 +1211,7 @@
 <translation id="4808744395915275922">Përditësimet</translation>
 <translation id="4813345808229079766">Lidhja</translation>
 <translation id="4821595350501541683">Skedat janë mbyllur dhe të dhënat e shfletimit janë fshirë</translation>
+<translation id="4823322556950229674">Mund të shtypësh dhe të mbash shtypur për të zhvendosur shiritin e adresave dhe butonin "prapa" në pjesën e poshtme</translation>
 <translation id="4824480232751123840">Volumi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dhe 1 tjetër}other{{domain} dhe {count} të tjerë}}</translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>

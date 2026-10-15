@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android ਐਪਾਂ</translation>
 <translation id="2103210856015238101">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਉਪਲਬਧ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="2104739941682874393">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਸੁਵਿਧਾ ਫ਼ਾਰਮਾਂ ਨੂੰ ਬਿਹਤਰ ਢੰਗ ਨਾਲ ਸਮਝਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਆਟੋਫਿਲ ਕਰ ਸਕਦੀ ਹੈ</translation>
+<translation id="2105237910269166838">ਇਸ ਪੰਨੇ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="2107021941795971877">ਪ੍ਰਿੰਟ ਸੰਬੰਧੀ ਸਹਾਇਤਾਵਾਂ</translation>
 <translation id="2108755909498034140">ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2109845311767915560">ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਟੈਬ ਗਰੁੱਪ</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">ਕਾਪੀ ਨਾ ਕਰੋ</translation>
 <translation id="2738771556149464852">ਬਾਅਦ ਵਿੱਚ ਨਹੀਂ</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਹੁਨਰ}other{# ਹੁਨਰ}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> ਫ਼ਾਈਲ ਨੂੰ Google Drive 'ਤੇ ਅੱਪਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2759299890026163685">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਸਥਿਰ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਹੈ</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਭਰੋ</translation>
@@ -3619,6 +3621,7 @@
 <translation id="7083258188081898530">ਟ੍ਰੇਅ 9</translation>
 <translation id="70846382339153529">OpenDocument ਲਿਖਤ</translation>
 <translation id="7086090958708083563">ਵਰਤੋਂਕਾਰ ਵੱਲੋਂ ਅੱਪਲੋਡ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</translation>
+<translation id="7089745480771070611">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
 <translation id="7090698782953528257">ਗਣਿਤ ਸਮੀਕਰਨ ਦੀ ਕਲਪਨਾ ਕਰਨ ਅਤੇ ਵਕਰ ਦੀ ਆਕ੍ਰਿਤੀ ਦੇਖਣ ਲਈ ਫੰਕਸ਼ਨ ਨੂੰ ਗ੍ਰਾਫ਼ ਕਰਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7092087596499105699">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਪ੍ਰਾਈਵੇਟ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ ਸੁਰੱਖਿਅਤ ਗੇਟਵੇ ਕਨੈਕਟਰ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਹੈ। ਇਹ ਪਹੁੰਚ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਦੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਵਿੱਚ ਸਟੋਰ ਕੀਤੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
@@ -4002,6 +4005,7 @@
 <translation id="7696107855583699585">Known Traveler Number ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="7698864304447945242">ਕੀ Google Play Services for AR ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7699509138503320152">ਮੇਰੀ ਈਮੇਲ ਨੂੰ ਜ਼ਿਆਦਾ ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਬਣਾਉਣ ਲਈ ਮੁੜ-ਲਿਖੋ</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਹੁਨਰ (ਸਿੰਕ ਕੀਤਾ ਗਿਆ)}other{# ਹੁਨਰ (ਸਿੰਕ ਕੀਤੇ ਗਏ)}}</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> ਲਈ ਅੱਗੇ ਵੱਧੋ (ਅਸੁਰੱਖਿਅਤ)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>

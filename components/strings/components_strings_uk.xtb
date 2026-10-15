@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2103210856015238101">Список карток постійного покупця, дані яких заповнюються дотиком, відкрито на всю висоту.</translation>
 <translation id="2104739941682874393">Функція "Розширене автозаповнення" краще визначає форми й швидше заповнює їх</translation>
+<translation id="2105237910269166838">Поставте запитання</translation>
 <translation id="2107021941795971877">Підтримка друку</translation>
 <translation id="2108755909498034140">Перезавантажте комп’ютер</translation>
 <translation id="2109845311767915560">Спільна група вкладок</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Не копіювати</translation>
 <translation id="2738771556149464852">Не пізніше</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Немає}=1{1 навичка}one{# навичка}few{# навички}many{# навичок}other{# навички}}</translation>
 <translation id="2757727729385895652">Завантаження файлів (<ph name="COUNT" />) на Google Диск</translation>
 <translation id="2759299890026163685">Перш ніж повторити спробу, переконайтеся, що інтернет-з’єднання стабільне</translation>
 <translation id="2759825833388495838">автоматично заповнити ваш пароль у додатку <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">Лоток 9</translation>
 <translation id="70846382339153529">Текст OpenDocument</translation>
 <translation id="7086090958708083563">Запит на завантаження від користувача</translation>
+<translation id="7089745480771070611">Відкриється на бічній панелі</translation>
 <translation id="7090698782953528257">Побудуй графік функції, щоб візуалізувати математичне рівняння й побачити форму кривої</translation>
 <translation id="7092087596499105699">Ваш адміністратор налаштував конектор захищеного шлюзу, щоб убезпечити доступ до приватних вебдодатків вашої організації. Для підтвердження доступу можуть використовуватися дані з вашого робочого профілю.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
@@ -4007,6 +4010,7 @@
 <translation id="7696107855583699585">Змінити номер надійного мандрівника</translation>
 <translation id="7698864304447945242">Оновити Сервіси Google Play для AR?</translation>
 <translation id="7699509138503320152">Перепиши мій електронний лист, щоб зробити його переконливішим</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Немає}=1{1 навичка (синхронізовано)}one{# навичка (синхронізовано)}few{# навички (синхронізовано)}many{# навичок (синхронізовано)}other{# навички (синхронізовано)}}</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /> (небезпечно)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Допомога з текстом</translation>

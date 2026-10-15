@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">แอป Android</translation>
 <translation id="2103210856015238101">บัตรสะสมคะแนนที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="2104739941682874393">ฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นเข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อความอัตโนมัติให้คุณได้เร็วขึ้น</translation>
+<translation id="2105237910269166838">เกี่ยวกับหน้านี้</translation>
 <translation id="2107021941795971877">การรองรับการพิมพ์</translation>
 <translation id="2108755909498034140">รีสตาร์ทคอมพิวเตอร์</translation>
 <translation id="2109845311767915560">กลุ่มแท็บที่แชร์</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">ไม่คัดลอก</translation>
 <translation id="2738771556149464852">ไม่เกิน</translation>
 <translation id="2740531572673183784">ตกลง</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{ไม่มี}=1{ทักษะ 1 รายการ}other{ทักษะ # รายการ}}</translation>
 <translation id="2757727729385895652">กำลังอัปโหลดไฟล์ <ph name="COUNT" /> รายการไปยัง Google ไดรฟ์</translation>
 <translation id="2759299890026163685">ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ตที่เสถียรก่อนลองอีกครั้ง</translation>
 <translation id="2759825833388495838">กรอกรหัสผ่านใน "<ph name="APP_NAME" />"</translation>
@@ -3622,6 +3624,7 @@
 <translation id="7083258188081898530">ถาด 9</translation>
 <translation id="70846382339153529">ข้อความ OpenDocument</translation>
 <translation id="7086090958708083563">ผู้ใช้ขอการอัปโหลด</translation>
+<translation id="7089745480771070611">เปิดในแผงด้านข้าง</translation>
 <translation id="7090698782953528257">ช่วยฉันเขียนกราฟฟังก์ชันเพื่อแสดงสมการทางคณิตศาสตร์และดูรูปร่างของเส้นโค้ง</translation>
 <translation id="7092087596499105699">ผู้ดูแลระบบกำหนดค่าเครื่องมือเชื่อมต่อเกตเวย์ที่ปลอดภัยเพื่อปกป้องการเข้าถึงเว็บแอปพลิเคชันส่วนตัวขององค์กร โดยอาจใช้ข้อมูลจากโปรไฟล์งานเพื่อยืนยันการเข้าถึง</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการสิทธิ์และข้อมูลที่จัดเก็บในเว็บไซต์ต่างๆ ในการตั้งค่า Chrome</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">แก้ไขหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="7698864304447945242">อัปเดตบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="7699509138503320152">เขียนอีเมลใหม่ให้โน้มน้าวใจมากขึ้น</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{ไม่มี}=1{ทักษะ 1 รายการ (ซิงค์แล้ว)}other{ทักษะ # รายการ (ซิงค์แล้ว)}}</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />ไปยัง <ph name="SITE" /> (ไม่ปลอดภัย)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">ช่วยฉันเขียน</translation>

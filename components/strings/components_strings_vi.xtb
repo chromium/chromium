@@ -648,6 +648,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2102495993840063010">Ứng dụng Android</translation>
 <translation id="2103210856015238101">Thẻ khách hàng thân thiết có thể điền bằng thao tác chạm đã mở trên toàn màn hình.</translation>
 <translation id="2104739941682874393">Tính năng tự động điền nâng cao nhận biết rõ các biểu mẫu hơn và có thể tự động điền giúp bạn nhanh hơn</translation>
+<translation id="2105237910269166838">Hỏi về trang này</translation>
 <translation id="2107021941795971877">Hỗ trợ in</translation>
 <translation id="2108755909498034140">Khởi động lại máy tính của bạn</translation>
 <translation id="2109845311767915560">Nhóm thẻ được chia sẻ</translation>
@@ -1054,6 +1055,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2734797989819862638">Không sao chép</translation>
 <translation id="2738771556149464852">Không được Sau</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Không có}=1{1 kỹ năng}other{# kỹ năng}}</translation>
 <translation id="2757727729385895652">Đang tải <ph name="COUNT" /> tệp lên Google Drive</translation>
 <translation id="2759299890026163685">Đảm bảo bạn có kết nối Internet ổn định rồi mới thử lại</translation>
 <translation id="2759825833388495838">điền mật khẩu của bạn vào <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7083258188081898530">Khay 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Người dùng yêu cầu tải lên</translation>
+<translation id="7089745480771070611">Mở trong bảng điều khiển bên</translation>
 <translation id="7090698782953528257">Giúp tôi vẽ đồ thị hàm số để trực quan hoá phương trình toán học và xem hình dạng của đường cong</translation>
 <translation id="7092087596499105699">Quản trị viên đã định cấu hình trình kết nối cổng bảo mật để bảo vệ quyền truy cập vào các ứng dụng web riêng tư của tổ chức. Trình kết nối này có thể sử dụng dữ liệu trong hồ sơ công việc của bạn để xác minh quyền truy cập.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
@@ -4007,6 +4010,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7696107855583699585">Chỉnh sửa mã số Known Traveler Number</translation>
 <translation id="7698864304447945242">Cập nhật Dịch vụ Google Play cho Thực tế tăng cường?</translation>
 <translation id="7699509138503320152">Viết lại email của tôi sao cho thuyết phục hơn</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Không có}=1{1 kỹ năng (đã đồng bộ hoá)}other{# kỹ năng (đã đồng bộ hoá)}}</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Tiếp tục truy cập <ph name="SITE" /> (không an toàn)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Giúp tôi viết</translation>

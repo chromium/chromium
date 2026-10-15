@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">ብጁ</translation>
 <translation id="1178093605842850860">ይህን ጣቢያ ማንበብ እና መለወጥ ተፈቅዷል</translation>
 <translation id="1178357842179817577">ከአደገኛ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ይጠብቅዎታል</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />ለበለጠ ተዛማጅ መልሶች ትሮች ይጋራሉ።<ph name="END_BOLD" /> አዲስ ውይይት ሲጀምሩ Google የክፍት ትርዎን ይዘት እና ዩአርኤል ይጠቀማል። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="117916940443676133">የእርስዎ ደህንነት ቁልፍ በፒን ጥበቃ እየተደረገለት አይደለም ያለው። በመለያ መግቢያ ውሂብን ለማስተዳደር፣ በመጀመሪያ ፒን ይፍጠሩ።</translation>
 <translation id="1179400851034021914">አይቢኤኤን ልክ ያልሆነ ነው</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">የተወሰነ ጽሁፍ ጮክ ተብሎ ሲነበብ ይስሙ። መጀመሪያ በማያ ገጽዎ ግርጌ ላይ ያለውን የለመናገር ምረጥ አዶውን ይምረጡ፣ ከዚያ ጽሑፉን ያድምቁ።</translation>
 <translation id="1536754031901697553">ግንኙነት በማቋረጥ ላይ...</translation>
 <translation id="1536883206862903762">ይሄ ቅጥያዎችን ያሰናክላል እና ቅንብሮችዎን ወደ ደኅንነታቸው የተጠበቁ ነባሪዎች ዳግም ያስጀምራል። ትሮች፣ ፋይሎች እና ኩኪዎች ይጠበቃሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />ለበለጠ ተዛማጅ መልሶች ትሮች ይጋራሉ።<ph name="END_BOLD_1" /> አዲስ ውይይት ሲጀምሩ Google የክፍት ትርዎን ይዘት እና ዩአርኤል ይጠቀማል። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ። <ph name="BEGIN_BOLD_2" />የድርጅትዎ ውሂብ የግል እና ደኅንነቱ የተጠበቀ ነው።<ph name="END_BOLD_2" /> ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="1537254971476575106">የሙሉ ማያ ገፅ ማጉያ</translation>
 <translation id="1538808328818992871">ቢያንስ <ph name="MIN_LENGTH" /> ቁምፊዎች መሆን አለባቸው</translation>
 <translation id="1539248305642687917">የቁልፍ ሰሌዳ ግብዓትን ለመሻር ጣቢያዎችን አይፍቀዱ</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">ቅጥያ አቀናብር</translation>
 <translation id="1553538517812678578">ገደብ የለሽ</translation>
 <translation id="1553947773881524342">በእርስዎ Chromebook ላይ ስለ Microsoft 365 <ph name="LINK_BEGIN" />የበለጠ ይወቁ<ph name="LINK_END" />።</translation>
+<translation id="1554343363646356023">አዲስ እና የተለየ መስኮት</translation>
 <translation id="1554640914375980459">ማሳወቂያዎች ሲደርሱዎ ማያ ገፁ ላይ ብልጭ ያድርጉ። ለብርሃን በቀላሉ ተጠቂ ከሆኑ የብልጭታ ማሳወቂያዎችን በጥንቃቄ ይጠቀሙ።</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="1556127816860282890">የዳራ እንቅስቃሴ እና እንደ ለስላሳ ሽብለላ ያሉ አንዳንድ ምስላዊ ተጽዕኖዎች የተገደቡ ሊሆኑ ይችላሉ</translation>
@@ -1903,6 +1906,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ከ<ph name="VOLUME_NAME" /> ፋይሎችን ለመቅዳት ይፈልጋል።</translation>
 <translation id="2457842160081795172">በአሁኑ ጊዜ በ<ph name="CHANNEL_NAME" /> ሰርጥ ላይ</translation>
 <translation id="2458379781610688953">መለያን <ph name="EMAIL" /> አዘምን</translation>
+<translation id="2458545895994128057">ለበለጠ ተዛማጅ መልሶች ትሮች ይጋራሉ። አዲስ ውይይት ሲጀምሩ Google የክፍት ትርዎን ይዘት እና ዩአርኤል ይጠቀማል። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ። የድርጅትዎ ውሂብ የግል እና ደኅንነቱ የተጠበቀ ነው። ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="2459703812219683497">ማግበር ኮድ ተገኝቷል</translation>
 <translation id="2459706890611560967">ትርን ወደ <ph name="DEVICE_NAME" /> cast ማድረግን ከቆመበት ቀጥል</translation>
 <translation id="245979889539926662">ቅጽበታዊ ገጽ ዕይታን ያጋሩ</translation>
@@ -3164,6 +3168,7 @@
 <translation id="3390740059150071453">ወደ ግራ ይመልከቱ</translation>
 <translation id="3393554941209044235">የChrome ሰነድ ትንታኔ</translation>
 <translation id="3394072120086516913">ፒሲ በገመድ ተገናኝቷል እና የcasti ማድረጊያ መሣሪያው ከWi-Fi ጋር ተገናኝቷል</translation>
+<translation id="3394561494170561143">አዲስ የተገለለ እና ትር</translation>
 <translation id="3394850431319394743">የተጠበቀ ይዘት ለማጫወት ለዪዎችን እንዲጠቀም ተፈቅዷል</translation>
 <translation id="339722927132407568">ይረጋል</translation>
 <translation id="3399432415385675819">ማሳወቂያዎች ይሰናከላሉ</translation>
@@ -6208,6 +6213,7 @@
 <translation id="5724723163580775373">ትልቅ ትኩረት</translation>
 <translation id="5725112283692663422">በሰው ሠራሽ አስተውሎት ለገጽታ ፍጠር ግብረ መልስ ይላኩ</translation>
 <translation id="5727728807527375859">ቅጥያዎች፣ መተግበሪያዎች እና ገፅታዎች ኮምፒውተርዎን ሊጎዱ ይችላሉ። እርግጠኛ ነዎት መቀጠል ይፈልጋሉ?</translation>
+<translation id="5727872803091928075">ለበለጠ ተዛማጅ መልሶች ትሮች ይጋራሉ። አዲስ ውይይት ሲጀምሩ Google የክፍት ትርዎን ይዘት እና ዩአርኤል ይጠቀማል። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="5728072125198221967">የተገናኙ የGoogle አገልግሎቶች</translation>
 <translation id="5729712731028706266">&amp;እይታ</translation>
 <translation id="5731247495086897348">ለ&amp;ጥፍና እና ሂድ</translation>
@@ -7037,6 +7043,7 @@
 <translation id="6370021412472292592">ማሳያን መጫን አልተቻለም።</translation>
 <translation id="6370551072524410110">ፍለጋ + ቀያይር + የኋሊት መደምሰሻ</translation>
 <translation id="637135143619858508">ሰፋ ያለ</translation>
+<translation id="6372413553057593904">«<ph name="WINDOW_TITLE" />» ውስጥ ገቢር ያልሆነ ትር</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">እንደገና ይሞክሩ</translation>
 <translation id="637642201764944055">የድሮ የChrome መተግበሪያዎች ስሪቶች ከዲሴምበር 2022 በኋላ በLinux መሣሪያዎች ላይ አይከፍቱም። ወደ አዲስ ስሪት ለማዘመን ወይም ይህን መተግበሪያ ለማስወገድ አስተዳዳሪዎን ያነጋግሩ።</translation>
@@ -7351,6 +7358,7 @@
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6613231539539868591">ያልተቋረጠ ውሂብ</translation>
 <translation id="6613267708691765962">የተንኮል አዘል ዌርን በመቃኘት ላይ...</translation>
+<translation id="6614219106064338118">ውይይት ጀምር</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
 <translation id="6616000047939888167">በሌሎች ቋንቋዎች ላሉ ድር ጣቢያዎች እና PDFዎች የGoogle ትርጉምን ያቅርቡ</translation>
 <translation id="6618013221808317456">ጣቢያዎች ጃቫስክሪፕት ማመቻቸትን እንዲጠቀሙ አትፍቀድ</translation>
@@ -9739,6 +9747,7 @@ nil</translation>
 <translation id="8410133743809404768">«@history»ን በመጠቀም በአድራሻ አሞሌው ውስጥ እንዲሁም ከታሪክ ገፅ መፈለግ ይችላሉ</translation>
 <translation id="8411043186249152291">ሙሉ ማያ ገፅ</translation>
 <translation id="8412136526970428322">የተፈቀዱ <ph name="PERMISSION" /> እና <ph name="COUNT" /> ተጨማሪ</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />የGoogle ደንቦች<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGemini መተግበሪያ የግላዊነት ማስታወቂያ<ph name="END_LINK2" /> ይተገበራሉ።</translation>
 <translation id="8413795581997394485">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። ጣቢያን ጉብኝት በሚያደርጉበት ጊዜ፣ Chrome የአይ ፒ አድራሻዎን በሚደብቅ የግላዊነት አገልጋይ በኩል የተደበቀውን የዩአርኤል ክፍል ወደ Google ይልካል። ጣቢያ አጠራጣሪ ነገር ካደረገ፣ እንዲሁም የገፅ ይዘት ሙሉ ዩአርኤሎች እና ቢቶች ይላካሉ</translation>
 <translation id="8414396119627470038">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> በመለያ ይግቡ</translation>
 <translation id="8415120635186642416">ማንኛውንም ነገር ይመርምሩ</translation>

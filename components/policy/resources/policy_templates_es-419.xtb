@@ -412,6 +412,15 @@ que se instale.</translation>
 <translation id="1272798957154751008">Habilitar la migración de los dispositivos Chromad a la administración de la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1277411517984768103">Permitir que se ejecute <ph name="BOREALIS_NAME" /> para un usuario</translation>
+<translation id="1281420319219324116">Esta política configura el certificado de cliente administrado que se aprovisiona cuando se habilita <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />.
+
+El campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica la fuente del nombre común (CN) del asunto del certificado:
+
+- Si no se establece o se establece en <ph name="DEVICE_ID_VALUE" />, el nombre común del asunto del certificado se especifica como el ID de dispositivo virtual del navegador administrado.
+
+- Si se establece en <ph name="COMPUTER_NAME_VALUE" />, el nombre común del asunto del certificado se especifica como el nombre de host de la máquina.
+
+Esta política no tiene efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> está inhabilitada o no se estableció.</translation>
 <translation id="1285819498003746288">La API de Event.path no estará disponible.</translation>
 <translation id="1290722184971934486">Si estableces la política como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de administración de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -5856,6 +5865,15 @@ En el caso de los dispositivos no administrados, esta política no se aplica, y 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado. Los usuarios podrán cambiar la configuración mediante la función experimental --disk-cache-size.
 
       Nota: El valor especificado en esta política se utiliza como pauta para varios subsistemas del navegador almacenados en caché. Por lo tanto, el uso total del disco destinado al almacenamiento en caché será mayor, pero en la misma proporción que el valor especificado.</translation>
+<translation id="4582488040806837065">Esta política configura el certificado de cliente administrado que se aprovisiona cuando se habilita <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />.
+
+El campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica la fuente del nombre común (CN) del asunto del certificado:
+
+- Si no se establece o se establece en <ph name="PROFILE_ID_VALUE" />, el nombre común del asunto del certificado se especifica como el ID del perfil del navegador.
+
+- Si se establece en <ph name="COMPUTER_NAME_VALUE" />, el nombre común del asunto del certificado se especifica como el nombre de host de la máquina. Nota: Si estableces esta propiedad en <ph name="COMPUTER_NAME_VALUE" />, se usará una propiedad a nivel del dispositivo en un certificado con alcance de perfil, lo que tiene implicaciones de privacidad en dispositivos no administrados o compartidos, ya que el nombre de host de la máquina se incluirá en el certificado.
+
+Esta política no tiene efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> está inhabilitada o no se estableció.</translation>
 <translation id="4591366717022345234">Proporcionarles a los usuarios una versión Quick Fix</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594027034164195984">Permitir que las imágenes de terceros muestren una solicitud de autenticación</translation>

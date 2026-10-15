@@ -665,6 +665,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2126374524350484896">Pengeluar PDF:</translation>
 <translation id="2127090458081644412">Kata laluan telah disimpan pada peranti ini</translation>
 <translation id="2127747486437921899">Huruf condong</translation>
+<translation id="2129163794581571479">Dikuasakan oleh Gemini dengan Kecerdasan Peribadi. Permintaan, tajuk halaman dan URL anda mungkin disemak untuk meningkatkan autolengkap dipertingkatkan. <ph name="BEGIN_LINK" />Urus tetapan<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Templat yang anda nyatakan tidak dapat digunakan kerana dasar DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Dayakan Autolengkap Pembayaran dibuka pada ketinggian penuh.</translation>
@@ -1576,6 +1577,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3655670868607891010">Jika anda kerap melihatnya, cuba <ph name="HELP_LINK" /> ini.</translation>
 <translation id="3658742229777143148">Semakan</translation>
 <translation id="3659521826520353662">Jenis dan masa laman web ditakrifkan pentadbir dilawati: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Dikuasakan oleh Gemini dengan Kecerdasan Peribadi. <ph name="BEGIN_LINK" />Urus tetapan<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Cari lebih banyak pilihan pembelian daripada kedai lain yang menjual produk ini.</translation>
 <translation id="3664782872746246217">Kata kunci:</translation>
 <translation id="3670030362669914947">Nombor</translation>
@@ -1596,6 +1598,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3693516565203081475">Pilih kaedah pembayaran</translation>
 <translation id="3698353241727597930">Pentadbir anda telah mengkonfigurasi untuk menyimpan <ph name="FILES" /> dalam storan <ph name="CLOUD_STORAGE" /> yang diurus oleh syarikat anda. Fail ini mungkin dipantau, diaudit dan dikekalkan apabila anda memadamkan fail tersebut.</translation>
 <translation id="3698629142018988477">Butang buat laman, aktifkan untuk membuat laman baharu dalam Google Sites dengan pantas</translation>
+<translation id="3698708128812719147">Tekan Ctrl dua kali di mana-mana sahaja pada web untuk menemukan dan mengisi lebih banyak maklumat</translation>
 <translation id="3700094625653511150">Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Anda menggunakan cap jari anda untuk mengisi kata laluan</translation>
 <translation id="3701427423622901115">Tetap semula diakui.</translation>
@@ -1899,6 +1902,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4185037616931963178">Kemas kinikan nombor tebus rugi dengan selamat</translation>
 <translation id="4186035307311647330">Nyahjejak harga</translation>
 <translation id="4191334393248735295">Panjang</translation>
+<translation id="4192770747482479191">Tekan ⌘ dua kali di mana-mana sahaja pada web untuk menemukan dan mengisi lebih banyak maklumat</translation>
 <translation id="4195459680867822611">Butang lihat petua Chrome, aktifkan untuk mengetahui tentang ciri Chrome</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4196861286325780578">&amp;Buat semula pindahkan</translation>
@@ -2847,6 +2851,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="573974402615125334">Untuk berkongsi, menyertai dan bekerjasama dalam kumpulan tab, segerakkan sejarah dan tab anda</translation>
 <translation id="5740911612628596808">Sampul C9</translation>
 <translation id="574392208103952083">Sederhana</translation>
+<translation id="5744350700955456407">Kini autolengkap dipertingkatkan dapat menemukan dan mengisi maklumat — seperti nombor pesanan dan kod pengesahan penerbangan — daripada apl seperti Gmail dan Photos</translation>
 <translation id="5745586894920491759">Chrome memproses tajuk halaman dan URL dalam awan</translation>
 <translation id="5745733273847572235">Boleh meminta lokasi anda</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>

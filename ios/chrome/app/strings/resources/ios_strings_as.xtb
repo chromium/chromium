@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">কিছুমান সমল সকলোৰে বাবে উপযুক্ত নহ’বও পাৰে।</translation>
 <translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{১ টা ঠিকনা}one{# টা ঠিকনা}other{# টা ঠিকনা}}</translation>
+<translation id="160477039162785330">{count,plural, =1{স্তৰ উন্নত কৰিবলৈ ১ টা কাৰ্য সম্পূৰ্ণ কৰক}one{স্তৰ উন্নত কৰিবলৈ {count} টা কাৰ্য সম্পূৰ্ণ কৰক}other{স্তৰ উন্নত কৰিবলৈ {count} টা কাৰ্য সম্পূৰ্ণ কৰক}}</translation>
 <translation id="1605405588277479165">অফ আছে - চুপাৰিছ কৰা নহয়</translation>
 <translation id="1605658421715042784">চিত্ৰ প্ৰতিলিপি কৰক</translation>
 <translation id="1606899876897213121">শেহতীয়া কাৰ্যকলাপৰ সাৰাংশ বন্ধ কৰক</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">বাধ্যতামূলক</translation>
 <translation id="3914640181019354363">ঠিকনা চিনাক্ত কৰক</translation>
 <translation id="391904960191284041">প্ৰ’ডাক্টৰ পর্যালোচনা</translation>
+<translation id="3920165976616657606">"বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং অন্বেষণ কৰক" সম্পূৰ্ণ হৈছে!</translation>
 <translation id="3921585859122905677">ঠিকনাৰ বাৰৰ স্থান</translation>
 <translation id="3922185497376658606">ৱেবপৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
 <translation id="3926703470020109118">ডাউনল’ড বাতিল কৰা হৈছে</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">পাছলৈ বা আগলৈ যাবলৈ আপুনি কাষৰ পৰা ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="4460014764210899310">গোট ভংগ কৰক</translation>
 <translation id="446314443268698477">আপোনাৰ কেমেৰা বা ফট’ৰ জৰিয়তে দেখা পোৱা বস্তুবোৰ কিনক, অনুবাদ কৰক আৰু চিনাক্ত কৰক।</translation>
+<translation id="4465941170695753889">এটা টেবৰ গোট সৃষ্টি কৰিবলৈ টিপি ধৰি ৰাখক</translation>
 <translation id="4469324811108161144">টোকায়ে <ph name="CHARACTER_LIMIT" /> টা পৰ্যন্ত বৰ্ণ ছেভ কৰিব পাৰে।</translation>
 <translation id="4470766488397113689">আপুনি কিহৰ ওপৰত কাম কৰিব বিচাৰে?</translation>
 <translation id="4471472356135655769">পাছৱৰ্ড ৰপ্তানি কৰিব নোৱাৰি</translation>

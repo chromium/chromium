@@ -163,6 +163,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1109482864356262001">Ni fydd nodweddion sydd angen synwyryddion symudiad neu olau yn gweithio</translation>
 <translation id="1110155001042129815">Aros</translation>
 <translation id="1110965959145884739">Dewis pa ieithoedd i'w gosod ar y ddyfais hon. Rhennir ffeiliau iaith ymhlith defnyddwyr i gadw lle ar y disg. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Ffocysu ar grŵp tabiau</translation>
 <translation id="1112227834592480032">Dewiswch y botwm Google Lens, yna cliciwch a llusgwch dros broblem</translation>
 <translation id="1112420131909513020">Mae tab cefndir yn defnyddio Bluetooth</translation>
 <translation id="1112998165730922436">Mae castio wedi'i seibio</translation>
@@ -2240,6 +2241,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2701960282717219666">Cyfeiriad MAC Rhwydwaith</translation>
 <translation id="2702720509009999256">Gwiriwch eich cysylltiad rhyngrwyd a dewiswch "Rhowch gynnig arall arni", neu dewiswch "Agor yn y golygydd sylfaenol" er mwyn defnyddio dewisiadau gweld a golygu cyfyngedig.</translation>
 <translation id="2702801445560668637">Rhestr Ddarllen</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Dadffocysu tab}zero{Dadffocysu tabiau}two{Dadffocysu tabiau}few{Dadffocysu tabiau}many{Dadffocysu tabiau}other{Dadffocysu tabiau}}</translation>
 <translation id="270414148003105978">Rhwydweithiau symudol</translation>
 <translation id="2704184184447774363">Llofnodi Dogfennau Microsoft</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
@@ -3155,6 +3157,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3379268272734690">Anialwch</translation>
 <translation id="3382737653173267704">Gweld teulu</translation>
 <translation id="338323348408199233">Rhwystro traffig heb VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Ffocysu ar dab}zero{Ffocysu ar dabiau}two{Ffocysu ar dabiau}few{Ffocysu ar dabiau}many{Ffocysu ar dabiau}other{Ffocysu ar dabiau}}</translation>
 <translation id="3385053436247851142">Mewngofnodi gyda Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb eich adnabod i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal yn gyffredinol wasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr.</translation>
@@ -4538,6 +4541,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4406308048672435032">Gallwch wneud y tab hwn yn anweithredol neu adnewyddu i weld y rhestr lawn eto</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
 <translation id="4406963243402726564">Data heb eu cadw</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Dadffocysu Tab}zero{Dadffocysu Tabiau}two{Dadffocysu Tabiau}few{Dadffocysu Tabiau}many{Dadffocysu Tabiau}other{Dadffocysu Tabiau}}</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}=2{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" /> a <ph name="APP1_NAME" />. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}=3{Gall eich gweinyddwr recordio eich sgrin gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ac 1 ap arall. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}zero{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # apiau eraill. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}many{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ap arall. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}other{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ap arall. Byddwch yn cael gwybod pan fydd y recordiad yn dechrau.}}</translation>
 <translation id="4409697491990005945">Ymylon</translation>
@@ -7424,6 +7428,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6651762277693024112">Yn rhedeg yn awtomatig bob tro y byddwch yn ymweld â'r wefan hon</translation>
 <translation id="6654509035557065241">Gwneud hwn y rhwydwaith diofyn</translation>
 <translation id="6655190889273724601">Modd datblygwr</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Ffocysu ar Dab}zero{Ffocysu ar Dabiau}two{Ffocysu ar Dabiau}few{Ffocysu ar Dabiau}many{Ffocysu ar Dabiau}other{Ffocysu ar Dabiau}}</translation>
 <translation id="6657180931610302174">Ychwanegu enw defnyddiwr?</translation>
 <translation id="6657240842932274095">Caniatáu i wasanaethau system ddefnyddio'ch lleoliad?</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
@@ -10060,6 +10065,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8652400352452647993">Gwall estyniad pecyn</translation>
 <translation id="8654151524613148204">Mae'r ffeil yn rhy fawr i'ch cyfrifiadur ei thrin. Ymddiheuriadau.</translation>
 <translation id="8655295600908251630">Sianel</translation>
+<translation id="8656101380279383244">Ffocysu ar Grŵp Tabiau</translation>
 <translation id="8656888282555543604">Galluogi cofnodi braille</translation>
 <translation id="8657393004602556571">Ydych chi am gael gwared ar yr adborth?</translation>
 <translation id="8657542881463614516">Defnyddiwch ystum sweipio i lywio rhwng tudalennau</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">更新済みのアイテム</translation>
 <translation id="1018804590490383958">スキャンして自動入力</translation>
 <translation id="1019990162050689579">Gemini アプリ アクティビティ</translation>
+<translation id="102471647093736603">長押しして移動</translation>
 <translation id="102645702181682900">タスクが開始されました</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030376737535466765">パスワード マネージャーを開く</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">一部のユーザーに適していないコンテンツがあります。</translation>
 <translation id="1601560923496285236">適用</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 件の住所}other{# 件の住所}}</translation>
+<translation id="160477039162785330">{count,plural, =1{レベルアップするには、あと 1 件のタスクを完了してください}other{レベルアップするには、あと {count} 件のタスクを完了してください}}</translation>
 <translation id="1605405588277479165">オフ - 推奨されません</translation>
 <translation id="1605658421715042784">画像をコピー</translation>
 <translation id="1606899876897213121">最近のアクティビティの概要を閉じる</translation>
@@ -511,6 +513,7 @@
 <translation id="2524699375503213836">Safari からデータを移行</translation>
 <translation id="2526166285241366046">パスワードを保存する</translation>
 <translation id="2529021024822217800">すべて開く</translation>
+<translation id="2530932541542751783">この設定でエラーが発生しました。Chrome と iPadOS を更新して再起動してから、もう一度お試しください。このエラーが引き続き発生する場合は、お使いの iPad がこの設定に対応していない可能性があります。</translation>
 <translation id="2536991091671391962">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="2538103551183528357">非表示のパスワード</translation>
 <translation id="2538705697765638552">情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。保存した情報は <ph name="USER_EMAIL" /> の Google ウォレットで管理できます。</translation>
@@ -920,6 +923,7 @@
 <translation id="3914173277599553213">必須</translation>
 <translation id="3914640181019354363">アドレスを検出する</translation>
 <translation id="391904960191284041">商品レビュー</translation>
+<translation id="3920165976616657606">「セーフ ブラウジング保護強化機能を確認する」が完了しました。</translation>
 <translation id="3921585859122905677">アドレスバーの位置</translation>
 <translation id="3922185497376658606">ウェブページのプリロード</translation>
 <translation id="3926703470020109118">ダウンロード キャンセル</translation>
@@ -928,6 +932,7 @@
 <translation id="3933372629914873850"><ph name="URL" /> にログインします</translation>
 <translation id="3934905113567851655">ピンチでサイズを変更</translation>
 <translation id="393732545649378031">アカウント</translation>
+<translation id="3939683043166875001">よく使用するサイトや Discover フィードなどの表示 / 非表示を切り替えることができます。</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="3946483119107054883">CSV 形式でダウンロード</translation>
@@ -1090,6 +1095,7 @@
 <translation id="4455710003856931944">端をスワイプすると、前または次のタブに移動できます。</translation>
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="446314443268698477">カメラで撮影したアイテムや写真のアイテムを購入、翻訳、特定できます。</translation>
+<translation id="4465941170695753889">長押しするとタブグループを作成できます</translation>
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4470766488397113689">何をしますか？</translation>
 <translation id="4471472356135655769">パスワードをエクスポートできません</translation>
@@ -1205,6 +1211,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">接続</translation>
 <translation id="4821595350501541683">タブを閉じて閲覧データを削除しました</translation>
+<translation id="4823322556950229674">アドレスバーと戻るボタンを長押しすると、一番下に移動できます</translation>
 <translation id="4824480232751123840">数量</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
 <translation id="4826588772550366629">カメラとマイク</translation>
@@ -1262,6 +1269,7 @@
 <translation id="4977176874984951085">ページ操作メニューを開く</translation>
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4985921635659180565">ファイルの削除をスケジュール設定すると、後からキャンセルできません。</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 個の共有タブ}other{{COUNT} 個の共有タブ}}</translation>
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
 <translation id="4986428648020277392">プロンプト: どちらを買うべき？3 つのうちの 2 つ目</translation>
 <translation id="498768198683310172">Gemini の使用を開始</translation>
@@ -1921,6 +1929,7 @@
 <translation id="6938212956536472404">このタブは共有できません</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6946722113367118030">考えている</translation>
+<translation id="6947751977892029882">この設定でエラーが発生しました。Chrome と iOS を更新して再起動してから、もう一度お試しください。このエラーが引き続き発生する場合は、お使いの iPhone がこの設定に対応していない可能性があります。</translation>
 <translation id="6950522403736391608">非表示</translation>
 <translation id="695965663642079255">お支払い情報を保存、管理して、購入手続きをスムーズに行います</translation>
 <translation id="6962809930976936328">Gemini で分析情報を取得</translation>
@@ -2343,6 +2352,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8264966119170358612">保存したパスワードの一部が Google 以外でのデータ侵害で漏洩しました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome メニューを開く</translation>
 <translation id="826614135184049678">iPad をリセットしている途中で、アカウント <ph name="USER_NAME" /> からログアウトしました。再度ログインするには、下の [続行] をタップします。</translation>
+<translation id="8266370374397811600">新しい実績を達成しました！🥳</translation>
 <translation id="8270320981823560179">ドライブ</translation>
 <translation id="8274795744553482834">プロファイルを切り替えようとしています</translation>
 <translation id="8275068909952022340">その他…</translation>

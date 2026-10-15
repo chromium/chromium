@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2103210856015238101">Хүрч бөглөх боломжтой лояалти картуудыг бүтэн өндрөөр нээсэн.</translation>
 <translation id="2104739941682874393">Сайжруулсан автоматаар бөглөх хэсэг маягтыг илүү сайн ойлгодог бөгөөд танд илүү хурдан автоматаар бөглөж өгөх боломжтой</translation>
+<translation id="2105237910269166838">Энэ хуудасны тухай асуух</translation>
 <translation id="2107021941795971877">Хэвлэлийн дэмжлэг</translation>
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
 <translation id="2109845311767915560">Хуваалцсан табын бүлэг</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Бүү хуул</translation>
 <translation id="2738771556149464852">Дараа нь биш</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Байхгүй}=1{1 ур чадвар}other{# ур чадвар}}</translation>
 <translation id="2757727729385895652">Google Драйвт <ph name="COUNT" /> файл байршуулж байна</translation>
 <translation id="2759299890026163685">Та дахин оролдохоосоо өмнө тогтвортой интернэт холболттой эсэхээ нягтална уу</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> дээр нууц үгээ оруулна уу</translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">Гарах цаасны тавиур 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Хэрэглэгч байршуулах хүсэлт тавьсан</translation>
+<translation id="7089745480771070611">Хажуугийн самбарт нээгдэнэ</translation>
 <translation id="7090698782953528257">Математикийн тэгшитгэлийг дүрслэх, муруйн хэлбэрийг харахын тулд функцийн график зурахад надад тусална уу</translation>
 <translation id="7092087596499105699">Байгууллагын тань хувийн веб аппликейшнуудад хандах хандалтыг хамгаалахын тулд танай администратор аюулгүй гэйтвэй холбогчийг тохируулсан байна. Хандалтыг баталгаажуулахын тулд таны ажлын профайлын өгөгдлийг ашиглаж магадгүй.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоонд сайтууд дээр хадгалсан зөвшөөрөл болон өгөгдлийг удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">Бүртгэлтэй аялагчийн дугаарыг засах</translation>
 <translation id="7698864304447945242">Google Play Services for AR-г шинэчлэх үү?</translation>
 <translation id="7699509138503320152">Миний имэйлийг илүү үнэмшилтэй болгож найруулан бичнэ үү</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Байхгүй}=1{1 ур чадвар (синк хийсэн)}other{# ур чадвар (синк хийсэн)}}</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7704050614460855821"><ph name="SITE" /> (аюултай) <ph name="BEGIN_LINK" />руу үгрэлжлүүлэх<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Надад бичихэд тусал</translation>

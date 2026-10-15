@@ -268,6 +268,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1177863135347784049">Custom</translation>
 <translation id="1178093605842850860">Pinapayagan na mabasa at mabago ang site na ito</translation>
 <translation id="1178357842179817577">Pinoprotektahan ka laban sa mga mapanganib na site, download, at extension</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Sine-share ang mga tab para sa mga mas nauugnay na sagot.<ph name="END_BOLD" /> Ginagamit ng Google ang content at URL ng iyong nakabukas na tab kapag nagsimula ka ng bagong chat. Puwede mong baguhin ang setting na ito anumang oras.</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="117916940443676133">Hindi pinoprotektahan ng PIN ang iyong security key. Para pamahalaan ang data sa pag-sign in, gumawa muna ng PIN.</translation>
 <translation id="1179400851034021914">Invalid ang IBAN</translation>
@@ -702,6 +703,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1535753739390684432">Marinig na binabasa nang malakas ang partikular na text. Una, piliin ang icon na Select-to-speak sa ibaba ng iyong screen, pagkatapos ay i-highlight ang text.</translation>
 <translation id="1536754031901697553">Nagdidiskonekta...</translation>
 <translation id="1536883206862903762">Idi-disable nito ang mga extension at ire-reset ang iyong mga setting sa mga ligtas na default. Mapapanatili ang mga tab, file, at cookies. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Sine-share ang mga tab para sa mga mas nauugnay na sagot.<ph name="END_BOLD_1" /> Ginagamit ng Google ang content at URL ng iyong nakabukas na tab kapag nagsimula ka ng bagong chat. Puwede mong baguhin ang setting na ito anumang oras. <ph name="BEGIN_BOLD_2" />Pribado at secure ang data ng iyong organisasyon.<ph name="END_BOLD_2" /> Hindi ito gagamitin para pahusayin ang mga generative AI model.</translation>
 <translation id="1537254971476575106">Fullscreen magnifier</translation>
 <translation id="1538808328818992871">Hindi dapat bababa sa <ph name="MIN_LENGTH" /> character</translation>
 <translation id="1539248305642687917">Huwag payagan ang mga site na i-override ang input ng iyong keyboard</translation>
@@ -729,6 +731,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1552752544932680961">Mamahala ng extension</translation>
 <translation id="1553538517812678578">walang limitasyon</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /> tungkol sa Microsoft 365 sa iyong Chromebook.</translation>
+<translation id="1554343363646356023">Bagong &amp;isolated window</translation>
 <translation id="1554640914375980459">I-flash ang screen kapag nakatanggap ka ng mga notification. Mag-ingat sa paggamit ng mga flash notification kung sensitibo ka sa ilaw.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1556127816860282890">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll</translation>
@@ -1908,6 +1911,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2457246892030921239">Gustong kumopya ng <ph name="APP_NAME" /> ng mga file mula sa <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Kasalukuyang nasa <ph name="CHANNEL_NAME" /> channel</translation>
 <translation id="2458379781610688953">I-update ang account, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Sine-share ang mga tab para sa mga mas nauugnay na sagot. Ginagamit ng Google ang content at URL ng iyong nakabukas na tab kapag nagsimula ka ng bagong chat. Puwede mong baguhin ang setting na ito anumang oras. Pribado at secure ang data ng iyong organisasyon. Hindi ito gagamitin para pahusayin ang mga generative AI model.</translation>
 <translation id="2459703812219683497">Na-detect ang code sa pag-activate</translation>
 <translation id="2459706890611560967">Ipagpatuloy ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Mag-share ng screenshot</translation>
@@ -3169,6 +3173,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3390740059150071453">Tumingin sa kaliwa</translation>
 <translation id="3393554941209044235">Pagsusuri ng Chrome sa Dokumento</translation>
 <translation id="3394072120086516913">Wired ang PC at nakakonekta sa Wi-Fi ang casting device</translation>
+<translation id="3394561494170561143">Bagong naka-isolate na &amp;tab</translation>
 <translation id="3394850431319394743">Pinapayagang gumamit ng mga identifier para mag-play ng pinoprotektahang content</translation>
 <translation id="339722927132407568">Nagfi-freeze</translation>
 <translation id="3399432415385675819">Madi-disable ang mga notification</translation>
@@ -6215,6 +6220,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5724723163580775373">Malaking pag-focus</translation>
 <translation id="5725112283692663422">Magpadala ng feedback para sa Gumawa ng tema gamit ang AI</translation>
 <translation id="5727728807527375859">Maaaring mapinsala ng mga extension, apps, at mga tema ang iyong computer. Sigurado ka bang gusto mong magpatuloy?</translation>
+<translation id="5727872803091928075">Sine-share ang mga tab para sa mga mas nauugnay na sagot. Ginagamit ng Google ang content at URL ng iyong nakabukas na tab kapag nagsimula ka ng bagong chat. Puwede mong baguhin ang setting na ito anumang oras.</translation>
 <translation id="5728072125198221967">Mga naka-link na serbisyo ng Google</translation>
 <translation id="5729712731028706266">&amp;Tingnan</translation>
 <translation id="5731247495086897348">I-pa&amp;ste at Umalis</translation>
@@ -7044,6 +7050,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6370021412472292592">Hindi mai-load ang manifest.</translation>
 <translation id="6370551072524410110">search + shift + backspace</translation>
 <translation id="637135143619858508">Loose</translation>
+<translation id="6372413553057593904">Hindi aktibong tab sa "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Subukan Ulit</translation>
 <translation id="637642201764944055">Hindi na bubukas ang mga lumang bersyon ng Chrome Apps sa mga Linux device pagkatapos ng Disyembre 2022. Makipag-ugnayan sa iyong administrator para mag-update sa bagong bersyon o alisin ang app na ito.</translation>
@@ -7358,6 +7365,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6613231539539868591">Nananatiling Data</translation>
 <translation id="6613267708691765962">Sina-scan para sa malware...</translation>
+<translation id="6614219106064338118">Magsimula ng chat</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6616000047939888167">Ialok ang Google Translate para sa mga website at PDF na nasa iba pang wika</translation>
 <translation id="6618013221808317456">Huwag payagan ang mga site na gamitin ang pag-optimize ng JavaScript</translation>
@@ -9741,6 +9749,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8410133743809404768">Puwede kang maghanap sa address bar gamit ang "@history," at mula sa page na History</translation>
 <translation id="8411043186249152291">fullscreen</translation>
 <translation id="8412136526970428322">Pinayagan ang <ph name="PERMISSION" /> at <ph name="COUNT" /> pa</translation>
+<translation id="8413685856004704642">Nalalapat ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Google<ph name="END_LINK1" /> at ang <ph name="BEGIN_LINK2" />Notification ng Privacy sa Mga Gemini App<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content page.</translation>
 <translation id="8414396119627470038">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Magsaliksik ng kahit ano</translation>

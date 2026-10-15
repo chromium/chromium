@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">काही आशय प्रत्येकासाठी योग्य नसू शकतो.</translation>
 <translation id="1601560923496285236">लागू करा</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{१ ॲड्रेस}other{# ॲड्रेस}}</translation>
+<translation id="160477039162785330">{count,plural, =1{लेव्हल अप करण्यासाठी १ टास्क पूर्ण करा}other{लेव्हल अप करण्यासाठी {count} टास्क पूर्ण करा}}</translation>
 <translation id="1605405588277479165">बंद - शिफारस केलेले नाही</translation>
 <translation id="1605658421715042784">इमेज कॉपी करा</translation>
 <translation id="1606899876897213121">अलीकडील अ‍ॅक्टिव्हिटी सारांश बंद करा</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914640181019354363">पत्ते डिटेक्ट करा</translation>
 <translation id="391904960191284041">उत्पादन पुनरावलोकने</translation>
+<translation id="3920165976616657606">"वर्धित सुरक्षित ब्राउझिंग एक्सप्लोर करा" पूर्ण झाले आहे!</translation>
 <translation id="3921585859122905677">अ‍ॅड्रेस बारचे स्थान</translation>
 <translation id="3922185497376658606">वेबपेज प्रीलोड करा</translation>
 <translation id="3926703470020109118">डाउनलोड रद्द केले आहे</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">पुढे किंवा मागे जाण्यासाठी तुम्ही कडेवर स्‍वाइप करू शकता.</translation>
 <translation id="4460014764210899310">गटामधून काढून टाका</translation>
 <translation id="446314443268698477">तुमचा कॅमेरा वापरून किंवा फोटोमध्ये तुम्हाला जे दिसते ते खरेदी करा, त्याचे भाषांतर करा आणि ते ओळखा.</translation>
+<translation id="4465941170695753889">टॅब गट तयार करण्यासाठी प्रेस करून धरून ठेवा</translation>
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4470766488397113689">तुम्हाला कशावर काम करायचे आहे?</translation>
 <translation id="4471472356135655769">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>

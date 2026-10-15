@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1178093605842850860">יש הרשאה לקריאה ולשינוי של האתר הזה</translation>
 <translation id="1178357842179817577">הגנה מפני אתרים, הורדות ותוספים מסוכנים</translation>
+<translation id="1178447762281437907">‏<ph name="BEGIN_BOLD" />הכרטיסיות משותפות כדי לתת תשובות רלוונטיות יותר.<ph name="END_BOLD" /> כשמתחילים שיחה חדשה, Google משתמשת בתוכן ובכתובת ה-URL של הכרטיסייה הפתוחה. אפשר לשנות את ההגדרה הזו בכל שלב.</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="117916940443676133">מפתח האבטחה שלך אינו מוגן באמצעות קוד אימות. כדי לנהל את פרטי הכניסה, צריך תחילה ליצור קוד אימות.</translation>
 <translation id="1179400851034021914">‏מספר ה-IBAN לא תקין</translation>
@@ -702,6 +703,7 @@
 <translation id="1535753739390684432">האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט.</translation>
 <translation id="1536754031901697553">מתנתק...</translation>
 <translation id="1536883206862903762">‏הפעולה הזו תשבית תוספים ותאפס את ההגדרות לברירות מחדל בטוחות. הכרטיסיות, הקבצים וקובצי ה-Cookie יישמרו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877">‏<ph name="BEGIN_BOLD_1" />הכרטיסיות משותפות כדי לתת תשובות רלוונטיות יותר.<ph name="END_BOLD_1" /> כשמתחילים שיחה חדשה, Google משתמשת בתוכן ובכתובת ה-URL של הכרטיסייה הפתוחה. אפשר לשנות את ההגדרה הזו בכל שלב. <ph name="BEGIN_BOLD_2" />נתוני הארגון פרטיים ומאובטחים.<ph name="END_BOLD_2" /> לא נשתמש בהם כדי לשפר מודלים של AI גנרטיבי.</translation>
 <translation id="1537254971476575106">מגדיל למסך מלא</translation>
 <translation id="1538808328818992871">הסיסמה חייבת להכיל לפחות <ph name="MIN_LENGTH" /> תווים</translation>
 <translation id="1539248305642687917">לא לאפשר לאתרים לשנות את ברירת המחדל של קלט המקלדת</translation>
@@ -1908,6 +1910,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" /> רוצה להעתיק קבצים מ-<ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">בערוץ <ph name="CHANNEL_NAME" /> כרגע</translation>
 <translation id="2458379781610688953">עדכון חשבון, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">‏הכרטיסיות משותפות כדי לתת תשובות רלוונטיות יותר. כשמתחילים שיחה חדשה, Google משתמשת בתוכן ובכתובת ה-URL של הכרטיסייה הפתוחה. אפשר לשנות את ההגדרה הזו בכל שלב. נתוני הארגון פרטיים ומאובטחים. לא נשתמש בהם כדי לשפר מודלים של AI גנרטיבי.</translation>
 <translation id="2459703812219683497">זוהה קוד הפעלה</translation>
 <translation id="2459706890611560967">המשך ההעברה של הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">שיתוף של צילום מסך</translation>
@@ -3082,6 +3085,7 @@
 <translation id="3320957378743864387">אין הרשאה להציע עזרה בכתיבה</translation>
 <translation id="3321460131042519426">הפעלת גלישת שורות</translation>
 <translation id="3321494112580110651">המדפסת שלך לא מופיעה?</translation>
+<translation id="3321512411079201586">&amp;מבודד</translation>
 <translation id="3321776060736518525">המקור: <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">‏התקנה ב-Edge</translation>
 <translation id="3323521181261657960">בונוס! קיבלת עוד זמן מסך</translation>
@@ -6216,6 +6220,7 @@
 <translation id="5724723163580775373">מיקוד גדול</translation>
 <translation id="5725112283692663422">‏שליחת משוב בנושא יצירת עיצוב באמצעות AI</translation>
 <translation id="5727728807527375859">‏תוספים, Google Apps ועיצובים עלולים לפגוע במחשב שלך. להמשיך?</translation>
+<translation id="5727872803091928075">‏הכרטיסיות משותפות כדי לתת תשובות רלוונטיות יותר. כשמתחילים שיחה חדשה, Google משתמשת בתוכן ובכתובת ה-URL של הכרטיסייה הפתוחה. אפשר לשנות את ההגדרה הזו בכל שלב.</translation>
 <translation id="5728072125198221967">‏שירותי Google מקושרים</translation>
 <translation id="5729712731028706266">&amp;הצגה</translation>
 <translation id="5731247495086897348">הד&amp;בקה ומעבר אל</translation>
@@ -7362,6 +7367,7 @@
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6613231539539868591">נתונים שנשמרו</translation>
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
+<translation id="6614219106064338118">שיחה חדשה</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6616000047939888167">‏הצעה לתרגם אתרים וקובצי PDF בעזרת Google Translate</translation>
 <translation id="6618013221808317456">‏אין הרשאה לאתרים להשתמש באופטימיזציה של JavaScript</translation>
@@ -9185,6 +9191,7 @@
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
 <translation id="7992080146463834191">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות.</translation>
 <translation id="7992203134935383159">סינתזת דיבור</translation>
+<translation id="7992462686695281167">&amp;פרטי</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
 <translation id="7998701048266085837">‏כתובות URL</translation>
 <translation id="7999229196265990314">יצר את הקבצים הבאים:
@@ -9744,6 +9751,7 @@
 <translation id="8410133743809404768">‏אפשר לחפש בסרגל הכתובות וגם בדף "היסטוריה" באמצעות ‎@history</translation>
 <translation id="8411043186249152291">מסך מלא</translation>
 <translation id="8412136526970428322">יש אישור להרשאות <ph name="PERMISSION" /> ועוד <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">‏בכפוף <ph name="BEGIN_LINK1" />לתנאים של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />להודעת הפרטיות של ממשקי Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. כשמבקרים באתר מסוים, Chrome שולח ל-Google קטע קוד מעורפל מכתובת ה-URL דרך שרת פרטיות שמסתיר את כתובת ה-IP. אם האתר פועל באופן שמעורר חשד, נשלחות גם כתובות URL מלאות וקטעי תוכן מדפים.</translation>
 <translation id="8414396119627470038">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /> באמצעות <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">אפשר לחפש מידע על כל דבר</translation>

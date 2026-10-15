@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">在「<ph name="NATIVE_APP_NAME" />」中開啟 • 來自「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1496514951988037011">使用者名稱</translation>
+<translation id="1498051468374914325">開啟開發人員工具控制台</translation>
 <translation id="1501480321619201731">刪除群組</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤與網頁記錄</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">以無痕模式開啟新視窗</translation>
 <translation id="152204906462707884">快速刪除瀏覽記錄，強化隱私控管</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1537160738459068682">開啟開發人員工具元素</translation>
 <translation id="1540012742443808215">網址列目前位於頂端</translation>
 <translation id="1543035591122163372">登入即可存取<ph name="DEVICE_TYPE" />中的密碼和其他資訊</translation>
 <translation id="1544084554881119930">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
@@ -1069,6 +1071,7 @@
 <translation id="5233638681132016545">新增分頁</translation>
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
+<translation id="5257142004843671642">調整側邊面板大小</translation>
 <translation id="5264813352784073502">過去 24 小時</translation>
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5273031377282080577">系統管理員會管理這項設定。</translation>
@@ -2061,6 +2064,7 @@
 <translation id="9024318700713112071">將 Chrome 設為預設瀏覽器</translation>
 <translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="9038316201889095704">有未儲存的變更時，無法使用「在網頁中尋找」功能。</translation>
 <translation id="904146253922032365">按住即可垂直顯示分頁</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
 <translation id="9047347135558855162">快速啟動 Chrome 搜尋</translation>

@@ -649,6 +649,7 @@
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
 <translation id="2103210856015238101">টাচ করে পূরণ করার জন্য উপলভ্য লয়্যালটি কার্ড সম্পূর্ণ উচ্চতায় খোলা আছে।</translation>
 <translation id="2104739941682874393">উন্নত অটোফিল করার সুবিধা ফর্মের খুঁটিনাটি আরও ভালো বুঝতে পারে এবং আপনার জন্য তা আরও দ্রুত অটোফিল করতে পারে</translation>
+<translation id="2105237910269166838">এই পৃষ্ঠা নিয়ে জিজ্ঞেস করুন</translation>
 <translation id="2107021941795971877">প্রিন্ট সংক্রান্ত সহায়তা</translation>
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
 <translation id="2109845311767915560">ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
@@ -1055,6 +1056,7 @@
 <translation id="2734797989819862638">কপি করবেন না</translation>
 <translation id="2738771556149464852">এরপরে নয়</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি স্কিল}one{#টি স্কিল}other{#টি স্কিল}}</translation>
 <translation id="2757727729385895652">Google Drive-এ <ph name="COUNT" />টি ফাইল আপলোড করা হচ্ছে</translation>
 <translation id="2759299890026163685">আবার চেষ্টা করার আগে নিশ্চিত করুন যে আপনার স্থিতিশীল ইন্টারনেট কানেকশন আছে</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করুন</translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">ট্রে ৯</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
+<translation id="7089745480771070611">সাইড প্যানেলে খোলে</translation>
 <translation id="7090698782953528257">গাণিতিক সমীকরণ ভিজ্যুয়ালাইজ করতে এবং কার্ভের আকার দেখার ক্ষেত্রে সাহায্য করতে আমাকে ফাংশনের গ্রাফ তৈরিতে সাহায্য করো</translation>
 <translation id="7092087596499105699">আপনার অ্যাডমিনিস্ট্রেটর আপনার সংস্থার ব্যক্তিগত ওয়েব অ্যাপ্লিকেশনগুলিতে অ্যাক্সেস সুরক্ষিত করার জন্য নিরাপদ গেটওয়ে কানেক্টর কনফিগার করেছেন। অ্যাক্সেস যাচাই করার জন্য এটি আপনার অফিস প্রোফাইলের ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -4007,6 +4010,7 @@
 <translation id="7696107855583699585">পরিচিত পর্যটকের নম্বর এডিট করুন</translation>
 <translation id="7698864304447945242">Google Play Services for AR আপডেট করবেন?</translation>
 <translation id="7699509138503320152">আমার ইমেলটি আরও প্রভাবশালী করে নতুন করে লেখো</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি স্কিল (সিঙ্ক করা হয়েছে)}one{#টি স্কিল (সিঙ্ক করা হয়েছে)}other{#টি স্কিল (সিঙ্ক করা হয়েছে)}}</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> এ এগিয়ে যান (নিরাপদ নয়) <ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">আমাকে লিখতে সাহায্য করো</translation>

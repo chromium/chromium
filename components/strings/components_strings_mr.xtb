@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
 <translation id="2103210856015238101">स्पर्श करून भरण्यासाठी उपलब्ध असलेली लॉयल्‍टी कार्ड पूर्ण उंचीवर उघडली आहेत.</translation>
 <translation id="2104739941682874393">वर्धित केलेले ऑटोफिल हे फॉर्म आणखी चांगल्या पद्धतीने समजून घेते आणि ते तुमच्यासाठी अधिक जलद ऑटोफिल करू शकते.</translation>
+<translation id="2105237910269166838">या पेजबद्दल विचारा</translation>
 <translation id="2107021941795971877">प्रिंट सपोर्ट</translation>
 <translation id="2108755909498034140">तुमचा कॉंप्युटर रीस्टार्ट करा</translation>
 <translation id="2109845311767915560">शेअर केलेला टॅब गट</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">कॉपी करू नका</translation>
 <translation id="2738771556149464852">नंतर नाही</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{काहीही नाही}=1{१ कौशल्य}other{# कौशल्ये}}</translation>
 <translation id="2757727729385895652">Google Drive वर <ph name="COUNT" /> फाइल अपलोड करत आहे</translation>
 <translation id="2759299890026163685">पुन्हा प्रयत्न करण्यापूर्वी तुमच्याकडे स्थिर इंटरनेट कनेक्शन असल्याची खात्री करा</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
@@ -3623,6 +3625,7 @@
 <translation id="7083258188081898530">ट्रे ९</translation>
 <translation id="70846382339153529">OpenDocument मजकूर</translation>
 <translation id="7086090958708083563">वापरकर्त्याने अपलोडची विनंती केली आहे</translation>
+<translation id="7089745480771070611">साइड पॅनलमध्ये उघडते</translation>
 <translation id="7090698782953528257">गणितीय समीकरण व्हिजुअलाइझ करण्यासाठी आणि वक्राचा आकार पाहण्यासाठी मला समीकरणाचा आलेख तयार करण्यात मदत कर</translation>
 <translation id="7092087596499105699">तुमच्या संस्थेच्या खाजगी वेब अ‍ॅप्लिकेशनचा अ‍ॅक्सेस संरक्षित करण्यासाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरने सुरक्षित गेटवे कनेक्टर कॉन्फिगर केला आहे. अ‍ॅक्सेसची पडताळणी करण्यासाठी ते तुमच्या कार्य प्रोफाइलमधील डेटा वापरू शकते.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
@@ -4007,6 +4010,7 @@
 <translation id="7696107855583699585">ओळखीच्या प्रवाशाचा नंबर संपादित करा</translation>
 <translation id="7698864304447945242">Google Play Services for AR अपडेट करायचे आहे का?</translation>
 <translation id="7699509138503320152">माझा ईमेल अधिक आकर्षक करण्यासाठी पुन्हा लिही</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{काहीही नाही}=1{१ कौशल्य (सिंक केलेले)}other{# कौशल्ये (सिंक केलेली)}}</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> (असुरक्षित) वर सुरू ठेवा<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">मला लिहिण्यात मदत कर</translation>

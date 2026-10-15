@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Enye ikhontenti ingase ingafaneleki kuwo wonke umuntu.</translation>
 <translation id="1601560923496285236">Faka</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{Ikheli eli-1}one{Amakheli angu-#}other{Amakheli angu-#}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Qedela umsebenzi o-1 ukuze ukhuphuke kuleveli}one{Qedela imisebenzi engu-{count} ukuze ukhuphuke kuleveli}other{Qedela imisebenzi engu-{count} ukuze ukhuphuke kuleveli}}</translation>
 <translation id="1605405588277479165">Valiwe - Akunconywa</translation>
 <translation id="1605658421715042784">Kopisha isithombe</translation>
 <translation id="1606899876897213121">Vala isifinyezo somsebenzi wakamuva</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Kuyadingeka</translation>
 <translation id="3914640181019354363">Thola amakheli</translation>
 <translation id="391904960191284041">Ukubuyekeza komkhiqizo</translation>
+<translation id="3920165976616657606">Okuthi "Hlola Ukubhrawuza Okuphephe Ngokuthuthukisiwe" kuqediwe!</translation>
 <translation id="3921585859122905677">Indawo Yebha Yekheli</translation>
 <translation id="3922185497376658606">Layisha ngaphambili amakhasi wewebhu</translation>
 <translation id="3926703470020109118">Ukudawuniloda Kukhanseliwe</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Ungaswayipha unqenqema ukuze ubuyele emuva noma uye phambili.</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="446314443268698477">Thenga, uhumushe, futhi uhlonze okubonayo ngekhamera noma izithombe zakho.</translation>
+<translation id="4465941170695753889">Cindezela futhi ubambe ukuze wakhe iqembu lethebhu</translation>
 <translation id="4469324811108161144">Amanothi angalondoloza kuze kufike ezinhlamvini ezingu-<ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Yini ofuna ukusebenza kuyo?</translation>
 <translation id="4471472356135655769">Ayikwazi ukuthumela amaphasiwedi</translation>

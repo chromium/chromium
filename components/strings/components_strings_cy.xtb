@@ -665,6 +665,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2126374524350484896">Cynhyrchydd PDF:</translation>
 <translation id="2127090458081644412">Cyfrinair wedi'i gadw i'r ddyfais hon</translation>
 <translation id="2127747486437921899">Italig</translation>
+<translation id="2129163794581571479">Pwerir gan Gemini gyda Deallusrwydd Personol. Mae'n bosib y bydd eich ceisiadau, teitlau tudalennau, a chyfeiriadau URL yn cael eu hadolygu i wella awtolenwi gwell. <ph name="BEGIN_LINK" />Rheoli gosodiadau<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Mae'n bosib na fydd y templedi rydych wedi'u nodi yn cael eu defnyddio oherwydd nad yw'r polisi DnsOverHttpsMode wedi'i osod.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Galluogi Awtolenwi Taliadau wedi'i agor ar uchder llawn.</translation>
@@ -1575,6 +1576,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3655670868607891010">Os ydych yn gweld hyn yn aml, rhowch gynnig ar y <ph name="HELP_LINK" /> hyn.</translation>
 <translation id="3658742229777143148">Adolygiad</translation>
 <translation id="3659521826520353662">Pa wefannau a ddiffinnir gan weinyddwyr yr ymwelir â nhw a phryd: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Pwerir gan Gemini gyda Deallusrwydd Personol. <ph name="BEGIN_LINK" />Rheoli gosodiadau<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Chwilio am ragor o opsiynau prynu o siopau eraill sy'n gwerthu'r cynnyrch hwn.</translation>
 <translation id="3664782872746246217">Allweddeiriau:</translation>
 <translation id="3670030362669914947">Rhif</translation>
@@ -1595,6 +1597,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3693516565203081475">Dewis dull talu</translation>
 <translation id="3698353241727597930">Mae eich gweinyddwr wedi ffurfweddu i gadw <ph name="FILES" /> yn eich storfa <ph name="CLOUD_STORAGE" /> a reolir gan Enterprise. Mae'n bosib y bydd y ffeiliau hyn yn cael eu monitro, eu harchwilio, a'u cadw pan fyddwch yn eu dileu.</translation>
 <translation id="3698629142018988477">Botwm creu gwefan, gweithredwch i greu gwefan newydd yn Google Sites yn gyflym</translation>
+<translation id="3698708128812719147">Pwyswch Ctrl ddwywaith unrhyw le ar y we i ddod o hyd i ragor o wybodaeth a'i llenwi</translation>
 <translation id="3700094625653511150">I guddio opsiynau talu'n ddiweddarach, ewch i <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Rydych yn defnyddio'ch olion bysedd i lenwi cyfrineiriau</translation>
 <translation id="3701427423622901115">Mae'r ailosod wedi'i gydnabod.</translation>
@@ -1898,6 +1901,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4185037616931963178">Diweddaru rhif unioni cam yn ddiogel</translation>
 <translation id="4186035307311647330">Olrhain prisiau</translation>
 <translation id="4191334393248735295">Hyd</translation>
+<translation id="4192770747482479191">Pwyswch ⌘ ddwywaith unrhyw le ar y we i ddod o hyd i ragor o wybodaeth a'i llenwi</translation>
 <translation id="4195459680867822611">Botwm gweld awgrymiadau Chrome, gweithredwch i ddysgu am nodweddion Chrome</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4196861286325780578">&amp;Ailwneud Symud</translation>
@@ -2846,6 +2850,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="573974402615125334">I rannu, ymuno a chydweithio mewn grwpiau tabiau, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5740911612628596808">Amlen C9</translation>
 <translation id="574392208103952083">Canolig</translation>
+<translation id="5744350700955456407">Gall awto-lenwi gwell bellach ddod o hyd i wybodaeth a'i llenwi - megis rhifau archebion a chodau cadarnhau hediadau - o apiau fel Gmail a Photos</translation>
 <translation id="5745586894920491759">Mae Chrome yn prosesu teitlau tudalennau a chyfeiriadau URL yn y cwmwl</translation>
 <translation id="5745733273847572235">Yn gallu gofyn am eich lleoliad</translation>
 <translation id="5750869797196646528">Olrhain dwylo</translation>

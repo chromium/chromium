@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2103210856015238101">㩒一下先可以填嘅會員卡清單，宜家顯示喺成個畫面。</translation>
 <translation id="2104739941682874393">強化版自動填入功能可以更準確識別表格內容，更快自動填入相關資料</translation>
+<translation id="2105237910269166838">提出關於此頁的問題</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動您的電腦</translation>
 <translation id="2109845311767915560">共用分頁群組</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">不要複製</translation>
 <translation id="2738771556149464852">此日期之前</translation>
 <translation id="2740531572673183784">確定</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{無}=1{1 項技能}other{# 項技能}}</translation>
 <translation id="2757727729385895652">正在上載 <ph name="COUNT" /> 個檔案至「Google 雲端硬碟」</translation>
 <translation id="2759299890026163685">請確保互聯網連線穩定，然後再試一次</translation>
 <translation id="2759825833388495838">在 <ph name="APP_NAME" /> 上填寫您的密碼</translation>
@@ -3622,6 +3624,7 @@
 <translation id="7083258188081898530">紙匣 9</translation>
 <translation id="70846382339153529">OpenDocument 文字</translation>
 <translation id="7086090958708083563">使用者已要求上載</translation>
+<translation id="7089745480771070611">在側面板中開啟</translation>
 <translation id="7090698782953528257">幫我繪製函數圖表，視覺化呈現數學方程式和曲線形狀</translation>
 <translation id="7092087596499105699">管理員已設定安全閘道連接器，以保護機構的私人網絡軟件存取權。系統可能會使用工作設定檔的資料來驗證存取權。</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理所有網站嘅權限同儲存嘅資料</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7696107855583699585">編輯已知的旅客編號</translation>
 <translation id="7698864304447945242">要更新「Google Play 服務 (AR)」嗎？</translation>
 <translation id="7699509138503320152">改寫電郵以提高說服力</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{無}=1{1 項技能 (已同步)}other{# 項技能 (已同步)}}</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /> 網站 (不安全) <ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">幫我寫</translation>

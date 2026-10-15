@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">Özel</translation>
 <translation id="1178093605842850860">Bu siteyi okumasına ve değiştirmesine izin veriliyor</translation>
 <translation id="1178357842179817577">Sizi tehlikeli siteler, indirmeler ve uzantılardan korur</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Sekmeler, daha alakalı yanıtlar vermek için paylaşılır.<ph name="END_BOLD" /> Google, yeni bir sohbet başlattığınızda açık olan sekmenizin içeriğini ve URL'sini kullanır. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="117916940443676133">Güvenlik anahtarınız PIN ile korunmuyor. Oturum açma verilerini yönetmek için önce PIN oluşturun.</translation>
 <translation id="1179400851034021914">IBAN geçersiz</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">Seçilen metni sesli dinleyin. Ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın.</translation>
 <translation id="1536754031901697553">Bağlantı kesiliyor...</translation>
 <translation id="1536883206862903762">Bu işlem, uzantıları devre dışı bırakır ve ayarlarınızı güvenli varsayılan ayarlara sıfırlar. Sekmeler, dosyalar ve çerezler korunur. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Sekmeler, daha alakalı yanıtlar vermek için paylaşılır.<ph name="END_BOLD_1" /> Google, yeni bir sohbet başlattığınızda açık olan sekmenizin içeriğini ve URL'sini kullanır. Bu ayarı dilediğiniz zaman değiştirebilirsiniz. <ph name="BEGIN_BOLD_2" />Kuruluş verilerinizin gizliliği ve güvenliği sağlanır.<ph name="END_BOLD_2" /> Üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz.</translation>
 <translation id="1537254971476575106">Tam ekran büyüteci</translation>
 <translation id="1538808328818992871">En az <ph name="MIN_LENGTH" /> karakter olmalı</translation>
 <translation id="1539248305642687917">Sitelerin klavye girişimi geçersiz kılmasına izin verme</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">Uzantıyı yönet</translation>
 <translation id="1553538517812678578">sınırsız</translation>
 <translation id="1553947773881524342">Chromebook'unuzdaki Microsoft 365 hakkında <ph name="LINK_BEGIN" />daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
+<translation id="1554343363646356023">Yeni &amp;yalıtılmış pencere</translation>
 <translation id="1554640914375980459">Bildirim aldığınızda ekran ışığı yanıp söner. Işığa karşı hassasiyetiniz varsa flaşlı bildirimi dikkatle kullanın.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1556127816860282890">Arka plan etkinliği ve yumuşak kaydırma gibi bazı görsel efektler sınırlı olabilir</translation>
@@ -1895,6 +1898,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2457246892030921239"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> birimindeki dosyaları kopyalamak istiyor.</translation>
 <translation id="2457842160081795172">Şu anda <ph name="CHANNEL_NAME" /> kanalında</translation>
 <translation id="2458379781610688953"><ph name="EMAIL" /> hesabını güncelle</translation>
+<translation id="2458545895994128057">Sekmeler, daha alakalı yanıtlar vermek için paylaşılır. Google, yeni bir sohbet başlattığınızda açık olan sekmenizin içeriğini ve URL'sini kullanır. Bu ayarı dilediğiniz zaman değiştirebilirsiniz. Kuruluş verilerinizin gizliliği ve güvenliği sağlanır. Üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz.</translation>
 <translation id="2459703812219683497">Etkinleştirme kodu algılandı</translation>
 <translation id="2459706890611560967">Sekmeyi <ph name="DEVICE_NAME" /> adlı cihazda yayınlamaya devam edin</translation>
 <translation id="245979889539926662">Ekran görüntüsü paylaş</translation>
@@ -3154,6 +3158,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3390740059150071453">Sola bakın</translation>
 <translation id="3393554941209044235">Chrome Doküman Analizi</translation>
 <translation id="3394072120086516913">PC, kablolu ağa; yayın cihazı ise kablosuz ağa bağlı</translation>
+<translation id="3394561494170561143">Yeni yalıtılmış &amp;sekme</translation>
 <translation id="3394850431319394743">Korumalı içerikleri oynatmak için kimlik kullanımına izin verilenler</translation>
 <translation id="339722927132407568">Donuyor</translation>
 <translation id="3399432415385675819">Bildirimler devre dışı bırakılacak</translation>
@@ -5605,7 +5610,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5235050375939235066">Uygulama kaldırılsın mı?</translation>
 <translation id="5235750401727657667">Yeni bir sekme açarken gördüğünüz sayfayı değiştirme</translation>
-<translation id="5238301240406177137">Hesaba Kaydet</translation>
+<translation id="5238301240406177137">Hesaba kaydet</translation>
 <translation id="523862956770478816">Site izinleri</translation>
 <translation id="5240247138804326767">Bölünmüş Görünümü Düzenle</translation>
 <translation id="5241361816687301119">&amp;Yalıtılmış Pencerede Aç</translation>
@@ -6200,6 +6205,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5724723163580775373">Büyük odak</translation>
 <translation id="5725112283692663422">Yapay zeka ile tema üretme hakkında geri bildirim gönderin</translation>
 <translation id="5727728807527375859">Uzantılar, uygulamalar ve temalar bilgisayarınıza zarar verebilir. Devam etmek istediğinizden emin misiniz?</translation>
+<translation id="5727872803091928075">Sekmeler, daha alakalı yanıtlar vermek için paylaşılır. Google, yeni bir sohbet başlattığınızda açık olan sekmenizin içeriğini ve URL'sini kullanır. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="5728072125198221967">Bağlı Google hizmetleri</translation>
 <translation id="5729712731028706266">&amp;Görüntüle</translation>
 <translation id="5731247495086897348">Ya&amp;pıştır ve Git</translation>
@@ -7029,6 +7035,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6370021412472292592">Manifest yüklenemedi.</translation>
 <translation id="6370551072524410110">arama + üst karakter + geri tuşu</translation>
 <translation id="637135143619858508">Boşluklu</translation>
+<translation id="6372413553057593904">"<ph name="WINDOW_TITLE" />" penceresinde etkin olmayan sekme</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Tekrar Dene</translation>
 <translation id="637642201764944055">Chrome Uygulamalarının eski sürümleri Aralık 2022'den sonra Linux cihazlarda açılmayacaktır. Yeni sürüme güncellemek veya bu uygulamayı kaldırmak için yöneticinizle iletişime geçin.</translation>
@@ -7341,6 +7348,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="661266467055912436">Hem siz hem de web'deki herkes için güvenliği iyileştirir.</translation>
 <translation id="6613231539539868591">Kalıcı Veriler</translation>
 <translation id="6613267708691765962">Kötü amaçlı yazılım taranıyor...</translation>
+<translation id="6614219106064338118">Sohbet başlat</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6616000047939888167">Diğer dillerdeki web siteleri ve PDF'ler için Google Çeviri'yi teklif et</translation>
 <translation id="6618013221808317456">Sitelerin JavaScript optimizasyonunu kullanmasına izin verme</translation>
@@ -9723,6 +9731,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8410133743809404768">Adres çubuğuna "@history" yazarak ve Geçmiş sayfasından arama yapabilirsiniz</translation>
 <translation id="8411043186249152291">tam ekran</translation>
 <translation id="8412136526970428322">İzin verildi: <ph name="PERMISSION" /> ve <ph name="COUNT" /> daha</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google Şartları<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />Gemini Uygulamaları Gizlilik Uyarısı<ph name="END_LINK2" /> geçerlidir.</translation>
 <translation id="8413795581997394485">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir siteyi ziyaret ettiğinizde Chrome, IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> oturumunu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile açın</translation>
 <translation id="8415120635186642416">Herhangi bir konuda araştırma yapın</translation>

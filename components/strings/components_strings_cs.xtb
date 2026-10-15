@@ -648,6 +648,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2102495993840063010">Aplikace Android</translation>
 <translation id="2103210856015238101">Věrnostní karty k vyplnění dotykem otevřené na plnou výšku.</translation>
 <translation id="2104739941682874393">Vylepšené automatické vyplňování lépe rozumí formulářům a dokáže je automaticky vyplňovat rychleji</translation>
+<translation id="2105237910269166838">Zeptat se ohledně této stránky</translation>
 <translation id="2107021941795971877">Podpora tisku</translation>
 <translation id="2108755909498034140">Restartujte počítač</translation>
 <translation id="2109845311767915560">Sdílená skupina karet</translation>
@@ -1054,6 +1055,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2734797989819862638">Nekopírovat</translation>
 <translation id="2738771556149464852">Nikoli po</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Žádné}=1{1 dovednost}few{# dovednosti}many{# dovednosti}other{# dovedností}}</translation>
 <translation id="2757727729385895652">Nahrávání <ph name="COUNT" /> souborů na Disk Google</translation>
 <translation id="2759299890026163685">Než to zkusíte znovu, ujistěte se, že máte stabilní připojení k internetu</translation>
 <translation id="2759825833388495838">vyplnit vašeho heslo v aplikaci <ph name="APP_NAME" /></translation>
@@ -3618,6 +3620,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7083258188081898530">Přihrádka 9</translation>
 <translation id="70846382339153529">Text ve formátu OpenDocument</translation>
 <translation id="7086090958708083563">Uživatel požádal o nahrání</translation>
+<translation id="7089745480771070611">Otevře se na bočním panelu</translation>
 <translation id="7090698782953528257">Pomoz mi vykreslit graf funkce k vizualizaci matematické rovnice a získání představy o tvar její křivky</translation>
 <translation id="7092087596499105699">Váš administrátor nakonfiguroval konektor zabezpečené brány, aby chránil přístup k soukromým webovým aplikacím vaší organizace. K ověření přístupu může použít data z vašeho pracovního profilu.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat oprávnění a uložená data webů v nastavení Chromu</translation>
@@ -4001,6 +4004,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7696107855583699585">Upravit číslo prověřeného cestujícího</translation>
 <translation id="7698864304447945242">Aktualizovat Služby Google Play pro RR?</translation>
 <translation id="7699509138503320152">Přepiš můj e‑mail, aby byl přesvědčivější</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Žádné}=1{1 dovednost (synchronizováno)}few{# dovednosti (synchronizováno)}many{# dovednosti (synchronizováno)}other{# dovedností (synchronizováno)}}</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Pokračovat na web <ph name="SITE" /> (nespolehlivý)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Pomozte mi s psaním</translation>

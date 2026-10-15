@@ -412,6 +412,15 @@ Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" 
 <translation id="1272798957154751008">Chromad cihazların bulut yönetimine taşınmasını etkinleştir</translation>
 <translation id="1274997165432133392">Çerezler ve diğer site verileri</translation>
 <translation id="1277411517984768103"><ph name="BOREALIS_NAME" /> politikasının, kullanıcı için çalıştırılmasına izin ver</translation>
+<translation id="1281420319219324116">Bu politikayla, <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> etkinleştirildiğinde temel hazırlığı yapılan yönetilen istemci sertifikası yapılandırılır.
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> alanında, sertifikanın konu ortak adının (CN) kaynağı belirtilir:
+
+- Ayarlanmazsa veya <ph name="DEVICE_ID_VALUE" /> değerine ayarlanırsa sertifikanın konu ortak adı, yönetilen tarayıcının sanal cihaz kimliğine ayarlanır.
+
+- <ph name="COMPUTER_NAME_VALUE" /> değerine ayarlanırsa sertifikanın ortak konu adı, makinenin ana makine adına ayarlanır.
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> devre dışı bırakılırsa veya ayarlanmazsa bu politikanın etkisi olmaz.</translation>
 <translation id="1285819498003746288">Event.path API kullanılamaz.</translation>
 <translation id="1290722184971934486">Politika, <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (2. değer) değerine ayarlanırsa sitelere pencere yönetimi izni verilmesini varsayılan olarak reddeder. Bu durumda sitelerin, cihazların ekranlarıyla ilgili bilgileri görme ve pencere açıp yerleştirmek ya da belirli ekranlarda tam ekran isteği iletmek için bu bilgileri kullanma imkanı kısıtlanmış olur.
 
@@ -5776,6 +5785,15 @@ Bu politika, yönetilmeyen cihazlar için geçerli değildir. Kullanıcılar, ci
       Ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan boyutu kullanır. Kullanıcılar bu ayarı --disk-cache-size flag'ini kullanarak değiştirebilirler.
 
       Not: Bu politikada belirtilen değer, tarayıcıdaki çeşitli önbellek alt sistemleri için bir ipucu olarak kullanılır. Bu nedenle, tüm önbelleklerin gerçekteki toplam disk kullanımı daha yüksek olsa da belirtilen değerle aynı büyüklük sırasında olacaktır.</translation>
+<translation id="4582488040806837065">Bu politikayla, <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> etkinleştirildiğinde temel hazırlığı yapılan yönetilen istemci sertifikası yapılandırılır.
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> alanında, sertifikanın konu ortak adının (CN) kaynağı belirtilir:
+
+- Ayarlanmazsa veya <ph name="PROFILE_ID_VALUE" /> olarak ayarlanırsa sertifikanın konu ortak adı, tarayıcı profil kimliği olarak ayarlanır.
+
+- <ph name="COMPUTER_NAME_VALUE" /> değerine ayarlanırsa sertifikanın ortak konu adı, makinenin ana makine adına ayarlanır. Not: Bu özellik <ph name="COMPUTER_NAME_VALUE" /> olarak ayarlandığında, profil kapsamlı bir sertifikada cihaz düzeyinde bir özellik kullanılır. Bu durumda, makine ana makine adı sertifikaya dahil edileceğinden, yönetilmeyen veya paylaşılan cihazlarda gizlilikle ilgili sorunlar ortaya çıkar.
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> devre dışı bırakılırsa veya ayarlanmazsa bu politikanın etkisi olmaz.</translation>
 <translation id="4591366717022345234">Kullanıcılara Hızlı Düzeltme Derlemesi sağlayın.</translation>
 <translation id="4593391169954484940">Dosyanın SHA-256 karması.</translation>
 <translation id="4594027034164195984">Üçüncü taraf görsellerinin, kimlik doğrulama istemi göstermesine izin ver</translation>

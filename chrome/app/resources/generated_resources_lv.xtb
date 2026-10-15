@@ -268,6 +268,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1177863135347784049">Pielāgota</translation>
 <translation id="1178093605842850860">Drīkst lasīt un mainīt šo vietni</translation>
 <translation id="1178357842179817577">Aizsargā pret bīstamām vietnēm, lejupielādēm un paplašinājumiem.</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Cilnes tiek kopīgotas, lai saņemtu atbilstošākas atbildes.<ph name="END_BOLD" /> Google izmanto jūsu atvērtās cilnes saturu un vietrādi URL, kad sākat jaunu tērzēšanas sarunu. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="117916940443676133">Jūsu drošības atslēga nav aizsargāta ar PIN. Lai pārvaldītu pierakstīšanās datus, vispirms izveidojiet PIN.</translation>
 <translation id="1179400851034021914">IBAN nav derīgs</translation>
@@ -701,6 +702,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1535753739390684432">Noklausieties konkrētu tekstu. Vispirms ekrāna apakšdaļā atlasiet ikonu “Atlasīt, lai izrunātu” un pēc tam iezīmējiet tekstu.</translation>
 <translation id="1536754031901697553">Notiek atvienošana...</translation>
 <translation id="1536883206862903762">Tādējādi tiks atspējoti paplašinājumi un jūsu iestatījumi tiks atiestatīti uz drošām noklusējuma vērtībām. Cilnes, faili un sīkfaili tiks saglabāti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Cilnes tiek kopīgotas, lai saņemtu atbilstošākas atbildes.<ph name="END_BOLD_1" /> Google izmanto jūsu atvērtās cilnes saturu un vietrādi URL, kad sākat jaunu tērzēšanas sarunu. Jebkurā laikā varat mainīt šo iestatījumu. <ph name="BEGIN_BOLD_2" />Jūsu organizācijas dati ir konfidenciāli un aizsargāti.<ph name="END_BOLD_2" /> Tie netiks izmantoti ģeneratīvā MI modeļu uzlabošanai.</translation>
 <translation id="1537254971476575106">Pilnekrāna lupa</translation>
 <translation id="1538808328818992871">Jābūt vismaz <ph name="MIN_LENGTH" /> rakstzīmēm.</translation>
 <translation id="1539248305642687917">Neļaut vietnēm ignorēt ar tastatūru ievadītos datus</translation>
@@ -728,6 +730,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1552752544932680961">Pārvaldīt paplašinājumu</translation>
 <translation id="1553538517812678578">neierobežots</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" /> par pakalpojumu Microsoft 365 Chromebook datorā.</translation>
+<translation id="1554343363646356023">Jauns &amp;izolēts logs</translation>
 <translation id="1554640914375980459">Kad saņemsiet paziņojumus, ekrāns mirgos. Ja esat jutīgs pret gaismu, izmantojiet zibpaziņojumus apdomīgi.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1556127816860282890">Var būt ierobežotas darbības fonā un noteikti vizuālie efekti, piemēram, vienmērīga ritināšana.</translation>
@@ -1895,6 +1898,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vēlas kopēt failus no krātuves <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Pašreizējais kanāls: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Atjaunināt kontu (<ph name="EMAIL" />)</translation>
+<translation id="2458545895994128057">Cilnes tiek kopīgotas, lai saņemtu atbilstošākas atbildes. Google izmanto jūsu atvērtās cilnes saturu un vietrādi URL, kad sākat jaunu tērzēšanas sarunu. Jebkurā laikā varat mainīt šo iestatījumu. Jūsu organizācijas dati ir konfidenciāli un aizsargāti. Tie netiks izmantoti ģeneratīvā MI modeļu uzlabošanai.</translation>
 <translation id="2459703812219683497">Konstatēts aktivizācijas kods</translation>
 <translation id="2459706890611560967">Atsākt cilnes apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Kopīgot ekrānuzņēmumu</translation>
@@ -3154,6 +3158,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3390740059150071453">Paskatīties pa kreisi</translation>
 <translation id="3393554941209044235">Chrome dokumenta analīze</translation>
 <translation id="3394072120086516913">Datoram ir vadu pieslēgums, un apraides ierīce ir Wi-Fi tīklā</translation>
+<translation id="3394561494170561143">Jauna izolēta &amp;cilne</translation>
 <translation id="3394850431319394743">Atļauts izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>
 <translation id="339722927132407568">Attēla sastingšana</translation>
 <translation id="3399432415385675819">Paziņojumi tiks atspējoti</translation>
@@ -6197,6 +6202,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5724723163580775373">Liels fokuss</translation>
 <translation id="5725112283692663422">Sūtiet atsauksmes par funkciju “Motīva izveide, izmantojot MI”</translation>
 <translation id="5727728807527375859">Paplašinājumi, lietojumprogrammas un motīvi var kaitēt datoram. Vai tiešām vēlaties turpināt?</translation>
+<translation id="5727872803091928075">Cilnes tiek kopīgotas, lai saņemtu atbilstošākas atbildes. Google izmanto jūsu atvērtās cilnes saturu un vietrādi URL, kad sākat jaunu tērzēšanas sarunu. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="5728072125198221967">Saistītie Google pakalpojumi</translation>
 <translation id="5729712731028706266">&amp;Skatīt</translation>
 <translation id="5731247495086897348">Ielīmēt un dotie&amp;s</translation>
@@ -7025,6 +7031,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6370021412472292592">Nevarēja ielādēt manifestu.</translation>
 <translation id="6370551072524410110">meklēšanas taustiņš+pārslēgšanas taustiņš+atkāpšanās taustiņš</translation>
 <translation id="637135143619858508">Augstas</translation>
+<translation id="6372413553057593904">Neaktīva cilne logā “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Mēģināt vēlreiz</translation>
 <translation id="637642201764944055">Pēc 2022. gada decembra Chrome lietotņu iepriekšējās versijas netiks atvērtas Linux ierīcēs. Sazinieties ar administratoru, lai atjauninātu šo lietotni uz jaunu versiju vai noņemtu to.</translation>
@@ -7341,6 +7348,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6613231539539868591">Saglabātie dati</translation>
 <translation id="6613267708691765962">Notiek ļaunprātīgas programmatūras meklēšana…</translation>
+<translation id="6614219106064338118">Sākt tērzēšanu</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6616000047939888167">Piedāvāt Google tulkotāju tīmekļa vietnēm un PDF failiem citās valodās</translation>
 <translation id="6618013221808317456">Neļaut vietnēm izmantot JavaScript optimizāciju</translation>
@@ -9724,6 +9732,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8410133743809404768">Varat meklēt adreses joslā, ievadot @history, kā arī veikt meklēšanu lapā Vēsture.</translation>
 <translation id="8411043186249152291">pilnekrāna režīms</translation>
 <translation id="8412136526970428322">Atļauts: <ph name="PERMISSION" /> un vēl <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Ir spēkā <ph name="BEGIN_LINK1" />Google noteikumi<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Gemini Apps konfidencialitātes paziņojums<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Tiek nodrošināta aizsardzība pret zināmām bīstamām vietnēm, lejupielādēm un paplašinājumiem. Kad apmeklējat kādu vietni, pārlūks Chrome nosūta Google serveriem pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="8414396119627470038">Pierakstieties vietnē <ph name="SITE_ETLD_PLUS_ONE" />, izmantojot <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Izpētiet jebko</translation>

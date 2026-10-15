@@ -268,6 +268,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1177863135347784049">Personalizada</translation>
 <translation id="1178093605842850860">Permiso concedido para ler e cambiar este sitio</translation>
 <translation id="1178357842179817577">Protéxete contra descargas, extensións e sitios perigosos</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />As pestanas compártense para obter respostas máis relevantes.<ph name="END_BOLD" /> Google usa o contido e o URL da pestana que tes aberta cando inicias un chat novo. Podes cambiar esta opción en calquera momento.</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="117916940443676133">A túa chave de seguranza non está protexida cun PIN. Para xestionar os datos de inicio de sesión, primeiro crea un PIN.</translation>
 <translation id="1179400851034021914">O IBAN non é válido</translation>
@@ -701,6 +702,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1535753739390684432">Escoita a lectura dun determinado texto. Primeiro, selecciona a icona de Escoitar selección, situada na parte inferior da pantalla, e despois destaca o texto.</translation>
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1536883206862903762">Con esta acción, desactivaranse as extensións e restablecerase a configuración aos valores predeterminados seguros. Conservaranse as pestanas, ficheiros e cookies. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />As pestanas compártense para obter respostas máis relevantes.<ph name="END_BOLD_1" /> Google usa o contido e o URL da pestana que tes aberta cando inicias un chat novo. Podes cambiar esta opción en calquera momento. <ph name="BEGIN_BOLD_2" />Os datos da túa organización son privados e están protexidos.<ph name="END_BOLD_2" /> Non se usará para mellorar os modelos de IA xenerativa.</translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="1538808328818992871">Debe conter polo menos <ph name="MIN_LENGTH" /> caracteres</translation>
 <translation id="1539248305642687917">Non permitir que os sitios ignoren a entrada do teclado</translation>
@@ -728,6 +730,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1552752544932680961">Xestionar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /> sobre Microsoft 365 no teu Chromebook.</translation>
+<translation id="1554343363646356023">Nova ventá &amp;illada</translation>
 <translation id="1554640914375980459">Acenderase a luz da pantalla cando cheguen notificacións. Vai con tino ao usar esta opción se es sensible á luminosidade.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556127816860282890">É posible que se limiten a actividade en segundo plano e algúns efectos visuais (como o desprazamento suave)</translation>
@@ -1895,6 +1898,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quere copiar ficheiros de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Actualmente na canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizar conta, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">As pestanas compártense para obter respostas máis relevantes. Google usa o contido e o URL da pestana que tes aberta cando inicias un chat novo. Podes cambiar esta opción en calquera momento. Os datos da túa organización son privados e están protexidos. Non se usará para mellorar os modelos de IA xenerativa.</translation>
 <translation id="2459703812219683497">Detectouse un código de activación</translation>
 <translation id="2459706890611560967">Retomar a emisión da pestana no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Compartir unha captura de pantalla</translation>
@@ -3156,6 +3160,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3390740059150071453">Mirar á esquerda</translation>
 <translation id="3393554941209044235">Análise de documentos de Chrome</translation>
 <translation id="3394072120086516913">O PC está conectado por cable e o dispositivo de emisión está conectado á wifi</translation>
+<translation id="3394561494170561143">Nova &amp;pestana illada</translation>
 <translation id="3394850431319394743">Permiso concedido para usar identificadores para reproducir contido protexido</translation>
 <translation id="339722927132407568">A imaxe conxélase</translation>
 <translation id="3399432415385675819">Desactivaranse as notificacións</translation>
@@ -6203,6 +6208,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5724723163580775373">Enfoque grande</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear un tema con IA</translation>
 <translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
+<translation id="5727872803091928075">As pestanas compártense para obter respostas máis relevantes. Google usa o contido e o URL da pestana que tes aberta cando inicias un chat novo. Podes cambiar esta opción en calquera momento.</translation>
 <translation id="5728072125198221967">Servizos de Google vinculados</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
@@ -7031,6 +7037,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6370021412472292592">Erro ao cargar o manifesto.</translation>
 <translation id="6370551072524410110">busca + maiúsculas + retroceso</translation>
 <translation id="637135143619858508">Separadas</translation>
+<translation id="6372413553057593904">Pestana inactiva en "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Tentar de novo</translation>
 <translation id="637642201764944055">As versións antigas das aplicacións de Chrome non se poderán abrir nos dispositivos Linux despois de decembro de 2022. Ponte en contacto co teu administrador para actualizar esta aplicación a unha versión nova ou quitala.</translation>
@@ -7343,6 +7350,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613231539539868591">Datos persistentes</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
+<translation id="6614219106064338118">Iniciar chat</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6616000047939888167">Ofrecer o Tradutor de Google para sitios web e PDF noutros idiomas</translation>
 <translation id="6618013221808317456">Non permitir que os sitios usen a optimización de JavaScript</translation>
@@ -9725,6 +9733,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8410133743809404768">Podes facer buscas na barra de enderezos usando @historial, así como na páxina Historial</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
+<translation id="8413685856004704642">Aplícanse as <ph name="BEGIN_LINK1" />Condicións de Google<ph name="END_LINK1" /> e o <ph name="BEGIN_LINK2" />Aviso de privacidade das aplicacións Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Pescuda calquera cousa</translation>

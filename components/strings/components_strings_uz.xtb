@@ -664,6 +664,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2126374524350484896">PDF manbasi:</translation>
 <translation id="2127090458081644412">Parol shu qurilmaga saqlandi</translation>
 <translation id="2127747486437921899">Qiya</translation>
+<translation id="2129163794581571479">Personal Intelligence va Gemini imkoniyatlari asosida ishlaydi. Yaxshilangan avtomatik kiritish funksiyasini yanada takomillashtirish maqsadida soʻrovlaringiz, sahifa sarlavhalari va URL manzillaringiz koʻrib chiqilishi mumkin. <ph name="BEGIN_LINK" />Sozlamalarni boshqarish<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode qoidasi sozlanmagani sababli siz tanlangan andozalar tatbiq qilinmasligi mumkin.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Toʻlovlarni avtomatik kiritishni yoqish oynasi toʻliq hajmda ochildi.</translation>
@@ -1570,6 +1571,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3655670868607891010">Agar bu muammo tez-tez qaytarilib tursa, yechimini <ph name="HELP_LINK" /> sahifasidan izlang.</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3659521826520353662">Administrator sozlagan qaysi saytlarga va qaysi vaqtda foydalanuvchilar tashrif buyuradi: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
+<translation id="3663760610864720538">Personal Intelligence va Gemini imkoniyatlari asosida ishlaydi. <ph name="BEGIN_LINK" />Sozlamalarni boshqarish<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Bu mahsulot sotiladigan doʻkonlardan boshqa xarid variantlarini qidirish.</translation>
 <translation id="3664782872746246217">Kalit soʻzlar:</translation>
 <translation id="3670030362669914947">Raqam</translation>
@@ -1590,6 +1592,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3693516565203081475">Toʻlov usulini tanlash</translation>
 <translation id="3698353241727597930">Administrator <ph name="FILES" /> <ph name="CLOUD_STORAGE" /> korporativ omborida saqlanishini sozlagan. Bu fayllar oʻchirilganda monitoring va audit qilinishi hamda saqlanib qolishi mumkin.</translation>
 <translation id="3698629142018988477">Sayt yaratish tugmasi, Google Sitesda yangi saytni tez yaratish uchun faollashtiring</translation>
+<translation id="3698708128812719147">Internetning istalgan joyida Ctrl tugmasini ikki marta bosib, maʼlumotlarni toping va toʻldiring</translation>
 <translation id="3700094625653511150">Keyinroq toʻlash usullarini berkitish uchun <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> sahifasini oching.</translation>
 <translation id="3700966190175650601">Parollarni kiritishda barmoq izidan foydalanasiz</translation>
 <translation id="3701427423622901115">Asliga qaytarish boshlandi.</translation>
@@ -1893,6 +1896,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4185037616931963178">Redress raqamini xavfsiz yangilang</translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
 <translation id="4191334393248735295">Uzunlik</translation>
+<translation id="4192770747482479191">Internetning istalgan joyida ⌘ tugmasini ikki marta bosib, koʻproq maʼlumot toping va toʻldiring</translation>
 <translation id="4195459680867822611">Chrome maslahatlari tugmasi, Chrome funksiyalari bilan tanishish uchun faollashtiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4196861286325780578">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>
@@ -2841,6 +2845,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="573974402615125334">Varaqlar guruhini ulashish, ularga qoʻshilish va boshqalar bilan birga ishlash uchun varaqlar va tarixni sinxronlang</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
+<translation id="5744350700955456407">Yaxshilangan avtomatik kiritish endi Gmail va Photos kabi ilovalardan buyurtma raqamlari va parvozni tasdiqlash kodlari kabi maʼlumotlarni topishi hamda joyiga qoʻyishi mumkin</translation>
 <translation id="5745586894920491759">Chrome sahifa nomlari va URL manzillarni bulutda qayta ishlaydi</translation>
 <translation id="5745733273847572235">Joylashuvingizni soʻrashi mumkin</translation>
 <translation id="5750869797196646528">Qoʻllar holatini kuzatish</translation>

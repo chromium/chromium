@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Beberapa konten mungkin tidak sesuai untuk semua orang.</translation>
 <translation id="1601560923496285236">Terapkan</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Selesaikan 1 tugas untuk naik level}other{Selesaikan {count} tugas untuk naik level}}</translation>
 <translation id="1605405588277479165">Nonaktif - Tidak direkomendasikan</translation>
 <translation id="1605658421715042784">Salin Gambar</translation>
 <translation id="1606899876897213121">Tutup ringkasan aktivitas terbaru</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Diperlukan</translation>
 <translation id="3914640181019354363">Deteksi alamat</translation>
 <translation id="391904960191284041">Ulasan produk</translation>
+<translation id="3920165976616657606">"Pelajari Safe Browsing yang Disempurnakan" selesai.</translation>
 <translation id="3921585859122905677">Posisi Kolom URL</translation>
 <translation id="3922185497376658606">Pramuat halaman web</translation>
 <translation id="3926703470020109118">Download Dibatalkan</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Anda dapat menggeser tepi untuk kembali atau maju.</translation>
 <translation id="4460014764210899310">Pisahkan</translation>
 <translation id="446314443268698477">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera atau foto.</translation>
+<translation id="4465941170695753889">Tekan lama untuk membuat grup tab</translation>
 <translation id="4469324811108161144">Catatan dapat menyimpan hingga <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="4470766488397113689">Apa yang ingin Anda kerjakan?</translation>
 <translation id="4471472356135655769">Tidak dapat mengekspor sandi</translation>

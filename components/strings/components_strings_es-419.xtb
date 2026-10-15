@@ -648,6 +648,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2103210856015238101">La lista de tarjetas de lealtad disponibles que se debe tocar para completar está totalmente abierta.</translation>
 <translation id="2104739941682874393">El autocompletado mejorado comprende mejor los formularios y puede autocompletarlos más rápido</translation>
+<translation id="2105237910269166838">Solicita información sobre esta página</translation>
 <translation id="2107021941795971877">Compatibilidades de la impresora</translation>
 <translation id="2108755909498034140">Reinicia la computadora.</translation>
 <translation id="2109845311767915560">Grupo de pestañas compartido</translation>
@@ -1054,6 +1055,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2734797989819862638">No copiar</translation>
 <translation id="2738771556149464852">No después</translation>
 <translation id="2740531572673183784">Aceptar</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ninguna}=1{1 habilidad}other{# habilidades}}</translation>
 <translation id="2757727729385895652">Subiendo <ph name="COUNT" /> archivos a Google Drive</translation>
 <translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
 <translation id="2759825833388495838">completar tu contraseña en <ph name="APP_NAME" /></translation>
@@ -3624,6 +3626,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="70846382339153529">Texto de OpenDocument</translation>
 <translation id="7086090958708083563">Carga solicitada por el usuario</translation>
+<translation id="7089745480771070611">Se abre en el panel lateral</translation>
 <translation id="7090698782953528257">Ayúdame a graficar una función para visualizar la ecuación matemática y ver la forma de la curva</translation>
 <translation id="7092087596499105699">Tu administrador configuró el conector de puerta de enlace segura para proteger el acceso a las aplicaciones web privadas de tu organización. Es posible que use datos de tu perfil de trabajo para verificar el acceso.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
@@ -4008,6 +4011,7 @@ Detalles adicionales:
 <translation id="7696107855583699585">Editar el número de viajero conocido</translation>
 <translation id="7698864304447945242">¿Quieres actualizar los Servicios de Google Play para RA?</translation>
 <translation id="7699509138503320152">Reescribe mi correo electrónico para que sea más persuasivo</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ninguna}=1{1 habilidad (sincronizada)}other{# habilidades (sincronizadas)}}</translation>
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuar a <ph name="SITE" /> (no seguro)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Ayúdame a escribir</translation>

@@ -268,6 +268,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1177863135347784049">Personalizează</translation>
 <translation id="1178093605842850860">Are permisiunea să citească și să modifice acest site</translation>
 <translation id="1178357842179817577">Te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Se permite accesul la file pentru răspunsuri mai relevante.<ph name="END_BOLD" /> Google folosește conținutul și adresa URL a filei deschise când începi un chat nou. Poți modifica oricând această setare.</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="117916940443676133">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona datele de conectare, creează mai întâi un cod PIN.</translation>
 <translation id="1179400851034021914">Codul IBAN este nevalid</translation>
@@ -701,6 +702,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1535753739390684432">Ascultă un anumit text citit cu voce tare. Mai întâi, selectează pictograma Selectați și ascultați din partea de jos a ecranului, apoi evidențiază textul.</translation>
 <translation id="1536754031901697553">Se deconectează...</translation>
 <translation id="1536883206862903762">Astfel, extensiile se vor dezactiva și setările vor reveni la valorile prestabilite sigure. Filele, fișierele și cookie-urile vor fi păstrate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Se permite accesul la file pentru răspunsuri mai relevante.<ph name="END_BOLD_1" /> Google folosește conținutul și adresa URL a filei deschise când începi un chat nou. Poți modifica oricând această setare. <ph name="BEGIN_BOLD_2" />Datele organizației tale sunt private și securizate.<ph name="END_BOLD_2" /> Nu se vor folosi pentru îmbunătățirea modelelor de AI generativ.</translation>
 <translation id="1537254971476575106">Lupă de ecran complet</translation>
 <translation id="1538808328818992871">Trebuie să aibă cel puțin <ph name="MIN_LENGTH" /> caractere</translation>
 <translation id="1539248305642687917">Nu permite site-urilor să modifice intrările de la tastatură</translation>
@@ -728,6 +730,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1552752544932680961">Gestionați extensia</translation>
 <translation id="1553538517812678578">nelimitat</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /> despre Microsoft 365 pe Chromebook.</translation>
+<translation id="1554343363646356023">Fereastră &amp;izolată nouă</translation>
 <translation id="1554640914375980459">Iluminează intermitent ecranul când primești notificări. Folosește cu atenție notificările flash dacă ai sensibilitate la lumină.</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1556127816860282890">Este posibil ca activitatea în fundal și unele efecte vizuale, cum ar fi derularea lină, să fie limitate</translation>
@@ -1895,6 +1898,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2457246892030921239"><ph name="APP_NAME" /> dorește să copieze fișiere din <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Folosești canalul <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizează contul, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Se permite accesul la file pentru răspunsuri mai relevante. Google folosește conținutul și adresa URL a filei deschise când începi un chat nou. Poți modifica oricând această setare. Datele organizației tale sunt private și securizate. Nu se vor folosi pentru îmbunătățirea modelelor de AI generativ.</translation>
 <translation id="2459703812219683497">S-a detectat un cod de activare</translation>
 <translation id="2459706890611560967">Reia proiectarea filei pe <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Trimite o captură de ecran</translation>
@@ -3155,6 +3159,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3390740059150071453">Privire spre stânga</translation>
 <translation id="3393554941209044235">Analiza documentelor Chrome</translation>
 <translation id="3394072120086516913">PC-ul este conectat la rețea prin cablu și dispozitivul de proiecție prin Wi-Fi</translation>
+<translation id="3394561494170561143">Filă izola&amp;tă nouă</translation>
 <translation id="3394850431319394743">Au permisiunea de a folosi identificatori pentru a reda conținut protejat</translation>
 <translation id="339722927132407568">Înghețări</translation>
 <translation id="3399432415385675819">Notificările vor fi dezactivate</translation>
@@ -6199,6 +6204,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5724723163580775373">Focalizare mare</translation>
 <translation id="5725112283692663422">Trimite feedback despre opțiunea Creează o temă cu AI</translation>
 <translation id="5727728807527375859">Extensiile, aplicațiile și temele pot dăuna computerului. Sigur vrei să continui?</translation>
+<translation id="5727872803091928075">Se permite accesul la file pentru răspunsuri mai relevante. Google folosește conținutul și adresa URL a filei deschise când începi un chat nou. Poți modifica oricând această setare.</translation>
 <translation id="5728072125198221967">Servicii Google conectate</translation>
 <translation id="5729712731028706266">&amp;Afișează</translation>
 <translation id="5731247495086897348">In&amp;serează și accesează</translation>
@@ -7028,6 +7034,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6370021412472292592">Manifestul nu a putut fi încărcat.</translation>
 <translation id="6370551072524410110">tasta de căutare + shift + backspace</translation>
 <translation id="637135143619858508">Largă</translation>
+<translation id="6372413553057593904">Filă inactivă în <ph name="WINDOW_TITLE" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
 <translation id="637642201764944055">Începând cu luna decembrie 2022, versiunile vechi ale aplicațiilor Chrome nu se vor mai deschide pe dispozitivele Linux. Contactează administratorul pentru a actualiza la o versiune nouă sau pentru a elimina aplicația.</translation>
@@ -7342,6 +7349,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
 <translation id="6613231539539868591">Date persistente</translation>
 <translation id="6613267708691765962">Se caută programe malware...</translation>
+<translation id="6614219106064338118">Începe un chat</translation>
 <translation id="6615455863669487791">Afișează</translation>
 <translation id="6616000047939888167">Oferă Google Traducere pentru site-uri și PDF-uri în alte limbi</translation>
 <translation id="6618013221808317456">Nu permite site-urilor să folosească optimizarea JavaScript</translation>
@@ -9725,6 +9733,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8410133743809404768">Poți căuta în bara de adrese folosind @istoric, precum și din pagina Istoric</translation>
 <translation id="8411043186249152291">ecran complet</translation>
 <translation id="8412136526970428322">Permisiuni acordate: <ph name="PERMISSION" /> și încă <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Se aplică <ph name="BEGIN_LINK1" />Termenii Google<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Notificarea privind confidențialitatea în Aplicațiile Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Când accesezi un site, Chrome trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>
 <translation id="8414396119627470038">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /> de pe <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Cercetează orice</translation>

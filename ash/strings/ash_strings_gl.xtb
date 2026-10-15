@@ -1021,6 +1021,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
 <translation id="3978162107953847778">Insire ligazóns de sitios como o teu historial de navegación ou Google Drive. Tamén podes inserir emojis, ficheiros de imaxe e moito máis. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Queres cambiar a saída de audio?</translation>
+<translation id="3983903378684256134">Steam en Chromebook</translation>
 <translation id="3984536049089846927">Páxina seguinte</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí.</translation>
@@ -1637,6 +1638,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5727460725221669831">Se esqueciches o contrasinal ou cambiaches o da Conta de Google recentemente, proba a recuperar este usuario.</translation>
 <translation id="5733630091161562207">Notificación de benvida</translation>
 <translation id="573413375004481890">Este dispositivo non puido admitir todas as túas liñas de braille, así que se desconectou unha</translation>
+<translation id="5739548907438839901">Liberouse espazo no disco: <ph name="SIZE" />.</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5745612484876805746">A opción Luz nocturna activarase automaticamente ao anoitecer</translation>
 <translation id="5749214722697335450">Envía datos de uso e diagnóstico. Para axudar a mellorar a túa experiencia en Android, envíalle automaticamente a Google datos de diagnóstico, do dispositivo e de uso das aplicacións. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e implementar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional, estes datos pódense gardar na túa conta de Google. <ph name="BEGIN_LINK1" />Máis información sobre as métricas<ph name="BEGIN_LINK1_END" />Máis información<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Nova instalación</translation>
 <translation id="7413851974711031813">Para pechar o diálogo, preme a tecla Escape</translation>
 <translation id="7416471219712049036">Gardar páxina actual</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
+<translation id="7430466159639897874">Tes espazo no disco sen usar (<ph name="SIZE" />) asignado á función obsoleta Steam en Chromebook.</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
 <translation id="7433708794692032816">Para seguir usando o teu dispositivo (<ph name="DEVICE_TYPE" />), insire a tarxeta intelixente</translation>
 <translation id="7440404390546433462">Busca de Google</translation>
@@ -2353,6 +2356,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7781335840981796660">Eliminaranse todas as contas de usuario e os datos locais.</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7787212146956232129">Definíronse os dispositivos de saída e entrada. Para cambialos, vai a Configuración.</translation>
+<translation id="7790757511772316441">Liberar espazo no disco</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>

@@ -731,6 +731,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1552752544932680961">Valdyti plėtinį</translation>
 <translation id="1553538517812678578">neribotas</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /> apie „Microsoft 365“ „Chromebook“ įrenginyje.</translation>
+<translation id="1554343363646356023">Naujas &amp;izoliuotas langas</translation>
 <translation id="1554640914375980459">Įjungti ekrano mirksėjimą gavus pranešimų. Naudokite mirksėjimo pranešimus apdairiai, jei esate jautrūs šviesai.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1556127816860282890">Veikla fone ir kai kurie vaizdiniai efektai, pvz., sklandus slinkimas, gali būti apriboti</translation>
@@ -3172,6 +3173,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3390740059150071453">Žiūrėti į kairę</translation>
 <translation id="3393554941209044235">„Chrome“ dokumentų analizė</translation>
 <translation id="3394072120086516913">Asmeninis kompiuteris yra prijungtas prie laidinio, o perdavimo įrenginys – prie „Wi-Fi“ tinklo</translation>
+<translation id="3394561494170561143">Naujas izoliuotas &amp;skirtukas</translation>
 <translation id="3394850431319394743">Leidžiama naudoti identifikatorius apsaugotam turiniui leisti</translation>
 <translation id="339722927132407568">Stringa</translation>
 <translation id="3399432415385675819">Pranešimai bus išjungti</translation>
@@ -7049,6 +7051,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6370021412472292592">Nepavyko įkelti aprašo.</translation>
 <translation id="6370551072524410110">paieškos klavišas + „Shift“ + naikinimo klavišas</translation>
 <translation id="637135143619858508">Laisvas</translation>
+<translation id="6372413553057593904">Neaktyvus skirtukas lange „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Bandyti dar kartą</translation>
 <translation id="637642201764944055">Senų versijų „Chrome“ programos nebus atidaromos „Linux“ įrenginiuose po 2022 m. gruodžio mėn. Susisiekite su administratoriumi, kad atnaujintų į naują versiją, arba pašalinkite šią programą.</translation>

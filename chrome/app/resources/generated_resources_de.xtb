@@ -268,6 +268,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1178093605842850860">Zum Lesen und Ändern dieser Website berechtigt</translation>
 <translation id="1178357842179817577">Maßnahmen zum Schutz vor gefährlichen Websites, Downloads und Erweiterungen werden ausgeführt</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt.<ph name="END_BOLD" /> Google verwendet Inhalt und URL des geöffneten Tabs, wenn du einen neuen Chat startest. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="117916940443676133">Dein Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstelle zuerst eine PIN, um die Anmeldedaten zu verwalten.</translation>
 <translation id="1179400851034021914">IBAN ist ungültig</translation>
@@ -701,6 +702,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1535753739390684432">Du kannst dir Text vorlesen lassen. Wähle zuerst unten auf dem Bildschirm das Symbol „Vorlesen“ aus und markiere dann den entsprechenden Text.</translation>
 <translation id="1536754031901697553">Verbindung wird getrennt…</translation>
 <translation id="1536883206862903762">Dadurch werden Erweiterungen deaktiviert und deine Einstellungen auf die Standardeinstellungen zurückgesetzt, um dein Gerät besser zu schützen. Tabs, Dateien und Cookies bleiben erhalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt.<ph name="END_BOLD_1" /> Google verwendet Inhalt und URL des geöffneten Tabs, wenn du einen neuen Chat startest. Du kannst diese Einstellung jederzeit ändern. <ph name="BEGIN_BOLD_2" />Die Daten deiner Organisation bleiben privat und geschützt.<ph name="END_BOLD_2" /> Sie werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="1537254971476575106">Vollbildlupe</translation>
 <translation id="1538808328818992871">Muss mindestens <ph name="MIN_LENGTH" /> Zeichen lang sein</translation>
 <translation id="1539248305642687917">Websites nicht erlauben, meine Tastatureingaben zu überschreiben</translation>
@@ -728,6 +730,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1552752544932680961">Erweiterung verwalten</translation>
 <translation id="1553538517812678578">unbegrenzt</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Weitere Informationen zu Microsoft 365 auf Chromebook<ph name="LINK_END" /></translation>
+<translation id="1554343363646356023">Neues &amp;isoliertes Fenster</translation>
 <translation id="1554640914375980459">Der Bildschirm leuchtet kurz auf, wenn du Benachrichtigungen erhältst. Wenn du lichtempfindlich bist, solltest du das Aufleuchten bei Benachrichtigungen mit Vorsicht verwenden.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556127816860282890">Hintergrundaktivitäten und einige visuelle Effekte wie optimiertes Scrollen können eingeschränkt sein</translation>
@@ -1588,6 +1591,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2215070081105889450">Zum Teilen von Audio, musst du stattdessen einen Tab oder Bildschirm teilen</translation>
 <translation id="2217208085547223783">Vertrauensstatus</translation>
 <translation id="2218019600945559112">Maus und Touchpad</translation>
+<translation id="2218116022473625437">In den Einstellungen kannst du die Texthervorhebung deaktivieren, die Stimme ändern und das Erscheinungsbild der Seite anpassen.</translation>
 <translation id="2218515861914035131">Als unformatierten Text einfügen</translation>
 <translation id="2219007152108311874">Bei jedem Besuch fragen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
@@ -1894,6 +1898,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2457246892030921239"><ph name="APP_NAME" /> möchte Dateien von <ph name="VOLUME_NAME" /> kopieren.</translation>
 <translation id="2457842160081795172">Aktuelle Release-Version: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Konto aktualisieren, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt. Google verwendet Inhalt und URL des geöffneten Tabs, wenn du einen neuen Chat startest. Du kannst diese Einstellung jederzeit ändern. Die Daten deiner Organisation bleiben privat und geschützt. Sie werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="2459703812219683497">Aktivierungscode erkannt</translation>
 <translation id="2459706890611560967">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ fortsetzen</translation>
 <translation id="245979889539926662">Screenshot teilen</translation>
@@ -3153,6 +3158,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3390740059150071453">Nach links blicken</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3394072120086516913">PC verwendet eine kabelgebundene Verbindung für den Internetzugriff und Übertragungsgerät ist mit WLAN verbunden</translation>
+<translation id="3394561494170561143">Neuer isolierter &amp;Tab</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
 <translation id="339722927132407568">Hängenbleiben</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
@@ -3756,6 +3762,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
 <translation id="3813296892522778813">Wenn du keine Ergebnisse erhältst, <ph name="BEGIN_LINK_CHROMIUM" />rufe die Google Chrome-Hilfe auf<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Verwendete Sprache zum Übersetzen von Seiten und Schnellinfos</translation>
+<translation id="3815509884387832993">Diese Seite lässt sich über die KI-Wiedergabe wie ein Podcast anhören. Verwende dazu den Button „KI-Wiedergabe aktivieren“ in der Symbolleiste des Lesemodus.</translation>
 <translation id="3815668647912194650">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest.</translation>
 <translation id="3816118180265633665">Chrome-Farben</translation>
 <translation id="3817524650114746564">Proxy-Einstellungen des Computers öffnen</translation>
@@ -4140,6 +4147,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4109135793348361820">Fenster zu <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) verschieben</translation>
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4112282889480354965">Erweiterungen und Skills</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
@@ -6193,6 +6201,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5724723163580775373">Großer Fokus</translation>
 <translation id="5725112283692663422">Feedback zu „Design mit KI erstellen“ senden</translation>
 <translation id="5727728807527375859">Erweiterungen, Apps und Designs können deinen Computer beschädigen. Möchtest du den Vorgang wirklich fortsetzen?</translation>
+<translation id="5727872803091928075">Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt. Google verwendet Inhalt und URL des geöffneten Tabs, wenn du einen neuen Chat startest. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5729712731028706266">&amp;Ansicht</translation>
 <translation id="5731247495086897348">Einfügen und &amp;aufrufen</translation>
@@ -7021,6 +7030,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
 <translation id="6370551072524410110">Suchtaste + Umschalttaste + Rücktaste</translation>
 <translation id="637135143619858508">Hoch</translation>
+<translation id="6372413553057593904">Inaktiver Tab in „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="637642201764944055">Ältere Versionen von Chrome-Apps können nach Dezember 2022 auf Linux-Geräten nicht mehr geöffnet werden. Du kannst dich an deinen Administrator wenden, um ein Update auf eine neue Version durchführen oder diese App entfernen zu lassen.</translation>
@@ -7333,6 +7343,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
 <translation id="6613231539539868591">Gespeicherte Daten</translation>
 <translation id="6613267708691765962">Nach Malware wird gesucht…</translation>
+<translation id="6614219106064338118">Chat starten</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6616000047939888167">Google Übersetzer für Websites und PDFs in anderen Sprachen anbieten</translation>
 <translation id="6618013221808317456">Websites dürfen die JavaScript-Optimierung nicht verwenden</translation>
@@ -8775,6 +8786,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7702463352133825032">Streamen an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="7704305437604973648">Task</translation>
 <translation id="7705085181312584869">Formuliere für mich</translation>
+<translation id="7705230242432916648">Höre dir diese Seite mit der KI-Wiedergabe wie einen Podcast an</translation>
 <translation id="7705276765467986571">Lesezeichen-Modell konnte nicht geladen werden.</translation>
 <translation id="7705334495398865155">Du kannst die Hardware-ID (BSSID) zufällig auswählen lassen, um zu verhindern, dass sich dieses Gerät tracken lässt.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9715,6 +9727,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8410133743809404768">Du kannst in der Adressleiste mit „@history“ oder auf der Seite „Verlauf“ suchen</translation>
 <translation id="8411043186249152291">Vollbild</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere zugelassen</translation>
+<translation id="8413685856004704642">Es gelten die <ph name="BEGIN_LINK1" />Google-Nutzungsbedingungen<ph name="END_LINK1" /> und die <ph name="BEGIN_LINK2" />Datenschutzhinweise für Gemini-Apps<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="8414396119627470038">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bei <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8415120635186642416">Recherchieren</translation>
@@ -10205,6 +10218,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8780123805589053431">Bildbeschreibungen von Google verwenden</translation>
 <translation id="8780443667474968681">Die Sprachsuche wurde deaktiviert.</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, verwende die Links- oder die Rechtspfeiltaste, um die Verknüpfung zu verschieben. Drücke Eingabe oder die Esc-Taste, um den Vorgang abzuschließen.</translation>
 <translation id="8781980678064919987">Beim Zuklappen herunterfahren</translation>
 <translation id="8783171585655659524">Screenshot hinzufügen</translation>
 <translation id="8785622406424941542">Eingabestift</translation>

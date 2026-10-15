@@ -648,6 +648,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2102495993840063010">App Android</translation>
 <translation id="2103210856015238101">Carte fedeltà che è possibile compilare tramite tocco aperte a schermo intero.</translation>
 <translation id="2104739941682874393">La compilazione automatica avanzata comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido</translation>
+<translation id="2105237910269166838">Chiedi informazioni su questa pagina</translation>
 <translation id="2107021941795971877">Supporti di stampa</translation>
 <translation id="2108755909498034140">Riavvia il computer</translation>
 <translation id="2109845311767915560">Gruppo di schede condiviso</translation>
@@ -1054,6 +1055,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2734797989819862638">Non copiare</translation>
 <translation id="2738771556149464852">Non dopo</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Nessuna}=1{1 skill}other{# skill}}</translation>
 <translation id="2757727729385895652">Caricamento di <ph name="COUNT" /> file su Google Drive in corso…</translation>
 <translation id="2759299890026163685">Assicurati di avere una connessione a internet stabile prima di riprovare</translation>
 <translation id="2759825833388495838">inserire la tua password su <ph name="APP_NAME" /></translation>
@@ -3619,6 +3621,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="7083258188081898530">Vassoio 9</translation>
 <translation id="70846382339153529">Testo OpenDocument</translation>
 <translation id="7086090958708083563">Caricamento richiesto dall'utente</translation>
+<translation id="7089745480771070611">Si apre nel riquadro laterale</translation>
 <translation id="7090698782953528257">Aiutami a creare un grafico di una funzione per visualizzare l'equazione matematica e vedere la forma della curva</translation>
 <translation id="7092087596499105699">L'amministratore ha configurato il connettore gateway sicuro per proteggere l'accesso alle applicazioni web private della tua organizzazione. Potrebbe utilizzare i dati del tuo profilo di lavoro per verificare l'accesso.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
@@ -4003,6 +4006,7 @@ Ulteriori dettagli:
 <translation id="7696107855583699585">Modifica Known Traveler Number</translation>
 <translation id="7698864304447945242">Vuoi aggiornare Google Play Services per AR?</translation>
 <translation id="7699509138503320152">Riscrivi la mia email per renderla più persuasiva</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Nessuna}=1{1 skill (sincronizzata)}other{# skill (sincronizzate)}}</translation>
 <translation id="7701040980221191251">Nessun dato</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Procedi su <ph name="SITE" /> (non sicuro)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Aiutami a scrivere</translation>

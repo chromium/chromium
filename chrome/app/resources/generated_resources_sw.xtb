@@ -268,6 +268,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1177863135347784049">Maalum</translation>
 <translation id="1178093605842850860">Umeruhusu kisome na kibadilishe tovuti hii</translation>
 <translation id="1178357842179817577">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezo hatari</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Ufikiaji wa vichupo unaruhusiwa ili upate majibu yanayokufaa zaidi.<ph name="END_BOLD" /> Google hutumia maudhui na URL ya kichupo ulichofungua unapoanzisha gumzo jipya. Unaweza kubadilisha mipangilio hii wakati wowote.</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="117916940443676133">Ufunguo wako wa usalama haujalindwa kwa PIN. Ili udhibiti data ya kuingia katika akaunti, tunga PIN kwanza.</translation>
 <translation id="1179400851034021914">IBAN si sahihi</translation>
@@ -702,6 +703,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1535753739390684432">Sikiliza maandishi mahususi yakisomwa kwa sauti. Kwanza, chagua aikoni ya kipengele cha Chagua ili Izungumze kwenye sehemu ya chini ya skrini, kisha uangazie maandishi.</translation>
 <translation id="1536754031901697553">Inatenganisha...</translation>
 <translation id="1536883206862903762">Hatua hii itazima viendelezi na kubadilisha mipangilio yako iwe chaguomsingi salama. Vichupo, faili na vidakuzi vitahifadhiwa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Ufikiaji wa vichupo unaruhusiwa ili upate majibu yanayokufaa zaidi.<ph name="END_BOLD_1" /> Google hutumia maudhui na URL ya kichupo ulichofungua unapoanzisha gumzo jipya. Unaweza kubadilisha mipangilio hii wakati wowote. <ph name="BEGIN_BOLD_2" />Data ya shirika lako ni ya faragha na salama.<ph name="END_BOLD_2" /> Haitatumiwa kuboresha mifumo ya AI zalishi.</translation>
 <translation id="1537254971476575106">Kikuzaji cha skrini nzima</translation>
 <translation id="1538808328818992871">Ni lazima liwe na angalau herufi <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Usiruhusu tovuti zibatilishe data unayoweka ukitumia kibodi</translation>
@@ -729,6 +731,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1552752544932680961">Dhibiti kiendelezi</translation>
 <translation id="1553538517812678578">bila kikomo</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /> kuhusu Microsoft 365 kwenye Chromebook yako.</translation>
+<translation id="1554343363646356023">Dirisha &amp;huru jipya</translation>
 <translation id="1554640914375980459">Washa mweko wa skrini unapopokea arifa. Tumia arifa zenye mweko kwa makini ikiwa unaathiriwa na mwangaza.</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="1556127816860282890">Baadhi ya madoido ya video na shughuli ya chinichini kama vile usogezaji rahisi inaweza kuwa na utendaji finyu</translation>
@@ -1907,6 +1910,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2457246892030921239"><ph name="APP_NAME" /> inataka kunakili faili kutoka <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Kwa sasa unatumia kituo cha <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Sakinisha akaunti, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Ufikiaji wa vichupo unaruhusiwa ili upate majibu yanayokufaa zaidi. Google hutumia maudhui na URL ya kichupo ulichofungua unapoanzisha gumzo jipya. Unaweza kubadilisha mipangilio hii wakati wowote. Data ya shirika lako ni ya faragha na salama. Haitatumiwa kuboresha mifumo ya AI zalishi.</translation>
 <translation id="2459703812219683497">Msimbo wa kuanza kutumia umetambuliwa</translation>
 <translation id="2459706890611560967">Endelea kutuma maudhui ya kichupo kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Tuma picha ya skrini</translation>
@@ -3168,6 +3172,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3390740059150071453">Angalia kushoto</translation>
 <translation id="3393554941209044235">Uchambuzi wa Hati kwenye Chrome</translation>
 <translation id="3394072120086516913">Kompyuta binafsi imeunganishwa kwa waya na kifaa kinachotuma maudhui kimeunganishwa kwenye Wi-Fi</translation>
+<translation id="3394561494170561143">Kichupo &amp;huru kipya</translation>
 <translation id="3394850431319394743">Zinazoruhusiwa kutumia vitambulishi kucheza maudhui yanayolindwa</translation>
 <translation id="339722927132407568">Inasita kucheza</translation>
 <translation id="3399432415385675819">Arifa zitazimwa</translation>
@@ -6212,6 +6217,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5724723163580775373">Uangaziaji mkubwa</translation>
 <translation id="5725112283692663422">Tuma maoni kuhusu kutumia AI kubuni mandhari</translation>
 <translation id="5727728807527375859">Viendelezi, programu, na mandhari vinaweza kudhuru kompyuta yako. Je, una hakika unataka kuendelea?</translation>
+<translation id="5727872803091928075">Ufikiaji wa vichupo unaruhusiwa ili upate majibu yanayokufaa zaidi. Google hutumia maudhui na URL ya kichupo ulichofungua unapoanzisha gumzo jipya. Unaweza kubadilisha mipangilio hii wakati wowote.</translation>
 <translation id="5728072125198221967">Huduma za Google zilizounganishwa</translation>
 <translation id="5729712731028706266">&amp;Ona</translation>
 <translation id="5731247495086897348">&amp;Bandika Uende</translation>
@@ -7041,6 +7047,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6370021412472292592">Haikupakia maelezo.</translation>
 <translation id="6370551072524410110">tafuta pamoja na "shift" na "backspace"</translation>
 <translation id="637135143619858508">Nafasi kubwa</translation>
+<translation id="6372413553057593904">Kichupo kisichotumika katika "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Jaribu Tena</translation>
 <translation id="637642201764944055">Matoleo ya zamani ya Programu za Chrome hayatafunguka tena kwenye vifaa vya Linux baada ya Desemba 2022. Wasiliana na msimamizi wako ili asasishe kuwa toleo jipya au aondoe programu hii.</translation>
@@ -7353,6 +7360,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="661266467055912436">Huboresha usalama wako na wa kila mtu kwenye wavuti.</translation>
 <translation id="6613231539539868591">Data Iliyodumishwa</translation>
 <translation id="6613267708691765962">Inakagua ili kubaini programu hasidi...</translation>
+<translation id="6614219106064338118">Anzisha gumzo</translation>
 <translation id="6615455863669487791">Nionyeshe</translation>
 <translation id="6616000047939888167">Tafsiri tovuti na PDF zilizo katika lugha nyingine kwa kutumia Google Tafsiri</translation>
 <translation id="6618013221808317456">Usiruhusu tovuti zitumie uboreshaji wa JavaScript</translation>
@@ -9736,6 +9744,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8410133743809404768">Unaweza kutafuta kwenye sehemu ya anwani ukitumia "@historia" au katika ukurasa wa Historia</translation>
 <translation id="8411043186249152291">skrini nzima</translation>
 <translation id="8412136526970428322">Umeruhusu <ph name="PERMISSION" /> na zingine <ph name="COUNT" /></translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Masharti ya Google<ph name="END_LINK1" /> pamoja na <ph name="BEGIN_LINK2" />Ilani ya Faragha ya Programu za Gemini<ph name="END_LINK2" /> vinatumika.</translation>
 <translation id="8413795581997394485">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari. Unapotembelea tovuti, Chrome hutuma kwenda Google msimbo uliofumbwa wa sehemu ya URL kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>
 <translation id="8414396119627470038">Ingia katika akaunti <ph name="SITE_ETLD_PLUS_ONE" /> kwa kutumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Tafiti chochote</translation>

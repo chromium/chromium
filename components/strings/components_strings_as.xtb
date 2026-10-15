@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android এপ্‌</translation>
 <translation id="2103210856015238101">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ লয়েল্টী কাৰ্ডসমূহ সম্পূৰ্ণ উচ্চতাত খোল খাইছে।</translation>
 <translation id="2104739941682874393">স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধাই ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
+<translation id="2105237910269166838">এই পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
 <translation id="2107021941795971877">প্ৰিণ্টৰ সমৰ্থন</translation>
 <translation id="2108755909498034140">আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2109845311767915560">শ্বেয়াৰ কৰা টেবৰ গোট</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">প্ৰতিলিপি নকৰিব</translation>
 <translation id="2738771556149464852">ইয়াৰ পাছত নহয়</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{নাই}=1{১ টা দক্ষতা}one{# টা দক্ষতা}other{# টা দক্ষতা}}</translation>
 <translation id="2757727729385895652">Google Driveত <ph name="COUNT" /> টা ফাইল আপল’ড কৰি থকা হৈছে</translation>
 <translation id="2759299890026163685">পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ সুস্থিৰ ইণ্টাৰনেট সংযোগ থকাটো নিশ্চিত কৰক</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ডটো দিয়ক</translation>
@@ -3618,6 +3620,7 @@
 <translation id="7083258188081898530">ট্ৰে’ ৯</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">ব্যৱহাৰকাৰীয়ে অনুৰোধ কৰা আপল'ড</translation>
+<translation id="7089745480771070611">ছাইডৰ পেনেলত খোল খায়</translation>
 <translation id="7090698782953528257">গণিতৰ সমীকৰণটো ভিজুৱেলাইজ কৰিবলৈ আৰু বক্ৰৰেখাৰ আকৃতি চাবলৈ এটা ফাংশ্বনৰ গ্ৰাফ সৃষ্টি কৰাত মোক সহায় কৰক</translation>
 <translation id="7092087596499105699">আপোনাৰ প্ৰশাসকে আপোনাৰ প্ৰতিষ্ঠানৰ ব্যক্তিগত ৱেব এপ্লিকেশ্বনসমূহৰ এক্সেছ সুৰক্ষিত কৰিবলৈ সুৰক্ষিত গে’টৱে’ সংযোগকাৰী কনফিগাৰ কৰিছে। এক্সেছ সত্যাপন কৰিবলৈ ই আপোনাৰ কৰ্মস্থানৰ প্ৰ’ফাইলৰ পৰা ডেটা ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সমগ্ৰ ছাইটত ষ্ট’ৰ কৰি ৰখা ডেটা আৰু অনুমতি পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
@@ -4001,6 +4004,7 @@
 <translation id="7696107855583699585">জ্ঞাত ভ্ৰমণকাৰীৰ নম্বৰটো সম্পাদনা কৰক</translation>
 <translation id="7698864304447945242">Google Play Services for AR আপডে’ট কৰিবনে?</translation>
 <translation id="7699509138503320152">মোৰ ইমেইলটো অধিক বিশ্বাসযোগ্য কৰি পুনৰ লিখক</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{নাই}=1{১ টা দক্ষতা (ছিংক কৰা হৈছে)}one{# টা দক্ষতা (ছিংক কৰা হৈছে)}other{# টা দক্ষতা (ছিংক কৰা হৈছে)}}</translation>
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> (অসুৰক্ষিত) লৈ যাওক<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">মোক লিখাত সহায় কৰক</translation>

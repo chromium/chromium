@@ -1020,6 +1020,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3977512764614765090">Nivelul bateriei este <ph name="PERCENTAGE" /> % și se încarcă.</translation>
 <translation id="3978162107953847778">Inserează linkuri din locuri precum istoricul de navigare și Google Drive. În plus, poți să inserezi emoji, fișiere imagine și multe altele. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Schimbi ieșirea audio?</translation>
+<translation id="3983903378684256134">Steam pe Chromebook</translation>
 <translation id="3984536049089846927">Pagina următoare</translation>
 <translation id="3986082989454912832">Răspunde</translation>
 <translation id="3990002060657467458">Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setări rapide. Aici poți și să faci capturi de ecran.</translation>
@@ -1637,6 +1638,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="5733630091161562207">Notificare de bun venit</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
+<translation id="5739548907438839901">S-au eliberat <ph name="SIZE" /> de spațiu pe disc.</translation>
 <translation id="574392208103952083">Mediu</translation>
 <translation id="5745612484876805746">Lumina de noapte se activează automat la apus</translation>
 <translation id="5749214722697335450">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date de diagnosticare și utilizare a dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK1" />Află mai multe despre valori<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
@@ -2213,6 +2215,7 @@ Instalare nouă</translation>
 <translation id="7413851974711031813">Apasă Escape pentru a închide</translation>
 <translation id="7416471219712049036">Salvează pagina actuală</translation>
 <translation id="742594950370306541">Camera foto este în uz.</translation>
+<translation id="7430466159639897874">Ai spațiu pe disc nefolosit (<ph name="SIZE" />) alocat pentru funcția învechită Steam pe Chromebook.</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
 <translation id="7433708794692032816">Introdu cardul inteligent pentru a folosi în continuare dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Căutare Google</translation>
@@ -2354,6 +2357,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7781335840981796660">Toate conturile de utilizator și datele locale vor fi eliminate.</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7787212146956232129">Dispozitivele de intrare și de ieșire sunt setate. Accesează Setările pentru a le modifica.</translation>
+<translation id="7790757511772316441">Spațiu liber pe disc</translation>
 <translation id="7792590255364786396">Vizibil</translation>
 <translation id="7796735576426975947">Notificare nouă ascunsă</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>

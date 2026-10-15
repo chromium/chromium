@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178093605842850860">已允許讀取及變更此網站</translation>
 <translation id="1178357842179817577">助你防範危險網站、下載項目和擴充程式</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />系統會分享分頁以提供更相關的答案。<ph name="END_BOLD" />Google 會在你開始新對話時使用已開啟分頁的內容和網址。你可隨時變更此設定。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
@@ -702,6 +703,7 @@
 <translation id="1535753739390684432">由系統讀出特定文字。請先選取畫面底部的「揀選朗讀內容」圖示，然後突顯所需文字。</translation>
 <translation id="1536754031901697553">正在解除連結…</translation>
 <translation id="1536883206862903762">這麼做會停用擴充程式，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />系統會分享分頁以提供更相關的答案。<ph name="END_BOLD_1" />Google 會在你開始新對話時使用已開啟分頁的內容和網址。你可隨時變更此設定。<ph name="BEGIN_BOLD_2" />你機構的資料會保持私密和安全，<ph name="END_BOLD_2" />不會用於改善生成式 AI 模型。</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="1538808328818992871">必須有至少 <ph name="MIN_LENGTH" /> 個字元</translation>
 <translation id="1539248305642687917">不允許網站取代鍵盤輸入</translation>
@@ -1908,6 +1910,7 @@
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」想要從 <ph name="VOLUME_NAME" />複製檔案。</translation>
 <translation id="2457842160081795172">目前為<ph name="CHANNEL_NAME" />版</translation>
 <translation id="2458379781610688953">更新帳戶，<ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">系統會分享分頁以提供更相關的答案。Google 會在你開始新對話時使用已開啟分頁的內容和網址。你可隨時變更此設定。你機構的資料會保持私密和安全，不會用於改善生成式 AI 模型。</translation>
 <translation id="2459703812219683497">已偵測到啟動碼</translation>
 <translation id="2459706890611560967">繼續投放分頁去 <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">分享螢幕截圖</translation>
@@ -6210,6 +6213,7 @@
 <translation id="5724723163580775373">大焦點</translation>
 <translation id="5725112283692663422">提供你對「以 AI 製作主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害您的電腦，確定要繼續嗎？</translation>
+<translation id="5727872803091928075">系統會分享分頁以提供更相關的答案。Google 會在你開始新對話時使用已開啟分頁的內容和網址。你可隨時變更此設定。</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5729712731028706266">檢視(&amp;V)</translation>
 <translation id="5731247495086897348">貼上並前往(&amp;S)</translation>
@@ -7351,6 +7355,7 @@
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6613231539539868591">持久化資料</translation>
 <translation id="6613267708691765962">正在掃瞄惡意軟件…</translation>
+<translation id="6614219106064338118">開始對話</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6616000047939888167">在其他語言的網站和 PDF 上使用「Google 翻譯」</translation>
 <translation id="6618013221808317456">不允許網站使用 JavaScript 優化功能</translation>
@@ -9731,6 +9736,7 @@
 <translation id="8410133743809404768">你可在網址列中使用「@history」或到「記錄」頁面搜尋</translation>
 <translation id="8411043186249152291">全螢幕</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
+<translation id="8413685856004704642">受《<ph name="BEGIN_LINK1" />Google 條款<ph name="END_LINK1" />》及《<ph name="BEGIN_LINK2" />Gemini 應用程式私隱聲明<ph name="END_LINK2" />》約束。</translation>
 <translation id="8413795581997394485">對已知的危險網站、下載檔案及擴充程式提供保護功能。瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">研究任何主題</translation>

@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">فتح في "<ph name="NATIVE_APP_NAME" />" • من "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1495677929897281669">الرجوع إلى علامة التبويب</translation>
 <translation id="1496514951988037011">اسم المستخدم</translation>
+<translation id="1498051468374914325">فتح وحدة تحكّم "أدوات المطوّرين"</translation>
 <translation id="1501480321619201731">حذف مجموعة</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1513352483775369820">الإشارات المرجعية وسجلّ الويب</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">لفتح نافذة جديدة في وضع التصفُّح المتخفي</translation>
 <translation id="152204906462707884">يمكنك حذف سجلّ التصفّح بسرعة والتحكّم بشكل أكبر في خصوصيتك</translation>
 <translation id="153446405401665083">‏يتوفّر إصدار جديد من متصفّح Chrome</translation>
+<translation id="1537160738459068682">فتح عناصر "أدوات المطوّرين"</translation>
 <translation id="1540012742443808215">شريط العناوين حاليًا في أعلى الشاشة</translation>
 <translation id="1543035591122163372">يمكنك تسجيل الدخول للوصول إلى كلمات المرور والمزيد من <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفّح من Chrome.
@@ -1070,6 +1072,7 @@
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5235196193381275927">حدث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="5246093389635966745">تعديل الاختصار على شريط الأدوات</translation>
+<translation id="5257142004843671642">تغيير حجم اللوحة الجانبية</translation>
 <translation id="5264813352784073502">آخر 24 ساعة</translation>
 <translation id="5267572070504076962">يُرجى تفعيل إعداد "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة</translation>
 <translation id="5273031377282080577">يدير المشرف هذا الإعداد.</translation>
@@ -2065,6 +2068,7 @@
 <translation id="9024318700713112071">‏ضبط Chrome كمتصفّح تلقائي</translation>
 <translation id="9027728231343310283">التراجع عن إلغاء إذن للموقع الإلكتروني <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏نقل إلى\u2026</translation>
+<translation id="9038316201889095704">تم إيقاف ميزة "البحث في الصفحة" بسبب وجود تغييرات غير محفوظة.</translation>
 <translation id="904146253922032365">يمكنك النقر مع الاستمرار لعرض علامات التبويب عموديًا</translation>
 <translation id="9042893549633094279">الخصوصية والأمان</translation>
 <translation id="9047347135558855162">‏يمكنك بدء عملية بحث بسرعة في Chrome</translation>

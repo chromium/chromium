@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ।</translation>
 <translation id="1601560923496285236">ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ଠିକଣା}other{# ଠିକଣା}}</translation>
+<translation id="160477039162785330">{count,plural, =1{ଲେଭେଲ ଅପ କରିବାକୁ 1 ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ}other{ଲେଭେଲ ଅପ କରିବାକୁ {count} ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ}}</translation>
 <translation id="1605405588277479165">ବନ୍ଦ ଅଛି - ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="1605658421715042784">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="1606899876897213121">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ସାରାଂଶ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">ଆବଶ୍ୟକ</translation>
 <translation id="3914640181019354363">ଠିକଣାଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="391904960191284041">ପ୍ରଡକ୍ଟର ସମୀକ୍ଷା</translation>
+<translation id="3920165976616657606">"ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ" ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="3921585859122905677">ଠିକଣା ବାର ପୋଜିସନ</translation>
 <translation id="3922185497376658606">ୱେବପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରନ୍ତୁ</translation>
 <translation id="3926703470020109118">ଡାଉନଲୋଡକୁ ବାତିଲ କରାଯାଇଛି</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">ପଛକୁ କିମ୍ବା ଆଗକୁ ଯିବା ପାଇଁ ଆପଣ ଧାରକୁ ସ୍ୱାଇପ କରିପାରିବେ।</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
 <translation id="446314443268698477">ଆପଣଙ୍କ କେମେରା ମାଧ୍ୟମରେ କିମ୍ବା ଫଟୋଗୁଡ଼ିକରେ ଆପଣ ଯାହା ଦେଖନ୍ତି, ତାହା କ୍ରୟ, ଅନୁବାଦ ଏବଂ ଚିହ୍ନଟ କରେ।</translation>
+<translation id="4465941170695753889">ଏକ ଟାବ ଗ୍ରୁପ ତିଆରି କରିବାକୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="4469324811108161144">ନୋଟଗୁଡ଼ିକ <ph name="CHARACTER_LIMIT" />ଟି ପର୍ଯ୍ୟନ୍ତ କେରେକ୍ଟର ସେଭ କରିପାରିବ।</translation>
 <translation id="4470766488397113689">ଆପଣ କେଉଁ କାମ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="4471472356135655769">ପାସୱାର୍ଡ ଏକ୍ସପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>

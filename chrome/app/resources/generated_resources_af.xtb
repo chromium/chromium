@@ -268,6 +268,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1178093605842850860">Toegelaat om hierdie werf te lees en te verander</translation>
 <translation id="1178357842179817577">Beskerm jou teen gevaarlike werwe, aflaaie en uitbreidings</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Oortjies word gedeel vir meer relevante antwoorde.<ph name="END_BOLD" /> Google gebruik die inhoud en URL van jou oop oortjie wanneer jy ’n nuwe klets begin. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="1178581264944972037">Laat wag</translation>
 <translation id="117916940443676133">Jou sekuriteitsleutel word nie met 'n PIN beskerm nie. Om aanmelddata te bestuur, skep eers 'n PIN.</translation>
 <translation id="1179400851034021914">IBAN is ongeldig</translation>
@@ -702,6 +703,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1535753739390684432">Hoor hoe spesifieke teks hardop gelees word. Kies eerstens die Hardoplees-ikoon aan die onderkant van jou skerm en merk dan die teks.</translation>
 <translation id="1536754031901697553">Ontkoppel tans …</translation>
 <translation id="1536883206862903762">Dit sal uitbreidings deaktiveer en jou instellings na veilige verstekke terugstel. Oortjies, lêers en webkoekies sal bewaar word. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Oortjies word gedeel vir meer relevante antwoorde.<ph name="END_BOLD_1" /> Google gebruik die inhoud en URL van jou oop oortjie wanneer jy ’n nuwe klets begin. Jy kan hierdie instelling enige tyd verander. <ph name="BEGIN_BOLD_2" />Jou organisasie se data is privaat en veilig.<ph name="END_BOLD_2" /> Dit sal nie gebruik word om generatiewe-KI-modelle te verbeter nie.</translation>
 <translation id="1537254971476575106">Volskermvergrootglas</translation>
 <translation id="1538808328818992871">Moet ten minste <ph name="MIN_LENGTH" /> karakters wees</translation>
 <translation id="1539248305642687917">Moenie werwe toelaat om jou sleutelbordinvoer te ignoreer nie</translation>
@@ -729,6 +731,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1552752544932680961">Bestuur uitbreiding</translation>
 <translation id="1553538517812678578">onbeperk</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /> oor Microsoft 365 op jou Chromebook.</translation>
+<translation id="1554343363646356023">Nuwe &amp;geïsoleerde venster</translation>
 <translation id="1554640914375980459">Laat flits die skerm wanneer jy kennisgewings ontvang. Gebruik flitskennisgewings versigtig as jy ligsensitief is.</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1556127816860282890">Agtergrondaktiwiteit en sommige visuele effekte, soos gladde rollees, kan beperk wees</translation>
@@ -1908,6 +1911,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil lêers van <ph name="VOLUME_NAME" /> af kopieer.</translation>
 <translation id="2457842160081795172">Tans op <ph name="CHANNEL_NAME" />-kanaal</translation>
 <translation id="2458379781610688953">Dateer rekening op, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Oortjies word gedeel vir meer relevante antwoorde. Google gebruik die inhoud en URL van jou oop oortjie wanneer jy ’n nuwe klets begin. Jy kan hierdie instelling enige tyd verander. Jou organisasie se data is privaat en veilig. Dit sal nie gebruik word om generatiewe-KI-modelle te verbeter nie.</translation>
 <translation id="2459703812219683497">Aktiveringkode is bespeur</translation>
 <translation id="2459706890611560967">Hervat uitsending van oortjie na <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Deel ’n skermskoot</translation>
@@ -3169,6 +3173,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3390740059150071453">Kyk links</translation>
 <translation id="3393554941209044235">Chrome-dokumentontleding</translation>
 <translation id="3394072120086516913">Rekenaar is bedraad en uitsaaitoestel is op wi-fi</translation>
+<translation id="3394561494170561143">Nuwe geïsoleerde &amp;oortjie</translation>
 <translation id="3394850431319394743">Word toegelaat om identifiseerders te gebruik om beskermde inhoud te speel</translation>
 <translation id="339722927132407568">Vries</translation>
 <translation id="3399432415385675819">Kennisgewings sal gedeaktiveer word</translation>
@@ -6216,6 +6221,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5724723163580775373">Groot fokus</translation>
 <translation id="5725112283692663422">Stuur terugvoer vir Skep tema met KI</translation>
 <translation id="5727728807527375859">Uitbreidings, programme en temas kan jou rekenaar beskadig. Is jy seker jy wil voortgaan?</translation>
+<translation id="5727872803091928075">Oortjies word gedeel vir meer relevante antwoorde. Google gebruik die inhoud en URL van jou oop oortjie wanneer jy ’n nuwe klets begin. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="5728072125198221967">Gekoppelde Google-dienste</translation>
 <translation id="5729712731028706266">Bekyk</translation>
 <translation id="5731247495086897348">Plak en gaan</translation>
@@ -7045,6 +7051,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6370021412472292592">Kon nie manifes laai nie.</translation>
 <translation id="6370551072524410110">soek + shift + backspace</translation>
 <translation id="637135143619858508">Los</translation>
+<translation id="6372413553057593904">Onaktiewe oortjie in “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Probeer weer</translation>
 <translation id="637642201764944055">Ouer weergawes van Chrome-apps sal nie ná Desember 2022 op Linux-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie app te verwyder.</translation>
@@ -7357,6 +7364,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6613231539539868591">Voortgesette data</translation>
 <translation id="6613267708691765962">Skandeer tans vir wanware …</translation>
+<translation id="6614219106064338118">Begin klets</translation>
 <translation id="6615455863669487791">Wys my</translation>
 <translation id="6616000047939888167">Bied Google Vertaal aan vir webwerwe en PDF’s in ander tale</translation>
 <translation id="6618013221808317456">Moenie werwe toelaat om JavaScript-optimering te gebruik nie</translation>
@@ -9739,6 +9747,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8410133743809404768">Jy kan op die adresbalk soek deur “@history” te gebruik, asook op die Geskiedenis-bladsy</translation>
 <translation id="8411043186249152291">volskerm</translation>
 <translation id="8412136526970428322">Het <ph name="PERMISSION" /> en nog <ph name="COUNT" /> toegelaat</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google-bepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Gemini-apps se privaatheidkennisgewing<ph name="END_LINK2" /> is van toepassing.</translation>
 <translation id="8413795581997394485">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="8414396119627470038">Meld aan by <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Vors enigiets na</translation>

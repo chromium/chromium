@@ -490,6 +490,7 @@
 <translation id="18139523105317219">‏اسم جهة تبادل البيانات الإلكتروني (EDI)</translation>
 <translation id="1816436748874040213">السماح بطلب الانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="1816707915923025275">‏أدخِل ‎@history للبحث في سجلّ التصفّح</translation>
+<translation id="1816771466809215784">‏لملء اسم حامل هذه البطاقة تلقائيًا عند الدفع، يجب حفظه في "محفظة Google"</translation>
 <translation id="1817364650920811003">‏الدور: نصيحة لاستخدام Chrome، تصنيف تسهيل الاستخدام: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">عمليات التنزيل التلقائية</translation>
 <translation id="1821930232296380041">طلب غير صالح، أو معلمات طلب غير صالحة</translation>
@@ -647,6 +648,7 @@
 <translation id="2102495993840063010">‏تطبيقات Android</translation>
 <translation id="2103210856015238101">تم فتح قائمة بطاقات الولاء التي يمكن ملء بياناتها باللمس بطول الشاشة.</translation>
 <translation id="2104739941682874393">تفهم ميزة "الملء التلقائي المحسّن" النماذج بشكل أفضل ويمكنها ملء بياناتها تلقائيًا بشكل أسرع</translation>
+<translation id="2105237910269166838">طرح سؤال حول هذه الصفحة</translation>
 <translation id="2107021941795971877">دعم الطباعة</translation>
 <translation id="2108755909498034140">إعادة تشغيل جهاز الكمبيوتر</translation>
 <translation id="2109845311767915560">مجموعة علامات تبويب تمت مشاركتها</translation>
@@ -1053,6 +1055,7 @@
 <translation id="2734797989819862638">عدم النسخ</translation>
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2740531572673183784">حسنًا</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{ما مِن مهارات}=1{مهارة واحدة}two{مهارتان}few{‫# مهارات}many{‫# مهارة}other{‫# مهارة}}</translation>
 <translation id="2757727729385895652">‏جارٍ تحميل <ph name="COUNT" /> من الملفات إلى Google Drive</translation>
 <translation id="2759299890026163685">يُرجى التأكّد من استقرار اتصال جهازك بالإنترنت قبل إعادة المحاولة</translation>
 <translation id="2759825833388495838">إدخال كلمة مرورك في "<ph name="APP_NAME" />".</translation>
@@ -3622,6 +3625,7 @@
 <translation id="7083258188081898530">الدُرج 9</translation>
 <translation id="70846382339153529">‏نص OpenDocument</translation>
 <translation id="7086090958708083563">طلب التحميل مقدّم من المستخدم</translation>
+<translation id="7089745480771070611">يتم فتح النتائج في اللوحة الجانبية</translation>
 <translation id="7090698782953528257">ساعِدني في تمثيل دالة بيانيًا لتوضيح المعادلة الرياضية ومعاينة شكل المنحنى</translation>
 <translation id="7092087596499105699">ضبط المشرف موصِّل البوابة الآمنة لحماية الوصول إلى تطبيقات الويب الخاصة بمؤسستك. وقد يتم استخدام بيانات من ملف العمل للتحقّق من الوصول.</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
@@ -4006,6 +4010,7 @@
 <translation id="7696107855583699585">تعديل رقم المسافر المعروف</translation>
 <translation id="7698864304447945242">‏هل تريد تحديث "خدمات Google Play للواقع المعزّز"؟</translation>
 <translation id="7699509138503320152">أريد إعادة كتابة رسالتي الإلكترونية لتكون أكثر إقناعًا</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{ما مِن مهارات}=1{مهارة واحدة (تمت مزامنتها)}two{مهارتان (تمت مزامنتهما)}few{‫# مهارات (تمت مزامنتها)}many{‫# مهارة (تمت مزامنتها)}other{‫# مهارات (تمت مزامنتها)}}</translation>
 <translation id="7701040980221191251">ما مِن بيانات</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />متابعة إلى <ph name="SITE" /> (غير آمن)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">ساعدني في الكتابة</translation>
@@ -4248,6 +4253,7 @@
 <translation id="813024282736408069">تفعيل بطاقة افتراضية لميزة "الملء التلقائي"</translation>
 <translation id="8131740175452115882">تأكيد</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
+<translation id="8136385032646505126">هل المطلوب حفظ اسم حامل البطاقة؟</translation>
 <translation id="8137185688006450980">أريد مقارنة خيارات خطط الرعاية الصحية</translation>
 <translation id="8138591088112729119">مستنِد إلى ميزة "الذكاء المخصّص"</translation>
 <translation id="814071672416123670">تعذَّر نسخ المحتوى بسبب سياسات مؤسستك</translation>

@@ -728,6 +728,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1552752544932680961">Gestiona l'extensió</translation>
 <translation id="1553538517812678578">il·limitat</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Obtén més informació<ph name="LINK_END" /> sobre Microsoft 365 al teu Chromebook.</translation>
+<translation id="1554343363646356023">Finestra &amp;aïllada nova</translation>
 <translation id="1554640914375980459">Il·lumina la pantalla quan reps notificacions. Utilitza les notificacions amb flaix amb precaució si ets sensible a la llum.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556127816860282890">Pot ser que l'activitat en segon pla i alguns efectes visuals, com ara el desplaçament suau, quedin limitats</translation>
@@ -3154,6 +3155,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3390740059150071453">Mirar a l'esquerra</translation>
 <translation id="3393554941209044235">Anàlisi de documents a Chrome</translation>
 <translation id="3394072120086516913">PC amb connexió per cable i dispositiu d'emissió amb connexió Wi-Fi</translation>
+<translation id="3394561494170561143">&amp;Pestanya aïllada nova</translation>
 <translation id="3394850431319394743">Es permet que utilitzin identificadors per reproduir contingut protegit</translation>
 <translation id="339722927132407568">Es bloqueja</translation>
 <translation id="3399432415385675819">Les notificacions es desactivaran</translation>
@@ -7025,6 +7027,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6370021412472292592">No s'ha pogut carregar el manifest.</translation>
 <translation id="6370551072524410110">Cerca+Maj+retrocés</translation>
 <translation id="637135143619858508">Separat</translation>
+<translation id="6372413553057593904">Pestanya inactiva a "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="637642201764944055">Passat desembre de 2022, les versions anteriors de les aplicacions de Chrome no s'obriran en dispositius Linux. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>

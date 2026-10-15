@@ -731,6 +731,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1552752544932680961">Administrer utvidelsen</translation>
 <translation id="1553538517812678578">ubegrenset</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /> om Microsoft 365 på Chromebooken.</translation>
+<translation id="1554343363646356023">Nytt &amp;isolert vindu</translation>
 <translation id="1554640914375980459">Få skjermen til å blinke når du mottar varsler. Hvis du er lysfølsom, bør du være forsiktig med å bruke blitsvarsler.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556127816860282890">Aktivitet i bakgrunnen og enkelte visuelle effekter, for eksempel jevn rulling, kan være begrenset</translation>
@@ -3169,6 +3170,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3390740059150071453">Se til venstre</translation>
 <translation id="3393554941209044235">Chrome-dokumentanalyse</translation>
 <translation id="3394072120086516913">PC-en er tilkoblet med kabel, og Cast-enheten er tilkoblet via wifi</translation>
+<translation id="3394561494170561143">Ny isolert &amp;fane</translation>
 <translation id="3394850431319394743">Nettsteder som har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="339722927132407568">Fryser</translation>
 <translation id="3399432415385675819">Varsler slås av</translation>
@@ -7040,6 +7042,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6370021412472292592">Kunne ikke laste inn manifestet.</translation>
 <translation id="6370551072524410110">søketasten + Shift + tilbaketasten</translation>
 <translation id="637135143619858508">Løs</translation>
+<translation id="6372413553057593904">Inaktiv fane i «<ph name="WINDOW_TITLE" />»</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
 <translation id="637642201764944055">Gamle versjoner av Chrome-apper lar seg ikke åpne på Linux-enheter etter desember 2022. Kontakt administratoren din for å oppdatere til en ny versjon eller fjerne denne appen.</translation>

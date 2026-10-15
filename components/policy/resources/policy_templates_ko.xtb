@@ -402,6 +402,15 @@ DLP 관련 엔터프라이즈 정책 및 강제 설치된 확장 프로그램을
 <translation id="1272798957154751008">Chromad 기기를 클라우드 관리로 이전할 수 있도록 합니다.</translation>
 <translation id="1274997165432133392">쿠키 및 기타 사이트 데이터</translation>
 <translation id="1277411517984768103">사용자가 <ph name="BOREALIS_NAME" />를 실행하도록 허용</translation>
+<translation id="1281420319219324116">이 정책은 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />가 사용 설정되었을 때 프로비저닝되는 관리형 클라이언트 인증서를 구성합니다.
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> 필드는 다음과 같이 인증서의 주체 일반 이름(CN)의 소스를 지정합니다.
+
+- 설정하지 않거나 <ph name="DEVICE_ID_VALUE" />(으)로 설정하면 인증서의 주체 일반 이름이 관리 브라우저의 가상 기기 ID로 설정됩니다.
+
+- <ph name="COMPUTER_NAME_VALUE" />(으)로 설정하면 인증서의 주체 일반 이름이 머신의 호스트 이름으로 설정됩니다.
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />를 설정하지 않거나 사용 중지하면 이 정책은 아무런 영향을 미치지 않습니다.</translation>
 <translation id="1285819498003746288">Event.path API를 사용할 수 없습니다.</translation>
 <translation id="1290722184971934486">정책을 <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" />(값 2) 정책으로 설정하면 기본적으로 창 관리 권한이 사이트에 부여되지 않도록 자동으로 거부됩니다. 이렇게 하면 사이트에서 기기 화면에 관한 정보를 본 다음, 해당 정보를 사용하여 창을 열고 배치하거나 특정 화면에서는 전체 화면을 요청하는 기능이 제한됩니다.
 
@@ -5745,6 +5754,15 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
       정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 크기를 사용합니다. 사용자는 --disk-cache-size 플래그를 통해 기본 크기를 변경할 수 있습니다.
 
       참고: 이 정책에 지정된 값은 브라우저에서 다양한 캐시 하위 시스템의 힌트로 사용됩니다. 따라서 실제로는 모든 캐시의 총 디스크 소비량이 더 많지만, 지정된 값의 자릿수보다 크지는 않습니다.</translation>
+<translation id="4582488040806837065">이 정책은 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />가 사용 설정되었을 때 프로비저닝되는 관리형 클라이언트 인증서를 구성합니다.
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> 필드는 다음과 같이 인증서의 주체 일반 이름(CN)의 소스를 지정합니다.
+
+- 설정하지 않거나 <ph name="PROFILE_ID_VALUE" />(으)로 설정하면 인증서의 주체 일반 이름이 브라우저 프로필 ID로 설정됩니다.
+
+- <ph name="COMPUTER_NAME_VALUE" />(으)로 설정하면 인증서의 주체 일반 이름이 머신의 호스트 이름으로 설정됩니다. 참고: 이 속성을 <ph name="COMPUTER_NAME_VALUE" />(으)로 설정하면 프로필 범위 인증서에서 기기 수준 속성이 사용됩니다. 이 경우 머신 호스트 이름이 인증서에 포함되므로, 관리되지 않거나 공유된 기기에서 개인 정보 보호에 유의해야 합니다.
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />를 설정하지 않거나 사용 중지하면 이 정책은 아무런 영향을 미치지 않습니다.</translation>
 <translation id="4591366717022345234">사용자에게 빠른 픽스 빌드를 제공합니다.</translation>
 <translation id="4593391169954484940">파일의 SHA-256 해시입니다.</translation>
 <translation id="4594027034164195984">타사 이미지가 인증 프롬프트를 표시하도록 허용</translation>

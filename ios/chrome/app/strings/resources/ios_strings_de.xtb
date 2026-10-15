@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet.</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 Adresse}other{# Adressen}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Erledige 1 Aufgabe, um das nächste Level zu erreichen}other{Erledige {count} Aufgaben, um das nächste Level zu erreichen}}</translation>
 <translation id="1605405588277479165">Aus – Nicht empfohlen</translation>
 <translation id="1605658421715042784">Bild kopieren</translation>
 <translation id="1606899876897213121">Zusammenfassung letzter Aktivitäten schließen</translation>
@@ -853,6 +854,7 @@
 <translation id="3672283986707092811">Alle auswählen</translation>
 <translation id="3679163990085797665">Gelesene löschen</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
+<translation id="3689746421535476813">Wähle eine gespeicherte Zahlungsmethode zum Bearbeiten aus oder füge eine neue Zahlungsmethode hinzu</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3700134753671613714">Melde dich an, um deine Lesezeichen auf allen Ihren Geräten abzurufen.</translation>
 <translation id="3701167022068948696">Jetzt beheben</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">Erforderlich</translation>
 <translation id="3914640181019354363">Adressen erkennen</translation>
 <translation id="391904960191284041">Rezensionen</translation>
+<translation id="3920165976616657606">Du hast die Aufgabe „Erweitertes Safe Browsing entdecken“ abgeschlossen.</translation>
 <translation id="3921585859122905677">Position der Adressleiste</translation>
 <translation id="3922185497376658606">Webseiten vorab laden</translation>
 <translation id="3926703470020109118">Download abgebrochen</translation>
@@ -1091,6 +1094,7 @@
 <translation id="4455710003856931944">Du kannst über den Rand wischen, um zurück- oder weiterzugehen.</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
 <translation id="446314443268698477">Mit Google Lens kannst du das, was du mit deiner Kamera oder in Fotos siehst, schnell bestimmen, in Shops finden oder übersetzen.</translation>
+<translation id="4465941170695753889">Gedrückt halten, um eine Tabgruppe zu erstellen</translation>
 <translation id="4469324811108161144">Notizen können bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4470766488397113689">Woran möchtest du arbeiten?</translation>
 <translation id="4471472356135655769">Passwörter können nicht exportiert werden</translation>
@@ -2431,6 +2435,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8535368836838588657">Passwort einblenden</translation>
 <translation id="8540426897269305488">Mit <ph name="CELL_ACCESSIBILITY_LABEL" /> anmelden</translation>
 <translation id="8542331710562073430">Ein Fehler ist aufgetreten. Tippe auf den Button „Gemini Live“, um es noch einmal zu versuchen.</translation>
+<translation id="8544172904312384600">Zahlungsmethode bearbeiten oder hinzufügen</translation>
 <translation id="8545276357312221485">Einstellungen für Standardbrowser prüfen</translation>
 <translation id="854938212724803178">Du hast 1 kompromittiertes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="8551311254462607218">Tippe in der Adressleiste auf das Google Lens-Kamerasymbol</translation>

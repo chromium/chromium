@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android ଆପଗୁଡ଼ିକ</translation>
 <translation id="2103210856015238101">ସ୍ପର୍ଶ ମାଧ୍ୟମରେ ପୂରଣ ହେବାକୁ ଥିବା ଉପଲବ୍ଧ ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="2104739941682874393">ଉନ୍ନତ ଅଟୋଫିଲ ଫର୍ମଗୁଡ଼ିକୁ ଭଲ ଭାବରେ ବୁଝି ଆପଣଙ୍କ ପାଇଁ ସେଗୁଡ଼ିକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରେ</translation>
+<translation id="2105237910269166838">ପୃଷ୍ଠା ବିଷୟରେ ପଚାର</translation>
 <translation id="2107021941795971877">ପ୍ରିଣ୍ଟ ସପୋର୍ଟ</translation>
 <translation id="2108755909498034140">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2109845311767915560">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">କପି କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2738771556149464852">ପରେ ନୁହେଁ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସ୍କିଲ}other{# ସ୍କିଲ}}</translation>
 <translation id="2757727729385895652">Google Driveରେ <ph name="COUNT" /> ଫାଇଲକୁ ଅପଲୋଡ କରାଯାଉଛି</translation>
 <translation id="2759299890026163685">ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ପାଖରେ ସ୍ଥିର ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପୂରଣ କରନ୍ତୁ</translation>
@@ -3619,6 +3621,7 @@
 <translation id="7083258188081898530">ଟ୍ରେ 9</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">ୟୁଜରଙ୍କ ଦ୍ୱାରା ଅପଲୋଡ ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି</translation>
+<translation id="7089745480771070611">ସାଇଡ ପେନେଲରେ ଖୋଲେ</translation>
 <translation id="7090698782953528257">ଗାଣିତିକ ସମୀକରଣକୁ ଭିଜୁଆଲାଇଜ କରିବା ଏବଂ କର୍ଭର ଆକୃତି ଦେଖିବା ପାଇଁ ଏକ ଫଙ୍କସନର ଗ୍ରାଫ ତିଆରି କରିବାରେ ମୋତେ ସାହାଯ୍ୟ କର</translation>
 <translation id="7092087596499105699">ଆପଣଙ୍କ ସଂସ୍ଥାର ପ୍ରାଇଭେଟ ୱେବ ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଆକ୍ସେସ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସିକ୍ୟୁର ଗେଟୱେ କନେକ୍ଟରକୁ କନଫିଗର କରିଛନ୍ତି। ଆକ୍ସେସ ଯାଞ୍ଚ କରିବା ପାଇଁ ଏହା ଆପଣଙ୍କ ୱାର୍କ ପ୍ରୋଫାଇଲରୁ ଡାଟା ବ୍ୟବହାର କରିପାରେ।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ସମସ୍ତ ସାଇଟରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଅନୁମତି ଏବଂ ଡାଟାକୁ ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -4002,6 +4005,7 @@
 <translation id="7696107855583699585">ଜଣା ଥିବା ଟ୍ରାଭେଲର ନମ୍ବରକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="7698864304447945242">AR ପାଇଁ Google Play ସେବାଗୁଡ଼ିକ ଅପଡେଟ କରିବେ?</translation>
 <translation id="7699509138503320152">ମୋ ଇମେଲକୁ ଅଧିକ ପ୍ରଭାବଶାଳୀ କରିବା ପାଇଁ ରିରାଇଟ କରନ୍ତୁ</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସ୍କିଲ (ସିଙ୍କ କରାଯାଇଛି)}other{# ସ୍କିଲ (ସିଙ୍କ କରାଯାଇଛି)}}</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" />(ଅସୁରକ୍ଷିତ)କୁ ଅଗ୍ରସର ହୁଅନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">ହେଲ୍ପ ମି ରାଇଟ</translation>

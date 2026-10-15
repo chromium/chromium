@@ -648,6 +648,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2103210856015238101">Lijst met klantenkaarten die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="2104739941682874393">Verbeterd automatisch invullen begrijpt formulieren beter en kan ze sneller automatisch voor je invullen</translation>
+<translation id="2105237910269166838">Stel een vraag over deze pagina</translation>
 <translation id="2107021941795971877">Afdruksteunen</translation>
 <translation id="2108755909498034140">Je computer opnieuw opstarten</translation>
 <translation id="2109845311767915560">Gedeelde tabbladgroep</translation>
@@ -1054,6 +1055,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2734797989819862638">Niet kopiëren</translation>
 <translation id="2738771556149464852">Niet na</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Geen}=1{1 vaardigheid}other{# vaardigheden}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> bestanden uploaden naar Google Drive</translation>
 <translation id="2759299890026163685">Zorg dat je een stabiele internetverbinding hebt voordat je het opnieuw probeert</translation>
 <translation id="2759825833388495838">je wachtwoord in te vullen in <ph name="APP_NAME" /></translation>
@@ -3616,6 +3618,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7083258188081898530">Lade 9</translation>
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Upload aangevraagd door gebruiker</translation>
+<translation id="7089745480771070611">Wordt geopend in een zijvenster</translation>
 <translation id="7090698782953528257">Help me een functie te tekenen om de wiskundige vergelijking te visualiseren en de vorm van de curve te bekijken</translation>
 <translation id="7092087596499105699">Je beheerder heeft de Secure Gateway Connector ingesteld om de toegang tot de privé-web-apps van je organisatie te beschermen. De connector kan gegevens uit je werkprofiel gebruiken om de toegang te verifiëren.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om rechten en opgeslagen gegevens voor sites te beheren in de Chrome-instellingen</translation>
@@ -4000,6 +4003,7 @@ Aanvullende informatie:
 <translation id="7696107855583699585">Known Traveler Number bewerken</translation>
 <translation id="7698864304447945242">Google Play-services voor AR updaten?</translation>
 <translation id="7699509138503320152">Herschrijf mijn e-mail om deze overtuigender te maken</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Geen}=1{1 vaardigheid (gesynchroniseerd)}other{# vaardigheden (gesynchroniseerd)}}</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Doorgaan naar <ph name="SITE" /> (onveilig)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Help me met schrijven</translation>

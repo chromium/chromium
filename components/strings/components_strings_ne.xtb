@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2103210856015238101">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="2104739941682874393">अटोफिल गर्ने परिष्कृत सुविधाले फारामहरूमा लेखिएको कुरा अझ राम्रोसँग बुझ्छ र यसले फारामहरू छिटोछरितो रूपमा अटोफिल गरिदिन सक्छ</translation>
+<translation id="2105237910269166838">यो पेजका बारेमा प्रश्न सोध्नुहोस्</translation>
 <translation id="2107021941795971877">मुद्रणसम्बन्धी सहायता प्रदान गर्ने सेवा</translation>
 <translation id="2108755909498034140">आफ्नो कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
 <translation id="2109845311767915560">साझा ट्याब समूह</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">कपी नगर्नुहोस्</translation>
 <translation id="2738771556149464852">पछि होइन</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{कुनै पनि स्किल छैन}=1{एउटा स्किल}other{# वटा स्किल}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> वटा फाइल Google Drive मा अपलोड गरिँदै छन्</translation>
 <translation id="2759299890026163685">फेरि प्रयास गर्नुअघि आफ्नो इन्टरनेट कनेक्सन स्थिर छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मा आफ्नो पासवर्ड भर्नुहोस्</translation>
@@ -3621,6 +3623,7 @@
 <translation id="7083258188081898530">ट्रे ९</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">प्रयोगकर्ताले अनुरोध गरेको अपलोड</translation>
+<translation id="7089745480771070611">साइड प्यानलमा खुल्छ</translation>
 <translation id="7090698782953528257">मलाई गणितीय समीकरण भिजुअलाइज गर्न र कर्भको आकार हेर्न फङ्सनको ग्राफ बनाउन मद्दत गर</translation>
 <translation id="7092087596499105699">तपाईंका एड्मिनले तपाईंको सङ्गठनका निजी वेब एपहरू सुरक्षित राख्न सुरक्षित गेटवे कनेक्टर कन्फिगर गर्नुभएको छ। यसले एक्सेस पुष्टि गर्न तपाईंको कार्य प्रोफाइलमा भएको डेटा प्रयोग गर्न सक्छ।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -4004,6 +4007,7 @@
 <translation id="7696107855583699585">Known Traveler Number परिवर्तन गर्नुहोस्</translation>
 <translation id="7698864304447945242">Google Play Services for AR अपडेट गर्ने हो?</translation>
 <translation id="7699509138503320152">मेरो इमेल अझ बढी प्रभावकारी बन्ने गरी पुनर्लेखन गर्नुहोस्</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{कुनै पनि स्किल छैन}=1{एउटा स्किल (सिंक गरिएको)}other{# वटा स्किल (सिंक गरिएका)}}</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> मा अगाडि बढ्नु (असुरक्षित छ)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">मलाई लेख्न मद्दत गर्नुहोस्</translation>

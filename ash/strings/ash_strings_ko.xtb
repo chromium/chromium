@@ -1020,6 +1020,7 @@
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
 <translation id="3978162107953847778">방문 기록 및 Google Drive 등의 위치에 대한 링크를 삽입하세요. 이모티콘, 이미지 파일 등의 콘텐츠도 삽입할 수 있습니다.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">오디오 출력을 전환할까요?</translation>
+<translation id="3983903378684256134">Steam on Chromebook</translation>
 <translation id="3984536049089846927">다음 페이지</translation>
 <translation id="3986082989454912832">답변</translation>
 <translation id="3990002060657467458">Wi-Fi, 블루투스, 볼륨 등 자주 사용하는 제어 기능은 빠른 설정에 있습니다. 여기에서 스크린샷을 찍을 수도 있습니다.</translation>
@@ -1636,6 +1637,7 @@
 <translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="5733630091161562207">환영 알림</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
+<translation id="5739548907438839901"><ph name="SIZE" />의 디스크 공간을 확보했습니다.</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="5749214722697335450">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@
 <translation id="7413851974711031813">Esc 키를 눌러 닫기</translation>
 <translation id="7416471219712049036">현재 페이지 저장</translation>
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
+<translation id="7430466159639897874">지원 중단된 기능인 'Steam on Chromebook'에 할당된 사용하지 않는 디스크 공간(<ph name="SIZE" />)이 있습니다.</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> 기기를 계속 사용하려면 스마트 카드 삽입</translation>
 <translation id="7440404390546433462">Google 검색</translation>
@@ -2352,6 +2355,7 @@
 <translation id="7781335840981796660">모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7787212146956232129">입력 및 출력 장치가 설정되었습니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
+<translation id="7790757511772316441">디스크 공간 확보</translation>
 <translation id="7792590255364786396">표시</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
 <translation id="7798302898096527229">취소하려면 검색 또는 Shift 키를 누르세요.</translation>

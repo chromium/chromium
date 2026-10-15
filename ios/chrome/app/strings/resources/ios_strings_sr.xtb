@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Ставка је ажурирана</translation>
 <translation id="1018804590490383958">Скенирај и аутоматски попуни</translation>
 <translation id="1019990162050689579">Активности у Gemini апликацијама</translation>
+<translation id="102471647093736603">Притисните и задржите да бисте преместили</translation>
 <translation id="102645702181682900">Задатак је покренут</translation>
 <translation id="102916930470544692">Приступни кључ</translation>
 <translation id="1030376737535466765">Отвори Менаџер лозинки</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Неки садржај можда није прикладан за свакога.</translation>
 <translation id="1601560923496285236">Примени</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Довршите 1 задатак да бисте прешли на следећи ниво}one{Довршите {count} задатак да бисте прешли на следећи ниво}few{Довршите {count} задатка да бисте прешли на следећи ниво}other{Довршите {count} задатака да бисте прешли на следећи ниво}}</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
 <translation id="1605658421715042784">Копирај слику</translation>
 <translation id="1606899876897213121">Затворите резиме недавних активности</translation>
@@ -921,6 +923,7 @@
 <translation id="3914173277599553213">Обавезно</translation>
 <translation id="3914640181019354363">Откривај адресе</translation>
 <translation id="391904960191284041">Рецензије производа</translation>
+<translation id="3920165976616657606">Задатак Истражите побољшано безбедно прегледање је завршен.</translation>
 <translation id="3921585859122905677">Позиција траке за адресу</translation>
 <translation id="3922185497376658606">Унапред учитавај веб-странице</translation>
 <translation id="3926703470020109118">Преузимање је отказано</translation>
@@ -1208,6 +1211,7 @@
 <translation id="4808744395915275922">Ажурирања</translation>
 <translation id="4813345808229079766">Веза</translation>
 <translation id="4821595350501541683">Картице су затворене и подаци прегледања су избрисани</translation>
+<translation id="4823322556950229674">Можете да притиснете и задржите да бисте преместили траку за адресу и дугме Назад на дно</translation>
 <translation id="4824480232751123840">Запремина</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и још 1}one{{domain} и још {count}}few{{domain} и још {count}}other{{domain} и још {count}}}</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>

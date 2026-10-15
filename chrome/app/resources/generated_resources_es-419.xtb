@@ -268,6 +268,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178093605842850860">Puede leer y modificar este sitio</translation>
 <translation id="1178357842179817577">Te protege de sitios, descargas y extensiones peligrosos</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Las pestañas se comparten para brindar respuestas más pertinentes.<ph name="END_BOLD" /> Google usa el contenido y la URL de la pestaña abierta cuando inicias un nuevo chat. Puedes cambiar este parámetro de configuración en cualquier momento.</translation>
 <translation id="1178581264944972037">Detener</translation>
 <translation id="117916940443676133">Tu llave de seguridad no está protegida con un PIN. Para administrar los datos de acceso, crea uno.</translation>
 <translation id="1179400851034021914">El IBAN no es válido</translation>
@@ -701,6 +702,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1535753739390684432">Escucha un texto específico en voz alta. Primero, elige el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto.</translation>
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1536883206862903762">Esta acción inhabilitará las extensiones y restablecerá tu configuración a valores predeterminados seguros. Se conservarán las pestañas, los archivos y las cookies. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Las pestañas se comparten para brindar respuestas más pertinentes.<ph name="END_BOLD_1" /> Google usa el contenido y la URL de la pestaña abierta cuando inicias un nuevo chat. Puedes cambiar este parámetro de configuración en cualquier momento. <ph name="BEGIN_BOLD_2" />Los datos de tu organización se mantienen privados y seguros.<ph name="END_BOLD_2" /> No se usarán para mejorar los modelos de IA generativa.</translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="1538808328818992871">Debe tener al menos <ph name="MIN_LENGTH" /> caracteres</translation>
 <translation id="1539248305642687917">No permitir que los sitios anulen la entrada del teclado</translation>
@@ -728,6 +730,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1552752544932680961">Administrar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Obtén más información<ph name="LINK_END" /> sobre Microsoft 365 en tu Chromebook.</translation>
+<translation id="1554343363646356023">Nueva &amp;ventana aislada</translation>
 <translation id="1554640914375980459">Ilumina la pantalla cuando recibes notificaciones. Si eres sensible a la luz, ten cuidado al usar las notificaciones con flash.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556127816860282890">Es posible que se limiten la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave</translation>
@@ -1895,6 +1898,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quiere copiar archivos de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Actualmente, estás en el canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizar cuenta, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Las pestañas se comparten para brindar respuestas más pertinentes. Google usa el contenido y la URL de la pestaña abierta cuando inicias un nuevo chat. Puedes cambiar este parámetro de configuración en cualquier momento. Los datos de tu organización se mantienen privados y seguros. No se usarán para mejorar los modelos de IA generativa.</translation>
 <translation id="2459703812219683497">Se detectó el código de activación</translation>
 <translation id="2459706890611560967">Reanudar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Compartir una captura de pantalla</translation>
@@ -3156,6 +3160,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3390740059150071453">Mirar a la izquierda</translation>
 <translation id="3393554941209044235">Análisis de documentos de Chrome</translation>
 <translation id="3394072120086516913">La PC está conectada por cable y el dispositivo de transmisión está conectado a Wi-Fi</translation>
+<translation id="3394561494170561143">Nueva pestaña &amp;aislada</translation>
 <translation id="3394850431319394743">Puede usar identificadores para reproducir contenido protegido.</translation>
 <translation id="339722927132407568">Intermitente</translation>
 <translation id="3399432415385675819">Se inhabilitarán las notificaciones</translation>
@@ -6202,6 +6207,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5724723163580775373">Enfoque amplio</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
+<translation id="5727872803091928075">Las pestañas se comparten para brindar respuestas más pertinentes. Google usa el contenido y la URL de la pestaña abierta cuando inicias un nuevo chat. Puedes cambiar este parámetro de configuración en cualquier momento.</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar y acceder</translation>
@@ -7031,6 +7037,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6370021412472292592">No se pudo cargar el manifiesto.</translation>
 <translation id="6370551072524410110">Búsqueda + Mayúsculas + retroceso</translation>
 <translation id="637135143619858508">Separado</translation>
+<translation id="6372413553057593904">Pestaña inactiva en "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>
 <translation id="637642201764944055">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Linux después de diciembre de 2022. Comunícate con el administrador para que quite esta app o la actualice a una versión nueva.</translation>
@@ -7343,6 +7350,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="661266467055912436">Mejora la seguridad para ti y todos los usuarios de la Web.</translation>
 <translation id="6613231539539868591">Datos persistentes</translation>
 <translation id="6613267708691765962">Buscando software malicioso…</translation>
+<translation id="6614219106064338118">Iniciar chat</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
 <translation id="6616000047939888167">Ofrecer Google Traductor para sitios web y archivos PDF en otros idiomas</translation>
 <translation id="6618013221808317456">No permitir que los sitios usen la optimización de JavaScript</translation>
@@ -9726,6 +9734,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8410133743809404768">Puedes buscar en la barra de direcciones con "@historial", así como en la página Historial.</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Permisos habilitados: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
+<translation id="8413685856004704642">Se aplican las <ph name="BEGIN_LINK1" />Condiciones de Google<ph name="END_LINK1" /> y el <ph name="BEGIN_LINK2" />Aviso de Privacidad de las Apps con Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>
 <translation id="8414396119627470038">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Investiga sobre cualquier tema</translation>

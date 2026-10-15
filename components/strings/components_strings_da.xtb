@@ -648,6 +648,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2103210856015238101">Loyalitetskort, der kan udfyldes ved berøring, er åbnet i fuld højde.</translation>
 <translation id="2104739941682874393">Forbedret autofyld forstår formularer bedre og kan udfylde dem hurtigere for dig</translation>
+<translation id="2105237910269166838">Stil spørgsmål om denne side</translation>
 <translation id="2107021941795971877">Understøttelse til udskrivning</translation>
 <translation id="2108755909498034140">Genstart computeren</translation>
 <translation id="2109845311767915560">Delt fanegruppe</translation>
@@ -1054,6 +1055,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2734797989819862638">Undlad at kopiere</translation>
 <translation id="2738771556149464852">Ikke efter</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ingen}=1{1 færdighed}one{# færdighed}other{# færdigheder}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> filer uploades til Google Drev</translation>
 <translation id="2759299890026163685">Sørg for, at du har en stabil internetforbindelse, før du prøver igen</translation>
 <translation id="2759825833388495838">udfylde din adgangskode på <ph name="APP_NAME" /></translation>
@@ -2811,7 +2813,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="568292603005599551">Billedposition X</translation>
 <translation id="5684874026226664614">Ups! Denne side kunne ikke oversættes.</translation>
 <translation id="5689199277474810259">Eksportér i JSON</translation>
-<translation id="5689516760719285838">Placering</translation>
+<translation id="5689516760719285838">Lokation</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates-værdien er ikke relevant og anvendes ikke, medmindre politikken DnsOverHttpsMode er angivet som enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">"Gem kort" er åbnet i fuld højde.</translation>
 <translation id="5701381305118179107">Centrér</translation>
@@ -3623,6 +3625,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7083258188081898530">Bakke 9</translation>
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Brugeren anmodede om upload</translation>
+<translation id="7089745480771070611">Åbnes i sidepanelet</translation>
 <translation id="7090698782953528257">Hjælp mig med at tegne en graf for en funktion for at visualisere den matematiske ligning og se kurvens form</translation>
 <translation id="7092087596499105699">Din administrator har konfigureret den sikre gateway-connector for at beskytte adgangen til din organisations private webapps. Den kan bruge data fra din arbejdsprofil til at verificere adgang.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
@@ -4007,6 +4010,7 @@ Yderligere oplysninger:
 <translation id="7696107855583699585">Rediger Known Traveler-nummer</translation>
 <translation id="7698864304447945242">Vil du opdatere Google Play-tjenester til AR?</translation>
 <translation id="7699509138503320152">Omskriv min mail, så den bliver mere overbevisende</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ingen}=1{1 færdighed (synkroniseret)}one{# færdighed (synkroniseret)}other{# færdigheder (synkroniseret)}}</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Fortsæt til <ph name="SITE" /> (usikkert)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Hjælp mig med at skrive</translation>

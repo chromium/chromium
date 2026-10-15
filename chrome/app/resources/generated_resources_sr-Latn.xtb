@@ -268,6 +268,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178093605842850860">Dozvoljeno je čitanje i menjanje ovog sajta</translation>
 <translation id="1178357842179817577">Štiti vas od opasnih sajtova, preuzimanja i dodataka</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Kartice se dele radi relevantnijih odgovora.<ph name="END_BOLD" /> Google koristi sadržaj i URL otvorene kartice kad započnete novi čet. Ovo podešavanje možete da promenite kad god poželite.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="117916940443676133">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali podacima za prijavljivanje, prvo napravite PIN.</translation>
 <translation id="1179400851034021914">IBAN je nevažeći</translation>
@@ -701,6 +702,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1535753739390684432">Slušajte čitanje određenog teksta naglas. Prvo izaberite ikonu Izaberite za govor u dnu ekrana, pa istaknite tekst.</translation>
 <translation id="1536754031901697553">Veza se prekida...</translation>
 <translation id="1536883206862903762">Ovim ćete onemogućiti dodatke i resetovati podešavanja na bezbedne podrazumevane vrednosti. Kartice, fajlovi i kolačići se čuvaju. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Kartice se dele radi relevantnijih odgovora.<ph name="END_BOLD_1" /> Google koristi sadržaj i URL otvorene kartice kad započnete novi čet. Ovo podešavanje možete da promenite kad god poželite. <ph name="BEGIN_BOLD_2" />Podaci vaše organizacije su privatni i bezbedni.<ph name="END_BOLD_2" /> Neće se koristiti za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="1537254971476575106">Lupa za ceo ekran</translation>
 <translation id="1538808328818992871">Minimalni broj znakova: <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Ne dozvoljavaj sajtovima da zamenjuju unos sa tastature</translation>
@@ -1895,6 +1897,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2457246892030921239"><ph name="APP_NAME" /> želi da kopira datoteke sa <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Trenutno na kanalu <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Ažurirajte nalog, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Kartice se dele radi relevantnijih odgovora. Google koristi sadržaj i URL otvorene kartice kad započnete novi čet. Ovo podešavanje možete da promenite kad god poželite. Podaci vaše organizacije su privatni i bezbedni. Neće se koristiti za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="2459703812219683497">Otkriven je aktivacioni kôd</translation>
 <translation id="2459706890611560967">Nastavite prebacivanje kartice na <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Deli snimak ekrana</translation>
@@ -6202,6 +6205,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5724723163580775373">Veliki fokus</translation>
 <translation id="5725112283692663422">Pošaljite povratne informacije za Pravljenje teme pomoću veštačke inteligencije</translation>
 <translation id="5727728807527375859">Dodaci, aplikacije i teme mogu da oštete računar. Želite li stvarno da nastavite?</translation>
+<translation id="5727872803091928075">Kartice se dele radi relevantnijih odgovora. Google koristi sadržaj i URL otvorene kartice kad započnete novi čet. Ovo podešavanje možete da promenite kad god poželite.</translation>
 <translation id="5728072125198221967">Povezane Google usluge</translation>
 <translation id="5729712731028706266">&amp;Prikaži</translation>
 <translation id="5731247495086897348">Na&amp;lepi i idi</translation>
@@ -7348,6 +7352,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6613231539539868591">Sačuvani podaci</translation>
 <translation id="6613267708691765962">Traži se malver...</translation>
+<translation id="6614219106064338118">Započni čet</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6616000047939888167">Ponudi Google prevodilac za veb-sajtove i PDF-ove na drugim jezicima</translation>
 <translation id="6618013221808317456">Ne dozvoljavaj sajtovima da koriste optimizaciju JavaScript-a</translation>
@@ -9731,6 +9736,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8410133743809404768">Možete da pretražujete u traci za adresu koristeći @history, kao i sa stranice Istorija</translation>
 <translation id="8411043186249152291">preko celog ekrana</translation>
 <translation id="8412136526970428322">Dozvoljeno je: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Važe <ph name="BEGIN_LINK1" />Google uslovi<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Obaveštenje o privatnosti Gemini aplikacija<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Kada posetite sajt, Chrome šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu. Ako sajt radi nešto sumnjivo, šalju se i celi URL-ovi i delovi sadržaja stranice.</translation>
 <translation id="8414396119627470038">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /> uz <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Istražujte bilo šta</translation>

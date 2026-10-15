@@ -649,6 +649,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2102495993840063010">Aplikasi Android</translation>
 <translation id="2103210856015238101">Kartu loyalitas yang tersedia untuk diisi dengan gestur sentuh terbuka sepenuhnya.</translation>
 <translation id="2104739941682874393">Isi otomatis yang ditingkatkan memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda</translation>
+<translation id="2105237910269166838">Tanya info halaman ini</translation>
 <translation id="2107021941795971877">Dukungan cetak</translation>
 <translation id="2108755909498034140">Mulai ulang komputer</translation>
 <translation id="2109845311767915560">Grup tab bersama</translation>
@@ -1055,6 +1056,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2734797989819862638">Jangan salin</translation>
 <translation id="2738771556149464852">Tidak Setelah</translation>
 <translation id="2740531572673183784">Oke</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Tidak ada}=1{1 keahlian}other{# keahlian}}</translation>
 <translation id="2757727729385895652">Mengupload <ph name="COUNT" /> file ke Google Drive</translation>
 <translation id="2759299890026163685">Pastikan Anda memiliki koneksi internet yang stabil sebelum mencoba lagi</translation>
 <translation id="2759825833388495838">mengisi sandi Anda di <ph name="APP_NAME" /></translation>
@@ -3623,6 +3625,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7083258188081898530">Baki 9</translation>
 <translation id="70846382339153529">Teks OpenDocument</translation>
 <translation id="7086090958708083563">Upload yang diminta oleh pengguna</translation>
+<translation id="7089745480771070611">Terbuka di panel samping</translation>
 <translation id="7090698782953528257">Bantu saya membuat grafik fungsi untuk memvisualisasikan persamaan matematika dan melihat bentuk kurvanya</translation>
 <translation id="7092087596499105699">Administrator Anda mengonfigurasi konektor gateway aman untuk melindungi akses ke aplikasi web pribadi organisasi Anda. Fitur ini mungkin menggunakan data dari profil kerja Anda untuk memverifikasi akses.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
@@ -4005,6 +4008,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7696107855583699585">Edit Known Traveler Number</translation>
 <translation id="7698864304447945242">Update Layanan Google Play untuk AR?</translation>
 <translation id="7699509138503320152">Tulis ulang email saya agar lebih persuasif</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Tidak ada}=1{1 keahlian (disinkronkan)}other{# keahlian (disinkronkan)}}</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Lanjutkan ke <ph name="SITE" /> (tidak aman)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Bantu Tulis</translation>

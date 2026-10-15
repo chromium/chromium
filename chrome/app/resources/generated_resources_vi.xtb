@@ -268,6 +268,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1178093605842850860">Được phép đọc và thay đổi trang web này</translation>
 <translation id="1178357842179817577">Bảo vệ bạn khỏi các trang web, tệp tải xuống và tiện ích nguy hiểm</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn.<ph name="END_BOLD" /> Google sẽ sử dụng nội dung và URL của thẻ đang mở khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="117916940443676133">Bạn chưa thiết lập mã PIN để bảo vệ khóa bảo mật. Để quản lý dữ liệu đăng nhập, trước tiên, hãy tạo một mã PIN.</translation>
 <translation id="1179400851034021914">IBAN không hợp lệ</translation>
@@ -702,6 +703,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1535753739390684432">Nghe văn bản cụ thể được đọc thành tiếng. Trước tiên, hãy chọn biểu tượng Chọn để nói ở cuối màn hình, sau đó bôi đen phần văn bản bạn muốn nghe.</translation>
 <translation id="1536754031901697553">Đang ngắt kết nối...</translation>
 <translation id="1536883206862903762">Tính năng này sẽ tắt các tiện ích và đặt lại chế độ cài đặt về chế độ mặc định, tức là chế độ an toàn. Thẻ, tệp và cookie sẽ được giữ nguyên. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn.<ph name="END_BOLD_1" /> Google sẽ sử dụng nội dung và URL của thẻ đang mở khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào. <ph name="BEGIN_BOLD_2" />Dữ liệu của tổ chức sẽ luôn được đảm bảo tính riêng tư và bảo mật.<ph name="END_BOLD_2" /> Dữ liệu này sẽ không được dùng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="1537254971476575106">Phóng to toàn bộ màn hình</translation>
 <translation id="1538808328818992871">Phải có ít nhất <ph name="MIN_LENGTH" /> ký tự</translation>
 <translation id="1539248305642687917">Không cho phép các trang web ghi đè thao tác nhập bằng bàn phím</translation>
@@ -729,6 +731,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1552752544932680961">Quản lý tiện ích</translation>
 <translation id="1553538517812678578">không giới hạn</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /> về Microsoft 365 trên Chromebook.</translation>
+<translation id="1554343363646356023">Cửa sổ &amp;biệt lập mới</translation>
 <translation id="1554640914375980459">Nháy sáng màn hình khi bạn nhận được thông báo. Hãy thận trọng khi sử dụng tính năng nháy sáng khi có thông báo nếu bạn nhạy cảm với ánh sáng.</translation>
 <translation id="1555130319947370107">Xanh dương</translation>
 <translation id="1556127816860282890">Hoạt động trong nền và một số hiệu ứng hình ảnh như cuộn mượt có thể bị hạn chế</translation>
@@ -1908,6 +1911,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> muốn sao chép tệp từ <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Hiện ở trên kênh <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Cập nhật tài khoản, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn. Google sẽ sử dụng nội dung và URL của thẻ đang mở khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào. Dữ liệu của tổ chức sẽ luôn được đảm bảo tính riêng tư và bảo mật. Dữ liệu này sẽ không được dùng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="2459703812219683497">Đã phát hiện một mã kích hoạt</translation>
 <translation id="2459706890611560967">Tiếp tục truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Chia sẻ ảnh chụp màn hình</translation>
@@ -2702,7 +2706,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3028445648481691885">Đã huỷ quá trình tải xuống</translation>
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
 <translation id="3029808567601324798">Thời gian chờ khoá</translation>
-<translation id="3030772324014024606">Sửa</translation>
+<translation id="3030772324014024606">Chỉnh sửa</translation>
 <translation id="3030795534674718505">Được phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3030967311408872958">Từ tối đến sáng</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
@@ -3169,6 +3173,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3390740059150071453">Nhìn sang trái</translation>
 <translation id="3393554941209044235">Phân tích tài liệu Chrome</translation>
 <translation id="3394072120086516913">Máy tính dùng mạng có dây còn thiết bị truyền dùng Wi-Fi</translation>
+<translation id="3394561494170561143">&amp;Thẻ biệt lập mới</translation>
 <translation id="3394850431319394743">Được phép dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>
 <translation id="339722927132407568">Dừng hình</translation>
 <translation id="3399432415385675819">Thông báo sẽ bị tắt</translation>
@@ -6215,6 +6220,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5724723163580775373">Tiêu điểm lớn</translation>
 <translation id="5725112283692663422">Gửi ý kiến phản hồi về tính năng Tạo giao diện bằng AI</translation>
 <translation id="5727728807527375859">Tiện ích, ứng dụng và chủ đề có thể gây hại cho máy tính của bạn. Bạn có chắc chắn muốn tiếp tục không?</translation>
+<translation id="5727872803091928075">Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn. Google sẽ sử dụng nội dung và URL của thẻ đang mở khi bạn bắt đầu một cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="5728072125198221967">Các dịch vụ của Google được liên kết</translation>
 <translation id="5729712731028706266">&amp;Xem</translation>
 <translation id="5731247495086897348">Dá&amp;n và Truy cập</translation>
@@ -7044,6 +7050,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6370021412472292592">Không thể tải tệp kê khai.</translation>
 <translation id="6370551072524410110">tìm kiếm + shift + phím backspace</translation>
 <translation id="637135143619858508">Cách xa nhau</translation>
+<translation id="6372413553057593904">Thẻ không hoạt động trong "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Thử lại</translation>
 <translation id="637642201764944055">Sau tháng 12 năm 2022, các phiên bản cũ của Ứng dụng Chrome sẽ không mở trên các thiết bị Linux. Hãy liên hệ với quản trị viên để cập nhật lên phiên bản mới hoặc xoá ứng dụng này.</translation>
@@ -7356,6 +7363,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6613231539539868591">Dữ liệu được lưu trữ</translation>
 <translation id="6613267708691765962">Đang quét tìm phần mềm độc hại...</translation>
+<translation id="6614219106064338118">Bắt đầu trò chuyện</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
 <translation id="6616000047939888167">Đề xuất dịch các trang web và tệp PDF xuất hiện ở các ngôn ngữ khác bằng Google Dịch</translation>
 <translation id="6618013221808317456">Không cho phép các trang web sử dụng tính năng tối ưu hoá JavaScript</translation>
@@ -9741,6 +9749,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8410133743809404768">Bạn có thể tìm kiếm trên thanh địa chỉ bằng lối tắt "@history" cũng như từ trang Nhật ký</translation>
 <translation id="8411043186249152291">toàn màn hình</translation>
 <translation id="8412136526970428322">Đã cho phép <ph name="PERMISSION" /> và <ph name="COUNT" /> quyền khác</translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Điều khoản của Google<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Thông báo về quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK2" /> sẽ được áp dụng.</translation>
 <translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
 <translation id="8414396119627470038">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Bạn có thể nghiên cứu về bất cứ chủ đề nào</translation>

@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Alcuni contenuti potrebbero non essere adatti a tutti.</translation>
 <translation id="1601560923496285236">Applica</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 indirizzo}other{# indirizzi}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Completa 1 attività per salire di livello}other{Completa {count} attività per salire di livello}}</translation>
 <translation id="1605405588277479165">Off - Sconsigliata</translation>
 <translation id="1605658421715042784">Copia immagine</translation>
 <translation id="1606899876897213121">Chiudi riepilogo attività recente</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Obbligatorie</translation>
 <translation id="3914640181019354363">Rileva indirizzi</translation>
 <translation id="391904960191284041">Recensioni prodotto</translation>
+<translation id="3920165976616657606">Azione completata: "Esplora Navigazione sicura avanzata".</translation>
 <translation id="3921585859122905677">Posizione barra degli indirizzi</translation>
 <translation id="3922185497376658606">Precaricamento di pagine web</translation>
 <translation id="3926703470020109118">Download annullato</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Puoi far scorrere il bordo per andare avanti o indietro.</translation>
 <translation id="4460014764210899310">Separa</translation>
 <translation id="446314443268698477">Acquista, traduci e identifica ciò che vedi con la fotocamera o tramite le foto.</translation>
+<translation id="4465941170695753889">Tieni premuto per creare un gruppo di schede</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4470766488397113689">Su cosa vuoi lavorare?</translation>
 <translation id="4471472356135655769">Impossibile esportare le password</translation>

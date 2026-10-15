@@ -1020,6 +1020,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3977512764614765090">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu.</translation>
 <translation id="3978162107953847778">Settu inn tengla frá stöðum eins og vafraferlinum þínum og Google Drive. Þú getur einnig sett inn emoji, myndskrár og fleira. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Viltu skipta um hljóðúttak?</translation>
+<translation id="3983903378684256134">Steam í Chromebook</translation>
 <translation id="3984536049089846927">Næsta síða</translation>
 <translation id="3986082989454912832">Svara</translation>
 <translation id="3990002060657467458">Þú finnur algengar stýringar á borð við Wi-Fi, Bluetooth og hljóðstyrkur í flýtistillingunum. Hér geturðu einnig tekið skjámyndir.</translation>
@@ -1637,6 +1638,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5727460725221669831">Ef þú gleymdir aðgangsorðinu þínu eða breyttir aðgangsorðinu að Google-reikningnum þínum nýlega geturðu reynt að endurheimta notandaaðganginn.</translation>
 <translation id="5733630091161562207">Móttökutilkynning</translation>
 <translation id="573413375004481890">Þetta tæki gat ekki stutt alla skjáina og því var einn aftengdur</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> af diskplássi losað.</translation>
 <translation id="574392208103952083">Miðlungs</translation>
 <translation id="5745612484876805746">Sjálfkrafa kviknar á næturljósi við sólsetur</translation>
 <translation id="5749214722697335450">Sendu notkunar- og greiningargögn. Hjálpaðu okkur að bæta upplifun þína af Android með því að senda greiningargögn og gögn um notkun tækis og forrita sjálfkrafa til Google. Gögnin hjálpa okkur að stuðla að stöðugleika kerfa og forrita sem og öðrum endurbótum. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni kunna þessi gögn að vera vistuð á Google-reikningnum þínum. <ph name="BEGIN_LINK1" />Nánar um mæligildi<ph name="BEGIN_LINK1_END" />Nánar<ph name="END_LINK1" /></translation>
@@ -2213,6 +2215,7 @@ Ný uppsetning</translation>
 <translation id="7413851974711031813">Ýttu á Esc til að loka</translation>
 <translation id="7416471219712049036">Vista núverandi síðu</translation>
 <translation id="742594950370306541">Myndavélin er í notkun.</translation>
+<translation id="7430466159639897874">Þú ert með ónotað diskpláss (<ph name="SIZE" />) sem er úthlutað fyrir úrelta eiginleikann „Steam í Chromebook“.</translation>
 <translation id="743058460480092004">Myndavél og hljóðnemi eru í notkun.</translation>
 <translation id="7433708794692032816">Settu snjallkort í til að halda áfram að nota <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google-leit</translation>
@@ -2354,6 +2357,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7781335840981796660">Allir notendareikningar og staðbundin gögn verða fjarlægð.</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7787212146956232129">Inntaks- og úttakstæki eru stillt. Farðu í stillingar til að breyta.</translation>
+<translation id="7790757511772316441">Losa um diskpláss</translation>
 <translation id="7792590255364786396">Sýnilegt</translation>
 <translation id="7796735576426975947">Ný tilkynning falin</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>

@@ -648,6 +648,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2103210856015238101">Kartice lojalnosti dostupne za unos dodirom otvorene su u punoj visini.</translation>
 <translation id="2104739941682874393">Poboljšano automatsko popunjavanje bolje razume obrasce i može brže automatski da ih popunjava za vas</translation>
+<translation id="2105237910269166838">Postavite pitanje o ovoj stranici</translation>
 <translation id="2107021941795971877">Podrška za štampanje</translation>
 <translation id="2108755909498034140">Ponovo pokrenite računar</translation>
 <translation id="2109845311767915560">Deljena grupa kartica</translation>
@@ -1054,6 +1055,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2734797989819862638">Ne kopiraj</translation>
 <translation id="2738771556149464852">Ne posle</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ništa}=1{1 veština}one{# veština}few{# veštine}other{# veština}}</translation>
 <translation id="2757727729385895652">Broj fajlova koji se otprema na Google disk: <ph name="COUNT" /></translation>
 <translation id="2759299890026163685">Uverite se da imate stabilnu internet vezu pre nego što probate ponovo</translation>
 <translation id="2759825833388495838">unese lozinku na <ph name="APP_NAME" /></translation>
@@ -3622,6 +3624,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="7083258188081898530">9. fioka</translation>
 <translation id="70846382339153529">OpenDocument tekst</translation>
 <translation id="7086090958708083563">Korisnik je tražio otpremanje</translation>
+<translation id="7089745480771070611">Otvara se na bočnoj tabli</translation>
 <translation id="7090698782953528257">Pomozi mi da napravim grafikon funkcije za vizuelizaciju matematičke jednačine i pregled oblika krive</translation>
 <translation id="7092087596499105699">Administrator je konfigurisao konektor bezbednog mrežnog prolaza radi zaštite pristupa privatnim veb-aplikacijama organizacije. Može da koristi podatke s vašeg poslovnog profila za verifikaciju pristupa.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali dozvolama i podacima sačuvanim na različitim sajtovima u podešavanjima Chrome-a</translation>
@@ -4006,6 +4009,7 @@ Dodatni detalji:
 <translation id="7696107855583699585">Izmenite broj registrovanog putnika</translation>
 <translation id="7698864304447945242">Želite da ažurirate Google Play usluge za PR?</translation>
 <translation id="7699509138503320152">Preformuliši mi imejl tako da bude ubedljiviji</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ništa}=1{1 veština (sinhronizovano)}one{# veština (sinhronizovano)}few{# veštine (sinhronizovano)}other{# veština (sinhronizovano)}}</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Nastavi na <ph name="SITE" /> (nije bezbedno)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Pomoć pri pisanju</translation>

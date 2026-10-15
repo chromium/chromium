@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">有些内容不一定适合所有人。</translation>
 <translation id="1601560923496285236">应用</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
+<translation id="160477039162785330">{count,plural, =1{完成 1 项任务即可升级}other{完成 {count} 项任务即可升级}}</translation>
 <translation id="1605405588277479165">关闭 - 不推荐</translation>
 <translation id="1605658421715042784">复制图片</translation>
 <translation id="1606899876897213121">关闭近期活动摘要</translation>
@@ -511,6 +512,7 @@
 <translation id="2524699375503213836">导入 Safari 中的数据</translation>
 <translation id="2526166285241366046">保存密码</translation>
 <translation id="2529021024822217800">全部打开</translation>
+<translation id="2530932541542751783">此设置出了点问题。请更新并重启 Chrome 和 iPadOS，然后重试。如果此错误持续出现，说明您的 iPad 可能不支持该设置。</translation>
 <translation id="2536991091671391962">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2538103551183528357">目前为隐藏状态的密码</translation>
 <translation id="2538705697765638552">保存信息可以提升操作效率，例如在不同 Google 产品中快速填写表单。您可以在 <ph name="USER_EMAIL" /> 的 Google 钱包中管理自己的信息。</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">必需</translation>
 <translation id="3914640181019354363">检测地址</translation>
 <translation id="391904960191284041">商品评价</translation>
+<translation id="3920165976616657606">“探索增强型安全浏览”任务已完成！</translation>
 <translation id="3921585859122905677">地址栏位置</translation>
 <translation id="3922185497376658606">预加载网页</translation>
 <translation id="3926703470020109118">下载已取消</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850">您将登录 <ph name="URL" /></translation>
 <translation id="3934905113567851655">双指张合即可调整大小</translation>
 <translation id="393732545649378031">账号</translation>
+<translation id="3939683043166875001">隐藏或显示您最常访问的网站、探索信息流等。</translation>
 <translation id="3940195383040445971">跟踪标签页上的价格</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
 <translation id="3946483119107054883">下载为 CSV 文件</translation>
@@ -1090,6 +1094,7 @@
 <translation id="4455710003856931944">滑动边缘即可返回或前进。</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="446314443268698477">使用相机拍照或从相册中选择照片，从而购买、翻译和识别所见内容。</translation>
+<translation id="4465941170695753889">按住即可创建标签页组</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4470766488397113689">您想处理点什么？</translation>
 <translation id="4471472356135655769">无法导出密码</translation>
@@ -1262,6 +1267,7 @@
 <translation id="4977176874984951085">打开页面操作菜单</translation>
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 个分享的标签页}other{{COUNT} 个分享的标签页}}</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="4986428648020277392">提示：我该买哪个？（第 2 个，共 3 个）</translation>
 <translation id="498768198683310172">开始使用 Gemini</translation>
@@ -1921,6 +1927,7 @@
 <translation id="6938212956536472404">无法分享此标签页</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6946722113367118030">做思考状</translation>
+<translation id="6947751977892029882">此设置出了点问题。请更新并重启 Chrome 和 iOS，然后重试。如果此错误持续出现，说明您的 iPhone 可能不支持该设置。</translation>
 <translation id="6950522403736391608">已隐藏</translation>
 <translation id="695965663642079255">保存并管理支付信息，结账更快捷</translation>
 <translation id="6962809930976936328">利用 Gemini 获取数据洞见</translation>
@@ -2343,6 +2350,7 @@
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">打开 Chrome 菜单</translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
+<translation id="8266370374397811600">已解锁新成就！🥳</translation>
 <translation id="8270320981823560179">云端硬盘</translation>
 <translation id="8274795744553482834">您即将切换个人资料</translation>
 <translation id="8275068909952022340">更多…</translation>

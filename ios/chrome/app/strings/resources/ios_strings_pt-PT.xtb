@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="1018804590490383958">Ler e preencher automaticamente</translation>
 <translation id="1019990162050689579">Atividade da app Gemini</translation>
+<translation id="102471647093736603">Prima sem soltar para mover</translation>
 <translation id="102645702181682900">Tarefa iniciada</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Algum conteúdo pode não ser adequado para todos.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 endereço}other{# endereços}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Conclua 1 tarefa para subir de nível}other{Conclua {count} tarefas para subir de nível}}</translation>
 <translation id="1605405588277479165">Desativada – Não recomendado</translation>
 <translation id="1605658421715042784">Copiar imagem</translation>
 <translation id="1606899876897213121">Fechar resumo da atividade recente</translation>
@@ -921,6 +923,7 @@
 <translation id="3914173277599553213">Necessário</translation>
 <translation id="3914640181019354363">Detetar moradas</translation>
 <translation id="391904960191284041">Críticas sobre produtos</translation>
+<translation id="3920165976616657606">Ação "Explorar Navegação segura melhorada" concluída!</translation>
 <translation id="3921585859122905677">Posição da Barra de Endereço</translation>
 <translation id="3922185497376658606">Pré-carregar páginas Web</translation>
 <translation id="3926703470020109118">Transferência cancelada</translation>
@@ -1092,6 +1095,7 @@
 <translation id="4455710003856931944">Pode deslizar rapidamente na extremidade para retroceder ou avançar.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compre, traduza e identifique o que vê com a câmara ou as fotos.</translation>
+<translation id="4465941170695753889">Prima sem soltar para criar um grupo de separadores</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4470766488397113689">Em que quer trabalhar?</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
@@ -1207,6 +1211,7 @@
 <translation id="4808744395915275922">Atualizações</translation>
 <translation id="4813345808229079766">Ligação</translation>
 <translation id="4821595350501541683">Os separadores foram fechados e os dados de navegação foram eliminados</translation>
+<translation id="4823322556950229674">Pode premir sem soltar para mover a barra de endereço e o botão anterior para a parte inferior</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}other{{domain} e mais {count}}}</translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
@@ -2054,6 +2059,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
+<translation id="7417055777338419059">Programe, escreva ou crie slides</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7425053386765766120">Adicionar método de pagamento…</translation>

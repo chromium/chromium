@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">פתיחה באפליקציה <ph name="NATIVE_APP_NAME" /> • מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
 <translation id="1496514951988037011">שם משתמש</translation>
+<translation id="1498051468374914325">פתיחת מסוף הכלים למפתחים</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1513352483775369820">סימניות והיסטוריית אתרים</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="152204906462707884">אפשר למחוק במהירות את היסטוריית הגלישה ולשלוט יותר בפרטיות</translation>
 <translation id="153446405401665083">‏יש גרסה חדשה של Chrome</translation>
+<translation id="1537160738459068682">פתיחת הרכיבים של הכלים למפתחים</translation>
 <translation id="1540012742443808215">סרגל הכתובות נמצא כרגע בחלק העליון</translation>
 <translation id="1543035591122163372">רוצה לקבל את הסיסמאות ונתונים נוספים מ-<ph name="DEVICE_TYPE" />? עליך להיכנס לחשבון</translation>
 <translation id="1544084554881119930">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
@@ -1069,6 +1071,7 @@
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5235196193381275927">משהו השתבש במהלך הכניסה לחשבון</translation>
 <translation id="5246093389635966745">עריכת קיצור הדרך בסרגל הכלים</translation>
+<translation id="5257142004843671642">שינוי הגודל של חלונית הצד</translation>
 <translation id="5264813352784073502">24 השעות האחרונות</translation>
 <translation id="5267572070504076962">כדאי להפעיל את הגלישה הבטוחה ולקבל הגנה מפני אתרים מסוכנים</translation>
 <translation id="5273031377282080577">ההגדרה הזו מנוהלת על ידי האדמין.</translation>
@@ -2061,6 +2064,7 @@
 <translation id="9024318700713112071">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="9027728231343310283">ביטול ההרשאה לאתר <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏העברה אל\u2026</translation>
+<translation id="9038316201889095704">האפשרות "חיפוש בדף" מושבתת כשיש שינויים שלא נשמרו.</translation>
 <translation id="904146253922032365">כדי להציג את הכרטיסיות לאורך צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
 <translation id="9047347135558855162">‏חיפוש מהיר ב-Chrome</translation>

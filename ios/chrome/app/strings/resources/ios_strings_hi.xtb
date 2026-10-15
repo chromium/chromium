@@ -213,6 +213,7 @@
 <translation id="1600571977391127696">ऐसा हो सकता है कि कुछ कॉन्टेंट हर किसी के लिए सही न हो.</translation>
 <translation id="1601560923496285236">लागू करें</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 पता}one{# पता}other{# पते}}</translation>
+<translation id="160477039162785330">{count,plural, =1{अगले लेवल पर जाने के लिए, 1 टास्क पूरा करें}one{अगले लेवल पर जाने के लिए, {count} टास्क पूरा करें}other{अगले लेवल पर जाने के लिए, {count} टास्क पूरे करें}}</translation>
 <translation id="1605405588277479165">बंद है - सुझाव नहीं दिया गया है</translation>
 <translation id="1605658421715042784">इमेज की कॉपी करें</translation>
 <translation id="1606899876897213121">हाल ही की गतिविधि की खास जानकारी वाला कार्ड बंद करें</translation>
@@ -922,6 +923,7 @@
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914640181019354363">पते पहचानें</translation>
 <translation id="391904960191284041">प्रॉडक्ट की समीक्षाएं</translation>
+<translation id="3920165976616657606">"बेहतर सुरक्षित ब्राउज़िंग की सुविधा एक्सप्लोर करें" टास्क पूरा हुआ!</translation>
 <translation id="3921585859122905677">पता बार की जगह</translation>
 <translation id="3922185497376658606">पहले से लोड हुए वेबपेज</translation>
 <translation id="3926703470020109118">डाउनलोड की प्रोसेस रद्द की गई</translation>
@@ -1093,6 +1095,7 @@
 <translation id="4455710003856931944">स्क्रीन पर आगे या पीछे जाने के लिए, किनारे पर स्वाइप करें.</translation>
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
 <translation id="446314443268698477">कैमरे की मदद से या फ़ोटो पर दिख रही चीज़ों की पहचान करें, उनका अनुवाद करें, और खरीदारी करें.</translation>
+<translation id="4465941170695753889">टैब ग्रुप बनाने के लिए, किसी टैब को दबाकर रखें</translation>
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4470766488397113689">आपको किस विषय पर काम करना है?</translation>
 <translation id="4471472356135655769">पासवर्ड एक्सपोर्ट नहीं किए जा सके</translation>
@@ -2056,6 +2059,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">जारी रखें</translation>
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
+<translation id="7417055777338419059">कोडिंग करें, कॉन्टेंट लिखें या स्लाइड बनाएं</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>
 <translation id="7423098979219808738">पहले पूछें</translation>
 <translation id="7425053386765766120">पेमेंट का तरीका जोड़ें…</translation>

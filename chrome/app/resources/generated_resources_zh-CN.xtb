@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178093605842850860">可以读取和更改此网站</translation>
 <translation id="1178357842179817577">保护您免受危险网站、下载内容和扩展程序的侵害</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />系统会共享标签页以提供更相关的回答。<ph name="END_BOLD" />在您开始新对话时，Google 会使用打开的标签页的内容和网址。您可以随时更改此设置。</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="117916940443676133">您尚未设置 PIN 码来保护您的安全密钥。要管理登录数据，请先创建一个 PIN 码。</translation>
 <translation id="1179400851034021914">IBAN 无效</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">让系统大声朗读特定文字。首先，选择屏幕底部的“随选朗读”图标，然后突出显示文字。</translation>
 <translation id="1536754031901697553">正在断开连接…</translation>
 <translation id="1536883206862903762">此操作会停用扩展程序，并将设置重置为安全的默认设置。系统会保留标签页、文件和 Cookie。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />系统会共享标签页以提供更相关的回答。<ph name="END_BOLD_1" />在您开始新对话时，Google 会使用打开的标签页的内容和网址。您随时可以更改此设置。<ph name="BEGIN_BOLD_2" />组织数据的隐私性和安全性有保障。<ph name="END_BOLD_2" />此类数据不会用于改进生成式 AI 模型。</translation>
 <translation id="1537254971476575106">全屏放大镜</translation>
 <translation id="1538808328818992871">必须至少包含 <ph name="MIN_LENGTH" /> 个字符</translation>
 <translation id="1539248305642687917">不允许网站替换键盘输入</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">管理扩展程序</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />详细了解<ph name="LINK_END" /> Chromebook 上的 Microsoft 365。</translation>
+<translation id="1554343363646356023">新的隔离窗口(&amp;I)</translation>
 <translation id="1554640914375980459">收到通知时闪烁屏幕。如果您对光敏感，请谨慎使用闪烁通知功能。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556127816860282890">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制</translation>
@@ -1895,6 +1898,7 @@
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2457842160081795172">目前位于<ph name="CHANNEL_NAME" />渠道</translation>
 <translation id="2458379781610688953">更新账号，<ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">系统会共享标签页以提供更相关的回答。在您开始新对话时，Google 会使用打开的标签页的内容和网址。您随时可以更改此设置。组织数据的隐私性和安全性有保障。此类数据不会用于改进生成式 AI 模型。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>
 <translation id="2459706890611560967">继续将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="245979889539926662">分享屏幕截图</translation>
@@ -3067,6 +3071,7 @@
 <translation id="3320957378743864387">不得提供写作帮助</translation>
 <translation id="3321460131042519426">启用自动换行</translation>
 <translation id="3321494112580110651">找不到您的打印机？</translation>
+<translation id="3321512411079201586">隔离 (&amp;I)</translation>
 <translation id="3321776060736518525">来源：<ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">安装 Edge 版扩展程序</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的屏幕使用时间</translation>
@@ -3153,6 +3158,7 @@
 <translation id="3390740059150071453">向左看</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3394072120086516913">PC 使用有线网络，投放设备使用 Wi-Fi</translation>
+<translation id="3394561494170561143">新的隔离标签页(&amp;T)</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
 <translation id="339722927132407568">卡顿</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
@@ -6194,6 +6200,7 @@
 <translation id="5724723163580775373">大焦点</translation>
 <translation id="5725112283692663422">发送有关“利用 AI 创建主题”的反馈</translation>
 <translation id="5727728807527375859">扩展功能、应用和主题背景可能会损害您的计算机。您确定要继续吗？</translation>
+<translation id="5727872803091928075">系统会共享标签页以提供更相关的回答。在您开始新对话时，Google 会使用打开的标签页的内容和网址。您可以随时更改此设置。</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
 <translation id="5729712731028706266">视图(&amp;V)</translation>
 <translation id="5731247495086897348">粘贴并转到(&amp;S)</translation>
@@ -7022,6 +7029,7 @@
 <translation id="6370021412472292592">无法加载清单。</translation>
 <translation id="6370551072524410110">搜索键 + shift + 退格键</translation>
 <translation id="637135143619858508">宽松</translation>
+<translation id="6372413553057593904">“<ph name="WINDOW_TITLE" />”中的闲置标签页</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="637642201764944055">2022 年 12 月之后，旧版 Chrome 应用将无法在 Linux 设备上开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
@@ -7334,6 +7342,7 @@
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613231539539868591">持久性数据</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
+<translation id="6614219106064338118">开始对话</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6616000047939888167">针对其他语言的网站和 PDF 提供谷歌翻译选项</translation>
 <translation id="6618013221808317456">不允许网站使用 JavaScript 优化功能</translation>
@@ -9157,6 +9166,7 @@
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992080146463834191">总结内容、简化复杂语言或提问。</translation>
 <translation id="7992203134935383159">语音合成</translation>
+<translation id="7992462686695281167">无痕模式 (&amp;I)</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7998701048266085837">网址</translation>
 <translation id="7999229196265990314">已创建以下文件：
@@ -9716,6 +9726,7 @@
 <translation id="8410133743809404768">您可以在地址栏中使用“@history”进行搜索，也可以在“历史记录”页面中搜索</translation>
 <translation id="8411043186249152291">全屏</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
+<translation id="8413685856004704642">须遵守<ph name="BEGIN_LINK1" />《Google 条款》<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />《Gemini 应用隐私权声明》<ph name="END_LINK2" />。</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">研究任何内容</translation>

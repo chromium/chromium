@@ -490,6 +490,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="18139523105317219">Heiti EDI-aðila</translation>
 <translation id="1816436748874040213">Getur beðið um að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="1816707915923025275">Sláðu inn @history til að leita í vafraferlinum</translation>
+<translation id="1816771466809215784">Til að fylla sjálfkrafa út við greiðslu skaltu vista nafn korthafa fyrir þetta kort í Google-veski</translation>
 <translation id="1817364650920811003">Hlutverk: Ábending frá Chrome. Aðgengisflokkur: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">sjálfvirkt niðurhal</translation>
 <translation id="1821930232296380041">Ógild beiðni eða færibreytur beiðni</translation>
@@ -647,6 +648,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2102495993840063010">Android forrit</translation>
 <translation id="2103210856015238101">Tryggðarkort sem hægt er að fylla út með einni snertingu, opin til fulls.</translation>
 <translation id="2104739941682874393">Ítarleg sjálfvirk útfylling hefur betri skilning á eyðublöðum og getur fyllt þau út hraðar fyrir þig</translation>
+<translation id="2105237910269166838">Spyrja um þessa síðu</translation>
 <translation id="2107021941795971877">Prentstuðningur</translation>
 <translation id="2108755909498034140">Endurræstu tölvuna</translation>
 <translation id="2109845311767915560">Sameiginlegur flipahópur</translation>
@@ -663,6 +665,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2126374524350484896">PDF-breytir:</translation>
 <translation id="2127090458081644412">Aðgangsorð vistað í þessu tæki</translation>
 <translation id="2127747486437921899">Skáletur</translation>
+<translation id="2129163794581571479">Knúið af Gemini með Personal Intelligence. Farið verður yfir beiðnirnar þínar, titla síðna og vefslóðir til að bæta ítarlega sjálfvirka útfyllingu. <ph name="BEGIN_LINK" />Stjórna stillingum<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Hugsanlega er ekki hægt að nota sniðmátin sem þú tilgreindir vegna þess að reglan DnsOverHttpsMode hefur ekki verið valin.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">„Kveikja á sjálfvirkri útfyllingu greiðsluupplýsinga“ opnað í fullri hæð.</translation>
@@ -1053,6 +1056,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2734797989819862638">Ekki afrita</translation>
 <translation id="2738771556149464852">Ekki eftir</translation>
 <translation id="2740531572673183784">Í lagi</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Engin}=1{1 færni}one{# færni}other{# færni}}</translation>
 <translation id="2757727729385895652">Hleður upp <ph name="COUNT" /> skrám í Google Drive</translation>
 <translation id="2759299890026163685">Gakktu úr skugga um að þú sért með stöðuga nettengingu áður en þú reynir aftur</translation>
 <translation id="2759825833388495838">fylla út aðgangsorðið þitt í <ph name="APP_NAME" /></translation>
@@ -1572,6 +1576,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3655670868607891010">Ef þú sérð þetta oft skaltu prófa þessar <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Endurskoðun</translation>
 <translation id="3659521826520353662">Hvaða vefsvæði sem stjórnandi hefur skilgreint eru opnuð og hvenær: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Knúið af Gemini með Personal Intelligence. <ph name="BEGIN_LINK" />Stjórna stillingum<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Leita að fleiri valkostum annarra verslana sem selja þessa vöru.</translation>
 <translation id="3664782872746246217">Leitarorð:</translation>
 <translation id="3670030362669914947">Númer</translation>
@@ -1592,6 +1597,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3693516565203081475">Velja greiðslumáta</translation>
 <translation id="3698353241727597930">Stjórnandi þinn hefur stillt á að vista <ph name="FILES" /> í <ph name="CLOUD_STORAGE" />-geymslu sem er í umsjón fyrirtækis. Hægt er að fylgjast með þessum skrám, fara yfir þær og varðveita þegar þú eyðir þeim.</translation>
 <translation id="3698629142018988477">Hnappurinn „Búa til Site“, virkjaðu til að búa til nýtt Site í Google Sites á skjótan hátt</translation>
+<translation id="3698708128812719147">Ýttu tvisvar á Ctrl hvar sem er á vefnum til að finna og fylla út fleiri upplýsingar</translation>
 <translation id="3700094625653511150">Farðu í <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> til að fela valkosti greiðslufrests</translation>
 <translation id="3700966190175650601">Þú ert að nota fingrafarið þitt til að fylla út aðgangsorð</translation>
 <translation id="3701427423622901115">Endurstilling samþykkt.</translation>
@@ -1895,6 +1901,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4185037616931963178">Uppfærðu leiðréttingarnúmer á öruggan hátt</translation>
 <translation id="4186035307311647330">Hætta að vakta verð</translation>
 <translation id="4191334393248735295">Lengd</translation>
+<translation id="4192770747482479191">Ýttu tvisvar á ⌘ hvar sem er á vefnum til að finna og fylla út frekari upplýsingar</translation>
 <translation id="4195459680867822611">Hnappurinn „Sjá ábendingar um Chrome“, virkjaðu til að fá frekari upplýsingar um eiginleika Chrome</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4196861286325780578">&amp;Endurtaka flutning</translation>
@@ -2843,6 +2850,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="573974402615125334">Samstilltu ferilinn þinn og flipa til að deila, taka þátt í og flipahópum</translation>
 <translation id="5740911612628596808">Umslag: C9</translation>
 <translation id="574392208103952083">Miðlungs</translation>
+<translation id="5744350700955456407">Ítarleg sjálfvirk útfylling getur nú fundið og fyllt út upplýsingar, t.d. pöntunarnúmer og staðfestingarkóða flugs, úr forritum á borð við Gmail og Myndir</translation>
 <translation id="5745586894920491759">Chrome vinnur úr síðutitlum og vefslóðum í skýinu</translation>
 <translation id="5745733273847572235">Getur beðið um staðsetningu þína</translation>
 <translation id="5750869797196646528">Rakning handahreyfinga</translation>
@@ -3622,6 +3630,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7083258188081898530">Bakki 9</translation>
 <translation id="70846382339153529">OpenDocument-texti</translation>
 <translation id="7086090958708083563">Notandi bað um sendingu</translation>
+<translation id="7089745480771070611">Opnast í hliðarglugga</translation>
 <translation id="7090698782953528257">Hjálpaðu mér að teikna fall til að útfæra stærðfræðiformúlu á myndrænan hátt og sjá lögun ferilsins</translation>
 <translation id="7092087596499105699">Kerfisstjórinn þinn stillti tengi öruggu gáttarinnar til að vernda aðgang að lokuðum vefforritum fyrirtækisins þíns. Hún kann að nota gögn af vinnusniðinu þínu til að staðfesta aðgang.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna heimildum og gögnum sem eru geymd á vefsvæðum</translation>
@@ -4005,6 +4014,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7696107855583699585">Breyta þekktu ferðalangsnúmeri</translation>
 <translation id="7698864304447945242">Uppfæra Google Play þjónustur fyrir AR?</translation>
 <translation id="7699509138503320152">Endurskrifaðu tölvupóstinn minn þannig að hann búi yfir meiri sannfæringarkrafti</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Engin}=1{1 færni (samstillt)}one{# færni (samstillt)}other{# færni (samstillt)}}</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Halda áfram á <ph name="SITE" /> (ekki öruggt)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Rithjálp</translation>
@@ -4247,6 +4257,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="813024282736408069">Kveiktu á sýndarkorti fyrir sjálfvirka útfyllingu</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8135546115396015134">vinstri lykill</translation>
+<translation id="8136385032646505126">Viltu vista nafn korthafa?</translation>
 <translation id="8137185688006450980">Berðu saman valkosti fyrir sjúkratryggingar</translation>
 <translation id="8138591088112729119">Knúið af persónulegri greind</translation>
 <translation id="814071672416123670">Ekki var hægt að afrita efni vegna reglna fyrirtækisins þíns</translation>

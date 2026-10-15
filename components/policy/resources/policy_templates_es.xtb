@@ -402,6 +402,15 @@ Sin embargo, los patrones de esta política que coinciden con el origen no puede
 <translation id="1272798957154751008">Habilitar la migración de dispositivos Chromad a la gestión en la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1277411517984768103">Permitir que un usuario ejecute <ph name="BOREALIS_NAME" /></translation>
+<translation id="1281420319219324116">Esta política configura el certificado de cliente gestionado que se aprovisiona cuando se habilita <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />.
+
+El campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica el origen del nombre común del sujeto del certificado:
+
+- Si no se define o se le asigna el valor <ph name="DEVICE_ID_VALUE" />, el nombre común del sujeto del certificado será el ID del dispositivo virtual del navegador gestionado.
+
+- Si se le asigna el valor <ph name="COMPUTER_NAME_VALUE" />, el nombre común del sujeto del certificado será el nombre de host del equipo.
+
+Esta política no tendrá efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> se ha inhabilitado o no se ha definido.</translation>
 <translation id="1285819498003746288">La API Event.path no estará disponible.</translation>
 <translation id="1290722184971934486">Si se le asigna el valor <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2) a esta política, automáticamente se niega a los sitios el permiso de gestión de ventanas de forma predeterminada. Esto limitará la capacidad de los sitios de ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
 
@@ -5690,6 +5699,15 @@ En el caso de los dispositivos no gestionados, esta política no se aplica y los
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado. Los usuarios podrán cambiar el ajuste usando la marca "--disk-cache-size".
 
       Nota: El valor especificado en esta política se utilizará como sugerencia en varios subsistemas de caché del navegador. Por ello, el consumo total real de disco de todas las cachés será mayor, pero se mantendrá en el mismo orden de magnitud que el valor especificado.</translation>
+<translation id="4582488040806837065">Esta política configura el certificado de cliente gestionado que se aprovisiona cuando se habilita <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />.
+
+El campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica el origen del nombre común del sujeto del certificado:
+
+- Si no se define o se le asigna el valor <ph name="PROFILE_ID_VALUE" />, el nombre común del sujeto del certificado será el ID del perfil del navegador.
+
+- Si se le asigna el valor <ph name="COMPUTER_NAME_VALUE" />, el nombre común del sujeto del certificado será el nombre de host del equipo. Nota: Si a esta propiedad se le asigna el valor <ph name="COMPUTER_NAME_VALUE" />, se usará una propiedad del dispositivo en un certificado asociado a un perfil. Esto puede tener implicaciones para la privacidad en dispositivos no administrados o compartidos, ya que el nombre de host del equipo se incluirá en el certificado.
+
+Esta política no tendrá efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> se ha inhabilitado o no se ha definido.</translation>
 <translation id="4591366717022345234">Proporciona a los usuarios una versión Quick Fix</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594027034164195984">Permitir que las imágenes de terceros muestren una solicitud de autenticación</translation>

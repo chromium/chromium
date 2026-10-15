@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Niektorý obsah nemusí byť vhodný pre všetkých.</translation>
 <translation id="1601560923496285236">Použiť</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}few{# adresy}many{# addresses}other{# adries}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Ak chcete prejsť na vyššiu úroveň, dokončite jednu úlohu}few{Ak chcete prejsť na vyššiu úroveň, dokončite {count} úlohy}many{Complete {count} tasks to level up}other{Ak chcete prejsť na vyššiu úroveň, dokončite {count} úloh}}</translation>
 <translation id="1605405588277479165">Vypnuté – neodporúča sa</translation>
 <translation id="1605658421715042784">Kopírovať obrázok</translation>
 <translation id="1606899876897213121">Zavrieť súhrn nedávnej aktivity</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Povinné</translation>
 <translation id="3914640181019354363">Rozpoznávať adresy</translation>
 <translation id="391904960191284041">Recenzie výrobku</translation>
+<translation id="3920165976616657606">Úloha „Preskúmajte Zlepšené bezpečné prehliadanie“ bola dokončená.</translation>
 <translation id="3921585859122905677">Umiestnenie panela s adresou</translation>
 <translation id="3922185497376658606">Prednačítanie webových stránok</translation>
 <translation id="3926703470020109118">Sťahovanie bolo zrušené</translation>
@@ -1092,6 +1094,7 @@
 <translation id="4455710003856931944">Potiahnutím okraja prejdete dozadu alebo dopredu.</translation>
 <translation id="4460014764210899310">Rozpustiť skupinu</translation>
 <translation id="446314443268698477">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery alebo fotiek.</translation>
+<translation id="4465941170695753889">Pridržaním vytvoríte skupinu kariet</translation>
 <translation id="4469324811108161144">Poznámky môžu uložiť maximálne tento počet znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Na čom chcete pracovať?</translation>
 <translation id="4471472356135655769">Heslá sa nedajú exportovať</translation>

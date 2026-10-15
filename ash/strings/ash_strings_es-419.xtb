@@ -1021,6 +1021,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
 <translation id="3978162107953847778">Inserta vínculos desde ubicaciones como tu historial de navegación y Google Drive. También puedes insertar emojis, archivos de imagen y más. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">¿Quieres cambiar la salida de audio?</translation>
+<translation id="3983903378684256134">Steam en Chromebook</translation>
 <translation id="3984536049089846927">Página siguiente</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla.</translation>
@@ -1637,6 +1638,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5727460725221669831">Si olvidaste tu contraseña o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
 <translation id="5733630091161562207">Notificación de bienvenida</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
+<translation id="5739548907438839901">Se liberaron <ph name="SIZE" /> de espacio en el disco.</translation>
 <translation id="574392208103952083">Media</translation>
 <translation id="5745612484876805746">Se activa la Luz nocturna automáticamente al atardecer</translation>
 <translation id="5749214722697335450">Enviar datos de uso y diagnóstico. Para mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK1" />Más información sobre las métricas<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Nueva instalación</translation>
 <translation id="7413851974711031813">Presiona Esc para cerrar</translation>
 <translation id="7416471219712049036">Guardar la página actual</translation>
 <translation id="742594950370306541">Cámara en uso</translation>
+<translation id="7430466159639897874">Tienes espacio en el disco sin usar (<ph name="SIZE" />) asignado para la función obsoleta "Steam en Chromebook".</translation>
 <translation id="743058460480092004">Cámara y micrófono en uso</translation>
 <translation id="7433708794692032816">Inserta la tarjeta inteligente para seguir usando tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Búsqueda de Google</translation>
@@ -2353,6 +2356,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7781335840981796660">Se eliminarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7787212146956232129">Se establecieron los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
+<translation id="7790757511772316441">Espacio libre en disco</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Se ocultó una nueva notificación</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>

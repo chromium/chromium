@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178093605842850860">允許讀取及變更這個網站</translation>
 <translation id="1178357842179817577">防範危險的網站、下載內容和擴充功能</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD" />當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="117916940443676133">你的安全金鑰未受 PIN 碼保護。如要管理登入資料，請先建立 PIN 碼。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後醒目顯示所需文字。</translation>
 <translation id="1536754031901697553">正在中斷連線…</translation>
 <translation id="1536883206862903762">這麼做會停用擴充功能，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />系統會分享分頁內容，以提供更符合需求的答案。<ph name="END_BOLD_1" />當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。<ph name="BEGIN_BOLD_2" />我們會確保貴機構的資料隱私與安全，<ph name="END_BOLD_2" />也不會用於改善生成式 AI 模型。</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="1538808328818992871">不能少於 <ph name="MIN_LENGTH" /> 個半形字元</translation>
 <translation id="1539248305642687917">禁止網站覆寫鍵盤輸入內容</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />進一步瞭解<ph name="LINK_END" /> Chromebook 上的 Microsoft 365。</translation>
+<translation id="1554343363646356023">新增隔離視窗(&amp;I)</translation>
 <translation id="1554640914375980459">收到通知時閃爍螢幕。如果你畏光，請謹慎使用閃光燈通知。</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556127816860282890">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制</translation>
@@ -1895,6 +1898,7 @@
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」要求複製 <ph name="VOLUME_NAME" /> 中的檔案。</translation>
 <translation id="2457842160081795172">目前為<ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">更新帳戶 (<ph name="EMAIL" />)</translation>
+<translation id="2458545895994128057">系統會分享分頁內容，以提供更符合需求的答案當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。我們會確保貴機構的資料隱私與安全。也不會用於改善生成式 AI 模型。</translation>
 <translation id="2459703812219683497">已偵測到啟用代碼</translation>
 <translation id="2459706890611560967">繼續將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="245979889539926662">分享螢幕截圖</translation>
@@ -3066,6 +3070,7 @@
 <translation id="3320957378743864387">不允許寫作輔助</translation>
 <translation id="3321460131042519426">允許自動換行</translation>
 <translation id="3321494112580110651">沒看到你的印表機嗎？</translation>
+<translation id="3321512411079201586">隔離模式(&amp;I)</translation>
 <translation id="3321776060736518525">來源：<ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">安裝 Edge 擴充功能</translation>
 <translation id="3323521181261657960">恭喜！你的螢幕時間增加了</translation>
@@ -3152,6 +3157,7 @@
 <translation id="3390740059150071453">往左看</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394072120086516913">電腦使用有線網路，投放裝置則使用 Wi-Fi 網路</translation>
+<translation id="3394561494170561143">新增隔離分頁(&amp;T)</translation>
 <translation id="3394850431319394743">允許使用 ID 來播放受保護的內容</translation>
 <translation id="339722927132407568">畫面凍結</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
@@ -6190,6 +6196,7 @@
 <translation id="5724723163580775373">聚焦範圍：大</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害你的電腦，確定要繼續？</translation>
+<translation id="5727872803091928075">系統會分享分頁內容，以提供更符合需求的答案當你發起新對話，Google 會使用開啟的分頁內容和網址。你隨時可以變更這項設定。</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5729712731028706266">檢視(&amp;V)</translation>
 <translation id="5731247495086897348">貼上並前往(&amp;S)</translation>
@@ -7018,6 +7025,7 @@
 <translation id="6370021412472292592">無法載入資訊清單。</translation>
 <translation id="6370551072524410110">搜尋鍵 + Shift 鍵 + Backspace 鍵</translation>
 <translation id="637135143619858508">寬行距</translation>
+<translation id="6372413553057593904">「<ph name="WINDOW_TITLE" />」中的閒置分頁</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="637642201764944055">2022 年 12 月之後，舊版 Chrome 應用程式將無法在 Linux 裝置上開啟。如要更新至新版本或移除這個應用程式，請與系統管理員聯絡。</translation>
@@ -7330,6 +7338,7 @@
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613231539539868591">保留的資料</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
+<translation id="6614219106064338118">發起即時通訊</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6616000047939888167">對使用其他語言的網站和 PDF 提供 Google 翻譯功能</translation>
 <translation id="6618013221808317456">禁止網站使用 JavaScript 最佳化功能</translation>
@@ -9152,6 +9161,7 @@
 <translation id="7991296728590311172">切換控制功能設定</translation>
 <translation id="7992080146463834191">生成內容摘要、簡化複雜語言或提問。</translation>
 <translation id="7992203134935383159">語音合成</translation>
+<translation id="7992462686695281167">無痕模式(&amp;I)</translation>
 <translation id="7997826902155442747">處理優先順序</translation>
 <translation id="7998701048266085837">網址</translation>
 <translation id="7999229196265990314">已建立下列檔案：
@@ -9711,6 +9721,7 @@
 <translation id="8410133743809404768">你可以在網址列中使用「@歷史記錄」搜尋，也可以在「歷史記錄」頁面尋找</translation>
 <translation id="8411043186249152291">全螢幕</translation>
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
+<translation id="8413685856004704642">適用《<ph name="BEGIN_LINK1" />Google 條款<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />Gemini 系列應用程式隱私權聲明<ph name="END_LINK2" />》。</translation>
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">研究任何內容</translation>

@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1178093605842850860">اس سائٹ کو پڑھنے اور تبدیل کرنے کی اجازت ہے</translation>
 <translation id="1178357842179817577">یہ ترتیب آپ کو خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تحفظ فراہم کرتی ہے</translation>
+<translation id="1178447762281437907">‏<ph name="BEGIN_BOLD" />مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے۔<ph name="END_BOLD" /> جب آپ نئی چیٹ شروع کرتے ہیں تو Google آپ کے کھلے ٹیب کے مواد اور URL کا استعمال کرتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="117916940443676133">‏آپ کی سیکیورٹی کلید PIN کے ذریعے محفوظ نہیں ہے۔ سائن ان ڈیٹا کا نظم کرنے کے لیے پہلے ایک PIN تخلیق کریں۔</translation>
 <translation id="1179400851034021914">‏‫IBAN غلط ہے</translation>
@@ -701,6 +702,7 @@
 <translation id="1535753739390684432">کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔</translation>
 <translation id="1536754031901697553">منقطع کیا جا رہا ہے...</translation>
 <translation id="1536883206862903762">یہ ایکسٹینشنز کو غیر فعال کر دے گا اور آپ کی ترتیبات کو محفوظ ڈیفالٹس پر ری سیٹ کر دے گا۔ ٹیبز، فائلیں اور کوکیز برقرار رہیں گی۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877">‏<ph name="BEGIN_BOLD_1" />مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے۔<ph name="END_BOLD_1" /> جب آپ نئی چیٹ شروع کرتے ہیں تو Google آپ کے کھلے ٹیب کے مواد اور URL کا استعمال کرتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔ <ph name="BEGIN_BOLD_2" />آپ کی تنظیم کا ڈیٹا نجی اور محفوظ ہے۔<ph name="END_BOLD_2" /> اسے تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔</translation>
 <translation id="1537254971476575106">پوری اسکرین مکبّر</translation>
 <translation id="1538808328818992871">کم از کم<ph name="MIN_LENGTH" /> حروف ضرور ہونے چاہیئں۔</translation>
 <translation id="1539248305642687917">سائٹس کو اپنے کی بورڈ ان پٹ کو اوور رائیڈ کرنے کی اجازت نہ دیں</translation>
@@ -728,6 +730,7 @@
 <translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
 <translation id="1553947773881524342">‏اپنے Chromebook پر Microsoft 365 کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" />۔</translation>
+<translation id="1554343363646356023">نئی اور الگ تھلگ ونڈو</translation>
 <translation id="1554640914375980459">اطلاعات موصول ہونے پر، اسکرین کو فلیش کریں۔ اگر آپ روشنی کے تئیں حساس ہیں تو فلیش کرنے والی اطلاعات کا استعمال احتیاط کے ساتھ کریں۔</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="1556127816860282890">پس منظر کی سرگرمی اور کچھ بصری اثرات، جیسے ہموار اسکرولنگ، محدود ہو سکتے ہیں</translation>
@@ -1895,6 +1898,7 @@
 <translation id="2457246892030921239"><ph name="APP_NAME" /> فائلوں کو <ph name="VOLUME_NAME" /> سے کاپی کرنا چاہتی ہے۔</translation>
 <translation id="2457842160081795172">فی الحال <ph name="CHANNEL_NAME" /> چینل پر</translation>
 <translation id="2458379781610688953">اکاؤنٹ اپ ڈیٹ کریں، <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">‏مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے۔ جب آپ نئی چیٹ شروع کرتے ہیں تو Google آپ کے کھلے ٹیب کے مواد اور URL کا استعمال کرتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔ آپ کی تنظیم کا ڈیٹا نجی اور محفوظ ہے۔ اسے تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔</translation>
 <translation id="2459703812219683497">فعالیت کے کوڈ کا پتہ چلا</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> پر ٹیب کاسٹ کرنا دوبارہ شروع کریں</translation>
 <translation id="245979889539926662">اسکرین شاٹ کا اشتراک کریں</translation>
@@ -3154,6 +3158,7 @@
 <translation id="3390740059150071453">بائیں جانب دیکھیں</translation>
 <translation id="3393554941209044235">‏Chrome کی دستاویز کا تجزیہ</translation>
 <translation id="3394072120086516913">‏‫PC تار سے منسلک ہے اور کاسٹنگ آلہ Wi-Fi پر ہے</translation>
+<translation id="3394561494170561143">نیا الگ تھلگ ٹیب</translation>
 <translation id="3394850431319394743">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت دی گئی</translation>
 <translation id="339722927132407568">منجمد ہو جاتی ہے</translation>
 <translation id="3399432415385675819">معلومات غیر فعال ہو جائیں گي</translation>
@@ -6197,6 +6202,7 @@
 <translation id="5724723163580775373">زیادہ فوکس</translation>
 <translation id="5725112283692663422">‏AI کے ذریعے تھیم تخلیق کریں کے لیے تاثرات بھیجیں</translation>
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
+<translation id="5727872803091928075">‏مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے۔ جب آپ نئی چیٹ شروع کرتے ہیں تو Google آپ کے کھلے ٹیب کے مواد اور URL کا استعمال کرتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="5728072125198221967">‏لنک کردہ Google سروسز</translation>
 <translation id="5729712731028706266">&amp;منظر</translation>
 <translation id="5731247495086897348">پی&amp;سٹ کریں اور جائیں</translation>
@@ -7026,6 +7032,7 @@
 <translation id="6370021412472292592">‏manifest لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="6370551072524410110">search + shift + backspace</translation>
 <translation id="637135143619858508">لائنوں کے درمیان جگہ</translation>
+<translation id="6372413553057593904">‫"<ph name="WINDOW_TITLE" />" میں غیر فعال ٹیب</translation>
 <translation id="6374077068638737855">آئیس ویزل</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="637642201764944055">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Linux آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
@@ -7338,6 +7345,7 @@
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6613231539539868591">برقرار ڈیٹا</translation>
 <translation id="6613267708691765962">میلوئیر کے لیے اسکین کیا جا رہا ہے...</translation>
+<translation id="6614219106064338118">چیٹ شروع کريں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6616000047939888167">‏ویب سائٹس اور PDFs کو دیگر زبانوں میں 'ترجمہ Google' کی پیشکش کریں</translation>
 <translation id="6618013221808317456">‏سائٹس کو JavaScript آپٹیمائزیشن استعمال کرنے کی اجازت نہ دیں</translation>
@@ -9720,6 +9728,7 @@
 <translation id="8410133743809404768">آپ ایڈریس بار میں "@سرگزشت" کے ساتھ ساتھ سرگزشت کے صفحے سے بھی تلاش کر سکتے ہیں</translation>
 <translation id="8411043186249152291">مکمل اسکرین</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
+<translation id="8413685856004704642">‏<ph name="BEGIN_LINK1" />‫Google کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Gemini ایپس کی رازداری کا نوٹس<ph name="END_LINK2" /> لاگو ہوتے ہیں۔</translation>
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8415120635186642416">کسی بھی چیز کی تحقیق کریں</translation>

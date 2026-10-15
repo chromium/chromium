@@ -648,6 +648,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2103210856015238101">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje janë hapur në lartësi të plotë.</translation>
 <translation id="2104739941682874393">Plotësimi automatik i përmirësuar i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty</translation>
+<translation id="2105237910269166838">Pyet për këtë faqe</translation>
 <translation id="2107021941795971877">Mbështetjet e printimit</translation>
 <translation id="2108755909498034140">Rinis kompjuterin</translation>
 <translation id="2109845311767915560">Grupi i ndarë i skedave</translation>
@@ -1054,6 +1055,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2734797989819862638">Mos kopjo</translation>
 <translation id="2738771556149464852">Jo pas</translation>
 <translation id="2740531572673183784">Në rregull</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Asnjë}=1{1 aftësi}other{# aftësi}}</translation>
 <translation id="2757727729385895652">Po ngarkohen <ph name="COUNT" /> skedarë te "Disku i Google"</translation>
 <translation id="2759299890026163685">Sigurohu që të kesh një lidhje të qëndrueshme interneti para se të provosh përsëri</translation>
 <translation id="2759825833388495838">të plotësojë fjalëkalimin tënd në <ph name="APP_NAME" /></translation>
@@ -3622,6 +3624,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7083258188081898530">Tabakaja 9</translation>
 <translation id="70846382339153529">Skedar me tekst OpenDocument</translation>
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
+<translation id="7089745480771070611">Hapet në panelin anësor</translation>
 <translation id="7090698782953528257">Më ndihmo të paraqes një funksion në grafik për të vizualizuar ekuacionin matematikor dhe për të parë formën e lakores</translation>
 <translation id="7092087596499105699">Administratori yt ka konfiguruar bashkuesin e portëkalimit të sigurt për të mbrojtur qasjen në aplikacionet private të uebit të organizatës sate. Ai mund të përdorë të dhëna nga profili yt i punës për të verifikuar qasjen.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
@@ -4005,6 +4008,7 @@ Detaje shtesë:
 <translation id="7696107855583699585">Modifiko numrin e udhëtarit të njohur</translation>
 <translation id="7698864304447945242">Të përditësohen "Shërbimet e Google Play për AR"?</translation>
 <translation id="7699509138503320152">Rishkruaj email-in tim që të jetë më bindës</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Asnjë}=1{1 aftësi (sinkronizuar)}other{# aftësi (sinkronizuar)}}</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Vazhdo te <ph name="SITE" /> (e pasigurt)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Më ndihmo të shkruaj</translation>

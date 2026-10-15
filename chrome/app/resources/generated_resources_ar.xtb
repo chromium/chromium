@@ -268,6 +268,7 @@
 <translation id="1177863135347784049">مخصص</translation>
 <translation id="1178093605842850860">هذه الإضافة مسموح لها بقراءة محتوى هذا الموقع الإلكتروني وتغييره.</translation>
 <translation id="1178357842179817577">يحميك هذا الإعداد من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة</translation>
+<translation id="1178447762281437907">‏<ph name="BEGIN_BOLD" />تتم مشاركة علامات التبويب لتقديم ردود أكثر صلة بطلبك.<ph name="END_BOLD" /> وتستخدم Google محتوى علامة التبويب المفتوحة وعنوان URL الخاص بها عند بدء محادثة جديدة. ويمكنك تغيير هذا الإعداد متى شئت.</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="117916940443676133">مفتاح الأمان غير محمي برقم تعريف شخصي. لإدارة بيانات تسجيل الدخول، عليك أولاً إنشاء رقم تعريف شخصي.</translation>
 <translation id="1179400851034021914">‏رقم الحساب بصيغة IBAN غير صالح</translation>
@@ -702,6 +703,7 @@
 <translation id="1535753739390684432">هذه الميزة تتيح لك إمكانية سماع نص معيَّن بصوت عالٍ. أولاً، انقر على رمز "سماع الاختيار" في أسفل الشاشة، ثم ميِّز النص التي تريد سماعه.</translation>
 <translation id="1536754031901697553">جارٍ قطع الاتصال…</translation>
 <translation id="1536883206862903762">سيؤدي هذا الإجراء إلى إيقاف الإضافات وإعادة ضبط الجهاز على الإعدادات التلقائية الآمنة، علمًا بأنّه سيتم الاحتفاظ بالملفات وعلامات التبويب وملفات تعريف الارتباط. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877">‏<ph name="BEGIN_BOLD_1" />تتم مشاركة علامات التبويب لتقديم ردود أكثر صلة بطلبك.<ph name="END_BOLD_1" /> وتستخدم Google محتوى علامة التبويب المفتوحة وعنوان URL الخاص بها عند بدء محادثة جديدة. ويمكنك تغيير هذا الإعداد متى شئت. <ph name="BEGIN_BOLD_2" />بيانات مؤسستك خاصة وآمنة.<ph name="END_BOLD_2" /> ولن يتم استخدامها لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="1537254971476575106">مكبّر بملء الشاشة</translation>
 <translation id="1538808328818992871">يجب أن يكون عدد حروف كلمة المرور <ph name="MIN_LENGTH" /> على الأقل</translation>
 <translation id="1539248305642687917">عدم السماح للمواقع الإلكترونية بتجاوُز إدخالات لوحة المفاتيح</translation>
@@ -729,6 +731,7 @@
 <translation id="1552752544932680961">إدارة الإضافة</translation>
 <translation id="1553538517812678578">غير محدودة</translation>
 <translation id="1553947773881524342">‏تعرَّف على <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /> حول Microsoft 365 على جهاز Chromebook.</translation>
+<translation id="1554343363646356023">نافذة &amp;تصفّح معزول جديدة</translation>
 <translation id="1554640914375980459">يتم تشغيل وميض الشاشة عند تلقّي إشعارات. يُرجى توخّي الحذر عند استخدام الإشعارات المصحوبة بوميض إذا كنت تعاني من حساسية الضوء.</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1556127816860282890">قد يتم إيقاف الأنشطة التي تتم في الخلفية وبعض التأثيرات المرئية، مثل الانتقال السلس للأعلى أو للأسفل.</translation>
@@ -1898,6 +1901,7 @@
 <translation id="2457246892030921239">يريد <ph name="APP_NAME" /> نسخ الملفات من <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">حاليًا على قناة <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">تحديث الحساب، <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">‏تتم مشاركة علامات التبويب لتقديم ردود أكثر صلة بطلبك. وتستخدم Google محتوى علامة التبويب المفتوحة وعنوان URL الخاص بها عند بدء محادثة جديدة. ويمكنك تغيير هذا الإعداد متى شئت. بيانات مؤسستك خاصة وآمنة. ولن يتم استخدامها لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="2459703812219683497">تم التعرّف على رمز التفعيل.</translation>
 <translation id="2459706890611560967">استئناف بث علامة التبويب على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="245979889539926662">مشاركة لقطة شاشة</translation>
@@ -3072,6 +3076,7 @@
 <translation id="3320957378743864387">لا يُسمح لهذه الميزة بتقديم مساعدة في الكتابة</translation>
 <translation id="3321460131042519426">تفعيل التفاف الكلمات</translation>
 <translation id="3321494112580110651">ألم تظهر لك الطابعة الخاصة بك؟</translation>
+<translation id="3321512411079201586">الوضع ال&amp;معزول</translation>
 <translation id="3321776060736518525">بدءًا من <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">‏التثبيت على Microsoft Edge</translation>
 <translation id="3323521181261657960">إليك مكافأة. ستحظى بالمزيد من وقت النظر إلى الشاشة.</translation>
@@ -3158,6 +3163,7 @@
 <translation id="3390740059150071453">النظر جهة اليسار</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394072120086516913">‏جهاز الكمبيوتر الشخصي متصل بشبكة سلكية وجهاز البثّ متصل بشبكة Wi-Fi</translation>
+<translation id="3394561494170561143">‫&amp;علامة تبويب جديدة للتصفّح المعزول</translation>
 <translation id="3394850431319394743">المواقع الإلكترونية التي يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
 <translation id="339722927132407568">يتوقف</translation>
 <translation id="3399432415385675819">سيتم إيقاف الإشعارات</translation>
@@ -6202,6 +6208,7 @@
 <translation id="5724723163580775373">تركيز على نطاق كبير</translation>
 <translation id="5725112283692663422">إرسال ملاحظات عن ميزة إنشاء مظهر باستخدام الذكاء الاصطناعي</translation>
 <translation id="5727728807527375859">قد تلحق الإضافات والتطبيقات والمظاهر الضرر بالكمبيوتر، فهل تريد بالتأكيد المتابعة؟</translation>
+<translation id="5727872803091928075">‏تتم مشاركة علامات التبويب لتقديم ردود أكثر صلة بطلبك. وتستخدم Google محتوى علامة التبويب المفتوحة وعنوان URL الخاص بها عند بدء محادثة جديدة. ويمكنك تغيير هذا الإعداد متى شئت.</translation>
 <translation id="5728072125198221967">‏خدمات Google المرتبطة</translation>
 <translation id="5729712731028706266">&amp;عرض</translation>
 <translation id="5731247495086897348">ل&amp;صق وانتقال</translation>
@@ -7031,6 +7038,7 @@
 <translation id="6370021412472292592">تعذر تحميل البيان.</translation>
 <translation id="6370551072524410110">‏مفتاح البحث + Shift + مفتاح Backspace</translation>
 <translation id="637135143619858508">أسطر متباعدة</translation>
+<translation id="6372413553057593904">علامة تبويب غير نشطة في "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="637642201764944055">‏لن تُفتَح الإصدارات القديمة من تطبيقات Chrome على الأجهزة التي تعمل بنظام التشغيل Linux بعد كانون الأول (ديسمبر) 2022. يمكنك التواصل مع المشرف للتحديث إلى إصدار جديد من هذا التطبيق أو إزالته.</translation>
@@ -7351,6 +7359,7 @@
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6613231539539868591">حفظ بيانات</translation>
 <translation id="6613267708691765962">جارٍ البحث عن برامج ضارة…</translation>
+<translation id="6614219106064338118">بدء محادثة</translation>
 <translation id="6615455863669487791">عرض</translation>
 <translation id="6616000047939888167">‏اقتراح استخدام "ترجمة Google" على المواقع الإلكترونية وملفات PDF المعروضة بلغات أخرى</translation>
 <translation id="6618013221808317456">‏عدم السماح للمواقع الإلكترونية باستخدام ميزة تحسين JavaScript</translation>
@@ -9174,6 +9183,7 @@
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح تحكّم</translation>
 <translation id="7992080146463834191">تساعدك هذه الميزة في تلخيص المحتوى أو تبسيط المصطلحات المعقدة أو طرح أسئلة.</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
+<translation id="7992462686695281167">وضع التصفّح المت&amp;خفي</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
 <translation id="7998701048266085837">‏عناوين URL</translation>
 <translation id="7999229196265990314">تم إنشاء الملفات التالية:
@@ -9734,6 +9744,7 @@
 <translation id="8410133743809404768">‏يمكنك البحث في شريط العناوين باستخدام ‎@history، وكذلك من صفحة "السجلّ"</translation>
 <translation id="8411043186249152291">ملء الشاشة</translation>
 <translation id="8412136526970428322">تمت الموافقة على إذن <ph name="PERMISSION" /> و<ph name="COUNT" /> إذن آخر.</translation>
+<translation id="8413685856004704642">‏تنطبق <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />إشعار الخصوصية في "تطبيقات Gemini"<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيَّن أنها ضارة. عند زيارة موقع إلكتروني، يرسل متصفِّح Chrome جزءًا مشفّرًا من عنوان URL إلى Google من خلال خادم لحماية الخصوصية يخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="8414396119627470038">سجِّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">البحث عن أي موضوع</translation>

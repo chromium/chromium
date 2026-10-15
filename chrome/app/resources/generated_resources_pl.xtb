@@ -268,6 +268,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1178093605842850860">Może odczytywać i zmieniać tę witrynę</translation>
 <translation id="1178357842179817577">Chroni przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Udostępniasz karty, aby otrzymywać lepsze odpowiedzi.<ph name="END_BOLD" /> Google wykorzystuje treść i adres URL otwartej karty, gdy rozpoczynasz nowy czat. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="117916940443676133">Klucz bezpieczeństwa nie jest zabezpieczony kodem PIN. Aby zarządzać danymi logowania, najpierw utwórz kod PIN.</translation>
 <translation id="1179400851034021914">Nieprawidłowy numer IBAN</translation>
@@ -701,6 +702,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1535753739390684432">Umożliwia odsłuchanie określonego tekstu. Najpierw kliknij ikonę Przeczytaj na głos u dołu ekranu, a potem zaznacz tekst.</translation>
 <translation id="1536754031901697553">Rozłączam...</translation>
 <translation id="1536883206862903762">Spowoduje to wyłączenie rozszerzeń i przywrócenie bezpiecznych ustawień domyślnych. Karty i pliki, w tym pliki cookie, zostaną zachowane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Udostępniasz karty, aby otrzymywać lepsze odpowiedzi.<ph name="END_BOLD_1" /> Google wykorzystuje treść i adres URL otwartej karty, gdy rozpoczynasz nowy czat. W każdej chwili możesz zmienić to ustawienie. <ph name="BEGIN_BOLD_2" />Dbamy o prywatność i bezpieczeństwo danych Twojej organizacji.<ph name="END_BOLD_2" /> Nie będą one wykorzystywane do ulepszania modeli generatywnej AI.</translation>
 <translation id="1537254971476575106">Lupa pełnego ekranu</translation>
 <translation id="1538808328818992871">Nie może mieć mniej niż <ph name="MIN_LENGTH" /> znaków</translation>
 <translation id="1539248305642687917">Nie zezwalaj witrynom na zastępowanie sygnałów z klawiatury</translation>
@@ -1894,6 +1896,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2457246892030921239"><ph name="APP_NAME" /> chce skopiować pliki z dysku <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Obecnie na kanale <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Aktualizuj konto, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Udostępniasz karty, aby otrzymywać lepsze odpowiedzi. Google wykorzystuje treść i adres URL otwartej karty, gdy rozpoczynasz nowy czat. W każdej chwili możesz zmienić to ustawienie. Dbamy o prywatność i bezpieczeństwo danych Twojej organizacji. Nie będą one wykorzystywane do ulepszania modeli generatywnej AI.</translation>
 <translation id="2459703812219683497">Wykryto kod aktywacyjny</translation>
 <translation id="2459706890611560967">Wznów przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Udostępnij zrzut ekranu</translation>
@@ -6189,6 +6192,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5724723163580775373">Duże skupienie</translation>
 <translation id="5725112283692663422">Prześlij opinię na temat tworzenia motywu za pomocą AI</translation>
 <translation id="5727728807527375859">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na komputerze. Czy na pewno chcesz kontynuować?</translation>
+<translation id="5727872803091928075">Udostępniasz karty, aby otrzymywać lepsze odpowiedzi. Google wykorzystuje treść i adres URL otwartej karty, gdy rozpoczynasz nowy czat. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5729712731028706266">&amp;Widok</translation>
 <translation id="5731247495086897348">Wkl&amp;ej i otwórz</translation>
@@ -7335,6 +7339,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6613231539539868591">Zachowane dane</translation>
 <translation id="6613267708691765962">Skanuję w poszukiwaniu złośliwego oprogramowania…</translation>
+<translation id="6614219106064338118">Rozpocznij czat</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="6616000047939888167">Proponuj użycie Tłumacza Google na stronach i w plikach PDF w innych językach</translation>
 <translation id="6618013221808317456">Nie zezwalaj witrynom na korzystanie z optymalizacji JavaScriptu</translation>
@@ -9715,6 +9720,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8410133743809404768">Możesz wyszukiwać treści, wpisując „@history” na pasku adresu, oraz na stronie Historia</translation>
 <translation id="8411043186249152291">pełny ekran</translation>
 <translation id="8412136526970428322">Przyznano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">Obowiązują <ph name="BEGIN_LINK1" />Warunki usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Informacje na temat ochrony prywatności w aplikacjach z Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Gdy wchodzisz na stronę, Chrome wysyła zaciemniony fragment adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona robi coś podejrzanego, wysyłane są też pełne adresy URL i fragmenty zawartości strony.</translation>
 <translation id="8414396119627470038">Zaloguj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" /> za pomocą konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Szukaj dowolnych informacji</translation>

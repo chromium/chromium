@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android Колдонмолору</translation>
 <translation id="2103210856015238101">Тийип толтурула турган туруктуу кардардын карталары толугу менен ачылды.</translation>
 <translation id="2104739941682874393">Жакшыртылган автотолтуруу формаларды жакшыраак түшүнүп, сизден тезирээк автотолтура алат</translation>
+<translation id="2105237910269166838">Бул бет жөнүндө суроо</translation>
 <translation id="2107021941795971877">Басып чыгарууну колдоо</translation>
 <translation id="2108755909498034140">Компьютериңизди өчүрүп-күйгүзүңүз</translation>
 <translation id="2109845311767915560">Бөлүшүлгөн өтмөктөр тобунун</translation>
@@ -1054,6 +1055,7 @@
 <translation id="2734797989819862638">Көчүрүлбөсүн</translation>
 <translation id="2738771556149464852">Кийин эмес</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Жок}=1{1 жөндөм}other{# жөндөм}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> файл Google Drive'га жүктөлүүдө</translation>
 <translation id="2759299890026163685">Интернет байланышы туруктуу экенин текшерип, кайталап көрүңүз</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> сырсөзүн толтурганы жатат</translation>
@@ -3622,6 +3624,7 @@
 <translation id="7083258188081898530">9-түпкүч</translation>
 <translation id="70846382339153529">OpenDocument тексти</translation>
 <translation id="7086090958708083563">Колдонуучу тарабынан жүктөп берүү суралды</translation>
+<translation id="7089745480771070611">Капталдагы тилкеде ачылат</translation>
 <translation id="7090698782953528257">Математикалык теңдемени визуалдаштыруу жана ийри сызыктын формасын көрүү үчүн функциянын графигин түзүүгө жардам бер</translation>
 <translation id="7092087596499105699">Администраторуңуз уюмуңуздун жеке веб колдонмолоруна кирүү мүмкүнчүлүгүн коргоо үчүн коопсуз шлюз туташтыргычын конфигурациялады. Ал кирүү мүмкүнчүлүгүн ырастоо үчүн жумуш профилиңиздеги маалыматты колдонушу мүмкүн.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеринен уруксаттарды жана сакталган маалыматтарды башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
@@ -4005,6 +4008,7 @@
 <translation id="7696107855583699585">Белгилүү жүргүнчүнүн номерин түзөтүү</translation>
 <translation id="7698864304447945242">AR үчүн Google Play кызматтары жаңыртылсынбы?</translation>
 <translation id="7699509138503320152">Электрондук катымды ынандырарлык кылып жаз</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Жок}=1{1 жөндөм (шайкештирилди)}other{# жөндөм (шайкештирилди)}}</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> Улантуу <ph name="SITE" /> (кооптуу)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Жазууга жардам бер функциясы</translation>

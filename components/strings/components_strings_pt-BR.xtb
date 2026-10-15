@@ -665,6 +665,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2126374524350484896">Criador do PDF:</translation>
 <translation id="2127090458081644412">Senha salva neste dispositivo</translation>
 <translation id="2127747486437921899">Itálico</translation>
+<translation id="2129163794581571479">Com a tecnologia do Gemini com Inteligência Personalizada. Suas solicitações, títulos de páginas e URLs podem ser analisados para melhorar o preenchimento automático aprimorado. <ph name="BEGIN_LINK" />Gerenciar configurações<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">A opção Ativar o Preenchimento Automático de Pagamentos está aberta no tamanho máximo.</translation>
@@ -1575,6 +1576,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3655670868607891010">Caso veja esta página com frequência, tente <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3659521826520353662">Quais sites definidos pelo administrador são visitados e quando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Com a tecnologia do Gemini com Inteligência Personalizada. <ph name="BEGIN_LINK" />Gerenciar configurações<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Pesquise mais opções de compra de outras lojas que vendem esse produto.</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1595,6 +1597,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3693516565203081475">Escolha a forma de pagamento</translation>
 <translation id="3698353241727597930">O administrador configurou o salvamento de <ph name="FILES" /> no armazenamento do <ph name="CLOUD_STORAGE" /> gerenciado pela empresa. Esses arquivos podem ser monitorados, auditados e retidos quando você os exclui.</translation>
 <translation id="3698629142018988477">Botão "Criar site". Ative para criar rapidamente um novo site no Google Sites</translation>
+<translation id="3698708128812719147">Pressione Ctrl duas vezes em qualquer lugar da web para encontrar e preencher mais informações</translation>
 <translation id="3700094625653511150">Se quiser ocultar as opções para pagar depois, acesse <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Você está usando sua impressão digital para preencher senhas</translation>
 <translation id="3701427423622901115">Redefinição confirmada.</translation>
@@ -1898,6 +1901,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4185037616931963178">Atualizar número de retificação com segurança</translation>
 <translation id="4186035307311647330">Não acompanhar preço</translation>
 <translation id="4191334393248735295">Duração</translation>
+<translation id="4192770747482479191">Pressione ⌘ duas vezes em qualquer lugar da web para encontrar e preencher mais informações</translation>
 <translation id="4195459680867822611">Botão "Ver dicas do Chrome". Ative para saber mais sobre os recursos do Chrome</translation>
 <translation id="4195643157523330669">Abrir em nova guia</translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
@@ -2683,7 +2687,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5481604577800516617">Arranjo de janelas e guias</translation>
 <translation id="5481682542063333508">Oferecer ajuda para escrever</translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
-<translation id="5483838506518938965">Está tudo pronto</translation>
+<translation id="5483838506518938965">Tudo pronto!</translation>
 <translation id="5484396522446324950">Estilos</translation>
 <translation id="5485100387355669506">Ultragrosso</translation>
 <translation id="5485973315555778056">Computador na nuvem</translation>
@@ -2846,6 +2850,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">Médio</translation>
+<translation id="5744350700955456407">O preenchimento automático aprimorado agora é capaz de encontrar e preencher informações, como números de pedidos e códigos de confirmação de voos, em apps como o Gmail e o Fotos</translation>
 <translation id="5745586894920491759">O Chrome processa títulos de páginas e URLs na nuvem</translation>
 <translation id="5745733273847572235">Pode pedir sua localização</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>

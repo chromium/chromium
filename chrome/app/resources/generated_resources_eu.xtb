@@ -268,6 +268,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1177863135347784049">Pertsonalizatua</translation>
 <translation id="1178093605842850860">Webgune hau irakurtzeko eta aldatzeko baimena du</translation>
 <translation id="1178357842179817577">Webgune, deskarga eta luzapen arriskutsuen aurrean babesten zaitu.</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Erantzun egokiagoak emateko partekatzen dira fitxak.<ph name="END_BOLD" /> Google-k irekita daukazun fitxako edukia eta URLak erabiltzen ditu elkarrizketa bat hasten duzunean. Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="117916940443676133">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Saioa hasteko datuak kudeatzeko, sortu PIN bat.</translation>
 <translation id="1179400851034021914">IBANak ez du balio</translation>
@@ -701,6 +702,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1535753739390684432">Entzun ozen testu zati zehatz bat. Lehenik eta behin, aukeratu "Hautatu ozen irakurtzeko" eginbidearen ikonoa pantailaren behealdean; ondoren, nabarmendu testua.</translation>
 <translation id="1536754031901697553">Deskonektatzen…</translation>
 <translation id="1536883206862903762">Luzapenak desgaituko dira, eta ezarpenetan balio lehenetsi seguruak berrezarriko. Fitxak, fitxategiak eta cookieak mantenduko dira. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Erantzun egokiagoak emateko partekatzen dira fitxak.<ph name="END_BOLD_1" /> Google-k irekita daukazun fitxako edukia eta URLak erabiltzen ditu elkarrizketa bat hasten duzunean. Nahi duzunean alda dezakezu ezarpena. <ph name="BEGIN_BOLD_2" />Zure erakundearen datuak pribatuak dira eta babestuta daude.<ph name="END_BOLD_2" /> Ez da erabiliko AA generatiboko ereduak hobetzeko.</translation>
 <translation id="1537254971476575106">Pantaila osoko lupa</translation>
 <translation id="1538808328818992871">Gutxienez <ph name="MIN_LENGTH" /> karaktere izan behar ditu</translation>
 <translation id="1539248305642687917">Ez eman zure teklatuarekin idatzitakoa ordezteko baimena webguneei</translation>
@@ -728,6 +730,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1552752544932680961">Kudeatu luzapena</translation>
 <translation id="1553538517812678578">mugagabea</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /> Chromebook-eko Microsoft 365-i buruz.</translation>
+<translation id="1554343363646356023">&amp;Leiho isolatu berria</translation>
 <translation id="1554640914375980459">Jakinarazpenak jasotzean, pantaila argituko da. Argiarekiko sentibera bazara, erabili kontuz argi-jakinarazpenak.</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1556127816860282890">Baliteke atzeko planoko jarduerak eta efektu bisual batzuk (adibidez, korritze leuna) mugatuta egotea</translation>
@@ -1894,6 +1897,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2457246892030921239"><ph name="APP_NAME" /> aplikazioak <ph name="VOLUME_NAME" /> bolumeneko fitxategiak kopiatu nahi ditu.</translation>
 <translation id="2457842160081795172">Oraingo kanala: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Eguneratu kontua, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Erantzun egokiagoak emateko partekatzen dira fitxak. Google-k irekita daukazun fitxako edukia eta URLak erabiltzen ditu elkarrizketa bat hasten duzunean. Nahi duzunean alda dezakezu ezarpena. Zure erakundearen datuak pribatuak dira eta babestuta daude. Ez da erabiliko AA generatiboko ereduak hobetzeko.</translation>
 <translation id="2459703812219683497">Hauteman da aktibazio-kodea</translation>
 <translation id="2459706890611560967">Berrekin pantaila <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="245979889539926662">Partekatu pantaila-argazki bat</translation>
@@ -3066,6 +3070,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3320957378743864387">Ez du idazteko laguntza eskaintzeko baimenik</translation>
 <translation id="3321460131042519426">Gaitu hitzen doikuntza</translation>
 <translation id="3321494112580110651">Ez duzu ikusten zure inprimagailua?</translation>
+<translation id="3321512411079201586">&amp;Modu isolatuta</translation>
 <translation id="3321776060736518525">Iturburua: <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">Instalatu Edge-rako</translation>
 <translation id="3323521181261657960">Erabilera-denbora gehiago eman dizute!</translation>
@@ -3152,6 +3157,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3390740059150071453">Ezkerrera begiratzea</translation>
 <translation id="3393554941209044235">Chrome-ko dokumentuen analisia</translation>
 <translation id="3394072120086516913">PCak konexio kableduna du, eta igorpen-gailuak wifia darabil</translation>
+<translation id="3394561494170561143">&amp;Fitxa isolatu berria</translation>
 <translation id="3394850431319394743">Identifikatzaileak erabiltzeko baimena eman zaie eduki babestua erreproduzi dezaten</translation>
 <translation id="339722927132407568">Gelditu egiten da</translation>
 <translation id="3399432415385675819">Desgaitu egingo dira jakinarazpenak</translation>
@@ -6194,6 +6200,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5724723163580775373">Foku handia</translation>
 <translation id="5725112283692663422">Bidali "Sortu gai bat AA bidez" aukerari buruzko oharrak</translation>
 <translation id="5727728807527375859">Luzapenek, aplikazioek eta gaiek ordenagailua kalte diezazukete. Ziur aurrera jarraitu nahi duzula?</translation>
+<translation id="5727872803091928075">Erantzun egokiagoak emateko partekatzen dira fitxak. Google-k irekita daukazun fitxako edukia eta URLak erabiltzen ditu elkarrizketa bat hasten duzunean. Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="5728072125198221967">Lotutako Google-ren zerbitzuak</translation>
 <translation id="5729712731028706266">I&amp;kuspegia</translation>
 <translation id="5731247495086897348">It&amp;satsi eta listo</translation>
@@ -7022,6 +7029,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6370021412472292592">Ezin izan da manifestua kargatu.</translation>
 <translation id="6370551072524410110">Bilaketa + Maius + Atzera tekla</translation>
 <translation id="637135143619858508">Handia</translation>
+<translation id="6372413553057593904">"<ph name="WINDOW_TITLE" />" leihoko fitxa inaktiboa</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
 <translation id="637642201764944055">2022ko abendutik aurrera, Chrome-ren aplikazioen bertsio zaharrak ez dira irekiko Linux darabilten gailuetan. Jarri administratzailearekin harremanetan bertsioa eguneratzeko. Bestela, kendu aplikazioa.</translation>
@@ -7334,6 +7342,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainerako erabiltzaileentzat.</translation>
 <translation id="6613231539539868591">Datu iraunkorrak</translation>
 <translation id="6613267708691765962">Malwarea dagoen egiaztatzen…</translation>
+<translation id="6614219106064338118">Hasi txateatzen</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
 <translation id="6616000047939888167">Google Translate erabiltzeko aukera beste hizkuntza batzuetan dauden webguneetan eta PDFetan eskaini</translation>
 <translation id="6618013221808317456">Ez eman JavaScript-en optimizazioa erabiltzeko baimena webguneei</translation>
@@ -9155,6 +9164,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7991296728590311172">Erabilerraztasun-osagarriaren ezarpenak</translation>
 <translation id="7992080146463834191">Laburbildu edukia, sinplifikatu hizkera konplexua edo egin galderak.</translation>
 <translation id="7992203134935383159">Hizketaren sintesia</translation>
+<translation id="7992462686695281167">&amp;Ezkutuko modua</translation>
 <translation id="7997826902155442747">Prozesuaren lehentasuna</translation>
 <translation id="7998701048266085837">URLak</translation>
 <translation id="7999229196265990314">Fitxategi hauek sortu dira:
@@ -9714,6 +9724,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8410133743809404768">Helbide-barran egin dezakezu bilaketa, "@historia" erabilita, baita Historia orritik ere.</translation>
 <translation id="8411043186249152291">pantaila osoa</translation>
 <translation id="8412136526970428322">Baimendutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
+<translation id="8413685856004704642"><ph name="BEGIN_LINK1" />Google-ren Baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Gemini-ren aplikazioen Pribatutasun-oharra<ph name="END_LINK2" /> aplikatzen dira.</translation>
 <translation id="8413795581997394485">Arriskutsuak direla dakigun webgune, deskarga eta luzapenen aurka babesten du. Webgune bat bisitatzen duzunean, Chrome-k URLaren zati nahasi bat bidaltzen dio Google-ri, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>
 <translation id="8414396119627470038">Hasi saioa <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="8415120635186642416">Ikertu edozer</translation>

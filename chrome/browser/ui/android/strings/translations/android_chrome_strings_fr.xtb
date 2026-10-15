@@ -135,6 +135,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1485343711570311792">Ouvrir dans <ph name="NATIVE_APP_NAME" /> • Depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1496514951988037011">nom d'utilisateur</translation>
+<translation id="1498051468374914325">Ouvrir la console des outils pour les développeurs</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
@@ -142,6 +143,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1516966594427080024">Ouvrir une nouvelle fenêtre en mode navigation privée</translation>
 <translation id="152204906462707884">Supprimez rapidement votre historique de navigation et contrôlez mieux votre confidentialité</translation>
 <translation id="153446405401665083">Une nouvelle version de Chrome est disponible</translation>
+<translation id="1537160738459068682">Ouvrir les éléments des outils pour les développeurs</translation>
 <translation id="1540012742443808215">Barre d'adresse actuellement en haut</translation>
 <translation id="1543035591122163372">Connectez-vous pour accéder sur <ph name="DEVICE_TYPE" /> à vos mots de passe et bien plus</translation>
 <translation id="1544084554881119930">Les adresses et les modes de paiement ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
@@ -1069,6 +1071,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5235196193381275927">Une erreur s'est produite lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci sur la barre d'outils</translation>
+<translation id="5257142004843671642">Redimensionner le panneau latéral</translation>
 <translation id="5264813352784073502">dernières 24 heures</translation>
 <translation id="5267572070504076962">Activez la navigation sécurisée pour vous protéger contre les sites dangereux</translation>
 <translation id="5273031377282080577">Votre administrateur gère ce paramètre.</translation>
@@ -2061,6 +2064,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9027728231343310283">Annuler <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Déplacer vers\u2026</translation>
+<translation id="9038316201889095704">L'option Rechercher sur la page est désactivée tant que les modifications ne sont pas enregistrées.</translation>
 <translation id="904146253922032365">Appuyer de manière prolongée pour afficher les onglets verticalement</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9047347135558855162">Lancez rapidement une recherche dans Chrome</translation>

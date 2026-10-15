@@ -268,6 +268,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1177863135347784049">Egyéni</translation>
 <translation id="1178093605842850860">Olvashatja és módosíthatja ezt a webhelyet</translation>
 <translation id="1178357842179817577">Védelmet nyújt a veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben.</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />A lapok meg lesznek osztva, hogy relevánsabb válaszokat kaphasson.<ph name="END_BOLD" /> A Google felhasználja a megnyitott lap tartalmát és URL-jét, amikor Ön új csevegést indít. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="117916940443676133">Biztonsági hardverkulcsát nem védi PIN-kód. A bejelentkezési adatok kezeléséhez előbb hozzon létre PIN-kódot.</translation>
 <translation id="1179400851034021914">Az IBAN érvénytelen</translation>
@@ -702,6 +703,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1535753739390684432">Felolvastathatja a kívánt szöveget. Először válassza ki a Felolvasás ikont a képernyő alján, majd jelölje ki a kívánt szövegrészt.</translation>
 <translation id="1536754031901697553">Kapcsolat bontása...</translation>
 <translation id="1536883206862903762">Ez letiltja a bővítményeket, és visszaállítja a beállításokat a biztonságos alapértelmezett értékekre. A lapok, a fájlok és a cookie-k megmaradnak. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />A lapok meg lesznek osztva, hogy relevánsabb válaszokat kaphasson.<ph name="END_BOLD_1" /> A Google felhasználja a megnyitott lap tartalmát és URL-jét, amikor Ön új csevegést indít. Ezt a beállítást bármikor módosíthatja. <ph name="BEGIN_BOLD_2" />A szervezete adatai biztonságban maradnak, és megőrzik privát jellegüket.<ph name="END_BOLD_2" /> Nem használjuk fel őket a generatív AI-modellek továbbfejlesztésére.</translation>
 <translation id="1537254971476575106">Teljes képernyős nagyító</translation>
 <translation id="1538808328818992871">Legalább <ph name="MIN_LENGTH" /> karaktert kell tartalmaznia</translation>
 <translation id="1539248305642687917">A webhelyek nem bírálhatják felül a billentyűzetbeviteleket</translation>
@@ -1907,6 +1909,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2457246892030921239">A(z) <ph name="APP_NAME" /> fájlokat szeretne másolni a következőről: <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Jelenleg <ph name="CHANNEL_NAME" /> csatornán</translation>
 <translation id="2458379781610688953">Fiók frissítése, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">A lapok meg lesznek osztva, hogy relevánsabb válaszokat kaphasson. A Google felhasználja a megnyitott lap tartalmát és URL-jét, amikor Ön új csevegést indít. Ezt a beállítást bármikor módosíthatja. A szervezete adatai biztonságban maradnak, és megőrzik privát jellegüket. Nem használjuk fel őket a generatív AI-modellek továbbfejlesztésére.</translation>
 <translation id="2459703812219683497">Aktivációs kód észlelve</translation>
 <translation id="2459706890611560967">Lap következőre való átküldésének folytatása: <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Képernyőkép megosztása</translation>
@@ -6215,6 +6218,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5724723163580775373">Nagy fókusz</translation>
 <translation id="5725112283692663422">Visszajelzés küldése a Téma létrehozása AI-jal funkcióval kapcsolatban</translation>
 <translation id="5727728807527375859">A bővítmények, alkalmazások és témák esetleg károsíthatják számítógépét. Biztosan folytatja?</translation>
+<translation id="5727872803091928075">A lapok meg lesznek osztva, hogy relevánsabb válaszokat kaphasson. A Google felhasználja a megnyitott lap tartalmát és URL-jét, amikor Ön új csevegést indít. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="5728072125198221967">Összekapcsolt Google-szolgáltatások</translation>
 <translation id="5729712731028706266">&amp;Megtekintés</translation>
 <translation id="5731247495086897348">Beille&amp;sztés</translation>
@@ -7357,6 +7361,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="661266467055912436">Javítja az Ön és mindenki más biztonságát az interneten.</translation>
 <translation id="6613231539539868591">Megőrzött adatok</translation>
 <translation id="6613267708691765962">Rosszindulatú programok keresése…</translation>
+<translation id="6614219106064338118">Csevegés indítása</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6616000047939888167">A Google Fordító használatának felajánlása más nyelvű webhelyeknél és PDF-eknél</translation>
 <translation id="6618013221808317456">A webhelyek nem használhatnak JavaScript-optimalizálást</translation>
@@ -9739,6 +9744,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8410133743809404768">A címsávban a „@history” kifejezés használatával, valamint az Előzmények oldalon kereshet</translation>
 <translation id="8411043186249152291">teljes képernyő</translation>
 <translation id="8412136526970428322">Engedélyezve: <ph name="PERMISSION" /> és további <ph name="COUNT" /></translation>
+<translation id="8413685856004704642">A funkció használatára <ph name="BEGIN_LINK1" />A Google Feltételei<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />A Gemini-appok adatvédelmi közleménye<ph name="END_LINK2" /> vonatkozik.</translation>
 <translation id="8413795581997394485">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Amikor Ön felkeresi valamelyik webhelyet, a Chrome az URL obfuszkált részét egy olyan adatvédelmi szerveren keresztül küldi el a Google-nak, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="8414396119627470038">Jelentkezzen be a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyre a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Bármire rákereshet</translation>
