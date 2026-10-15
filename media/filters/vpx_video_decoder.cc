@@ -472,10 +472,9 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
   }
 
   if ((*vpx_image_alpha)->d_h != vpx_image->d_h ||
-      (*vpx_image_alpha)->d_w != vpx_image->d_w ||
-      (*vpx_image_alpha)->bit_depth != vpx_image->bit_depth) {
-    DLOG(ERROR) << "The alpha plane dimensions/bit depth are not the same as "
-                   "the image dimensions/bit depth.";
+      (*vpx_image_alpha)->d_w != vpx_image->d_w) {
+    DLOG(ERROR) << "The alpha plane dimensions are not the same as the "
+                   "image dimensions.";
     return kAlphaPlaneError;
   }
 
@@ -506,8 +505,7 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     case VPX_IMG_FMT_I42016:
       switch (vpx_image->bit_depth) {
         case 10:
-          codec_format = vpx_image_alpha ? PIXEL_FORMAT_YUV420AP10
-                                         : PIXEL_FORMAT_YUV420P10;
+          codec_format = PIXEL_FORMAT_YUV420P10;
           break;
         case 12:
           codec_format = PIXEL_FORMAT_YUV420P12;
@@ -521,8 +519,7 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     case VPX_IMG_FMT_I42216:
       switch (vpx_image->bit_depth) {
         case 10:
-          codec_format = vpx_image_alpha ? PIXEL_FORMAT_YUV422AP10
-                                         : PIXEL_FORMAT_YUV422P10;
+          codec_format = PIXEL_FORMAT_YUV422P10;
           break;
         case 12:
           codec_format = PIXEL_FORMAT_YUV422P12;
@@ -536,8 +533,7 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     case VPX_IMG_FMT_I44416:
       switch (vpx_image->bit_depth) {
         case 10:
-          codec_format = vpx_image_alpha ? PIXEL_FORMAT_YUV444AP10
-                                         : PIXEL_FORMAT_YUV444P10;
+          codec_format = PIXEL_FORMAT_YUV444P10;
           break;
         case 12:
           codec_format = PIXEL_FORMAT_YUV444P12;
