@@ -44,6 +44,7 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
   accessor someArrayProp: string = '';
   accessor onClick_: number[] = [0];
   trustedHtml: TrustedHTML = window.trustedTypes!.emptyHTML;
+  trustedHtmlOrString: TrustedHTML|string = window.trustedTypes!.emptyHTML;
 
   getErrorMessage(): string {
     return 'some error';

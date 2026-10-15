@@ -141,6 +141,16 @@ declare global {
 
 customElements.define(TestError7ElementFoo.is, TestError7ElementFoo);
 
+type Constructor<T> = new (...args: any[]) => T;
+const FooMixin = <T extends Constructor<CrLitElement>>(superClass: T): T => {
+  class FooMixin extends superClass {}
+  return FooMixin;
+};
+const FooMixinLit = <T extends Constructor<CrLitElement>>(superClass: T): T => {
+  class FooMixinLit extends superClass {}
+  return FooMixinLit;
+};
+
 // Case1.8: Class with incorrect class name, using "extends
 // FooMixin(CrLitElement)".
 export class TestError8ElementFoo extends FooMixin
@@ -233,6 +243,34 @@ declare global {
 }
 
 customElements.define(TestError12Element.is, TestError12Element);
+
+// Case1.13: Mixin class with missing superclass calls and incorrect method
+// definition order.
+export const TestError13Mixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T => {
+      class TestError13Mixin extends superClass {
+        override disconnectedCallback() {}
+        override connectedCallback() {}
+      }
+      return TestError13Mixin;
+    };
+
+// Case1.14: Class extending an intermediate CrLitElement subclass (rather than
+// CrLitElement directly).
+export abstract class TestBaseLitElement extends CrLitElement {}
+export class TestError14ElementFoo extends TestBaseLitElement {
+  static get is() {
+    return 'test-error14';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-error14': TestError14ElementFoo;
+  }
+}
+
+customElements.define(TestError14ElementFoo.is, TestError14ElementFoo);
 
 
 /* Cases with no violations below. */

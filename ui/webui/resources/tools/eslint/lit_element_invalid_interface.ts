@@ -258,7 +258,7 @@ export const litElementInvalidInterface = ESLintUtils.RuleCreator.withoutDocs<
 
     return {
       'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
-        if (!isCrLitElementSubclass(node, context.sourceCode.ast)) {
+        if (!isCrLitElementSubclass(node, context)) {
           currentClassInfo = null;
           return;
         }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import {AST_NODE_TYPES as Node} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
@@ -17,44 +17,99 @@ import path from 'node:path';
 export const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
-export const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
-    'CallExpression[callee.name=/Mixin(Lit)?$/][arguments.0.name="CrLitElement"]';
-
 export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
     'CallExpression[callee.name=/Mixin(Polymer)?$/][arguments.0.name="PolymerElement"]';
 
+export function isCrLitElementType(
+    type: ts.Type, checker: ts.TypeChecker,
+    visited: Set<ts.Type> = new Set()): boolean {
+  const nonNullableType = checker.getNonNullableType(type);
+  if (visited.has(nonNullableType)) {
+    return false;
+  }
+  visited.add(nonNullableType);
+
+  if (nonNullableType.symbol?.name === 'CrLitElement') {
+    return true;
+  }
+
+  if ((nonNullableType.flags &
+       (ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never)) !== 0) {
+    return false;
+  }
+
+  if ((nonNullableType.flags & ts.TypeFlags.TypeParameter) !== 0) {
+    const constraint = checker.getBaseConstraintOfType(nonNullableType);
+    return !!constraint && isCrLitElementType(constraint, checker, visited);
+  }
+
+  if ((nonNullableType.flags & ts.TypeFlags.Union) !== 0) {
+    const union = nonNullableType as ts.UnionType;
+    return union.types.length > 0 &&
+        union.types.every(
+            (t: ts.Type) => isCrLitElementType(t, checker, visited));
+  }
+
+  if ((nonNullableType.flags & ts.TypeFlags.Intersection) !== 0) {
+    const intersection = nonNullableType as ts.IntersectionType;
+    return intersection.types.some(
+        (t: ts.Type) => isCrLitElementType(t, checker, visited));
+  }
+
+  if ((nonNullableType.flags & ts.TypeFlags.Object) !== 0 &&
+      ((nonNullableType as ts.ObjectType).objectFlags &
+       ts.ObjectFlags.ClassOrInterface) !== 0) {
+    const baseTypes = checker.getBaseTypes(nonNullableType as ts.InterfaceType);
+    return baseTypes.some(
+        (baseType: ts.BaseType) =>
+            isCrLitElementType(baseType, checker, visited));
+  }
+
+  return false;
+}
+
 export function isCrLitElementSubclass(
-    node: TSESTree.ClassDeclaration, programNode: TSESTree.Program): boolean {
+    node: TSESTree.ClassDeclaration,
+    context: TSESLint.RuleContext<string, readonly unknown[]>): boolean {
+  assert.ok(isType(node, Node.ClassDeclaration));
+
+  if (!node.superClass || node.id?.name === 'CrLitElement') {
+    return false;
+  }
+
+  const services = ESLintUtils.getParserServices(context);
+  const checker = services.program.getTypeChecker();
+  const tsNode = services.esTreeNodeToTSNodeMap.get(node);
+  assert.ok(tsNode);
+  const type = checker.getTypeAtLocation(tsNode);
+  return isCrLitElementType(type, checker);
+}
+
+function hasTypeParameter(type: ts.Type): boolean {
+  if ((type.flags & ts.TypeFlags.TypeParameter) !== 0) {
+    return true;
+  }
+  if ((type.flags & ts.TypeFlags.Intersection) !== 0) {
+    return (type as ts.IntersectionType).types.some(hasTypeParameter);
+  }
+  return false;
+}
+
+export function isMixinClass(
+    node: TSESTree.ClassDeclaration,
+    context: TSESLint.RuleContext<string, readonly unknown[]>): boolean {
   assert.ok(isType(node, Node.ClassDeclaration));
 
   if (!node.superClass) {
     return false;
   }
 
-  if (isType(node.superClass, Node.Identifier)) {
-    if (node.superClass.name === 'CrLitElement') {
-      // Case1: 'MyElement extends CrLitElement {...}'
-      return true;
-    }
-
-    // Case2:
-    // const MyElementBase = SomeMixin(CrLitElement);
-    // MyElement extends MyElementBase {...}'
-    const baseClassSelector = esquery.parse(
-        `Program > VariableDeclaration > VariableDeclarator[id.name="${
-            node.superClass.name}"] ${CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR}`);
-    const matchingNodes = esquery.match(programNode, baseClassSelector);
-    return matchingNodes.length > 0;
-  }
-
-  if (isType(node.superClass, Node.CallExpression)) {
-    // Case3: 'MyElement extends SomeMixin(SomeOtherMixin(CrLitElement)) {...}'
-    const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
-    const matchingNodes = esquery.match(node.superClass, selector);
-    return matchingNodes.length > 0;
-  }
-
-  return false;
+  const services = ESLintUtils.getParserServices(context);
+  const checker = services.program.getTypeChecker();
+  const superClassTsNode = services.esTreeNodeToTSNodeMap.get(node.superClass);
+  assert.ok(superClassTsNode);
+  const superClassType = checker.getTypeAtLocation(superClassTsNode);
+  return hasTypeParameter(superClassType);
 }
 
 export function isPolymerElementSubclass(
@@ -157,7 +212,9 @@ export function extractClassImport(
 }
 
 function isObjectType(type: ts.Type, typeStr: string): boolean {
-  if ((type.flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection)) !== 0) {
+  if ((type.flags &
+       (ts.TypeFlags.Object | ts.TypeFlags.Intersection |
+        ts.TypeFlags.TypeParameter)) !== 0) {
     return true;
   }
   return typeStr.startsWith('Record<') || typeStr.startsWith('{') ||

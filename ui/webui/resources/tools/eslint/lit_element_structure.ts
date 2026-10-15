@@ -7,7 +7,7 @@ import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescrip
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isMixinClass, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 // The order in which boilerplate and lifecycle CrLitElement methods should
 // be defined.
@@ -42,6 +42,7 @@ type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
 class ClassInfo {
   private readonly context: TSESLint.RuleContext<MessageIds, Options>;
   private readonly isTest: boolean;
+  private readonly isMixin: boolean;
 
   // Whether 'interface HTMLElementTagNameMap {...}' is specified. Only
   // applies when isTest=false.
@@ -71,11 +72,13 @@ class ClassInfo {
 
   constructor(
       context: TSESLint.RuleContext<MessageIds, Options>,
-      node: TSESTree.ClassDeclarationWithName, isTest: boolean) {
+      node: TSESTree.ClassDeclarationWithName, isTest: boolean,
+      isMixin: boolean) {
     this.context = context;
     this.node = node;
     this.name = this.node.id.name;
     this.isTest = isTest;
+    this.isMixin = isMixin;
   }
 
   visitStaticGetIs(node: TSESTree.ReturnStatement) {
@@ -146,7 +149,8 @@ class ClassInfo {
   }
 
   runMissingTagNameRegistrationCheck() {
-    if (this.isTest || !this.domName || this.hasTagNameRegistration) {
+    if (this.isTest || this.isMixin || !this.domName ||
+        this.hasTagNameRegistration) {
       return;
     }
 
@@ -167,7 +171,8 @@ class ClassInfo {
   }
 
   runMissingCustomElementRegistrationCheck() {
-    if (this.node.abstract || this.hasCustomElementRegistration) {
+    if (this.node.abstract || this.isMixin ||
+        this.hasCustomElementRegistration) {
       return;
     }
 
@@ -181,7 +186,7 @@ class ClassInfo {
   }
 
   runMissingStaticIsGetterCheck() {
-    if (this.node.abstract || this.domName) {
+    if (this.node.abstract || this.isMixin || this.domName) {
       return;
     }
 
@@ -211,6 +216,12 @@ class ClassInfo {
   }
 
   runConsistentFilenameDomNameCheck() {
+    if (this.isTest || this.isMixin) {
+      // Don't proceed with filename consistency checks if running in a test
+      // context or on a mixin class.
+      return;
+    }
+
     const basename = path.basename(this.context.filename, '.ts');
 
     if (basename.endsWith('_element')) {
@@ -221,13 +232,6 @@ class ClassInfo {
           filename: basename + '.ts',
         },
       });
-      return;
-    }
-
-    if (this.isTest) {
-      // Don't proceed with filename consistency checks if running in a test
-      // context, since it is common for custom elements to be defined in the
-      // file holding the tests and not a dedicated file.
       return;
     }
 
@@ -263,6 +267,10 @@ class ClassInfo {
   }
 
   runConsistentClassDomNameCheck() {
+    if (this.isMixin) {
+      return;
+    }
+
     if (!this.name.endsWith('Element')) {
       this.context.report({
         node: this.node,
@@ -382,6 +390,13 @@ function isNullableOrUndefinable(typeNode: TSESTree.TypeNode): boolean {
   return false;
 }
 
+function isTestFile(filename: string): boolean {
+  const normalizedFilename = filename.replaceAll('\\', '/');
+  return normalizedFilename.includes('chrome/test/data/webui') ||
+      normalizedFilename.includes('chrome/test/data/pdf') ||
+      normalizedFilename.endsWith('_test.ts');
+}
+
 function canImportHtml(filename: string, importsRender: boolean): boolean {
   if (filename.endsWith('.html.ts')) {
     return true;
@@ -404,9 +419,7 @@ function canImportHtml(filename: string, importsRender: boolean): boolean {
 
   // Tests may use html to define dummy elements, e.g. for testing
   // mixins
-  const isTestFile = normalizedFilename.includes('chrome/test/data/webui') ||
-      normalizedFilename.includes('chrome/test/data/pdf');
-  return isTestFile;
+  return isTestFile(filename);
 }
 
 export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
@@ -449,17 +462,13 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
   },
   defaultOptions: [],
   create(context) {
-    // Whether lit.rollup.js is imported.
-    let hasLitImport = false;
     let importsRender = false;
     let htmlImportNode: TSESTree.Node|null = null;
 
     // Dollar sign property signatures in this file, keyed by interface name.
     const dollarProperties = new Map<string, TSESTree.TSPropertySignature>();
 
-    // Whether operating on a test file, assuming all files end with the
-    // '_test.ts' suffix.
-    const isTest = context.filename.endsWith('_test.ts');
+    const isTest = isTestFile(context.filename);
 
     const METHOD_DEFINITION_SELECTOR_TEMPLATE =
         'ClassDeclaration > ClassBody > MethodDefinition[key.name=/{{methodDefinition}}/]';
@@ -476,7 +485,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
             '{{methodDefinition}}', SUPER_CALL_REQUIRED_REGEX);
     const LIFECYCLE_METHOD_SUPER_CALL_SELECTOR = `${
-        LIFECYCLE_METHOD_DEFINITION_SELECTOR} > FunctionExpression > BlockStatement > ExpressionStatement > CallExpression > MemberExpression[object.type="Super"][property.name=/${
+        LIFECYCLE_METHOD_DEFINITION_SELECTOR} > FunctionExpression > BlockStatement CallExpression > MemberExpression[object.type="Super"][property.name=/${
         SUPER_CALL_REQUIRED_REGEX}/]`;
 
     // Info about all the CrLitElement subclass definitions encountered in this
@@ -496,32 +505,29 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         if (importedName === 'render') {
           importsRender = true;
         }
-        if (importedName === 'CrLitElement') {
-          hasLitImport = true;
-        }
       },
       'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
-        if (!hasLitImport ||
-            !isCrLitElementSubclass(node, context.sourceCode.ast)) {
+        if (!isCrLitElementSubclass(node, context)) {
           currentClassInfo = null;
           return;
         }
 
         assert.ok(node.id);
         currentClassInfo = new ClassInfo(
-            context, node as TSESTree.ClassDeclarationWithName, isTest);
+            context, node as TSESTree.ClassDeclarationWithName, isTest,
+            isMixinClass(node, context));
         classInfos.set(node.id.name, currentClassInfo);
       },
       'ClassDeclaration > ClassBody > MethodDefinition[key.name="is"] > FunctionExpression > BlockStatement > ReturnStatement'(
           node: TSESTree.ReturnStatement) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
         currentClassInfo.visitStaticGetIs(node);
       },
       [METHOD_DEFINITION_SELECTOR](node: TSESTree.MethodDefinition) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
@@ -530,7 +536,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
             {name: node.key.name, node});
       },
       [LIFECYCLE_METHOD_DEFINITION_SELECTOR](node: TSESTree.MethodDefinition) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
@@ -538,7 +544,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         currentClassInfo.superCallRequired.add(node.key.name);
       },
       [LIFECYCLE_METHOD_SUPER_CALL_SELECTOR](node: TSESTree.MemberExpression) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
@@ -547,14 +553,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       },
       ['MethodDefinition > FunctionExpression TSTypeReference[typeName.name="CustomEvent"]:not([typeArguments])'](
           node: TSESTree.TSTypeReference) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
         currentClassInfo.runCustomEventTypeParameterCheck(node);
       },
       'ClassDeclaration:exit'(_node: TSESTree.ClassDeclaration) {
-        if (!hasLitImport || !currentClassInfo) {
+        if (!currentClassInfo) {
           return;
         }
 
@@ -566,14 +572,15 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       },
       ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
           node: TSESTree.TSPropertySignature) {
-        if (!hasLitImport) {
+        if (classInfos.size === 0) {
           return;
         }
-
         assert.ok(node.typeAnnotation);
         const typeAnnotation = node.typeAnnotation.typeAnnotation;
         assert.ok(isType(typeAnnotation, Node.TSTypeReference));
-        assert.ok(isIdentifier(typeAnnotation.typeName));
+        if (!isIdentifier(typeAnnotation.typeName)) {
+          return;
+        }
         const className = typeAnnotation.typeName.name;
 
         const classInfo = classInfos.get(className) || null;
@@ -583,10 +590,9 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       },
       'ExpressionStatement > CallExpression[callee.object.name="customElements"][callee.property.name="define"]'(
           node: TSESTree.CallExpression) {
-        if (!hasLitImport) {
+        if (classInfos.size === 0) {
           return;
         }
-
         assert.ok(isIdentifier(node.arguments[1]!));
         const className = node.arguments[1].name;
         const classInfo = classInfos.get(className) || null;
@@ -596,10 +602,6 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       },
       ['TSInterfaceDeclaration > TSInterfaceBody > TSPropertySignature[key.name="$"]'](
           node: TSESTree.TSPropertySignature) {
-        if (!hasLitImport) {
-          return;
-        }
-
         assert.ok(isType(node.parent.parent, Node.TSInterfaceDeclaration));
         dollarProperties.set(node.parent.parent.id.name, node);
       },

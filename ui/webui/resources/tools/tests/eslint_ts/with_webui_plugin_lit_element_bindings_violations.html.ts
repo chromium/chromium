@@ -32,6 +32,7 @@ export function getHtml(this: BindingsViolationsElement) {
 <hello-world-child .fooString="${this.value ? 'value' : nothing}">
 </hello-world-child>
 <div .innerHTML="${this.trustedHtml}" .style="${this.errorMessage}"></div>
+<div .innerHTML="${this.trustedHtmlOrString}"></div>
 <div @click="${this.onClick}"></div>
 <div @click="${this.onClick_}"></div>
 `;

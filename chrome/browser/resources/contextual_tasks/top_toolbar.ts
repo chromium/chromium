@@ -21,11 +21,6 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import type {InitialState} from './contextual_tasks_toolbar.mojom-webui.js';
 // </if>
 
-// <if expr="is_android">
-type PermissionDashboardState = any;
-type PermissionChipDelegate = any;
-// </if>
-
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -109,8 +104,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
         attribute: 'is-side-panel-rearchitecture-enabled',
       },
       webuiRoundedIconsEnabled_: {type: Boolean},
+      // <if expr="not is_android">
       permissionDashboardState: {type: Object},
       permissionChipDelegate_: {type: Object},
+      // </if>
       profileAvatarUrl: {type: String},
     };
   }
@@ -122,7 +119,11 @@ export class TopToolbarElement extends TopToolbarElementBase {
   accessor isAimEligible: boolean = loadTimeData.getBoolean('isAimEligible');
   accessor isCobrowseEligible: boolean =
       loadTimeData.getBoolean('isCobrowseEligible');
+  // <if expr="not is_android">
   accessor permissionDashboardState: PermissionDashboardState|null = null;
+  protected accessor permissionChipDelegate_: PermissionChipDelegate|null =
+      null;
+  // </if>
   accessor profileAvatarUrl: string =
       loadTimeData.valueExists('profileAvatarUrl') ?
       loadTimeData.getString('profileAvatarUrl') :
@@ -132,8 +133,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
   accessor isUserSignedIn: boolean = true;
   accessor enableOpenInNewTabButton: boolean = false;
   accessor onboardingTooltipShowing: boolean = false;
-  protected accessor permissionChipDelegate_: PermissionChipDelegate|null =
-      null;
   private toolbarBrowserProxy_: ToolbarBrowserProxyImpl =
       ToolbarBrowserProxyImpl.getInstance();
   private toolbarListenerIds_: number[] = [];
@@ -293,12 +292,15 @@ export class TopToolbarElement extends TopToolbarElementBase {
     }
   }
 
-  // If permission dashboard is not imported due to being on android, the
-  // optional chaining (?) causes this to return false.
   protected isPermissionShowing_(): boolean {
+    // <if expr="is_android">
+    return false;
+    // </if>
+    // <if expr="not is_android">
     return this.isSidePanelRearchitectureEnabled_ &&
         (!!this.permissionDashboardState?.indicatorChip?.isVisible ||
          !!this.permissionDashboardState?.requestChip?.isVisible);
+    // </if>
   }
 
   protected shouldShowSourcesMenuButton_(): boolean {

@@ -4,58 +4,9 @@
 
 import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 
-import {isIdentifier, isLiteral, isType} from './query_utils.js';
-
-function isCrLitElementType(
-    type: ts.Type, checker: ts.TypeChecker,
-    visited: Set<ts.Type> = new Set()): boolean {
-  const nonNullableType = checker.getNonNullableType(type);
-  if (visited.has(nonNullableType)) {
-    return false;
-  }
-  visited.add(nonNullableType);
-
-  if (nonNullableType.symbol?.name === 'CrLitElement') {
-    return true;
-  }
-
-  if ((nonNullableType.flags &
-       (ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never)) !== 0) {
-    return false;
-  }
-
-  if ((nonNullableType.flags & ts.TypeFlags.TypeParameter) !== 0) {
-    const constraint = checker.getBaseConstraintOfType(nonNullableType);
-    return !!constraint && isCrLitElementType(constraint, checker, visited);
-  }
-
-  if ((nonNullableType.flags & ts.TypeFlags.Union) !== 0) {
-    const union = nonNullableType as ts.UnionType;
-    return union.types.length > 0 &&
-        union.types.every(
-            (t: ts.Type) => isCrLitElementType(t, checker, visited));
-  }
-
-  if ((nonNullableType.flags & ts.TypeFlags.Intersection) !== 0) {
-    const intersection = nonNullableType as ts.IntersectionType;
-    return intersection.types.some(
-        (t: ts.Type) => isCrLitElementType(t, checker, visited));
-  }
-
-  if ((nonNullableType.flags & ts.TypeFlags.Object) !== 0 &&
-      ((nonNullableType as ts.ObjectType).objectFlags &
-       ts.ObjectFlags.ClassOrInterface) !== 0) {
-    const baseTypes = checker.getBaseTypes(nonNullableType as ts.InterfaceType);
-    return baseTypes.some(
-        (baseType: ts.BaseType) =>
-            isCrLitElementType(baseType, checker, visited));
-  }
-
-  return false;
-}
+import {isCrLitElementType, isIdentifier, isLiteral, isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'useFireHelper'|'useFireHelperWithEventName';

@@ -431,6 +431,23 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestError12Element',
         'propertyName': 'undefinableBtn',
       },
+      # Case 1.13
+      _EXPECTED_MISSING_SUPER_CALLS_ERROR
+      % {
+        'className': 'TestError13Mixin',
+        'lifecycleMethods': 'disconnectedCallback, connectedCallback',
+      },
+      _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR
+      % {
+        'className': 'TestError13Mixin',
+        'expectedOrder': '[connectedCallback, disconnectedCallback]',
+        'actualOrder': '[disconnectedCallback, connectedCallback]',
+      },
+      # Case 1.14
+      _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR
+      % {
+        'className': 'TestError14ElementFoo',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -439,6 +456,12 @@ class EslintTsTest(unittest.TestCase):
 
     # The following strings *should not* appear in the error output.
     non_errors = [
+      # Case 1.13 (non-applicable checks on mixins)
+      _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {'className': 'TestError13Mixin'},
+      _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR
+      % {'className': 'TestError13Mixin'},
+      _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR
+      % {'className': 'TestError13Mixin'},
       # Case 2.1
       _EXPECTED_MISSING_STATIC_GET_IS_ERROR
       % {'className': 'TestNoError1Element'},

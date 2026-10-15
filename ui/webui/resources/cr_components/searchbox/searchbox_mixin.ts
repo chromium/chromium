@@ -37,8 +37,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     superClass: T): T&Constructor<SearchboxMixinInterface> => {
   class SearchboxMixin extends SearchboxSelectionMixin
   (superClass) implements SearchboxMixinInterface {
-    accessor virtualFocusEnabled: boolean = false;
-
     static get properties() {
       return {
         virtualFocusEnabled: {
@@ -93,6 +91,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     composeboxSource: string = loadTimeData.valueExists('composeboxSource') ?
         loadTimeData.getString('composeboxSource') :
         'Unknown';
+    accessor virtualFocusEnabled: boolean = false;
     accessor searchboxAriaDescription: string = '';
     accessor dropdownIsVisible: boolean = false;
     // Tracks the latest query sent for autocompletion. Used to filter out
@@ -101,7 +100,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     // reusing IDs.
     activeQueryId: number = -1;
     private nextQueryId_: number = 0;
-    accessor lastQueriedInput: string|null = null;
+    lastQueriedInput: string|null = null;
     accessor multiLineEnabled: boolean = false;
     accessor singleLineOnInlineAutocomplete: boolean = false;
     accessor result: AutocompleteResult|null = null;

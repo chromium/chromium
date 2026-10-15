@@ -50,7 +50,7 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs<
 
     return {
       'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
-        isLitElement = isCrLitElementSubclass(node, context.sourceCode.ast);
+        isLitElement = isCrLitElementSubclass(node, context);
 
         if (!isLitElement) {
           currentClass = null;
