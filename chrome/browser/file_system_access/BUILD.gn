@@ -23,8 +23,10 @@ source_set("file_system_access") {
     "//chrome/browser/profiles:profile",
     "//components/enterprise/buildflags",
     "//components/enterprise/common:files_scan_data",
+    "//components/tabs:public",
     "//content/public/browser",
     "//third_party/blink/public/common",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
   if (!is_android) {
@@ -166,6 +168,8 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/content_settings/core/browser",
     "//components/sync_preferences:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//ui/shell_dialogs",
     "//ui/webui",

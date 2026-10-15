@@ -7,6 +7,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 
 FileSystemAccessTabHelper::FileSystemAccessTabHelper(
     content::WebContents* web_contents)

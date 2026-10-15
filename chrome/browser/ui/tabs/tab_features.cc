@@ -532,8 +532,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             .CreateInstance<IntentPickerViewPageActionController>(tab, tab);
   }
 
-  FileSystemAccessPermissionRequestManager::CreateForWebContents(
-      tab.GetContents());
+  file_system_access_permission_request_manager_ =
+      GetUserDataFactory()
+          .CreateInstance<FileSystemAccessPermissionRequestManager>(tab, tab);
   if (page_action_controller_->ActionExists(kActionShowFileSystemAccess)) {
     file_system_access_page_action_controller_ =
         std::make_unique<FileSystemAccessPageActionController>(tab);
@@ -1953,8 +1954,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   chained_back_navigation_tracker_ =
       GetUserDataFactory().CreateInstance<ChainedBackNavigationTracker>(
           *tab, *tab, new_contents);
-
-  FileSystemAccessPermissionRequestManager::CreateForWebContents(new_contents);
 
   file_system_access_tab_helper_ =
       std::make_unique<FileSystemAccessTabHelper>(new_contents);

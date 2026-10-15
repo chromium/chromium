@@ -45,6 +45,8 @@
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -342,8 +344,10 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
 
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
-    FileSystemAccessPermissionRequestManager::CreateForWebContents(
-        web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    ON_CALL(tab_, GetContents()).WillByDefault(testing::Return(web_contents()));
+    permission_request_manager_ =
+        std::make_unique<FileSystemAccessPermissionRequestManager>(tab_);
     content::WebContentsTester::For(web_contents())
         ->NavigateAndCommit(kTestOrigin.GetURL());
 
@@ -364,6 +368,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
 #endif
     task_environment_.RunUntilIdle();
     ASSERT_TRUE(temp_dir_.Delete());
+    permission_request_manager_.reset();
     web_contents_.reset();
   }
 
@@ -559,6 +564,9 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<WebContents> web_contents_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<FileSystemAccessPermissionRequestManager>
+      permission_request_manager_;
   // `permission_context_` must be declared after `profile_` (and
   // `web_contents_`) so that it is destroyed BEFORE them. The base class
   // `ObjectPermissionContextBase` holds a raw pointer to

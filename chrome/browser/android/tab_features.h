@@ -166,6 +166,7 @@ class ChromeFacilitatedPaymentsClient;
 class ConnectionHelpTabHelper;
 class CoreTabHelper;
 class ExternalProtocolObserver;
+class FileSystemAccessPermissionRequestManager;
 class FileSystemAccessTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HistoryEmbeddingsTabHelper;
@@ -364,6 +365,8 @@ class TabFeatures {
       site_engagement_helper_;
   std::unique_ptr<page_content_annotations::AnnotatedPageContentRequest>
       annotated_page_content_request_;
+  std::unique_ptr<FileSystemAccessPermissionRequestManager>
+      file_system_access_permission_request_manager_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

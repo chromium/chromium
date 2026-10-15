@@ -615,7 +615,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   media_state_observer_ = std::make_unique<MediaStateObserver>(web_contents);
 
   // Attach FileSystemAccessPermissionRequestManager to the tab.
-  FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
+  file_system_access_permission_request_manager_ =
+      GetUserDataFactory()
+          .CreateInstance<FileSystemAccessPermissionRequestManager>(*tab, *tab);
 
   file_system_access_tab_helper_ =
       std::make_unique<FileSystemAccessTabHelper>(web_contents);

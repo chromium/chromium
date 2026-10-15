@@ -5,12 +5,15 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_permission_dialog.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/switches.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -69,8 +72,25 @@ struct FileSystemAccessPermissionRequestManager::Request {
   std::vector<base::ScopedClosureRunner> fullscreen_blocks;
 };
 
+DEFINE_USER_DATA(FileSystemAccessPermissionRequestManager);
+
 FileSystemAccessPermissionRequestManager::
     ~FileSystemAccessPermissionRequestManager() = default;
+
+// static
+FileSystemAccessPermissionRequestManager*
+FileSystemAccessPermissionRequestManager::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+FileSystemAccessPermissionRequestManager*
+FileSystemAccessPermissionRequestManager::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
 
 FileSystemAccessPermissionRequestManager::RequestData::RequestData(
     RequestType request_type,
@@ -128,10 +148,22 @@ void FileSystemAccessPermissionRequestManager::AddRequest(
 }
 
 FileSystemAccessPermissionRequestManager::
-    FileSystemAccessPermissionRequestManager(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<FileSystemAccessPermissionRequestManager>(
-          *web_contents) {}
+    FileSystemAccessPermissionRequestManager(tabs::TabInterface& tab)
+    : content::WebContentsObserver(tab.GetContents()),
+      tab_discard_subscription_(
+          tab.RegisterWillDiscardContents(base::BindRepeating(
+              &FileSystemAccessPermissionRequestManager::OnDiscardContents,
+              base::Unretained(this)))),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+
+void FileSystemAccessPermissionRequestManager::OnDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  queued_requests_.clear();
+  current_request_.reset();
+  Observe(new_contents);
+}
 
 bool FileSystemAccessPermissionRequestManager::CanShowRequest() const {
   // Deley showing requests until the main frame is fully loaded.
@@ -206,5 +238,3 @@ void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
   if (!queued_requests_.empty())
     ScheduleShowRequest();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager);

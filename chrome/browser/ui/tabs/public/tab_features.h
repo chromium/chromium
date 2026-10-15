@@ -57,6 +57,7 @@ class CookieControlsPageActionController;
 class CoreTabHelper;
 class ExternalProtocolObserver;
 class FileSystemAccessPageActionController;
+class FileSystemAccessPermissionRequestManager;
 class FileSystemAccessTabHelper;
 class FocusTabAfterNavigationHelper;
 class FontPrewarmerTabHelper;
@@ -1079,6 +1080,9 @@ class TabFeatures {
 
   std::unique_ptr<page_content_annotations::AnnotatedPageContentRequest>
       annotated_page_content_request_;
+
+  std::unique_ptr<FileSystemAccessPermissionRequestManager>
+      file_system_access_permission_request_manager_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

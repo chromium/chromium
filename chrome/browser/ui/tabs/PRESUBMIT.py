@@ -65,10 +65,6 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # TabFeatures::WillDiscardContents swaps in new_contents, so the WebContents
   # must own it.
   'extensions::WebNavigationTabObserver::CreateForWebContents',
-  # FileSystemAccessPermissionRequestManager is also attached to non-tab
-  # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
-  # the WebContents must own it.
-  'FileSystemAccessPermissionRequestManager::CreateForWebContents',
   # HistoryClustersTabHelper records final page-end metrics
   # (RecordPageEndMetricsIfNeeded) in WebContentsDestroyed() after TabFeatures
   # is destroyed, and is looked up on WebContents by

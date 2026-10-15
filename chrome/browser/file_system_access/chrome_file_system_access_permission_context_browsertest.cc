@@ -1754,33 +1754,6 @@ class FileSystemChromeAppTest : public extensions::PlatformAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
-                       FileSystemAccessPermissionRequestManagerExists) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ExtensionTestMessageListener launched_listener("Launched");
-
-  // Install Platform App
-  content::CreateAndLoadWebContentsObserver app_loaded_observer;
-  const extensions::Extension* extension =
-      InstallPlatformApp("file_system_test");
-  ASSERT_TRUE(extension);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
-      extension->id());
-#endif
-
-  // Launch Platform App
-  LaunchPlatformApp(extension);
-  app_loaded_observer.Wait();
-  ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
-
-  content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  EXPECT_TRUE(web_contents);
-  EXPECT_NE(nullptr, FileSystemAccessPermissionRequestManager::FromWebContents(
-                         web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
                        FileSystemAccessPersistentPermissionsPrompt) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener launched_listener("Launched");
@@ -1806,8 +1779,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
   Profile* const profile = browser()->GetProfile();
   TestFileSystemAccessPermissionContext permission_context(profile);
   content::SetFileSystemAccessPermissionContext(profile, &permission_context);
-  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
   // Initialize file permission grant.
   const url::Origin kTestOrigin = extension->origin();
