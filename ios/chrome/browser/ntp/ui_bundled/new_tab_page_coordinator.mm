@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/contextual_search/contextual_search_service.h"
+#import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -52,9 +53,15 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
+#import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -188,6 +195,7 @@ using ntp_tiles::AimButtonRefactorArm;
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
                                      AuthenticationServiceObserving,
+                                     ComposeboxPickerPresenterDelegate,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
@@ -345,6 +353,15 @@ using ntp_tiles::AimButtonRefactorArm;
   ActivityReporterWithIncognito* _activityReporter;
   // The coordinator showing the multimodal composebox menu.
   ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
+  // Presenter for composebox pickers (e.g. photo library gallery).
+  ComposeboxPickerPresenter* _composeboxPickerPresenter;
+  // Session handle for contextual search.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      _contextualSearchSession;
+  // Manages state for composebox inputs and limits.
+  ComposeboxInputStateManager* _composeboxInputStateManager;
+  // Holds the active composebox mode.
+  ComposeboxModeHolder* _composeboxModeHolder;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -440,6 +457,38 @@ using ntp_tiles::AimButtonRefactorArm;
       supervised_user::IsPrimaryAccountSubjectToParentalControls(
           _identityManager);
   [self updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
+
+  // Create instance of composeboxInputStateManager to get
+  // remainingNumberOfImagesAllowed for compose box picker presenter if the
+  // Attach Image button is activated
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  if (arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+      arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    ProfileIOS* profile = self.profile;
+    contextual_search::ContextualSearchService* service =
+        ContextualSearchServiceFactory::GetForProfile(profile);
+    if (service) {
+      auto configParams = std::make_unique<
+          contextual_search::ContextualSearchContextController::ConfigParams>();
+      _contextualSearchSession = service->CreateSession(
+          std::move(configParams),
+          contextual_search::ContextualSearchSource::kNewTabPage,
+          lens::LensOverlayInvocationSource::kNtpContextualQuery);
+    }
+
+    _composeboxModeHolder = [[ComposeboxModeHolder alloc] init];
+    _composeboxInputStateManager = [[ComposeboxInputStateManager alloc]
+         initWithWebStateList:self.browser->GetWebStateList()
+                   modeHolder:_composeboxModeHolder
+                  prefService:self.prefService
+        aimEligibilityService:_aimEligibilityService
+              identityManager:_identityManager
+           templateURLService:self.templateURLService
+                sessionHandle:_contextualSearchSession.get()
+                   entrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
+                  isIncognito:profile->IsOffTheRecord()
+             urlLoaderFactory:profile->GetSharedURLLoaderFactory()];
+  }
 
   // Ensure the initial background is applied after all components have been
   // set up.
@@ -548,6 +597,18 @@ using ntp_tiles::AimButtonRefactorArm;
   _customizationButtonBubblePresenter = nil;
 
   _identityManager = nullptr;
+
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+
+  if (arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+      arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    [self dismissComposeboxPicker];
+    [_composeboxInputStateManager disconnect];
+    _composeboxInputStateManager.delegate = nil;
+    _composeboxInputStateManager = nil;
+    _composeboxModeHolder = nil;
+    _contextualSearchSession.reset();
+  }
 
   self.started = NO;
 }
@@ -727,6 +788,20 @@ using ntp_tiles::AimButtonRefactorArm;
   [self stopSigninCoordinator];
   [self dismissCustomizationMenu];
   [self dismissMultimodalActionsMenu];
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  if (arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+      arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    [self dismissComposeboxPicker];
+  }
+}
+
+- (void)dismissComposeboxPicker {
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  [_composeboxPickerPresenter dismissPicker];
+  _composeboxPickerPresenter.delegate = nil;
+  _composeboxPickerPresenter = nil;
 }
 
 - (void)setBlueDotVisible:(BOOL)visible {
@@ -2401,6 +2476,32 @@ using ntp_tiles::AimButtonRefactorArm;
   _customizationButtonBubblePresenter = presenter;
 }
 
+// Opens composebox with AI chip enabled and images attached after user finishes
+// selecting from the gallery.
+- (void)openComposeboxWithImages:
+    (NSArray<ComposeboxPickerImageResult*>*)images {
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  [self dismissComposeboxPicker];
+
+  ComposeboxAttachmentSelection* attachments =
+      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
+                                          cachedWebStateIDs:{}
+                                                     images:images
+                                                      files:nil
+                                                 driveItems:nil];
+
+  ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
+                   query:nil
+                toolMode:ComposeboxMode::kAIM
+               modelMode:ComposeboxModelOption::kNone
+          attachmentList:attachments];
+
+  ShowComposebox(self.browser, params);
+}
+
 #pragma mark - HomeCustomizationDelegate
 
 - (void)dismissCustomizationMenu {
@@ -2481,11 +2582,23 @@ using ntp_tiles::AimButtonRefactorArm;
 }
 
 - (void)openAIMAttachImage {
-  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
-  // TODO(crbug.com/549020046): Implement this method and add metrics recording
-  // hooks.
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  // TODO(crbug.com/549020046): Add metrics recording hooks.
+  if (![self canFocusComposeboxForAIM]) {
+    return;
+  }
+  NSUInteger limit =
+      [_composeboxInputStateManager remainingNumberOfImagesAllowed];
+
+  // Builds the picker presenter.
+  _composeboxPickerPresenter = [[ComposeboxPickerPresenter alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _composeboxPickerPresenter.delegate = self;
+
+  [_composeboxPickerPresenter presentGalleryPickerWithLimit:limit];
 }
 
 - (void)preloadVoiceSearch {
@@ -2607,6 +2720,23 @@ using ntp_tiles::AimButtonRefactorArm;
   // alert the Feature Engagement Tracker on dismissal.
   _customizationCoordinator.openedForUserEducation = shouldAlertFETOfDismissal;
   _customizationCoordinator.promosManagerUIHandler = uiHandler;
+}
+
+#pragma mark - ComposeboxPickerPresenterDelegate
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                    didPickImages:
+                        (NSArray<ComposeboxPickerImageResult*>*)results {
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK_EQ(_composeboxPickerPresenter, presenter);
+  CHECK_GT(results.count, 0u);
+
+  __weak __typeof(self) weakSelf = self;
+  [_composeboxPickerPresenter dismissPickerWithCompletion:^{
+    [weakSelf openComposeboxWithImages:results];
+  }];
 }
 
 @end

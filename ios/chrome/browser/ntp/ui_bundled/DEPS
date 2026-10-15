@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/contextual_search/contextual_search_service.h",
+  "+components/contextual_search/contextual_search_session_handle.h",
   "+components/subscription_eligibility",
   "+ios/chrome/browser/aim/model",
   "+ios/chrome/browser/authentication/account_menu",
@@ -10,7 +11,9 @@ include_rules = [
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/composebox/coordinator",
   "+ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h",
+  "+ios/chrome/browser/composebox/model",
   "+ios/chrome/browser/composebox/public",
+  "+ios/chrome/browser/composebox/shared/coordinator",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/context_menu/ui_bundled/link_preview",

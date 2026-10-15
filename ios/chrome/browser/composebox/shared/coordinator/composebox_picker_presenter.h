@@ -20,8 +20,9 @@
 @class ComposeboxPickerPresenter;
 
 /// Delegate for various picker events.
-@protocol ComposeboxPickerPresenterDelegate
+@protocol ComposeboxPickerPresenterDelegate <NSObject>
 
+@optional
 // Called when the camera or gallery picker finishes picking an image.
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:

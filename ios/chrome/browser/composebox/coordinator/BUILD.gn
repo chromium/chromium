@@ -89,6 +89,7 @@ source_set("input_plate") {
     "//components/contextual_tasks/public:query_contextualizer",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
+    "//components/ntp_tiles",
     "//components/prefs",
     "//components/security_state/ios",
     "//components/strings",

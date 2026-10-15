@@ -4,14 +4,15 @@
 
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 
-#import "components/omnibox/browser/searchbox_utils.h"
-
 #import <set>
 
+#import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
+#import "components/ntp_tiles/features.h"
+#import "components/omnibox/browser/searchbox_utils.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 
 namespace {
@@ -154,6 +155,14 @@ std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
       return ".NTPAIMButton";
+    case ComposeboxEntrypoint::kNTPAttachImageButton: {
+      ntp_tiles::AimButtonRefactorArm arm =
+          ntp_tiles::GetAimButtonRefactorArm();
+      CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+            arm ==
+                ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+      return ".NTPAttachImageButton";
+    }
     case ComposeboxEntrypoint::kNTPImageGenerationButton:
       return ".NTPImageGenerationButton";
     case ComposeboxEntrypoint::kNTPFakebox:

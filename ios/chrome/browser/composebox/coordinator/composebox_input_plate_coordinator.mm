@@ -10,6 +10,7 @@
 #import <iterator>
 #import <set>
 
+#import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/contextual_search/contextual_search_service.h"
@@ -17,6 +18,7 @@
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/lens/lens_features.h"
 #import "components/lens/lens_overlay_invocation_source.h"
+#import "components/ntp_tiles/features.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/search_engines/template_url_service.h"
@@ -97,6 +99,14 @@ const CGFloat kSnackbarBottomMargin = 10;
 contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
+    case ComposeboxEntrypoint::kNTPAttachImageButton: {
+      ntp_tiles::AimButtonRefactorArm arm =
+          ntp_tiles::GetAimButtonRefactorArm();
+      CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
+            arm ==
+                ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+      return contextual_search::ContextualSearchSource::kNewTabPage;
+    }
     case ComposeboxEntrypoint::kNTPAIMButton:
     case ComposeboxEntrypoint::kNTPImageGenerationButton:
     case ComposeboxEntrypoint::kNTPPlusButton:
@@ -253,7 +263,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.metricsRecorder = _metricsRecorder;
-
 
   _viewController.mutator = _mediator;
   // Mediator is the voice search delegate to load queries in composebox.
