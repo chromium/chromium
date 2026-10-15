@@ -18,6 +18,7 @@ if (use_fuzzing_engine_with_lpm) {
 
       # :policy_fuzzer_proto should be the first dependency to avoid duplicate
       # symbols when linking.
+      "//ash/constants",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
@@ -25,7 +26,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/settings",
-      "//chrome/common:constants",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/install_attributes",
       "//components/exo/wayland:ui_controls_protocol_stub",

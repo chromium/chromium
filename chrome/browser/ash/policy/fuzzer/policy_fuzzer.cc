@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_paths.h"
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -69,7 +69,7 @@ struct Environment {
     base::CommandLine::Init(0, nullptr);
     TestTimeouts::Initialize();
     CHECK(scoped_temp_dir.CreateUniqueTempDir());
-    CHECK(base::PathService::Override(chrome::DIR_USER_DATA,
+    CHECK(base::PathService::Override(ash::DIR_USER_DATA,
                                       scoped_temp_dir.GetPath()));
     CHECK(base::i18n::InitializeICU());
 
