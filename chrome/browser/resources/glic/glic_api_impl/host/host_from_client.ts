@@ -6,14 +6,11 @@
 // to the browser via mojo.
 
 import type {WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import type {                            //
-             ConversationInfo,           //
-             CounterAbuseVerdict,        //
-             OpenPinnedTabPickerOptions, //
-             PinTabsOptions,             //
-             TabContextOptions,          //
-             UnpinTabsOptions,           //
-             ZeroStateSuggestions,       //
+import type {                      //
+             ConversationInfo,     //
+             CounterAbuseVerdict,  //
+             TabContextOptions,    //
+             ZeroStateSuggestions, //
 } from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import type {                         //
@@ -27,20 +24,17 @@ import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.j
 import type {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageHandler} from '../transport/post_message_transport.js';
 
-import {                             //
-  bitmapN32ToRGBAImage,              //
-  conversationInfoFromClient,        //
-  counterAbuseVerdictFromClient,     //
-  idFromClient,                      //
-  idToClient,                        //
-  imageBytesResultToClient,          //
-  openPinnedTabPickerOptionsToMojo,  //
-  optionalFromClient,                //
-  pinTabsOptionsToMojo,              //
-  tabContextOptionsFromClient,       //
-  tabContextToClient,                //
-  unpinTabsOptionsToMojo,            //
-  urlToClient,                       //
+import {                          //
+  bitmapN32ToRGBAImage,           //
+  conversationInfoFromClient,     //
+  counterAbuseVerdictFromClient,  //
+  idFromClient,                   //
+  idToClient,                     //
+  imageBytesResultToClient,       //
+  optionalFromClient,             //
+  tabContextOptionsFromClient,    //
+  tabContextToClient,             //
+  urlToClient,                    //
 } from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 
@@ -166,24 +160,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     };
   }
 
-  async setMaximumNumberOfPinnedTabs(request: {
-    requestedMax: number,
-  }): Promise<{effectiveMax: number}> {
-    const requestedMax = request.requestedMax >= 0 ? request.requestedMax : 0;
-    const {effectiveMax} =
-        await this.handler.setMaximumNumberOfPinnedTabs(requestedMax);
-    return {effectiveMax};
-  }
-
-  activateTab(request: {tabId: string}): void {
-    this.handler.activateTab(idFromClient(request.tabId));
-  }
-
-  deleteCapturedRegion(request: {tabId: string, regionId: string}) {
-    this.handler.deleteCapturedRegion(
-        idFromClient(request.tabId), request.regionId);
-  }
-
   async getUserProfileInfo(_request: void, extras: ResponseExtras) {
     const {profileInfo: mojoProfileInfo} =
         await this.handler.getUserProfileInfo();
@@ -204,30 +180,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   refreshSignInCookies(): Promise<{success: boolean}> {
     return this.handler.syncCookies();
-  }
-
-  pinTabs(request: {tabIds: string[], options?: PinTabsOptions}):
-      Promise<{pinnedAll: boolean}> {
-    return this.handler.pinTabs(
-        request.tabIds.map((x) => idFromClient(x)),
-        pinTabsOptionsToMojo(request.options));
-  }
-
-  unpinTabs(request: {tabIds: string[], options?: UnpinTabsOptions}):
-      Promise<{unpinnedAll: boolean}> {
-    return this.handler.unpinTabs(
-        request.tabIds.map((x) => idFromClient(x)),
-        unpinTabsOptionsToMojo(request.options));
-  }
-
-  unpinAllTabs(request: {options?: UnpinTabsOptions}): void {
-    this.handler.unpinAllTabs(unpinTabsOptionsToMojo(request.options));
-  }
-
-  async openPinnedTabPicker(request: {options?: OpenPinnedTabPickerOptions}):
-      Promise<void> {
-    await this.handler.openPinnedTabPicker(
-        openPinnedTabPickerOptionsToMojo(request.options));
   }
 
   async getZeroStateSuggestionsForFocusedTab(request: {
@@ -252,13 +204,5 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   maybeRefreshUserStatus(): void {
     this.handler.maybeRefreshUserStatus();
-  }
-
-  subscribeToPageMetadata(request: {
-    tabId: string,
-    names: string[],
-  }): Promise<{success: boolean}> {
-    return this.handler.subscribeToPageMetadata(
-        idFromClient(request.tabId), request.names);
   }
 }

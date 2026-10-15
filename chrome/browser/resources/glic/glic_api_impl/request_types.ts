@@ -2,28 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {                            //
-             AdditionalContext,          //
-             AdditionalContextPart,      //
-             AnnotatedPageData,          //
-             ConversationInfo,           //
-             CounterAbuseVerdict,        //
-             ErrorReasonTypes,           //
-             ErrorWithReason,            //
-             FocusedTabDataHasFocus,     //
-             FocusedTabDataHasNoFocus,   //
-             InvokeOptions,              //
-             OpenPinnedTabPickerOptions, //
-             PageMetadata,               //
-             PdfDocumentData,            //
-             PinTabsOptions,             //
-             ResumeActorTaskResult,      //
-             TabContextOptions,          //
-             TabContextResult,           //
-             TabData,                    //
-             UnpinTabsOptions,           //
-             UserProfileInfo,            //
-             ZeroStateSuggestions,       //
+import type {                          //
+             AdditionalContext,        //
+             AdditionalContextPart,    //
+             AnnotatedPageData,        //
+             ConversationInfo,         //
+             CounterAbuseVerdict,      //
+             ErrorReasonTypes,         //
+             ErrorWithReason,          //
+             FocusedTabDataHasFocus,   //
+             FocusedTabDataHasNoFocus, //
+             InvokeOptions,            //
+             PageMetadata,             //
+             PdfDocumentData,          //
+             ResumeActorTaskResult,    //
+             TabContextOptions,        //
+             TabContextResult,         //
+             TabData,                  //
+             UserProfileInfo,          //
+             ZeroStateSuggestions,     //
 } from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
@@ -108,23 +105,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 101},
     },
     {
-      name: 'setMaximumNumberOfPinnedTabs',
-      request: defMessage<{
-        requestedMax: number,
-      }>(),
-      response: defMessage<{
-        effectiveMax: number,
-      }>(),
-      histogram: {id: 12},
-    },
-    {
-      name: 'activateTab',
-      request: defMessage<{
-        tabId: string,
-      }>(),
-      histogram: {id: 76},
-    },
-    {
       name: 'getUserProfileInfo',
       response: defMessage<{
         profileInfo?: UserProfileInfoPrivate,
@@ -139,48 +119,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 26},
     },
     {
-      name: 'pinTabs',
-      request: defMessage<{
-        tabIds: string[],
-        options?: PinTabsOptions,
-      }>(),
-      response: defMessage<{
-        pinnedAll: boolean,
-      }>(),
-      histogram: {id: 49},
-    },
-    {
-      name: 'unpinTabs',
-      request: defMessage<{
-        tabIds: string[],
-        options?: UnpinTabsOptions,
-      }>(),
-      response: defMessage<{
-        unpinnedAll: boolean,
-      }>(),
-      histogram: {id: 50},
-    },
-    {
-      name: 'unpinAllTabs',
-      request: defMessage<{
-        options?: UnpinTabsOptions,
-      }>(),
-      histogram: {id: 51},
-    },
-    {
-      name: 'openPinnedTabPicker',
-      request: defMessage<{options?: OpenPinnedTabPickerOptions}>(),
-      histogram: {id: 104},
-    },
-    {
-      name: 'deleteCapturedRegion',
-      request: defMessage<{
-        tabId: string,
-        regionId: string,
-      }>(),
-      histogram: {id: 92},
-    },
-    {
       name: 'getZeroStateSuggestionsForFocusedTab',
       request: defMessage<{
         isFirstRun?: boolean,
@@ -193,17 +131,6 @@ export const WebClientHostDef = defInterface({
     {
       name: 'maybeRefreshUserStatus',
       histogram: {id: 58},
-    },
-    {
-      name: 'subscribeToPageMetadata',
-      request: defMessage<{
-        tabId: string,
-        names: string[],
-      }>(),
-      response: defMessage<{
-        success: boolean,
-      }>(),
-      histogram: {id: 63},
     },
     {
       name: 'reportClientTransientError',
@@ -260,7 +187,7 @@ export const RECORDED_REQUEST_IDS = {
   GetContextFromFocusedTab: 9,
   GetContextFromTab: 10,
   // Do not reuse deleted request ID: 11,
-  SetMaximumNumberOfPinnedTabs: 12,
+  // Do not reuse deleted request ID: 12,
   // Do not reuse deleted request ID: 13,
   // Do not reuse deleted request ID: 14,
   // Do not reuse deleted request ID: 15,
@@ -297,9 +224,9 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 46,
   // Do not reuse deleted request ID: 47,
   // Do not reuse deleted request ID: 48,
-  PinTabs: 49,
-  UnpinTabs: 50,
-  UnpinAllTabs: 51,
+  // Do not reuse deleted request ID: 49,
+  // Do not reuse deleted request ID: 50,
+  // Do not reuse deleted request ID: 51,
   // Do not reuse deleted request ID: 52,
   // Do not reuse deleted request ID: 53,
   GetZeroStateSuggestionsForFocusedTab: 54,
@@ -311,7 +238,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 60,
   // Do not reuse deleted request ID: 61,
   // Do not reuse deleted request ID: 62,
-  SubscribeToPageMetadata: 63,
+  // Do not reuse deleted request ID: 63,
   SwitchConversation: 64,
   RegisterConversation: 65,
   // Do not reuse deleted request ID: 66,
@@ -324,7 +251,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 73,
   // Do not reuse deleted request ID: 74,
   // Do not reuse deleted request ID: 75,
-  ActivateTab: 76,
+  // Do not reuse deleted request ID: 76,
   // Do not reuse deleted request ID: 77,
   // Do not reuse deleted request ID: 78,
   // Do not reuse deleted request ID: 80,
@@ -339,7 +266,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 89,
   // Do not reuse deleted request ID: 90,
   // Do not reuse deleted request ID: 91,
-  DeleteCapturedRegion: 92,
+  // Do not reuse deleted request ID: 92,
   // Do not reuse deleted request ID: 93,
   // Do not reuse deleted request ID: 94,
   // Do not reuse deleted request ID: 95,
@@ -351,7 +278,7 @@ export const RECORDED_REQUEST_IDS = {
   GetImageBytesFromTab: 101,
   // Do not reuse deleted request ID: 102,
   // Do not reuse deleted request ID: 103,
-  OpenPinnedTabPicker: 104,
+  // Do not reuse deleted request ID: 104,
   // Do not reuse deleted request ID: 105,
   // Do not reuse deleted request ID: 106,
   // Do not reuse deleted request ID: 107,

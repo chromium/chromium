@@ -112,13 +112,16 @@ import {                              //
   idToClient,                         //
   invokeOptionsToClient,              //
   microphoneStatusToMojo,             //
+  openPinnedTabPickerOptionsToMojo,   //
   pageMetadataToClient,               //
   panelOpeningDataToClient,           //
   panelStateToClient,                 //
   pinCandidateToClient,               //
+  pinTabsOptionsToMojo,               //
   tabContextOptionsFromClient,        //
   tabDataToClient,                    //
   timeDeltaFromClient,                //
+  unpinTabsOptionsToMojo,             //
   urlFromClient,                      //
   webClientModeToMojo,                //
 } from '../host/conversions.js';
@@ -803,9 +806,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async setMaximumNumberOfPinnedTabs?(requestedMax: number): Promise<number> {
-    const result = await this.clientRemote.requestWithResponse(
-        'setMaximumNumberOfPinnedTabs', {requestedMax});
-    return result.effectiveMax;
+    const {effectiveMax} = await this.handler.setMaximumNumberOfPinnedTabs(
+        requestedMax >= 0 ? requestedMax : 0);
+    return effectiveMax;
   }
 
   async getContextFromTab?
@@ -835,7 +838,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   activateTab?(tabId: string): void {
-    this.clientRemote.requestNoResponse('activateTab', {tabId});
+    this.handler.activateTab(idFromClient(tabId));
   }
 
   onModeChange?(newMode: WebClientMode): void {
@@ -874,8 +877,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   deleteCapturedRegion?(tabId: string, regionId: string): void {
-    this.clientRemote.requestNoResponse(
-        'deleteCapturedRegion', {tabId, regionId});
+    this.handler.deleteCapturedRegion(idFromClient(tabId), regionId);
   }
 
   async setMinimumWidgetSize(width: number, height: number): Promise<void> {
@@ -1092,27 +1094,26 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async pinTabs?(tabIds: string[], options?: PinTabsOptions): Promise<boolean> {
-    return (await this.clientRemote.requestWithResponse(
-                'pinTabs', {tabIds, options}))
-        .pinnedAll;
+    const {pinnedAll} = await this.handler.pinTabs(
+        tabIds.map((x) => idFromClient(x)), pinTabsOptionsToMojo(options));
+    return pinnedAll;
   }
 
   async unpinTabs?
       (tabIds: string[], options?: UnpinTabsOptions): Promise<boolean> {
-    return (await this.clientRemote.requestWithResponse(
-                'unpinTabs', {tabIds, options}))
-        .unpinnedAll;
+    const {unpinnedAll} = await this.handler.unpinTabs(
+        tabIds.map((x) => idFromClient(x)), unpinTabsOptionsToMojo(options));
+    return unpinnedAll;
   }
 
 
   unpinAllTabs?(options?: UnpinTabsOptions): void {
-    this.clientRemote.requestNoResponse('unpinAllTabs', {options});
+    this.handler.unpinAllTabs(unpinTabsOptionsToMojo(options));
   }
 
-  async openPinnedTabPicker?
-      (options?: OpenPinnedTabPickerOptions): Promise<void> {
-    await this.clientRemote.requestWithResponse(
-        'openPinnedTabPicker', {options});
+  openPinnedTabPicker?(options?: OpenPinnedTabPickerOptions): Promise<void> {
+    return this.handler.openPinnedTabPicker(
+        openPinnedTabPickerOptionsToMojo(options));
   }
 
   getPinCandidates?
@@ -1165,8 +1166,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         async (isActive: boolean) => {
           // If the client subscribes to an Observable with an invalid tabId,
           // it will emit nothing, even if the tab later becomes valid.
-          const {success} = await this.clientRemote.requestWithResponse(
-              'subscribeToPageMetadata', {tabId, names: isActive ? names : []});
+          const {success} = await this.handler.subscribeToPageMetadata(
+              idFromClient(tabId), isActive ? names : []);
           if (!success) {
             if (!observableValue.isStopped()) {
               observableValue.complete();

@@ -902,6 +902,7 @@ class GlicWebClientHandler
   void SetMaximumNumberOfPinnedTabs(
       uint32_t num_tabs,
       SetMaximumNumberOfPinnedTabsCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetMaximumNumberOfPinnedTabs);
     uint32_t effective_max =
         GetSharingManagerInternal().SetMaxPinnedTabs(num_tabs);
     std::move(callback).Run(effective_max);
@@ -910,6 +911,7 @@ class GlicWebClientHandler
   void PinTabs(const std::vector<int32_t>& tab_ids,
                mojom::PinTabsOptionsPtr options,
                PinTabsCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kPinTabs);
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
@@ -938,6 +940,7 @@ class GlicWebClientHandler
   void UnpinTabs(const std::vector<int32_t>& tab_ids,
                  mojom::UnpinTabsOptionsPtr options,
                  UnpinTabsCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kUnpinTabs);
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
@@ -951,6 +954,7 @@ class GlicWebClientHandler
   }
 
   void UnpinAllTabs(mojom::UnpinTabsOptionsPtr options) override {
+    LogApiRequest(GlicHostApiRequestId::kUnpinAllTabs);
     GlicUnpinTrigger trigger = GlicUnpinTrigger::kWebClientUnknown;
     if (options) {
       trigger = FromMojomUnpinTrigger(options->unpin_trigger);
@@ -961,6 +965,7 @@ class GlicWebClientHandler
   void OpenPinnedTabPicker(
       mojom::OpenPinnedTabPickerOptionsPtr options,
       mojom::WebClientHandler::OpenPinnedTabPickerCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kOpenPinnedTabPicker);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::device_info::is_desktop()) {
       std::move(callback).Run();
@@ -1075,6 +1080,7 @@ class GlicWebClientHandler
   }
 
   void ActivateTab(int32_t tab_id) override {
+    LogApiRequest(GlicHostApiRequestId::kActivateTab);
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {
       return;
@@ -1117,6 +1123,7 @@ class GlicWebClientHandler
 
   void DeleteCapturedRegion(int32_t tab_id,
                             const base::UnguessableToken& id) override {
+    LogApiRequest(GlicHostApiRequestId::kDeleteCapturedRegion);
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion (b/494315475)
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {
@@ -1729,6 +1736,7 @@ class GlicWebClientHandler
       int32_t tab_id,
       const std::vector<std::string>& names,
       SubscribeToPageMetadataCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSubscribeToPageMetadata);
     // TODO(b/480418718): Not sure how this happens but we sometimes get here
     // with a null page_metadata_manager_. The mojo pipe is cleared on mojo
     // disconnect and destruction (which also closes the mojo pipe) so suspect
