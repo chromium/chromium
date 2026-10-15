@@ -31,6 +31,8 @@
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
 
 namespace gpu {
 
@@ -41,6 +43,43 @@ namespace {
 std::string GetLabel(const std::string& debug_label) {
   return std::string("WrappedSkImage_" + debug_label);
 }
+
+// Saves the GL context and surface that are current on construction, and
+// makes them current again on destruction if a different context or surface
+// was made current in between. Backings in this file make the
+// SharedContextState current, and may be created or destroyed while another
+// client's context (e.g. a command decoder's) is current. That client expects
+// its context to still be current afterwards.
+class ScopedRestoreCurrentGLContext {
+ public:
+  ScopedRestoreCurrentGLContext()
+      : context_(gl::GLContext::GetCurrent()),
+        surface_(gl::GLSurface::GetCurrent()) {}
+
+  ScopedRestoreCurrentGLContext(const ScopedRestoreCurrentGLContext&) = delete;
+  ScopedRestoreCurrentGLContext& operator=(
+      const ScopedRestoreCurrentGLContext&) = delete;
+
+  ~ScopedRestoreCurrentGLContext() {
+    if (!context_ || (gl::GLContext::GetCurrent() == context_.get() &&
+                      gl::GLSurface::GetCurrent() == surface_.get())) {
+      return;
+    }
+    if (!context_->MakeCurrent(surface_.get())) {
+      LOG(ERROR) << "Failed to restore the previously current GL context.";
+      // MakeCurrent can fail without changing the current context. Release
+      // whatever is current so the caller does not continue on the wrong
+      // context; it will instead fail to find its context current.
+      if (gl::GLContext* current = gl::GLContext::GetCurrent()) {
+        current->ReleaseCurrent(nullptr);
+      }
+    }
+  }
+
+ private:
+  scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gl::GLSurface> surface_;
+};
 
 }  // namespace
 
@@ -149,6 +188,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
 WrappedSkImageBacking::~WrappedSkImageBacking() {
   auto destroy_resources = [](scoped_refptr<SharedContextState> context_state,
                               std::vector<TextureHolder> textures) {
+    ScopedRestoreCurrentGLContext restore_context;
     context_state->MakeCurrent(nullptr);
 
     for (auto& texture : textures) {
@@ -189,6 +229,7 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
 
   // MakeCurrent to avoid destroying another client's state because Skia may
   // change GL state to create and upload textures (crbug.com/1095679).
+  ScopedRestoreCurrentGLContext restore_context;
   if (!context_state_->MakeCurrent(nullptr)) {
     return false;
   }
@@ -258,6 +299,7 @@ bool WrappedSkImageBacking::InitializeWithData(
 
   // MakeCurrent to avoid destroying another client's state because Skia may
   // change GL state to create and upload textures (crbug.com/1095679).
+  ScopedRestoreCurrentGLContext restore_context;
   if (!context_state_->MakeCurrent(nullptr)) {
     return false;
   }
