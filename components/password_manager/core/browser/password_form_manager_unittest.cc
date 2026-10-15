@@ -5073,7 +5073,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
   MOCK_METHOD(PasswordForm::Store,
               GetPasswordStoreForSaving,
               (const PasswordForm& password_form),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               UpdateDateLastFilled,
               (const PasswordForm& password_form),

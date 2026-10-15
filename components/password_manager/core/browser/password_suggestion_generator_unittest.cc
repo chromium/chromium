@@ -250,7 +250,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(const syncer::SyncService*, GetSyncService, (), (const override));
+  MOCK_METHOD(const syncer::SyncService*,
+              GetSyncService,
+              (),
+              (const, override));
   MOCK_METHOD(WebAuthnCredentialsDelegate*,
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),

@@ -83,7 +83,7 @@ struct MockBulkLeakCheck : BulkLeakCheck {
               CheckCredentials,
               (LeakDetectionInitiator, std::vector<LeakCheckCredential>),
               (override));
-  MOCK_METHOD(size_t, GetPendingChecksCount, (), (const override));
+  MOCK_METHOD(size_t, GetPendingChecksCount, (), (const, override));
 };
 
 using NiceMockBulkLeakCheck = ::testing::NiceMock<MockBulkLeakCheck>;

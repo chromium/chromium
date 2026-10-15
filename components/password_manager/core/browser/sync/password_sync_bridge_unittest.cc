@@ -363,12 +363,12 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               GetMetadataStore,
               (),
               (override));
-  MOCK_METHOD(bool, IsAccountStore, (), (const override));
+  MOCK_METHOD(bool, IsAccountStore, (), (const, override));
   MOCK_METHOD(bool, DeleteAndRecreateDatabaseFile, (), (override));
   MOCK_METHOD(std::optional<bool>,
               WereUndecryptableLoginsDeleted,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, ClearWereUndecryptableLoginsDeleted, (), (override));
 };
 

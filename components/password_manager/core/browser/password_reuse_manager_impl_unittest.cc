@@ -117,11 +117,11 @@ class MockStoreResultFilter : public StubCredentialsFilter {
   MOCK_METHOD(bool,
               ShouldSaveGaiaPasswordHash,
               (const PasswordForm&),
-              (const override));
+              (const, override));
   MOCK_METHOD(bool,
               ShouldSaveEnterprisePasswordHash,
               (const PasswordForm&),
-              (const override));
+              (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {

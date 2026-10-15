@@ -44,8 +44,11 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
-  MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (const override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
 };
 
 enum class FormFieldFocusabilityType {

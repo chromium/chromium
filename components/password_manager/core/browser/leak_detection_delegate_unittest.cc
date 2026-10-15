@@ -75,26 +75,29 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
-  MOCK_METHOD(PrefService*, GetPrefs, (), (const override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(void,
               NotifyUserCredentialsWereLeaked,
               (LeakedPasswordDetails details),
               (override));
-  MOCK_METHOD(const syncer::SyncService*, GetSyncService, (), (const override));
+  MOCK_METHOD(const syncer::SyncService*,
+              GetSyncService,
+              (),
+              (const, override));
   MOCK_METHOD(PasswordStoreInterface*,
               GetAccountPasswordStore,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(PasswordStoreInterface*,
               GetProfilePasswordStore,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(PasswordChangeServiceInterface*,
               GetPasswordChangeService,
               (),
-              (const override));
-  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+              (const, override));
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
   MOCK_METHOD(affiliations::AffiliationService*,
               GetAffiliationService,
               (),
@@ -113,15 +116,15 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
+  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const, override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
               (const PasswordForm&, bool),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               RecordLoginAttemptQuality,
               (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, AddChangePasswordUrlOverride, (const GURL&), (override));
 };
 

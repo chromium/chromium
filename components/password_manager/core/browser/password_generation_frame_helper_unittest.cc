@@ -94,7 +94,7 @@ class TestPasswordManagerDriver : public StubPasswordManagerDriver {
     return &password_autofill_manager_;
   }
 
-  MOCK_METHOD(GURL&, GetLastCommittedURL, (), (const override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
 
  private:
   GURL empty_url_;
@@ -145,7 +145,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               IsSavingAndFillingEnabled,
               (const url::Origin&, base::optional_ref<const GURL>),
               (const, override));
-  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
 
   explicit MockPasswordManagerClient(std::unique_ptr<PrefService> prefs)
       : prefs_(std::move(prefs)),

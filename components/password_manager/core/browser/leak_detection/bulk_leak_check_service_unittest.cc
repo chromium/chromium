@@ -66,7 +66,7 @@ class MockBulkLeakCheck : public BulkLeakCheck {
               CheckCredentials,
               (LeakDetectionInitiator, std::vector<LeakCheckCredential>),
               (override));
-  MOCK_METHOD(size_t, GetPendingChecksCount, (), (const override));
+  MOCK_METHOD(size_t, GetPendingChecksCount, (), (const, override));
 };
 
 class MockObserver : public BulkLeakCheckService::Observer {

@@ -183,7 +183,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
        autofill::mojom::AutofillSuggestionAvailability suggestion_availability),
       (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (override));
-  MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(bool, HasValidURL, (bool), (override));
   MOCK_METHOD(bool, IsRenderFrameHostSupported, (), (override));
 };

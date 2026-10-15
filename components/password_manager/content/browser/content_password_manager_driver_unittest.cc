@@ -55,7 +55,7 @@ namespace {
 
 class MockLogManager : public autofill::StubLogManager {
  public:
-  MOCK_METHOD(bool, IsLoggingActive, (), (const override));
+  MOCK_METHOD(bool, IsLoggingActive, (), (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -67,7 +67,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   ~MockPasswordManagerClient() override = default;
 
   MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
-  MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (const override));
+  MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (const, override));
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   MOCK_METHOD(void,
               CheckSafeBrowsingReputation,

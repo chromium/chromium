@@ -151,7 +151,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
                autofill::FieldPropertiesFlags field_flags,
                base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(autofill::PasswordManagerDelegate*,
               GetPasswordManagerDelegate,
               (),
@@ -185,7 +185,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(PasswordStoreInterface*,
               GetProfilePasswordStore,
               (),
-              (const override));
+              (const, override));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void,

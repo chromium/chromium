@@ -194,15 +194,15 @@ class MockStoreResultFilter : public StubCredentialsFilter {
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
+  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const, override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
               (const PasswordForm&, bool),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               RecordLoginAttemptQuality,
               (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, AddChangePasswordUrlOverride, (const GURL&), (override));
 };
 
@@ -327,7 +327,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetProfileType,
               (),
               (const, override));
-  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
   MOCK_METHOD(void,
               RefreshPasswordManagerSettingsIfNeeded,
               (),
