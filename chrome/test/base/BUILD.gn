@@ -771,6 +771,47 @@ source_set("web_ui_mocha_browser_test") {
 }
 
 if (!is_android) {
+  static_library("interactive_ui_tests_runner") {
+    testonly = true
+    sources = [ "interactive_ui_tests_main.cc" ]
+    deps = [
+      ":chrome_test_launcher",
+      ":chrome_test_suite",
+      ":in_process_browser_test",
+      ":interactive_test_utils",
+      "//base",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser/preloading",
+      "//chrome/browser/ssl",
+      "//content/public/common",
+      "//gpu/ipc/service",
+      "//ui/base:test_support",
+      "//ui/base/interaction:test_support",
+      "//ui/compositor",
+    ]
+    if (is_linux) {
+      deps += [ "//ui/linux:display_server_utils" ]
+    }
+    if (is_chromeos) {
+      deps += [ "//ash:test_support" ]
+    } else if (is_win) {
+      deps += [
+        ":always_on_top_window_killer_win",
+        "//ui/views",
+      ]
+    }
+    if (use_aura) {
+      deps += [ "//ui/aura:test_support" ]
+    }
+    if (use_aura && use_ozone) {
+      deps += [
+        "//ui/ozone",
+        "//ui/platform_window/common",
+      ]
+    }
+  }
+
   source_set("platform_browser_test") {
     testonly = true
     sources = [ "platform_browser_test.h" ]

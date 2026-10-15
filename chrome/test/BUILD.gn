@@ -3971,10 +3971,6 @@ if (!is_android) {
     # These tests are only meant to run on an FYI bot because they
     # test against live sites, as a way to catch potential regressions.
     test("accessibility_live_site_tests") {
-      sources = [ "base/interactive_ui_tests_main.cc" ]
-      configs += [ "//build/config:precompiled_headers" ]
-
-      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
       ldflags = []
 
       deps = [
@@ -3989,6 +3985,7 @@ if (!is_android) {
         "//chrome/renderer",
         "//chrome/test/base:chrome_test_launcher",
         "//chrome/test/base:chrome_test_suite",
+        "//chrome/test/base:interactive_ui_tests_runner",
         "//components/resources",
         "//components/sync",
         "//components/sync:test_support",
@@ -4034,9 +4031,6 @@ if (!is_android && !is_chromeos_device) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
 
-    sources = [ "base/interactive_ui_tests_main.cc" ]
-
-    configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
@@ -4054,7 +4048,6 @@ if (!is_android && !is_chromeos_device) {
       "//google_apis/test/",
     ]
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
 
     deps = [
@@ -4149,6 +4142,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/webauthn:interactive_ui_tests",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_suite",
+      "//chrome/test/base:interactive_ui_tests_runner",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/media:performance_tests",
       "//chrome/test/media_router:browser_tests",
@@ -4401,9 +4395,9 @@ if (!is_android && !is_chromeos_device) {
       deps += [ "//chrome/browser/ui/views/compose:interactive_ui_tests" ]
     }
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    # All interactive_ui_tests sources have been migrated into per-feature
+    # targets. Do not add new sources to //chrome/test:interactive_ui_tests.
+    sources = []
   }
 }
 
@@ -4551,10 +4545,6 @@ if (!is_android) {
   test("captured_sites_interactive_tests") {
     use_xvfb = use_xvfb_in_this_config
 
-    sources = [ "base/interactive_ui_tests_main.cc" ]
-
-    configs += [ "//build/config:precompiled_headers" ]
-
     data = [
       "//chrome/test/data/autofill/captured_sites/",
       "//chrome/test/data/password/captured_sites/",
@@ -4569,8 +4559,6 @@ if (!is_android) {
     if (is_linux || is_chromeos || is_win) {
       data_deps = [ "//chrome:packed_resources" ]
     }
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     ldflags = []
 
@@ -4598,6 +4586,7 @@ if (!is_android) {
       "//chrome/renderer",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_suite",
+      "//chrome/test/base:interactive_ui_tests_runner",
       "//components/javascript_dialogs",
       "//components/resources",
       "//components/sync",
