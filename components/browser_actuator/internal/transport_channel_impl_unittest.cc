@@ -1034,5 +1034,44 @@ TEST_F(TransportChannelImplTest,
   EXPECT_TRUE(command.has_close_session());
 }
 
+class DestructionTrackingHandler : public TransportHandler {
+ public:
+  explicit DestructionTrackingHandler(bool* destroyed)
+      : destroyed_(destroyed) {}
+  ~DestructionTrackingHandler() override { *destroyed_ = true; }
+
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {}
+
+ private:
+  raw_ptr<bool> destroyed_;
+};
+
+TEST_F(TransportChannelImplTest,
+       UnregisterFactoryDestroysActiveSessionHandlers) {
+  bool handler_destroyed = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kExperimentalTriggering},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<DestructionTrackingHandler>(
+                &handler_destroyed);
+          }),
+      FactoryId::kExperimentalTriggering);
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+        "triggering-bytes",
+        std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
+
+  EXPECT_FALSE(handler_destroyed);
+
+  channel_->GetHandlerFactoryRegistry()->UnregisterFactory(&factory);
+
+  EXPECT_TRUE(handler_destroyed);
+}
+
 }  // namespace
 }  // namespace browser_actuator

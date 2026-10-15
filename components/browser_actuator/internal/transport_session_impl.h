@@ -17,12 +17,14 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/downstream_message_sequencer.h"
 #include "components/browser_actuator/public/common.h"
+#include "components/browser_actuator/public/transport_handler_factory_registry.h"
 #include "components/browser_actuator/public/transport_session.h"
 
 namespace browser_actuator {
@@ -33,7 +35,8 @@ class TransportHandler;
 
 // Implements TransportSession. Represents an active session instance between
 // the server and Chrome instance.
-class TransportSessionImpl : public TransportSession {
+class TransportSessionImpl : public TransportSession,
+                             public TransportHandlerFactoryRegistry::Observer {
  public:
   // Number of consecutive downstream messages with invalid sequence numbers
   // before the channel tears down the session.
@@ -63,6 +66,10 @@ class TransportSessionImpl : public TransportSession {
 
   void OnMessage(PayloadType payload_type,
                  const google::protobuf::MessageLite& message) override;
+
+  // TransportHandlerFactoryRegistry::Observer implementation.
+  void OnFactoryUnregistered(FactoryId factory_id) override;
+  void OnRegistryDestroyed() override;
 
   base::TimeTicks start_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,6 +170,10 @@ class TransportSessionImpl : public TransportSession {
   // active handler instances that support it.
   base::flat_map<PayloadType, std::vector<raw_ptr<TransportHandler>>>
       routing_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ScopedObservation<TransportHandlerFactoryRegistry,
+                          TransportHandlerFactoryRegistry::Observer>
+      factory_registry_observation_ GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   base::WeakPtrFactory<TransportSessionImpl> weak_ptr_factory_{this};
 };

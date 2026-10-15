@@ -1035,5 +1035,72 @@ TEST(TransportSessionImplTest,
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
 }
 
+TEST(TransportSessionImplTest,
+     UnregisterFactoryDestroysHandlerAndStopsRouting) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory1({PayloadType::kUnspecified},
+                                       kTestFactoryId1);
+  MockTransportHandlerFactory factory2({PayloadType::kUnspecified},
+                                       kTestFactoryId2);
+  registry.RegisterFactory(&factory1);
+  registry.RegisterFactory(&factory2);
+
+  auto handler1 = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr1 = handler1.get();
+  auto handler2 = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr2 = handler2.get();
+
+  EXPECT_CALL(factory1, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler1)));
+  EXPECT_CALL(factory2, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler2)));
+
+  EXPECT_CALL(*handler_ptr1, OnMessage(PayloadType::kUnspecified, kTestPayload))
+      .Times(1);
+  EXPECT_CALL(*handler_ptr2, OnMessage(PayloadType::kUnspecified, kTestPayload))
+      .Times(2);
+
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
+
+  registry.UnregisterFactory(&factory1);
+
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
+}
+
+TEST(TransportSessionImplTest,
+     RegistryDestroyedBeforeSessionResetsObservation) {
+  MockTransportChannel channel;
+  auto registry = std::make_unique<TransportHandlerFactoryRegistryImpl>();
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(registry.get()));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kUnspecified},
+                                      kTestFactoryId1);
+  registry->RegisterFactory(&factory);
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  EXPECT_CALL(*handler, OnMessage(PayloadType::kUnspecified, kTestPayload))
+      .Times(1);
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
+
+  registry.reset();
+}
+
 }  // namespace
 }  // namespace browser_actuator
