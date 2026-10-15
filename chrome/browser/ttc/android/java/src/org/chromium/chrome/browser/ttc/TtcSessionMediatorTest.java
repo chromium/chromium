@@ -230,6 +230,19 @@ public class TtcSessionMediatorTest {
     }
 
     @Test
+    public void testPermissionGrantedWhilePausedStartsSession() {
+        when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.toggleSession();
+        // The permission dialog pauses the activity, which is still visible behind it.
+        when(mLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(ActivityState.PAUSED_WITH_NATIVE);
+        resolvePermissionRequest(PackageManager.PERMISSION_GRANTED);
+        verify(mService).startSession();
+    }
+
+    @Test
     public void testPermissionGrantedAfterActivityStoppedDoesNotStartSession() {
         when(mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
         TtcSessionMediator mediator = createMediator();
@@ -367,6 +380,22 @@ public class TtcSessionMediatorTest {
         verify(mService, never()).endSession();
 
         mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testPausedWindowKeepsSessionAlive() {
+        when(mService.isSessionActive()).thenReturn(true);
+        // A paused window, e.g. an unfocused one in multi-window mode, is still visible.
+        when(mOtherLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(ActivityState.PAUSED_WITH_NATIVE);
+        TtcSessionMediator mediator = createMediator();
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        mediator.onStopWithNative();
+        verify(mService, never()).endSession();
+
+        otherMediator.onStopWithNative();
         verify(mService).endSession();
     }
 

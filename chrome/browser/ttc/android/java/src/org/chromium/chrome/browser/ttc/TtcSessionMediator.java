@@ -117,7 +117,7 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                     // session would run with no UI and nothing to end it.
                     if (grantResults.length > 0
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                            && isActivityStarted()) {
+                            && isActivityVisible()) {
                         startSession();
                     }
                 });
@@ -195,7 +195,7 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                         ? ServiceState.SESSION_ACTIVE
                         : ServiceState.SESSION_INACTIVE);
         // The window may have started before the profile was available.
-        if (isActivityStarted()) mService.getWindowTracker().addVisibleWindow(this);
+        if (isActivityVisible()) mService.getWindowTracker().addVisibleWindow(this);
     }
 
     /**
@@ -215,10 +215,15 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         mService.startSession();
     }
 
-    private boolean isActivityStarted() {
+    /**
+     * Whether the activity is on screen. A paused activity is still visible, e.g. an unfocused
+     * window in multi-window mode or a window behind the microphone permission dialog.
+     */
+    private boolean isActivityVisible() {
         @ActivityState int state = mLifecycleDispatcher.getCurrentActivityState();
         return state == ActivityState.STARTED_WITH_NATIVE
-                || state == ActivityState.RESUMED_WITH_NATIVE;
+                || state == ActivityState.RESUMED_WITH_NATIVE
+                || state == ActivityState.PAUSED_WITH_NATIVE;
     }
 
     private void hideAfterError() {
