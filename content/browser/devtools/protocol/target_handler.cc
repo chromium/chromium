@@ -832,7 +832,9 @@ void TargetHandler::MaybeCreateAndAddNavigationThrottle(
     return;
   }
   // If we got here for main frame, it must be either browser or tab target.
-  CHECK(auto_attacher == auto_attacher_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/573156711): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(auto_attacher == auto_attacher_);
   DevToolsAgentHost* host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
   TargetHandler::Session* waiting_session = FindWaitingSession(host);
