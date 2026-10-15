@@ -16,8 +16,6 @@ source_set("send_tab_to_self") {
     "send_tab_to_self_toolbar_bubble_view.h",
   ]
   sources = [
-    "manage_account_devices_link_view.cc",
-    "manage_account_devices_link_view.h",
     "send_tab_to_self_bubble.cc",
     "send_tab_to_self_bubble_controller.cc",
     "send_tab_to_self_bubble_device_button.cc",

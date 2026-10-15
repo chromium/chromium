@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 
@@ -157,7 +158,14 @@ TEST_F(SendTabToSelfNoTargetDeviceBubbleViewTest, LoadsDeviceActivityDesign) {
   // Verify labels contain the correct "no devices" notice and account email.
   EXPECT_NE(nullptr, FindLabelWithText(l10n_util::GetStringUTF16(
                          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)));
-  EXPECT_NE(nullptr, FindLabelWithText(u"user@host.com"));
+  views::Label* email_label = FindLabelWithText(u"user@host.com");
+  ASSERT_NE(nullptr, email_label);
+
+  // Verify the account info row contains both the avatar image and email label.
+  ASSERT_NE(nullptr, email_label->parent());
+  ASSERT_EQ(2u, email_label->parent()->children().size());
+  EXPECT_TRUE(views::IsViewClass<views::ImageView>(
+      email_label->parent()->children()[0]));
 
   // Frame view should not have a header view.
   EXPECT_EQ(nullptr, bubble_->GetBubbleFrameView()->GetHeaderViewForTesting());
