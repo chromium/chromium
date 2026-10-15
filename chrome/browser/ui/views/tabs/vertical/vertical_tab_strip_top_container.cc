@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -51,6 +52,10 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
               kVerticalTabStripTopContainerElementId);
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetMasksToBounds(true);
+
   collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->set_context_menu_controller(this);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
@@ -63,9 +68,11 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
                                       ? views::LayoutOrientation::kVertical
                                       : views::LayoutOrientation::kHorizontal);
 
-  if (organizer_panel::IsOrganizerPanelSegmentationControlEnabled()) {
-    segmented_control_ = AddChildView(
-        std::make_unique<VerticalTabStripSegmentedControl>(browser_));
+  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+    if (organizer_panel::IsOrganizerPanelSegmentationControlEnabled()) {
+      segmented_control_ = AddChildView(
+          std::make_unique<VerticalTabStripSegmentedControl>(browser_));
+    }
 
     if (browser_ && browser_->GetProfile()) {
       pref_registrar_.Init(browser_->GetProfile()->GetPrefs());
@@ -129,9 +136,9 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   const int uncollapsed_width = state.uncollapsed_width;
   const bool is_expand_on_hover =
       state_controller_ && state_controller_->IsExpandOnHoverEnabled();
-  const bool is_segmented_expand_on_hover =
-      is_collapsed && is_expand_on_hover && segmented_control_ &&
-      segmented_control_->GetVisible();
+  const bool is_control_expand_on_hover =
+      is_collapsed && is_expand_on_hover &&
+      organizer_panel::IsOrganizerPanelFeatureEnabled();
 
   int trailing_control_width = 0;
   if (segmented_control_ && segmented_control_->GetVisible()) {
@@ -148,7 +155,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
   // Once the available width is below the collapse snap width, we update the
   // orientation in order to have smooth transition during animation.
-  if (!is_segmented_expand_on_hover &&
+  if (!is_control_expand_on_hover &&
       (trailing_control_width >= available_width ||
        available_width < tabs::kVerticalTabStripCollapseSnapWidth ||
        is_collapsed_with_combo)) {
@@ -242,7 +249,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
-    const bool wrapped_due_to_overflow = !is_segmented_expand_on_hover &&
+    const bool wrapped_due_to_overflow = !is_control_expand_on_hover &&
                                          size_bounds.width().is_bounded() &&
                                          WillWrapDueToOverflow(available_width);
 
@@ -288,12 +295,12 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
         2 * GetLayoutConstant(
                 LayoutConstant::kVerticalTabStripHorizontalPadding);
     const int layout_width =
-        is_segmented_expand_on_hover
+        is_control_expand_on_hover
             ? std::max(host_size.width(), expected_uncollapsed_width)
             : host_size.width();
     int right_alignment = layout_width;
 
-    bool wrap_during_animation = !is_segmented_expand_on_hover &&
+    bool wrap_during_animation = !is_control_expand_on_hover &&
                                  caption_button_width_ != 0 &&
                                  available_width < GetPreferredWidth();
 

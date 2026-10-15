@@ -342,6 +342,79 @@ TEST_F(VerticalTabStripTopContainerTest,
 }
 
 TEST_F(VerticalTabStripTopContainerTest,
+       CollapsedExpandOnHoverRendersComboButtonAtExpandedWidth) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  controller()->SetExpandOnHoverEnabled(true);
+  controller()->RequestCollapse(true);
+  EXPECT_TRUE(controller()->IsCollapsed());
+
+  top_container()->UpdateControlsVisibility();
+  EXPECT_EQ(segmented_control(), nullptr);
+  EXPECT_TRUE(combo_button()->GetVisible());
+
+  // When narrow (unhovered), combo button is rendered based on the known
+  // uncollapsed width, outside of the narrow container width.
+  top_container()->SetSize(
+      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
+  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  auto it = std::ranges::find(layout.child_layouts, combo_button(),
+                              &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_GT(it->bounds.x(), top_container()->width());
+
+  // When expanded, the combo button fits within the container width.
+  top_container()->SetSize(gfx::Size(300, 40));
+  layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  it = std::ranges::find(layout.child_layouts, combo_button(),
+                         &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_LE(it->bounds.right(), top_container()->width());
+
+  // When expand on hover is disabled while collapsed, combo button is
+  // laid out vertically inside the collapsed width.
+  controller()->SetExpandOnHoverEnabled(false);
+  top_container()->SetSize(
+      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
+  layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  it = std::ranges::find(layout.child_layouts, combo_button(),
+                         &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_LE(it->bounds.right(), top_container()->width());
+}
+
+TEST_F(VerticalTabStripTopContainerTest,
+       CollapsedExpandOnHoverOrganizerDisabledLaysOutComboButtonVertically) {
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  controller()->SetExpandOnHoverEnabled(true);
+  controller()->RequestCollapse(true);
+  EXPECT_TRUE(controller()->IsCollapsed());
+
+  top_container()->SetSize(
+      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
+  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  auto it = std::ranges::find(layout.child_layouts, combo_button(),
+                              &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_LE(it->bounds.right(), top_container()->width());
+}
+
+TEST_F(VerticalTabStripTopContainerTest,
        CollapsedExpandOnHoverWithCaptionButtonsExclusionZone) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
