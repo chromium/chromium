@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -548,6 +549,11 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
   const base::FilePath sqlite_staging_path =
       sqlite_path.AddExtensionASCII(kSqliteMigrationStagingExtension);
 
+  // After an error occurs, delete the migrated SQLite database.
+  // TODO(crbug.com/377242771): record the delete result.
+  base::ScopedClosureRunner delete_sqlite_on_failure(base::BindOnce(
+      base::IgnoreResult(&sqlite::DestroyDatabase), sqlite_staging_path));
+
   StatusOr<std::unique_ptr<DomStorageDatabase>> migration_result =
       CreateAndPopulateSqliteDatabaseForMigration(
           storage_type, *source_database, sqlite_staging_path);
@@ -592,6 +598,11 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
     return;
   }
 
+  // Update `delete_sqlite_on_failure` to use the moved database path.
+  // TODO(crbug.com/377242771): record the delete result.
+  delete_sqlite_on_failure.ReplaceClosure(base::BindOnce(
+      base::IgnoreResult(&sqlite::DestroyDatabase), sqlite_path));
+
   // Re-open the moved SQLite database before destroying `source_database`. If
   // opening fails, fall back to the `source_database`.
   const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -607,15 +618,15 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
                                sqlite_path, /*is_sqlite=*/true, start_time,
                                open_status);
   if (!open_status.ok()) {
-    // Delete the migrated SQLite database that failed to open.
-    // TODO(crbug.com/377242771): record the delete result.
-    std::ignore = sqlite::DestroyDatabase(sqlite_path);
     std::move(callback).Run(OpenResult::FromError(std::move(open_status)));
     return;
   }
   std::unique_ptr<DomStorageDatabase> sqlite_database = *std::move(open_result);
 
-  // The migration succeeded. Close and delete the source LevelDB.
+  // The migration succeeded. Don't delete the SQLite database. Instead, close
+  // and delete the source LevelDB.
+  std::ignore = delete_sqlite_on_failure.Release();
+
   const base::FilePath leveldb_path =
       DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
   source_database->Close();
