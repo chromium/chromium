@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -44,7 +45,9 @@ constexpr std::string_view kQueryParamDescription = "The terms to search for.";
 base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
     Profile& profile,
     std::string_view query) {
-  if (query.empty()) {
+  const std::string_view trimmed_query =
+      base::TrimWhitespaceASCII(query, base::TRIM_ALL);
+  if (trimmed_query.empty()) {
     return base::unexpected(MakeResult(
         mojom::ActionResultCode::kArgumentsInvalid,
         /*requires_page_stabilization=*/false, "Search query is empty."));
@@ -69,7 +72,8 @@ base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
   }
 
   return default_provider->GenerateSearchURL(
-      template_url_service->search_terms_data(), base::UTF8ToUTF16(query));
+      template_url_service->search_terms_data(),
+      base::UTF8ToUTF16(trimmed_query));
 }
 
 }  // namespace

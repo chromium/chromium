@@ -175,6 +175,16 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest, EmptyQueryFails) {
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
+                       WhitespaceOnlyQueryFails) {
+  std::unique_ptr<ToolRequest> action =
+      MakePerformSearchRequest(*active_tab(), "   ");
+  EXPECT_EQ(action->AssociatedOriginGrant(), std::nullopt);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest, TabWentAwayFails) {
   constexpr char kQuery[] = "test query";
   int index = browser()->tab_strip_model()->count();
