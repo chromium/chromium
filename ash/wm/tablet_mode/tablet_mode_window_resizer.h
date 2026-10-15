@@ -13,7 +13,6 @@
 #include "ash/wm/window_resizer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -48,6 +47,7 @@ class ASH_EXPORT TabletModeWindowResizer : public WindowResizer {
   void CompleteDrag() override;
   void RevertDrag() override;
   void FlingOrSwipe(ui::GestureEvent* event) override;
+  void OnDragCompleted() override;
 
  private:
   std::unique_ptr<TabletModeWindowDragDelegate> drag_delegate_;
@@ -79,6 +79,9 @@ class ASH_EXPORT TabletModeWindowDragDelegate {
   void EndWindowDrag(ToplevelWindowEventHandler::DragResult result,
                      const gfx::PointF& location_in_screen);
 
+  void OnDragCompleted();
+  bool IsDragCompleted() const { return drag_completed_; }
+
  private:
   SnapPosition GetSnapPosition(const gfx::PointF& location_in_screen) const;
 
@@ -86,7 +89,7 @@ class ASH_EXPORT TabletModeWindowDragDelegate {
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
   raw_ptr<aura::Window> dragged_window_ = nullptr;
   gfx::PointF initial_location_in_screen_;
-  base::WeakPtrFactory<TabletModeWindowDragDelegate> weak_ptr_factory_{this};
+  bool drag_completed_ = false;
 };
 
 }  // namespace ash

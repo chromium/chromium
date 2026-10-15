@@ -226,6 +226,24 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   std::unique_ptr<ScopedWindowResizer> window_resizer_;
 
+  // Tracks nested `OnMouseEvent()` / `OnGestureEvent()` calls. Increments
+  // `event_dispatch_depth_` while in scope and, when the outermost dispatch
+  // finishes, deletes `resizer_pending_deletion_`.
+  class ScopedEventDispatch;
+
+  // The number of nested `OnMouseEvent()` / `OnGestureEvent()` calls
+  // currently on the stack.
+  int event_dispatch_depth_ = 0;
+
+  // Holds the resizer when the drag is completed while an event is being
+  // dispatched, e.g. when the bounds change made by `WindowResizer::Drag()`
+  // synchronously results in capture loss, which is delivered as a nested
+  // mouse event. Deleting the resizer at that point would destroy it while
+  // `Drag()` is still on the stack (and holding a
+  // `WindowResizer::ScopedDeleteBlocker`), so the deletion is deferred until
+  // the outermost event dispatch returns.
+  std::unique_ptr<ScopedWindowResizer> resizer_pending_deletion_;
+
   // We exclude dragged or resized windows from occluding things below them to
   // prevent windows from being marked as occluded temporarily while another
   // window is being, for example, dragged over them. This is particularly

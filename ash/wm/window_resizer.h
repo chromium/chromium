@@ -11,7 +11,6 @@
 #include "ash/wm/drag_details.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/wm/public/window_move_client.h"
 
 namespace aura {
@@ -102,6 +101,15 @@ class ASH_EXPORT WindowResizer {
   // Drag parameters established when drag starts.
   const DragDetails& details() const { return *window_state_->drag_details(); }
 
+  // Called by ToplevelWindowEventHandler when the drag completes. The drag may
+  // complete while `Drag()` is still on the stack, e.g. when a bounds change
+  // made by `Drag()` makes the client transfer capture or merge the dragged
+  // tab(s) into another browser window. The resizer is kept alive until the
+  // outermost event dispatch returns, so `Drag()` implementations must check
+  // `IsDragCompleted()` after any call that may end the drag and return early.
+  virtual void OnDragCompleted();
+  bool IsDragCompleted() const { return drag_completed_; }
+
  protected:
   gfx::Rect CalculateBoundsForDrag(const gfx::PointF& location);
 
@@ -148,7 +156,8 @@ class ASH_EXPORT WindowResizer {
 
   uint32_t delete_block_count_ = 0;
 
-  base::WeakPtrFactory<WindowResizer> weak_ptr_factory_{this};
+  // See `IsDragCompleted()`.
+  bool drag_completed_ = false;
 };
 
 // Creates a WindowResizer for |window|. Returns a unique_ptr with null if

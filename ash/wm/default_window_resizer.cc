@@ -31,6 +31,9 @@ void DefaultWindowResizer::Drag(const gfx::PointF& location, int event_flags) {
     }
     did_move_or_resize_ = true;
     SetBoundsDuringResize(bounds);
+    if (IsDragCompleted()) {
+      return;
+    }
   }
   if (window_resize_recorder_) {
     window_resize_recorder_->RequestNext();

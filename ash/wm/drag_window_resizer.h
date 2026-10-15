@@ -11,7 +11,6 @@
 #include "ash/wm/window_resizer.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
@@ -38,6 +37,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   void RevertDrag() override;
   void FlingOrSwipe(ui::GestureEvent* event) override;
   void Pinch(const gfx::PointF& location, float scale) override;
+  void OnDragCompleted() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest, DragWindowController);
@@ -65,8 +65,6 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
 
   // Current instance for use by the DragWindowResizerTest.
   static DragWindowResizer* instance_;
-
-  base::WeakPtrFactory<DragWindowResizer> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
