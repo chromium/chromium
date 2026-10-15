@@ -9,19 +9,18 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace one_time_tokens {
 class GmailOtpBackend;
-}
+enum class TickleFormOutcome;
+}  // namespace one_time_tokens
 
 namespace signin {
 class IdentityManager;
@@ -41,8 +40,6 @@ class OtpMetricsTracker {
       "Autofill.OneTimeTokens.FieldDetectionToTickleLatency";
   static constexpr char kTickleToFieldDetectionLatencyHistogram[] =
       "Autofill.OneTimeTokens.TickleToFieldDetectionLatency";
-  static constexpr char kTickleFormOutcomeHistogram[] =
-      "Autofill.OneTimeTokens.Tickle.FormOutcome";
   static constexpr char kPageLanguageTickleBeforeUserInteractionHistogram[] =
       "Autofill.OneTimeTokens.PageLanguage.TickleBeforeUserInteraction";
   static constexpr char kPageLanguageTickleAfterUserInteractionHistogram[] =
@@ -101,7 +98,6 @@ class OtpMetricsTracker {
   bool IsOtpFieldEmptyAndUnedited() const;
   void ResetPendingFormState();
 
-  const raw_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend_;
   // The owning `AutofillClient`, guaranteed to outlive this class.
   const raw_ref<AutofillClient> autofill_client_;
   one_time_tokens::ExpiringSubscription tickle_subscription_;
