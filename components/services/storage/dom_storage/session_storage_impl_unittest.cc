@@ -1467,14 +1467,8 @@ class SessionStorageImplMigrationTest
       kDomStorageSqliteMigrationInactivityTimeout +
       kDomStorageSqliteMigrationInactivityTimeout / 2;
 
-  SessionStorageImplMigrationTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kDomStorageSqliteMigration},
-        /*disabled_features=*/{kDomStorageSqlite,
-                               kDomStorageSqliteNewDatabases});
-    InitializeTaskEnvironment(
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-  }
+  SessionStorageImplMigrationTest()
+      : SessionStorageImplMigrationTest(/*enable_verification=*/true) {}
 
   bool IsSqlite() {
     return session_storage_impl()->GetDatabaseForTesting()->is_sqlite();
@@ -1529,6 +1523,18 @@ class SessionStorageImplMigrationTest
         ReadMapKeyValuesSync(*session_storage_impl()->GetDatabaseForTesting(),
                              map_locator.Clone(), &actual_entries));
     EXPECT_EQ(actual_entries, expected_entries);
+  }
+
+ protected:
+  explicit SessionStorageImplMigrationTest(bool enable_verification) {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{kDomStorageSqliteMigration,
+                               {{kDomStorageSqliteMigrationVerification.name,
+                                 enable_verification ? "true" : "false"}}}},
+        /*disabled_features=*/{kDomStorageSqlite,
+                               kDomStorageSqliteNewDatabases});
+    InitializeTaskEnvironment(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   }
 };
 
@@ -1966,6 +1972,75 @@ TEST_F(SessionStorageImplMigrationTest,
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(namespace_id, unchanged_storage_key,
                       /*expected_entries=*/{{key1, value2}}));
+}
+
+// Runs migration with the `kDomStorageSqliteMigrationVerification` feature
+// parameter disabled, which skips verifying the migrated data.
+class SessionStorageImplMigrationWithoutVerificationTest
+    : public SessionStorageImplMigrationTest {
+ public:
+  SessionStorageImplMigrationWithoutVerificationTest()
+      : SessionStorageImplMigrationTest(/*enable_verification=*/false) {}
+};
+
+TEST_F(SessionStorageImplMigrationWithoutVerificationTest,
+       MigratesAfterInactivity) {
+  ASSERT_FALSE(kDomStorageSqliteMigrationVerification.Get());
+
+  const std::string namespace_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://example1.com");
+
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com");
+
+  const DomStorageDatabase::Key key1 = StringViewToUint8Vector("key1");
+  const DomStorageDatabase::Value value1 = StringViewToUint8Vector("value1");
+
+  const DomStorageDatabase::Key key2 = StringViewToUint8Vector("key2");
+  const DomStorageDatabase::Value value2 = StringViewToUint8Vector("value2");
+
+  ASSERT_NO_FATAL_FAILURE(CreateLevelDbWithEntries(
+      {{namespace_id, storage_key1, "key1", "value1"},
+       {namespace_id, storage_key2, "key2", "value2"}}));
+
+  EnsureDatabaseOpen();
+  EXPECT_FALSE(IsSqlite());
+
+  // Trigger the migration.
+  task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsSqlite(); }));
+
+  // The SQLite database replaces the LevelDB on disk.
+  EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+  EXPECT_FALSE(base::PathExists(
+      SqliteDbPath().AddExtensionASCII(kSqliteMigrationStagingExtension)));
+
+  // The migration copied all map entries and metadata.
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      namespace_id, storage_key1, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      namespace_id, storage_key2, /*expected_entries=*/{{key2, value2}}));
+
+  DomStorageDatabase::Metadata all_metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(
+      *session_storage_impl()->GetDatabaseForTesting(), &all_metadata));
+  EXPECT_EQ(all_metadata.map_metadata.size(), 2u);
+
+  // Re-opening must use the migrated SQLite database.
+  ShutDownSessionStorage();
+  EnsureDatabaseOpen();
+
+  EXPECT_TRUE(IsSqlite());
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      namespace_id, storage_key1, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      namespace_id, storage_key2, /*expected_entries=*/{{key2, value2}}));
 }
 
 // Test fixture for tests that use fake database implementations. These tests

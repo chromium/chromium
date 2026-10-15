@@ -20,6 +20,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kDomStorageSqliteMigration,
                    kDomStorageSqliteMigrationInactivityTimeout);
 
+BASE_FEATURE_PARAM(bool,
+                   kDomStorageSqliteMigrationVerification,
+                   &kDomStorageSqliteMigration,
+                   /*default=*/false);
+
 BASE_FEATURE(kDomStorageSqliteNewDatabases, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<DomStorageSqliteRolloutStage>::Option

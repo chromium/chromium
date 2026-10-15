@@ -569,12 +569,15 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
     return;
   }
 
-  // Verify the migrated data against the source.
-  DbStatus verify_status =
-      VerifyMigration(*source_database, *sqlite_destination);
-  if (!verify_status.ok()) {
-    std::move(callback).Run(OpenResult::FromError(std::move(verify_status)));
-    return;
+  // Verify the migrated data against the source when the feature parameter is
+  // enabled.
+  if (kDomStorageSqliteMigrationVerification.Get()) {
+    DbStatus verify_status =
+        VerifyMigration(*source_database, *sqlite_destination);
+    if (!verify_status.ok()) {
+      std::move(callback).Run(OpenResult::FromError(std::move(verify_status)));
+      return;
+    }
   }
 
   // Move the staged SQLite database file from the staging path to the

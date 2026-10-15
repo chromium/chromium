@@ -1989,14 +1989,8 @@ class LocalStorageImplMigrationTest
       kDomStorageSqliteMigrationInactivityTimeout +
       kDomStorageSqliteMigrationInactivityTimeout / 2;
 
-  LocalStorageImplMigrationTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kDomStorageSqliteMigration},
-        /*disabled_features=*/{kDomStorageSqlite,
-                               kDomStorageSqliteNewDatabases});
-    InitializeTaskEnvironment(
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-  }
+  LocalStorageImplMigrationTest()
+      : LocalStorageImplMigrationTest(/*enable_verification=*/true) {}
 
   bool IsSqlite() { return context()->GetDatabaseForTesting()->is_sqlite(); }
 
@@ -2030,6 +2024,18 @@ class LocalStorageImplMigrationTest
     }
     ASSERT_TRUE(LevelDbDirHasContents());
     ASSERT_FALSE(base::PathExists(SqliteDbPath()));
+  }
+
+ protected:
+  explicit LocalStorageImplMigrationTest(bool enable_verification) {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{kDomStorageSqliteMigration,
+                               {{kDomStorageSqliteMigrationVerification.name,
+                                 enable_verification ? "true" : "false"}}}},
+        /*disabled_features=*/{kDomStorageSqlite,
+                               kDomStorageSqliteNewDatabases});
+    InitializeTaskEnvironment(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   }
 };
 
@@ -2247,8 +2253,8 @@ TEST_F(LocalStorageImplMigrationTest,
         database->MakeAllCommitsFailForTesting();
       }));
 
-  // Change enough storage areas that a single failed commit exceeds the commit
-  // error threshold.
+  // Change enough storage areas that a single failed commit exceeds the
+  // commit error threshold.
   constexpr size_t kAreaCount = kCommitErrorThreshold + 1;
   std::vector<mojo::Remote<blink::mojom::StorageArea>> areas(kAreaCount);
 
@@ -2419,6 +2425,68 @@ TEST_F(LocalStorageImplMigrationTest,
       unchanged_storage_key, /*expected_entries=*/{{key2, value2}}));
 }
 
+// Runs migration with the `kDomStorageSqliteMigrationVerification` feature
+// parameter disabled, which skips verifying the migrated data.
+class LocalStorageImplMigrationWithoutVerificationTest
+    : public LocalStorageImplMigrationTest {
+ public:
+  LocalStorageImplMigrationWithoutVerificationTest()
+      : LocalStorageImplMigrationTest(/*enable_verification=*/false) {}
+};
+
+TEST_F(LocalStorageImplMigrationWithoutVerificationTest,
+       MigratesDatabaseAfterInactivity) {
+  ASSERT_FALSE(kDomStorageSqliteMigrationVerification.Get());
+
+  const blink::StorageKey storage_key1 = StorageKeyForExampleHost(1);
+  const blink::StorageKey storage_key2 = StorageKeyForExampleHost(2);
+
+  const std::vector<uint8_t> key1 = StdStringToUint8Vector("key1");
+  const std::vector<uint8_t> value1 = StdStringToUint8Vector("value1");
+
+  const std::vector<uint8_t> key2 = StdStringToUint8Vector("key2");
+  const std::vector<uint8_t> value2 = StdStringToUint8Vector("value2");
+
+  ASSERT_NO_FATAL_FAILURE(CreateLevelDbWithEntries(
+      {{storage_key1, key1, value1}, {storage_key2, key2, value2}}));
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  EXPECT_FALSE(IsSqlite());
+
+  // Trigger the migration.
+  task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsSqlite(); }));
+
+  // The SQLite database replaces the LevelDB on disk.
+  EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+  EXPECT_FALSE(base::PathExists(
+      SqliteDbPath().AddExtensionASCII(kSqliteMigrationStagingExtension)));
+
+  // The migration copied all map entries and usage metadata.
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key1, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key2, /*expected_entries=*/{{key2, value2}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(2u));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key1));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key2));
+
+  // Re-opening must use the migrated SQLite database.
+  ShutDownStorage();
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  EXPECT_TRUE(IsSqlite());
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key1, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key2, /*expected_entries=*/{{key2, value2}}));
+}
+
 // Test fixture for tests that use fake database implementations. These tests
 // do not depend on the real SQLite/LevelDB backend and run only once.
 class LocalStorageImplFakeDbTest : public LocalStorageImplTestBase {
@@ -2433,8 +2501,8 @@ class LocalStorageImplFakeDbTest : public LocalStorageImplTestBase {
 
 // Parametrized over the on-disk metrics type to verify that recovery and
 // commit-error histograms carry the rollout-experiment suffix
-// `.OnDiskExperimental` for the experiment arm and none otherwise. This matches
-// the database's reported metrics type.
+// `.OnDiskExperimental` for the experiment arm and none otherwise. This
+// matches the database's reported metrics type.
 class LocalStorageImplFakeDbRolloutTest
     : public LocalStorageImplFakeDbTest,
       public testing::WithParamInterface<DatabaseMetricsType> {};
@@ -2450,9 +2518,10 @@ INSTANTIATE_TEST_SUITE_P(
                  : "NonExperimental";
     });
 
-// After recovery, some commit errors occur but resolve via a successful commit.
-// Verifies the kTransientErrorsAfterAttemptedRecovery and commit-error-count
-// histograms are emitted with the suffix matching the database's metrics type.
+// After recovery, some commit errors occur but resolve via a successful
+// commit. Verifies the kTransientErrorsAfterAttemptedRecovery and
+// commit-error-count histograms are emitted with the suffix matching the
+// database's metrics type.
 TEST_P(LocalStorageImplFakeDbRolloutTest, TransientErrorsAfterRecovery) {
   const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
@@ -2504,7 +2573,8 @@ TEST_P(LocalStorageImplFakeDbRolloutTest, TransientErrorsAfterRecovery) {
     EXPECT_TRUE(put_future.Take());
     old_value = std::vector<uint8_t>(value);
     // Commit this iteration's write to the DB sequence. The reply may fire
-    // recovery if it pushes `commit_error_count_` past `kCommitErrorThreshold`.
+    // recovery if it pushes `commit_error_count_` past
+    // `kCommitErrorThreshold`.
     context()->FlushStorageKeyForTesting(
         blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
   }
@@ -2577,10 +2647,10 @@ TEST_P(LocalStorageImplFakeDbRolloutTest, TransientErrorsAfterRecovery) {
       "Storage.LocalStorage.CommitErrorCountAtReset" + suffix, 3, 1);
 }
 
-// Both disk opens fail, destroy succeeds, in-memory open succeeds. The recovery
-// outcome and destroy histograms keep the database's metrics-type suffix even
-// though recovery falls back to in-memory, because the metrics type is captured
-// when recovery starts.
+// Both disk opens fail, destroy succeeds, in-memory open succeeds. The
+// recovery outcome and destroy histograms keep the database's metrics-type
+// suffix even though recovery falls back to in-memory, because the metrics
+// type is captured when recovery starts.
 TEST_P(LocalStorageImplFakeDbRolloutTest, FallbackToInMemory_DestroySucceeded) {
   const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
@@ -2791,8 +2861,8 @@ TEST_F(LocalStorageImplFakeDbTest, InMemoryRecovery_Succeeded) {
       /*sample=*/true, 1);
 }
 
-// Both in-memory opens fail, gave up. No Destroy() because there is nothing on
-// disk.
+// Both in-memory opens fail, gave up. No Destroy() because there is nothing
+// on disk.
 TEST_F(LocalStorageImplFakeDbTest, InMemoryRecovery_GaveUp) {
   base::HistogramTester histograms;
   ShutDownStorage();
@@ -2932,8 +3002,8 @@ TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
   UpdateAccessMetaData(storage_key4, base::Time::Now() - base::Days(401));
   UpdateWriteMetaData(storage_key4, base::Time::Now() - base::Days(401), 0);
 
-  // Restart local storage, force bind area for storage_key3, and trigger stale
-  // storage area purging.
+  // Restart local storage, force bind area for storage_key3, and trigger
+  // stale storage area purging.
   base::HistogramTester histograms;
   ResetStorage(storage_path());
   context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));

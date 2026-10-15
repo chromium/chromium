@@ -99,7 +99,8 @@ class DOMStorageMigrationBrowserTest
       feature_list_.InitAndEnableFeatureWithParameters(
           storage::kDomStorageSqliteMigration,
           {{storage::kDomStorageSqliteMigrationInactivityTimeoutParam.name,
-            "100ms"}});
+            "100ms"},
+           {storage::kDomStorageSqliteMigrationVerification.name, "true"}});
     }
   }
 

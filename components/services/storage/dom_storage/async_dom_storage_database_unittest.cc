@@ -273,7 +273,9 @@ TEST_P(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutMapId) {
 class AsyncDomStorageDatabaseMigrationTest : public testing::Test {
  public:
   AsyncDomStorageDatabaseMigrationTest() {
-    feature_list_.InitAndEnableFeature(kDomStorageSqliteMigration);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kDomStorageSqliteMigration,
+        {{kDomStorageSqliteMigrationVerification.name, "true"}});
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   }

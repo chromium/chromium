@@ -36,6 +36,12 @@ COMPONENT_EXPORT(STORAGE_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kDomStorageSqliteMigrationInactivityTimeoutParam);
 
+// Verifies the contents of the database after migration.  This is expensive,
+// requiring a full read of both the source database and the destination
+// database.
+COMPONENT_EXPORT(STORAGE_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(bool, kDomStorageSqliteMigrationVerification);
+
 inline constexpr base::TimeDelta kDomStorageSqliteMigrationInactivityTimeout =
     base::Seconds(45);
 
