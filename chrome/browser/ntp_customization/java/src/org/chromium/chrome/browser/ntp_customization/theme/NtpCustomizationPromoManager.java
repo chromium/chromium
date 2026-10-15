@@ -73,8 +73,9 @@ public class NtpCustomizationPromoManager {
      */
     public static boolean canTriggerCustomizationBottomSheet(
             WindowAndroid windowAndroid, boolean isLff, int ntpOpenedCount) {
-        if (CommandLine.getInstance()
-                .hasSwitch(ChromeSwitches.DISABLE_NTP_THEME_PROMO_BOTTOM_SHEET_FOR_TESTING)) {
+        CommandLine commandLine = CommandLine.getInstance();
+        if (commandLine.hasSwitch(ChromeSwitches.DISABLE_NTP_THEME_PROMO_BOTTOM_SHEET_FOR_TESTING)
+                || commandLine.hasSwitch(ChromeSwitches.NO_FIRST_RUN)) {
             return false;
         }
 

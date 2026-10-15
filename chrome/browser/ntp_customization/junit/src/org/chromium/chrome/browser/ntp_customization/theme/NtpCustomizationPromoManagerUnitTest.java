@@ -490,6 +490,13 @@ public class NtpCustomizationPromoManagerUnitTest {
                 /* expectedCanTrigger= */ true);
     }
 
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.NO_FIRST_RUN)
+    public void testCanTriggerCustomizationBottomSheet_noFirstRunSwitchEnabled() {
+        testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchImpl(
+                /* expectedCanTrigger= */ false);
+    }
+
     private void testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchImpl(
             boolean expectedCanTrigger) {
         mFakeTimeTestRule.advanceMillis(Duration.ofDays(10).toMillis());
