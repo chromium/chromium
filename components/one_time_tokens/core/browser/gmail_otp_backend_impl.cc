@@ -25,6 +25,24 @@
 
 namespace one_time_tokens {
 
+namespace {
+
+void RecordTickleLatency(const char* histogram_name,
+                         base::Time start_timestamp,
+                         base::Time received_timestamp) {
+  if (start_timestamp.is_null()) {
+    return;
+  }
+  base::TimeDelta latency = received_timestamp - start_timestamp;
+  if (!latency.is_negative()) {
+    base::UmaHistogramCustomTimes(histogram_name, latency,
+                                  base::Milliseconds(10),
+                                  kNotificationExpirationDuration, 50);
+  }
+}
+
+}  // namespace
+
 GmailOtpBackendImpl::GmailOtpBackendImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager,
@@ -120,25 +138,15 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
 
   LOG_OTT(&log_sink_) << "Tickle received";
 
-  if (!notification.email_delivered_timestamp.is_null()) {
-    base::TimeDelta latency = notification.notification_received_timestamp -
-                              notification.email_delivered_timestamp;
-    if (!latency.is_negative()) {
-      base::UmaHistogramCustomTimes(kEmailSavedToTickleLatencyHistogram,
-                                    latency, base::Milliseconds(10),
-                                    kNotificationExpirationDuration, 50);
-    }
-  }
-
-  if (!notification.notification_sent_timestamp.is_null()) {
-    base::TimeDelta latency = notification.notification_received_timestamp -
-                              notification.notification_sent_timestamp;
-    if (!latency.is_negative()) {
-      base::UmaHistogramCustomTimes(kTickleTransmissionLatencyHistogram,
-                                    latency, base::Milliseconds(10),
-                                    kNotificationExpirationDuration, 50);
-    }
-  }
+  RecordTickleLatency(kEmailReceivedToTickleLatencyHistogram,
+                      notification.email_received_timestamp,
+                      notification.notification_received_timestamp);
+  RecordTickleLatency(kEmailSavedToTickleLatencyHistogram,
+                      notification.email_delivered_timestamp,
+                      notification.notification_received_timestamp);
+  RecordTickleLatency(kTickleTransmissionLatencyHistogram,
+                      notification.notification_sent_timestamp,
+                      notification.notification_received_timestamp);
 
   if (base::TimeTicks::Now() - notification.notification_received_timeticks >
       kNotificationExpirationDuration) {

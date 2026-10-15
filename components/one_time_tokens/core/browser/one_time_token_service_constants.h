@@ -33,6 +33,9 @@ inline GURL GetOneTimeTokenServiceUrl(const std::string& path) {
   return GURL(url_str + path);
 }
 
+inline constexpr char kEmailReceivedToTickleLatencyHistogram[] =
+    "Autofill.OneTimeTokens.EmailReceivedToTickleLatency";
+
 inline constexpr char kEmailSavedToTickleLatencyHistogram[] =
     "Autofill.OneTimeTokens.EmailSavedToTickleLatency";
 
