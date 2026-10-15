@@ -5529,7 +5529,7 @@ public class LocationBarMediatorUnitTest {
         input.setRequestType(AutocompleteRequestType.SEARCH);
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteState.ENABLED, input.getAutocompleteState());
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
@@ -5545,7 +5545,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.beginInput(input);
         clearInvocations(mAutocompleteCoordinator, mUrlCoordinator);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mAutocompleteCoordinator)
@@ -5562,10 +5562,15 @@ public class LocationBarMediatorUnitTest {
         mMediator.beginInput(input);
         clearInvocations(mAutocompleteCoordinator, mUrlCoordinator);
 
-        mMediator.onActivationChipClicked();
+        var watcher =
+                expectAimEntrypointActivatedHistograms(
+                        /* userTextPresent= */ false, /* viaKeyboard= */ false, ".google");
+
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
+        watcher.assertExpected();
     }
 
     @Test
@@ -5578,7 +5583,7 @@ public class LocationBarMediatorUnitTest {
         doReturn("google.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
         clearInvocations(mAutocompleteCoordinator, mUrlCoordinator);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
@@ -5601,7 +5606,7 @@ public class LocationBarMediatorUnitTest {
         doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
@@ -5613,6 +5618,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testActivationChipClicked_withUserText_expandsNavigationUrl() {
+        doReturn(false).when(mSearchEngineService).isDefaultSearchEngineGoogle();
         mAiModeButtonUiConfigSupplier.set(
                 createTestAiModeButtonUiConfig(
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
@@ -5627,9 +5633,14 @@ public class LocationBarMediatorUnitTest {
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setInitialUserText("page.com");
         input.setUserText("cat pictures");
+        doReturn("cat pictures").when(mUrlCoordinator).getTextWithoutAutocomplete();
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        var watcher =
+                expectAimEntrypointActivatedHistograms(
+                        /* userTextPresent= */ true, /* viaKeyboard= */ false, ".3p");
+
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
@@ -5639,6 +5650,7 @@ public class LocationBarMediatorUnitTest {
                 PageTransition.FROM_ADDRESS_BAR,
                 mOmniboxLoadUrlParamsCaptor.getValue().transitionType);
         verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
+        watcher.assertExpected();
     }
 
     @Test
@@ -5657,7 +5669,7 @@ public class LocationBarMediatorUnitTest {
         input.setUserText("page.com");
         doReturn("page.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
@@ -5683,7 +5695,7 @@ public class LocationBarMediatorUnitTest {
         input.setUserText("cat pictures");
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
@@ -5703,7 +5715,7 @@ public class LocationBarMediatorUnitTest {
         input.setUserText("");
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
@@ -5723,11 +5735,48 @@ public class LocationBarMediatorUnitTest {
         doReturn("suggestion text").when(mUrlCoordinator).getTextWithoutAutocomplete();
         mMediator.beginInput(input);
 
-        mMediator.onActivationChipClicked();
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
 
         verify(mNavigator, never()).loadUrl(any());
         verify(mAutocompleteCoordinator)
                 .loadTypedOmniboxText(anyLong(), eq(NavigationTarget.CURRENT_TAB));
+    }
+
+    @Test
+    public void testActivationChipActivatedViaKeyboard_recordsHistograms() {
+        setUpTabToActivationChip(DisplayState.SUGGESTIONS, /* withInitialUserText= */ true);
+
+        // Tab from UrlBar to ActivationChip (which clears unchanged initial URL text).
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
+
+        var watcher =
+                expectAimEntrypointActivatedHistograms(
+                        /* userTextPresent= */ false, /* viaKeyboard= */ true, ".google");
+
+        doReturn(KeyEvent.KEYCODE_ENTER).when(mKeyEvent).getKeyCode();
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
+
+        watcher.assertExpected();
+    }
+
+    private static HistogramWatcher expectAimEntrypointActivatedHistograms(
+            boolean userTextPresent, boolean viaKeyboard, String engineSuffix) {
+        return HistogramWatcher.newBuilder()
+                .expectBooleanRecord(
+                        OmniboxMetrics.HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_USER_TEXT_PRESENT,
+                        userTextPresent)
+                .expectBooleanRecord(
+                        OmniboxMetrics.HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_USER_TEXT_PRESENT
+                                + engineSuffix,
+                        userTextPresent)
+                .expectBooleanRecord(
+                        OmniboxMetrics.HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_VIA_KEYBOARD, viaKeyboard)
+                .expectBooleanRecord(
+                        OmniboxMetrics.HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_VIA_KEYBOARD
+                                + engineSuffix,
+                        viaKeyboard)
+                .build();
     }
 
     @Test

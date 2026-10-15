@@ -485,7 +485,9 @@ public class LocationBarMediator
         mFuseboxCoordinator.setOnFirstPickerInteractionCanceledCallback(this::endInput);
         mFuseboxCoordinator.setOnPickerInteractionSucceededCallback(
                 () -> onFuseboxInteractionCompleted(/* actionTaken= */ true));
-        mLocationBarLayout.getActivationChip().setOnClickListener(v -> onActivationChipClicked());
+        mLocationBarLayout
+                .getActivationChip()
+                .setOnClickListener(v -> onActivationChipClicked(/* viaKeyboard= */ false));
         mOmniboxChipManager = omniboxChipManager;
         mHintTextUpdater =
                 new HintTextUpdater(
@@ -600,7 +602,8 @@ public class LocationBarMediator
         mActivationChipSelectableView =
                 wrapSelectableView(
                         mLocationBarLayout.getActivationChip(),
-                        mActivationChipSelectedSupplier::set);
+                        mActivationChipSelectedSupplier::set,
+                        () -> onActivationChipClicked(/* viaKeyboard= */ true));
 
         mFuseboxAttachmentsSelectableView =
                 new SelectableView() {
@@ -642,7 +645,7 @@ public class LocationBarMediator
     }
 
     private SelectableView wrapSelectableView(
-            View view, @Nullable Callback<Boolean> onSelectionChanged) {
+            View view, @Nullable Callback<Boolean> onSelectionChanged, Runnable onActivated) {
         return new SelectableView() {
             @Override
             public boolean isVisible() {
@@ -659,13 +662,13 @@ public class LocationBarMediator
 
             @Override
             public void handleActivationEvent(KeyEvent event) {
-                view.performClick();
+                onActivated.run();
             }
         };
     }
 
     private SelectableView wrapSelectableView(View view) {
-        return wrapSelectableView(view, null);
+        return wrapSelectableView(view, /* onSelectionChanged= */ null, view::performClick);
     }
 
     @SuppressWarnings("NullAway")
@@ -3821,8 +3824,18 @@ public class LocationBarMediator
         return true;
     }
 
-    /* package */ void onActivationChipClicked() {
+    void onActivationChipClicked(boolean viaKeyboard) {
         if (mCurrentInput == null) return;
+
+        boolean userTextPresent =
+                !isUrlBarTextUnchanged()
+                        && (!TextUtils.isEmpty(mCurrentInput.getUserText())
+                                || !TextUtils.isEmpty(
+                                        mUrlCoordinator.getTextWithoutAutocomplete()));
+        boolean isGoogle =
+                mSearchEngineService == null || mSearchEngineService.isDefaultSearchEngineGoogle();
+        OmniboxMetrics.recordAimEntrypointActivatedUserTextPresent(isGoogle, userTextPresent);
+        OmniboxMetrics.recordAimEntrypointActivatedViaKeyboard(isGoogle, viaKeyboard);
 
         mCurrentInput.setRequestType(AutocompleteRequestType.AI_MODE);
         FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.DEDICATED_BUTTON);

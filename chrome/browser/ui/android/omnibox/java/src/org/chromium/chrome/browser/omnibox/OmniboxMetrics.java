@@ -86,6 +86,12 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT =
             "Android.Omnibox.SearchPrefetch.TouchDownPrefetchResult.NavigationPrefetch";
 
+    public static final String HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_USER_TEXT_PRESENT =
+            "Omnibox.AimEntrypoint.Activated.UserTextPresent";
+
+    public static final String HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_VIA_KEYBOARD =
+            "Omnibox.AimEntrypoint.Activated.ViaKeyboard";
+
     @IntDef({
         ActionInSuggestIntentResult.SUCCESS,
         ActionInSuggestIntentResult.BAD_URI_SYNTAX,
@@ -535,6 +541,38 @@ public class OmniboxMetrics {
     public static void recordZeroSuggestSuppressedOnIncognitoNtp(boolean suppressed) {
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP, suppressed);
+    }
+
+    /**
+     * Records whether non-empty user text was present in the Omnibox when the AI Mode entrypoint
+     * was activated, unsliced and sliced by search engine party (1P Google vs 3P).
+     *
+     * @param isGoogle Whether the default search engine is Google.
+     * @param userTextPresent Whether non-empty user-entered text was present at activation.
+     */
+    public static void recordAimEntrypointActivatedUserTextPresent(
+            boolean isGoogle, boolean userTextPresent) {
+        recordAimEntrypointMetric(
+                HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_USER_TEXT_PRESENT, isGoogle, userTextPresent);
+    }
+
+    /**
+     * Records whether the AI Mode entrypoint was activated via keyboard (as opposed to touch or
+     * mouse click), unsliced and sliced by search engine party (1P Google vs 3P).
+     *
+     * @param isGoogle Whether the default search engine is Google.
+     * @param viaKeyboard Whether activation was triggered via keyboard navigation.
+     */
+    public static void recordAimEntrypointActivatedViaKeyboard(
+            boolean isGoogle, boolean viaKeyboard) {
+        recordAimEntrypointMetric(
+                HISTOGRAM_AIM_ENTRYPOINT_ACTIVATED_VIA_KEYBOARD, isGoogle, viaKeyboard);
+    }
+
+    private static void recordAimEntrypointMetric(String name, boolean isGoogle, boolean value) {
+        String partySuffix = isGoogle ? ".google" : ".3p";
+        RecordHistogram.recordBooleanHistogram(name, value);
+        RecordHistogram.recordBooleanHistogram(name + partySuffix, value);
     }
 
     /**
