@@ -111,21 +111,21 @@ class GtkColorMixersTest : public testing::Test {
 
 }  // namespace
 
-// Regression test for crbug.com/565897998: a dark GTK theme with a light color
-// mode (e.g. portal color-scheme "no preference") made chrome://settings text
-// light-on-light.
-TEST_F(GtkColorMixersTest, DarkThemeLightModeReadable) {
+// Regression tests for crbug.com/565897998: chrome://settings text must be
+// readable with GTK colors. `NativeThemeGtk` derives the color mode from the
+// GTK theme, so the color mode always matches the GTK palette.
+TEST_F(GtkColorMixersTest, DarkThemeDarkModeReadable) {
   UseAdwaita(/*dark=*/true);
-  auto provider = CreateProvider(ColorMode::kLight);
+  auto provider = CreateProvider(ColorMode::kDark);
   ASSERT_TRUE(color_utils::IsDark(
       provider->GetColor(ui::kColorNativeToolbarBackground)));
   ExpectContentReadable(*provider);
   ExpectToolbarReadable(*provider);
 }
 
-TEST_F(GtkColorMixersTest, LightThemeDarkModeReadable) {
+TEST_F(GtkColorMixersTest, LightThemeLightModeReadable) {
   UseAdwaita(/*dark=*/false);
-  auto provider = CreateProvider(ColorMode::kDark);
+  auto provider = CreateProvider(ColorMode::kLight);
   ASSERT_FALSE(color_utils::IsDark(
       provider->GetColor(ui::kColorNativeToolbarBackground)));
   ExpectContentReadable(*provider);

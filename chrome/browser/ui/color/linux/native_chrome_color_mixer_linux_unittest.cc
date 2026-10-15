@@ -312,23 +312,19 @@ void ExpectLocationIconChipReadable(const ui::ColorProvider& provider) {
   }
 }
 
-// The location icon chip used the toolbar color as its background and the
-// omnibox text color for its label. With a dark Qt toolbar and a light color
-// mode, both were dark.
-TEST(NativeChromeColorMixerLinuxChipTest, DarkToolbarLightModeReadable) {
-  auto provider = CreateToolbarOnlyProvider(ColorMode::kLight,
-                                            kDarkToolkit.menu_background);
+// The location icon chip uses the toolbar color as its background and the
+// omnibox text color for its label. The toolkit native themes derive the color
+// mode from the toolkit palette, so the toolbar always matches the color mode,
+// and the toolbar color is kept as the chip background.
+TEST(NativeChromeColorMixerLinuxChipTest, DarkToolbarDarkModeReadable) {
+  auto provider =
+      CreateToolbarOnlyProvider(ColorMode::kDark, kDarkToolkit.menu_background);
   ExpectLocationIconChipReadable(*provider);
+  EXPECT_EQ(provider->GetColor(kColorOmniboxIconBackground),
+            provider->GetColor(kColorToolbar));
 }
 
-TEST(NativeChromeColorMixerLinuxChipTest, LightToolbarDarkModeReadable) {
-  auto provider = CreateToolbarOnlyProvider(ColorMode::kDark,
-                                            kLightToolkit.menu_background);
-  ExpectLocationIconChipReadable(*provider);
-}
-
-// When the omnibox text is readable on the toolbar, the toolbar color is kept.
-TEST(NativeChromeColorMixerLinuxChipTest, MatchingToolbarKept) {
+TEST(NativeChromeColorMixerLinuxChipTest, LightToolbarLightModeReadable) {
   auto provider = CreateToolbarOnlyProvider(ColorMode::kLight,
                                             kLightToolkit.menu_background);
   ExpectLocationIconChipReadable(*provider);
