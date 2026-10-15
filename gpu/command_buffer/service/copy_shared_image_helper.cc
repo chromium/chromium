@@ -10,6 +10,9 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -19,7 +22,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
@@ -27,6 +32,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -37,7 +43,9 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gl/progress_reporter.h"
 
 namespace gpu {
 
@@ -764,6 +772,178 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
     return base::unexpected(GLError(GL_INVALID_OPERATION, "ReadPixels",
                                     "Failed to read pixels from SkImage"));
   }
+  return base::ok();
+}
+
+namespace {
+struct YUVReadbackResult {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+  bool finished = false;
+};
+
+void OnReadYUVImagePixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  YUVReadbackResult* context = reinterpret_cast<YUVReadbackResult*>(raw_ctx);
+  context->async_result = std::move(async_result);
+  context->finished = true;
+}
+}  // namespace
+
+base::expected<void, GLError> CopySharedImageHelper::ReadPixelsYUV(
+    ReadbackDelegate* delegate,
+    GLuint src_x,
+    GLuint src_y,
+    GLuint src_width,
+    GLuint src_height,
+    GLuint dst_width,
+    GLuint dst_height,
+    uint8_t* y_out,
+    GLuint y_stride,
+    uint8_t* u_out,
+    GLuint u_stride,
+    uint8_t* v_out,
+    GLuint v_stride,
+    std::unique_ptr<SkiaImageRepresentation> source_shared_image) {
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // We don't use |end_semaphores| here because we're going to sync with
+  // with the CPU later regardless.
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      source_scoped_access = source_shared_image->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
+
+  if (!begin_semaphores.empty()) {
+    CHECK(shared_context_state_->gr_context());
+    bool wait_result = shared_context_state_->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(wait_result);
+  }
+
+  if (!source_scoped_access) {
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
+                                    "Source shared image is not accessible"));
+  }
+
+  auto sk_image =
+      source_scoped_access->CreateSkImage(shared_context_state_.get());
+  if (!sk_image) {
+    // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
+    // exiting.
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackImagePixels",
+                                    "Couldn't create SkImage for reading."));
+  }
+
+  const SkIRect src_rect =
+      SkIRect::MakeXYWH(src_x, src_y, src_width, src_height);
+
+  if (!SkIRect::MakeSize(sk_image->dimensions()).contains(src_rect)) {
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
+    return base::unexpected(
+        GLError(GL_INVALID_VALUE, "glReadbackYUVImagePixels",
+                "SRC rect is outside of source image dimensions"));
+  }
+
+  const SkISize dst_size = SkISize::Make(dst_width, dst_height);
+
+  // Readback is potentially slow, so report progress here.
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
+
+  // YUV readback requires knowing what SkColorSpace the RGB data should be
+  // converted to AND the SkYUVColorSpace that defines how YUV is derived from
+  // the RGB data. To avoid colorspace conversion, this always uses the
+  // SkColorSpace on `sk_image` (derived from the gfx::ColorSpace of the shared
+  // image). If the source image is multi-planar, try to match its YUV color
+  // space, otherwise default to Rec 709 for multi-planar and Rec 601 for
+  // single-plane formats.
+  SkYUVColorSpace yuv_cs = kRec601_Limited_SkYUVColorSpace;
+  if (source_shared_image->format().is_multi_plane()) {
+    yuv_cs = kRec709_Limited_SkYUVColorSpace;
+    source_shared_image->color_space().ToSkYUVColorSpace(&yuv_cs);
+  }
+
+  // While this function indicates it's asynchronous, the DoFinish() call below
+  // ensures it completes synchronously.
+  YUVReadbackResult yuv_result;
+  bool is_context_lost = false;
+  if (shared_context_state_->graphite_shared_context()) {
+    // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
+    // for Graphite. Instead the equivalent methods will be on Graphite Context.
+    shared_context_state_->graphite_shared_context()
+        ->asyncRescaleAndReadPixelsYUV420AndSubmit(
+            sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect,
+            dst_size, SkImage::RescaleGamma::kSrc,
+            SkImage::RescaleMode::kRepeatedLinear,
+            base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
+    is_context_lost =
+        !yuv_result.finished &&
+        shared_context_state_->graphite_shared_context()->IsContextLost();
+  } else {
+    CHECK(shared_context_state_->gr_context());
+    sk_image->asyncRescaleAndReadPixelsYUV420(
+        yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &OnReadYUVImagePixelsDone, &yuv_result);
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    if (!end_semaphores.empty()) {
+      GrFlushInfo flush_info = {
+          .fNumSemaphores = end_semaphores.size(),
+          .fSignalSemaphores = end_semaphores.data(),
+      };
+      AddVulkanCleanupTaskForSkiaFlush(
+          shared_context_state_->vk_context_provider(), &flush_info);
+      shared_context_state_->gr_context()->flush(flush_info);
+    }
+
+    // TODO(crbug.com/40106956): Use COMMANDS_COMPLETED query for async
+    // readback.
+    delegate->DoFinish();
+    is_context_lost = !yuv_result.finished &&
+                      (delegate->WasContextLost() ||
+                       shared_context_state_->gr_context()->abandoned());
+  }
+
+  // The call above will sync up gpu and CPU, resulting in callback being run
+  // during DoFinish(). To prevent UAF make sure it indeed happened or context
+  // was lost.
+  CHECK(yuv_result.finished || is_context_lost);
+  if (!yuv_result.async_result || is_context_lost) {
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackYUVImagePixels",
+                                    "Failed to read pixels from SkImage"));
+  }
+
+  // Refuse to deliver readback results after a device reset — a reset can fire
+  // the async-read completion over never-written buffers. The plane
+  // destinations have not been written yet on this path, so there is nothing to
+  // scrub; the shm result stays 0. CheckResetStatus() marks the context lost
+  // when it returns true.
+  if (delegate->workarounds().check_graphics_reset_status_after_readback &&
+      !delegate->WasContextLost() && delegate->CheckResetStatus()) {
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackYUVImagePixels",
+                                    "readback aborted: device reset detected"));
+  }
+
+  auto& async_result = yuv_result.async_result;
+  libyuv::I420Copy(static_cast<const uint8_t*>(async_result->data(0)),
+                   async_result->rowBytes(0),
+                   static_cast<const uint8_t*>(async_result->data(1)),
+                   async_result->rowBytes(1),
+                   static_cast<const uint8_t*>(async_result->data(2)),
+                   async_result->rowBytes(2), y_out, y_stride, u_out, u_stride,
+                   v_out, v_stride, dst_width, dst_height);
   return base::ok();
 }
 

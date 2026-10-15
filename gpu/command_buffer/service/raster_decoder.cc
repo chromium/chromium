@@ -70,13 +70,11 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -463,7 +461,8 @@ SkYUVAPixmapInfo::DataType ToSkYUVADataType(viz::SharedImageFormat format) {
 class RasterDecoderImpl final : public RasterDecoder,
                                 public gles2::ErrorStateClient,
                                 public ServiceFontManager::Client,
-                                public SharedContextState::ContextLostObserver {
+                                public SharedContextState::ContextLostObserver,
+                                public CopySharedImageHelper::ReadbackDelegate {
  public:
   RasterDecoderImpl(DecoderClient* client,
                     CommandBufferServiceBase* command_buffer_service,
@@ -639,9 +638,10 @@ class RasterDecoderImpl final : public RasterDecoder,
     return feature_info()->feature_flags();
   }
 
-  const GpuDriverBugWorkarounds& workarounds() const {
-    return feature_info()->workarounds();
-  }
+  // CopySharedImageHelper::ReadbackDelegate implementation. WasContextLost()
+  // and CheckResetStatus() are implemented above.
+  const GpuDriverBugWorkarounds& workarounds() const override;
+  void DoFinish() override;
 
   void FlushToWorkAroundMacCrashes() {
     // The workaround is not needed for arm based macs (because they don't have
@@ -686,7 +686,6 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   bool GenQueriesEXTHelper(GLsizei n, const GLuint* client_ids);
   void DeleteQueriesEXTHelper(GLsizei n, const volatile GLuint* client_ids);
-  void DoFinish();
   void DoFlush();
   void DoGetIntegerv(GLenum pname, GLint* params, GLsizei params_size);
   void DoTraceEndCHROMIUM();
@@ -1762,6 +1761,10 @@ error::Error RasterDecoderImpl::HandleEndQueryEXT(
   return error::kNoError;
 }
 
+const GpuDriverBugWorkarounds& RasterDecoderImpl::workarounds() const {
+  return feature_info()->workarounds();
+}
+
 void RasterDecoderImpl::DoFinish() {
   shared_context_state_->FlushAndSubmit(/*sync_to_cpu=*/true);
   ProcessPendingQueries(/*did_finish=*/true);
@@ -2476,21 +2479,6 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   }
 }
 
-namespace {
-struct YUVReadbackResult {
-  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
-  bool finished = false;
-};
-
-void OnReadYUVImagePixelsDone(
-    void* raw_ctx,
-    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
-  YUVReadbackResult* context = reinterpret_cast<YUVReadbackResult*>(raw_ctx);
-  context->async_result = std::move(async_result);
-  context->finished = true;
-}
-}  // namespace
-
 void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     GLuint src_x,
     GLuint src_y,
@@ -2619,141 +2607,18 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-
-  // We don't use |end_semaphores| here because we're going to sync with
-  // with the CPU later regardless.
-  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
-      source_scoped_access = source_shared_image->BeginScopedReadAccess(
-          &begin_semaphores, &end_semaphores);
-
-  if (!begin_semaphores.empty()) {
-    CHECK(gr_context());
-    bool wait_result =
-        gr_context()->wait(begin_semaphores.size(), begin_semaphores.data(),
-                           /*deleteSemaphoresAfterWait=*/false);
-    DCHECK(wait_result);
-  }
-
-  if (!source_scoped_access) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
-                       "Source shared image is not accessible");
+  CopySharedImageHelper helper(&shared_image_representation_factory_,
+                               shared_context_state_.get());
+  auto helper_result =
+      helper.ReadPixelsYUV(this, src_x, src_y, src_width, src_height, dst_width,
+                           dst_height, y_out, y_stride, u_out, u_stride, v_out,
+                           v_stride, std::move(source_shared_image));
+  if (!helper_result.has_value()) {
+    LOCAL_SET_GL_ERROR(helper_result.error().gl_error,
+                       helper_result.error().function_name.c_str(),
+                       helper_result.error().msg.c_str());
     return;
   }
-
-  auto sk_image =
-      source_scoped_access->CreateSkImage(shared_context_state_.get());
-  if (!sk_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                       "Couldn't create SkImage for reading.");
-    // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
-    // exiting.
-    source_scoped_access->ApplyBackendSurfaceEndState();
-    shared_context_state_->SubmitIfNecessary(
-        std::move(end_semaphores),
-        source_scoped_access->NeedGraphiteContextSubmit());
-    return;
-  }
-
-  const SkIRect src_rect =
-      SkIRect::MakeXYWH(src_x, src_y, src_width, src_height);
-
-  if (!SkIRect::MakeSize(sk_image->dimensions()).contains(src_rect)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackYUVImagePixels",
-                       "SRC rect is outside of source image dimensions");
-    source_scoped_access->ApplyBackendSurfaceEndState();
-    shared_context_state_->SubmitIfNecessary(
-        std::move(end_semaphores),
-        source_scoped_access->NeedGraphiteContextSubmit());
-    return;
-  }
-
-  const SkISize dst_size = SkISize::Make(dst_width, dst_height);
-
-  // Readback is potentially slow, so report progress here.
-  gl::ScopedProgressReporter report_progress(
-      shared_context_state_->progress_reporter());
-
-  // YUV readback requires knowing what SkColorSpace the RGB data should be
-  // converted to AND the SkYUVColorSpace that defines how YUV is derived from
-  // the RGB data. To avoid colorspace conversion, this always uses the
-  // SkColorSpace on `sk_image` (derived from the gfx::ColorSpace of the shared
-  // image). If the source image is multi-planar, try to match its YUV color
-  // space, otherwise default to Rec 709 for multi-planar and Rec 601 for
-  // single-plane formats.
-  SkYUVColorSpace yuv_cs = kRec601_Limited_SkYUVColorSpace;
-  if (source_shared_image->format().is_multi_plane()) {
-    yuv_cs = kRec709_Limited_SkYUVColorSpace;
-    source_shared_image->color_space().ToSkYUVColorSpace(&yuv_cs);
-  }
-
-  // While this function indicates it's asynchronous, the DoFinish() call below
-  // ensures it completes synchronously.
-  YUVReadbackResult yuv_result;
-  bool is_context_lost = false;
-  if (graphite_shared_context()) {
-    // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
-    // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_shared_context()->asyncRescaleAndReadPixelsYUV420AndSubmit(
-        sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
-        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
-    is_context_lost =
-        !yuv_result.finished && graphite_shared_context()->IsContextLost();
-  } else {
-    CHECK(gr_context());
-    sk_image->asyncRescaleAndReadPixelsYUV420(
-        yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
-        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        &OnReadYUVImagePixelsDone, &yuv_result);
-    source_scoped_access->ApplyBackendSurfaceEndState();
-    if (!end_semaphores.empty()) {
-      GrFlushInfo flush_info = {
-          .fNumSemaphores = end_semaphores.size(),
-          .fSignalSemaphores = end_semaphores.data(),
-      };
-      AddVulkanCleanupTaskForSkiaFlush(
-          shared_context_state_->vk_context_provider(), &flush_info);
-      gr_context()->flush(flush_info);
-    }
-
-    // TODO(crbug.com/40106956): Use COMMANDS_COMPLETED query for async readback.
-    DoFinish();
-    is_context_lost =
-        !yuv_result.finished && (WasContextLost() || gr_context()->abandoned());
-  }
-
-  // The call above will sync up gpu and CPU, resulting in callback being run
-  // during DoFinish(). To prevent UAF make sure it indeed happened or context
-  // was lost.
-  CHECK(yuv_result.finished || is_context_lost);
-  if (!yuv_result.async_result || is_context_lost) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
-                       "Failed to read pixels from SkImage");
-    return;
-  }
-
-  // Refuse to deliver readback results after a device reset — a reset can fire
-  // the async-read completion over never-written buffers. The plane
-  // destinations have not been written yet on this path, so there is nothing to
-  // scrub; the shm result stays 0. CheckResetStatus() marks the context lost
-  // when it returns true.
-  if (workarounds().check_graphics_reset_status_after_readback &&
-      !WasContextLost() && CheckResetStatus()) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
-                       "readback aborted: device reset detected");
-    return;
-  }
-
-  auto& async_result = yuv_result.async_result;
-  libyuv::I420Copy(static_cast<const uint8_t*>(async_result->data(0)),
-                   async_result->rowBytes(0),
-                   static_cast<const uint8_t*>(async_result->data(1)),
-                   async_result->rowBytes(1),
-                   static_cast<const uint8_t*>(async_result->data(2)),
-                   async_result->rowBytes(2), y_out, y_stride, u_out, u_stride,
-                   v_out, v_stride, dst_width, dst_height);
 
   *result = 1;
 }

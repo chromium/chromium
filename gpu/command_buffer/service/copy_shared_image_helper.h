@@ -20,6 +20,7 @@
 
 namespace gpu {
 
+class GpuDriverBugWorkarounds;
 class SharedContextState;
 class SharedImageRepresentationFactory;
 
@@ -33,6 +34,18 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
     GLenum gl_error = 0;
     std::string function_name = "";
     std::string msg = "";
+  };
+
+  // Decoder facilities needed by the readback functions.
+  class ReadbackDelegate {
+   public:
+    virtual const GpuDriverBugWorkarounds& workarounds() const = 0;
+    virtual bool WasContextLost() const = 0;
+    virtual bool CheckResetStatus() = 0;
+    virtual void DoFinish() = 0;
+
+   protected:
+    virtual ~ReadbackDelegate() = default;
   };
 
   CopySharedImageHelper(
@@ -70,6 +83,24 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLuint row_bytes,
       SkImageInfo dst_info,
       void* pixel_address,
+      std::unique_ptr<SkiaImageRepresentation> source_shared_image);
+  // Reads back the `src_width` x `src_height` rect at (`src_x`, `src_y`) of
+  // `source_shared_image`, rescaled to `dst_width` x `dst_height`, as I420 into
+  // the given planes, which must be large enough for that size.
+  base::expected<void, GLError> ReadPixelsYUV(
+      ReadbackDelegate* delegate,
+      GLuint src_x,
+      GLuint src_y,
+      GLuint src_width,
+      GLuint src_height,
+      GLuint dst_width,
+      GLuint dst_height,
+      uint8_t* y_out,
+      GLuint y_stride,
+      uint8_t* u_out,
+      GLuint u_stride,
+      uint8_t* v_out,
+      GLuint v_stride,
       std::unique_ptr<SkiaImageRepresentation> source_shared_image);
   base::expected<void, GLError> WritePixelsYUV(
       GLuint src_width,
