@@ -45,6 +45,8 @@ std::string GetAnnotationModeMessageString(InkAnnotationMode mode) {
       return "draw";
     case InkAnnotationMode::kText:
       return "text";
+    case InkAnnotationMode::kSignature:
+      return "signature";
   }
   NOTREACHED();
 }

@@ -293,6 +293,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       // <if expr="enable_pdf_ink2">
       pdfInk2Enabled_: {type: Boolean},
+      pdfSignaturesEnabled_: {type: Boolean},
       pdfTextAnnotationsEnabled_: {type: Boolean},
       // </if>
 
@@ -370,6 +371,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private pdfGetSaveDataInBlocks_: boolean = false;
   // <if expr="enable_pdf_ink2">
   protected accessor pdfInk2Enabled_: boolean = false;
+  protected accessor pdfSignaturesEnabled_: boolean = false;
   protected accessor pdfTextAnnotationsEnabled_: boolean = false;
   // </if>
   // <if expr="enable_pdf_save_to_drive">
@@ -691,6 +693,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         record(UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE);
         break;
       case AnnotationMode.OFF:
+      case AnnotationMode.SIGNATURE:
         break;
       default:
         assertNotReached();
@@ -705,6 +708,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         record(UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE);
         break;
       case AnnotationMode.OFF:
+      case AnnotationMode.SIGNATURE:
         break;
       default:
         assertNotReached();
@@ -988,6 +992,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         loadTimeData.getBoolean('pdfGetSaveDataInBlocks');
     // <if expr="enable_pdf_ink2">
     this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
+    this.pdfSignaturesEnabled_ =
+        loadTimeData.getBoolean('pdfSignaturesEnabled');
     this.pdfTextAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfTextAnnotationsEnabled');
     // </if>

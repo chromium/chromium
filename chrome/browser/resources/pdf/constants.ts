@@ -9,6 +9,7 @@ export enum AnnotationMode {
   OFF = 'off',
   DRAW = 'draw',
   TEXT = 'text',
+  SIGNATURE = 'signature',
 }
 
 // The different types of annotation brushes.

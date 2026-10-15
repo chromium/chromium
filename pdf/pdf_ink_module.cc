@@ -1597,6 +1597,9 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
   } else if (*mode == "text") {
     CHECK(features::kPdfInk2TextAnnotations.Get());
     mode_ = InkAnnotationMode::kText;
+  } else if (*mode == "signature") {
+    CHECK(features::kPdfInk2Signatures.Get());
+    mode_ = InkAnnotationMode::kSignature;
   } else {
     NOTREACHED();
   }
@@ -2078,6 +2081,9 @@ void PdfInkModule::MaybeSetCursor() {
       // TODO(crbug.com/402546153): Update cursor for text annotation, once
       // UX determines if it should always use I-beam.
       client_->UpdateInkCursor(ui::mojom::CursorType::kIBeam);
+      return;
+
+    case InkAnnotationMode::kSignature:
       return;
   }
   NOTREACHED();

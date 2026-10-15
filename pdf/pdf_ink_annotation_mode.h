@@ -8,7 +8,7 @@
 namespace chrome_pdf {
 
 // Types of annotations supported.
-enum class InkAnnotationMode { kOff, kDraw, kText };
+enum class InkAnnotationMode { kOff, kDraw, kText, kSignature };
 
 }  // namespace chrome_pdf
 
