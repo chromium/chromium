@@ -285,6 +285,9 @@ crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac 
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
 
+# Linux Wayland/AMD color mismatch in cropped frames.
+crbug.com/574107321 [ amd-0x7340 display-server-wayland linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
+
 # Linux/AMD RX 9070 XT failures
 crbug.com/515133241 [ amd-0x7550 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
 
