@@ -19,13 +19,9 @@ namespace send_tab_to_self {
 // be captured and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 
-// If this feature is enabled, received tabs will be automatically opened
-// in the foreground if Chrome is currently being used.
-BASE_DECLARE_FEATURE(kSendTabToSelfAutoOpen);
-
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// If this feature is enabled along with kSendTabToSelfAutoOpen, received tabs
-// will be automatically opened in the background even while in the Tab Grid.
+// If this feature is enabled, received tabs will be automatically opened in the
+// background even while in the Tab Grid.
 BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 

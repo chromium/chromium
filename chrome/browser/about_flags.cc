@@ -2900,12 +2900,10 @@ const FeatureEntry::FeatureVariation kEnableAndroidSidePanelVariations[] = {
 const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints"},
     {"Enabled with fast-follows", switches::kEnableFeatures,
      "IPH_SendTabToSelfOmnibox,"
      "IPH_SendTabToSelfTutorial,"
-     "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
      "SendTabToSelfDynamicShortcuts,"
@@ -2915,7 +2913,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfMultiTabShare"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "IPH_SendTabToSelfOmnibox,"
-     "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
      "SendTabToSelfDynamicShortcuts,"
