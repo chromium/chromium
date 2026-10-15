@@ -5,6 +5,9 @@ include_rules = [
   "+chrome/services/util_win/util_win_impl.h",
 ]
 specific_include_rules = {
+  "chrome_metrics_services_manager_client_unittest\\.cc": [
+    "+chrome/chrome_elf/nt_registry/nt_registry.h",
+  ],
   "process_memory_metrics_emitter_browsertest\\.cc": [
     "+third_party/iaccessible2",
   ],

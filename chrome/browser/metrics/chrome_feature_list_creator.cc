@@ -261,6 +261,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());
+  metrics_services_manager_client_->OnFieldTrialsInitialized();
 
   initial_seed_.reset();
 }

@@ -371,17 +371,23 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 #endif
 }
 
+void ChromeMetricsServicesManagerClient::OnFieldTrialsInitialized() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(IS_WIN)
+  // Set the registry value so that Crashpad will have the sampling state now
+  // and for subsequent runs. Note that Crashpad uses *both* the registry value
+  // and the value sent from SetUploadConsent() below.
+  // We use IsClientInSampleForCrashes() which checks the feature for whether
+  // crash reports should be sent.
+  install_static::SetCollectStatsInSample(IsClientInSampleForCrashes());
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 #if BUILDFLAG(IS_WIN)
 void ChromeMetricsServicesManagerClient::UpdateRunningServices(
     bool may_record,
     bool may_upload) {
-  // First, set the registry value so that Crashpad will have the sampling state
-  // now and for subsequent runs. Note that Crashpad uses *both* the registry
-  // value and the value sent from SetUploadConsent below.
-  // We use IsClientInSampleForCrash() which checks the feature for if crashes
-  // are allowed.
-  install_static::SetCollectStatsInSample(IsClientInSampleForCrashes());
-
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The intent here is to set the value of the consent. However, since right
   // now we have may_record which is based off both consent and the Feature
   // state, this is redundant with the above value. This is pretty confusing

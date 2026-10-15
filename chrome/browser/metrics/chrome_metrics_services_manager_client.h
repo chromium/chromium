@@ -73,6 +73,9 @@ class ChromeMetricsServicesManagerClient
   void OnCrosSettingsCreated();
 #endif
 
+  // Performs initialization that requires field trials to be set up.
+  void OnFieldTrialsInitialized();
+
   // metrics_services_manager::MetricsServicesManagerClient:
   std::unique_ptr<variations::VariationsService> CreateVariationsService()
       override;
