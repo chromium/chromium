@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -28,9 +30,19 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  void AddProfile(const std::string& name, FeedActivityBucket bucket) {
-    TestProfileIOS* profile = profile_manager_.AddProfileWithBuilder(
-        std::move(TestProfileIOS::Builder().SetName(name)));
+  void AddPersonalProfile(FeedActivityBucket bucket) {
+    CHECK(profile_manager_.GetLoadedProfiles().empty());
+    TestProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+
+    profile->GetPrefs()->SetInteger(kActivityBucketKey,
+                                    std::to_underlying(bucket));
+  }
+
+  void AddManagedProfile(id<SystemIdentity> managed_identity,
+                         FeedActivityBucket bucket) {
+    TestProfileIOS* profile =
+        AddManagedProfileWithBuilder(profile_manager_, managed_identity);
 
     profile->GetPrefs()->SetInteger(kActivityBucketKey,
                                     std::to_underlying(bucket));
@@ -62,7 +74,7 @@ TEST_F(IOSFeedActivityMetricsProviderTest,
        ProvideCurrentSessionData_OneBrowserState) {
   IOSFeedActivityMetricsProvider provider;
 
-  AddProfile("Default", FeedActivityBucket::kLowActivity);
+  AddPersonalProfile(FeedActivityBucket::kLowActivity);
 
   // Check that the data is recorded as expected.
   provider.ProvideCurrentSessionData(/*uma_proto=*/nullptr);
@@ -77,9 +89,11 @@ TEST_F(IOSFeedActivityMetricsProviderTest,
        ProvideCurrentSessionData_MultipleProfileIOS) {
   IOSFeedActivityMetricsProvider provider;
 
-  AddProfile("Profile1", FeedActivityBucket::kLowActivity);
-  AddProfile("Profile2", FeedActivityBucket::kLowActivity);
-  AddProfile("Profile3", FeedActivityBucket::kHighActivity);
+  AddPersonalProfile(FeedActivityBucket::kLowActivity);
+  AddManagedProfile([FakeSystemIdentity fakeManagedIdentity],
+                    FeedActivityBucket::kLowActivity);
+  AddManagedProfile([FakeSystemIdentity identityWithEmail:@"bar@foo.com"],
+                    FeedActivityBucket::kHighActivity);
 
   // Check that the data is recorded as expected.
   provider.ProvideCurrentSessionData(/*uma_proto=*/nullptr);
