@@ -173,15 +173,14 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
   TableViewDetailIconItem* pageTitlesItem = DetailIconItem(
       kItemTypePageTitlesAndUrls,
       IDS_IOS_GEMINI_SUGGESTIONS_PAGE_TITLES_AND_URLS_DESCRIPTION,
-      SymbolWithPointSize(SymbolChartBarXAxis,
+      SymbolWithPointSize(SymbolDocPlaintext,
                           kSettingsRootSymbolImagePointSize));
   [model addItem:pageTitlesItem
       toSectionWithIdentifier:kSectionIdentifierWhenUsed];
 
   TableViewDetailIconItem* adaptItem = DetailIconItem(
       kItemTypeAdapt, IDS_IOS_GEMINI_SUGGESTIONS_ADAPT_DESCRIPTION,
-      SymbolWithPointSize(SymbolMagnifyingglass,
-                          kSettingsRootSymbolImagePointSize));
+      SymbolWithPointSize(SymbolLightBulb, kSettingsRootSymbolImagePointSize));
   [model addItem:adaptItem toSectionWithIdentifier:kSectionIdentifierWhenUsed];
 
   // 3. Things To Consider Section.
@@ -191,10 +190,11 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
                        IDS_IOS_GEMINI_SUGGESTIONS_THINGS_TO_CONSIDER_HEADER)
       forSectionWithIdentifier:kSectionIdentifierThingsToConsider];
 
-  TableViewDetailIconItem* privateSpaceItem = DetailIconItem(
-      kItemTypePrivateSpace,
-      IDS_IOS_GEMINI_SUGGESTIONS_PRIVATE_SPACE_DESCRIPTION,
-      SymbolWithPointSize(SymbolInfoCircle, kSettingsRootSymbolImagePointSize));
+  TableViewDetailIconItem* privateSpaceItem =
+      DetailIconItem(kItemTypePrivateSpace,
+                     IDS_IOS_GEMINI_SUGGESTIONS_PRIVATE_SPACE_DESCRIPTION,
+                     SymbolWithPointSize(SymbolPhoneSparkle,
+                                         kSettingsRootSymbolImagePointSize));
   [model addItem:privateSpaceItem
       toSectionWithIdentifier:kSectionIdentifierThingsToConsider];
 
@@ -203,8 +203,8 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
           initWithType:kItemTypeTurningOff];
   turningOffItem.textNumberOfLines = 0;
   turningOffItem.selectionStyle = UITableViewCellSelectionStyleNone;
-  turningOffItem.iconImage = SymbolWithPointSize(
-      SymbolPersonCropCircle, kSettingsRootSymbolImagePointSize);
+  turningOffItem.iconImage =
+      SymbolWithPointSize(SymbolShield, kSettingsRootSymbolImagePointSize);
   turningOffItem.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
 
   NSDictionary* textAttributes = @{
