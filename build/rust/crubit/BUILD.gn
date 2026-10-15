@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/c++/c++.gni")
+import("//build/rust/rust_api_from_cpp.gni")
 import("//build_overrides/crubit.gni")
 
 # Public C++ APIs provided by Crubit.
@@ -88,4 +90,41 @@ config("allow_unstable_features_required_by_crubit") {
     "unsized_const_params",
   ]
   rustflags = [ "-Zallow-features=" + string_join(",", _allowed_features) ]
+}
+
+if (enable_rust_api_from_cpp) {
+  # `cc_std` below refers to the in-tree libc++ headers (and Crubit's
+  # hand-written `cc_std_impl/*.rs` files assume libc++ layout of standard
+  # library types).
+  assert(use_custom_libcxx,
+         "`rust_api_from_cpp` requires `use_custom_libcxx = true`")
+
+  rust_api_from_cpp("cc_std") {
+    bindings_target = ":cc_std_empty_target"
+    override_crate_name = "cc_std"
+
+    # Not a GN label in Chromium - this is the label that Crubit expects for
+    # bindings of the C++ standard library.
+    override_target_label = "//third_party/crubit/support/cc_std:cc_std"
+
+    # Other C++ standard library types to cover (in dependency order):
+    # TODO(crbug.com/40226863): std::unique_ptr (+allocator.*, non_null.rs).
+    # TODO(crbug.com/40226863): std::vector (+allocator.*, crate feature).
+    # TODO(crbug.com/40226863): std::shared_ptr (needs std::unique_ptr).
+    # TODO(crbug.com/40226863): std::string_view (+lossy_utf8, slice_ptr).
+    # TODO(crbug.com/40226863): std::string (needs std::string_view).
+    # TODO(crbug.com/40226863): Other headers from Crubit's `headers.bzl`.
+    public_headers = [ "${libcxx_prefix}/include/optional" ]
+
+    # Hand-written Rust types (e.g. `cc_std::std::optional<T>`) that
+    # Crubit-generated code expects in the `std` module.
+    extra_rust_sources = [ "${crubit_src_dir}/support/cc_std_impl/optional.rs" ]
+    extra_rust_sources_mod = "std"
+  }
+
+  source_set("cc_std_empty_target") {
+    # Empty target to satisfy `rust_api_from_cpp` which requires
+    # mandatory `bindings_target` (C++ standard library is special
+    # in that it doesn't need an explicit target).
+  }
 }

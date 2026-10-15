@@ -21,6 +21,19 @@ _globally_enabled_crubit_features = [
   # "References and lifetimes" section in
   # `docs/rust/crubit/rust_api_from_cpp.md`.
   "assume_lifetimes",
+
+  # `layout_compat_optional` makes Crubit represent `std::optional<T>` as
+  # layout-compatible `cc_std::std::optional<T>` (rather than bridging it to
+  # Rust's `Option<T>`) in by-value positions (e.g. in function parameters).
+  # This will become the default Crubit behavior "soon", but for now this is an
+  # opt-in (to enable incremental migration of other Crubit clients).
+  "layout_compat_optional",
+
+  # Other features to consider enabling by default:
+  # TODO(crbug.com/40226863): Consider enabling `forward_declare`.
+  # TODO(crbug.com/40226863): Consider enabling `layout_compat_string`.
+  # TODO(crbug.com/40226863): Consider enabling `layout_compat_tuple`.
+  # TODO(crbug.com/40226863): Consider enabling `template_instantiation`.
 ]
 
 # Template to generate and build Rust bindings for a set of C++ headers using
@@ -87,6 +100,11 @@ _globally_enabled_crubit_features = [
 #     This should be needed only rarely (e.g. when `extra_rust_sources` need to
 #     provide items that Crubit-generated code expects at a specific module
 #     path).
+#
+#   override_target_label, override_crate_name: (optional)
+#     Internal parameters, used only by `//build/rust/crubit:cc_std` (bindings
+#     for the C++ standard library) to provide the target label and crate name
+#     that Crubit expects for `cc_std`.
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
   assert(enable_rust)
@@ -104,8 +122,12 @@ template("rust_api_from_cpp") {
 
   # Mandatory/unavoidable parameter: target_name
   _lib_target_name = target_name
-  _current_lib_target_full_label =
-      get_label_info(":${_lib_target_name}", "label_no_toolchain")
+  if (defined(invoker.override_target_label)) {
+    _current_lib_target_full_label = invoker.override_target_label
+  } else {
+    _current_lib_target_full_label =
+        get_label_info(":${_lib_target_name}", "label_no_toolchain")
+  }
   _cc_impl_target_name = "${_lib_target_name}_cc_impl"
 
   # Mandatory parameter: public_headers.
@@ -134,6 +156,15 @@ template("rust_api_from_cpp") {
   _bindings_deps = []
   if (defined(invoker.bindings_deps)) {
     _bindings_deps = invoker.bindings_deps
+  }
+
+  # Bindings of the C++ standard library are an implicit dependency of all
+  # other `rust_api_from_cpp` targets (similarly to how `cpp_api_from_rust`
+  # injects `//build/rust/std:std_bindings`).
+  _cc_std_target = "//build/rust/crubit:cc_std"
+  if (get_label_info(":${_lib_target_name}", "label_no_toolchain") !=
+      _cc_std_target) {
+    _bindings_deps += [ _cc_std_target ]
   }
 
   # Optional parameters: extra_rust_sources and extra_rust_sources_mod.
@@ -200,8 +231,12 @@ template("rust_api_from_cpp") {
   #
   # NOTE: TargetName=>CrateName mangling algorithm should be kept in sync with
   # `rust_target.gni` (see the NOTE there; `chromium::import!` relies on it).
-  _dir_hash = string_hash(get_label_info(":${_lib_target_name}", "dir"))
-  _lib_target_crate_name = "${_lib_target_name}_${_dir_hash}"
+  if (defined(invoker.override_crate_name)) {
+    _lib_target_crate_name = invoker.override_crate_name
+  } else {
+    _dir_hash = string_hash(get_label_info(":${_lib_target_name}", "dir"))
+    _lib_target_crate_name = "${_lib_target_name}_${_dir_hash}"
+  }
 
   # Metadata targets (see `_metadata_target_name` below) of `_bindings_deps`.
   _bindings_deps_metadata_targets = []
@@ -419,5 +454,12 @@ template("rust_api_from_cpp") {
     # (and those may not be inherited via `public_configs` of `bindings_target`)
     configs = default_compiler_configs
     args += [ "--" ] + libclang_args_for_cpp
+
+    # TODO(crbug.com/40226863): Remove after rolling Crubit to a version that
+    # supports the `type_visibility` attribute that libc++ uses on
+    # `namespace std` (without this, Crubit can't generate bindings for any
+    # items in `namespace std` - e.g. for `std::optional`).  See the WIP PR at
+    # https://github.com/google/crubit/pull/2361
+    args += [ "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
   }
 }
