@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
@@ -38,6 +39,12 @@ using ::ui::mojom::DragOperation;
 // RunMoveLoop is pumping tasks. On X11 that lets a compromised renderer steal
 // the global XdndSelection mid-drag. Mirrors desktop_drag_drop_client_win.cc.
 bool g_is_dragging = false;
+
+// Number of live ScopedSuppressForWindowMove() scopes. A counter (rather than
+// reusing `g_is_dragging` with base::AutoReset) allows independent scopes, such
+// as a caption click-hold and a move loop, to overlap and be destroyed in any
+// order without leaving drags permanently suppressed or prematurely enabled.
+int g_window_move_suppression_count = 0;
 
 // The minimum alpha required so we would treat the pixel as visible.
 constexpr uint32_t kMinAlpha = 32;
@@ -135,10 +142,18 @@ DesktopDragDropClientOzone::DesktopDragDropClientOzone(
     : root_window_(root_window), drag_handler_(drag_handler) {}
 
 // static
-base::AutoReset<bool>
+base::ScopedClosureRunner
 DesktopDragDropClientOzone::ScopedSuppressForWindowMove() {
-  DCHECK(!g_is_dragging);
-  return base::AutoReset<bool>(&g_is_dragging, true);
+  ++g_window_move_suppression_count;
+  return base::ScopedClosureRunner(base::BindOnce([] {
+    CHECK_GT(g_window_move_suppression_count, 0);
+    --g_window_move_suppression_count;
+  }));
+}
+
+// static
+bool DesktopDragDropClientOzone::IsDragInProgressOrSuppressedForTesting() {
+  return g_is_dragging || g_window_move_suppression_count > 0;
 }
 
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
@@ -159,8 +174,9 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   }
 
   // A renderer can send LocalFrameHost::StartDragging at any time, so reject
-  // (rather than CHECK) re-entrant drags from a second top-level window.
-  if (g_is_dragging) {
+  // (rather than CHECK) re-entrant drags from a second top-level window, and
+  // drags that would latch onto a user's in-progress window-move gesture.
+  if (g_is_dragging || g_window_move_suppression_count > 0) {
     return DragOperation::kNone;
   }
   base::AutoReset<bool> drag_scoper(&g_is_dragging, true);

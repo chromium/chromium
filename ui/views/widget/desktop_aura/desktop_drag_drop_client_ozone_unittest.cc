@@ -630,6 +630,35 @@ TEST_F(DesktopDragDropClientOzoneTest, RejectDragDuringWindowMove) {
   EXPECT_EQ(DragOperation::kNone, operation);
 }
 
+// Overlapping suppression scopes (e.g. a caption click-hold and a move loop)
+// may be released in any order. Drags must stay suppressed until all scopes are
+// gone, and must not remain suppressed afterwards.
+TEST_F(DesktopDragDropClientOzoneTest, OverlappingWindowMoveSuppression) {
+  EXPECT_FALSE(
+      DesktopDragDropClientOzone::IsDragInProgressOrSuppressedForTesting());
+
+  auto first = DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
+  auto second = DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
+  EXPECT_TRUE(
+      DesktopDragDropClientOzone::IsDragInProgressOrSuppressedForTesting());
+
+  // Release the outer scope first.
+  first.RunAndReset();
+  EXPECT_TRUE(
+      DesktopDragDropClientOzone::IsDragInProgressOrSuppressedForTesting());
+  EXPECT_EQ(DragOperation::kNone,
+            StartDragAndDrop(ui::DragDropTypes::DRAG_COPY));
+
+  second.RunAndReset();
+  EXPECT_FALSE(
+      DesktopDragDropClientOzone::IsDragInProgressOrSuppressedForTesting());
+
+  // Drags work again once all scopes are released.
+  dragdrop_delegate_->SetOperation(DragOperation::kCopy);
+  EXPECT_EQ(DragOperation::kCopy,
+            StartDragAndDrop(ui::DragDropTypes::DRAG_COPY));
+}
+
 TEST_F(DesktopDragDropClientOzoneTest, DestroyClientDuringDrop) {
   dragdrop_delegate_->SetOperation(DragOperation::kMove);
   dragdrop_delegate_->set_on_drop_callback(base::BindRepeating(

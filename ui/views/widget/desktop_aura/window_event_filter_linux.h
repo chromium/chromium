@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/hit_test.h"
@@ -50,6 +51,10 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 
+  // Clears `begin_drag_location_` and releases the associated data drag
+  // suppression.
+  void ResetCaptionHold();
+
   void MaybeToggleMaximizedState(aura::Window* window);
 
   // Dispatches a message to the window manager to tell it to act as if a border
@@ -83,6 +88,11 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // The drag will only happen if the system-provided mouse move threshold is
   // met.
   std::optional<gfx::Point> begin_drag_location_;
+
+  // Suppresses renderer-initiated data drags while `begin_drag_location_` is
+  // set, so that a data drag cannot latch onto the user's caption click-hold.
+  // Must be reset whenever `begin_drag_location_` is reset.
+  base::ScopedClosureRunner caption_hold_drag_suppression_;
 
   base::ScopedObservation<ui::EventTarget, ui::EventHandler>
       window_observation_{this};
