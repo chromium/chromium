@@ -69,6 +69,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.shadows.ShadowChoreographer;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -276,6 +277,18 @@ public class UrlBarUnitTest {
         ShadowSystemClock.advanceBy(ShadowChoreographer.getFrameDelay());
         ShadowLooper.idleMainLooper();
         ShadowChoreographer.setPaused(false);
+    }
+
+    /** Displays {@code url} in the unfocused, bounds-ellipsis-enabled state, then lays it out. */
+    private void showUnfocusedUrlWithBoundsEllipsis(String url) {
+        mUrlBar.mCustomPaint = null;
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+        mUrlBar.setText(url);
+        measureAndLayoutUrlBar();
     }
 
     private void verifySelectionState(
@@ -1554,41 +1567,72 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_Enabled() {
-        mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(
-                /* focused= */ false,
-                /* direction= */ View.FOCUS_DOWN,
-                /* previouslyFocusedRect= */ null);
-        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
-        measureAndLayoutUrlBar();
+        showUnfocusedUrlWithBoundsEllipsis(LONG_DOMAIN);
 
         Editable text = mUrlBar.getText();
-        UrlBar.BoundsEllipsisSpan[] spans =
-                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
-        assertNotNull(spans);
-        assertTrue(spans.length > 0);
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(1, spans.length);
+        int spanStart = text.getSpanStart(spans[0]);
+        assertTrue(spanStart > 0 && spanStart < LONG_DOMAIN.length());
+        float visibleWidth = mUrlBar.getPaint().measureText(text, 0, spanStart);
+        int ellipsisWidth =
+                spans[0].getSize(mUrlBar.getPaint(), text, spanStart, text.length(), null);
+        assertTrue(visibleWidth + ellipsisWidth <= 100);
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_StepsBackWholeSurrogatePair() {
+        // Place emoji at every position near the cutoff boundary and verify the span start never
+        // splits a UTF-16 surrogate pair.
+        String emojiUrl =
+                "www."
+                        + TextUtils.join("", Collections.nCopies(20, GRINNING_FACE_EMOJI))
+                        + LONG_PATH;
+        showUnfocusedUrlWithBoundsEllipsis(emojiUrl);
+
+        Editable text = mUrlBar.getText();
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(1, spans.length);
+        int spanStart = text.getSpanStart(spans[0]);
+        assertFalse(Character.isLowSurrogate(text.charAt(spanStart)));
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_NotAppliedWhenUrlFitsViewport() {
+        showUnfocusedUrlWithBoundsEllipsis(LONG_DOMAIN);
+        assertEquals(
+                1,
+                mUrlBar.getText()
+                        .getSpans(0, mUrlBar.getText().length(), BoundsEllipsisSpan.class)
+                        .length);
+
+        mUrlBar.setText(SHORT_DOMAIN);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ true);
+
+        Editable text = mUrlBar.getText();
+        assertEquals(0, text.getSpans(0, text.length(), BoundsEllipsisSpan.class).length);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_Disabled() {
-        mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(
-                /* focused= */ false,
-                /* direction= */ View.FOCUS_DOWN,
-                /* previouslyFocusedRect= */ null);
-        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
-        measureAndLayoutUrlBar();
+        showUnfocusedUrlWithBoundsEllipsis(LONG_DOMAIN);
 
         Editable text = mUrlBar.getText();
-        UrlBar.BoundsEllipsisSpan[] spans =
-                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
-        assertTrue(spans == null || spans.length == 0);
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(0, spans.length);
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_NotEnabledByContext() {
         mUrlBar.setBoundsEllipsisEnabled(false);
@@ -1596,38 +1640,30 @@ public class UrlBarUnitTest {
                 /* focused= */ false,
                 /* direction= */ View.FOCUS_DOWN,
                 /* previouslyFocusedRect= */ null);
-        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
+        mUrlBar.setText(LONG_DOMAIN);
         measureAndLayoutUrlBar();
 
         Editable text = mUrlBar.getText();
-        UrlBar.BoundsEllipsisSpan[] spans =
-                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
-        assertTrue(spans == null || spans.length == 0);
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(0, spans.length);
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_ClearOnFocus() {
-        mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(
-                /* focused= */ false,
-                /* direction= */ View.FOCUS_DOWN,
-                /* previouslyFocusedRect= */ null);
-        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
-        measureAndLayoutUrlBar();
+        showUnfocusedUrlWithBoundsEllipsis(LONG_DOMAIN);
 
         Editable text = mUrlBar.getText();
-        UrlBar.BoundsEllipsisSpan[] spans =
-                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
-        assertNotNull(spans);
-        assertTrue(spans.length > 0);
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(1, spans.length);
 
         mUrlBar.onFocusChanged(
                 /* focused= */ true,
                 /* direction= */ View.FOCUS_DOWN,
                 /* previouslyFocusedRect= */ null);
-        spans = text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
-        assertTrue(spans == null || spans.length == 0);
+        spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(0, spans.length);
     }
 
     @Test

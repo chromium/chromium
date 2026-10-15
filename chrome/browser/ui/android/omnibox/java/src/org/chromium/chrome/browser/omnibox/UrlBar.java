@@ -1402,13 +1402,7 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     private void clearBoundsEllipsisSpans(Editable text) {
-        int textLength = text.length();
-        BoundsEllipsisSpan[] spans = text.getSpans(0, textLength, BoundsEllipsisSpan.class);
-        if (spans != null && spans.length > 0) {
-            for (BoundsEllipsisSpan span : spans) {
-                text.removeSpan(span);
-            }
-        }
+        text.removeSpan(BoundsEllipsisSpan.INSTANCE);
     }
 
     /**
@@ -1419,37 +1413,32 @@ public class UrlBar extends AutocompleteEditText {
         if (!shouldApplyBoundsEllipsis()) return;
 
         int textLength = text.length();
-        if (textLength == 0) return;
+        if (textLength == 0 || getLayout() == null) return;
 
-        Layout textLayout = getLayout();
-        if (textLayout != null) {
-            int ellipsisWidth = (int) textLayout.getPaint().measureText(EllipsisSpan.ELLIPSIS);
-            int cutoffWidth = Math.max(0, measuredWidth - ellipsisWidth);
-            int finalVisibleCharIndex =
-                    textLayout
-                            .getPaint()
-                            .getOffsetForAdvance(
-                                    text, 0, textLength, 0, textLength, false, cutoffWidth);
+        if (getTextWidth() <= measuredWidth) {
+            clearBoundsEllipsisSpans(text);
+            return;
+        }
 
-            BoundsEllipsisSpan[] spans = text.getSpans(0, textLength, BoundsEllipsisSpan.class);
-            if (finalVisibleCharIndex < textLength) {
-                if (spans != null
-                        && spans.length == 1
-                        && text.getSpanStart(spans[0]) == finalVisibleCharIndex
-                        && text.getSpanEnd(spans[0]) == textLength) {
-                    return;
-                }
-                clearBoundsEllipsisSpans(text);
-                text.setSpan(
-                        BoundsEllipsisSpan.INSTANCE,
-                        finalVisibleCharIndex,
-                        textLength,
-                        Editable.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else {
-                if (spans != null && spans.length > 0) {
-                    clearBoundsEllipsisSpans(text);
-                }
-            }
+        CharSequence ellipsizedText =
+                TextUtils.ellipsize(
+                        assumeNonNull(mLastMeasuredText),
+                        getPaint(),
+                        measuredWidth,
+                        TextUtils.TruncateAt.END);
+        if (TextUtils.equals(mLastMeasuredText, ellipsizedText)) {
+            clearBoundsEllipsisSpans(text);
+            return;
+        }
+
+        int offset = Math.max(0, ellipsizedText.length() - 1);
+        if (text.getSpanStart(BoundsEllipsisSpan.INSTANCE) != offset
+                || text.getSpanEnd(BoundsEllipsisSpan.INSTANCE) != textLength) {
+            text.setSpan(
+                    BoundsEllipsisSpan.INSTANCE,
+                    offset,
+                    textLength,
+                    Editable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
     }
 
@@ -1946,7 +1935,7 @@ public class UrlBar extends AutocompleteEditText {
      * get decent performance from TextView.
      */
     /* package */ static class EllipsisSpan extends ReplacementSpan {
-        static final String ELLIPSIS = "...";
+        static final String ELLIPSIS = "\u2026";
 
         public static final EllipsisSpan INSTANCE = new EllipsisSpan();
 
@@ -1957,7 +1946,7 @@ public class UrlBar extends AutocompleteEditText {
                 int start,
                 int end,
                 Paint.@Nullable FontMetricsInt fm) {
-            return (int) paint.measureText(ELLIPSIS);
+            return (int) Math.ceil(paint.measureText(ELLIPSIS));
         }
 
         @Override
