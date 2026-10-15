@@ -5,7 +5,9 @@
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/feature_list.h"
 #import "base/task/sequenced_task_runner.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
@@ -100,11 +102,21 @@ void WebContentsNSViewBridge::SetVisible(bool visible) {
   // the toolbar in immersive fullscreen. To prevent this set the window's first
   // responder to nil which will make the window the first responder before the
   // hide.
+  //
+  // When kClearFirstResponderBeforeHidingWebContents is enabled this is done
+  // unconditionally rather than only in immersive fullscreen: detecting
+  // immersive fullscreen from here is unreliable (e.g. a WebContents hosted in
+  // the toolbar lives in the NSToolbarFullScreenWindow, which is not a
+  // NativeWidgetMacNSWindow; see https://crbug.com/573809833), and
+  // toolkit-views' FocusManager, not the AppKit key view loop, is responsible
+  // for choosing the next focused view anyway.
   // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in
   // AppKit.
   NativeWidgetMacNSWindow* widget_window =
       base::apple::ObjCCast<NativeWidgetMacNSWindow>(ns_view_.window);
-  if (!visible && [widget_window immersiveFullscreen]) {
+  if (!visible && (base::FeatureList::IsEnabled(
+                       features::kClearFirstResponderBeforeHidingWebContents) ||
+                   [widget_window immersiveFullscreen])) {
     NSView* first_responder =
         base::apple::ObjCCast<NSView>(ns_view_.window.firstResponder);
     if ([first_responder isDescendantOf:ns_view_]) {

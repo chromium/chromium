@@ -28,4 +28,12 @@ BASE_FEATURE(kSuppressAppKitFrameAdjustmentsDuringMoveLoop,
 // display reliably when floating over native macOS fullscreen spaces.
 BASE_FEATURE(kMacFullScreenAuxiliaryFileDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, before hiding a WebContents' NSView that contains the window's
+// first responder, the first responder is cleared so that AppKit does not
+// search the key view loop for a replacement. That search can loop forever (and
+// OOM) when an NSToolbar is involved, e.g. in immersive fullscreen. See
+// https://crbug.com/573809833. Kill switch.
+BASE_FEATURE(kClearFirstResponderBeforeHidingWebContents,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features
