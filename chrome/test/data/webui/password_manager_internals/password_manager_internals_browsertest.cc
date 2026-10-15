@@ -111,6 +111,23 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest,
       /*skip_test_loader=*/true));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest, AutoScroll) {
+  autofill::LogRouter* log_router =
+      password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(log_router);
+  for (int i = 0; i < 50; ++i) {
+    log_router->ProcessLog("Log entry for auto-scroll testing");
+  }
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(RunTestOnWebContents(
+      web_contents,
+      "password_manager_internals/password_manager_internals_test.js",
+      "runMochaTest('PasswordManagerInternals', 'AutoScroll')",
+      /*skip_test_loader=*/true));
+}
+
 class PasswordManagerInternalsIncognitoBrowserTest
     : public PasswordManagerInternalsBrowserTest {
  protected:

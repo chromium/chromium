@@ -50,7 +50,8 @@ function showModalDialog(text: string) {
 // scrollDown() if needsScrollDown() was true.
 
 function isScrolledDown(): boolean {
-  return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+  return Math.ceil(window.innerHeight + window.scrollY) >=
+      document.body.offsetHeight;
 }
 
 // Whether autoscroll is currently scrolling.
@@ -319,10 +320,15 @@ function enableResetCacheButton() {
 }
 
 function notifyAboutIncognito(isIncognito: boolean) {
+  const scrollAfterInsert = needsScrollDown();
   document.body.dataset['incognito'] = isIncognito.toString();
+  if (scrollAfterInsert) {
+    scrollDown();
+  }
 }
 
 function notifyAboutVariations(variations: string[]) {
+  const scrollAfterInsert = needsScrollDown();
   const list = document.createElement('div');
   for (const item of variations) {
     list.appendChild(document.createTextNode(item));
@@ -331,6 +337,9 @@ function notifyAboutVariations(variations: string[]) {
   const variationsList =
       getRequiredElement<HTMLTableCellElement>('variations-list');
   variationsList.appendChild(list);
+  if (scrollAfterInsert) {
+    scrollDown();
+  }
 }
 
 // Setup a (fake) button to add visual markers
@@ -769,6 +778,12 @@ function setUpSettingCheckboxes() {
     const input = createCheckbox(setting);
     settingsPlaceholder.appendChild(input.parentElement!);
   }
+  getRequiredElement<HTMLInputElement>('EnableAutoscroll')
+      .addEventListener('change', (e) => {
+        if ((e.target as HTMLInputElement).checked) {
+          scrollDown();
+        }
+      });
   {
     // Add the timestamp for AutomaticallyStopRecording.
     const span = document.createElement('span');

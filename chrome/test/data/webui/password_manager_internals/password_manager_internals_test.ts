@@ -47,4 +47,39 @@ suite('PasswordManagerInternals', function() {
     match = bodyText.match(/logs are listed below/);
     assertEquals(null, match);
   });
+
+  test('AutoScroll', () => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    const checkbox =
+        document.querySelector<HTMLInputElement>('#EnableAutoscroll');
+    assertTrue(!!checkbox);
+    assertTrue(checkbox.checked);
+    assertTrue(document.body.offsetHeight > window.innerHeight);
+
+    const markerButton = document.getElementById('marker-fake-button');
+    assertTrue(!!markerButton);
+    markerButton.click();
+
+    assertTrue(window.scrollY > 0);
+    assertTrue(
+        Math.ceil(window.innerHeight + window.scrollY) >=
+        document.body.offsetHeight);
+
+    const scrollBeforeMarker = window.scrollY;
+    markerButton.click();
+    assertTrue(window.scrollY > scrollBeforeMarker);
+    assertTrue(
+        Math.ceil(window.innerHeight + window.scrollY) >=
+        document.body.offsetHeight);
+
+    checkbox.click();
+    window.scrollTo(0, 0);
+    assertEquals(0, window.scrollY);
+
+    checkbox.click();
+    assertTrue(checkbox.checked);
+    assertTrue(
+        Math.ceil(window.innerHeight + window.scrollY) >=
+        document.body.offsetHeight);
+  });
 });
