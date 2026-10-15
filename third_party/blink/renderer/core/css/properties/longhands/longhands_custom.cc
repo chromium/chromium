@@ -7047,7 +7047,7 @@ const CSSValue* MarginTrim::ParseSingleValue(CSSParserTokenStream& stream,
   } else {
     // [ block-start || block-end ]
     while (!stream.AtEnd()) {
-      id = stream.ConsumeIncludingWhitespace().Id();
+      id = stream.Peek().Id();
       if (id == CSSValueID::kBlockStart) {
         if (!add_flags(kMarginTrimBlockStart)) {
           return nullptr;
@@ -7059,6 +7059,7 @@ const CSSValue* MarginTrim::ParseSingleValue(CSSParserTokenStream& stream,
       } else {
         return nullptr;
       }
+      stream.ConsumeIncludingWhitespace();
     }
   }
   DCHECK(margin_trim & kMarginTrimBlock);
