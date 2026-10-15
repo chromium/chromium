@@ -83,7 +83,8 @@ bool TokenHandleStoreImpl::HasToken(const AccountId& account_id) const {
 
 bool TokenHandleStoreImpl::ShouldObtainHandle(
     const AccountId& account_id) const {
-  return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
+  return !HasToken(account_id) || HasTokenStatusInvalid(account_id) ||
+         IsTokenHandleStale(account_id);
 }
 
 bool TokenHandleStoreImpl::IsRecentlyChecked(
@@ -342,8 +343,10 @@ bool TokenHandleStoreImpl::HasTokenStatusInvalid(
 
 bool TokenHandleStoreImpl::IsTokenHandleStale(
     const AccountId& account_id) const {
-  return *known_user_->FindStringPath(account_id, kTokenHandleStatusPref) ==
-         kTokenHandleStatusStale;
+  const std::string* status =
+      known_user_->FindStringPath(account_id, kTokenHandleStatusPref);
+
+  return status && *status == kTokenHandleStatusStale;
 }
 
 void TokenHandleStoreImpl::SetInvalidTokenForTesting(const char* token) {

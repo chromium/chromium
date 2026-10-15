@@ -199,6 +199,22 @@ TEST_F(TokenHandleStoreTest,
   EXPECT_EQ(should_obtain_handle, true);
 }
 
+TEST_F(TokenHandleStoreTest,
+       ShouldObtainHandleReturnsTrueIfTokenExistsAndIsStale) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  auto known_user = std::make_unique<user_manager::KnownUser>(local_state());
+  known_user->SetStringPref(account_id, kTokenHandlePref, kFakeToken);
+  known_user->SetStringPref(account_id, kTokenHandleStatusPref,
+                            kTokenHandleStatusStale);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(known_user));
+
+  bool should_obtain_handle =
+      token_handle_store->ShouldObtainHandle(account_id);
+
+  EXPECT_EQ(should_obtain_handle, true);
+}
+
 TEST_F(TokenHandleStoreTest, ShouldObtainHandleReturnsTrueIfTokenDoesNotExist) {
   AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
   auto known_user = std::make_unique<user_manager::KnownUser>(local_state());
