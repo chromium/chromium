@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"
@@ -133,6 +134,31 @@ AutofillMessageModel::CreateForPrivateInferenceNotice(
 }
 
 std::unique_ptr<AutofillMessageModel>
+AutofillMessageModel::CreateForEmailVerificationLoading(
+    ui::WindowAndroid* window_android,
+    base::OnceClosure action_callback,
+    messages::MessageWrapper::DismissCallback dismiss_callback) {
+  std::unique_ptr<messages::MessageWrapper> message =
+      std::make_unique<messages::MessageWrapper>(
+          messages::MessageIdentifier::EMAIL_VERIFICATION_LOADING);
+  message->SetTitle(l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
+  message->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_CANCEL));
+  if (!message->ShowLoadingSpinner(window_android)) {
+    message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+        IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED));
+  }
+  // Keep the loading banner visible while token retrieval is in flight until it
+  // is explicitly replaced by the verified or error banner.
+  constexpr base::TimeDelta kEmailVerificationLoadingDuration =
+      base::Seconds(60);
+  message->SetDuration(kEmailVerificationLoadingDuration.InMilliseconds());
+
+  return std::make_unique<AutofillMessageModel>(
+      std::move(message), Type::kEmailVerificationLoading,
+      std::move(action_callback), std::move(dismiss_callback));
+}
+
+std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForEmailVerified(
     const GURL& issuer,
     base::OnceClosure action_callback) {
@@ -206,6 +232,8 @@ std::string_view AutofillMessageModel::TypeToString(Type message_type) {
       return "ResurrectChurnedUsers";
     case Type::kEmailVerificationError:
       return "EmailVerificationError";
+    case Type::kEmailVerificationLoading:
+      return "EmailVerificationLoading";
   }
 }
 

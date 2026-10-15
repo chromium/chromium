@@ -1718,6 +1718,7 @@ chromium-metrics-reviews@google.com.
   <int value="80" label="EmailVerified"/>
   <int value="81" label="ResurrectChurnedUsers"/>
   <int value="82" label="EmailVerificationError"/>
+  <int value="83" label="EmailVerificationLoading"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

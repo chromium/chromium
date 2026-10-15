@@ -155,6 +155,36 @@ TEST(AutofillMessageModelTest, VerifyResurrectChurnedUsersAttributes) {
   message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
 }
 
+TEST(AutofillMessageModelTest, VerifyEmailVerificationLoadingAttributes) {
+  base::MockCallback<base::OnceClosure> cancel_callback;
+  base::MockCallback<messages::MessageWrapper::DismissCallback>
+      dismiss_callback;
+
+  std::unique_ptr<AutofillMessageModel> message_model =
+      AutofillMessageModel::CreateForEmailVerificationLoading(
+          /*window_android=*/nullptr, cancel_callback.Get(),
+          dismiss_callback.Get());
+
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetTitle(),
+            l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryButtonText(),
+            l10n_util::GetStringUTF16(IDS_CANCEL));
+  EXPECT_EQ(
+      test_api(*message_model).GetMessage().GetIconResourceId(),
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED));
+  EXPECT_EQ(message_model->GetType(),
+            AutofillMessageModel::Type::kEmailVerificationLoading);
+  EXPECT_EQ(message_model->GetTypeAsString(),
+            AutofillMessageModel::TypeToString(
+                AutofillMessageModel::Type::kEmailVerificationLoading));
+
+  EXPECT_CALL(cancel_callback, Run);
+  message_model->OnActionClicked();
+
+  EXPECT_CALL(dismiss_callback, Run(messages::DismissReason::PRIMARY_ACTION));
+  message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+}
+
 TEST(AutofillMessageModelTest, VerifyEmailVerifiedAttributes) {
   base::MockCallback<base::OnceClosure> manage_callback;
 
@@ -215,5 +245,8 @@ TEST(AutofillMessageModelTest, AutofillMessageTypeToString) {
   EXPECT_EQ(AutofillMessageModel::TypeToString(
                 AutofillMessageModel::Type::kEmailVerificationError),
             "EmailVerificationError");
+  EXPECT_EQ(AutofillMessageModel::TypeToString(
+                AutofillMessageModel::Type::kEmailVerificationLoading),
+            "EmailVerificationLoading");
 }
 }  // namespace autofill

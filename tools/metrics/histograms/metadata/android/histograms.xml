@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".DownloadIncognitoWarning"/>
   <variant name=".DownloadProgress"/>
   <variant name=".EmailVerificationError"/>
+  <variant name=".EmailVerificationLoading"/>
   <variant name=".EmailVerified"/>
   <variant name=".ExtensionDevTools"/>
   <variant name=".ExtensionsRequestAccess"/>
