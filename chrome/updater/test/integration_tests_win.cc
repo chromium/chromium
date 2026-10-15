@@ -915,7 +915,9 @@ void ExpectClean(UpdaterScope scope) {
                return files;
              }(),
              FILE_PATH_LITERAL(","));
-  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+  }
 }
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {

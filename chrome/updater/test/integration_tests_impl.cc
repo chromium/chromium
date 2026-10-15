@@ -1929,9 +1929,14 @@ void UninstallEnterpriseCompanionApp() {
   base::CommandLine command_line(*exe_path);
   command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
-  if (uninstall_process.IsValid() && WaitForProcess(uninstall_process) == 0) {
+  // The enterprise companion completes its uninstall asynchronously (e.g. via
+  // a separate cmd script on Windows).
+  if (uninstall_process.IsValid() && WaitForProcess(uninstall_process) == 0 &&
+      WaitFor([] { return !enterprise_companion::FindExistingInstall(); })) {
     VLOG(1) << "Enterprise companion app is removed.";
-    return;
+  } else {
+    LOG(WARNING) << "Failed to uninstall the enterprise companion app at "
+                 << *exe_path;
   }
 }
 

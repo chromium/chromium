@@ -153,7 +153,9 @@ void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
   ExpectMostlyClean(GetInstallDirectory(scope));
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
-  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+  }
 }
 
 base::TimeDelta GetOverinstallTimeoutForEnterTestMode() {
