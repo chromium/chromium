@@ -58,6 +58,15 @@
       <ExpandedItem Condition="ptr_ != 0">ptr_</ExpandedItem>
     </Expand>
   </Type>
+  <Type Name="base::raw_ptr&lt;*&gt;">
+    <SmartPointer Usage="Minimal">wrapped_ptr_</SmartPointer>
+    <DisplayString Condition="wrapped_ptr_ == 0">null</DisplayString>
+    <DisplayString>{(void*)wrapped_ptr_} {*wrapped_ptr_}</DisplayString>
+    <Expand>
+      <Item Name="Ptr">wrapped_ptr_</Item>
+      <ExpandedItem Condition="wrapped_ptr_ != 0">wrapped_ptr_</ExpandedItem>
+    </Expand>
+  </Type>
   <Type Name="IPC::Message::Header">
     <DisplayString>{{Routing: {routing}, Type: {type}}}</DisplayString>
     <Expand>
