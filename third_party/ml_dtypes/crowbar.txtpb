@@ -1,0 +1,15 @@
+upstream {
+  commit: "ce57c03112ff4a95c275c3d2c3622acaa53663bd"
+  artifacts {
+    git {
+      repository: "https://github.com/jax-ml/ml_dtypes"
+      commit: "ce57c03112ff4a95c275c3d2c3622acaa53663bd"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

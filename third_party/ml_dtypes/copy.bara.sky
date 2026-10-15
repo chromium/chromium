@@ -1,0 +1,10 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob([
+        "LICENSE",
+        "ml_dtypes/include/float8.h",
+        "ml_dtypes/include/intn.h",
+        "ml_dtypes/include/mxfloat.h",
+    ]),
+)

@@ -17,5 +17,5 @@ in machine learning libraries.
 
 Local Modifications:
 Only a portion of the upstream library is copied here, namely the include
-headers which serve as glue code between TFLite and Eigen. See also update.sh
-in this directory.
+headers which serve as glue code between TFLite and Eigen. See also
+copy.bara.sky in this directory.
