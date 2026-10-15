@@ -88,9 +88,12 @@ constexpr CGFloat kSpacingBeforeImage = 24;
     presentationController.delegate = self;
   }
 
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
   [_mediator markNoticeShown];
 }
 
@@ -115,6 +118,15 @@ constexpr CGFloat kSpacingBeforeImage = 24;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [_mediator didDismissNotice];
+}
+
+#pragma mark - Private
+
+// Sets VoiceOver focus on the notice sheet's title.
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(
+      UIAccessibilityScreenChangedNotification,
+      _viewController.titleLabel ?: _viewController.view);
 }
 
 @end
