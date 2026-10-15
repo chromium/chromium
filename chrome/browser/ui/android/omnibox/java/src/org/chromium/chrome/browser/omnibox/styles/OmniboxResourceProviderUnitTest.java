@@ -453,12 +453,10 @@ public class OmniboxResourceProviderUnitTest {
 
         assertEquals(
                 expectedBottomSheetSize,
-                OmniboxResourceProvider.getFuseboxPopupIconSize(
-                        mContext, /* isBottomSheet= */ true));
+                mProvider.getFuseboxPopupIconSize(/* isBottomSheet= */ true));
         assertEquals(
                 expectedPlusMenuSize,
-                OmniboxResourceProvider.getFuseboxPopupIconSize(
-                        mContext, /* isBottomSheet= */ false));
+                mProvider.getFuseboxPopupIconSize(/* isBottomSheet= */ false));
     }
 
     @Test
@@ -472,12 +470,10 @@ public class OmniboxResourceProviderUnitTest {
 
         assertEquals(
                 expectedBottomSheetSize,
-                OmniboxResourceProvider.getFuseboxPopupIconSize(
-                        mContext, /* isBottomSheet= */ true));
+                mProvider.getFuseboxPopupIconSize(/* isBottomSheet= */ true));
         assertEquals(
                 expectedPlusMenuSize,
-                OmniboxResourceProvider.getFuseboxPopupIconSize(
-                        mContext, /* isBottomSheet= */ false));
+                mProvider.getFuseboxPopupIconSize(/* isBottomSheet= */ false));
     }
 
     @Test
@@ -503,12 +499,8 @@ public class OmniboxResourceProviderUnitTest {
     public void getPopupItemTextRes_variationsDisabled() {
         int expected = IncognitoColors.getTextMediumPrimary(/* isIncognito= */ false);
 
-        assertEquals(
-                expected,
-                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.APP_DEFAULT));
-        assertEquals(
-                expected,
-                OmniboxResourceProvider.getAttachmentButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+        assertEquals(expected, mProvider.getPopupButtonTextRes());
+        assertEquals(expected, mProvider.getAttachmentButtonTextRes());
     }
 
     @Test
@@ -516,13 +508,15 @@ public class OmniboxResourceProviderUnitTest {
     public void getPopupItemTextRes_variationsEnabled() {
         assertEquals(
                 IncognitoColors.getTextLargePrimary(/* isIncognito= */ false),
-                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+                mProvider.getPopupButtonTextRes());
         assertEquals(
                 IncognitoColors.getTextMediumPrimary(/* isIncognito= */ false),
-                OmniboxResourceProvider.getAttachmentButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+                mProvider.getAttachmentButtonTextRes());
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 IncognitoColors.getTextLargePrimary(/* isIncognito= */ true),
-                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.INCOGNITO));
+                mProvider.getPopupButtonTextRes());
     }
 
     @Test

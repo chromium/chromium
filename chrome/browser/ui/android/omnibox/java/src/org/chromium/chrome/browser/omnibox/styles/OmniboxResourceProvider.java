@@ -10,7 +10,6 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -701,7 +700,13 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * @return Icon size in pixels.
      */
     public @Px int getFuseboxPopupIconSize(boolean isBottomSheet) {
-        return getFuseboxPopupIconSize(mContext, isBottomSheet);
+        if (isBottomSheet) {
+            return mCache.getDimen(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
+        }
+        return mCache.getDimen(
+                OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                        ? R.dimen.fusebox_popup_item_large_icon_size
+                        : R.dimen.fusebox_popup_item_icon_size);
     }
 
     /**
@@ -737,22 +742,19 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return IncognitoColors.getTextMediumThickPrimary(isIncognito());
     }
 
-    /**
-     * Get popup button text res.
-     *
-     * @see #getPopupButtonTextRes(Context, ...)
-     */
+    /** Resolves the text appearance for menu items in the popup. */
     public @StyleRes int getPopupButtonTextRes() {
-        return getPopupButtonTextRes(getBrandedColorScheme());
+        return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                ? IncognitoColors.getTextLargePrimary(isIncognito())
+                : IncognitoColors.getTextMediumPrimary(isIncognito());
     }
 
     /**
-     * Get attachment button text res.
-     *
-     * @see #getAttachmentButtonTextRes(Context, ...)
+     * Resolves the text appearance for the label underneath carousel tiles in the popup. Unlike
+     * list rows, this stays medium when popup variations enlarge the list text.
      */
     public @StyleRes int getAttachmentButtonTextRes() {
-        return getAttachmentButtonTextRes(getBrandedColorScheme());
+        return IncognitoColors.getTextMediumPrimary(isIncognito());
     }
 
     /** Resolves the text appearance for header visibility text in the popup. */
@@ -1165,39 +1167,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     public static @Nullable Bitmap getFaviconBitmapForTab(Tab tab) {
         if (sTabFaviconFactory == null) return null;
         return sTabFaviconFactory.apply(tab);
-    }
-
-    /**
-     * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
-     * menu, or 24dp for both when popup variations are enabled).
-     */
-    public static @Px int getFuseboxPopupIconSize(Context context, boolean isBottomSheet) {
-        Resources res = context.getResources();
-        if (isBottomSheet) {
-            return res.getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
-        }
-        return res.getDimensionPixelSize(
-                OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
-                        ? R.dimen.fusebox_popup_item_large_icon_size
-                        : R.dimen.fusebox_popup_item_icon_size);
-    }
-
-    /** Resolves the text appearance for menu items in the popup. */
-    public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
-                ? IncognitoColors.getTextLargePrimary(isIncognito)
-                : IncognitoColors.getTextMediumPrimary(isIncognito);
-    }
-
-    /**
-     * Resolves the text appearance for the label underneath carousel tiles in the popup. Unlike
-     * list rows, this stays medium when popup variations enlarge the list text.
-     */
-    public static @StyleRes int getAttachmentButtonTextRes(
-            @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        return IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
