@@ -3334,7 +3334,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ExtendedUpdates.DialogEvent"
     enum="ExtendedUpdatesDialogEventEnum" expires_after="2027-04-11">
   <owner>aluh@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
   <owner>chromeos-consumer-extended-updates-team@google.com</owner>
   <summary>
     The number of times an event on the Extended Updates opt-in dialog happened.
@@ -3346,7 +3345,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ExtendedUpdates.EntryPointEvent"
     enum="ExtendedUpdatesEntryPointEventEnum" expires_after="2026-09-07">
   <owner>aluh@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
   <owner>chromeos-consumer-extended-updates-team@google.com</owner>
   <summary>
     The number of times an event related to the various entry points into the
