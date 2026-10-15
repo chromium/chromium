@@ -6,24 +6,19 @@
 
 import argparse
 import glob
-import json  # noqa: F401
-import os
 import platform
-import plistlib  # noqa: F401
 import re
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
-import shlex  # noqa: F401
+from typing import List, Optional
 
 import shared_test_utils
 from shared_test_utils import (
     Colors,
-    Simulator,  # noqa: F401
-    print_header,
-    print_command,
     SimulatorLogStreamer,
-)  # noqa: F401
+    print_command,
+    print_header,
+)
 
 _EG2TESTS_MODULE_SUFFIX = '_eg2tests_module'
 _TEST_CASE_SUFFIX = 'TestCase'
@@ -207,41 +202,6 @@ def _run_tests(
     Returns:
         The exit code of the test runner.
     """
-    project_path = os.path.join(os.getcwd(), 'out', 'build', 'all.xcodeproj')
-    launch_command = [
-        'xcodebuild',
-        'test-without-building',
-        '-project',
-        project_path,
-        '-scheme',
-        scheme,
-        '-destination',
-        f'platform=iOS Simulator,id={simulator_udid},arch={arch}',
-        f'CONFIGURATION_BUILD_DIR={os.path.abspath(out_dir)}',
-        '-collect-test-diagnostics',
-        'never',
-    ]
-    if test_filters:
-        for test_filter in test_filters:
-            launch_command.append(f'-only-testing:{scheme}/{test_filter}')
-
-    if args.test_iterations is not None:
-        launch_command.extend(['-test-iterations', str(args.test_iterations)])
-    if args.retry_tests_on_failure:
-        launch_command.append('-retry-tests-on-failure')
-    if args.run_tests_until_failure:
-        launch_command.append('-run-tests-until-failure')
-    if args.test_repetition_relaunch_enabled:
-        launch_command.extend(
-            [
-                '-test-repetition-relaunch-enabled',
-                args.test_repetition_relaunch_enabled,
-            ]
-        )
-
-    print_header("--- Running Tests ---")
-    print_command(launch_command)
-
     # Start log streaming
     show_app_logs = args.show_app_logs
     log_predicate = args.log_predicate
@@ -256,12 +216,19 @@ def _run_tests(
     log_streamer.start()
 
     try:
-        # The command is expected to return a non-zero exit code on test
-        # failure.
-        subprocess.check_call(launch_command)
-        exit_code = 0
-    except subprocess.CalledProcessError as e:
-        exit_code = e.returncode
+        exit_code = shared_test_utils.launch_egtests(
+            out_dir=out_dir,
+            simulator_udid=simulator_udid,
+            arch=arch,
+            scheme=scheme,
+            test_filters=test_filters,
+            test_iterations=args.test_iterations,
+            retry_tests_on_failure=args.retry_tests_on_failure,
+            run_tests_until_failure=args.run_tests_until_failure,
+            test_repetition_relaunch_enabled=(
+                args.test_repetition_relaunch_enabled
+            ),
+        )
     finally:
         log_streamer.stop()
 
@@ -322,7 +289,7 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
 
     final_exit_code = 0
     for scheme, tests in tests_by_scheme.items():
-        if not _build_tests(args.out_dir, scheme):
+        if not args.no_build and not _build_tests(args.out_dir, scheme):
             final_exit_code = 1
             continue  # Try next scheme even if this one fails to build.
 
@@ -353,7 +320,9 @@ def main() -> int:
     parser.add_argument(
         '--out-dir',
         default='out/Debug-iphonesimulator',
-        help='The output directory to use for the build (default: %(default)s).',
+        help=(
+            'The output directory to use for the build (default: %(default)s).'
+        ),
     )
     parser.add_argument(
         '--tests',
@@ -409,6 +378,11 @@ def main() -> int:
             'Custom predicate to filter simulator logs (e.g., '
             '\'composedMessage CONTAINS "my-tag"\').'
         ),
+    )
+    parser.add_argument(
+        '--no-build',
+        action='store_true',
+        help='Skip compiling/building the tests and only run them.',
     )
     args = parser.parse_args()
 

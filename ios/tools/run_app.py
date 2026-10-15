@@ -4,17 +4,16 @@
 # found in the LICENSE file.
 """Builds and runs the app in the simulator."""
 
+from __future__ import annotations
+
 import argparse
 import os
 import plistlib
-import re
 import subprocess
 import sys
-import time
-from typing import List, Optional
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command  # noqa: F401
+from shared_test_utils import Colors, print_command, print_header
 
 
 def _build_app(out_dir: str, target: str) -> bool:
@@ -42,10 +41,10 @@ def _run_app(
     out_dir: str,
     simulator_udid: str,
     target: str,
-    app_name: Optional[str],
-    enable_features: Optional[str] = None,
-    disable_features: Optional[str] = None,
-    app_args: Optional[List[str]] = None,
+    app_name: str | None,
+    enable_features: str | None = None,
+    disable_features: str | None = None,
+    app_args: list[str] | None = None,
     wipe: bool = False,
 ) -> int:
     """Installs and runs the app on the specified simulator.
@@ -58,6 +57,7 @@ def _run_app(
         enable_features: Comma-separated list of features to enable.
         disable_features: Comma-separated list of features to disable.
         app_args: Additional arguments to pass to the app.
+        wipe: Whether to wipe the app container before installation.
 
     Returns:
         The exit code of the app run (0 for success, non-zero for failure).
@@ -79,93 +79,25 @@ def _run_app(
     bundle_id = info_plist['CFBundleIdentifier']
 
     if wipe:
-        uninstall_command = [
-            'xcrun',
-            'simctl',
-            'uninstall',
-            simulator_udid,
-            bundle_id,
-        ]
-        print_header("--- Uninstalling App (Wiping Data) ---")
-        print_command(uninstall_command)
-        subprocess.run(uninstall_command)
+        shared_test_utils.uninstall_app(simulator_udid, bundle_id)
 
-    install_command = ['xcrun', 'simctl', 'install', simulator_udid, app_path]
-    print_header("--- Installing App ---")
-    print_command(install_command)
-    subprocess.check_call(install_command)
+    shared_test_utils.install_app(simulator_udid, app_path)
 
-    launch_command = [
-        'xcrun',
-        'simctl',
-        'launch',
-        '--console-pty',
-        simulator_udid,
-        bundle_id,
-    ]
+    launch_args: list[str] = []
     if enable_features:
-        launch_command.append(f'--enable-features={enable_features}')
+        launch_args.append(f'--enable-features={enable_features}')
     if disable_features:
-        launch_command.append(f'--disable-features={disable_features}')
+        launch_args.append(f'--disable-features={disable_features}')
     if app_args:
-        launch_command.extend(app_args)
+        launch_args.extend(app_args)
 
     print_header("--- Running App ---")
-    print_command(launch_command)
-
-    process = subprocess.Popen(
-        launch_command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        errors='replace',
+    return shared_test_utils.launch_app_with_console(
+        simulator_udid=simulator_udid,
+        bundle_id=bundle_id,
+        app_args=launch_args,
+        app_name=app_name,
     )
-
-    print(f"{Colors.BLUE}Runner Process PID: {process.pid}{Colors.RESET}")
-    time.sleep(1)
-    try:
-        exec_name = os.path.splitext(app_name)[0]
-        pgrep_pattern = (
-            rf'{simulator_udid}.*/{re.escape(app_name)}/'
-            rf'{re.escape(exec_name)}(\s|$)'
-        )
-        pgrep_out = subprocess.check_output(
-            ['pgrep', '-f', pgrep_pattern], text=True
-        ).strip()
-        if pgrep_out:
-            app_pid = pgrep_out.splitlines()[0]
-            print(
-                f"{Colors.BLUE}{Colors.BOLD}App Process PID (in simulator): "
-                f"{app_pid}{Colors.RESET}"
-            )
-            print(
-                f"{Colors.CYAN}To stop the app, run: xcrun simctl terminate "
-                f"{simulator_udid} {bundle_id}{Colors.RESET}\n"
-            )
-    except subprocess.CalledProcessError:
-        pass
-
-    try:
-        while True:
-            line = process.stdout.readline()
-            if not line and process.poll() is not None:
-                break
-            if line:
-                sys.stdout.write(line)
-                sys.stdout.flush()
-        process.wait()
-    except KeyboardInterrupt:
-        # If the user terminates the script via Ctrl-C, terminate the launched
-        # app in the simulator cleanly.
-        print(f"\n{Colors.CYAN}Terminating app in simulator...{Colors.RESET}")
-        subprocess.run(
-            ['xcrun', 'simctl', 'terminate', simulator_udid, bundle_id],
-            capture_output=True,
-        )
-        process.terminate()
-        process.wait()
-
-    return process.returncode
 
 
 def main() -> int:
@@ -181,7 +113,9 @@ def main() -> int:
     parser.add_argument(
         '--out-dir',
         default='out/Debug-iphonesimulator',
-        help='The output directory to use for the build (default: %(default)s).',
+        help=(
+            'The output directory to use for the build (default: %(default)s).'
+        ),
     )
     parser.add_argument(
         '--target',

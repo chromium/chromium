@@ -4,17 +4,20 @@
 # found in the LICENSE file.
 """Builds and runs selected unit tests."""
 
+from __future__ import annotations
+
 import argparse
-import json  # noqa: F401
 import os
 import plistlib
-import re  # noqa: F401
+import signal
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command  # noqa: F401
+from shared_test_utils import Colors, print_command, print_header
+
+_GTEST_PASSED_MARKER = '[  PASSED  ]'
+_GTEST_FAILED_MARKER = '[  FAILED  ]'
 
 
 def _build_tests(out_dir: str, test_target: str) -> bool:
@@ -41,9 +44,9 @@ def _build_tests(out_dir: str, test_target: str) -> bool:
 def _run_tests(
     out_dir: str,
     simulator_udid: str,
-    gtest_filter: Optional[str],
+    gtest_filter: str | None,
     test_target: str,
-    gtest_repeat: Optional[str] = None,
+    gtest_repeat: str | None = None,
 ) -> int:
     """Installs and runs the tests on the specified simulator.
 
@@ -52,6 +55,7 @@ def _run_tests(
       simulator_udid: The UDID of the simulator to use.
       gtest_filter: The gtest filter to apply.
       test_target: The target to run.
+      gtest_repeat: The gtest repeat count or pattern to apply.
 
     Returns:
       The exit code of the test runner (0 for success, non-zero for failure).
@@ -62,47 +66,34 @@ def _run_tests(
         info_plist = plistlib.load(f)
     bundle_id = info_plist['CFBundleIdentifier']
 
-    install_command = ['xcrun', 'simctl', 'install', simulator_udid, app_path]
-    print_header("--- Installing App ---")
-    print_command(install_command)
-    subprocess.check_call(install_command)
+    shared_test_utils.install_app(simulator_udid, app_path)
 
-    launch_command = [
-        'xcrun',
-        'simctl',
-        'launch',
-        '--console-pty',
-        simulator_udid,
-        bundle_id,
-    ]
+    launch_args: list[str] = []
     if gtest_filter:
-        launch_command.append('--gtest_filter=' + gtest_filter)
+        launch_args.append('--gtest_filter=' + gtest_filter)
     if gtest_repeat:
-        launch_command.append('--gtest_repeat=' + gtest_repeat)
+        launch_args.append('--gtest_repeat=' + gtest_repeat)
     print_header("--- Running Tests ---")
-    print_command(launch_command)
-
-    process = subprocess.Popen(
-        launch_command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        errors='replace',
-    )
 
     test_failed = False
     test_completed = False
-    while True:
-        line = process.stdout.readline()
-        if not line:
-            break
-        sys.stdout.write(line)
-        if '[  PASSED  ]' in line or '[  FAILED  ]' in line:
+
+    def _on_line(line: str) -> None:
+        nonlocal test_failed, test_completed
+        if _GTEST_PASSED_MARKER in line or _GTEST_FAILED_MARKER in line:
             test_completed = True
-        if '[  FAILED  ]' in line:
+        if _GTEST_FAILED_MARKER in line:
             test_failed = True
 
-    process.wait()
+    exit_code = shared_test_utils.launch_app_with_console(
+        simulator_udid=simulator_udid,
+        bundle_id=bundle_id,
+        app_args=launch_args,
+        line_callback=_on_line,
+    )
+
+    if exit_code in (shared_test_utils.SIGINT_EXIT_CODE, -signal.SIGINT):
+        return shared_test_utils.SIGINT_EXIT_CODE
 
     # If the test completed and there were failures, return 1.
     if test_completed and test_failed:
@@ -116,6 +107,9 @@ def _run_tests(
             f'{Colors.RESET}'
         )
         return 1
+
+    if exit_code != 0:
+        return exit_code
 
     # If the test completed and there were no failures, return 0.
     return 0
@@ -134,7 +128,8 @@ def main() -> int:
     parser.add_argument(
         '--out-dir',
         default='out/Debug-iphonesimulator',
-        help='The output directory to use for the build (default: %(default)s).',
+        help='The output directory to use for the build '
+        '(default: %(default)s).',
     )
     parser.add_argument(
         '--gtest_filter', help='The gtest_filter to use for running the tests.'
