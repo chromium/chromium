@@ -33,20 +33,20 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
       GetD3DDeviceCB get_d3d_device_cb) const override;
   D3DStatus AcquireDeviceResources(GetD3DDeviceCB get_d3d_device_cb) override;
   void LogDecoderAdapterInfo(MediaLog* media_log) override;
-  D3DStatus::Or<std::unique_ptr<D3DDecoderConfigurator>>
+  base::expected<std::unique_ptr<D3DDecoderConfigurator>, D3DStatus>
   CreateDecoderConfigurator(uint8_t bit_depth,
                             const VideoDecoderConfig& config,
                             VideoChromaSampling chroma_sampling,
                             const gpu::GpuPreferences& gpu_preferences,
                             const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
                             MediaLog* media_log) override;
-  D3DStatus::Or<std::unique_ptr<TextureSelector>> CreateTextureSelector(
-      D3DDecoderConfigurator* decoder_configurator,
-      const VideoDecoderConfig& config,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      bool use_shared_handle,
-      MediaLog* media_log) override;
-  D3DStatus::Or<std::unique_ptr<D3DVideoDecoderWrapper>>
+  base::expected<std::unique_ptr<TextureSelector>, D3DStatus>
+  CreateTextureSelector(D3DDecoderConfigurator* decoder_configurator,
+                        const VideoDecoderConfig& config,
+                        const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+                        bool use_shared_handle,
+                        MediaLog* media_log) override;
+  base::expected<std::unique_ptr<D3DVideoDecoderWrapper>, D3DStatus>
   CreateVideoDecoderWrapper(GetD3DDeviceCB get_d3d_device_cb,
                             D3DDecoderConfigurator* decoder_configurator,
                             const VideoDecoderConfig& config,
@@ -58,7 +58,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
       TextureSelector* texture_selector,
       const gfx::ColorSpace& color_space,
       const gfx::Size& size) override;
-  D3DStatus::Or<scoped_refptr<D3DPictureBuffer>> CreateAndInitPictureBuffer(
+  base::expected<scoped_refptr<D3DPictureBuffer>, D3DStatus>
+  CreateAndInitPictureBuffer(
       const gfx::Size& size,
       uint32_t array_size,
       size_t array_slice,
@@ -79,7 +80,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
   VideoDecoderType GetDecoderType() const override;
 
  private:
-  D3DStatus::Or<ComD3D11Texture2D> CreateDecoderOutputTexture(
+  base::expected<ComD3D11Texture2D, D3DStatus> CreateDecoderOutputTexture(
       const gfx::Size& size,
       uint32_t array_size,
       D3DDecoderConfigurator* decoder_configurator,

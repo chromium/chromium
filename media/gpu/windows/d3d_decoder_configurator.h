@@ -44,7 +44,7 @@ class MEDIA_GPU_EXPORT D3DDecoderConfigurator {
   bool SupportsD3D11Device(ComD3D11VideoDevice1 video_device);
 
   // Create the decoder's output texture.
-  D3DStatus::Or<ComD3D11Texture2D> CreateD3D11OutputTexture(
+  base::expected<ComD3D11Texture2D, D3DStatus> CreateD3D11OutputTexture(
       ComD3D11Device device,
       gfx::Size size,
       uint32_t array_size,

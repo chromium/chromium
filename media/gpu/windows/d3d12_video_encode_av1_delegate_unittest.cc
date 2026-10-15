@@ -47,7 +47,7 @@ class MockD3D12VideoEncodeAV1Delegate : public D3D12VideoEncodeAV1Delegate {
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
       : D3D12VideoEncodeAV1Delegate(std::move(video_device), gpu_workarounds) {}
 
-  MOCK_METHOD(EncoderStatus::Or<size_t>,
+  MOCK_METHOD((base::expected<size_t, EncoderStatus>),
               GetEncodedBitstreamWrittenBytesCount,
               (const ScopedD3D12ResourceMap& metadata),
               (override));

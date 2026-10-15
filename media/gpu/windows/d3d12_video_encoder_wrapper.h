@@ -47,8 +47,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
       const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE& reconstructed_picture);
 
   // Get the encoder output metadata or log the encoding error.
-  virtual EncoderStatus::Or<ScopedD3D12ResourceMap> GetEncoderOutputMetadata()
-      const;
+  virtual base::expected<ScopedD3D12ResourceMap, EncoderStatus>
+  GetEncoderOutputMetadata() const;
 
   // Readback bitstream from GPU memory to |data|. The |data.size()| must be no
   // greater than the value in the result from |GetEncoderOutputMetadata()|.

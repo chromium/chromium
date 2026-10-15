@@ -875,7 +875,8 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
   return EncoderStatus::Codes::kOk;
 }
 
-EncoderStatus::Or<size_t> D3D12VideoEncodeH264Delegate::ReadbackBitstream(
+base::expected<size_t, EncoderStatus>
+D3D12VideoEncodeH264Delegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   size_t packed_header_size = packed_header_.BytesInBuffer();
   // The |bitstream_buffer| is from outer shared memory, and the
@@ -886,7 +887,7 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeH264Delegate::ReadbackBitstream(
   auto size_or_error = D3D12VideoEncodeDelegate::ReadbackBitstream(
       bitstream_buffer.subspan(packed_header_size));
   if (!size_or_error.has_value()) {
-    return std::move(size_or_error).error();
+    return base::unexpected(std::move(size_or_error).error());
   }
   size_t payload_size = packed_header_size + std::move(size_or_error).value();
   if (software_rate_controller_) {

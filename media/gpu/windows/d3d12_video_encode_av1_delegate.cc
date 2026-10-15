@@ -479,16 +479,17 @@ aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
   return rc_config;
 }
 
-EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
-    bool is_screen,
-    const D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT&
-        config_support_limit) {
+base::expected<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS, EncoderStatus>
+GetEnabledAV1Features(bool is_screen,
+                      const D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT&
+                          config_support_limit) {
   const auto& supported_features = config_support_limit.SupportedFeatureFlags;
   const auto& required_features = config_support_limit.RequiredFeatureFlags;
   if ((supported_features & required_features) != required_features) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            base::StringPrintf(" d3d12 driver doesn't support %x .",
-                               required_features)};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kEncoderHardwareDriverError,
+                      base::StringPrintf(" d3d12 driver doesn't support %x .",
+                                         required_features)});
   }
   const std::array<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS, 2> expected_flgs = {
       D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING,
@@ -497,9 +498,9 @@ EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
   auto enabled_features = required_features;
   for (const auto feature : expected_flgs) {
     if (!(supported_features & feature)) {
-      return {
+      return base::unexpected(EncoderStatus{
           EncoderStatus::Codes::kEncoderHardwareDriverError,
-          base::StringPrintf(" d3d12 driver doesn't support %x .", feature)};
+          base::StringPrintf(" d3d12 driver doesn't support %x .", feature)});
     }
     enabled_features |= feature;
   }
@@ -557,7 +558,8 @@ SelectBestRestoration(
                         D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED);
 }
 
-EncoderStatus::Or<D3D12VideoEncodeAV1Delegate::D3D12EncodingCapabilities>
+base::expected<D3D12VideoEncodeAV1Delegate::D3D12EncodingCapabilities,
+               EncoderStatus>
 GetAV1EncodingCapabilities(
     const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features,
     const D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT&
@@ -578,8 +580,9 @@ GetAV1EncodingCapabilities(
                (1u << filter);
       });
   if (interpolation_filter_it == kInterpolationFilters.end()) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "No interpolation filters available."};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kEncoderInitializationError,
+                      "No interpolation filters available."});
   }
   encoding_caps.interpolation_filter = *interpolation_filter_it;
 
@@ -1245,7 +1248,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
   return EncoderStatus::Codes::kOk;
 }
 
-EncoderStatus::Or<size_t>
+base::expected<size_t, EncoderStatus>
 D3D12VideoEncodeAV1Delegate::GetEncodedBitstreamWrittenBytesCount(
     const ScopedD3D12ResourceMap& metadata) {
   if (metadata.data().size() <
@@ -1254,7 +1257,7 @@ D3D12VideoEncodeAV1Delegate::GetEncodedBitstreamWrittenBytesCount(
           sizeof(
               D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES) +
           sizeof(D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES)) {
-    return EncoderStatus::Codes::kEncoderHardwareDriverError;
+    return base::unexpected(EncoderStatus::Codes::kEncoderHardwareDriverError);
   }
 
   size_t compressed_size =
@@ -1269,8 +1272,9 @@ D3D12VideoEncodeAV1Delegate::GetEncodedBitstreamWrittenBytesCount(
   // We always enable full frame encoding, so there should be only one
   // subregion.
   if (subregions != 1) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "D3D12VideoEncodeAV1Delegate: unexpected number of subregions."};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kEncoderHardwareDriverError,
+        "D3D12VideoEncodeAV1Delegate: unexpected number of subregions."});
   }
 
   size_t suregion_size =
@@ -1375,16 +1379,17 @@ size_t D3D12VideoEncodeAV1Delegate::PackAV1BitstreamHeader(
   return packed_header_size;
 }
 
-EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
+base::expected<size_t, EncoderStatus>
+D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
   if (!metadata_or_error.has_value()) {
-    return std::move(metadata_or_error).error();
+    return base::unexpected(std::move(metadata_or_error).error());
   }
   ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
   auto compressed_size_or_size = GetEncodedBitstreamWrittenBytesCount(metadata);
   if (!compressed_size_or_size.has_value()) {
-    return std::move(compressed_size_or_size).error();
+    return base::unexpected(std::move(compressed_size_or_size).error());
   }
   size_t compressed_size = std::move(compressed_size_or_size).value();
   DVLOG(4) << base::StringPrintf("%s: compressed_size = %lu", __func__,
@@ -1399,8 +1404,9 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   if (metadata.data().size() <
       post_encode_values_offset +
           sizeof(D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES)) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "D3D12VideoEncodeAV1Delegate: metadata buffer is too small."};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kEncoderHardwareDriverError,
+        "D3D12VideoEncodeAV1Delegate: metadata buffer is too small."});
   }
 
   // SAFETY: The post_encode_values is guaranteed by above check to be within
@@ -1415,15 +1421,17 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   auto frame_header_or_error = FillAV1BuilderFrameHeader(
       picture_ctrl_, picture_params_, sequence_header_);
   if (!frame_header_or_error.has_value()) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "D3D12VideoEncodeAV1Delegate: invalid restoration tile size."};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kEncoderHardwareDriverError,
+        "D3D12VideoEncodeAV1Delegate: invalid restoration tile size."});
   }
   AV1BitstreamBuilder::FrameHeader frame_header =
       std::move(frame_header_or_error).value();
   if (!UpdateFrameHeaderPostEncode(enc_caps_.post_value_flags,
                                    post_encode_values, frame_header)) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "D3D12VideoEncodeAV1Delegate: invalid post encode values."};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kEncoderHardwareDriverError,
+        "D3D12VideoEncodeAV1Delegate: invalid post encode values."});
   }
 
   D3D12_RANGE written_range{};
@@ -1434,7 +1442,7 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   auto size_or_error = D3D12VideoEncodeDelegate::ReadbackBitstream(
       bitstream_buffer.subspan(packed_header_size));
   if (!size_or_error.has_value()) {
-    return std::move(size_or_error).error();
+    return base::unexpected(std::move(size_or_error).error());
   }
 
   // Notify SW BRC about recent encoded frame size.

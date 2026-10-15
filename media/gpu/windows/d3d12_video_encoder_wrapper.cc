@@ -267,16 +267,17 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
              : EncoderStatus::Codes::kD3D12FenceWaitFailed;
 }
 
-EncoderStatus::Or<ScopedD3D12ResourceMap>
+base::expected<ScopedD3D12ResourceMap, EncoderStatus>
 D3D12VideoEncoderWrapper::GetEncoderOutputMetadata() const {
   ScopedD3D12ResourceMap mapped_metadata;
   if (!mapped_metadata.Map(metadata_buffer_.Get(), 0, nullptr)) {
-    return EncoderStatus::Codes::kD3D12ResourceMapFailed;
+    return base::unexpected(EncoderStatus::Codes::kD3D12ResourceMapFailed);
   }
   if (mapped_metadata.data().size() <
       sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)) {
-    return {EncoderStatus::Codes::kD3D12InvalidVideoEncoderMetadata,
-            "Bad mapped metadata"};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kD3D12InvalidVideoEncoderMetadata,
+                      "Bad mapped metadata"});
   }
   D3D12_VIDEO_ENCODER_OUTPUT_METADATA* metadata =
       reinterpret_cast<D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
@@ -305,7 +306,7 @@ D3D12VideoEncoderWrapper::GetEncoderOutputMetadata() const {
         D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_INVALID_METADATA_BUFFER_SOURCE) {
       LOG(ERROR) << "D3D12VideoEncoder received invalid metadata buffer source";
     }
-    return EncoderStatus::Codes::kEncoderUnsupportedConfig;
+    return base::unexpected(EncoderStatus::Codes::kEncoderUnsupportedConfig);
   }
   return mapped_metadata;
 }

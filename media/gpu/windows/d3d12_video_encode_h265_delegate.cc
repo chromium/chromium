@@ -1012,7 +1012,8 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   return EncoderStatus::Codes::kOk;
 }
 
-EncoderStatus::Or<size_t> D3D12VideoEncodeH265Delegate::ReadbackBitstream(
+base::expected<size_t, EncoderStatus>
+D3D12VideoEncodeH265Delegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   size_t packed_header_size = packed_header_.BytesInBuffer();
   // The |bitstream_buffer| is from outer shared memory, and the
@@ -1025,25 +1026,27 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeH265Delegate::ReadbackBitstream(
   auto size_or_error =
       D3D12VideoEncodeDelegate::ReadbackBitstream(bitstream_buffer);
   if (!size_or_error.has_value()) {
-    return std::move(size_or_error).error();
+    return base::unexpected(std::move(size_or_error).error());
   }
 
   auto slice_size = std::move(size_or_error).value();
   // Some drivers report success while writing no bitstream at all; surface
   // that as a hardware error instead of crashing on the start code check.
   if (slice_size < 4u) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            base::StringPrintf(
-                "D3D12VideoEncoder wrote no bitstream data (%zu bytes)",
-                slice_size)};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kEncoderHardwareDriverError,
+        base::StringPrintf(
+            "D3D12VideoEncoder wrote no bitstream data (%zu bytes)",
+            slice_size)});
   }
   // Follow the same logic as H.264 encode delegate. Do not mandate start code
   // of first NALU to be 0x00000001 only, unless we see interop issue.
   if (bitstream_buffer.first(3u) != base::span_from_cstring("\0\0\1") &&
       bitstream_buffer.first(4u) != base::span_from_cstring("\0\0\0\1")) {
-    return {EncoderStatus::Codes::kBitstreamConversionError,
-            "D3D12VideoEncodeH265Delegate: The encoded bitstream does not "
-            "start with 0x000001 or 0x00000001"};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kBitstreamConversionError,
+        "D3D12VideoEncodeH265Delegate: The encoded bitstream does not "
+        "start with 0x000001 or 0x00000001"});
   }
   size_t payload_size = packed_header_size + slice_size;
   if (software_rate_controller_) {

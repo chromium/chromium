@@ -47,7 +47,7 @@ class MEDIA_GPU_EXPORT D3D12Fence
 
   // Let |command_queue| signal the fence and return the corresponding fence
   // value to be waited for elsewhere.
-  D3DStatus::Or<uint64_t> Signal(ID3D12CommandQueue& command_queue);
+  base::expected<uint64_t, D3DStatus> Signal(ID3D12CommandQueue& command_queue);
 
   // Wait on CPU until the |fence_value| is signaled.
   D3DStatus WaitCPU(uint64_t fence_value) const;

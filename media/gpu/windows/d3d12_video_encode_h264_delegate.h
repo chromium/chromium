@@ -94,7 +94,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
       const VideoEncodeAccelerator::Config& config) override;
 
   // Readback the bitstream from the encoder. Also prepend the SPS/PPS header.
-  EncoderStatus::Or<size_t> ReadbackBitstream(
+  base::expected<size_t, EncoderStatus> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 
   H264SPS ToSPS() const;

@@ -74,7 +74,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
 
   // Opens the D3D11 texture as a D3D12 resource, or returns the cached
   // or native D3D12 resource.
-  virtual D3DStatus::Or<ID3D12Resource*> GetOrCreateD3D12Resource(
+  virtual base::expected<ID3D12Resource*, D3DStatus> GetOrCreateD3D12Resource(
       ID3D12Device* device) = 0;
 
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
@@ -159,10 +159,11 @@ class MEDIA_GPU_EXPORT D3D11PictureBufferImpl : public D3DPictureBuffer {
       PictureBufferGPUResourceInitDoneCB
           picture_buffer_gpu_resource_init_done_cb);
 
-  D3DStatus::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
+  base::expected<ID3D11VideoDecoderOutputView*, D3DStatus> AcquireOutputView()
+      const;
 
   // D3DPictureBuffer:
-  D3DStatus::Or<ID3D12Resource*> GetOrCreateD3D12Resource(
+  base::expected<ID3D12Resource*, D3DStatus> GetOrCreateD3D12Resource(
       ID3D12Device* device) override;
 
  private:
@@ -190,7 +191,7 @@ class MEDIA_GPU_EXPORT D3D12PictureBufferImpl : public D3DPictureBuffer {
       size_t picture_index);
 
   // D3DPictureBuffer:
-  D3DStatus::Or<ID3D12Resource*> GetOrCreateD3D12Resource(
+  base::expected<ID3D12Resource*, D3DStatus> GetOrCreateD3D12Resource(
       ID3D12Device* device) override;
 
  private:

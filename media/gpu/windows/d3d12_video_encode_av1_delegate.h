@@ -67,7 +67,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   EncoderStatus InitializeVideoEncoder(
       const VideoEncodeAccelerator::Config& config) override;
 
-  EncoderStatus::Or<size_t> GetEncodedBitstreamWrittenBytesCount(
+  base::expected<size_t, EncoderStatus> GetEncodedBitstreamWrittenBytesCount(
       const ScopedD3D12ResourceMap& metadata) override;
 
   void RefreshDPBAndDescriptors();
@@ -76,7 +76,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       const AV1BitstreamBuilder::FrameHeader& frame_header,
       size_t compressed_size,
       base::span<uint8_t> bitstream_buffer);
-  EncoderStatus::Or<size_t> ReadbackBitstream(
+  base::expected<size_t, EncoderStatus> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 
   void FillPictureControlParams(const VideoEncoder::EncodeOptions& options);

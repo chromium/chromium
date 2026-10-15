@@ -590,7 +590,8 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithTooManyReferenceBuffersFails) {
 
   // Expect an error indicating too many reference buffers.
   EXPECT_FALSE(result_or_error.has_value());
-  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+  EXPECT_EQ(result_or_error.error().code(),
+            EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest,
@@ -615,7 +616,8 @@ TEST_F(D3D12VideoEncodeDelegateTest,
                                 bitstream_buffer, options);
 
   EXPECT_FALSE(result_or_error.has_value());
-  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+  EXPECT_EQ(result_or_error.error().code(),
+            EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest,
@@ -640,7 +642,8 @@ TEST_F(D3D12VideoEncodeDelegateTest,
                                 bitstream_buffer, options);
 
   EXPECT_FALSE(result_or_error.has_value());
-  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+  EXPECT_EQ(result_or_error.error().code(),
+            EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithEmptyRefsOnNonKeyframeFails) {
@@ -677,7 +680,8 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithEmptyRefsOnNonKeyframeFails) {
       encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
                                 bitstream_buffer, options);
   EXPECT_FALSE(result_or_error.has_value());
-  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+  EXPECT_EQ(result_or_error.error().code(),
+            EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
 }  // namespace media

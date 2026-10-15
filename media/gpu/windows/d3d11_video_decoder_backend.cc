@@ -167,7 +167,7 @@ void D3D11VideoDecoderBackend::LogDecoderAdapterInfo(MediaLog* media_log) {
                              << adapter_desc.AdapterLuid.LowPart << "}";
 }
 
-D3DStatus::Or<std::unique_ptr<D3DDecoderConfigurator>>
+base::expected<std::unique_ptr<D3DDecoderConfigurator>, D3DStatus>
 D3D11VideoDecoderBackend::CreateDecoderConfigurator(
     uint8_t bit_depth,
     const VideoDecoderConfig& config,
@@ -181,17 +181,17 @@ D3D11VideoDecoderBackend::CreateDecoderConfigurator(
       gpu_preferences, gpu_workarounds, config, bit_depth, chroma_sampling,
       media_log, device_);
   if (!decoder_configurator) {
-    return D3DStatus::Codes::kDecoderUnsupportedProfile;
+    return base::unexpected(D3DStatus::Codes::kDecoderUnsupportedProfile);
   }
 
   if (!decoder_configurator->SupportsD3D11Device(video_device_)) {
-    return D3DStatus::Codes::kDecoderUnsupportedCodec;
+    return base::unexpected(D3DStatus::Codes::kDecoderUnsupportedCodec);
   }
 
   return decoder_configurator;
 }
 
-D3DStatus::Or<std::unique_ptr<TextureSelector>>
+base::expected<std::unique_ptr<TextureSelector>, D3DStatus>
 D3D11VideoDecoderBackend::CreateTextureSelector(
     D3DDecoderConfigurator* decoder_configurator,
     const VideoDecoderConfig& config,
@@ -213,13 +213,13 @@ D3D11VideoDecoderBackend::CreateTextureSelector(
       video_device_, device_context_, media_log,
       config.color_space_info().ToGfxColorSpace(), use_shared_handle);
   if (!texture_selector) {
-    return D3DStatus::Codes::kCreateTextureSelectorFailed;
+    return base::unexpected(D3DStatus::Codes::kCreateTextureSelectorFailed);
   }
 
   return texture_selector;
 }
 
-D3DStatus::Or<std::unique_ptr<D3DVideoDecoderWrapper>>
+base::expected<std::unique_ptr<D3DVideoDecoderWrapper>, D3DStatus>
 D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
     GetD3DDeviceCB get_d3d_device_cb,
     D3DDecoderConfigurator* decoder_configurator,
@@ -236,8 +236,8 @@ D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
     // TODO(liberato): On re-init, we can probably reuse the device.
     ComUnknown d3d_device = get_d3d_device_cb.Run(D3DVersion::kD3D12);
     if (!d3d_device) {
-      return {D3DStatusCode::kUnsupportedFeatureLevel,
-              "Cannot create D3D12Device"};
+      return base::unexpected(D3DStatus{D3DStatusCode::kUnsupportedFeatureLevel,
+                                        "Cannot create D3D12Device"});
     }
 
     ComD3D12Device d3d12_device;
@@ -246,20 +246,20 @@ D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
     ComD3D12VideoDevice d3d12_video_device;
     HRESULT hr = d3d12_device.As(&d3d12_video_device);
     if (FAILED(hr)) {
-      return D3DStatus{D3DStatusCode::kFailedToGetVideoDevice,
-                       "Cannot create D3D12VideoDevice", hr};
+      return base::unexpected(D3DStatus{D3DStatusCode::kFailedToGetVideoDevice,
+                                        "Cannot create D3D12VideoDevice", hr});
     }
 
     // Check ID3D11Device5 is supported so that we can use D3D11Fence.
     d3d_device = get_d3d_device_cb.Run(D3DVersion::kD3D11);
     if (!d3d_device) {
-      return {D3DStatusCode::kUnsupportedFeatureLevel,
-              "Cannot create D3D11Device"};
+      return base::unexpected(D3DStatus{D3DStatusCode::kUnsupportedFeatureLevel,
+                                        "Cannot create D3D11Device"});
     }
     ComD3D11Device5 d3d11_device5;
     if (d3d_device.As(&d3d11_device5) != S_OK) {
-      return {D3DStatusCode::kUnsupportedFeatureLevel,
-              "Cannot get ID3D11Device5 interface"};
+      return base::unexpected(D3DStatus{D3DStatusCode::kUnsupportedFeatureLevel,
+                                        "Cannot get ID3D11Device5 interface"});
     }
 
     std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper =
@@ -289,7 +289,7 @@ D3D11VideoDecoderBackend::CreateOutputTextureWrapper(
   return texture_selector->CreateTextureWrapper(device_, color_space, size);
 }
 
-D3DStatus::Or<ComD3D11Texture2D>
+base::expected<ComD3D11Texture2D, D3DStatus>
 D3D11VideoDecoderBackend::CreateDecoderOutputTexture(
     const gfx::Size& size,
     uint32_t array_size,
@@ -303,7 +303,7 @@ D3D11VideoDecoderBackend::CreateDecoderOutputTexture(
       texture_selector->DoesDecoderOutputUseSharedHandle());
 }
 
-D3DStatus::Or<scoped_refptr<D3DPictureBuffer>>
+base::expected<scoped_refptr<D3DPictureBuffer>, D3DStatus>
 D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
     const gfx::Size& size,
     uint32_t array_size,
@@ -332,7 +332,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
     auto result = CreateDecoderOutputTexture(
         size, /*array_size=*/1, decoder_configurator, texture_selector);
     if (!result.has_value()) {
-      return std::move(result).error().AddHere();
+      return base::unexpected(std::move(result).error().AddHere());
     }
     texture = std::move(result).value();
   } else {
@@ -340,7 +340,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
       auto result = CreateDecoderOutputTexture(
           size, array_size, decoder_configurator, texture_selector);
       if (!result.has_value()) {
-        return std::move(result).error().AddHere();
+        return base::unexpected(std::move(result).error().AddHere());
       }
       picture_buffer_texture_ = std::move(result).value();
     }
@@ -362,7 +362,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
       decoder_configurator->DecoderGuid(), media_log->Clone(),
       std::move(init_done_cb));
   if (!result.is_ok()) {
-    return std::move(result).AddHere();
+    return base::unexpected(std::move(result).AddHere());
   }
 
   return scoped_refptr<D3DPictureBuffer>(std::move(picture_buffer));

@@ -454,7 +454,7 @@ bool D3D12VideoEncodeDelegate::UpdateRateControl(
   return true;
 }
 
-EncoderStatus::Or<D3D12VideoEncodeDelegate::EncodeResult>
+base::expected<D3D12VideoEncodeDelegate::EncodeResult, EncoderStatus>
 D3D12VideoEncodeDelegate::Encode(
     D3D12PictureBuffer picture_buffer,
     const gfx::Rect& input_visible_rect,
@@ -463,13 +463,15 @@ D3D12VideoEncodeDelegate::Encode(
     const VideoEncoder::EncodeOptions& options,
     const gfx::HDRMetadata& input_frame_hdr_metadata) {
   if (options.reference_buffers.size() > GetMaxNumOfManualRefBuffers()) {
-    return {EncoderStatus::Codes::kBadReferenceBuffer,
-            "Number of manual reference buffers exceeds that is supported by "
-            "encoder"};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kBadReferenceBuffer,
+        "Number of manual reference buffers exceeds that is supported by "
+        "encoder"});
   }
   if (!svc_layers_ && !options.key_frame && options.reference_buffers.empty()) {
-    return {EncoderStatus::Codes::kBadReferenceBuffer,
-            "Non-keyframe must have at least one reference buffer"};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kBadReferenceBuffer,
+                      "Non-keyframe must have at least one reference buffer"});
   }
 
   // Validate reference buffer indices early, before submitting any GPU work
@@ -478,15 +480,17 @@ D3D12VideoEncodeDelegate::Encode(
   // error in EncodeImpl().
   for (uint8_t ref_idx : options.reference_buffers) {
     if (ref_idx >= GetMaxNumOfManualRefBuffers()) {
-      return {EncoderStatus::Codes::kBadReferenceBuffer,
-              "Manual reference buffer index exceeds that is supported by "
-              "encoder"};
+      return base::unexpected(EncoderStatus{
+          EncoderStatus::Codes::kBadReferenceBuffer,
+          "Manual reference buffer index exceeds that is supported by "
+          "encoder"});
     }
   }
   if (options.update_buffer.has_value() &&
       options.update_buffer.value() >= GetMaxNumOfManualRefBuffers()) {
-    return {EncoderStatus::Codes::kBadReferenceBuffer,
-            "Update buffer index is out of range"};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kBadReferenceBuffer,
+                      "Update buffer index is out of range"});
   }
 
   const gfx::ColorSpace& output_color_space =
@@ -499,11 +503,12 @@ D3D12VideoEncodeDelegate::Encode(
       base::checked_cast<int>(input_frame_desc.Height));
   if (input_visible_rect.IsEmpty() ||
       !input_frame_rect.Contains(input_visible_rect)) {
-    return {EncoderStatus::Codes::kInvalidInputFrame,
-            base::StrCat({"Input frame visible rectangle ",
-                          input_visible_rect.ToString(),
-                          " is not a valid region of the input texture ",
-                          input_frame_rect.ToString()})};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kInvalidInputFrame,
+        base::StrCat({"Input frame visible rectangle ",
+                      input_visible_rect.ToString(),
+                      " is not a valid region of the input texture ",
+                      input_frame_rect.ToString()})});
   }
   // Subsampled chroma is shared between neighboring rows and/or columns, so an
   // odd origin or size along a shared axis does not name a whole chroma sample
@@ -516,11 +521,12 @@ D3D12VideoEncodeDelegate::Encode(
       input_visible_rect.width() % subsampling.x != 0 ||
       input_visible_rect.y() % subsampling.y != 0 ||
       input_visible_rect.height() % subsampling.y != 0) {
-    return {EncoderStatus::Codes::kInvalidInputFrame,
-            base::StrCat({"Input frame visible rectangle ",
-                          input_visible_rect.ToString(),
-                          " is not properly aligned for the subsampled input "
-                          "format"})};
+    return base::unexpected(EncoderStatus{
+        EncoderStatus::Codes::kInvalidInputFrame,
+        base::StrCat({"Input frame visible rectangle ",
+                      input_visible_rect.ToString(),
+                      " is not properly aligned for the subsampled input "
+                      "format"})});
   }
   const gfx::Rect encoder_input_rect(
       0, 0, base::checked_cast<int>(input_size_.Width),
@@ -549,9 +555,10 @@ D3D12VideoEncodeDelegate::Encode(
               static_cast<UINT>(input_visible_rect.height()),
               input_frame_desc.Format, input_frame_color_space, input_format_,
               output_color_space)) {
-        return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                "D3D12 video processor does not support the required input "
-                "format conversion"};
+        return base::unexpected(EncoderStatus{
+            EncoderStatus::Codes::kEncoderUnsupportedConfig,
+            "D3D12 video processor does not support the required input "
+            "format conversion"});
       }
       D3D12_RESOURCE_DESC processed_input_frame_desc =
           CD3DX12_RESOURCE_DESC::Tex2D(input_format_, input_size_.Width,
@@ -562,12 +569,14 @@ D3D12VideoEncodeDelegate::Encode(
           IID_PPV_ARGS(&processed_input_frame_));
       RETURN_ON_HR_FAILURE(
           hr, "CreateCommittedResource for processed input frame failed",
-          EncoderStatus::Codes::kD3D12CreateCommittedResourceFailed);
+          base::unexpected(
+              EncoderStatus::Codes::kD3D12CreateCommittedResourceFailed));
     }
     if (picture_buffer.fence_and_value.first) {
       if (!video_processor_wrapper_->Wait(picture_buffer.fence_and_value)) {
-        return {EncoderStatus::Codes::kD3D12FenceWaitFailed,
-                "D3D12 video processor wait failed"};
+        return base::unexpected(
+            EncoderStatus{EncoderStatus::Codes::kD3D12FenceWaitFailed,
+                          "D3D12 video processor wait failed"});
       }
     }
     auto fence_or_value = video_processor_wrapper_->ProcessFrames(
@@ -576,16 +585,18 @@ D3D12VideoEncodeDelegate::Encode(
         processed_input_frame_.Get(), 0, output_color_space,
         encoder_input_rect);
     if (!fence_or_value.first) {
-      return {EncoderStatus::Codes::kD3D12VideoProcessorProcessFramesFailed,
-              "D3D12 video processor process frame failed"};
+      return base::unexpected(EncoderStatus{
+          EncoderStatus::Codes::kD3D12VideoProcessorProcessFramesFailed,
+          "D3D12 video processor process frame failed"});
     }
 
     picture_buffer = {processed_input_frame_, 0, fence_or_value};
   }
   if (picture_buffer.fence_and_value.first) {
     if (!video_encoder_wrapper_->Wait(picture_buffer.fence_and_value)) {
-      return {EncoderStatus::Codes::kD3D12FenceWaitFailed,
-              "D3D12 video encoder wait failed"};
+      return base::unexpected(
+          EncoderStatus{EncoderStatus::Codes::kD3D12FenceWaitFailed,
+                        "D3D12 video encoder wait failed"});
     }
   }
   auto impl_result =
@@ -604,7 +615,7 @@ D3D12VideoEncodeDelegate::Encode(
                      "error failed: "
                   << static_cast<int>(status.code());
     }
-    return std::move(impl_result);
+    return base::unexpected(std::move(impl_result));
   }
 
   const base::UnsafeSharedMemoryRegion& region = bitstream_buffer.region();
@@ -613,7 +624,7 @@ D3D12VideoEncodeDelegate::Encode(
   auto payload_size_or_error =
       ReadbackBitstream(map.GetMemoryAsSpan<uint8_t>());
   if (!payload_size_or_error.has_value()) {
-    return std::move(payload_size_or_error).error();
+    return base::unexpected(std::move(payload_size_or_error).error());
   }
   metadata_.encoded_color_space = output_color_space;
   metadata_.payload_size_bytes = std::move(payload_size_or_error).value();
@@ -812,39 +823,41 @@ bool D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator==(
   }
 }
 
-EncoderStatus::Or<size_t>
+base::expected<size_t, EncoderStatus>
 D3D12VideoEncodeDelegate::GetEncodedBitstreamWrittenBytesCount(
     const ScopedD3D12ResourceMap& metadata) {
   if (metadata.data().size() < sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)) {
-    return EncoderStatus::Codes::kEncoderHardwareDriverError;
+    return base::unexpected(EncoderStatus::Codes::kEncoderHardwareDriverError);
   }
   return reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
              metadata.data().data())
       ->EncodedBitstreamWrittenBytesCount;
 }
 
-EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
+base::expected<size_t, EncoderStatus>
+D3D12VideoEncodeDelegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
   if (!metadata_or_error.has_value()) {
-    return std::move(metadata_or_error).error();
+    return base::unexpected(std::move(metadata_or_error).error());
   }
   ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
   auto size_or_error = GetEncodedBitstreamWrittenBytesCount(metadata);
   if (!size_or_error.has_value()) {
-    return std::move(size_or_error).error();
+    return base::unexpected(std::move(size_or_error).error());
   }
   size_t size = std::move(size_or_error).value();
   if (size > bitstream_buffer.size()) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "Encoded bitstream exceeds output buffer size"};
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kEncoderHardwareDriverError,
+                      "Encoded bitstream exceeds output buffer size"});
   }
   D3D12_RANGE written_range{};
   metadata.Commit(&written_range);
   EncoderStatus status =
       video_encoder_wrapper_->ReadbackBitstream(bitstream_buffer.first(size));
   if (!status.is_ok()) {
-    return status;
+    return base::unexpected(status);
   }
   return size;
 }

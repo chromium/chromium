@@ -116,18 +116,18 @@ D3DStatus D3D11PictureBufferImpl::InitD3D11(
   return D3DStatus::Codes::kOk;
 }
 
-D3DStatus::Or<ID3D11VideoDecoderOutputView*>
+base::expected<ID3D11VideoDecoderOutputView*, D3DStatus>
 D3D11PictureBufferImpl::AcquireOutputView() const {
   D3DStatus result = BeginSharedImageAccess();
   if (!result.is_ok()) {
-    return result;
+    return base::unexpected(std::move(result));
   }
 
   return output_view_.Get();
 }
 
-D3DStatus::Or<ID3D12Resource*> D3D11PictureBufferImpl::GetOrCreateD3D12Resource(
-    ID3D12Device* device) {
+base::expected<ID3D12Resource*, D3DStatus>
+D3D11PictureBufferImpl::GetOrCreateD3D12Resource(ID3D12Device* device) {
   if (!d3d12_resource_) {
     CHECK(d3d11_texture_);
     D3D11_TEXTURE2D_DESC desc;
@@ -144,7 +144,8 @@ D3DStatus::Or<ID3D12Resource*> D3D11PictureBufferImpl::GetOrCreateD3D12Resource(
                                                    nullptr, &handle);
     if (FAILED(hr)) {
       MEDIA_LOG(ERROR, media_log_) << "Cannot create shared handle";
-      return {D3DStatusCode::kCreateSharedHandleFailed, hr};
+      return base::unexpected(
+          D3DStatus{D3DStatusCode::kCreateSharedHandleFailed, hr});
     }
     base::win::ScopedHandle handle_holder(handle);
     hr = device->OpenSharedHandle(handle_holder.get(),
@@ -152,7 +153,8 @@ D3DStatus::Or<ID3D12Resource*> D3D11PictureBufferImpl::GetOrCreateD3D12Resource(
     if (FAILED(hr)) {
       MEDIA_LOG(ERROR, media_log_)
           << "Open shared handle as D3D12 resource failed.";
-      return {D3DStatusCode::kCreateSharedHandleFailed, hr};
+      return base::unexpected(
+          D3DStatus{D3DStatusCode::kCreateSharedHandleFailed, hr});
     }
   }
 #if DCHECK_IS_ON()
@@ -186,8 +188,8 @@ D3D12PictureBufferImpl::D3D12PictureBufferImpl(
 
 D3D12PictureBufferImpl::~D3D12PictureBufferImpl() = default;
 
-D3DStatus::Or<ID3D12Resource*> D3D12PictureBufferImpl::GetOrCreateD3D12Resource(
-    ID3D12Device* device) {
+base::expected<ID3D12Resource*, D3DStatus>
+D3D12PictureBufferImpl::GetOrCreateD3D12Resource(ID3D12Device* device) {
   return d3d12_resource_.Get();
 }
 

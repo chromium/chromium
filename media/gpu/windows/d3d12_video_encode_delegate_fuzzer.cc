@@ -615,11 +615,12 @@ class FuzzerVideoEncoderWrapper : public D3D12VideoEncoderWrapper {
     return EncoderStatus::Codes::kOk;
   }
 
-  EncoderStatus::Or<ScopedD3D12ResourceMap> GetEncoderOutputMetadata()
-      const override {
+  base::expected<ScopedD3D12ResourceMap, EncoderStatus>
+  GetEncoderOutputMetadata() const override {
     ScopedD3D12ResourceMap map;
     if (!map.Map(metadata_resource_.Get(), 0, nullptr)) {
-      return EncoderStatus::Codes::kEncoderInitializationError;
+      return base::unexpected(
+          EncoderStatus::Codes::kEncoderInitializationError);
     }
     return map;
   }
@@ -1180,8 +1181,8 @@ int RunD3D12VideoEncodeDelegateFuzzer(FuzzedDataProvider& provider) {
   }
 
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
-  delegate->Encode(picture_buffer, gfx::Rect(frame_size), color_space,
-                   bitstream_buffer, options);
+  auto status = delegate->Encode(picture_buffer, gfx::Rect(frame_size),
+                                 color_space, bitstream_buffer, options);
 
   return 0;
 }

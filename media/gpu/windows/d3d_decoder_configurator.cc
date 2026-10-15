@@ -161,7 +161,7 @@ bool D3DDecoderConfigurator::SupportsD3D11Device(
   return false;
 }
 
-D3DStatus::Or<ComD3D11Texture2D>
+base::expected<ComD3D11Texture2D, D3DStatus>
 D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
                                                  gfx::Size size,
                                                  uint32_t array_size,
@@ -196,11 +196,13 @@ D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
   if (FAILED(hr)) {
-    return {D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr};
+    return base::unexpected(
+        D3DStatus{D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr});
   }
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
   if (FAILED(hr)) {
-    return {D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr};
+    return base::unexpected(
+        D3DStatus{D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr});
   }
   return texture;
 }
