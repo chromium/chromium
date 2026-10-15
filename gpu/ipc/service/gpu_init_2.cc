@@ -259,11 +259,13 @@ struct GpuInit2::InitState {
   InitState(std::unique_ptr<GpuWatchdogThread>& watchdog_thread,
             bool enable_watchdog,
             bool watchdog_starts_backgrounded,
-            base::CommandLine* command_line)
+            base::CommandLine* command_line,
+            bool in_process)
       : watchdog(watchdog_thread,
                  enable_watchdog,
                  watchdog_starts_backgrounded),
-        command_line(command_line) {}
+        command_line(command_line),
+        in_process(in_process) {}
   InitState(const InitState&) = delete;
   InitState& operator=(const InitState&) = delete;
 
@@ -282,6 +284,9 @@ struct GpuInit2::InitState {
   GpuWatchdogInitScope watchdog;
 
   base::CommandLine* command_line = nullptr;
+
+  // True for InitializeInProcess(), where there is no sandbox.
+  const bool in_process;
 };
 
 GpuInit2::GpuInit2() = default;
@@ -359,7 +364,8 @@ bool GpuInit2::InitializeAndStartSandbox(
   gpu_preferences_ = gpu_preferences;
   InitState state(watchdog_thread_,
                   IsGpuWatchdogEnabled(gpu_preferences_, *command_line),
-                  gpu_preferences_.watchdog_starts_backgrounded, command_line);
+                  gpu_preferences_.watchdog_starts_backgrounded, command_line,
+                  /*in_process=*/false);
 
   RecordStartupCrashKeys(state);
   if (!CollectBasicInfoAndComputeFeatures(state)) {
@@ -478,6 +484,23 @@ void GpuInit2::StartSandbox(InitState& state) {
   state.sandbox_start_attempted = true;
 }
 
+bool GpuInit2::ReinitializeGLWithSwiftShader(InitState& state) {
+  SaveHardwareGpuInfoAndGpuFeatureInfo();
+  gl::init::ShutdownGL(state.gl_display, true);
+  if (state.watchdog.get()) {
+    // Recreate watchdog for software rasterizer.
+    state.watchdog.Create(/*software_rendering=*/true);
+  }
+  state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+      /*init_bindings=*/true, gl::GpuPreference::kDefault);
+  if (!state.gl_display) {
+    VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
+            << "failed";
+    return false;
+  }
+  return true;
+}
+
 void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
                                   const GpuPreferences& gpu_preferences) {
   gpu_preferences_ = gpu_preferences;
@@ -521,77 +544,53 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   default_offscreen_surface_ =
       gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
 #else  // !BUILDFLAG(IS_ANDROID)
+  InitState state(watchdog_thread_, /*enable_watchdog=*/false,
+                  /*watchdog_starts_backgrounded=*/false, command_line,
+                  /*in_process=*/true);
+
 #if BUILDFLAG(IS_OZONE)
   gpu_init_internal::InitializePlatformForGpu(
       /*enable_native_gpu_memory_buffers=*/false,
       /*single_process=*/true);
 #endif  // BUILDFLAG(IS_OZONE)
 
-  bool needs_more_info = true;
-
-#if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
-  needs_more_info = false;
-  CollectBasicGraphicsInfo(command_line, &gpu_info_);
-#if defined(SUBPIXEL_FONT_RENDERING_DISABLED)
-  gpu_info_.subpixel_font_rendering = false;
-#else
-  gpu_info_.subpixel_font_rendering = true;
-#endif  // defined(SUBPIXEL_FONT_RENDERING_DISABLED)
-  gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                            command_line, &needs_more_info);
+  CHECK(CollectBasicInfoAndComputeFeatures(state));
   if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
     InitializeSwitchableGPUs(
         gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
   }
-#endif  // !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
-
-  gl::GLDisplay* gl_display = nullptr;
-
-  gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
-      command_line, gpu_feature_info_,
-      gpu_preferences_.disable_software_rasterizer, needs_more_info);
-  gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-      /*init_bindings=*/true,
-      /*gpu_preference=*/gl::GpuPreference::kDefault);
-  if (!gl_display) {
-    VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
+  MaybeFallbackToSwiftShaderEarly(state);
+  if (!InitializeGLBindingsAndDisplay(state)) {
     return;
   }
-  bool gl_disabled = gl::GetGLImplementation() == gl::kGLImplementationDisabled;
+  state.gl_disabled =
+      gl::GetGLImplementation() == gl::kGLImplementationDisabled;
 
   gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
 
-  if (!gl_disabled && !gl_use_swiftshader_) {
+  if (!state.gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, false);
-    if (gl_use_swiftshader_) {
-      SaveHardwareGpuInfoAndGpuFeatureInfo();
-      gl::init::ShutdownGL(gl_display, true);
-      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings=*/true,
-          /*gpu_preference=*/gl::GpuPreference::kDefault);
-      if (!gl_display) {
-        VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
-                << "with SwiftShader";
-        return;
-      }
+    if (gl_use_swiftshader_ && !ReinitializeGLWithSwiftShader(state)) {
+      return;
     }
   }
 
-  if (!gl_disabled) {
+  if (!state.gl_disabled) {
     if (!gpu_feature_info_.disabled_extensions.empty()) {
       gl::init::SetDisabledExtensionsPlatform(
           gpu_feature_info_.disabled_extensions);
     }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(gl_display)) {
+    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
+            state.gl_display)) {
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
     }
     default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
+        gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
     if (!default_offscreen_surface_) {
       VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
     }
@@ -599,7 +598,7 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
-  if (!gl_disabled) {
+  if (!state.gl_disabled) {
     if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
       VLOG(1) << "gpu::CollectGpuExtraInfo failed";
     }
@@ -609,24 +608,15 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
-  if (!gl_disabled && !gl_use_swiftshader_) {
+  if (!state.gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, false);
-    if (gl_use_swiftshader_) {
-      SaveHardwareGpuInfoAndGpuFeatureInfo();
-      gl::init::ShutdownGL(gl_display, true);
-      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings=*/true,
-          /*gpu_preference=*/gl::GpuPreference::kDefault);
-      if (!gl_display) {
-        VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
-                << "with SwiftShader";
-        return;
-      }
+    if (gl_use_swiftshader_ && !ReinitializeGLWithSwiftShader(state)) {
+      return;
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -634,7 +624,7 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
   }
-  if (gl_disabled) {
+  if (state.gl_disabled) {
     // GL is disabled in display compositor mode, typically due to repeated GPU
     // crashes. Disable WebNN to ensure stability in this state.
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
@@ -656,18 +646,10 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
 
   InitializeDawnProcs();
 #if !BUILDFLAG(IS_ANDROID)
-  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
-    if (!InitializeDawn()) {
-      if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
-          kGpuFeatureStatusEnabled) {
-        // SkiaGraphite is disabled by software_rendering_list.json
-        gpu_preferences_.gr_context_type = GrContextType::kGL;
-      } else {
-        LOG(FATAL) << "InitializeDawn() failed!";
-      }
-    }
+  if (!InitializeSkiaBackend()) {
+    LOG(FATAL) << "InitializeDawn() failed!";
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   SetSkiaBackendType();
   RecordUMA();
@@ -726,7 +708,9 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
 
   // Set keys for crash logging based on preliminary gpu info, in case we
   // crash during feature collection.
-  SetKeysForCrashLogging(gpu_info_);
+  if (!state.in_process) {
+    SetKeysForCrashLogging(gpu_info_);
+  }
 #if defined(SUBPIXEL_FONT_RENDERING_DISABLED)
   gpu_info_.subpixel_font_rendering = false;
 #else
@@ -741,7 +725,7 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  if (!CanAccessDeviceFile(gpu_info_)) {
+  if (!state.in_process && !CanAccessDeviceFile(gpu_info_)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX)
@@ -752,7 +736,7 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
       gpu_info_, gpu_preferences_, state.command_line, &state.needs_more_info);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
-  gpu_info_.in_process_gpu = false;
+  gpu_info_.in_process_gpu = state.in_process;
   return true;
 }
 
@@ -836,7 +820,7 @@ bool GpuInit2::InitializeGLBindingsAndDisplay(InitState& state) {
   // to use. So call PreSandboxStartup after GL initialization. But make
   // sure the watchdog is paused as loadLibrary may take a long time and
   // restarting the GPU process will not help.
-  if (!state.sandbox_start_attempted) {
+  if (!state.in_process && !state.sandbox_start_attempted) {
     // The sandbox is not started yet.
     RunPreSandboxStartup(state);
   }
@@ -920,19 +904,7 @@ bool GpuInit2::FinalizeFeaturesWithContextInfo(InitState& state) {
             << "on Linux";
     return false;
 #else
-    SaveHardwareGpuInfoAndGpuFeatureInfo();
-    gl::init::ShutdownGL(state.gl_display, true);
-    if (state.watchdog.get()) {
-      // Recreate watchdog for software rasterizer.
-      state.watchdog.Create(/*software_rendering=*/true);
-    }
-    state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-        /*init_bindings=*/true, gl::GpuPreference::kDefault);
-    if (!state.gl_display) {
-      VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
-              << "failed";
-      return false;
-    }
+    return ReinitializeGLWithSwiftShader(state);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
   return true;
