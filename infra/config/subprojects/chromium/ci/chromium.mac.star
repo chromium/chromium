@@ -1474,3 +1474,33 @@ ios_builder(
         ),
     ],
 )
+
+ci.builder(
+    name = "mac-webdriver-bidi-rel",
+    description_html = "Builder for WebDriver BiDi implementation",
+    builder_spec = builder_config.copy_from("ci/mac-arm64-rel"),
+    gn_args = "ci/mac-arm64-rel",
+    targets = targets.bundle(
+        targets = [
+            "webdriver_bidi_e2e_tests",
+            "webdriver_bidi_unittests",
+        ],
+        mixins = [
+            "mac_26_vm_optional",
+        ],
+        per_test_modifications = {
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
+    ),
+    cpu = cpu.ARM64,
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "webdriver",
+        short_name = "bidi",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)

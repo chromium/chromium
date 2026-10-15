@@ -376,6 +376,7 @@ ci/linux-swangle-x64-exp
 ci/linux-v4l2-codec-rel
 ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
+ci/linux-webdriver-bidi-rel
 ci/linux-win-cross-clang-tot-rel
 ci/linux-win-cross-rel
 ci/linux-x64-centipede-asan-rel-tests
@@ -397,6 +398,7 @@ ci/mac-no-initial-webui-rel
 ci/mac-official
 ci/mac-rel-cft
 ci/mac-swangle-chromium-x64
+ci/mac-webdriver-bidi-rel
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac15-arm64-rel-tests
@@ -418,6 +420,7 @@ ci/win-swangle-tot-swiftshader-x64
 ci/win-swangle-tot-swiftshader-x86
 ci/win-swangle-x64
 ci/win-swangle-x86
+ci/win-webdriver-bidi-rel
 ci/win-x64-libfuzzer-asan-rel-tests
 ci/win10-angle-chromium-x64-intel
 ci/win10-angle-chromium-x64-nvidia

@@ -16,6 +16,11 @@
             "cpu": "arm64",
             "os": "Mac-26"
           },
+          "optional_dimensions": {
+            "180": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -37,6 +42,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-26"
+          },
+          "optional_dimensions": {
+            "180": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

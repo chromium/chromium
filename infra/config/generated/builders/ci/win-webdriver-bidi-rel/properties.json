@@ -13,7 +13,7 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.win",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -48,6 +48,7 @@
           "group": "tryserver.chromium.win"
         }
       ],
+      "retry_failed_shards": true,
       "targets_spec_directory": "infra/config/generated/builders/ci/win-webdriver-bidi-rel/targets"
     }
   },
@@ -69,6 +70,12 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "builder_group": "chromium.win",
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

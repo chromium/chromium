@@ -106,6 +106,7 @@ ci/linux-presubmit
 ci/linux-v4l2-codec-rel
 ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
+ci/linux-webdriver-bidi-rel
 ci/linux-win-cross-rel
 ci/linux-x64-centipede-asan-rel-tests
 ci/linux-x64-libfuzzer-asan-dbg-tests
@@ -121,6 +122,7 @@ ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-no-initial-webui-rel
 ci/mac-official
+ci/mac-webdriver-bidi-rel
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac15-arm64-rel-tests
@@ -133,6 +135,7 @@ ci/win-arm64-rel
 ci/win-asan
 ci/win-official
 ci/win-presubmit
+ci/win-webdriver-bidi-rel
 ci/win-x64-libfuzzer-asan-rel-tests
 ci/win11-arm64-rel-tests
 ci/win32-archive-rel

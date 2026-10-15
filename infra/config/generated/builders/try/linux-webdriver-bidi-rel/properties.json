@@ -13,7 +13,7 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [

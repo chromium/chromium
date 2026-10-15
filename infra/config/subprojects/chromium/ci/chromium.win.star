@@ -1114,3 +1114,34 @@ ci.builder(
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 4 * time.hour,
 )
+
+ci.builder(
+    name = "win-webdriver-bidi-rel",
+    description_html = "Builder for WebDriver BiDi implementation",
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
+    gn_args = "ci/Win x64 Builder",
+    targets = targets.bundle(
+        targets = [
+            "webdriver_bidi_e2e_tests",
+            "webdriver_bidi_unittests",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+        ],
+        per_test_modifications = {
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
+    ),
+    ssd = None,
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "webdriver",
+        short_name = "bidi",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
