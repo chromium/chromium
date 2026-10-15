@@ -28,7 +28,8 @@ namespace private_ai {
 //   <content_id>.<namespace>.<base_domain>
 //
 // where <content_id> is the lowercase, unpadded base32 encoding of the SHA-256
-// hash of the TCA root's DER bytes. Verifying that a TCA root has been
+// hash of the TCA root exactly as published, i.e. of the bytes of its PEM
+// file (not of the DER it decodes to). Verifying that a TCA root has been
 // published therefore consists of deriving the expected hostname from the TCA
 // root and verifying the OakCT certificate chain for that hostname with
 // Chrome's regular certificate verifier (public roots plus CT policy). The
@@ -46,7 +47,7 @@ class OakCtVerifier {
     kVerified = 0,
     // The ContentID could not be computed from the TCA root.
     kInvalidTcaRoot = 1,
-    // The OakCT chain was empty or did not parse as X.509.
+    // The OakCT file contained no PEM-encoded X.509 certificate.
     kInvalidOakCtCertificate = 2,
     // No NetworkContext was available to perform the verification.
     kNoNetworkContext = 3,
@@ -64,32 +65,31 @@ class OakCtVerifier {
 
   using VerifyCallback = base::OnceCallback<void(Result)>;
 
-  // Computes the ContentID for the given certificate DER content.
-  // The ID is the content's SHA-256 hash encoded in lowercase base32 with
-  // no padding (exactly 52 characters).
+  // Computes the ContentID of the given published content: its SHA-256 hash
+  // in lowercase base32 without padding (exactly 52 characters).
   static std::optional<std::string> ComputeContentId(
-      base::span<const uint8_t> cert_der);
+      base::span<const uint8_t> content);
 
-  // Returns the OakCT hostname expected for `tca_root_der`, i.e.
+  // Returns the OakCT hostname expected for `tca_root_pem`, i.e.
   // <content_id>.<namespace_str>.<base_domain>, or std::nullopt if the
   // ContentID cannot be computed.
   static std::optional<std::string> BuildOakCtHostname(
-      base::span<const uint8_t> tca_root_der,
+      base::span<const uint8_t> tca_root_pem,
       std::string_view namespace_str,
       std::string_view base_domain);
 
-  // Verifies that `oakct_chain_der` (leaf first, followed by any
-  // intermediates) is a publicly trusted, CT-compliant certificate for the
-  // OakCT hostname derived from `tca_root_der`, `namespace_str` and
-  // `base_domain`.
+  // Verifies that the OakCT certificate chain in `oakct_chain_pem` (PEM
+  // bytes, leaf first, followed by any intermediates, exactly as published)
+  // is a publicly trusted, CT-compliant certificate for the OakCT hostname
+  // derived from `tca_root_pem`, `namespace_str` and `base_domain`.
   //
   // `network_context` may be null, in which case the result is
   // kNoNetworkContext. `callback` is run exactly once, possibly synchronously
   // for failures detected before contacting the network service, and is
   // guaranteed to run even if the NetworkContext connection is dropped.
   static void Verify(network::mojom::NetworkContext* network_context,
-                     base::span<const uint8_t> tca_root_der,
-                     const std::vector<std::string>& oakct_chain_der,
+                     base::span<const uint8_t> tca_root_pem,
+                     base::span<const uint8_t> oakct_chain_pem,
                      std::string_view namespace_str,
                      std::string_view base_domain,
                      VerifyCallback callback);

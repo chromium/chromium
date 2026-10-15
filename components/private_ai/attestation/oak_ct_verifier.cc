@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -26,6 +25,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace private_ai {
 
@@ -62,13 +62,13 @@ void OnVerifyCertResult(OakCtVerifier::VerifyCallback callback,
 
 // static
 std::optional<std::string> OakCtVerifier::ComputeContentId(
-    base::span<const uint8_t> cert_der) {
-  if (cert_der.empty()) {
+    base::span<const uint8_t> content) {
+  if (content.empty()) {
     return std::nullopt;
   }
 
   std::array<uint8_t, crypto::hash::kSha256Size> hash =
-      crypto::hash::Sha256(cert_der);
+      crypto::hash::Sha256(content);
 
   std::string base32_encoded =
       base32::Base32Encode(hash, base32::Base32EncodePolicy::OMIT_PADDING);
@@ -83,10 +83,10 @@ std::optional<std::string> OakCtVerifier::ComputeContentId(
 
 // static
 std::optional<std::string> OakCtVerifier::BuildOakCtHostname(
-    base::span<const uint8_t> tca_root_der,
+    base::span<const uint8_t> tca_root_pem,
     std::string_view namespace_str,
     std::string_view base_domain) {
-  std::optional<std::string> content_id = ComputeContentId(tca_root_der);
+  std::optional<std::string> content_id = ComputeContentId(tca_root_pem);
   if (!content_id.has_value() || namespace_str.empty() || base_domain.empty()) {
     return std::nullopt;
   }
@@ -95,23 +95,32 @@ std::optional<std::string> OakCtVerifier::BuildOakCtHostname(
 
 // static
 void OakCtVerifier::Verify(network::mojom::NetworkContext* network_context,
-                           base::span<const uint8_t> tca_root_der,
-                           const std::vector<std::string>& oakct_chain_der,
+                           base::span<const uint8_t> tca_root_pem,
+                           base::span<const uint8_t> oakct_chain_pem,
                            std::string_view namespace_str,
                            std::string_view base_domain,
                            VerifyCallback callback) {
   std::optional<std::string> hostname =
-      BuildOakCtHostname(tca_root_der, namespace_str, base_domain);
+      BuildOakCtHostname(tca_root_pem, namespace_str, base_domain);
   if (!hostname.has_value()) {
     std::move(callback).Run(Result::kInvalidTcaRoot);
     return;
   }
 
+  // The published file holds the leaf first, followed by any intermediates.
+  // Parsing stops at the first block that is not a certificate; the
+  // certificate verifier is the authority on whether the chain is complete.
+  net::CertificateList certs =
+      net::X509Certificate::CreateCertificateListFromBytes(
+          oakct_chain_pem, net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   scoped_refptr<net::X509Certificate> certificate;
-  if (!oakct_chain_der.empty()) {
-    certificate = net::X509Certificate::CreateFromDERCertChain(base::ToVector(
-        oakct_chain_der,
-        [](const std::string& s) { return std::string_view(s); }));
+  if (!certs.empty()) {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    for (size_t i = 1; i < certs.size(); ++i) {
+      intermediates.push_back(bssl::UpRef(certs[i]->cert_buffer()));
+    }
+    certificate = net::X509Certificate::CreateFromBuffer(
+        bssl::UpRef(certs[0]->cert_buffer()), std::move(intermediates));
   }
   if (!certificate) {
     std::move(callback).Run(Result::kInvalidOakCtCertificate);
