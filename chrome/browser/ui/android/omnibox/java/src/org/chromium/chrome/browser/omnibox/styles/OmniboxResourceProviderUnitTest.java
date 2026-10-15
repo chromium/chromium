@@ -73,18 +73,14 @@ public class OmniboxResourceProviderUnitTest {
 
     @Test
     public void resolveAttributeToDrawable() {
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         Drawable drawableLight =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        mContext,
-                        BrandedColorScheme.LIGHT_BRANDED_THEME,
-                        R.attr.selectableItemBackground);
+                mProvider.resolveAttributeToDrawable(R.attr.selectableItemBackground);
         assertNotNull(drawableLight);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         Drawable drawableDark =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        mContext,
-                        BrandedColorScheme.DARK_BRANDED_THEME,
-                        R.attr.selectableItemBackground);
+                mProvider.resolveAttributeToDrawable(R.attr.selectableItemBackground);
         assertNotNull(drawableDark);
     }
 

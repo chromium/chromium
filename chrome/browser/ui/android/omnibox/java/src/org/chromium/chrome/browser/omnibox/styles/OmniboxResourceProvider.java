@@ -19,6 +19,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
@@ -247,12 +248,16 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Resolve attribute to drawable.
+     * Returns a drawable for a given attribute depending on the current {@link BrandedColorScheme}.
      *
-     * @see #resolveAttributeToDrawable(Context, ...)
+     * @param attributeResId A resource ID of an attribute to resolve.
+     * @return A background drawable providing ripple effect.
      */
-    public Drawable resolveAttributeToDrawable(int attributeResId) {
-        return resolveAttributeToDrawable(mContext, getBrandedColorScheme(), attributeResId);
+    public Drawable resolveAttributeToDrawable(@AttrRes int attributeResId) {
+        Context wrappedContext =
+                maybeWrapContextForIncognitoColorScheme(mContext, getBrandedColorScheme());
+        @DrawableRes int resourceId = resolveAttributeToDrawableRes(wrappedContext, attributeResId);
+        return assumeNonNull(wrappedContext.getDrawable(resourceId));
     }
 
     /**
@@ -855,22 +860,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                         context.getResources().getConfiguration().getLocales().get(0),
                         string,
                         (Object[]) args);
-    }
-
-    /**
-     * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}.
-     *
-     * @param context The {@link Context} used to retrieve resources.
-     * @param brandedColorScheme {@link BrandedColorScheme} to use.
-     * @param attributeResId A resource ID of an attribute to resolve.
-     * @return A background drawable resource ID providing ripple effect.
-     */
-    public static Drawable resolveAttributeToDrawable(
-            Context context, @BrandedColorScheme int brandedColorScheme, int attributeResId) {
-        Context wrappedContext =
-                maybeWrapContextForIncognitoColorScheme(context, brandedColorScheme);
-        @DrawableRes int resourceId = resolveAttributeToDrawableRes(wrappedContext, attributeResId);
-        return assumeNonNull(wrappedContext.getDrawable(resourceId));
     }
 
     /**
