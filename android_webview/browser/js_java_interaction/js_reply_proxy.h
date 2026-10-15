@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_JS_JAVA_INTERACTION_JS_REPLY_PROXY_H_
 #define ANDROID_WEBVIEW_BROWSER_JS_JAVA_INTERACTION_JS_REPLY_PROXY_H_
 
+#include <optional>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +33,10 @@ class JsReplyProxy {
   void ExecuteJavaScript(JNIEnv* env,
                          const std::u16string& java_script,
                          const base::android::JavaRef<jobject>& callback);
+
+  // Returns whether the frame this proxy belongs to is cross-origin isolated,
+  // or nullopt if there is no frame to post messages to.
+  std::optional<bool> IsCrossOriginIsolated(JNIEnv* env);
 
  private:
   raw_ptr<js_injection::WebMessageReplyProxy> reply_proxy_;

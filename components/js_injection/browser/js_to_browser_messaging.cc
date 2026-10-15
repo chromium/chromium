@@ -5,9 +5,12 @@
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 
 #include <algorithm>
+#include <optional>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -153,6 +156,15 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
     return document_.AsRenderFrameHostIfValid()->GetPage();
   }
 
+  std::optional<bool> IsCrossOriginIsolated() override {
+    content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+    if (!rfh) {
+      return std::nullopt;
+    }
+    return rfh->GetWebExposedIsolationLevel() !=
+           content::WebExposedIsolationLevel::kNotIsolated;
+  }
+
  private:
   content::WeakDocumentPtr document_;
   mojo::AssociatedRemote<mojom::BrowserToJsMessaging> java_to_js_messaging_;
@@ -214,6 +226,18 @@ void JsToBrowserMessaging::PostMessage(
     blink::WebMessagePayload message,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
+
+#if BUILDFLAG(IS_ANDROID)
+  // `JsWebMessage` is shared by both directions, but SharedArrayBuffers are
+  // only supported from the browser to the renderer. The renderer never sends
+  // one, so receiving it means the renderer is compromised. Reject it here
+  // rather than letting it reach the embedder, which cannot handle it.
+  if (std::holds_alternative<base::UnsafeSharedMemoryRegion>(message)) {
+    mojo::ReportBadMessage(
+        "SharedArrayBuffer cannot be sent from the renderer.");
+    return;
+  }
+#endif
 
   // For prerendering, messages will be queued until activation.
   if (!render_frame_host_->IsInLifecycleState(

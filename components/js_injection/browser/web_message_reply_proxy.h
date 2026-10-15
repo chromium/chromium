@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 #define COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 
+#include <optional>
+
 #include "components/js_injection/common/enum.mojom-forward.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -33,6 +35,11 @@ class WebMessageReplyProxy {
 
   // Returns the page the messages are sent to.
   virtual content::Page& GetPage() = 0;
+
+  // Returns whether the document messages are sent to is cross-origin isolated,
+  // or nullopt if there is no such document, i.e. if messages posted through
+  // this proxy would be dropped rather than delivered.
+  virtual std::optional<bool> IsCrossOriginIsolated() = 0;
 
  protected:
   virtual ~WebMessageReplyProxy() = default;

@@ -14,6 +14,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePayloadType;
 import org.chromium.js_injection.mojom.JavaScriptExecutionError;
 
 /**
@@ -33,6 +34,10 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
     /**
      * Post message to the injected JavaScript object. Note that it will drop message if the
      * injected object is gone.
+     *
+     * @throws IllegalStateException if the payload is a {@link
+     *     MessagePayloadType#SHARED_ARRAY_BUFFER} and the target frame, which is otherwise able to
+     *     receive the message, is not cross-origin isolated.
      */
     public void postMessage(final MessagePayload payload) {
         if (mNativeJsReplyProxy == 0) return;
@@ -40,6 +45,25 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
                 TaskTraits.UI_USER_VISIBLE,
                 () -> {
                     if (mNativeJsReplyProxy == 0) return;
+                    if (payload.getType() == MessagePayloadType.SHARED_ARRAY_BUFFER) {
+                        Boolean isCrossOriginIsolated =
+                                JsReplyProxyJni.get().isCrossOriginIsolated(mNativeJsReplyProxy);
+                        if (isCrossOriginIsolated == null) {
+                            // There is no frame to send the message to, so drop it. Reporting an
+                            // isolation failure here would be wrong: the message would not have
+                            // been delivered either way.
+                            return;
+                        }
+                        if (!isCrossOriginIsolated) {
+                            throw new IllegalStateException(
+                                    "Cannot send SharedArrayBuffer to a frame that is not"
+                                        + " cross-origin isolated. If this was intended, consider"
+                                        + " allowing your origin with"
+                                        + " `Profile#setCrossOriginIsolatedAllowlist()`, and add"
+                                        + " the Document-Isolation-Policy header the page's"
+                                        + " response.");
+                        }
+                    }
                     JsReplyProxyJni.get().postMessage(mNativeJsReplyProxy, payload);
                 });
     }
@@ -99,5 +123,9 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
                 long nativeJsReplyProxy,
                 @JniType("std::u16string") String script,
                 @Nullable JavaScriptExecutionCallback callback);
+
+        // Null if there is no frame to post messages to.
+        @JniType("std::optional<bool>")
+        @Nullable Boolean isCrossOriginIsolated(long nativeJsReplyProxy);
     }
 }

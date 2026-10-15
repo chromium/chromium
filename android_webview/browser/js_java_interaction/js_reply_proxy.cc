@@ -80,6 +80,13 @@ void JsReplyProxy::ExecuteJavaScript(
                      base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
+std::optional<bool> JsReplyProxy::IsCrossOriginIsolated(JNIEnv* env) {
+  if (!reply_proxy_) {
+    return std::nullopt;
+  }
+  return reply_proxy_->IsCrossOriginIsolated();
+}
+
 }  // namespace android_webview
 
 DEFINE_JNI(JsReplyProxy)
