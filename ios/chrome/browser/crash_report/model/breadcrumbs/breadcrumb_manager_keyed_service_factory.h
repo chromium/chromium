@@ -5,28 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace breadcrumbs {
-class BreadcrumbManagerKeyedService;
-}  // namespace breadcrumbs
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 class BreadcrumbManagerKeyedServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          BreadcrumbManagerKeyedServiceFactory,
+          breadcrumbs::BreadcrumbManagerKeyedService> {
  public:
-  static BreadcrumbManagerKeyedServiceFactory* GetInstance();
-  static breadcrumbs::BreadcrumbManagerKeyedService* GetForProfile(
-      ProfileIOS* profile);
+  explicit BreadcrumbManagerKeyedServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BreadcrumbManagerKeyedServiceFactory>;
-
-  BreadcrumbManagerKeyedServiceFactory();
-  ~BreadcrumbManagerKeyedServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
