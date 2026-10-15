@@ -203,8 +203,8 @@ class EGLImageBackingFactoryTest : public testing::Test {
                        const wgpu::Device& device,
                        const gfx::Size& size,
                        const std::vector<uint8_t>& expected_color) const {
-    uint32_t buffer_stride = static_cast<uint32_t>(
-        base::bits::AlignUpDeprecatedDoNotUse(size.width() * 4, 256));
+    uint32_t buffer_stride = base::bits::AlignUp(
+        base::checked_cast<uint32_t>(size.width()) * 4, 256u);
     size_t buffer_size = static_cast<size_t>(size.height()) * buffer_stride;
     wgpu::BufferDescriptor buffer_desc{
         .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
