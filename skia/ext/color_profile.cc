@@ -114,6 +114,13 @@ void ColorProfile::ComputeDisplaySkColorSpace() {
   }
 }
 
+void ColorProfile::ComputeSkHdrMetadata() {
+  if (profile_.has_HAGC) {
+    hdr_metadata_.setSerializedAgtm(
+        SkData::MakeWithoutCopy(profile_.HAGC.buffer, profile_.HAGC.size));
+  }
+}
+
 ColorProfile::ColorProfile() = default;
 ColorProfile::~ColorProfile() = default;
 
@@ -141,6 +148,7 @@ sk_sp<ColorProfile> ColorProfile::Make(const SkCodec* codec) {
   sk_sp<ColorProfile> result(new ColorProfile());
   result->profile_ = *profile;
   result->ComputeSkColorSpace();
+  result->ComputeSkHdrMetadata();
   return result;
 }
 
@@ -179,6 +187,7 @@ sk_sp<ColorProfile> ColorProfile::Make(base::span<const uint8_t> buffer) {
   result->skia_profile_ = std::move(skia_profile);
   result->ComputeSkColorSpace();
   result->ComputeDisplaySkColorSpace();
+  result->ComputeSkHdrMetadata();
   return result;
 }
 

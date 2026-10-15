@@ -1069,6 +1069,8 @@ void ImageDecoder::SetEmbeddedColorProfile(sk_sp<skia::ColorProfile> profile) {
 
   if (color_behavior_ == ColorBehavior::kTag && embedded_color_profile_) {
     sk_image_color_space_ = embedded_color_profile_->GetSkColorSpace();
+    hdr_metadata_.MergeMetadataFrom(
+        gfx::HDRMetadata(embedded_color_profile_->GetSkHdrMetadata()));
   } else {
     sk_image_color_space_ = SkColorSpace::MakeSRGB();
   }

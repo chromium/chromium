@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
 class SkCodec;
@@ -68,6 +69,9 @@ class SK_API ColorProfile final : public SkRefCnt {
   // the profile is unusable).
   sk_sp<SkColorSpace> GetSkColorSpace() const { return sk_color_space_; }
 
+  // Return the HDR metadata specified in the profile.
+  skhdr::Metadata GetSkHdrMetadata() const { return hdr_metadata_; }
+
   // Return if GetSkColorSpace returns an exact representation of the
   // provided ICC profile (and false if the ICC profile cannot be represented
   // as an SkColorSpace, e.g, because it is LUT-based).
@@ -102,6 +106,7 @@ class SK_API ColorProfile final : public SkRefCnt {
   void ComputeSkColorSpace();
   // Must be called after ComputeSkColorSpace.
   void ComputeDisplaySkColorSpace();
+  void ComputeSkHdrMetadata();
 
   skcms_ICCProfile profile_;
   // Retains the parsed profile data so that pointers in profile_ remain valid.
@@ -110,6 +115,7 @@ class SK_API ColorProfile final : public SkRefCnt {
   bool is_sk_color_space_exact_ = false;
   sk_sp<SkColorSpace> display_sk_color_space_;
   bool is_display_sk_color_space_exact_ = false;
+  skhdr::Metadata hdr_metadata_;
 };
 
 }  // namespace skia

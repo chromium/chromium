@@ -1753,6 +1753,22 @@ TEST(PNGTests, HDRMetadata) {
                   .01f);
 }
 
+TEST(PNGTests, ParseSmpte209450FromICC) {
+  const char* png_file = "/images/resources/smpte209450.png";
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
+  ASSERT_TRUE(data);
+
+  auto decoder = CreatePNGDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                                  ColorBehavior::kTag);
+  decoder->SetData(data.get(), true);
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_FALSE(decoder->Failed());
+
+  const gfx::HDRMetadata& hdr_metadata = decoder->GetHDRMetadata();
+  ASSERT_TRUE(hdr_metadata.HasAgtm());
+}
+
 TEST(AnimatedPNGTests, TrnsMeansAlpha) {
   const char* png_file =
       "/images/resources/"

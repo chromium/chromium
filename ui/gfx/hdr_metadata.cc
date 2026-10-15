@@ -143,6 +143,11 @@ HDRMetadata::HDRMetadata(const skhdr::Metadata& sk_hdr_metadata) {
   if (sk_hdr_metadata.getMasteringDisplayColorVolume(&mdcv)) {
     mdcv_ = mdcv;
   }
+
+  skhdr::AdaptiveGlobalToneMap agtm;
+  if (sk_hdr_metadata.getAdaptiveGlobalToneMap(&agtm)) {
+    agtm_ = agtm;
+  }
 }
 
 HDRMetadata::HDRMetadata(const skhdr::MasteringDisplayColorVolume& mdcv,

@@ -66,4 +66,20 @@ TEST(ColorProfileTest, DisplaySkColorSpaceNonD50) {
   EXPECT_TRUE(profile_from_cs->IsDisplaySkColorSpaceExact());
 }
 
+TEST(ColorProfileTest, HdrMetadata) {
+  skhdr::AdaptiveGlobalToneMap agtm;
+  agtm.fHdrReferenceWhite = 100.f;
+  skhdr::Metadata hdr_metadata;
+  hdr_metadata.setAdaptiveGlobalToneMap(agtm);
+
+  auto color_space =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kPQ, SkNamedGamut::kDisplayP3);
+  sk_sp<SkData> data = SkWriteICCProfile(color_space.get(), &hdr_metadata);
+  ASSERT_TRUE(data);
+
+  auto profile = ColorProfile::Make(skia::as_byte_span(*data));
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(profile->GetSkHdrMetadata(), hdr_metadata);
+}
+
 }  // namespace skia
