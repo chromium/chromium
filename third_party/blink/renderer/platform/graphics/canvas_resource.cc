@@ -406,15 +406,18 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
+  if (!context_provider_wrapper) {
+    if (release_callback) {
+      std::move(release_callback).Run(gpu::SyncToken(), false);
+    }
+    return nullptr;
+  }
+
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   CHECK(client_si);
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), sync_token, resource_source, hdr_metadata,
       std::move(release_callback), std::move(context_provider_wrapper)));
-
-  if (!resource->is_cross_thread() && !resource->context_provider_wrapper_) {
-    return nullptr;
-  }
 
   return resource;
 }
