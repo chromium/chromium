@@ -77,6 +77,8 @@ source_set("private_ai") {
     "secure_session_async_impl.cc",
     "secure_session_async_impl.h",
     "status_code.h",
+    "tls_certificate_downloader.cc",
+    "tls_certificate_downloader.h",
     "transport.h",
     "websocket_client.cc",
     "websocket_client.h",
@@ -161,6 +163,7 @@ source_set("unit_tests") {
     "private_ai_service_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
+    "tls_certificate_downloader_unittest.cc",
     "websocket_client_unittest.cc",
   ]
   deps = [
@@ -188,6 +191,7 @@ source_set("unit_tests") {
     "//components/private_ai/phosphor:unit_tests",
     "//components/private_ai/proto_utils:unit_tests",
     "//mojo/public/cpp/system",
+    "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/mojom",
