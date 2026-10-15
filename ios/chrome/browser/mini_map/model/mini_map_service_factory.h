@@ -7,24 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class MiniMapService;
+#import "ios/chrome/browser/mini_map/model/mini_map_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for the MiniMapService that will observe the profile scoped settings.
-class MiniMapServiceFactory final : public ProfileKeyedServiceFactoryIOS {
+class MiniMapServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<MiniMapServiceFactory,
+                                                MiniMapService> {
  public:
-  static MiniMapService* GetForProfile(ProfileIOS* profile);
-  static MiniMapServiceFactory* GetInstance();
+  explicit MiniMapServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<MiniMapServiceFactory>;
-
-  MiniMapServiceFactory();
-  ~MiniMapServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

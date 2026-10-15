@@ -17,26 +17,14 @@
 
 namespace drive {
 
-// static
-DriveService* DriveServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<DriveService>(profile,
-                                                             /*create=*/true);
-}
-
-// static
-DriveServiceFactory* DriveServiceFactory::GetInstance() {
-  static base::NoDestructor<DriveServiceFactory> instance;
-  return instance.get();
-}
-
-DriveServiceFactory::DriveServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("DriveService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+DriveServiceFactory::DriveServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DriveService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
 }
-
-DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
