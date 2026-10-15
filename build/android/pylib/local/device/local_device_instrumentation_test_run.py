@@ -81,11 +81,6 @@ TIMEOUT_ANNOTATIONS = [
 # Account for Instrumentation and process init overhead.
 FIXED_TEST_TIMEOUT_OVERHEAD = 60
 
-# In-process unit test batches (Batch.UNIT_TESTS) often launch
-# BlankUiTestActivity but have much smaller overhead than normal tests.
-_ESTIMATED_RUNTIME_PER_CLASS_UNIT_TESTS = 1.0
-_ESTIMATED_RUNTIME_PER_TEST_UNIT_TESTS = 0.05
-
 # 30 minute max timeout for an instrumentation invocation to avoid shard
 # timeouts when tests never finish. The shard timeout is currently 60 minutes,
 # so this needs to be less than that.
@@ -1137,7 +1132,7 @@ class LocalDeviceInstrumentationTestRun(
         batched_tests_split = self._SplitBatchesAboveMaxSize(batched_tests)
         all_tests = batched_tests_split + other_tests
 
-        return all_tests
+        return self._SortTests(all_tests)
 
     def _GroupTestsIntoBatchesAndOthers(self, tests):
         batched_tests = dict()
@@ -1378,7 +1373,7 @@ class LocalDeviceInstrumentationTestRun(
             )
 
             timeout_scale = self._test_instance.timeout_scale * (
-                self.GetTimeoutScaleFromAnnotations(test['annotations'])
+                self._GetTimeoutScaleFromAnnotations(test['annotations'])
             )
             if timeout_scale != 1:
                 extras[EXTRA_TIMEOUT_SCALE] = str(
@@ -2349,18 +2344,15 @@ class LocalDeviceInstrumentationTestRun(
                         error,
                     )
 
-    @classmethod
-    def _IsUnitTestBatch(cls, test):
-        if isinstance(test, list):
-            test = test[0]
-        return test['annotations'].get('Batch', {}).get('value') == 'UnitTests'
-
     # override
     def _ShouldRetry(self, test, result):
         # We've tried to disable retries in the past with mixed results.
         # See crbug.com/619055 for historical context and crbug.com/797002
         # for ongoing efforts.
-        if self._IsUnitTestBatch(test):
+        if (
+            'Batch' in test['annotations']
+            and test['annotations']['Batch']['value'] == 'UnitTests'
+        ):
             return False
         del test, result
         return True
@@ -2375,38 +2367,8 @@ class LocalDeviceInstrumentationTestRun(
         """
         return True
 
-    # override
-    def _EstimateTestGroupRuntime(self, test):
-        tests_in_group = test if isinstance(test, (list, tuple)) else [test]
-        assert tests_in_group, 'Empty test group'
-
-        is_unit_test = self._IsUnitTestBatch(test)
-        # Unit test batches (Batch.UNIT_TESTS) have much smaller overhead
-        # (~1.0s base, ~0.05s per test, although they often launch
-        # BlankUiTestActivity).
-        # Non-unit-test batches assume each class launches an activity
-        # (~8.0s overhead) and each test method runs in ~1.0s.
-        launch_overhead = (
-            _ESTIMATED_RUNTIME_PER_CLASS_UNIT_TESTS
-            if is_unit_test
-            else local_device_test_run.ESTIMATED_RUNTIME_PER_CLASS_DEFAULT
-        )
-        per_test_overhead = (
-            _ESTIMATED_RUNTIME_PER_TEST_UNIT_TESTS
-            if is_unit_test
-            else local_device_test_run.ESTIMATED_RUNTIME_PER_TEST_DEFAULT
-        )
-
-        # TimeoutScale is reused here only as a relative multiplier for the
-        # estimate, not as a timeout setting.
-        return launch_overhead + sum(
-            per_test_overhead
-            * self.GetTimeoutScaleFromAnnotations(t['annotations'])
-            for t in tests_in_group
-        )
-
     @classmethod
-    def GetTimeoutScaleFromAnnotations(cls, annotations):
+    def _GetTimeoutScaleFromAnnotations(cls, annotations):
         try:
             return int(annotations.get('TimeoutScale', {}).get('value', 1))
         except ValueError as e:
@@ -2425,7 +2387,7 @@ class LocalDeviceInstrumentationTestRun(
             logging.warning('Using default 1 minute timeout for %s', test_name)
             timeout = 60
 
-        timeout *= cls.GetTimeoutScaleFromAnnotations(annotations)
+        timeout *= cls._GetTimeoutScaleFromAnnotations(annotations)
 
         return timeout
 

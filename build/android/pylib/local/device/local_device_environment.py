@@ -118,7 +118,6 @@ class LocalDeviceEnvironment(environment.Environment):
         # //third_party/catapult's browser_options.py
         if hasattr(args, 'trace_output'):
             self._trace_output = args.trace_output
-        self._sharding_strategy = args.sharding_strategy
         self._trace_all = None
         if hasattr(args, 'trace_all'):
             self._trace_all = args.trace_all
@@ -323,10 +322,6 @@ class LocalDeviceEnvironment(environment.Environment):
     @property
     def trace_output(self):
         return self._trace_output
-
-    @property
-    def sharding_strategy(self):
-        return self._sharding_strategy
 
     @property
     def force_main_user(self):

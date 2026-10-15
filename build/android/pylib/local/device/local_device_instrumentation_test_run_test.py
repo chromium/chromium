@@ -155,11 +155,16 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
             test7,
             test8,
         ]
-
-        self._obj._env.sharding_strategy = 'bounded-load'
-        expected_shard0 = self._obj._ApplyExternalSharding(tests, 0, 2)
-        expected_shard1 = self._obj._ApplyExternalSharding(tests, 1, 2)
-
+        expected_shard0 = [test8]
+        expected_shard1 = [
+            [test1_batch1, test4_batch1, test5_batch1],
+            test3_multiprocess,
+            test7,
+            test3,
+            test6,
+            test2,
+        ]
+        # Shuffle the tests two times to check if the output is deterministic.
         random.shuffle(tests)
         self.assertListEqual(
             self._obj._ApplyExternalSharding(tests, 0, 2), expected_shard0
@@ -240,54 +245,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         )
         # Must not raise.
         self._obj._ResetLeftoverCtsMockIme(device)
-
-    def testEstimateTestGroupRuntime(self):
-        # single test dict with no special annotations
-        # (weight = 8.0 + 1.0 = 9.0)
-        self.assertEqual(
-            self._obj._EstimateTestGroupRuntime({'annotations': {}}), 9.0
-        )
-
-        # test dict with TimeoutScale: {'value': 4} (weight = 8.0 + 4.0 = 12.0)
-        self.assertEqual(
-            self._obj._EstimateTestGroupRuntime(
-                {'annotations': {'TimeoutScale': {'value': 4}}}
-            ),
-            12.0,
-        )
-
-        # multi-test batch of non-unit tests
-        self.assertEqual(
-            self._obj._EstimateTestGroupRuntime(
-                [{'annotations': {}}, {'annotations': {}}]
-            ),
-            10.0,
-        )
-
-        # unit test batch with Batch: {'value': 'UnitTests'}
-        # (weight = 1.0 + 0.05 = 1.05)
-        self.assertEqual(
-            self._obj._EstimateTestGroupRuntime(
-                {'annotations': {'Batch': {'value': 'UnitTests'}}}
-            ),
-            1.05,
-        )
-
-        # unit test batch with multiple tests and TimeoutScale
-        self.assertEqual(
-            self._obj._EstimateTestGroupRuntime(
-                [
-                    {'annotations': {'Batch': {'value': 'UnitTests'}}},
-                    {
-                        'annotations': {
-                            'Batch': {'value': 'UnitTests'},
-                            'TimeoutScale': {'value': 4},
-                        }
-                    },
-                ]
-            ),
-            1.25,
-        )
 
     @mock.patch.object(
         local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,

@@ -163,11 +163,16 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
             'TestSuite2.TestName1',
             'TestSuite2.TestName2',
         ]
-
-        self._obj._env.sharding_strategy = 'bounded-load'
-        expected_shard0 = self._obj._ApplyExternalSharding(tests, 0, 2)
-        expected_shard1 = self._obj._ApplyExternalSharding(tests, 1, 2)
-
+        expected_shard0 = [
+            'TestSuite1.TestName2',
+            'TestSuite1.TestName1',
+        ]
+        expected_shard1 = [
+            ['TestSuite1.PRE_TestName3', 'TestSuite1.TestName3'],
+            ['TestSuite2.PRE_TestName1', 'TestSuite2.TestName1'],
+            'TestSuite2.TestName2',
+        ]
+        # Shuffle the tests two times to check if the output is deterministic.
         random.shuffle(tests)
         self.assertListEqual(
             self._obj._ApplyExternalSharding(tests, 0, 2), expected_shard0
