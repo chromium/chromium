@@ -19,7 +19,7 @@
 // - Observers may add or remove themselves or others from within a
 //   notification.
 // - Pending registrations and notifications are still delivered after the
-//   owner releases the list.
+//   owner releases the list, unless `-removeAllObservers` is called.
 //
 // `ObserverType` (e.g. `id<MyObserver>`) must match the protocol passed to
 // `-initWithProtocol:`. Must be created and used on a single sequence.
@@ -43,6 +43,10 @@
 // Unregisters `observer`, cancelling its pending registration and
 // notifications. No-op if `observer` is nil.
 - (void)removeObserver:(ObserverType)observer;
+
+// Unregisters all observers, cancelling their pending registrations and
+// notifications.
+- (void)removeAllObservers;
 
 // Posts `notification`, which is called with `observers`, a proxy forwarding
 // each protocol message to the observers added before this call and not

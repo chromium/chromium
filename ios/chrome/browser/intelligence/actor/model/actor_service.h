@@ -14,14 +14,15 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
 
-@class CRBProtocolObservers;
 @class PageContextWrapper;
+@class PostedObserverList<ObserverType>;
 @protocol ActorTaskInterventionDelegate;
 @protocol ActorTaskLifecycleObserver;
 @protocol ActorTaskUpdatesObserver;
@@ -43,6 +44,8 @@ struct TaskSourceInfo;
 // Service responsible for handling Actor requests. The normal flow is to
 // `CreateTask` and reuse this ID for an entire Actor task (journey).
 // `ExecuteTools` can be called multiple times on the same task sequentially.
+// Must be created and used on a single sequence. Observers passed to
+// `Add*Observer()` must not be nil, `Remove*Observer()` ignores nil.
 class ActorService : public KeyedService {
  public:
   explicit ActorService(ProfileIOS* profile);
@@ -107,7 +110,10 @@ class ActorService : public KeyedService {
   void StopAllTasks();
 
   // Returns the aggregated journal for this service.
-  AggregatedJournal* GetJournal() { return journal_.get(); }
+  AggregatedJournal* GetJournal() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return journal_.get();
+  }
 
   // Registers an observer for task updates.
   void AddTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
@@ -124,10 +130,13 @@ class ActorService : public KeyedService {
   void RemoveTaskUpdatesObserver(ActorTaskId task_id,
                                  id<ActorTaskUpdatesObserver> observer);
 
-  // Registers `observer` for all task lifecycle events.
+  // Registers the `observer` for task lifecycle events.
+  // Events are posted, never delivered synchronously, and `observer` receives
+  // those posted after this call until it is removed or the service shuts down.
   void AddTaskLifecycleObserver(id<ActorTaskLifecycleObserver> observer);
 
-  // Removes a registered task lifecycle observer.
+  // Removes a registered task lifecycle observer. Pending events are not
+  // delivered to `observer`.
   void RemoveTaskLifecycleObserver(id<ActorTaskLifecycleObserver> observer);
 
   // Returns the execution state of the currently active task, or `std::nullopt`
@@ -149,6 +158,7 @@ class ActorService : public KeyedService {
 
   // Returns a weak pointer to this service instance.
   base::WeakPtr<ActorService> GetWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -171,14 +181,16 @@ class ActorService : public KeyedService {
   // Observers for task updates.
   std::vector<__weak id<ActorTaskUpdatesObserver>> task_observers_;
 
-  // Observers notified of task start and stop. The container is held strongly,
-  // but the observers inside are held weakly.
-  __strong CRBProtocolObservers<ActorTaskLifecycleObserver>*
+  // Observers notified of task start and stop, held weakly.
+  __strong PostedObserverList<id<ActorTaskLifecycleObserver>>*
       lifecycle_observers_;
 
   // Map of pending PageContext extractions ("observations"). Used to keep the
   // wrapper alive while the extraction is in progress.
   std::map<web::WebStateID, PageContextWrapper*> pending_observations_;
+
+  // Posts the lifecycle stop of `task` to lifecycle observers.
+  void NotifyTaskStopped(const ActorTask& task);
 
   // Callback for when PageContext extraction completes.
   void OnPageContextExtractionComplete(
@@ -204,6 +216,9 @@ class ActorService : public KeyedService {
   // if it cannot be found.
   web::WebState* GetWebState(web::WebStateID web_state_id,
                              bool allows_incognito);
+
+  // Ensures the service is only used on the sequence it was created on.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;

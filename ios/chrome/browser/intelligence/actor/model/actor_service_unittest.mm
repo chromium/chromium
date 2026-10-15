@@ -92,8 +92,17 @@
     : NSObject <ActorTaskLifecycleObserver>
 @property(nonatomic, assign) NSInteger startedCount;
 @property(nonatomic, assign) NSInteger stoppedCount;
+// Value of `stoppedCount` at the end of the last start notification.
+@property(nonatomic, assign) NSInteger stoppedCountAfterStart;
+// Value of `startedCount` when the last stop was received.
+@property(nonatomic, assign) NSInteger startedCountAtStop;
 @property(nonatomic, assign) actor::ActorTaskId lastTaskID;
 @property(nonatomic, assign) actor::TaskSourceInfo::Client lastSourceType;
+// Final state carried by the last stop notification.
+@property(nonatomic, assign) actor::ActorTaskState lastFinalState;
+// Called during each start notification, immediately before sampling
+// `stoppedCountAfterStart`.
+@property(nonatomic, copy) void (^onStart)(actor::ActorTaskId taskID);
 @end
 
 @implementation FakeActorTaskLifecycleObserver
@@ -104,14 +113,20 @@
   _startedCount++;
   _lastTaskID = taskID;
   _lastSourceType = sourceInfo.type;
+  if (_onStart) {
+    _onStart(taskID);
+  }
+  _stoppedCountAfterStart = _stoppedCount;
 }
 
 - (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
                            sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
                            finalState:(actor::ActorTaskState)finalState {
   _stoppedCount++;
+  _startedCountAtStop = _startedCount;
   _lastTaskID = taskID;
   _lastSourceType = sourceInfo.type;
+  _lastFinalState = finalState;
 }
 
 @end
@@ -916,8 +931,7 @@ TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
   EXPECT_EQ(0, observer.stoppedCount);
 }
 
-// Test that adding a task-scoped observer fails for an unknown task or a nil
-// observer.
+// Test that adding a task-scoped observer fails for an unknown task.
 TEST_F(ActorServiceTest, AddTaskScopedUpdatesObserverFailures) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -929,13 +943,10 @@ TEST_F(ActorServiceTest, AddTaskScopedUpdatesObserverFailures) {
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   EXPECT_FALSE(service->AddTaskUpdatesObserver(task_id, observer));
   EXPECT_EQ(0, observer.registeredCount);
-
-  ActorTaskId active_task_id = CreateTask(service);
-  EXPECT_FALSE(service->AddTaskUpdatesObserver(active_task_id, nil));
 }
 
-// Test that a task lifecycle observer is notified, with the task source, when a
-// task is started and stopped.
+// Tests that a task lifecycle observer is notified asynchronously, with the
+// task source, when a task is started and stopped.
 TEST_F(ActorServiceTest, TaskLifecycleObserverNotifiedOnStartAndStop) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -943,21 +954,30 @@ TEST_F(ActorServiceTest, TaskLifecycleObserverNotifiedOnStartAndStop) {
   FakeActorTaskLifecycleObserver* observer =
       [[FakeActorTaskLifecycleObserver alloc] init];
   service->AddTaskLifecycleObserver(observer);
+  // Complete the registration, so that the check below covers the start
+  // notification itself.
+  FlushCurrentSequence();
 
   ActorTaskId task_id = CreateTask(service);
+  EXPECT_EQ(0, observer.startedCount);
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.startedCount);
   EXPECT_EQ(task_id, observer.lastTaskID);
   EXPECT_EQ(TaskSourceInfo::Client::kTest, observer.lastSourceType);
 
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  EXPECT_EQ(0, observer.stoppedCount);
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.stoppedCount);
   EXPECT_EQ(task_id, observer.lastTaskID);
+  EXPECT_EQ(ActorTaskState::kCancelled, observer.lastFinalState);
 
   service->RemoveTaskLifecycleObserver(observer);
 }
 
-// Test that adding a task lifecycle observer when a task is already active does
-// not replay its start, but still notifies when that task stops.
+// Tests that adding a task lifecycle observer when a task is already active
+// does not replay its start, even if the start was not delivered yet, but still
+// notifies when that task stops.
 TEST_F(ActorServiceTest, LateAddedTaskLifecycleObserverNotReplayed) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -967,16 +987,20 @@ TEST_F(ActorServiceTest, LateAddedTaskLifecycleObserverNotReplayed) {
   FakeActorTaskLifecycleObserver* observer =
       [[FakeActorTaskLifecycleObserver alloc] init];
   service->AddTaskLifecycleObserver(observer);
+  FlushCurrentSequence();
   EXPECT_EQ(0, observer.startedCount);
 
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.stoppedCount);
   EXPECT_EQ(task_id, observer.lastTaskID);
+  EXPECT_EQ(0, observer.startedCount);
 
   service->RemoveTaskLifecycleObserver(observer);
 }
 
-// Test broadcasting to multiple task lifecycle observers and selective removal.
+// Tests broadcasting to multiple task lifecycle observers and selective
+// removal.
 TEST_F(ActorServiceTest, MultipleTaskLifecycleObserversBroadcastAndRemoval) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -989,24 +1013,27 @@ TEST_F(ActorServiceTest, MultipleTaskLifecycleObserversBroadcastAndRemoval) {
   service->AddTaskLifecycleObserver(observer2);
 
   ActorTaskId task_id = CreateTask(service, "Shared Task");
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer1.startedCount);
   EXPECT_EQ(1, observer2.startedCount);
 
   // Stopping the task should only notify the remaining observer.
   service->RemoveTaskLifecycleObserver(observer1);
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  FlushCurrentSequence();
   EXPECT_EQ(0, observer1.stoppedCount);
   EXPECT_EQ(1, observer2.stoppedCount);
 
   // Creating a new task should only notify the remaining observer.
   CreateTask(service, "Next Task");
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer1.startedCount);
   EXPECT_EQ(2, observer2.startedCount);
 
   service->RemoveTaskLifecycleObserver(observer2);
 }
 
-// Test that adding a duplicate task lifecycle observer is ignored.
+// Tests that adding a duplicate task lifecycle observer is ignored.
 TEST_F(ActorServiceTest, DuplicateTaskLifecycleObserverIgnored) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -1017,7 +1044,134 @@ TEST_F(ActorServiceTest, DuplicateTaskLifecycleObserverIgnored) {
   service->AddTaskLifecycleObserver(observer);
 
   CreateTask(service);
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.startedCount);
+
+  service->RemoveTaskLifecycleObserver(observer);
+}
+
+// Tests that a task lifecycle observer removed before a pending notification is
+// delivered does not receive it.
+TEST_F(ActorServiceTest,
+       TaskLifecycleObserverRemovedBeforeDeliveryNotNotified) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorTaskLifecycleObserver* observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  service->AddTaskLifecycleObserver(observer);
+  // Complete the registration, so that the removal below cancels a pending
+  // notification rather than a pending registration.
+  FlushCurrentSequence();
+
+  CreateTask(service);
+  service->RemoveTaskLifecycleObserver(observer);
+  FlushCurrentSequence();
+  EXPECT_EQ(0, observer.startedCount);
+}
+
+// Tests that a task lifecycle observer stopping a task from its start
+// notification runs outside `CreateTask()`, and receives the stop on a later
+// turn.
+TEST_F(ActorServiceTest, TaskLifecycleObserverStopsTaskFromStart) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorTaskLifecycleObserver* observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  observer.onStart = ^(ActorTaskId task_id) {
+    service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  };
+  service->AddTaskLifecycleObserver(observer);
+  // Complete the registration, so that the check below covers the start
+  // notification itself.
+  FlushCurrentSequence();
+
+  ActorTaskId task_id = CreateTask(service);
+  EXPECT_EQ(0, observer.startedCount);
+
+  // Delivers the start, from which the observer stops the task, posting the
+  // stop.
+  FlushCurrentSequence();
+  EXPECT_EQ(1, observer.startedCount);
+
+  // Delivers the stop.
+  FlushCurrentSequence();
+  EXPECT_EQ(1, observer.stoppedCount);
+  EXPECT_EQ(0, observer.stoppedCountAfterStart);
+  EXPECT_EQ(1, observer.startedCountAtStop);
+  EXPECT_EQ(task_id, observer.lastTaskID);
+
+  service->RemoveTaskLifecycleObserver(observer);
+}
+
+// Tests that a task stopped right after its creation is reported as started
+// before it is reported as stopped, and rejects task-scoped update observers.
+TEST_F(ActorServiceTest, TaskLifecycleStartDeliveredBeforeStop) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorTaskLifecycleObserver* observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  service->AddTaskLifecycleObserver(observer);
+
+  FakeActorServiceTaskUpdatesObserver* updates_observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  __block bool add_updates_observer_result = true;
+  observer.onStart = ^(ActorTaskId started_task_id) {
+    add_updates_observer_result =
+        service->AddTaskUpdatesObserver(started_task_id, updates_observer);
+  };
+
+  ActorTaskId task_id = CreateTask(service);
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  FlushCurrentSequence();
+  EXPECT_EQ(1, observer.stoppedCount);
+  EXPECT_EQ(1, observer.startedCountAtStop);
+  EXPECT_EQ(1, observer.startedCount);
+  EXPECT_FALSE(add_updates_observer_result);
+
+  service->RemoveTaskLifecycleObserver(observer);
+}
+
+// Tests that lifecycle notifications still pending when the service shuts down
+// are not delivered.
+TEST_F(ActorServiceTest, ShutdownDropsPendingLifecycleNotifications) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorTaskLifecycleObserver* observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  service->AddTaskLifecycleObserver(observer);
+  FlushCurrentSequence();
+
+  ActorTaskId task_id = CreateTask(service);
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  service->Shutdown();
+  FlushCurrentSequence();
+
+  EXPECT_EQ(0, observer.startedCount);
+  EXPECT_EQ(0, observer.stoppedCount);
+}
+
+// Tests that stopping all tasks posts one lifecycle stop per task, none of
+// which is delivered synchronously.
+TEST_F(ActorServiceTest, StopAllTasksPostsOneStopPerTask) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorTaskLifecycleObserver* observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  service->AddTaskLifecycleObserver(observer);
+  CreateTask(service, "First Task");
+  ActorTaskId last_task_id = CreateTask(service, "Second Task");
+  FlushCurrentSequence();
+
+  service->StopAllTasks();
+  EXPECT_EQ(0, observer.stoppedCount);
+  FlushCurrentSequence();
+  EXPECT_EQ(2, observer.stoppedCount);
+  EXPECT_EQ(last_task_id, observer.lastTaskID);
 
   service->RemoveTaskLifecycleObserver(observer);
 }
@@ -1189,6 +1343,8 @@ TEST_F(ActorServiceTest, InterruptTaskRemovesStoppedTaskOnFailure) {
                          "Please confirm");
 
   EXPECT_FALSE(HasTask(service, task_id));
+  EXPECT_EQ(0, observer.stoppedCount);
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.stoppedCount);
   EXPECT_EQ(task_id, observer.lastTaskID);
 

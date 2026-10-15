@@ -12,7 +12,6 @@
 #import "base/base64.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/ios/crb_protocol_observers.h"
 #import "base/location.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/core/aggregated_journal.h"
@@ -22,6 +21,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
+#import "ios/chrome/browser/intelligence/actor/model/posted_observer_list.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -81,12 +81,10 @@ void PostPerformActionsReply(PerformActionsCallback callback,
 ActorService::ActorService(ProfileIOS* profile)
     : profile_(profile),
       tool_factory_(std::make_unique<ActorToolFactory>(profile)),
-      journal_(std::make_unique<AggregatedJournal>()) {
+      journal_(std::make_unique<AggregatedJournal>()),
+      lifecycle_observers_([[PostedObserverList alloc]
+          initWithProtocol:@protocol(ActorTaskLifecycleObserver)]) {
   CHECK(tool_factory_);
-  lifecycle_observers_ =
-      static_cast<CRBProtocolObservers<ActorTaskLifecycleObserver>*>(
-          [CRBProtocolObservers
-              observersWithProtocol:@protocol(ActorTaskLifecycleObserver)]);
 }
 
 ActorService::~ActorService() {
@@ -94,6 +92,10 @@ ActorService::~ActorService() {
 }
 
 void ActorService::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Pending lifecycle notifications are dropped, so that observers are never
+  // called back after `Shutdown()`.
+  [lifecycle_observers_ removeAllObservers];
   // TODO(crbug.com/568342921): Gracefully cleanup tasks.
   task_observers_.clear();
   active_tasks_.clear();
@@ -102,6 +104,7 @@ void ActorService::Shutdown() {
 ActorTaskId ActorService::CreateTask(const std::string& title,
                                      const TaskSourceInfo& source_info,
                                      bool allow_incognito_web_states) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
@@ -117,8 +120,13 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   }
 
   active_tasks_[task_id] = std::move(task);
-  [lifecycle_observers_ actorServiceDidStartTaskWithID:task_id
-                                            sourceInfo:source_info];
+  // Copied because blocks capture C++ references by reference, and
+  // `source_info` may not outlive the posted notification.
+  const TaskSourceInfo source = source_info;
+  [lifecycle_observers_
+      postNotification:^(id<ActorTaskLifecycleObserver> observers) {
+        [observers actorServiceDidStartTaskWithID:task_id sourceInfo:source];
+      }];
   return task_id;
 }
 
@@ -127,6 +135,7 @@ void ActorService::PerformActions(
     const std::vector<optimization_guide::proto::Action>& actions,
     const std::string& task_update,
     PerformActionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
 
   LogActionsProto(journal_.get(), task_id, actions);
@@ -173,6 +182,7 @@ void ActorService::PerformActions(
 void ActorService::RequestTabObservation(ActorTaskId task_id,
                                          web::WebState* web_state,
                                          TabObservationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end() || !web_state) {
     std::move(callback).Run(PageContextWrapperCallbackResponse());
@@ -213,12 +223,14 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/496163986): Implement and test.
 }
 
 void ActorService::SetTaskInterventionDelegate(
     ActorTaskId task_id,
     id<ActorTaskInterventionDelegate> delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = active_tasks_.find(task_id);
   if (it != active_tasks_.end()) {
     it->second->SetInterventionDelegate(delegate);
@@ -228,6 +240,7 @@ void ActorService::SetTaskInterventionDelegate(
 void ActorService::InterruptTask(ActorTaskId task_id,
                                  ActorTaskInterruptReason reason,
                                  std::string_view message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end()) {
     return;
@@ -237,24 +250,19 @@ void ActorService::InterruptTask(ActorTaskId task_id,
   // task-initiated stops directly through `ActorService::StopTask`.
   it = active_tasks_.find(task_id);
   if (it != active_tasks_.end() && IsTerminalState(it->second->GetState())) {
-    [lifecycle_observers_
-        actorServiceDidStopTaskWithID:task_id
-                           sourceInfo:it->second->source_info()
-                           finalState:it->second->GetState()];
+    NotifyTaskStopped(*it->second);
     active_tasks_.erase(it);
   }
 }
 
 void ActorService::StopTask(ActorTaskId task_id,
                             ActorTaskStoppedReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/496163986): Implement and test.
   auto it = active_tasks_.find(task_id);
   if (it != active_tasks_.end()) {
     it->second->Stop(reason);
-    [lifecycle_observers_
-        actorServiceDidStopTaskWithID:task_id
-                           sourceInfo:it->second->source_info()
-                           finalState:it->second->GetState()];
+    NotifyTaskStopped(*it->second);
   }
   active_tasks_.erase(task_id);
 }
@@ -262,6 +270,7 @@ void ActorService::StopTask(ActorTaskId task_id,
 // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
 // cleaned up.
 void ActorService::StopAllTasks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!active_tasks_.empty()) {
     StopTask(active_tasks_.begin()->first,
              ActorTaskStoppedReason::kStoppedByUser);
@@ -271,7 +280,9 @@ void ActorService::StopAllTasks() {
 // TODO(crbug.com/556295233): Remove once the granular observer is implemented.
 void ActorService::AddTaskUpdatesObserver(
     id<ActorTaskUpdatesObserver> observer) {
-  if (!observer || std::ranges::contains(task_observers_, observer)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observer);
+  if (std::ranges::contains(task_observers_, observer)) {
     return;
   }
   std::erase_if(task_observers_, [](id obs) { return obs == nil; });
@@ -284,6 +295,7 @@ void ActorService::AddTaskUpdatesObserver(
 // TODO(crbug.com/556295233): Remove once the granular observer is implemented.
 void ActorService::RemoveTaskUpdatesObserver(
     id<ActorTaskUpdatesObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::erase(task_observers_, observer);
   for (const auto& [task_id, task] : active_tasks_) {
     task->RemoveObserver(observer);
@@ -293,8 +305,10 @@ void ActorService::RemoveTaskUpdatesObserver(
 bool ActorService::AddTaskUpdatesObserver(
     ActorTaskId task_id,
     id<ActorTaskUpdatesObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observer);
   auto it = active_tasks_.find(task_id);
-  if (!observer || it == active_tasks_.end()) {
+  if (it == active_tasks_.end()) {
     return false;
   }
   it->second->AddObserver(observer);
@@ -304,8 +318,9 @@ bool ActorService::AddTaskUpdatesObserver(
 void ActorService::RemoveTaskUpdatesObserver(
     ActorTaskId task_id,
     id<ActorTaskUpdatesObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = active_tasks_.find(task_id);
-  if (!observer || it == active_tasks_.end()) {
+  if (it == active_tasks_.end()) {
     return;
   }
   it->second->RemoveObserver(observer);
@@ -313,21 +328,19 @@ void ActorService::RemoveTaskUpdatesObserver(
 
 void ActorService::AddTaskLifecycleObserver(
     id<ActorTaskLifecycleObserver> observer) {
-  if (!observer) {
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observer);
   [lifecycle_observers_ addObserver:observer];
 }
 
 void ActorService::RemoveTaskLifecycleObserver(
     id<ActorTaskLifecycleObserver> observer) {
-  if (!observer) {
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [lifecycle_observers_ removeObserver:observer];
 }
 
 std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_tasks_.empty()) {
     return std::nullopt;
   }
@@ -336,6 +349,7 @@ std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {
 
 web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
                                               ActorTaskId task_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end()) {
     return nullptr;
@@ -352,6 +366,7 @@ web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
 
 void ActorService::AddControlledWebState(ActorTaskId task_id,
                                          web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
 
   auto it = active_tasks_.find(task_id);
@@ -362,6 +377,7 @@ void ActorService::AddControlledWebState(ActorTaskId task_id,
 
 std::vector<base::WeakPtr<ActorTaskBackgroundWorker>>
 ActorService::GetWeakTaskBackgroundWorkers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<base::WeakPtr<ActorTaskBackgroundWorker>> workers;
   workers.reserve(active_tasks_.size());
   for (const auto& [task_id, task] : active_tasks_) {
@@ -372,12 +388,26 @@ ActorService::GetWeakTaskBackgroundWorkers() {
 
 #pragma mark - Private
 
+void ActorService::NotifyTaskStopped(const ActorTask& task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const ActorTaskId task_id = task.task_id();
+  const TaskSourceInfo source = task.source_info();
+  const ActorTaskState final_state = task.GetState();
+  [lifecycle_observers_
+      postNotification:^(id<ActorTaskLifecycleObserver> observers) {
+        [observers actorServiceDidStopTaskWithID:task_id
+                                      sourceInfo:source
+                                      finalState:final_state];
+      }];
+}
+
 void ActorService::OnPageContextExtractionComplete(
     web::WebStateID web_state_id,
     const GURL& last_committed_url,
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> pending_journal_entry,
     TabObservationCallback callback,
     PageContextWrapperCallbackResponse response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_observations_.erase(web_state_id);
 
   if (pending_journal_entry) {
@@ -417,6 +447,7 @@ void ActorService::OnPageContextExtractionComplete(
 void ActorService::OnActCompleted(ActorTaskId task_id,
                                   PerformActionsCallback callback,
                                   std::vector<ActionResult> results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PerformActionsResult perform_actions_result;
   perform_actions_result.action_results = std::move(results);
 
@@ -475,6 +506,7 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
 void ActorService::AddControlledWebStates(
     ActorTask* task,
     const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
   CHECK(task);
 
@@ -498,6 +530,7 @@ void ActorService::AddControlledWebStates(
 
 web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
                                          bool allows_incognito) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserAndIndex browser_and_index =
       FindBrowserAndIndexFromProfile(profile_, web_state_id, allows_incognito);
 

@@ -153,6 +153,49 @@ TEST_F(PostedObserverListTest, RemoveCancelsPendingNotifications) {
   EXPECT_EQ(0u, observer.events.count);
 }
 
+// Tests that removing all observers cancels both the pending registrations and
+// the notifications already queued for the registered observers.
+TEST_F(PostedObserverListTest, RemoveAllObserversDropsPendingWork) {
+  FakePostedObserverListTestObserver* registered_observer =
+      [[FakePostedObserverListTestObserver alloc] init];
+  FakePostedObserverListTestObserver* pending_observer =
+      [[FakePostedObserverListTestObserver alloc] init];
+  [list_ addObserver:registered_observer];
+  actor::FlushCurrentSequence();
+
+  AddObserverWithRegisteredEvent(pending_observer);
+  Notify(kFirstEvent);
+  [list_ removeAllObservers];
+  actor::FlushCurrentSequence();
+
+  EXPECT_EQ(0u, registered_observer.events.count);
+  EXPECT_EQ(0u, pending_observer.events.count);
+}
+
+// Tests that removing all observers from within a notification stops its
+// delivery to the observers not yet reached.
+TEST_F(PostedObserverListTest, RemoveAllObserversDuringNotification) {
+  FakePostedObserverListTestObserver* first_observer =
+      [[FakePostedObserverListTestObserver alloc] init];
+  FakePostedObserverListTestObserver* second_observer =
+      [[FakePostedObserverListTestObserver alloc] init];
+  first_observer.triggerEvent = kFirstEvent;
+  first_observer.onTriggerEvent =
+      ^(FakePostedObserverListTestObserver* receiver) {
+        [list_ removeAllObservers];
+      };
+  [list_ addObserver:first_observer];
+  [list_ addObserver:second_observer];
+  actor::FlushCurrentSequence();
+
+  Notify(kFirstEvent);
+  Notify(kSecondEvent);
+  actor::FlushCurrentSequence();
+
+  EXPECT_NSEQ(@[ kFirstEvent ], first_observer.events);
+  EXPECT_EQ(0u, second_observer.events.count);
+}
+
 // Tests that an observer removed and re-added before its first registration
 // completes only receives the second registration and the notifications posted
 // after it, not the stale registration or the notifications posted before.

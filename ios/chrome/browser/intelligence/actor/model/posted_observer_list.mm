@@ -107,6 +107,17 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   [_observers removeObserver:observer];
 }
 
+- (void)removeAllObservers {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [_pendingObserverIDs removeAllObjects];
+  // `CRBProtocolObservers` supports removal while iterating, which also stops
+  // an in-flight delivery from reaching the observers not yet notified.
+  CRBProtocolObservers* observers = _observers;
+  [observers executeOnObservers:^(id observer) {
+    [observers removeObserver:observer];
+  }];
+}
+
 - (void)postNotification:(void (^)(id observers))notification {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(notification);
