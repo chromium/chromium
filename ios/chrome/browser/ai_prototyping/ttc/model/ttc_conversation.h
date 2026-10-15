@@ -153,6 +153,10 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   void LogOrUpdateInputTranscription(const std::string& chunk);
   void LogOrUpdateOutputTranscription(const std::string& chunk);
   void LogToolCallReceived(const std::string& tool_name);
+  // Logs a `TtcToolDefinitionsSent` journal entry recording the active
+  // `tool_definitions` sent to the backend.
+  void LogToolDefinitionsSent(
+      const std::vector<ttc::ToolDefinition>& tool_definitions);
   void ResetTurnJournalState();
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -19,6 +19,7 @@
 #import "base/check.h"
 #import "base/containers/span.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
@@ -217,6 +218,7 @@ void TtcConversation::SendToolSetUpdate(
     const std::vector<ttc::ToolDefinition>& tool_definitions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
+    LogToolDefinitionsSent(tool_definitions);
     backend_->SendToolSetUpdate(tool_definitions);
   }
 }
@@ -535,6 +537,31 @@ void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
                 TTCJournalDetailsBuilder()
                     .SetSummary(base::StrCat({"Tool: ", tool_name}))
                     .Add("tool_name", tool_name)
+                    .Build());
+}
+
+void TtcConversation::LogToolDefinitionsSent(
+    const std::vector<ttc::ToolDefinition>& tool_definitions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!journal_) {
+    return;
+  }
+
+  std::vector<std::string_view> tool_names;
+  tool_names.reserve(tool_definitions.size());
+  for (const auto& tool : tool_definitions) {
+    tool_names.push_back(tool.name);
+  }
+  std::string tool_names_joined = base::JoinString(tool_names, ", ");
+  std::string summary = tool_names.empty()
+                            ? "Sent tools: none"
+                            : base::StrCat({"Sent tools: ", tool_names_joined});
+
+  journal_->Log(TTCJournalComponent::kConversation, "TtcToolDefinitionsSent",
+                TTCJournalDetailsBuilder()
+                    .SetSummary(summary)
+                    .Add("count", tool_definitions.size())
+                    .Add("tool_names", tool_names_joined)
                     .Build());
 }
 
