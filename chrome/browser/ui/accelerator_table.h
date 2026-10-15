@@ -60,4 +60,9 @@ bool GetAcceleratorForCommandId(int command_id, ui::Accelerator* accelerator);
 // repeatedly while its accelerator keys are held down.
 bool IsCommandRepeatable(int command_id);
 
+// Returns true if the command identified by `command_id` is reserved by the
+// browser and should be handled before web content gets a chance to intercept
+// it (outside of app/custom-tab mode and fullscreen).
+bool IsReservedCommand(int command_id);
+
 #endif  // CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_

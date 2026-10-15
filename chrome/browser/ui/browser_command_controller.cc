@@ -56,6 +56,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
@@ -541,14 +542,7 @@ bool BrowserCommandController::IsReservedCommandOrKey(
   }
 #endif
 
-  return command_id == IDC_CLOSE_TAB || command_id == IDC_CLOSE_WINDOW ||
-         command_id == IDC_NEW_INCOGNITO_WINDOW ||
-         command_id == IDC_NEW_ISOLATED_WINDOW || command_id == IDC_NEW_TAB ||
-         command_id == IDC_NEW_WINDOW || command_id == IDC_RESTORE_TAB ||
-         command_id == IDC_SELECT_NEXT_TAB ||
-         command_id == IDC_SELECT_PREVIOUS_TAB ||
-         command_id == IDC_CYCLE_TO_NEXT_TAB ||
-         command_id == IDC_CYCLE_TO_PREV_TAB || command_id == IDC_EXIT;
+  return IsReservedCommand(command_id);
 }
 
 void BrowserCommandController::TabStateChanged() {

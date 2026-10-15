@@ -215,4 +215,28 @@ TEST_F(GetAcceleratorListTest, DevToolsAreEnabled) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST(AcceleratorTableTest, IsReservedCommand) {
+  EXPECT_TRUE(IsReservedCommand(IDC_NEW_TAB));
+  EXPECT_TRUE(IsReservedCommand(IDC_CLOSE_TAB));
+  EXPECT_TRUE(IsReservedCommand(IDC_CLOSE_WINDOW));
+  EXPECT_TRUE(IsReservedCommand(IDC_RESTORE_TAB));
+  EXPECT_TRUE(IsReservedCommand(IDC_CYCLE_TO_NEXT_TAB));
+  EXPECT_TRUE(IsReservedCommand(IDC_EXIT));
+
+  EXPECT_FALSE(IsReservedCommand(IDC_FIND));
+  EXPECT_FALSE(IsReservedCommand(IDC_RELOAD));
+  EXPECT_FALSE(IsReservedCommand(IDC_BOOKMARK_THIS_TAB));
+  EXPECT_FALSE(IsReservedCommand(IDC_CARET_BROWSING_TOGGLE));
+  EXPECT_FALSE(IsReservedCommand(IDC_DEV_TOOLS));
+  EXPECT_FALSE(IsReservedCommand(IDC_DEV_TOOLS_TOGGLE));
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(IsReservedCommand(IDC_FOCUS_NEXT_PANE));
+  EXPECT_TRUE(IsReservedCommand(IDC_FOCUS_PREVIOUS_PANE));
+#else
+  EXPECT_FALSE(IsReservedCommand(IDC_FOCUS_NEXT_PANE));
+  EXPECT_FALSE(IsReservedCommand(IDC_FOCUS_PREVIOUS_PANE));
+#endif
+}
+
 }  // namespace chrome

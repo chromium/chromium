@@ -344,6 +344,29 @@ const int kRepeatableCommandIds[] = {
     IDC_CYCLE_TO_PREV_TAB,
 };
 
+constexpr int kReservedCommandIds[] = {
+    IDC_CLOSE_TAB,
+    IDC_CLOSE_WINDOW,
+    IDC_NEW_INCOGNITO_WINDOW,
+    IDC_NEW_ISOLATED_WINDOW,
+    IDC_NEW_TAB,
+    IDC_NEW_WINDOW,
+    IDC_RESTORE_TAB,
+    IDC_SELECT_NEXT_TAB,
+    IDC_SELECT_PREVIOUS_TAB,
+    IDC_CYCLE_TO_NEXT_TAB,
+    IDC_CYCLE_TO_PREV_TAB,
+    IDC_EXIT,
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, pane navigation (F6 / Shift+F6) is also reserved so web
+    // pages cannot trap keyboard focus.
+    // TODO(crbug.com/542618092): Check if pane navigation should be reserved
+    // on Desktop as well.
+    IDC_FOCUS_NEXT_PANE,
+    IDC_FOCUS_PREVIOUS_PANE,
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
 std::vector<AcceleratorMapping>* GetAcceleratorsPointer() {
   static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
   return accelerators.get();
@@ -451,6 +474,10 @@ bool GetStandardAcceleratorForCommandId(int command_id,
 
 bool IsCommandRepeatable(int command_id) {
   return std::ranges::contains(kRepeatableCommandIds, command_id);
+}
+
+bool IsReservedCommand(int command_id) {
+  return std::ranges::contains(kReservedCommandIds, command_id);
 }
 
 bool GetAcceleratorForCommandId(int command_id, ui::Accelerator* accelerator) {
