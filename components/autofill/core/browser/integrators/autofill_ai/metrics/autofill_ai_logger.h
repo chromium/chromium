@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -146,6 +147,12 @@ class AutofillAiLogger {
                                   const FormFunnelStateMap& funnel_states,
                                   bool opt_in_status) const;
 
+  // Records the Autofill.Ai.Suppression.*.PersonalContext metrics. Logs for
+  // each unique personal context entity which was shown as a suggestion on the
+  // form with `form_id`, whether the user suppressed it. Called at form
+  // submission or abandonment.
+  void RecordPersonalContextSuppressionMetrics(FormGlobalId form_id) const;
+
   // Compresses `funnel_states` into a single `FunnelState` object by
   // essentially taking the logical OR of all its boolean members. `projection`
   // maps the elements of `funnel_states` to `FunnelState`s.
@@ -174,6 +181,13 @@ class AutofillAiLogger {
   // about what is recorded.
   std::map<FormGlobalId, FormFunnelStateMap> form_states_;
 
+  // Records the personal context entities which were shown as suggestions for
+  // each form. Used for entity suppression metrics.
+  // TODO(crbug.com/573978910): Restrict currently unbounded memory usage.
+  std::map<FormGlobalId,
+           base::flat_set<EntityInstance, EntityInstance::CompareByGuid>>
+      personal_context_entities_shown_;
+
   // Records the IDs of forms that were submitted throughout the lifetime of
   // this object.
   std::set<FormGlobalId> submitted_forms_;
@@ -187,6 +201,9 @@ class AutofillAiLogger {
   std::map<FieldGlobalId, std::pair<EntityType, EntityInstance::RecordType>>
       last_filled_entity_;
 
+  // `client_` owns the `AutofillAiManager` that owns this instance and
+  // therefore outlives this reference.
+  const raw_ref<AutofillClient> client_;
   AutofillAiUkmLogger ukm_logger_;
   // This instance will outlive the object as it is a keyed service attached to
   // a profile, whereas the object is indirectly owned by the client, which is
