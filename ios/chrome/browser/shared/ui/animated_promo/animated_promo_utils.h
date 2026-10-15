@@ -15,7 +15,7 @@ void ConfigureAnimationSemanticColor(id<LottieAnimation> animation,
                                      NSString* color_name);
 
 // Configures the animation with a custom color for a specific key.
-// Set the color value for the keypath `**KEY.**.Color` based on the
+// Sets the color value for the keypath `**KEY.**.Color` based on the
 // `UIUserInterfaceStyle`.
 void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
                                    NSString* key,
@@ -23,11 +23,19 @@ void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
                                    UIColor* dark_color);
 
 // Configures the animation with a custom `SkColor` for a specific key.
-// Set the color value for the keypath `**KEY.**.Color` based on the
+// Sets the color value for the keypath `**KEY.**.Color` based on the
 // `UIUserInterfaceStyle`.
 void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
                                    NSString* key,
                                    SkColor light_color,
                                    SkColor dark_color);
+
+// Configures the animation in light and dark modes with a color provider for
+// each key. Sets all color values for the keypath `**KEY.**.Color` based on the
+// `UIUserInterfaceStyle`.
+void ConfigureAnimationCustomColors(
+    id<LottieAnimation> animation,
+    NSDictionary<NSString*, UIColor*>* light_color_provider,
+    NSDictionary<NSString*, UIColor*>* dark_color_provider);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_UTILS_H_

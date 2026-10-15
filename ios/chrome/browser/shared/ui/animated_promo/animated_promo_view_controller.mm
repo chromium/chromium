@@ -280,13 +280,9 @@ constexpr CGFloat kTabletCenterOffset = 40;
     [self updateUIForSizeClass];
     return;
   }
-
-  for (NSString* keypath in self.lightModeColorProvider.allKeys) {
-    UIColor* lightColor = self.lightModeColorProvider[keypath];
-    UIColor* darkColor = self.darkModeColorProvider[keypath];
-    ConfigureAnimationCustomColor(self.animationViewWrapper, keypath,
-                                  lightColor, darkColor);
-  }
+  ConfigureAnimationCustomColors(self.animationViewWrapper,
+                                 self.lightModeColorProvider,
+                                 self.darkModeColorProvider);
 }
 
 @end
