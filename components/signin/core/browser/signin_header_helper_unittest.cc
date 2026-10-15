@@ -14,6 +14,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_member.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
@@ -99,7 +101,7 @@ class SigninHeaderHelperTest : public testing::Test {
     RequestAdapterWrapper request_adapter(url, original_headers);
     AppendOrRemoveMirrorRequestHeader(
         request_adapter.adapter(), GURL(), gaia_id, is_child_account,
-        account_consistency_, cookie_settings_.get(), PROFILE_MODE_DEFAULT,
+        account_consistency_, cookie_settings_.get(), profile_mode_mask_,
         kTestSource, force_account_consistency_);
     return request_adapter.GetFinalHeaders();
   }
@@ -134,6 +136,7 @@ class SigninHeaderHelperTest : public testing::Test {
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
   bool force_account_consistency_ = false;
+  int profile_mode_mask_ = PROFILE_MODE_DEFAULT;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
@@ -229,6 +232,56 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
                            GaiaId("0123456789"), "");
 }
 #endif
+
+// Mirror platforms only. Does not apply to iOS, as users cannot set cookie
+// settings in iOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Tests that when adding secondary accounts is disallowed, the Mirror request
+// is still returned if Gaia cookies are allowed but other Google cookies are
+// not. Otherwise, blocking google.com cookies would prevent the header from
+// being sent, and Gaia would offer to add another account. See
+// https://crbug.com/463848190.
+TEST_F(SigninHeaderHelperTest,
+       TestMirrorRequestGoogleCookiesBlockedAddAccountDisabled) {
+  account_consistency_ = AccountConsistencyMethod::kMirror;
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(
+          GaiaUrls::GetInstance()->secure_google_url()),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+      CONTENT_SETTING_BLOCK);
+
+  // No request by default, as google.com cookies are blocked.
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
+                           /*is_child_account=*/Tribool::kUnknown, "");
+
+  // The request is returned when adding secondary accounts is disallowed, as
+  // Gaia cookies are allowed.
+  profile_mode_mask_ = PROFILE_MODE_ADD_ACCOUNT_DISABLED;
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
+                           /*is_child_account=*/Tribool::kUnknown,
+                           "source=TestSource,mode=2,"
+                           "enable_account_consistency=true,"
+                           "consistency_enabled_by_default=false");
+}
+
+// Tests that no Mirror request is returned when Gaia cookies are blocked, even
+// if adding secondary accounts is disallowed.
+TEST_F(SigninHeaderHelperTest,
+       TestNoMirrorRequestGaiaCookiesBlockedAddAccountDisabled) {
+  account_consistency_ = AccountConsistencyMethod::kMirror;
+  profile_mode_mask_ = PROFILE_MODE_ADD_ACCOUNT_DISABLED;
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(
+          GaiaUrls::GetInstance()->gaia_url()),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+      CONTENT_SETTING_BLOCK);
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
+                           /*is_child_account=*/Tribool::kUnknown, "");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(SigninHeaderHelperTest,
        BuildMirrorRequestCookieIfPossibleHandlesNullptrCookieSettings) {

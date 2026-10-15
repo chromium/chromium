@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -53,8 +54,8 @@
 
 namespace signin {
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 namespace {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 bool IsFirstPartyRequest(ResponseAdapter* response_adapter) {
   const url::Origin* top_frame_origin =
       response_adapter->GetRequestTopFrameOrigin();
@@ -119,9 +120,23 @@ void ProcessBoundSessionResponseHeaders(
         std::move(param));
   }
 }
-
-}  // namespace
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_MIRROR)
+// Returns false if adding secondary Google accounts is disallowed by the
+// SecondaryGoogleAccountSigninAllowed policy.
+bool IsSecondaryAccountAdditionAllowed(const PrefService& prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          switches::kSecondaryGoogleAccountsSigninAllowedOnAndroid)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return prefs.GetBoolean(
+      policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed);
+}
+#endif  // BUILDFLAG(ENABLE_MIRROR)
+}  // namespace
 
 #if BUILDFLAG(IS_ANDROID)
 HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(
@@ -177,12 +192,9 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_secondary_account_addition_allowed = true;
-  if (!profile_->GetPrefs()->GetBoolean(
-          policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed)) {
-    is_secondary_account_addition_allowed = false;
-  }
+#if BUILDFLAG(ENABLE_MIRROR)
+  bool is_secondary_account_addition_allowed =
+      IsSecondaryAccountAdditionAllowed(*profile_->GetPrefs());
 #endif
 
   ConsentLevel consent_level = ConsentLevel::kSignin;
@@ -231,7 +243,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       incognito_mode_availability,
       AccountConsistencyModeManager::GetMethodForProfile(profile_),
       primary_account.gaia, consent_level, is_child_account,
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR)
       is_secondary_account_addition_allowed,
 #endif
       is_sync_feature_enabled,

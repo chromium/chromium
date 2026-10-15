@@ -160,7 +160,7 @@ void AppendOrRemoveMirrorRequestHeader(
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
   std::string chrome_connected_header_value;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR)
   bool is_secondary_account_addition_disallowed =
       (profile_mode_mask & PROFILE_MODE_ADD_ACCOUNT_DISABLED) != 0 &&
       account_consistency == AccountConsistencyMethod::kMirror;
@@ -178,8 +178,9 @@ void AppendOrRemoveMirrorRequestHeader(
   // web only and as a result Chrome is unaware of the account. However, when
   // secondary accounts are disallowed by policy, this web-only signin state is
   // not acceptable. In this case send the header anyway, and assume that the
-  // Chrome UI will block the signin (if this assumption is not true, then the
-  // user may experience inconsistencies due to AccountReconcilor malfunction).
+  // Chrome UI (or the OS on Android) will block the signin (if this assumption
+  // is not true, then the user may experience inconsistencies due to
+  // AccountReconcilor malfunction).
   if (chrome_connected_helper.ShouldBuildRequestHeader(
           url, cookie_settings, /* check_only_gaia_url= */
           is_secondary_account_addition_disallowed)) {

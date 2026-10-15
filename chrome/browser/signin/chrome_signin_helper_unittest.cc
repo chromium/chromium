@@ -22,6 +22,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -1007,9 +1008,7 @@ TEST_F(ChromeSigninHelperTest, NonEligibleURL) {
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), signin::ConsentLevel::kSignin,
       /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
-#endif
       /*is_sync_feature_enabled=*/false,
       CookieSettingsFactory::GetForProfile(profile()).get());
   EXPECT_EQ(
@@ -1025,9 +1024,7 @@ TEST_F(ChromeSigninHelperTest, EligibleURL) {
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), signin::ConsentLevel::kSignin,
       /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
-#endif
       /*is_sync_feature_enabled=*/false,
       CookieSettingsFactory::GetForProfile(profile()).get());
   std::string expected_header =
@@ -1048,9 +1045,7 @@ TEST_F(ChromeSigninHelperTest, MirrorConsentLevelSync) {
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), signin::ConsentLevel::kSync,
       /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
-#endif
       /*is_sync_feature_enabled=*/false,
       CookieSettingsFactory::GetForProfile(profile()).get());
 
@@ -1078,9 +1073,7 @@ TEST_F(ChromeSigninHelperTest, MirrorConsentLevelSync) {
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), signin::ConsentLevel::kSync,
       /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
-#endif
       /*is_sync_feature_enabled=*/true,
       CookieSettingsFactory::GetForProfile(profile()).get());
 
@@ -1104,9 +1097,7 @@ TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), signin::ConsentLevel::kSignin,
       /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
-#endif
       /*is_sync_feature_enabled=*/false,
       CookieSettingsFactory::GetForProfile(profile()).get());
   std::string expected_header =
@@ -1119,6 +1110,51 @@ TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
 
   GaiaUrls::SetInstanceForTesting(nullptr);
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kGaiaUrl);
+}
+
+// Tests that the Mirror header asks Gaia not to offer adding accounts when
+// secondary account addition is disallowed.
+TEST_F(ChromeSigninHelperTest, MirrorSecondaryAccountAdditionDisallowed) {
+  TestChromeRequestAdapter request(GURL("https://accounts.google.com"));
+  signin::FixAccountConsistencyRequestHeader(
+      &request, GURL(), /*is_off_the_record=*/false,
+      /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
+      GaiaId("gaia_id"), signin::ConsentLevel::kSignin,
+      /*is_child_account=*/signin::Tribool::kFalse,
+      /*is_secondary_account_addition_allowed=*/false,
+      /*is_sync_feature_enabled=*/false,
+      CookieSettingsFactory::GetForProfile(profile()).get());
+  // mode=2 is PROFILE_MODE_ADD_ACCOUNT_DISABLED.
+  std::string expected_header =
+      "source=Chrome,mode=2,enable_account_consistency=true,"
+      "supervised=false,consistency_enabled_by_default=false";
+  EXPECT_THAT(
+      request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+      testing::Optional(expected_header));
+}
+
+// Tests that the Mirror header combines the incognito and add account
+// restrictions when both are disallowed.
+TEST_F(ChromeSigninHelperTest,
+       MirrorSecondaryAccountAdditionAndIncognitoDisallowed) {
+  TestChromeRequestAdapter request(GURL("https://accounts.google.com"));
+  signin::FixAccountConsistencyRequestHeader(
+      &request, GURL(), /*is_off_the_record=*/false,
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled),
+      signin::AccountConsistencyMethod::kMirror, GaiaId("gaia_id"),
+      signin::ConsentLevel::kSignin,
+      /*is_child_account=*/signin::Tribool::kFalse,
+      /*is_secondary_account_addition_allowed=*/false,
+      /*is_sync_feature_enabled=*/false,
+      CookieSettingsFactory::GetForProfile(profile()).get());
+  // mode=3 is PROFILE_MODE_INCOGNITO_DISABLED (1) |
+  // PROFILE_MODE_ADD_ACCOUNT_DISABLED (2).
+  std::string expected_header =
+      "source=Chrome,mode=3,enable_account_consistency=true,"
+      "supervised=false,consistency_enabled_by_default=false";
+  EXPECT_THAT(
+      request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+      testing::Optional(expected_header));
 }
 #endif  // BUILDFLAG(ENABLE_MIRROR)
 

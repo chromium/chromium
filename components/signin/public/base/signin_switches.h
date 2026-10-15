@@ -828,6 +828,14 @@ BASE_DECLARE_FEATURE(kSearchAIModeSignInPromoSelfDismissal);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, the SecondaryGoogleAccountSigninAllowed policy is honored on
+// Android: if the policy is set to false, Chrome asks Google web properties
+// (via the X-Chrome-Connected header) not to offer adding another account.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSecondaryGoogleAccountsSigninAllowedOnAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 // Opens a desktop-like profile menu from the toolbar sign-in button on Desktop
 // Android.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

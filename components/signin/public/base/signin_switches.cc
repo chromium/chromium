@@ -861,6 +861,11 @@ BASE_FEATURE(kSearchAIModeSignInPromoSelfDismissal,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSecondaryGoogleAccountsSigninAllowedOnAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSigninButtonProfileMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSigninButtonProfileMenuErrorCard,

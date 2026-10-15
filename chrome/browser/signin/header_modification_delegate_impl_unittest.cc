@@ -5,10 +5,14 @@
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +30,17 @@
 #include "chrome/browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.h"
 #include "net/base/features.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_MIRROR)
+#include "base/values.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "net/http/http_request_headers.h"
+#include "url/gurl.h"
+#endif  // BUILDFLAG(ENABLE_MIRROR)
 
 namespace {
 
@@ -479,4 +494,118 @@ TEST_F(BoundSessionHeaderModificationDelegateImplTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_MIRROR)
+class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
+ public:
+  explicit TestChromeRequestAdapter(const GURL& url)
+      : signin::ChromeRequestAdapter(url,
+                                     original_headers_,
+                                     &modified_headers_,
+                                     &headers_to_remove_) {}
+
+  const net::HttpRequestHeaders& modified_headers() const {
+    return modified_headers_;
+  }
+
+  // signin::ChromeRequestAdapter:
+  content::WebContents::Getter GetWebContentsGetter() const override {
+    return content::WebContents::Getter();
+  }
+  network::mojom::RequestDestination GetRequestDestination() const override {
+    return network::mojom::RequestDestination::kDocument;
+  }
+  bool IsOutermostMainFrame() const override { return true; }
+  bool IsFetchLikeAPI() const override { return false; }
+  GURL GetReferrer() const override { return GURL(); }
+  void SetDestructionCallback(base::OnceClosure closure) override {}
+
+ private:
+  net::HttpRequestHeaders original_headers_;
+  net::HttpRequestHeaders modified_headers_;
+  std::vector<std::string> headers_to_remove_;
+};
+
+// Tests that the SecondaryGoogleAccountSigninAllowed policy is reflected in the
+// X-Chrome-Connected header sent to Google web properties.
+class SecondaryAccountHeaderModificationDelegateImplTest
+    : public testing::Test {
+ public:
+  SecondaryAccountHeaderModificationDelegateImplTest() {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactories(
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories());
+    profile_ = profile_builder.Build();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    identity_test_env_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("test@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  }
+
+  void SetSecondaryGoogleAccountSigninAllowedPolicy(bool allowed) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed,
+        base::Value(allowed));
+  }
+
+  // Returns the X-Chrome-Connected header added to a request to Gaia.
+  std::optional<std::string> GetChromeConnectedHeader() {
+#if BUILDFLAG(IS_ANDROID)
+    signin::HeaderModificationDelegateImpl delegate(profile_.get(),
+                                                    /*incognito_enabled=*/true);
+#else
+    signin::HeaderModificationDelegateImpl delegate(profile_.get());
+#endif
+    TestChromeRequestAdapter request(GURL("https://accounts.google.com"));
+    delegate.ProcessRequest(&request, /*redirect_url=*/GURL());
+    return request.modified_headers().GetHeader(signin::kChromeConnectedHeader);
+  }
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSecondaryGoogleAccountsSigninAllowedOnAndroid};
+#endif
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+};
+
+TEST_F(SecondaryAccountHeaderModificationDelegateImplTest,
+       AddAccountAllowedByDefault) {
+  EXPECT_THAT(GetChromeConnectedHeader(),
+              testing::Optional(testing::HasSubstr("mode=0,")));
+}
+
+TEST_F(SecondaryAccountHeaderModificationDelegateImplTest,
+       AddAccountAllowedByPolicy) {
+  SetSecondaryGoogleAccountSigninAllowedPolicy(true);
+  EXPECT_THAT(GetChromeConnectedHeader(),
+              testing::Optional(testing::HasSubstr("mode=0,")));
+}
+
+TEST_F(SecondaryAccountHeaderModificationDelegateImplTest,
+       AddAccountDisabledByPolicy) {
+  SetSecondaryGoogleAccountSigninAllowedPolicy(false);
+  // mode=2 is PROFILE_MODE_ADD_ACCOUNT_DISABLED.
+  EXPECT_THAT(GetChromeConnectedHeader(),
+              testing::Optional(testing::HasSubstr("mode=2,")));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SecondaryAccountHeaderModificationDelegateImplTest,
+       PolicyIgnoredWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kSecondaryGoogleAccountsSigninAllowedOnAndroid);
+  SetSecondaryGoogleAccountSigninAllowedPolicy(false);
+  EXPECT_THAT(GetChromeConnectedHeader(),
+              testing::Optional(testing::HasSubstr("mode=0,")));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_MIRROR)
+
 }  // namespace
