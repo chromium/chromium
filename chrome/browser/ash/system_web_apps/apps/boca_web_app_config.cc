@@ -11,10 +11,14 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
+#include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -129,11 +133,20 @@ std::unique_ptr<content::WebUIController> BocaUIConfig::CreateWebUIController(
   auto* profile = Profile::FromWebUI(web_ui);
   auto delegate = std::make_unique<ChromeBocaUIDelegate>(
       &application_locale_storage_.get(), profile);
+  BocaManager* const boca_manager = BocaManagerFactory::GetForProfile(profile);
+  ash::boca::OnTaskSessionManager* const on_task_session_manager =
+      boca_manager->GetOnTaskSessionManager();
+  const user_manager::User* const user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   return std::make_unique<ash::boca::BocaUI>(
-      web_ui, std::move(delegate),
-      BocaManagerFactory::GetForProfile(profile)->GetBocaSessionManager(),
-      ash::boca_util::IsProducer(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
-      HostContentSettingsMapFactory::GetForProfile(profile));
+      web_ui, std::move(delegate), boca_manager->GetBocaSessionManager(),
+      ash::boca_util::IsProducer(user),
+      HostContentSettingsMapFactory::GetForProfile(profile),
+      on_task_session_manager
+          ? on_task_session_manager->GetOnTaskSystemWebAppManager()
+          : nullptr,
+      user->GetAccountId().GetGaiaId().ToString(),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory(), profile->GetPrefs());
 }
 }  // namespace ash

@@ -40,8 +40,6 @@ static_library("boca_ui") {
     "//ash/webui/resources:boca_app_bundle_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//base",
-    "//chrome/browser/ash/boca",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca:spotlight_lib",

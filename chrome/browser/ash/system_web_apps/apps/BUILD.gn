@@ -152,6 +152,7 @@ static_library("apps") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:constants",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/channel",

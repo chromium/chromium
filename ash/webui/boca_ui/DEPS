@@ -1,6 +1,4 @@
 include_rules = [
-  "+chrome/browser/ash/boca/boca_manager_factory.h",
-  "+chrome/browser/profiles/profile.h",
   "+chromeos/ash/components/boca",
   "+chromeos/ash/components/browser_context_helper",
   "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
