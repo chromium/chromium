@@ -50,9 +50,6 @@
 
 namespace {
 
-// Profile name used in unit tests, see `TestProfileIOS` for more info.
-constexpr char kTestProfileName[] = "Test";
-
 // Profile name used to simulate a different profile for multi-profile
 // notification tests.
 constexpr char kOtherProfileName[] = "Other";
@@ -87,26 +84,30 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
         base::BindOnce(&password_manager::BuildPasswordStore<
                        ProfileIOS, password_manager::TestPasswordStore>));
 
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    BrowserList* list = BrowserListFactory::GetForProfile(profile_.get());
+    BrowserList* list =
+        BrowserListFactory::GetForProfile(personal_profile_.get());
 
     scene_state_ = [[SceneState alloc] init];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    browser_ =
+        std::make_unique<TestBrowser>(personal_profile_.get(), scene_state_);
 
     list->AddBrowser(browser_.get());
 
-    pref_service_ = profile_->GetPrefs();
+    pref_service_ = personal_profile_->GetPrefs();
 
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
-    safety_check_manager_ =
-        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile_.get());
+    safety_check_manager_ = IOSChromeSafetyCheckManagerFactory::GetForProfile(
+        personal_profile_.get());
 
     notification_client_ = std::make_unique<SafetyCheckNotificationClient>(
-        profile_.get(), base::SequencedTaskRunner::GetCurrentDefault());
+        personal_profile_.get(),
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     // By default, assume no pending requests exist. Tests can override this.
     StubGetPendingRequests(nil);
@@ -242,6 +243,10 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   }
 
  protected:
+  NSString* GetPersonalProfileName() {
+    return base::SysUTF8ToNSString(personal_profile_->GetProfileName());
+  }
+
   // Simulates the scene becoming active in the foreground, triggering the
   // notification scheduling logic.
   void SimulateSceneActive() {
@@ -261,7 +266,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS> personal_profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
 };
@@ -450,7 +455,7 @@ TEST_F(SafetyCheckNotificationClientTest,
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
   ExpectProfileNotificationRequest(kSafetyCheckSafeBrowsingNotificationID,
-                                   base::SysUTF8ToNSString(kTestProfileName));
+                                   GetPersonalProfileName());
 
   SimulateSceneActive();
 
@@ -467,7 +472,7 @@ TEST_F(SafetyCheckNotificationClientTest,
        SchedulesPasswordNotificationWithProfile) {
   base::HistogramTester histogram_tester;
   ExpectProfileNotificationRequest(kSafetyCheckPasswordNotificationID,
-                                   base::SysUTF8ToNSString(kTestProfileName));
+                                   GetPersonalProfileName());
 
   password_manager::InsecurePasswordCounts counts = {
       /* compromised */ 1, /* dismissed */ 0, /* reused */ 0, /* weak */ 0};
@@ -486,9 +491,8 @@ TEST_F(SafetyCheckNotificationClientTest,
 // Tests that password notifications are removed when the user signs out.
 TEST_F(SafetyCheckNotificationClientTest,
        ClearsPasswordNotificationsOnSignOut) {
-  id mock_notification =
-      CreateMockNotification(kSafetyCheckPasswordNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_notification = CreateMockNotification(
+      kSafetyCheckPasswordNotificationID, GetPersonalProfileName());
 
   StubGetDeliveredNotifications(@[ mock_notification ]);
   ExpectNotificationRemoval(kSafetyCheckPasswordNotificationID);
@@ -505,9 +509,8 @@ TEST_F(SafetyCheckNotificationClientTest,
 // Tests that password notifications are removed when the state becomes `Safe`.
 TEST_F(SafetyCheckNotificationClientTest,
        ClearsPasswordNotificationsWhenPasswordIssueFixed) {
-  id mock_notification =
-      CreateMockNotification(kSafetyCheckPasswordNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_notification = CreateMockNotification(
+      kSafetyCheckPasswordNotificationID, GetPersonalProfileName());
 
   StubGetDeliveredNotifications(@[ mock_notification ]);
   ExpectNotificationRemoval(kSafetyCheckPasswordNotificationID);
@@ -525,9 +528,8 @@ TEST_F(SafetyCheckNotificationClientTest,
 // `Safe`.
 TEST_F(SafetyCheckNotificationClientTest,
        ClearsSafeBrowsingNotificationsWhenIssueFixed) {
-  id mock_notification =
-      CreateMockNotification(kSafetyCheckSafeBrowsingNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_notification = CreateMockNotification(
+      kSafetyCheckSafeBrowsingNotificationID, GetPersonalProfileName());
 
   StubGetDeliveredNotifications(@[ mock_notification ]);
   ExpectNotificationRemoval(kSafetyCheckSafeBrowsingNotificationID);
@@ -545,9 +547,8 @@ TEST_F(SafetyCheckNotificationClientTest,
 // `UpToDate`.
 TEST_F(SafetyCheckNotificationClientTest,
        ClearsUpdateChromeNotificationsWhenIssueFixed) {
-  id mock_notification =
-      CreateMockNotification(kSafetyCheckUpdateChromeNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_notification = CreateMockNotification(
+      kSafetyCheckUpdateChromeNotificationID, GetPersonalProfileName());
 
   StubGetDeliveredNotifications(@[ mock_notification ]);
   ExpectNotificationRemoval(kSafetyCheckUpdateChromeNotificationID);
@@ -610,15 +611,12 @@ TEST_F(SafetyCheckNotificationClientTest,
 TEST_F(SafetyCheckNotificationClientTest, ClearsMultipleNotifications) {
   // Simulate delivered notifications for Passwords, Safe Browsing, and Update
   // Chrome.
-  id mock_password_notification =
-      CreateMockNotification(kSafetyCheckPasswordNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
-  id mock_safe_browsing_notification =
-      CreateMockNotification(kSafetyCheckSafeBrowsingNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
-  id mock_update_chrome_notification =
-      CreateMockNotification(kSafetyCheckUpdateChromeNotificationID,
-                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_password_notification = CreateMockNotification(
+      kSafetyCheckPasswordNotificationID, GetPersonalProfileName());
+  id mock_safe_browsing_notification = CreateMockNotification(
+      kSafetyCheckSafeBrowsingNotificationID, GetPersonalProfileName());
+  id mock_update_chrome_notification = CreateMockNotification(
+      kSafetyCheckUpdateChromeNotificationID, GetPersonalProfileName());
 
   StubGetDeliveredNotifications(@[
     mock_password_notification, mock_safe_browsing_notification,
