@@ -13,10 +13,10 @@
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 class Transform;
-class RectF;
 class Size;
 }  // namespace gfx
 
@@ -43,8 +43,12 @@ class VR_EXPORT GraphicsDelegate {
   gfx::RectF GetLeft();
 
   FovRectangles GetRecommendedFovs();
+  // Computes per-eye camera models for the given frame type and head pose, and
+  // initializes the per-eye normalized overlay UV bounds.
   RenderInfo GetRenderInfo(FrameType frame_type,
                            const gfx::Transform& head_pose);
+  // Updates the per-eye normalized overlay UV bounds (`left_bounds_` and
+  // `right_bounds_`) to tightly bound the active overlay elements' FOVs.
   RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs);
 
   virtual void Initialize(base::OnceClosure on_initialized) = 0;
@@ -64,7 +68,12 @@ class VR_EXPORT GraphicsDelegate {
  private:
   device::mojom::XRViewPtr left_;
   device::mojom::XRViewPtr right_;
+  // Normalized [0, 1] UV bounding boxes of the rendered overlay per eye.
+  gfx::RectF left_bounds_{0.0f, 0.0f, 1.0f, 1.0f};
+  gfx::RectF right_bounds_{0.0f, 0.0f, 1.0f, 1.0f};
 
+  // Last RenderInfo computed by GetRenderInfo(), reused by
+  // GetOptimizedRenderInfoForFovs().
   RenderInfo cached_info_ = {};
 };
 

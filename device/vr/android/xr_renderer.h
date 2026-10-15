@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "device/vr/android/local_texture.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace device {
@@ -49,16 +50,38 @@ class XrRenderer {
                       const float (&uv_transform)[16],
                       float opacity = 1.f);
 
+  struct OverlayLayerParams {
+    LocalTexture texture;
+    // Normalized [0, 1] UV bounding box in the target eye layer. An empty
+    // RectF skips overlay sampling.
+    gfx::RectF bounds;
+    // Horizontal UV offset into the side-by-side stereo overlay texture (0.0f
+    // for the left eye, 0.5f for the right eye).
+    float eye_uv_offset = 0.0f;
+    bool flip_y = false;
+  };
+
+  // Blits the specified layer of the source texture array and composites the
+  // 2D overlay texture within `overlay.bounds` in a single unblended pass.
+  void DrawArrayLayerWithOverlay(const LocalTexture& texture,
+                                 uint16_t layer_index,
+                                 const float (&uv_transform)[16],
+                                 float opacity,
+                                 const OverlayLayerParams& overlay);
+
  private:
   struct Program {
     GLuint program_handle_ = 0;
     GLuint position_handle_ = 0;
     GLuint texture_handle_ = 0;
+    GLuint overlay_texture_handle_ = 0;
     GLuint uv_transform_ = 0;
     GLuint opacity_ = 0;
     GLuint column_index_ = 0;
     GLuint row_index_ = 0;
     GLuint layer_index_ = 0;
+    GLuint overlay_bounds_ = 0;
+    GLuint overlay_uv_transform_ = 0;
   };
 
   Program CreateProgram(const std::string& vertex, const std::string& fragment);
@@ -74,6 +97,7 @@ class XrRenderer {
   Program program_2d_;
   Program program_cubemap_;
   Program program_array_;
+  Program program_array_overlay_;
 
   GLuint vertex_buffer_ = 0;
   GLuint index_buffer_ = 0;

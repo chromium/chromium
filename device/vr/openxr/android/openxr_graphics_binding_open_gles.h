@@ -5,6 +5,9 @@
 #ifndef DEVICE_VR_OPENXR_ANDROID_OPENXR_GRAPHICS_BINDING_OPEN_GLES_H_
 #define DEVICE_VR_OPENXR_ANDROID_OPENXR_GRAPHICS_BINDING_OPEN_GLES_H_
 
+#include <array>
+#include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +17,10 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/scoped_egl_image.h"
 
 namespace gl {
 class GLContext;
@@ -50,8 +56,8 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   void CleanupWithoutSubmit() override;
   bool SetOverlayTexture(scoped_refptr<gpu::ClientSharedImage> texture,
                          const gpu::SyncToken& sync_token,
-                         const gfx::RectF& left,
-                         const gfx::RectF& right) override;
+                         const gfx::RectF& left_bounds,
+                         const gfx::RectF& right_bounds) override;
   gfx::Size GetMaxTextureSize() override;
 
  protected:
@@ -72,14 +78,32 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   bool initialized_ = false;
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
-  gfx::GpuMemoryBufferHandle overlay_handle_;
 
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLContextEGL> egl_context_;
 
   std::unique_ptr<XrRenderer> renderer_;
-  LocalTexture overlay_texture_;
+
+ private:
+  struct OverlayBufferSlot {
+    OverlayBufferSlot();
+    ~OverlayBufferSlot();
+
+    gfx::GpuMemoryBufferHandle handle;
+    LocalTexture texture;
+    gl::ScopedEGLImage egl_image;
+    bool texture_dirty = false;
+  };
+
+  static constexpr size_t kNumOverlayBuffers = 2;
+
+  bool EnsureOverlayTextureReady(size_t slot);
+
+  std::array<OverlayBufferSlot, kNumOverlayBuffers> overlay_buffers_ = {};
+  size_t active_overlay_buffer_ = 0;
+  gfx::RectF overlay_left_bounds_{0.0f, 0.0f, 1.0f, 1.0f};
+  gfx::RectF overlay_right_bounds_{0.0f, 0.0f, 1.0f, 1.0f};
 };
 
 }  // namespace device

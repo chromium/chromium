@@ -4,12 +4,34 @@
 
 #include "device/vr/android/xr_renderer.h"
 
+#include <algorithm>
+#include <iterator>
+
 #include "base/check_op.h"
 #include "device/vr/vr_gl_util.h"
 
 namespace device {
 
 namespace {
+
+constexpr float kStereoEyeUvWidth = 0.5f;
+
+void BindAndConfigureTexture(GLenum texture_unit,
+                             const LocalTexture& texture,
+                             GLint uniform_location,
+                             GLint unit_index) {
+  glActiveTexture(texture_unit);
+  glBindTexture(texture.target, texture.id);
+  glTexParameteri(texture.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(texture.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  if (texture.target != GL_TEXTURE_EXTERNAL_OES) {
+    glTexParameteri(texture.target, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(texture.target, GL_TEXTURE_MAX_LEVEL, 0);
+  }
+  glUniform1i(uniform_location, unit_index);
+}
 
 static constexpr float kQuadVertices[8] = {
     -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, -0.5f,
@@ -114,6 +136,36 @@ static constexpr char const* kFragmentShaderArray = SHADER_ES3(
     outColor = texture(u_Texture, coord) * u_Opacity;
   }
 );
+
+// `u_OverlayBounds` holds (x_min, y_min, x_max, y_max) in [0, 1] UV space.
+// `u_OverlayUvTransform` holds (scale_x, scale_y, offset_x, offset_y).
+static constexpr const char* kFragmentShaderArrayOverlay = SHADER_ES3(
+  precision highp float;
+  in vec2 v_TexCoordinate;
+  out vec4 outColor;
+  uniform highp sampler2DArray u_Texture;
+  uniform highp sampler2D u_OverlayTexture;
+  uniform float u_Opacity;
+  uniform int u_LayerIndex;
+  uniform vec4 u_OverlayBounds;
+  uniform vec4 u_OverlayUvTransform;
+
+  void main() {
+    vec3 coord = vec3(v_TexCoordinate, u_LayerIndex);
+    vec4 base_color = texture(u_Texture, coord) * u_Opacity;
+    if (v_TexCoordinate.x >= u_OverlayBounds.x &&
+        v_TexCoordinate.x <= u_OverlayBounds.z &&
+        v_TexCoordinate.y >= u_OverlayBounds.y &&
+        v_TexCoordinate.y <= u_OverlayBounds.w) {
+      vec2 overlay_uv =
+          v_TexCoordinate * u_OverlayUvTransform.xy + u_OverlayUvTransform.zw;
+      vec4 overlay_color = texture(u_OverlayTexture, overlay_uv);
+      outColor = mix(base_color, overlay_color, overlay_color.a);
+    } else {
+      outColor = base_color;
+    }
+  }
+);
 // clang-format on
 
 }  // namespace
@@ -143,6 +195,8 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
       glGetAttribLocation(result.program_handle_, "a_Position");
   result.texture_handle_ =
       glGetUniformLocation(result.program_handle_, "u_Texture");
+  result.overlay_texture_handle_ =
+      glGetUniformLocation(result.program_handle_, "u_OverlayTexture");
   result.uv_transform_ =
       glGetUniformLocation(result.program_handle_, "u_UvTransform");
   result.opacity_ = glGetUniformLocation(result.program_handle_, "u_Opacity");
@@ -152,6 +206,10 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
       glGetUniformLocation(result.program_handle_, "u_RowIndex");
   result.layer_index_ =
       glGetUniformLocation(result.program_handle_, "u_LayerIndex");
+  result.overlay_bounds_ =
+      glGetUniformLocation(result.program_handle_, "u_OverlayBounds");
+  result.overlay_uv_transform_ =
+      glGetUniformLocation(result.program_handle_, "u_OverlayUvTransform");
 
   return result;
 }
@@ -161,6 +219,8 @@ XrRenderer::XrRenderer() {
   program_2d_ = CreateProgram(kVertexShader, kFragmentShader2D);
   program_cubemap_ = CreateProgram(kVertexShader, kFragmentShaderCubemap);
   program_array_ = CreateProgram(kVertexShaderES3, kFragmentShaderArray);
+  program_array_overlay_ =
+      CreateProgram(kVertexShaderES3, kFragmentShaderArrayOverlay);
 }
 
 void XrRenderer::EnsureVertexBuffers() {
@@ -206,20 +266,10 @@ void XrRenderer::Draw(const Program& program,
   // Bind texture. This is not necessarily a 1:1 pixel copy since the
   // size is modified by framebufferScaleFactor and requestViewportScale,
   // so use GL_LINEAR.
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(texture.target, texture.id);
-  glTexParameteri(texture.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(texture.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  if (texture.target != GL_TEXTURE_EXTERNAL_OES) {
-    glTexParameteri(texture.target, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(texture.target, GL_TEXTURE_MAX_LEVEL, 0);
-  }
-  glUniform1i(program.texture_handle_, 0);
+  BindAndConfigureTexture(GL_TEXTURE0, texture, program.texture_handle_, 0);
 
   glUniformMatrix4fv(program.uv_transform_, 1, GL_FALSE, &uv_transform[0]);
-  glUniform1f(program.opacity_, std::clamp(opacity, 0.f, 1.f));
+  glUniform1f(program.opacity_, std::clamp(opacity, 0.0f, 1.0f));
 
   if (face_index >= 0) {
     CHECK(face_index < 6);
@@ -276,6 +326,53 @@ void XrRenderer::DrawArrayLayer(const LocalTexture& texture,
                                 const float (&uv_transform)[16],
                                 float opacity) {
   Draw(program_array_, texture, uv_transform, opacity, -1, layer_index);
+}
+
+void XrRenderer::DrawArrayLayerWithOverlay(const LocalTexture& texture,
+                                           uint16_t layer_index,
+                                           const float (&uv_transform)[16],
+                                           float opacity,
+                                           const OverlayLayerParams& overlay) {
+  if (overlay.bounds.IsEmpty()) {
+    DrawArrayLayer(texture, layer_index, uv_transform, opacity);
+    return;
+  }
+
+  EnsureVertexBuffers();
+  CHECK_EQ(texture.target, static_cast<GLenum>(GL_TEXTURE_2D_ARRAY));
+  CHECK_EQ(overlay.texture.target, static_cast<GLenum>(GL_TEXTURE_2D));
+
+  const Program& program = program_array_overlay_;
+  glUseProgram(program.program_handle_);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+  glVertexAttribPointer(program.position_handle_, 2, GL_FLOAT, GL_FALSE, 0,
+                        nullptr);
+  glEnableVertexAttribArray(program.position_handle_);
+
+  BindAndConfigureTexture(GL_TEXTURE0, texture, program.texture_handle_, 0);
+  BindAndConfigureTexture(GL_TEXTURE1, overlay.texture,
+                          program.overlay_texture_handle_, 1);
+
+  glUniformMatrix4fv(program.uv_transform_, 1, GL_FALSE, &uv_transform[0]);
+  glUniform1f(program.opacity_, std::clamp(opacity, 0.0f, 1.0f));
+  glUniform1i(program.layer_index_, layer_index);
+
+  const float y_min =
+      overlay.flip_y ? (1.0f - overlay.bounds.bottom()) : overlay.bounds.y();
+  const float y_max = y_min + overlay.bounds.height();
+  glUniform4f(program.overlay_bounds_, overlay.bounds.x(), y_min,
+              overlay.bounds.right(), y_max);
+  glUniform4f(program.overlay_uv_transform_, kStereoEyeUvWidth,
+              overlay.flip_y ? -1.0f : 1.0f, overlay.eye_uv_offset,
+              overlay.flip_y ? 1.0f : 0.0f);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
+  glDrawElements(GL_TRIANGLES, std::size(kQuadIndices), GL_UNSIGNED_SHORT,
+                 nullptr);
+
+  glDisableVertexAttribArray(program.position_handle_);
+  glActiveTexture(GL_TEXTURE0);
 }
 
 // Note that we don't explicitly delete gl objects here, they're deleted
