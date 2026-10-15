@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -302,15 +301,12 @@ void PageInfoMainView::SetPermissionInfo(
     return;
   }
 
-  // When LHS indicators are enabled, permissions usage in PageInfo should be
-  // updated to reflect activity indicators.
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    for (const auto& permission : permission_info_list) {
-      auto it = syncable_permission_rows_.find(permission.type);
-      if (it != syncable_permission_rows_.end()) {
-        it->second->UpdatePermission(permission);
-      }
+  // Permissions usage in PageInfo should be updated to reflect activity
+  // indicators.
+  for (const auto& permission : permission_info_list) {
+    auto it = syncable_permission_rows_.find(permission.type);
+    if (it != syncable_permission_rows_.end()) {
+      it->second->UpdatePermission(permission);
     }
   }
 

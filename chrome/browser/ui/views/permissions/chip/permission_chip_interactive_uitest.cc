@@ -242,10 +242,7 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
 
 class LocationBarIconOverrideTest : public PermissionChipInteractiveUITest {
  public:
-  LocationBarIconOverrideTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {content_settings::features::kLeftHandSideActivityIndicators});
-  }
+  LocationBarIconOverrideTest() = default;
 
   bool IsLocationIconVisible() {
     return LocationIconTestAccessor(browser()).IsVisible();
@@ -261,9 +258,6 @@ class LocationBarIconOverrideTest : public PermissionChipInteractiveUITest {
           [&]() { return IsLocationIconVisible() == expected; }));
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,

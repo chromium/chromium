@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,8 +98,6 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   enum class TargetViewToVerify { kLocationBar, kPageInfo };
 
   LHSIndicatorsInteractiveUITest() {
-    scoped_features_.InitWithFeatures(
-        {content_settings::features::kLeftHandSideActivityIndicators}, {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -369,7 +366,6 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
   std::unique_ptr<TestLocationBarModel> test_location_bar_model_;

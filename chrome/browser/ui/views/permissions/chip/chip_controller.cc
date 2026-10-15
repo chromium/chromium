@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -33,7 +32,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
@@ -122,12 +120,10 @@ void ChipController::OnRequestDecided(
       permission_action == permissions::PermissionAction::REVOKED ||
       // Do not show the confirmation chip for Camera and Mic because they will
       // be displayed as LHS indicator.
-      (base::FeatureList::IsEnabled(
-           content_settings::features::kLeftHandSideActivityIndicators) &&
-       (permission_prompt_model_->content_settings_type() ==
-            ContentSettingsType::MEDIASTREAM_CAMERA ||
-        permission_prompt_model_->content_settings_type() ==
-            ContentSettingsType::MEDIASTREAM_MIC))) {
+      permission_prompt_model_->content_settings_type() ==
+          ContentSettingsType::MEDIASTREAM_CAMERA ||
+      permission_prompt_model_->content_settings_type() ==
+          ContentSettingsType::MEDIASTREAM_MIC) {
     // Reset everything and hide chip if:
     // - `LocationBar` isn't visible
     // - Permission request was ignored or dismissed as we do not confirm such

@@ -4,7 +4,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -23,7 +22,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -56,10 +54,7 @@ class PermissionDashboardBrowserTest : public InProcessBrowserTest {
  public:
   PermissionDashboardBrowserTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kLeftHandSideActivityIndicators);
-  }
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
 
   PermissionDashboardBrowserTest(const PermissionDashboardBrowserTest&) =
       delete;
@@ -104,7 +99,6 @@ class PermissionDashboardBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   // Some of these tests rely on animation being enabled. This forces
   // animation on even if it's turned off in the OS.
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;

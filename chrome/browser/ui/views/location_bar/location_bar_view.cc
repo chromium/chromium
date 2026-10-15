@@ -97,7 +97,6 @@
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
@@ -314,22 +313,12 @@ void LocationBarView::Init() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    permission_dashboard_view_ =
-        AddChildViewAt(std::make_unique<PermissionDashboardView>(), 0);
+  permission_dashboard_view_ =
+      AddChildViewAt(std::make_unique<PermissionDashboardView>(), 0);
 
-    permission_dashboard_controller_ =
-        std::make_unique<PermissionDashboardController>(
-            this, this, permission_dashboard_view_);
-  } else {
-    chip_view_ =
-        AddChildViewAt(std::make_unique<PermissionChipView>(
-                           PermissionChipView::Role::kPermissionRequestChip,
-                           PermissionChipView::PressedCallback()),
-                       0);
-    chip_controller_ = std::make_unique<ChipController>(this, this, chip_view_);
-  }
+  permission_dashboard_controller_ =
+      std::make_unique<PermissionDashboardController>(
+          this, this, permission_dashboard_view_);
 
   const auto& typography_provider = views::TypographyProvider::Get();
   const gfx::FontList& font_list = typography_provider.GetFont(
@@ -852,24 +841,11 @@ void LocationBarView::Layout(PassKey) {
   const double kLeadingDecorationMaxFraction = 0.5;
 
   const bool show_overriding_permission_chip =
-      base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)
-          ? permission_dashboard_view_->GetVisible() &&
-                !ShouldShowKeywordBubble()
-          : chip_controller_->chip()->GetVisible() &&
-                !ShouldShowKeywordBubble();
+      permission_dashboard_view_->GetVisible() && !ShouldShowKeywordBubble();
   if (show_overriding_permission_chip) {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kLeftHandSideActivityIndicators)) {
-      leading_decorations.AddDecoration(vertical_padding, location_height,
-                                        false, 0, /*intra_item_padding=*/0,
-                                        icon_left, permission_dashboard_view_);
-    } else {
-      CHECK(chip_view_);
-      leading_decorations.AddDecoration(vertical_padding, location_height,
-                                        false, 0, /*intra_item_padding=*/0,
-                                        icon_left, chip_view_);
-    }
+    leading_decorations.AddDecoration(vertical_padding, location_height, false,
+                                      0, /*intra_item_padding=*/0, icon_left,
+                                      permission_dashboard_view_);
   }
 
   if (ShouldShowKeywordBubble()) {
@@ -1127,12 +1103,7 @@ bool LocationBarView::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
 }
 
 ChipController* LocationBarView::GetChipController() {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    return permission_dashboard_controller_->request_chip_controller();
-  }
-
-  return chip_controller_.get();
+  return permission_dashboard_controller_->request_chip_controller();
 }
 
 PermissionDashboardController*
@@ -1455,10 +1426,7 @@ void LocationBarView::RefreshBackground() {
 
   // The divider between indicators and request chips should have the same color
   // as the omnibox.
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    permission_dashboard_view_->SetDividerBackgroundColor(background_color_);
-  }
+  permission_dashboard_view_->SetDividerBackgroundColor(background_color_);
 
   SchedulePaint();
 }
@@ -2138,12 +2106,9 @@ void LocationBarView::OnTouchUiChanged() {
 }
 
 bool LocationBarView::ShouldChipOverrideLocationIcon() {
-  if (permission_dashboard_view_) {
-    return permission_dashboard_view_->GetIndicatorChip()->GetVisible() ||
-           permission_dashboard_view_->GetRequestChip()->GetVisible();
-  }
-
-  return chip_controller_ && chip_controller_->chip()->GetVisible();
+  return permission_dashboard_view_ &&
+         (permission_dashboard_view_->GetIndicatorChip()->GetVisible() ||
+          permission_dashboard_view_->GetRequestChip()->GetVisible());
 }
 
 bool LocationBarView::IsEditingOrEmpty() const {
@@ -2384,15 +2349,12 @@ void LocationBarView::UpdateChipVisibility() {
     GetChipController()->ResetPermissionPromptChip();
   }
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    // Hide the LHS indicator to prevent it appearing in the location bar
-    // search panel.
-    // This is needed only if the indicator is already visible. If the
-    // location bar is in editing mode, we do not show new indicators.
-    if (permission_dashboard_view_->GetVisible()) {
-      permission_dashboard_view_->SetVisible(false);
-    }
+  // Hide the LHS indicator to prevent it appearing in the location bar
+  // search panel.
+  // This is needed only if the indicator is already visible. If the
+  // location bar is in editing mode, we do not show new indicators.
+  if (permission_dashboard_view_->GetVisible()) {
+    permission_dashboard_view_->SetVisible(false);
   }
 }
 

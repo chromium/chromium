@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -43,8 +41,6 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   DashboardKombuchaInteractiveUITest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    feature_list_.InitWithFeatures(
-        {content_settings::features::kLeftHandSideActivityIndicators}, {});
   }
 
   ~DashboardKombuchaInteractiveUITest() override = default;
@@ -181,7 +177,6 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestLocationBarModel> test_location_bar_model_;
 };
 
