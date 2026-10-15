@@ -343,15 +343,13 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
       latency_hint, context_sample_rate, hardware_params);
   EXPECT_EQ(output_buffer_size, kMaxWebAudioBufferSize);
 }
-// TODO(crbug.com/40248990): Re-enable once
-// media::AudioLatency::GetExactBufferSize removes the internal
-// DCHECK_LE(hardware_buffer_size, max_allowed_buffer_size). When the
-// kWebAudioRemoveAudioDestinationResampler feature is enabled and the hardware
-// reports a native minimum buffer size that exceeds Web Audio's maximum limit
-// (kMaxWebAudioBufferSize), the GetOutputBufferSize method safely caps the
-// computed buffer size at kMaxWebAudioBufferSize.
+
+// When the kWebAudioRemoveAudioDestinationResampler feature is enabled and the
+// hardware reports a native minimum buffer size that exceeds Web Audio's
+// maximum limit (kMaxWebAudioBufferSize), the GetOutputBufferSize method safely
+// caps the computed buffer size at kMaxWebAudioBufferSize.
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
-       DISABLED_ExactLatency_HighHardwareBufferSize_CapsAtMaxBufferSize) {
+       ExactLatency_HighHardwareBufferSize_CapsAtMaxBufferSize) {
   feature_list_.InitAndEnableFeature(
       features::kWebAudioRemoveAudioDestinationResampler);
   // Request a 50ms exact latency hint.

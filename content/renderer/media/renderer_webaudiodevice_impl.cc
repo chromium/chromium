@@ -161,16 +161,16 @@ int RendererWebAudioDeviceImpl::GetOutputBufferSize(
   // buffer size calculations rely on the context sample rate.
   int min_buffer_size = kMinWebAudioBufferSize;
   if (min_hardware_buffer_size != 0) {
-    min_buffer_size = std::max(
-        kMinWebAudioBufferSize,
-        static_cast<int>(std::ceil(min_hardware_buffer_size * scale_factor)));
+    min_buffer_size = std::clamp(
+        static_cast<int>(std::ceil(min_hardware_buffer_size * scale_factor)),
+        kMinWebAudioBufferSize, kMaxWebAudioBufferSize);
   }
 
   int max_buffer_size = kMaxWebAudioBufferSize;
   if (max_hardware_buffer_size != 0) {
-    max_buffer_size = std::min(
-        kMaxWebAudioBufferSize,
-        static_cast<int>(std::ceil(max_hardware_buffer_size * scale_factor)));
+    max_buffer_size = std::clamp(
+        static_cast<int>(std::ceil(max_hardware_buffer_size * scale_factor)),
+        kMinWebAudioBufferSize, kMaxWebAudioBufferSize);
   }
   // Ensure that the `min_buffer_size` does not exceed `max_buffer_size`.
   // This can occur when a small scale_factor leads to inverted limits after
@@ -552,8 +552,8 @@ RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
 
   TRACE_EVENT2("webaudio",
                "RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus",
-               "sink_id", sink_descriptor_.SinkId().Utf8(),
-               "status", static_cast<int>(status));
+               "sink_id", sink_descriptor_.SinkId().Utf8(), "status",
+               static_cast<int>(status));
 
   return status;
 }
