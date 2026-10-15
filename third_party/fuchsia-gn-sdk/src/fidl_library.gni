@@ -259,14 +259,12 @@ template("_fidl_cpp_library_impl") {
     if (!defined(deps)) {
       deps = []
     }
-    deps += [
-      ":${generation_target_name}",
-      invoker.fidl_ir_target,
-    ]
+    deps += [ invoker.fidl_ir_target ]
 
     if (!defined(public_deps)) {
       public_deps = []
     }
+    public_deps += [ ":${generation_target_name}" ]
 
     not_needed(invoker, [ "bindings_flavor" ])
     not_needed(invoker, [ "bindings_layer" ])
