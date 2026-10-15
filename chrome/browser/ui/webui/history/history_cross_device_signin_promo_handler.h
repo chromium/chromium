@@ -43,7 +43,9 @@ class HistoryCrossDeviceSigninPromoHandler
                               HistoryCrossDeviceSigninPromoPage> page) override;
 
  private:
-  // Forwards the bubble open state to `page_`, if bound.
+  // Forwards the bubble open state to `page_`, if bound. When the bubble closes
+  // while the card is shown, also hides the card if the user is no longer
+  // eligible for the promo.
   void OnBubbleOpenStateChanged(bool is_open);
 
   // Tears down the page connection and stops observing the bubble state.
@@ -57,6 +59,8 @@ class HistoryCrossDeviceSigninPromoHandler
       page_;
   raw_ptr<content::WebContents> web_contents_;
   base::CallbackListSubscription bubble_state_subscription_;
+  // Whether `page_` currently shows the promo card.
+  bool is_promo_card_shown_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_HISTORY_CROSS_DEVICE_SIGNIN_PROMO_HANDLER_H_

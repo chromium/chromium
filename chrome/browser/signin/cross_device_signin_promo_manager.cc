@@ -166,34 +166,26 @@ std::optional<CrossDeviceSigninPromoData> GetPromoDataForDismissibleEntryPoint(
   }
 }
 
-// Limits for the dismissible promo:
+// Checks the frequency caps for a dismissible promo:
 // - Promo can be shown at most 5 times.
 // - Promo can be shown at most once after dismissal.
 // - Cooldown period of 7 days after dismissal.
-bool IsDismissiblePromoLimitReached(
-    const CrossDeviceSigninPromoData& data,
-    CrossDeviceSigninPromoEntryPoint entry_point) {
+// Records no metrics.
+CrossDeviceSigninPromoShouldShowResult CheckDismissiblePromoLimits(
+    const CrossDeviceSigninPromoData& data) {
   if (data.shown_count >= kMaxShownCount) {
-    RecordShouldShowResult(
-        entry_point,
-        CrossDeviceSigninPromoShouldShowResult::kShownLimitReached);
-    return true;
+    return CrossDeviceSigninPromoShouldShowResult::kShownLimitReached;
   }
   if (data.shown_after_dismissal) {
-    RecordShouldShowResult(entry_point,
-                           CrossDeviceSigninPromoShouldShowResult::
-                               kAlreadyShownAfterDismissalLimitReached);
-    return true;
+    return CrossDeviceSigninPromoShouldShowResult::
+        kAlreadyShownAfterDismissalLimitReached;
   }
-  if (!data.last_dismissed_time.is_null()) {
-    if (base::Time::Now() <
-        data.last_dismissed_time + kDismissiblePromoCooldownPeriod) {
-      RecordShouldShowResult(
-          entry_point, CrossDeviceSigninPromoShouldShowResult::kCooldownActive);
-      return true;
-    }
+  if (!data.last_dismissed_time.is_null() &&
+      base::Time::Now() <
+          data.last_dismissed_time + kDismissiblePromoCooldownPeriod) {
+    return CrossDeviceSigninPromoShouldShowResult::kCooldownActive;
   }
-  return false;
+  return CrossDeviceSigninPromoShouldShowResult::kCanShow;
 }
 
 bool IsUserSignedInWithNoError(Profile* profile) {
@@ -350,35 +342,26 @@ class QrBubbleState : public base::SupportsUserData::Data {
   base::WeakPtrFactory<QrBubbleState> active_bubble_weak_factory_{this};
 };
 
-}  // namespace
-
-bool ShouldShowCrossDeviceSigninPromo(
+// Checks the user's state for the promo at `entry_point`, ignoring the
+// frequency caps: returns `kCanShow` if signed in with no error, without a
+// synced mobile device and with the required data types enabled, or the reason
+// it is not. Records no metrics.
+CrossDeviceSigninPromoShouldShowResult CheckPromoPrerequisites(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile) {
-  if (!base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop)) {
-    return false;
-  }
-
   // 1. General eligibility: Signed in with no errors, and has NO other devices.
   if (!IsUserSignedInWithNoError(profile)) {
-    RecordShouldShowResult(
-        entry_point, CrossDeviceSigninPromoShouldShowResult::kNotSignedIn);
-    return false;
+    return CrossDeviceSigninPromoShouldShowResult::kNotSignedIn;
   }
   if (HasMobileDevice(profile)) {
-    RecordShouldShowResult(
-        entry_point, CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice);
-    return false;
+    return CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice;
   }
 
   // 2. Data-type eligibility check.
   switch (entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
       if (!IsHistorySyncEnabled(profile)) {
-        RecordShouldShowResult(
-            entry_point,
-            CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled);
-        return false;
+        return CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled;
       }
       break;
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
@@ -387,16 +370,39 @@ bool ShouldShowCrossDeviceSigninPromo(
       break;
   }
 
-  // 3. Dismissible limit checking - only for dismissible entry points.
-  std::optional<CrossDeviceSigninPromoData> data =
-      GetPromoDataForDismissibleEntryPoint(profile, entry_point);
-  if (data.has_value() && IsDismissiblePromoLimitReached(*data, entry_point)) {
+  return CrossDeviceSigninPromoShouldShowResult::kCanShow;
+}
+
+}  // namespace
+
+bool ShouldStartShowingCrossDeviceSigninPromo(
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    Profile* profile) {
+  if (!base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop)) {
     return false;
   }
 
-  RecordShouldShowResult(entry_point,
-                         CrossDeviceSigninPromoShouldShowResult::kCanShow);
-  return true;
+  CrossDeviceSigninPromoShouldShowResult result =
+      CheckPromoPrerequisites(entry_point, profile);
+  if (result == CrossDeviceSigninPromoShouldShowResult::kCanShow) {
+    // 3. Dismissible limit checking - only for dismissible entry points.
+    if (std::optional<CrossDeviceSigninPromoData> data =
+            GetPromoDataForDismissibleEntryPoint(profile, entry_point)) {
+      result = CheckDismissiblePromoLimits(*data);
+    }
+  }
+
+  RecordShouldShowResult(entry_point, result);
+  return result == CrossDeviceSigninPromoShouldShowResult::kCanShow;
+}
+
+bool ShouldKeepShowingCrossDeviceSigninPromo(
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    Profile* profile) {
+  return base::FeatureList::IsEnabled(
+             switches::kCrossDeviceSigninFromDesktop) &&
+         CheckPromoPrerequisites(entry_point, profile) ==
+             CrossDeviceSigninPromoShouldShowResult::kCanShow;
 }
 
 void OnCrossDeviceSigninPromoShown(CrossDeviceSigninPromoEntryPoint entry_point,

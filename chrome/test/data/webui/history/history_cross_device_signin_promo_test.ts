@@ -127,6 +127,12 @@ suite('HistoryCrossDeviceSigninPromoTest', function() {
     const page = handlerRemote.page!;
     assertFalse(element.$.actionButton.disabled);
 
+    let eventFired = false;
+    element.addEventListener(
+        'should-show-history-cross-device-signin-promo', () => {
+          eventFired = true;
+        });
+
     page.onPromoBubbleStateChanged(true);
     await page.$.flushForTesting();
     await microtasksFinished();
@@ -136,6 +142,30 @@ suite('HistoryCrossDeviceSigninPromoTest', function() {
     await page.$.flushForTesting();
     await microtasksFinished();
     assertFalse(element.$.actionButton.disabled);
+    // Closing the bubble alone does not hide the promo.
+    assertFalse(eventFired);
+  });
+
+  test('HidePromoCard hides the promo', async () => {
+    await handlerRemote.whenCalled('setPage');
+    const page = handlerRemote.page!;
+
+    let eventFired = false;
+    let shouldShowVal = true;
+    element.addEventListener(
+        'should-show-history-cross-device-signin-promo', (e: Event) => {
+          eventFired = true;
+          shouldShowVal =
+              (e as CustomEvent<{shouldShow: boolean}>).detail.shouldShow;
+        });
+
+    page.hidePromoCard();
+    await page.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(eventFired);
+    assertFalse(shouldShowVal);
+    assertEquals(0, handlerRemote.getCallCount('onPromoCardDismissed'));
   });
 
   test('Reconnecting rebinds the page', async () => {

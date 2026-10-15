@@ -74,6 +74,10 @@ export class HistoryCrossDeviceSigninPromoElement extends
     this.isBubbleOpen_ = isOpen;
   }
 
+  hidePromoCard(): void {
+    this.propagateShouldShowPromo_(false);
+  }
+
   private handler_ =
       HistoryCrossDeviceSigninPromoBrowserProxy.getInstance().handler;
   private receiver_: HistoryCrossDeviceSigninPromoPageReceiver|null = null;

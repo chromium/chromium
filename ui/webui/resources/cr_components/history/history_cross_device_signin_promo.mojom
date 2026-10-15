@@ -42,4 +42,10 @@ interface HistoryCrossDeviceSigninPromoPage {
   // (and once immediately upon `SetPage()`). At most one bubble is open per
   // profile across all browser windows.
   OnPromoBubbleStateChanged(bool is_open);
+
+  // Hides the promo card. Sent when the QR code bubble closes while the card is
+  // shown and the user is no longer eligible for the promo (e.g. they signed in
+  // on their phone). The browser never asks to show the card: that is only
+  // decided on load by `ShouldShowPromoCard()`.
+  HidePromoCard();
 };

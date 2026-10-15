@@ -25,19 +25,21 @@ HistoryCrossDeviceSigninPromoHandler::~HistoryCrossDeviceSigninPromoHandler() =
 
 void HistoryCrossDeviceSigninPromoHandler::ShouldShowPromoCard(
     ShouldShowPromoCardCallback callback) {
-  bool should_show = ShouldShowCrossDeviceSigninPromo(
+  bool should_show = ShouldStartShowingCrossDeviceSigninPromo(
       CrossDeviceSigninPromoEntryPoint::kHistoryPage,
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   std::move(callback).Run(should_show);
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardShown() {
+  is_promo_card_shown_ = true;
   OnCrossDeviceSigninPromoShown(
       CrossDeviceSigninPromoEntryPoint::kHistoryPage,
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardDismissed() {
+  is_promo_card_shown_ = false;
   OnCrossDeviceSigninPromoDismissed(
       CrossDeviceSigninPromoEntryPoint::kHistoryPage,
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
@@ -76,6 +78,9 @@ void HistoryCrossDeviceSigninPromoHandler::SetPage(
   page_.set_disconnect_handler(
       base::BindOnce(&HistoryCrossDeviceSigninPromoHandler::OnPageDisconnected,
                      base::Unretained(this)));
+  // A new page has not shown the card yet; it reports it via
+  // `OnPromoCardShown()`.
+  is_promo_card_shown_ = false;
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -95,12 +100,26 @@ void HistoryCrossDeviceSigninPromoHandler::SetPage(
 
 void HistoryCrossDeviceSigninPromoHandler::OnBubbleOpenStateChanged(
     bool is_open) {
-  if (page_.is_bound()) {
-    page_->OnPromoBubbleStateChanged(is_open);
+  if (!page_.is_bound()) {
+    return;
+  }
+  page_->OnPromoBubbleStateChanged(is_open);
+
+  // Once the bubble closes, hide the card if the user is no longer eligible
+  // (e.g. they signed in on their phone). This is best-effort: the phone's
+  // device info may only sync later, in which case the card stays until the
+  // next page load.
+  if (!is_open && is_promo_card_shown_ &&
+      !ShouldKeepShowingCrossDeviceSigninPromo(
+          CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
+    is_promo_card_shown_ = false;
+    page_->HidePromoCard();
   }
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPageDisconnected() {
   page_.reset();
   bubble_state_subscription_ = {};
+  is_promo_card_shown_ = false;
 }

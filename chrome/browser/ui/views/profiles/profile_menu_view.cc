@@ -1215,7 +1215,7 @@ void ProfileMenuView::BuildFeatureButtons() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileMenuView::MaybeBuildCrossDeviceSigninButton() {
-  if (ShouldShowCrossDeviceSigninPromo(
+  if (ShouldStartShowingCrossDeviceSigninPromo(
           CrossDeviceSigninPromoEntryPoint::kProfileMenu, &profile())) {
     user_education::DisplayNewBadge display_new_badge;
     if (switches::kCrossDeviceSigninFromDesktopNewBadge.Get()) {

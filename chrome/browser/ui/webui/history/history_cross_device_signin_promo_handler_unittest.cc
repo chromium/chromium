@@ -20,11 +20,22 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,7 +75,8 @@ class FakeSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
   base::OnceClosure closing_callback_;
 };
 
-// Forwards the bubble state updates pushed by the handler to a test callback.
+// Forwards the bubble state updates pushed by the handler to a test callback,
+// and counts the requests to hide the promo card.
 class FakePromoPage : public promo_mojom::HistoryCrossDeviceSigninPromoPage {
  public:
   explicit FakePromoPage(base::RepeatingCallback<void(bool)> on_state_changed)
@@ -75,13 +87,17 @@ class FakePromoPage : public promo_mojom::HistoryCrossDeviceSigninPromoPage {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  int hide_promo_card_count() const { return hide_promo_card_count_; }
+
   // promo_mojom::HistoryCrossDeviceSigninPromoPage:
   void OnPromoBubbleStateChanged(bool is_open) override {
     on_state_changed_.Run(is_open);
   }
+  void HidePromoCard() override { ++hide_promo_card_count_; }
 
  private:
   base::RepeatingCallback<void(bool)> on_state_changed_;
+  int hide_promo_card_count_ = 0;
   mojo::Receiver<promo_mojom::HistoryCrossDeviceSigninPromoPage> receiver_{
       this};
 };
@@ -106,8 +122,22 @@ class HistoryCrossDeviceSigninPromoHandlerTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+    factories.emplace_back(
+        DeviceInfoSyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::FakeDeviceInfoSyncService>();
+        }));
+    return factories;
   }
 
  protected:
@@ -118,6 +148,27 @@ class HistoryCrossDeviceSigninPromoHandlerTest
   }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  void SetHistorySyncEnabled(bool enabled) {
+    static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()))
+        ->GetUserSettings()
+        ->SetSelectedType(syncer::UserSelectableType::kHistory, enabled);
+  }
+
+  // Simulates the user signing in on their phone, which makes them ineligible
+  // for the promo.
+  void AddMobileDevice() {
+    auto* device_info_service = static_cast<syncer::FakeDeviceInfoSyncService*>(
+        DeviceInfoSyncServiceFactory::GetForProfile(profile()));
+    static_cast<syncer::FakeDeviceInfoTracker*>(
+        device_info_service->GetDeviceInfoTracker())
+        ->Add(
+            syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+                .WithGuid("phone_guid")
+                .WithLastUpdatedTimestamp(base::Time::Now())
+                .Build());
   }
 
  private:
@@ -154,6 +205,106 @@ TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
 
   ui_delegate.CloseBubble();
   EXPECT_FALSE(is_open.Take());
+}
+
+// The user signs in on their phone while the bubble is open, so the card is
+// hidden when the bubble closes.
+TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
+       HidesShownCardWhenIneligibleOnBubbleClose) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  FakeSigninUiDelegate ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> reset_delegate =
+      signin_ui_util::SetSigninUiDelegateForTesting(&ui_delegate);
+  testing::NiceMock<MockBrowserWindowInterface> browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  FakePromoPage page(base::DoNothing());
+  handler().SetPage(page.BindAndGetRemote());
+  handler().OnPromoCardShown();
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                base::DoNothing());
+  AddMobileDevice();
+  ui_delegate.CloseBubble();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return page.hide_promo_card_count() > 0; }));
+  EXPECT_EQ(page.hide_promo_card_count(), 1);
+}
+
+TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
+       KeepsShownCardWhenStillEligibleOnBubbleClose) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  FakeSigninUiDelegate ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> reset_delegate =
+      signin_ui_util::SetSigninUiDelegateForTesting(&ui_delegate);
+  testing::NiceMock<MockBrowserWindowInterface> browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  base::test::TestFuture<bool> is_open;
+  FakePromoPage page(is_open.GetRepeatingCallback());
+  handler().SetPage(page.BindAndGetRemote());
+  EXPECT_FALSE(is_open.Take());
+  handler().OnPromoCardShown();
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                base::DoNothing());
+  EXPECT_TRUE(is_open.Take());
+  ui_delegate.CloseBubble();
+  EXPECT_FALSE(is_open.Take());
+
+  // Any `HidePromoCard()` sent on close would reach the page before this
+  // reopen update, as both go through the same pipe.
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  EXPECT_TRUE(is_open.Take());
+  EXPECT_EQ(page.hide_promo_card_count(), 0);
+  ui_delegate.CloseBubble();
+}
+
+// A card that is not shown (here: dismissed) is never asked to hide, even if
+// the user becomes ineligible.
+TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
+       DoesNotHideDismissedCardOnBubbleClose) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  FakeSigninUiDelegate ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> reset_delegate =
+      signin_ui_util::SetSigninUiDelegateForTesting(&ui_delegate);
+  testing::NiceMock<MockBrowserWindowInterface> browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  base::test::TestFuture<bool> is_open;
+  FakePromoPage page(is_open.GetRepeatingCallback());
+  handler().SetPage(page.BindAndGetRemote());
+  EXPECT_FALSE(is_open.Take());
+  handler().OnPromoCardShown();
+  handler().OnPromoCardDismissed();
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  EXPECT_TRUE(is_open.Take());
+  AddMobileDevice();
+  ui_delegate.CloseBubble();
+  EXPECT_FALSE(is_open.Take());
+
+  // Any `HidePromoCard()` sent on close would reach the page before this
+  // reopen update, as both go through the same pipe.
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  EXPECT_TRUE(is_open.Take());
+  EXPECT_EQ(page.hide_promo_card_count(), 0);
+  ui_delegate.CloseBubble();
 }
 
 // Calling `SetPage()` again (e.g. when the card is re-attached) must move
