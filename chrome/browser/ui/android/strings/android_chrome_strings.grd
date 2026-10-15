@@ -1001,6 +1001,20 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_BOTTOM_BAR_SETTING_SUMMARY" desc="Summary shown under the 'Show bottom toolbar' switch in the Appearance settings page. The bottom toolbar is a row of navigation and tool buttons (for example new tab, tab switcher and menu) anchored to the bottom of the screen so they are easier to reach with one hand. It is separate from the 'Address bar' setting, which only moves the address bar between the top and bottom of the screen." translateable="false">
         Keep navigation and tools to the bottom for easy reach
       </message>
+
+      <!-- On startup settings -->
+      <message name="IDS_ON_STARTUP_TITLE" desc="Title for the On startup settings page and preference row.">
+        On startup
+      </message>
+      <message name="IDS_ON_STARTUP_PREF_NEW_TAB" desc="Label for the option to open the Homepage on startup.">
+        Open the Homepage
+      </message>
+      <message name="IDS_ON_STARTUP_PREF_LAST" desc="Label for the option to continue where the user left off on startup.">
+        Continue where you left off
+      </message>
+      <message name="IDS_ON_STARTUP_PREF_URLS" desc="Label for the option to open a specific page or set of pages on startup.">
+        Open a specific page or set of pages
+      </message>
       <if expr="enable_extensions_core">
         <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_SETTING" desc="Title Text of the button that pins the extensions menu icon (the puzzle piece icon) to the toolbar.">
           Pin to toolbar

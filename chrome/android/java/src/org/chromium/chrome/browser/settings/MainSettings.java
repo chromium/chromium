@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -121,6 +122,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_APPEARANCE = "appearance";
     public static final String PREF_DEFAULT_BROWSER = "default_browser";
     public static final String PREF_GLIC = "glic";
+    public static final String PREF_ON_STARTUP = "on_startup";
 
     // Tag for Fragment backstack entry loading the search results into the display fragment.
     // Popping the entry means we are transitioning from result -> search state.
@@ -602,6 +604,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAutofillPreferences();
         updateAddressBarPreference();
         updateAppearancePreference();
+        if (MultiWindowUtils.isOnStartupSettingsUiEnabled()) {
+            addPreferenceIfAbsent(PREF_ON_STARTUP);
+        } else {
+            removePreferenceIfPresent(PREF_ON_STARTUP);
+        }
         addPreferenceIfAbsent(PREF_TABS);
 
         updateHomepagePreference();
@@ -949,6 +956,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
+                    }
+                    if (!MultiWindowUtils.isOnStartupSettingsUiEnabled()) {
+                        indexData.removeEntry(getUniqueId(PREF_ON_STARTUP));
                     }
                     if (!HomepageManager.shouldShowHomepageSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_HOMEPAGE));

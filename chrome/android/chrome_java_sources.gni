@@ -1120,6 +1120,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java",
   "java/src/org/chromium/chrome/browser/settings/search/SearchResultsPreferenceFragment.java",
   "java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java",
+  "java/src/org/chromium/chrome/browser/settings/startup/OnStartupSettingsFragment.java",
+  "java/src/org/chromium/chrome/browser/settings/startup/RadioButtonGroupOnStartupPreference.java",
   "java/src/org/chromium/chrome/browser/share/ChromeCustomShareAction.java",
   "java/src/org/chromium/chrome/browser/share/LensUtils.java",
   "java/src/org/chromium/chrome/browser/share/ShareButtonController.java",

@@ -517,6 +517,56 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
+    public void testGetSessionStartupType_unsetDefaultsToLast() {
+        // Setup cached preference value as unset.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET);
+
+        // Act & Verify.
+        assertEquals(SessionStartupPref.LAST, mDelegate.getSessionStartupType());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+    public void testGetSessionStartupType_historySyncOffWithSyncedPref_returnsLast() {
+        // Setup synced preference with History sync disabled and settings UI flag disabled.
+        when(mSyncService.getSelectedTypes()).thenReturn(Collections.emptySet());
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP)).thenReturn(SessionStartupPref.URLS);
+
+        // Act.
+        mDelegate.onNativeInitialized(mProfile);
+
+        // Verify effective startup type falls back to LAST.
+        assertEquals(SessionStartupPref.LAST, mDelegate.getSessionStartupType());
+    }
+
+    @Test
+    public void testGetSessionStartupType_returnsCachedEffectiveType() {
+        // Setup cached effective startup type.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+
+        // Act & Verify.
+        assertEquals(SessionStartupPref.NEW_TAB, mDelegate.getSessionStartupType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+    public void testSetSessionStartupType_writesPrefServiceAndUpdatesCache() {
+        // Setup initial cached startup type.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
+
+        // Act.
+        mDelegate.setSessionStartupType(mProfile, SessionStartupPref.URLS);
+
+        // Verify preference update on native PrefService and persistent store cache.
+        verify(mPrefService).setInteger(Pref.RESTORE_ON_STARTUP, SessionStartupPref.URLS);
+        assertEquals(
+                SessionStartupPref.URLS,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+    }
+
+    @Test
     public void testPreferenceChange_historySyncActive_syncsToCache() {
         // Setup mock native preferences.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))

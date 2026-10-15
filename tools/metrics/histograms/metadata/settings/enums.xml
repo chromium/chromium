@@ -84,6 +84,7 @@ chromium-metrics-reviews@google.com.
   <int value="-94642184" label="BlockedCredentialFragmentView"/>
   <int value="-67456740" label="MainSettings"/>
   <int value="-45144853" label="DownloadSettings"/>
+  <int value="-31712463" label="OnStartupSettingsFragment"/>
   <int value="-27162861" label="(Obsolete) FledgeFragment"/>
   <int value="2516405" label="TranslateTargetLanguagePickerFragment"/>
   <int value="6178351" label="ContentLanguagePickerFragment"/>

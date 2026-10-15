@@ -81,6 +81,25 @@ public final class TabbedStartupCoordinator {
     }
 
     /**
+     * Returns the effective {@link SessionStartupPref} currently active for the session.
+     *
+     * @return The active {@link SessionStartupPref} integer value.
+     */
+    public static @SessionStartupPref int getSessionStartupType() {
+        return TabbedStartupWindowPolicyDelegate.getInstance().getSessionStartupType();
+    }
+
+    /**
+     * Updates the user's selected {@link SessionStartupPref} in preference storage.
+     *
+     * @param profile The {@link Profile} associated with the browser session.
+     * @param startupType The {@link SessionStartupPref} integer value to persist.
+     */
+    public static void setSessionStartupType(Profile profile, @SessionStartupPref int startupType) {
+        TabbedStartupWindowPolicyDelegate.getInstance().setSessionStartupType(profile, startupType);
+    }
+
+    /**
      * Returns the validated web-safe startup URLs stored in {@code prefService}.
      *
      * @param prefService The {@link PrefService} for the user profile.

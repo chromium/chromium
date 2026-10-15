@@ -85,6 +85,11 @@ found in the LICENSE file.
         android:order="23"
         android:title="@string/appearance_settings" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.settings.startup.OnStartupSettingsFragment"
+        android:key="on_startup"
+        android:order="24"
+        android:title="@string/on_startup_title" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.glic.GlicSettings"
         android:key="glic"
         android:order="25"

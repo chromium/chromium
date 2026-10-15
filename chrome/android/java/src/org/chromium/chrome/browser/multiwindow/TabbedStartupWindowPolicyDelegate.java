@@ -200,6 +200,17 @@ import java.util.Set;
         return sInstance;
     }
 
+    /* package */ @SessionStartupPref
+    int getSessionStartupType() {
+        int cachedPref = ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
+        return cachedPref == PREF_UNSET ? SessionStartupPref.LAST : cachedPref;
+    }
+
+    /* package */ void setSessionStartupType(Profile profile, @SessionStartupPref int startupType) {
+        updateCachedRestoreOnStartupPref(startupType);
+        UserPrefs.get(profile).setInteger(Pref.RESTORE_ON_STARTUP, startupType);
+    }
+
     /* package */ void onNativeInitialized(Profile profile) {
         if (!MultiWindowUtils.isRestoreOnStartupPrefSupported()) return;
         // Early return if already initialized to ensure idempotency across multiple activities.
@@ -442,12 +453,16 @@ import java.util.Set;
     }
 
     private void updateCachedRestoreOnStartupPref() {
+        updateCachedRestoreOnStartupPref(
+                assertNonNull(mPrefService).getInteger(Pref.RESTORE_ON_STARTUP));
+    }
+
+    private void updateCachedRestoreOnStartupPref(@SessionStartupPref int startupType) {
         if (!shouldCacheRestoreOnStartupPref()) {
             ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(PREF_UNSET);
             return;
         }
-        int type = assertNonNull(mPrefService).getInteger(Pref.RESTORE_ON_STARTUP);
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(type);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(startupType);
     }
 
     private void updateCachedRestoreOnStartupUrlsPref() {

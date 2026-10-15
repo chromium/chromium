@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.language.settings.AlwaysTranslateListFragment
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.language.settings.NeverTranslateListFragment;
 import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -70,6 +71,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubNotificationsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubPermissionsFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
+import org.chromium.chrome.browser.settings.startup.OnStartupSettingsFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
@@ -349,6 +351,10 @@ public class SettingsFragmentRegistry {
 
         // Homepage
         registerMapping("/homepage", HomepageSettings.class);
+
+        // On startup
+        registerMapping("/onStartup", OnStartupSettingsFragment.class)
+                .availableWhen(profile -> MultiWindowUtils.isOnStartupSettingsUiEnabled());
 
         // Appearance
         registerMapping("/appearance", AppearanceSettingsFragment.class);

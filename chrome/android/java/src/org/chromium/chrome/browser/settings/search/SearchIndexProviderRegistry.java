@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.startup.OnStartupSettingsFragment;
 import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
@@ -94,6 +95,7 @@ public final class SearchIndexProviderRegistry {
                     UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER,
                     HomepageSettings.SEARCH_INDEX_DATA_PROVIDER,
                     LegalInformationSettings.SEARCH_INDEX_DATA_PROVIDER,
+                    OnStartupSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     SearchEngineSettings.SEARCH_INDEX_DATA_PROVIDER,
                     SiteSearchSettings.SEARCH_INDEX_DATA_PROVIDER,
                     PersonalizeGoogleServicesSettings.SEARCH_INDEX_DATA_PROVIDER,
