@@ -93,6 +93,10 @@ impl BuildConfig {
         self.per_crate_config.get(&epoch_key).or_else(|| self.per_crate_config.get(package_name))
     }
 
+    pub fn get_replacement_target(&self, package_name: &str, version: &Version) -> Option<&str> {
+        self.get_crate_config(package_name, version).and_then(|cfg| cfg.replace_with.as_deref())
+    }
+
     pub fn from_path(path: &Path) -> Result<Self> {
         let context = || format!("Error reading `gnrt_config.toml` from `{}`", path.display());
         let file_content = std::fs::read_to_string(path).with_context(context)?;
@@ -128,6 +132,10 @@ impl BuildConfig {
                      one or the other, not both.",
                 );
             }
+        }
+
+        if self.all_config.replace_with.is_some() {
+            bail!("`replace_with` cannot be specified in `[all-crates]`.");
         }
 
         Ok(())
@@ -194,6 +202,13 @@ pub struct CrateConfig {
     /// enabled but the dep is removed, the crate will still attempt to
     /// reference that dependency.
     pub remove_deps: Vec<String>,
+    /// Replace this crate with a custom GN target label (e.g.
+    /// `replace_with = "//third_party/rust/icu4x_data:lib"`).
+    /// Crates that depend on this crate will depend on the specified GN target
+    /// instead, and this crate will not be vendored or have a `BUILD.gn` file
+    /// generated.
+    #[serde(default)]
+    pub replace_with: Option<String>,
     /// Deps on generated targets to exclude from this target's `deps` list.
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.
@@ -365,5 +380,20 @@ mod test {
         let result = build_config.validate();
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("both unversioned"));
+    }
+
+    #[test]
+    fn test_validation_rejects_global_replace_with() {
+        let build_config = BuildConfig {
+            all_config: CrateConfig {
+                replace_with: Some("//global/target:lib".to_string()),
+                ..CrateConfig::default()
+            },
+            ..BuildConfig::default()
+        };
+
+        let result = build_config.validate();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("replace_with"));
     }
 }

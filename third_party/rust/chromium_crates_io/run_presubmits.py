@@ -171,11 +171,21 @@ def CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config):
        Returns an empty string if there are no problems.
     """
     real_crate_names = _GetRealCrateNames(crate_ids)
+    all_crate_names = set(
+        map(crate_utils.ConvertCrateIdToCrateName, crate_ids))
 
     crates_cfg_dict = _GetCratesConfigDict(gnrt_config)
     configured_crate_names = set(crates_cfg_dict.keys())
+    replaced_crate_names = {
+        name
+        for name, cfg in crates_cfg_dict.items()
+        if isinstance(cfg, dict) and "replace_with" in cfg
+    }
+    applicable_crate_names = real_crate_names | (all_crate_names
+                                                 & replaced_crate_names)
 
-    nonapplicable_config_entries = configured_crate_names - real_crate_names
+    nonapplicable_config_entries = (configured_crate_names -
+                                    applicable_crate_names)
     if nonapplicable_config_entries:
         return (f"Some entries in `{GNRT_CONFIG_RELATIVE_PATH}` are not "
                 "needed, because they don't apply to actual crates: "

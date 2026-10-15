@@ -105,14 +105,22 @@ cargo_crate("{{../name}}") {
   {{#each deps}}
   {{#if @first}}
     {{#each this.packages}}
+    {{#if this.target}}
+    "{{this.target}}",
+    {{else}}
     ":{{this.name}}",
+    {{/if}}
     {{/each}}
   ]
   {{else}}
   if ({{this.cond}}) {
     deps += [
       {{#each this.packages}}
+      {{#if this.target}}
+      "{{this.target}}",
+      {{else}}
       ":{{this.name}}",
+      {{/if}}
       {{/each}}
     ]
   }
@@ -121,7 +129,11 @@ cargo_crate("{{../name}}") {
   {{#if aliased_deps}}
   aliased_deps = {
     {{#each aliased_deps}}
+    {{#if this.1.target}}
+    {{this.0}} = "{{this.1.target}}"
+    {{else}}
     {{this.0}} = ":{{this.1.name}}"
+    {{/if}}
     {{/each}}
   }
   {{/if}}
@@ -158,14 +170,22 @@ cargo_crate("{{../name}}") {
       {{#if @first}}
         build_deps = [
           {{#each this.packages}}
+            {{#if this.target}}
+            "{{this.target}}",
+            {{else}}
             ":{{this.name}}",
+            {{/if}}
           {{/each}}
         ]
       {{else}}
         if ({{this.cond}}) {
           build_deps += [
           {{#each this.packages}}
+            {{#if this.target}}
+            "{{this.target}}",
+            {{else}}
             ":{{this.name}}",
+            {{/if}}
           {{/each}}
           ]
         }

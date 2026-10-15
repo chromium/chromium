@@ -232,6 +232,21 @@ class CheckNonapplicableGnrtConfigEntriesTests(unittest.TestCase):
         msg = CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config)
         self.assertTrue(msg != "")
 
+    def testPlaceholderCrateWithReplaceWith(self):
+        crate_id = crate_utils.GetPlaceholderCrateIdForTesting()
+        crate_name = crate_utils.ConvertCrateIdToCrateName(crate_id)
+        crate_ids = set([crate_id])
+        gnrt_config = {
+            "crate": {
+                crate_name: {
+                    "replace_with": "//third_party/rust/custom:lib"
+                }
+            }
+        }
+        self.assertEqual(
+            "", CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config))
+
+
 
 class GetExtraKvForCrateNameTests(unittest.TestCase):
 

@@ -39,6 +39,9 @@ pub struct PackageId {
     pub name: String,
     /// Package epoch if relevant (i.e. when needed as part of target paths).
     pub epoch: Option<String>,
+    /// Explicit GN target label when replaced via `replace_with`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
 }
 
 /// Defines what other GN targets can depend on this one.
@@ -199,13 +202,20 @@ pub fn build_rule_from_dep(
 
     // Lambda for translating `DepOfDep` into a `PackageId`.
     let create_package_id = |dep: &DepOfDep| {
+        if let Some(target) = extra_config.get_replacement_target(&dep.package_name, &dep.version) {
+            return PackageId {
+                name: String::new(),
+                epoch: None,
+                target: Some(target.to_string()),
+            };
+        }
         let name = NormalizedName::from_crate_name(&dep.package_name).to_string();
         let epoch = match name_lib_style {
             // TODO(danakj): Separate this choice to another parameter option.
             NameLibStyle::LibLiteral => Some(Epoch::from_version(&dep.version).to_string()),
             NameLibStyle::PackageName => None,
         };
-        PackageId { name, epoch }
+        PackageId { name, epoch, target: None }
     };
 
     // Add only normal and build dependencies: we don't run unit tests.
@@ -223,8 +233,9 @@ pub fn build_rule_from_dep(
         let mut aliases = Vec::new();
         for dep in &normal_deps {
             let target_name = NormalizedName::from_crate_name(&dep.package_name).to_string();
-            if target_name != dep.use_name {
-                aliases.push((dep.use_name.clone(), create_package_id(dep)));
+            let pkg_id = create_package_id(dep);
+            if pkg_id.target.is_some() || target_name != dep.use_name {
+                aliases.push((dep.use_name.clone(), pkg_id));
             }
         }
         aliases.sort_unstable();
@@ -432,7 +443,122 @@ fn group_deps(
 
     for group in groups.iter_mut() {
         group.packages.sort_unstable();
+        group.packages.dedup();
     }
     groups.sort_unstable_by(|l, r| l.cond.cmp(&r.cond));
     Ok(groups)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::CrateConfig;
+    use semver::Version;
+    use std::path::PathBuf;
+
+    #[test]
+    fn build_rule_with_replace_with() {
+        let mut extra_config = BuildConfig::default();
+        extra_config.insert_crate_config_for_testing(
+            "bar_data",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/custom_data:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+
+        let dep = deps::Package {
+            package_name: "foo".to_string(),
+            version: Version::new(1, 0, 0),
+            description: None,
+            authors: vec![],
+            edition: "2021".to_string(),
+            repository: None,
+            dependencies: vec![
+                DepOfDep {
+                    package_name: "bar_data".to_string(),
+                    use_name: "bar_data".to_string(),
+                    version: Version::new(2, 0, 0),
+                    condition: Condition::always_true(),
+                },
+                DepOfDep {
+                    package_name: "normal_dep".to_string(),
+                    use_name: "normal_dep".to_string(),
+                    version: Version::new(1, 0, 0),
+                    condition: Condition::always_true(),
+                },
+            ],
+            build_dependencies: vec![],
+            dependency_kinds: [(
+                deps::DependencyKind::Normal,
+                deps::PerKindInfo { condition: Condition::always_true(), features: vec![] },
+            )]
+            .into_iter()
+            .collect(),
+            lib_target: Some(deps::LibTarget {
+                root: PathBuf::from("/root/third_party/rust/foo/src/lib.rs"),
+                lib_type: deps::LibType::Rlib,
+            }),
+            bin_targets: vec![],
+            build_script: None,
+            group: Group::Safe,
+            is_local: false,
+            is_toplevel_dep: true,
+        };
+
+        let paths = paths::ChromiumPaths {
+            root: PathBuf::from("/root"),
+            third_party: std::path::Path::new("third_party/rust"),
+            rust_src_library_subdir: std::path::Path::new(""),
+            rust_src_vendor_subdir: std::path::Path::new(""),
+            rust_src_installed: std::path::Path::new(""),
+            std_config_file: std::path::Path::new(""),
+            std_build: std::path::Path::new(""),
+            std_fake_root: std::path::Path::new(""),
+            std_fake_root_config_template: std::path::Path::new(""),
+            std_fake_root_cargo_template: std::path::Path::new(""),
+            third_party_cargo_root: std::path::Path::new(""),
+            third_party_config_file: std::path::Path::new(""),
+        };
+        let details = CrateFiles {
+            sources: vec![],
+            inputs: vec![],
+            native_libs: vec![],
+            build_script_sources: vec![],
+            build_script_inputs: vec![],
+        };
+        let rules =
+            build_rule_from_dep(&dep, &paths, &details, &extra_config, NameLibStyle::LibLiteral)
+                .unwrap();
+
+        assert_eq!(rules.len(), 1);
+        let detail = &rules[0].detail;
+        assert_eq!(detail.deps.len(), 1);
+        assert_eq!(
+            detail.deps[0].packages,
+            vec![
+                PackageId {
+                    name: String::new(),
+                    epoch: None,
+                    target: Some("//third_party/rust/custom_data:lib".to_string()),
+                },
+                PackageId {
+                    name: "normal_dep".to_string(),
+                    epoch: Some("v1".to_string()),
+                    target: None,
+                },
+            ]
+        );
+        assert_eq!(
+            detail.aliased_deps,
+            vec![(
+                "bar_data".to_string(),
+                PackageId {
+                    name: String::new(),
+                    epoch: None,
+                    target: Some("//third_party/rust/custom_data:lib".to_string()),
+                },
+            )]
+        );
+    }
 }

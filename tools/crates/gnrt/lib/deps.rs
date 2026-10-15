@@ -304,6 +304,9 @@ pub fn collect_dependencies(
     let is_toplevel_dep = |package: &PackageMetadata| -> bool {
         package.reverse_direct_links().any(|link| link.from().name() == root_package_name)
     };
+    let is_replaced = |package: &PackageMetadata| -> bool {
+        extra_config.get_replacement_target(package.name(), package.version()).is_some()
+    };
     let mut get_dependency_condition =
         |link: &PackageLink, dep_kind: DependencyKind| -> Condition {
             let key = get_link_key(link);
@@ -319,6 +322,7 @@ pub fn collect_dependencies(
     let mut packages = package_set
         .packages(DependencyDirection::Forward)
         .filter(|package| package.name() != root_package_name)
+        .filter(|package| !is_replaced(package))
         .map(|package| {
             let err_context = || format!("Error processing `{}`", package.name());
             let dependencies = get_package_dependencies(&package, |link| {
@@ -461,6 +465,16 @@ impl<'g> guppy::graph::cargo::CargoLinkVisitor<'g> for ChromiumLinkVisitor<'_> {
                 &cfg.remove_deps
             });
         if remove_deps.contains(link.to().name()) {
+            return false;
+        }
+
+        // Do not traverse dependencies of crates that are replaced by a custom
+        // GN target in `gnrt_config.toml`.
+        if self
+            .extra_config
+            .get_replacement_target(link.from().name(), link.from().version())
+            .is_some()
+        {
             return false;
         }
 
@@ -1249,4 +1263,105 @@ mod tests {
     // `gnrt/sample_package5` directory.  See the `Cargo.toml` for more
     // information.
     static SAMPLE_CARGO_METADATA5: &str = include_str!("test_metadata5.json");
+
+    #[test]
+    fn dependencies_replaced_by_config_file() {
+        let mut config = BuildConfig::default();
+        // `icu_properties_data` is an enabled optional dependency of
+        // `icu_properties` (enabled via `compiled_data`).
+        config.insert_crate_config_for_testing(
+            "icu_properties_data",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/icu4x_data:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+        // `databake` is a disabled optional dependency and should NOT be
+        // included even when configured with `replace_with`.
+        config.insert_crate_config_for_testing(
+            "databake",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/databake_custom:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+        // `icu_experimental` has its own exclusive dependency
+        // (`icu_experimental_data`), which should also be pruned when
+        // `icu_experimental` is replaced.
+        config.insert_crate_config_for_testing(
+            "icu_experimental",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/icu_experimental_custom:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA2).unwrap();
+
+        // When `icu_properties_data` and `databake` have `replace_with`,
+        // `icu_properties_data` is pruned from `dependencies` while
+        // `icu_properties` still retains `icu_properties_data` in its outgoing
+        // `dependencies` list (and excludes disabled optional `databake`).
+        let mut config_leaf = BuildConfig::default();
+        config_leaf.insert_crate_config_for_testing(
+            "icu_properties_data",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/icu4x_data:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+        config_leaf.insert_crate_config_for_testing(
+            "databake",
+            CrateConfig {
+                replace_with: Some("//third_party/rust/databake_custom:lib".to_string()),
+                ..CrateConfig::default()
+            },
+        );
+        let dependencies =
+            collect_dependencies(&metadata, "sample_package2", &config_leaf).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        assert!(!dependencies.contains_key("icu_properties_data"));
+        let icu_properties = &dependencies["icu_properties"];
+        assert_eq!(
+            icu_properties
+                .dependencies
+                .iter()
+                .map(|d| d.package_name.clone())
+                .sorted()
+                .collect_vec(),
+            &[
+                "displaydoc",
+                "icu_collections",
+                "icu_locale_core",
+                "icu_properties_data",
+                "icu_provider",
+                "potential_utf",
+                "zerotrie",
+                "zerovec",
+            ],
+        );
+
+        // When `icu_experimental` is also replaced, its exclusive transitive
+        // dependencies (`icu_experimental_data`, `icu_properties`, etc.) are
+        // pruned as well, while `icu_capi` retains `icu_experimental` in its
+        // outgoing `dependencies`.
+        let dependencies = collect_dependencies(&metadata, "sample_package2", &config).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        assert!(!dependencies.contains_key("icu_experimental"));
+        assert!(!dependencies.contains_key("icu_experimental_data"));
+        assert!(!dependencies.contains_key("icu_properties"));
+        assert!(!dependencies.contains_key("icu_properties_data"));
+        assert!(dependencies["icu_capi"]
+            .dependencies
+            .iter()
+            .any(|d| d.package_name == "icu_experimental"));
+    }
 }

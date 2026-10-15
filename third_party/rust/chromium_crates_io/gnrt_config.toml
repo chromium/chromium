@@ -67,6 +67,12 @@
 #   to the static LICENSE_KIND_TO_LICENSE_FILES object in
 #   //tools/crates/gnrt/lib/readme.rs instead.
 #
+# replace_with: A custom GN target label to use in place of this crate (e.g.
+#   `replace_with = "//third_party/rust/icu4x_data:lib"`). Crates that depend on
+#   this crate will have their dependency replaced with the specified GN target
+#   (and aliased via `aliased_deps`), while this crate will not be vendored or
+#   have a `BUILD.gn` file generated.
+#
 # security_critical: A boolean that overrides if the crate is marked security-
 #   critical in the README.chromium. It defaults to true if the crate is not in
 #   the 'test' group/.
