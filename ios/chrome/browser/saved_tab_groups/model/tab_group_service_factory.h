@@ -5,25 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class TabGroupService;
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that creates the TabGroupService and associates that
 // service with ProfileIOS.
-class TabGroupServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TabGroupServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TabGroupServiceFactory,
+                                                TabGroupService> {
  public:
-  static TabGroupServiceFactory* GetInstance();
-  static TabGroupService* GetForProfile(ProfileIOS* profile);
+  explicit TabGroupServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TabGroupServiceFactory>;
-
-  TabGroupServiceFactory();
-  ~TabGroupServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

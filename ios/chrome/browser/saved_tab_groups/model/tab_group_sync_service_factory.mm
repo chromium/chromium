@@ -88,19 +88,6 @@ std::unique_ptr<KeyedService> BuildService(
 }  // namespace
 
 // static
-TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<TabGroupSyncService>(
-      profile, /*create=*/true);
-}
-
-// static
-TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<TabGroupSyncServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 TabGroupSyncServiceFactory::TestingFactory
 TabGroupSyncServiceFactory::GetDefaultFactory() {
   // GetSyntheticFieldTrialHelper() returns a pointer to a singleton that is
@@ -111,10 +98,11 @@ TabGroupSyncServiceFactory::GetDefaultFactory() {
           TabGroupSyncServiceFactory::GetSyntheticFieldTrialHelper()));
 }
 
-TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
-                                    TestingCreation::kNoServiceForTests,
-                                    ServiceCreation::kCreateWithProfile) {
+TabGroupSyncServiceFactory::TabGroupSyncServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "TabGroupSyncServiceFactory",
+                                         TestingCreation::kNoServiceForTests,
+                                         ServiceCreation::kCreateWithProfile) {
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
@@ -127,8 +115,6 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   DependsOn(data_sharing::personal_collaboration_data::
                 PersonalCollaborationDataServiceFactory::GetInstance());
 }
-
-TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 TabGroupSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

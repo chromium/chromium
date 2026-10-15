@@ -5,29 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_COBROWSE_MODEL_IOS_CONTEXTUAL_TASKS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_COBROWSE_MODEL_IOS_CONTEXTUAL_TASKS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace contextual_tasks {
-class ContextualTasksService;
-}  // namespace contextual_tasks
+#import "components/contextual_tasks/public/contextual_tasks_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory creating ContextualTasksService and associating them to ProfileIOS.
-class IOSContextualTasksServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSContextualTasksServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSContextualTasksServiceFactory,
+          contextual_tasks::ContextualTasksService> {
  public:
-  static contextual_tasks::ContextualTasksService* GetForProfile(
-      ProfileIOS* profile);
-
-  static IOSContextualTasksServiceFactory* GetInstance();
+  explicit IOSContextualTasksServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSContextualTasksServiceFactory>;
-
-  IOSContextualTasksServiceFactory();
-  ~IOSContextualTasksServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

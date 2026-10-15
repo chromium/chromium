@@ -39,31 +39,16 @@ bool IsGeminiThreadsEnabled() {
 
 }  // namespace
 
-// static
-contextual_tasks::ContextualTasksService*
-IOSContextualTasksServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<contextual_tasks::ContextualTasksService>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSContextualTasksServiceFactory*
-IOSContextualTasksServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSContextualTasksServiceFactory> instance;
-  return instance.get();
-}
-
-IOSContextualTasksServiceFactory::IOSContextualTasksServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ContextualTasksService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+IOSContextualTasksServiceFactory::IOSContextualTasksServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ContextualTasksService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(ios::FaviconServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-IOSContextualTasksServiceFactory::~IOSContextualTasksServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
