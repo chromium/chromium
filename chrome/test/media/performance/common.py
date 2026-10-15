@@ -18,8 +18,13 @@ args-based wrappers for the teardown and monitoring helpers.
 import logging
 import multiprocessing
 import subprocess
+import time
 
 from contextlib import AbstractContextManager
+
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+import urllib3
 
 # Imported first: puts build/util, fuchsia_web/av_testing, and
 # build/fuchsia/test on sys.path for the imports below.
@@ -89,7 +94,9 @@ __all__ = [
     'METRICS',
     'VIDEOS',
     'StartProcess',
+    'WEBDRIVER_ERRORS',
     'cleanup_binaries',
+    'connect_to_remote_driver',
     'dump_remote_logs',
     'start_glances_monitoring',
     'stop_glances_monitoring',
@@ -109,6 +116,12 @@ METRICS = [
     'total_frame_count',
     'dropped_frame_percentage',
 ]
+
+# What a WebDriver call raises when it fails: a WebDriver protocol error, or
+# an HTTP/socket error when chromedriver or the tunnel is down.
+WEBDRIVER_ERRORS = (WebDriverException, urllib3.exceptions.HTTPError, OSError)
+
+_CONNECT_ATTEMPTS = 20
 
 # Framerate is now legacy data, but until our results are standardized we'll
 # maintain the data in case it's necessary to pass later.
@@ -136,6 +149,33 @@ class StartProcess(AbstractContextManager):
         self._proc.join()
         if not self._terminate:
             assert self._proc.exitcode == 0
+
+
+def connect_to_remote_driver(chrome_options):
+    """Starts a WebDriver session through the tunnel.
+
+    Retries while chromedriver and the tunnel come up.
+
+    Raises:
+        RuntimeError: No session could be started.
+    """
+    logging.info("Attempting connection to %s.", REMOTE_URL)
+    last_error = None
+    for _ in range(_CONNECT_ATTEMPTS):
+        try:
+            driver = webdriver.Remote(
+                command_executor=REMOTE_URL, options=chrome_options
+            )
+        except WEBDRIVER_ERRORS as e:
+            last_error = e
+            logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
+            time.sleep(2)
+            continue
+        logging.info("Successfully connected!")
+        return driver
+    raise RuntimeError(
+        "Could not connect to the remote chromedriver."
+    ) from last_error
 
 
 def _sender_for_cleanup(args):
@@ -200,8 +240,11 @@ def teardown_test_environment(driver, tunnel_proc, args):
         args: The parsed command-line arguments.
     """
     if driver:
-        driver.quit()
-        logging.info("Terminated chromedriver.")
+        try:
+            driver.quit()
+            logging.info("Terminated chromedriver.")
+        except WEBDRIVER_ERRORS as e:
+            logging.warning("Failed to quit the WebDriver session: %s", e)
 
     if tunnel_proc:
         if hasattr(tunnel_proc, 'poll'):
@@ -213,6 +256,8 @@ def teardown_test_environment(driver, tunnel_proc, args):
             try:
                 tunnel_proc.ports.stop_reverse_forward(SERVER_PORT)
                 logging.info("Stopped Crossbench port forwarding.")
+            # Crossbench does not document what this raises, and teardown
+            # must not raise.
             except Exception as e:
                 logging.warning("Failed to stop Crossbench forwarding: %s", e)
 

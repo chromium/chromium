@@ -8,10 +8,14 @@ import subprocess
 import unittest
 from unittest import mock
 
+from selenium.common.exceptions import WebDriverException
+import urllib3
+
 import perf_test_fakes as fakes
 from perf_test_fakes import NO_ROUTE, completed, make_args
 import common
 import cros_setup
+import media_metrics
 
 
 class ReexportTest(unittest.TestCase):
@@ -178,18 +182,125 @@ class DumpRemoteLogsTest(fakes.SenderTestCase):
                 self.assertTrue(any('log line' in l for l in logs.output))  # noqa: E741
 
 
-class CrosInstallChromedriverTest(unittest.TestCase):
-    def test_returns_sender_driver_path(self):
+class ConnectToRemoteDriverTest(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        patcher = mock.patch('time.sleep')
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def test_retries_while_tunnel_is_down(self):
+        tunnel_down = urllib3.exceptions.MaxRetryError(None, common.REMOTE_URL)
+        driver = mock.MagicMock()
+        with mock.patch(
+            'selenium.webdriver.Remote', side_effect=[tunnel_down, driver]
+        ) as remote:
+            with self.assertLogs(level='INFO'):
+                self.assertIs(common.connect_to_remote_driver('opts'), driver)
+        self.assertEqual(remote.call_count, 2)
+
+    def test_gives_up_with_last_error(self):
+        error = WebDriverException('session not created')
+        with mock.patch('selenium.webdriver.Remote', side_effect=error):
+            with self.assertLogs(level='INFO'):
+                with self.assertRaises(RuntimeError) as ctx:
+                    common.connect_to_remote_driver('opts')
+        self.assertIs(ctx.exception.__cause__, error)
+
+    def test_does_not_retry_unexpected_errors(self):
+        with mock.patch(
+            'selenium.webdriver.Remote', side_effect=TypeError('bug')
+        ) as remote:
+            with self.assertLogs(level='INFO'):
+                with self.assertRaises(TypeError):
+                    common.connect_to_remote_driver('opts')
+        remote.assert_called_once()
+
+
+class TeardownDriverTest(fakes.SenderTestCase):
+    def test_dead_session_still_stops_tunnel(self):
+        driver = mock.MagicMock()
+        driver.quit.side_effect = urllib3.exceptions.MaxRetryError(None, 'u')
+        tunnel = mock.MagicMock()
+        tunnel.poll.return_value = None
+        with self.assertLogs(level='WARNING'):
+            common.teardown_test_environment(driver, tunnel, make_args())
+        tunnel.terminate.assert_called_once()
+
+
+class CrosSetupTest(unittest.TestCase):
+    def test_install_chromedriver_returns_sender_driver_path(self):
         sender = mock.MagicMock(driver_path='/usr/local/tmp/cd/chromedriver')
         path = cros_setup.install_chromedriver(sender, '120')
         sender.install_chrome.assert_called_once_with('120')
         self.assertEqual(path, '/usr/local/tmp/cd/chromedriver')
 
-    def test_install_failure_propagates(self):
+    def test_install_chromedriver_failure_propagates(self):
         sender = mock.MagicMock()
         sender.install_chrome.side_effect = RuntimeError('curl failed')
         with self.assertRaisesRegex(RuntimeError, 'curl failed'):
             cros_setup.install_chromedriver(sender, '120')
+
+    def test_detect_milestone(self):
+        cb_platform = mock.MagicMock()
+        cb_platform.app_version.return_value = 'Google Chrome 129.0.6668.100 '
+        with self.assertLogs(level='INFO'):
+            self.assertEqual(cros_setup.detect_milestone(cb_platform), '129')
+
+    def test_unparsable_version_raises_instead_of_using_latest(self):
+        cb_platform = mock.MagicMock()
+        cb_platform.app_version.return_value = 'Google Chrome dev'
+        with self.assertRaisesRegex(RuntimeError, 'Google Chrome dev'):
+            cros_setup.detect_milestone(cb_platform)
+
+
+class MediaMetricsTest(unittest.TestCase):
+    def test_result_upload_failure_propagates(self):
+        client = mock.MagicMock()
+        client.UpdateInvocationExtendedProperties.side_effect = OSError('503')
+        with (
+            mock.patch('media_metrics.measures'),
+            mock.patch(
+                'media_metrics.result_sink.TryInitClient', return_value=client
+            ),
+        ):
+            with self.assertLogs(level='INFO'):
+                with self.assertRaisesRegex(OSError, '503'):
+                    media_metrics.finalize_results('120.0.1.2')
+
+    def test_ffmpeg_timeout_is_logged(self):
+        with mock.patch(
+            'subprocess.run',
+            side_effect=subprocess.TimeoutExpired('ffmpeg', 120),
+        ):
+            with self.assertLogs(level='ERROR') as logs:
+                media_metrics.calculate_psnr_ssim('v', 'rec.mp4', 'orig.mp4')
+        self.assertEqual(len(logs.output), 2)
+
+    def test_bad_monitoring_log_is_logged(self):
+        with (
+            mock.patch('os.path.exists', return_value=True),
+            mock.patch(
+                'builtins.open', mock.mock_open(read_data='12\nnot-a-number\n')
+            ),
+        ):
+            with self.assertLogs(level='ERROR'):
+                media_metrics.parse_glances_csv_and_record(
+                    'v', '/out/p.txt', 'cros'
+                )
+
+    def test_monitoring_parser_bugs_are_not_swallowed(self):
+        with (
+            mock.patch('os.path.exists', return_value=True),
+            mock.patch(
+                'media_metrics._record_glances_csv',
+                side_effect=TypeError('bug'),
+            ),
+        ):
+            with self.assertRaises(TypeError):
+                media_metrics.parse_glances_csv_and_record(
+                    'v', '/out/g.csv', 'mac'
+                )
 
 
 if __name__ == '__main__':

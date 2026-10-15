@@ -266,6 +266,44 @@ class WaitForChromedriverTest(fakes.SenderTestCase):
                 _mac().wait_for_chromedriver()
         self.assertTrue(any('driver crashed' in l for l in logs.output))  # noqa: E741
 
+    def test_dead_sender_raises_without_polling(self):
+        status = senders.MacSender.STATUS_CMD
+        self.ssh.responses[status] = completed(255, stderr=NO_ROUTE)
+        with self.assertLogs(level='ERROR'):
+            with self.assertRaises(SenderUnreachableError):
+                _mac().wait_for_chromedriver()
+        self.assertEqual(self.ssh.remote_commands.count(status), 1)
+
+    def test_retries_after_timeout(self):
+        status = senders.MacSender.STATUS_CMD
+        ready = completed(stdout='200')
+
+        def run(argv, **kwargs):
+            if argv[-1] == status and not self.ssh.ran(status):
+                self.ssh.remote_commands.append(status)
+                raise subprocess.TimeoutExpired('ssh', 120)
+            return self.ssh(argv, **kwargs)
+
+        self.ssh.responses[status] = ready
+        self.run.side_effect = run
+        with self.assertLogs(level='WARNING'):
+            _mac().wait_for_chromedriver()
+        self.assertEqual(self.ssh.remote_commands.count(status), 2)
+
+    def test_does_not_swallow_unexpected_errors(self):
+        status = senders.MacSender.STATUS_CMD
+
+        def run(argv, **kwargs):
+            if argv[-1] == status:
+                self.ssh.remote_commands.append(status)
+                raise TypeError('bug')
+            return self.ssh(argv, **kwargs)
+
+        self.run.side_effect = run
+        with self.assertRaises(TypeError):
+            _mac().wait_for_chromedriver()
+        self.assertEqual(self.ssh.remote_commands.count(status), 1)
+
 
 class InstallChromeTest(fakes.SenderTestCase):
     def setUp(self):

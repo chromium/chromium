@@ -57,7 +57,7 @@ def calculate_psnr_ssim(
                 "Failed to parse PSNR from FFmpeg output. Stderr: %s",
                 psnr_result.stderr,
             )
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         logging.error("Failed to calculate PSNR: %s", e)
 
     # SSIM command. Arguments are identical to PSNR above, but calculates
@@ -88,7 +88,7 @@ def calculate_psnr_ssim(
                 "Failed to parse SSIM from FFmpeg output. Stderr: %s",
                 ssim_result.stderr,
             )
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         logging.error("Failed to calculate SSIM: %s", e)
 
 
@@ -103,16 +103,14 @@ def finalize_results(chrome_version=None):
     logging.info("Dumping metrics to: %s", perf_config.INVOCATIONS_DIR)
     measures.dump(perf_config.INVOCATIONS_DIR)
 
-    # If running in a LUCI environment, try to upload immediately.
+    # If running in a LUCI environment, upload immediately. Upload errors
+    # propagate: a run that loses its metrics should not look green.
     client = result_sink.TryInitClient()
     if client:
         logging.info("LUCI ResultSink detected. Uploading extended properties.")
-        try:
-            records = {measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()}
-            client.UpdateInvocationExtendedProperties(records)
-            logging.info("Metrics uploaded successfully.")
-        except Exception as e:
-            logging.error("Failed to upload metrics to ResultSink: %s", e)
+        records = {measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()}
+        client.UpdateInvocationExtendedProperties(records)
+        logging.info("Metrics uploaded successfully.")
 
 
 def _parse_float(val):
@@ -199,5 +197,6 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
             _record_cros_power(video_file, csv_local_path)
         else:
             _record_glances_csv(video_file, csv_local_path)
-    except Exception as e:
+    except (OSError, ValueError, csv.Error) as e:
+        # ValueError includes bad numbers and UnicodeDecodeError.
         logging.error("Failed to parse monitoring log: %s", e)

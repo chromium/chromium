@@ -43,27 +43,6 @@ CHROME_OPTIONS = [
 ]
 
 
-def connect_to_remote_driver(chrome_options, binary_location):
-    """Attempts to connect to the remote chromedriver via the tunnel."""
-    logging.info("Attempting connection to %s.", common.REMOTE_URL)
-
-    # Set the binary location directly on the options object.
-    if binary_location:
-        chrome_options.binary_location = binary_location
-
-    for _ in range(20):
-        try:
-            driver = webdriver.Remote(
-                command_executor=common.REMOTE_URL, options=chrome_options
-            )
-            logging.info("Successfully connected!")
-            return driver
-        except Exception as e:
-            logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
-            time.sleep(2)
-    raise RuntimeError("Could not connect to the remote chromedriver.")
-
-
 def setup_test_environment(args, chrome_version):
     """
     Sets up the remote chromedriver and SSH tunnel for testing.
@@ -94,7 +73,7 @@ def setup_test_environment(args, chrome_version):
     binary_path = sender.chrome_binary_path(remote_app_path)
     logging.info("Setting binary_location to: %s", binary_path)
     chrome_options.binary_location = binary_path
-    driver = connect_to_remote_driver(chrome_options, binary_path)
+    driver = common.connect_to_remote_driver(chrome_options)
 
     return driver, tunnel_proc, actual_version
 
@@ -273,7 +252,7 @@ def run_performance_test(video_file: str, driver: webdriver, args):
                 common.parse_glances_csv_and_record(
                     video_file, csv_local_path, args.sender_os
                 )
-            except Exception as e:
+            except (subprocess.SubprocessError, OSError) as e:
                 logging.error(
                     "Failed to stop or parse glances monitoring: %s", e
                 )
@@ -341,8 +320,9 @@ def main():
             finally:
                 common.teardown_recording_process(rec_proc)
     finally:
-        common.finalize_results(actual_version)
         common.teardown_test_environment(driver, tunnel_proc, args)
+        # Last, since it raises if the upload fails.
+        common.finalize_results(actual_version)
 
 
 if __name__ == '__main__':

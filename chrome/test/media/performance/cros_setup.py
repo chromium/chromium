@@ -11,6 +11,8 @@ import sys
 import time
 from unittest.mock import MagicMock
 
+from selenium.common.exceptions import WebDriverException
+
 import perf_config
 import senders
 
@@ -79,27 +81,27 @@ def _selenium_driver(browser):
     return browser._private_driver  # pylint: disable=protected-access
 
 
-def _detect_milestone(cb_platform):
-    """Returns the milestone (e.g. '129') of Chrome on the DUT, or None."""
-    try:
-        version_str = cb_platform.app_version(_CROS_CHROME_PATH)
-        version_match = re.search(r'(\d+\.\d+\.\d+\.\d+)', version_str)
-        if version_match:
-            actual_version = version_match.group(1)
-        else:
-            # Fallback to the previous split logic if regex fails.
-            actual_version = version_str.split()[-2]
+def detect_milestone(cb_platform):
+    """Returns the milestone (e.g. '129') of Chrome on the DUT.
 
-        milestone = actual_version.split('.')[0]
-        logging.info(
-            "Detected remote Chrome version: %s (milestone: %s)",
-            actual_version,
-            milestone,
+    Raises:
+        RuntimeError: The version could not be parsed. Falling back to the
+            newest chromedriver would usually mismatch the DUT's Chrome.
+    """
+    version_str = cb_platform.app_version(_CROS_CHROME_PATH)
+    version_match = re.search(r'(\d+)\.\d+\.\d+\.\d+', version_str)
+    if not version_match:
+        raise RuntimeError(
+            f"Could not parse the Chrome version on ChromeOS DUT from "
+            f"{version_str!r}."
         )
-        return milestone
-    except Exception as e:
-        logging.warning("Failed to detect remote Chrome version: %s", e)
-        return None
+    milestone = version_match.group(1)
+    logging.info(
+        "Detected remote Chrome version: %s (milestone: %s)",
+        version_match.group(0),
+        milestone,
+    )
+    return milestone
 
 
 def install_chromedriver(sender, milestone):
@@ -112,12 +114,6 @@ def install_chromedriver(sender, milestone):
     Returns:
         The remote chromedriver path.
     """
-    if not milestone:
-        logging.warning(
-            "Milestone is None. download_cft_urls will fall "
-            "back to the latest version, which may cause a "
-            "mismatch."
-        )
     sender.install_chrome(milestone)
     return sender.driver_path
 
@@ -176,7 +172,7 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     time.sleep(1)
 
     # Use the DUT's Chrome milestone to pick a matching chromedriver.
-    milestone = _detect_milestone(cb_platform)
+    milestone = detect_milestone(cb_platform)
     remote_driver_path = install_chromedriver(sender, milestone)
 
     chrome_os_flags = _crossbench_flags(chrome_options_list)
@@ -205,7 +201,7 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
                 if handles:
                     _selenium_driver(browser).switch_to.window(handles[0])
                     return
-            except Exception as e:
+            except WebDriverException as e:
                 logging.debug("Window not ready yet: %s", e)
             time.sleep(0.5)
         logging.warning(
@@ -234,6 +230,7 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
         try:
             # Clears a forward left over from an earlier run, if any.
             cb_platform.ports.stop_reverse_forward(server_port)
+        # Crossbench does not document what this raises when there is none.
         except Exception as e:
             logging.debug("No stale reverse forward to stop: %s", e)
         cb_platform.ports.reverse_forward(server_port, server_port)

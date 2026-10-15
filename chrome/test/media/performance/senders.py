@@ -264,6 +264,12 @@ class Sender(abc.ABC):
         for i in range(_CHROMEDRIVER_READY_ATTEMPTS):
             try:
                 result = self.run(self.STATUS_CMD)
+            except subprocess.TimeoutExpired:
+                logging.warning("Status check timed out. Retrying...")
+            else:
+                self.transport.raise_if_disconnected(
+                    result, 'checking chromedriver'
+                )
                 stdout = result.stdout.strip()
                 if result.returncode == 0 and stdout == '200':
                     logging.info("Chromedriver is ready.")
@@ -275,12 +281,6 @@ class Sender(abc.ABC):
                     result.returncode,
                     stdout,
                     result.stderr.strip(),
-                )
-            except subprocess.TimeoutExpired:
-                logging.warning("Status check timed out. Retrying...")
-            except Exception as e:
-                logging.warning(
-                    "A script-level error occurred: %s. Retrying...", e
                 )
             time.sleep(2)
 
@@ -403,7 +403,8 @@ class Sender(abc.ABC):
 
         try:
             self.terminate_chromedriver()
-        except Exception as e:
+        except (RuntimeError, subprocess.SubprocessError, OSError) as e:
+            # RuntimeError covers RemoteDeviceError and lingering processes.
             logging.warning("Error terminating processes in cleanup: %s", e)
 
         if self.transport.is_local:
@@ -422,7 +423,7 @@ class Sender(abc.ABC):
     def _run_cleanup(self, command, what):
         try:
             result = self.run(command)
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError) as e:
             logging.warning('Failed to clean up %s: %s', what, e)
             return
         if result.returncode == 0:

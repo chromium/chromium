@@ -101,7 +101,11 @@ def fuchsia_infra_is_available():
             import version
 
             return True
-    except Exception as e:
+        logging.warning(
+            "Result reporting infra not found at %s.", _fuchsia_common_path
+        )
+        return False
+    except (ImportError, OSError) as e:
         logging.warning("Result reporting infra not available: %s", e)
         return False
 
@@ -121,27 +125,6 @@ def _wait_js_condition(driver: webdriver, element, condition: str) -> bool:
             return False
         time.sleep(1)
     return True
-
-
-def connect_to_remote_driver(chrome_options, binary_location):
-    """Attempts to connect to the remote chromedriver via the tunnel."""
-    logging.info("Attempting connection to %s.", common.REMOTE_URL)
-
-    # Set the binary location directly on the options object.
-    if binary_location:
-        chrome_options.binary_location = binary_location
-
-    for _ in range(20):
-        try:
-            driver = webdriver.Remote(
-                command_executor=common.REMOTE_URL, options=chrome_options
-            )
-            logging.info("Successfully connected!")
-            return driver
-        except Exception as e:
-            logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
-            time.sleep(2)
-    raise RuntimeError("Could not connect to the remote chromedriver.")
 
 
 def setup_test_environment(args, chrome_version):
@@ -165,7 +148,7 @@ def setup_test_environment(args, chrome_version):
     binary_path = sender.chrome_binary_path(remote_app_path)
     logging.info("Setting binary_location to: %s", binary_path)
     chrome_options.binary_location = binary_path
-    driver = connect_to_remote_driver(chrome_options, binary_path)
+    driver = common.connect_to_remote_driver(chrome_options)
 
     return driver, tunnel_proc, actual_version
 
@@ -266,7 +249,7 @@ def install_chrome_on_android(version):
         )
 
         logging.info("Successfully updated Android Chrome to %s.", version)
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         logging.error(
             "Failed to update Android Chrome: %s. "
             "Proceeding with on-board version.",
@@ -482,7 +465,7 @@ def run_performance_test(
                         if read_resp.get('eof'):
                             break
                 driver.execute_cdp_cmd('IO.close', {'handle': stream_id})
-        except Exception as e:
+        except common.WEBDRIVER_ERRORS as e:
             logging.error("Failed to collect sender trace: %s", e)
 
         # Stop casting/playback.
@@ -498,7 +481,7 @@ def run_performance_test(
                 driver.execute_cdp_cmd(
                     "Cast.stopCasting", {"sinkName": args.receiver}
                 )
-            except Exception as e:
+            except common.WEBDRIVER_ERRORS as e:
                 logging.warning("Failed to stop casting: %s", e)
 
     logging.info("Recording finished. Analyzing video...")
@@ -662,7 +645,7 @@ def main():
                 timeout=10,
             )
             logging.info("USB data bridge established on port %d.", SERVER_PORT)
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError) as e:
             logging.error(
                 "Failed to setup ADB receiver: %s. "
                 "Receiver traces will not be collected.",
@@ -701,9 +684,10 @@ def main():
     finally:
         if FUCHSIA_INFRA_AVAILABLE:
             monitors.dump(LOG_DIR)
-        common.finalize_results(actual_version)
         common.teardown_test_environment(driver, tunnel_proc, args)
         common.cleanup_binaries(args, actual_version)
+        # Last, since it raises if the upload fails.
+        common.finalize_results(actual_version)
 
 
 if __name__ == '__main__':
