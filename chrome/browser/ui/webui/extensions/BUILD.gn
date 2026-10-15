@@ -30,6 +30,8 @@ if (enable_extensions_core) {
       "extensions_ui.h",
       "extensions_ui_prefs.cc",
       "extensions_ui_prefs.h",
+      "sidebar_promos.cc",
+      "sidebar_promos.h",
     ]
 
     public_deps = [ ":headers" ]
@@ -102,7 +104,10 @@ if (enable_extensions_core) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "extensions_internals_unittest.cc" ]
+    sources = [
+      "extensions_internals_unittest.cc",
+      "sidebar_promos_unittest.cc",
+    ]
     deps = [
       ":extensions",
       ":headers",

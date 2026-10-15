@@ -44,7 +44,6 @@ namespace extension_urls {
 extern const char kChromeWebstoreBaseURL[];
 extern const char kChromeWebstoreUpdateURL[];
 extern const char kNewChromeWebstoreBaseURL[];
-extern const char kModernWebGuidanceURL[];
 
 // Various utm attribution sources for web store URLs.
 // From the sub-menu item in the extension menu inside the 3-dot menu.
@@ -83,10 +82,6 @@ extern const char kReviewContextMenuUtmSource[];
 // slash. Do not use this as a prefix/extent for the store.
 GURL GetWebstoreLaunchURL();
 GURL GetNewWebstoreLaunchURL();
-
-// Returns the URL to the Chrome Web Store's "Modern Web Guidance" page for
-// extensions.
-GURL GetModernWebGuidanceURL();
 
 // Returns a url with a utm_source query param value of `utm_source_value`
 // appended.

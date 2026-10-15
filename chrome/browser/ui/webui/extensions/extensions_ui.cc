@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,12 +14,14 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/extensions/sidebar_promos.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -52,6 +55,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/current_channel_logo.h"
@@ -145,7 +149,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"safetyCheckExtensionsKeep", IDS_CONFIRM_DOWNLOAD},
       {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
       {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
-      {"sidebarDocsPromo", IDS_EXTENSIONS_MODERN_WEB_GUIDANCE_PROMO},
       {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
       {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
       {"userScriptInfoWarning", IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING},
@@ -465,14 +468,20 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                   extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
-  source->AddString(
-      "modernWebGuidanceURL",
-      base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
-                             extension_urls::AppendUtmSource(
-                                 extension_urls::GetModernWebGuidanceURL(),
-                                 extension_urls::kExtensionsSidebarUtmSource),
-                             g_browser_process->GetApplicationLocale())
-                             .spec()));
+  std::u16string sidebar_promo;
+  std::string sidebar_promo_url;
+  if (std::optional<SidebarPromo> promo =
+          PickSidebarPromo(GetSidebarPromos(), base::Time::Now())) {
+    sidebar_promo = l10n_util::GetStringUTF16(promo->message_id);
+    sidebar_promo_url =
+        google_util::AppendGoogleLocaleParam(
+            extension_urls::AppendUtmSource(
+                GURL(promo->url), extension_urls::kExtensionsSidebarUtmSource),
+            g_browser_process->GetApplicationLocale())
+            .spec();
+  }
+  source->AddString("sidebarDeveloperPromo", sidebar_promo);
+  source->AddString("sidebarDeveloperPromoUrl", sidebar_promo_url);
   source->AddString(
       "hostPermissionsLearnMoreLink",
       extension_permissions_constants::kRuntimeHostPermissionsHelpURL);

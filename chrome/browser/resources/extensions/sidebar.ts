@@ -125,11 +125,16 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
     });
   }
 
-  protected computeModernWebGuidancePromoText_(): TrustedHTML {
-    return this.i18nAdvanced('sidebarDocsPromo', {
+  protected showDeveloperPromo_(): boolean {
+    return this.inDevMode &&
+        loadTimeData.getString('sidebarDeveloperPromo') !== '';
+  }
+
+  protected computeDeveloperPromoText_(): TrustedHTML {
+    return this.i18nAdvanced('sidebarDeveloperPromo', {
       tags: ['a'],
       attrs: ['target'],
-      substitutions: [loadTimeData.getString('modernWebGuidanceURL')],
+      substitutions: [loadTimeData.getString('sidebarDeveloperPromoUrl')],
     });
   }
 }

@@ -125,6 +125,10 @@ class CrExtensionsSidebarTest : public ExtensionsBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsSidebarTest, DeveloperPromo) {
+  RunTestCase("DeveloperPromo");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsSidebarTest, HrefVerification) {
   RunTestCase("HrefVerification");
 }

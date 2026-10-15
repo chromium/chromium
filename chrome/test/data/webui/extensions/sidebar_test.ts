@@ -5,6 +5,7 @@
 /** @fileoverview Suite of tests for extension-sidebar. */
 import type {ExtensionsSidebarElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -93,5 +94,33 @@ suite('ExtensionSidebarTest', function() {
         '/shortcuts', sidebar.$.sectionsShortcuts.getAttribute('href'));
     assertTrue(sidebar.$.moreExtensions.querySelector('a')!
                    .getAttribute('href')!.includes('utm_source=ext_sidebar'));
+  });
+
+  test('DeveloperPromo', async () => {
+    const promoUrl = 'https://example.com/promo';
+    loadTimeData.overrideValues({
+      sidebarDeveloperPromo: 'Read the <a target="_blank" href="$1">guide</a>.',
+      sidebarDeveloperPromoUrl: promoUrl,
+    });
+    const boundTestVisible = testVisible.bind(null, sidebar);
+    boundTestVisible('#promo-message-text', false);
+
+    sidebar.inDevMode = true;
+    await microtasksFinished();
+    boundTestVisible('#promo-message-text', true);
+    const link = sidebar.shadowRoot.querySelector<HTMLAnchorElement>(
+        '#promo-message-text a');
+    assertTrue(!!link);
+    assertEquals(promoUrl, link.getAttribute('href'));
+    assertEquals('_blank', link.target);
+    assertEquals('guide', link.textContent);
+
+    // There is nothing to show once every promo has expired.
+    loadTimeData.overrideValues({sidebarDeveloperPromo: ''});
+    sidebar.inDevMode = false;
+    await microtasksFinished();
+    sidebar.inDevMode = true;
+    await microtasksFinished();
+    boundTestVisible('#promo-message-text', false);
   });
 });

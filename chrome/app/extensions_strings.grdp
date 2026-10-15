@@ -556,6 +556,9 @@
   <message name="IDS_EXTENSIONS_MODERN_WEB_GUIDANCE_PROMO" desc="The promotional text displayed in the sidebar of the chrome://extensions page when Developer Mode is enabled. It encourages developers to download the Chrome Extensions and Chrome Web Store skill for their AI coding agents to get latest API updates and best practices.">
     Using AI coding agents to build extensions? Install the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph><ph name="CHROME_EXTENSIONS">Chrome Extensions<ex>Chrome Extensions</ex></ph> and <ph name="WEB_STORE_SKILL">Chrome Web Store skill<ex>Chrome Web Store skill</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph> to teach your coding agent the latest API updates and best practices.
   </message>
+  <message name="IDS_EXTENSIONS_WHATS_NEW_PROMO" desc="The promotional text displayed in the sidebar of the chrome://extensions page when Developer Mode is enabled. It encourages developers to read about recent changes in the Chrome Extensions developer documentation.">
+    Developing extensions? Stay up to date on <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>What's New<ph name="END_LINK">&lt;/a&gt;</ph> with Chrome Extension developer documentation.
+  </message>
   <message name="IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS" desc="The text for the link to manage keyboard shortcuts for extensions.">
     Keyboard shortcuts
   </message>
