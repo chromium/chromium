@@ -1006,6 +1006,137 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
   EXPECT_EQ(output_count_after_change, 0);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest,
+       FlushAndChangeOptionsDuringInitialize) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(100000u);
+  auto pixel_format = PIXEL_FORMAT_I420;
+  int outputs_count = 0;
+  bool init_done = false;
+  bool flush_done = false;
+  bool second_flush_failed = false;
+  bool change_options_done = false;
+
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {
+        outputs_count++;
+      });
+
+  // Block vea_runner_ so Initialize() and both Flush() tasks are queued before
+  // InitializeOnAcceleratorThread() posts DoRequireBitstreamBuffers().
+  base::WaitableEvent init_event;
+  vea_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* e) {
+                       base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+                       e->Wait();
+                     },
+                     base::Unretained(&init_event)));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb),
+                        base::BindLambdaForTesting([&](EncoderStatus s) {
+                          EXPECT_TRUE(s.is_ok());
+                          EXPECT_FALSE(flush_done);
+                          init_done = true;
+                        }));
+
+  // Call Flush() immediately while the adapter is still in kInitializing with
+  // no pending encodes, and chain ChangeOptions() in the flush callback (as
+  // MediaVideoEncoderWrapper does on a bitrate update).
+  adapter()->Flush(base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_TRUE(s.is_ok());
+    EXPECT_TRUE(init_done);
+    flush_done = true;
+
+    options.bitrate = Bitrate::ConstantBitrate(200000u);
+    adapter()->ChangeOptions(
+        options, VideoEncoder::OutputCB(),
+        base::BindLambdaForTesting([&](EncoderStatus change_status) {
+          EXPECT_TRUE(change_status.is_ok());
+          change_options_done = true;
+          auto frame = CreateGreenFrame(options.frame_size, pixel_format,
+                                        base::Milliseconds(1));
+          adapter()->Encode(frame, VideoEncoder::EncodeOptions(true),
+                            ValidatingStatusCB());
+        }));
+  }));
+
+  // A second concurrent Flush() before the first completes is rejected with
+  // kEncoderFailedFlush rather than overwriting the first callback.
+  adapter()->Flush(base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderFailedFlush);
+    second_flush_failed = true;
+  }));
+
+  init_event.Signal();
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return outputs_count == 1 && second_flush_failed; }));
+  EXPECT_TRUE(init_done);
+  EXPECT_TRUE(flush_done);
+  EXPECT_TRUE(change_options_done);
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptionsInvalidState) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(100000u);
+
+  // Calling ChangeOptions() before Initialize() should fail gracefully with
+  // kEncoderIllegalState rather than crashing.
+  bool before_init_cb_called = false;
+  adapter()->ChangeOptions(
+      options, VideoEncoder::OutputCB(),
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderIllegalState);
+        before_init_cb_called = true;
+      }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return before_init_cb_called; }));
+
+  // Initialize with a pending encode and pending flush where the encode
+  // fails. Verify that Flush() fails with kEncoderFailedFlush and a subsequent
+  // ChangeOptions() fails with kEncoderIllegalState.
+  auto frame = CreateGreenFrame(options.frame_size, PIXEL_FORMAT_I420,
+                                base::Milliseconds(1));
+  base::WaitableEvent init_event;
+  vea_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* e) {
+                       base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+                       e->Wait();
+                     },
+                     base::Unretained(&init_event)));
+
+  vea()->SetWillEncodingSucceed(false);
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        /*output_cb=*/base::DoNothing(), ValidatingStatusCB());
+  bool encode_error_cb_called = false;
+  adapter()->Encode(frame, VideoEncoder::EncodeOptions(true),
+                    base::BindLambdaForTesting([&](EncoderStatus s) {
+                      EXPECT_FALSE(s.is_ok());
+                      encode_error_cb_called = true;
+                    }));
+  bool flush_failed_cb_called = false;
+  adapter()->Flush(base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderFailedFlush);
+    flush_failed_cb_called = true;
+  }));
+  init_event.Signal();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return encode_error_cb_called && flush_failed_cb_called; }));
+
+  bool after_error_cb_called = false;
+  adapter()->ChangeOptions(
+      options, VideoEncoder::OutputCB(),
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderIllegalState);
+        after_error_cb_called = true;
+      }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return after_error_cb_called; }));
+}
+
 TEST_F(VideoEncodeAcceleratorAdapterTest, ConvertsCpuP010ToSessionFormat) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);

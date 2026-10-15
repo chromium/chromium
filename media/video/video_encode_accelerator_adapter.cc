@@ -737,9 +737,14 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     OutputCB output_cb,
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  DCHECK(active_encodes_.empty());
-  DCHECK(pending_encodes_.empty());
-  CHECK(state_ == State::kReadyToEncode);
+  if (state_ != State::kReadyToEncode || !active_encodes_.empty() ||
+      !pending_encodes_.empty()) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderIllegalState,
+                      "Encoder can't change options now.")
+            .WithData("state", static_cast<int32_t>(state_)));
+    return;
+  }
 
   if (options.bitrate && options_.bitrate &&
       options.bitrate->mode() != options_.bitrate->mode()) {
@@ -827,13 +832,15 @@ void VideoEncodeAcceleratorAdapter::Flush(EncoderStatusCB done_cb) {
 void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (state_ != State::kReadyToEncode && state_ != State::kInitializing) {
+  if ((state_ != State::kReadyToEncode && state_ != State::kInitializing) ||
+      pending_flush_callback_) {
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderFailedFlush, "Encoder can't flush now"));
     return;
   }
 
-  if (active_encodes_.empty() && pending_encodes_.empty()) {
+  if (state_ == State::kReadyToEncode && active_encodes_.empty() &&
+      pending_encodes_.empty()) {
     // No active or pending encodes, nothing to flush.
     std::move(done_cb).Run(EncoderStatus::Codes::kOk);
     return;
@@ -1061,8 +1068,9 @@ void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     return;
   }
 
-  if (state_ == State::kFlushing)
+  if (state_ == State::kFlushing || pending_flush_callback_) {
     FlushCompleted(false);
+  }
 
   // Report the error to all encoding-done callbacks
   for (auto& encode : active_encodes_) {
@@ -1125,12 +1133,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
   // If a Flush() came in during initialization, transition to flushing now that
   // all the pending encodes have been sent.
   if (pending_flush_callback_) {
-    state_ = State::kFlushing;
-    if (flush_support_.value()) {
-      accelerator_->Flush(
-          base::BindOnce(&VideoEncodeAcceleratorAdapter::FlushCompleted,
-                         weak_factory_.GetWeakPtr()));
-    }
+    FlushOnAcceleratorThread(std::move(pending_flush_callback_));
   }
 }
 
