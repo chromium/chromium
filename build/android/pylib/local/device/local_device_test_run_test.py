@@ -5,6 +5,7 @@
 
 
 import os
+import random
 import unittest
 
 import sys
@@ -14,6 +15,7 @@ sys.path.append(
 )
 
 from pylib.base import base_test_result
+from pylib.base import test_exception
 from pylib.local.device import local_device_test_run
 
 import mock
@@ -21,12 +23,20 @@ import mock
 
 class TestLocalDeviceTestRun(local_device_test_run.LocalDeviceTestRun):
     def __init__(self):
-        super().__init__(mock.MagicMock(), mock.MagicMock())
+        env = mock.MagicMock()
+        env.sharding_strategy = (
+            local_device_test_run.SHARDING_STRATEGY_BOUNDED_LOAD
+        )
+        super().__init__(env, mock.MagicMock())
 
 
 class TestLocalDeviceNonStringTestRun(local_device_test_run.LocalDeviceTestRun):
     def __init__(self):
-        super().__init__(mock.MagicMock(), mock.MagicMock())
+        env = mock.MagicMock()
+        env.sharding_strategy = (
+            local_device_test_run.SHARDING_STRATEGY_BOUNDED_LOAD
+        )
+        super().__init__(env, mock.MagicMock())
 
     def _GetUniqueTestName(self, test):
         return test['name']
@@ -55,15 +65,6 @@ class TestLocalDeviceRetryTestRun(local_device_test_run.LocalDeviceTestRun):
 
 
 class LocalDeviceTestRunTest(unittest.TestCase):
-    def testSortTests(self):
-        test_run = TestLocalDeviceTestRun()
-        # Note that the expected result purely depends on the implementation of
-        # the function "_DeterministicHash" and "_GetUniqueTestName".
-        self.assertEqual(
-            test_run._SortTests(['a', 'b', 'c', 'd', 'e', 'f', 'g']),
-            ['e', 'c', 'g', 'b', 'f', 'a', 'd'],
-        )
-
     def testGetTestsToRetry_allTestsPassed(self):
         results = [
             base_test_result.BaseTestResult(
@@ -209,6 +210,152 @@ class LocalDeviceTestRunTest(unittest.TestCase):
             test_run.RunTests(results=[])
             # Only called once for the last attempt.
             self.assertEqual(mock_recover.call_count, 1)
+
+    class _DeterministicWeightTestRun(local_device_test_run.LocalDeviceTestRun):
+        def __init__(self):
+            env = mock.MagicMock()
+            env.sharding_strategy = (
+                local_device_test_run.SHARDING_STRATEGY_BOUNDED_LOAD
+            )
+            super().__init__(env, mock.MagicMock())
+
+        def _EstimateTestGroupRuntime(self, test):
+            return 1.0 + (self._DeterministicHash(test) % 7)
+
+    def testApplyExternalSharding_partitionIsCompleteAndOrderIndependent(self):
+        test_run = self._DeterministicWeightTestRun()
+        tests = [f'Test{i}' for i in range(200)]
+        for total_shards in (1, 3, 7):
+            shards = []
+            for i in range(total_shards):
+                shards.append(
+                    test_run._ApplyExternalSharding(tests, i, total_shards)
+                )
+
+            all_tests = [t for s in shards for t in s]
+            self.assertEqual(len(all_tests), len(tests))
+            self.assertEqual(set(all_tests), set(tests))
+
+            shuffled = list(tests)
+            random.Random(0).shuffle(shuffled)
+            shuffled_shards = []
+            for i in range(total_shards):
+                shuffled_shards.append(
+                    test_run._ApplyExternalSharding(shuffled, i, total_shards)
+                )
+
+            for i in range(total_shards):
+                self.assertEqual(shards[i], shuffled_shards[i])
+
+    def testApplyExternalSharding_boundedLoadRespectsCap(self):
+        test_run = TestLocalDeviceTestRun()
+        test_run._EstimateTestGroupRuntime = lambda t: (
+            10.0 if t.startswith('Heavy') else 1.0
+        )
+
+        tests = [f'Light{i}' for i in range(100)]
+        total_shards = 4
+
+        # Heavy tests that hash to the same shard
+        preferred = test_run._DeterministicHash('Heavy1') % total_shards
+        heavy_tests = []
+        for i in range(200):
+            name = f'HeavyX{i}'
+            if test_run._DeterministicHash(name) % total_shards == preferred:
+                heavy_tests.append(name)
+            if len(heavy_tests) == 4:
+                break
+        tests.extend(heavy_tests)
+
+        hash_test_run = TestLocalDeviceTestRun()
+        hash_test_run._env.sharding_strategy = 'hash'
+        hash_test_run._EstimateTestGroupRuntime = (
+            test_run._EstimateTestGroupRuntime
+        )
+
+        hash_loads = []
+        bounded_loads = []
+        for i in range(total_shards):
+            hash_shard = hash_test_run._ApplyExternalSharding(
+                tests, i, total_shards
+            )
+            bounded_shard = test_run._ApplyExternalSharding(
+                tests, i, total_shards
+            )
+            hash_loads.append(
+                sum(
+                    hash_test_run._EstimateTestGroupRuntime(t)
+                    for t in hash_shard
+                )
+            )
+            bounded_loads.append(
+                sum(
+                    test_run._EstimateTestGroupRuntime(t) for t in bounded_shard
+                )
+            )
+
+        weights = [test_run._EstimateTestGroupRuntime(t) for t in tests]
+        cap = (
+            (1 + local_device_test_run.BOUNDED_LOAD_EPSILON)
+            * sum(weights)
+            / total_shards
+        )
+
+        self.assertLess(max(bounded_loads), max(hash_loads))
+        for load in bounded_loads:
+            self.assertLessEqual(load, cap)
+
+    def testApplyExternalSharding_boundedLoadIsStableWhenTestsChange(self):
+        test_run = self._DeterministicWeightTestRun()
+        tests = [f'Test{i}' for i in range(200)]
+        total_shards = 4
+
+        original_assignments = {}
+        for i in range(total_shards):
+            for t in test_run._ApplyExternalSharding(tests, i, total_shards):
+                original_assignments[t] = i
+
+        tests.remove('Test10')
+        new_assignments = {}
+        for i in range(total_shards):
+            for t in test_run._ApplyExternalSharding(tests, i, total_shards):
+                new_assignments[t] = i
+
+        kept_shard = 0
+        for t in tests:
+            if original_assignments[t] == new_assignments[t]:
+                kept_shard += 1
+
+        self.assertGreaterEqual(kept_shard / len(tests), 0.90)
+
+    def testApplyExternalSharding_hashStrategyMatchesLegacyAssignment(self):
+        test_run = TestLocalDeviceTestRun()
+        test_run._env.sharding_strategy = 'hash'
+        tests = [f'Test{i}' for i in range(200)]
+        total_shards = 4
+
+        sorted_tests = sorted(
+            tests, key=lambda t: (test_run._DeterministicHash(t), t)
+        )
+        for i in range(total_shards):
+            shard = test_run._ApplyExternalSharding(tests, i, total_shards)
+            expected = [
+                t
+                for t in sorted_tests
+                if test_run._DeterministicHash(t) % total_shards == i
+            ]
+            self.assertEqual(shard, expected)
+
+    def testApplyExternalSharding_invalidSettings(self):
+        test_run = TestLocalDeviceTestRun()
+        with self.assertRaises(test_exception.InvalidShardingSettings):
+            test_run._ApplyExternalSharding(['a', 'b'], -1, 2)
+        with self.assertRaises(test_exception.InvalidShardingSettings):
+            test_run._ApplyExternalSharding(['a', 'b'], 2, 2)
+        with self.assertRaises(test_exception.InvalidShardingSettings):
+            test_run._ApplyExternalSharding(['a', 'b'], 0, 0)
+        with self.assertRaises(test_exception.InvalidShardingSettings):
+            test_run._ApplyExternalSharding(['a', 'b'], 0, -1)
 
 
 if __name__ == '__main__':
