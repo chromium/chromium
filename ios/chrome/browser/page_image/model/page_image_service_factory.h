@@ -7,25 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace page_image_service {
-class ImageService;
-}  // namespace page_image_service
+#import "components/page_image_service/image_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for the components ImageService service which fetches salient images.
-class PageImageServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class PageImageServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                    PageImageServiceFactory,
+                                    page_image_service::ImageService> {
  public:
-  static page_image_service::ImageService* GetForProfile(ProfileIOS* profile);
-  static PageImageServiceFactory* GetInstance();
+  explicit PageImageServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<PageImageServiceFactory>;
-
-  PageImageServiceFactory();
-  ~PageImageServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

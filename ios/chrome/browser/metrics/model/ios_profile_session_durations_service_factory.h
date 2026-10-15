@@ -5,26 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class IOSProfileSessionDurationsService;
-class ProfileIOS;
+#import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A factory that owns all IOSProfileSessionDurationsService and associate
 // the to ProfileIOS instances.
 class IOSProfileSessionDurationsServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSProfileSessionDurationsServiceFactory,
+          IOSProfileSessionDurationsService> {
  public:
-  static IOSProfileSessionDurationsService* GetForProfile(ProfileIOS* profile);
-  static IOSProfileSessionDurationsServiceFactory* GetInstance();
+  explicit IOSProfileSessionDurationsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSProfileSessionDurationsServiceFactory>;
-
-  IOSProfileSessionDurationsServiceFactory();
-  ~IOSProfileSessionDurationsServiceFactory() override;
-
   // BrowserContextKeyedServiceFactory:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

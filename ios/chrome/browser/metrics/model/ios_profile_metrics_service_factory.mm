@@ -6,33 +6,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/metrics/profile_metrics_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-
-// static
-metrics::ProfileMetricsService* IOSProfileMetricsServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<metrics::ProfileMetricsService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSProfileMetricsServiceFactory*
-IOSProfileMetricsServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSProfileMetricsServiceFactory> instance;
-  return instance.get();
-}
 
 // Session time in incognito is counted towards the session time in the
 // regular profile. That means that for a user that is signed in in their
 // regular profile and that is browsing in incognito profile,
 // Chromium will record the session time as being signed in.
-IOSProfileMetricsServiceFactory::IOSProfileMetricsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ProfileMetricsService",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-IOSProfileMetricsServiceFactory::~IOSProfileMetricsServiceFactory() = default;
+IOSProfileMetricsServiceFactory::IOSProfileMetricsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ProfileMetricsService",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 IOSProfileMetricsServiceFactory::BuildServiceInstanceFor(

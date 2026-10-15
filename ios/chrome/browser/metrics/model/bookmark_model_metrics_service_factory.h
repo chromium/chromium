@@ -5,26 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_BOOKMARK_MODEL_METRICS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_BOOKMARK_MODEL_METRICS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class BookmarkModelMetricsService;
-class ProfileIOS;
+#import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A factory that owns all BookmarkModelMetricsService and associate
 // the to ProfileIOS instances.
 class BookmarkModelMetricsServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          BookmarkModelMetricsServiceFactory,
+          BookmarkModelMetricsService> {
  public:
-  static BookmarkModelMetricsService* GetForProfile(ProfileIOS* profile);
-  static BookmarkModelMetricsServiceFactory* GetInstance();
+  explicit BookmarkModelMetricsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BookmarkModelMetricsServiceFactory>;
-
-  BookmarkModelMetricsServiceFactory();
-  ~BookmarkModelMetricsServiceFactory() override;
-
   // BrowserContextKeyedServiceFactory:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
@@ -14,37 +13,21 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-// static
-IOSProfileSessionDurationsService*
-IOSProfileSessionDurationsServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<IOSProfileSessionDurationsService>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSProfileSessionDurationsServiceFactory*
-IOSProfileSessionDurationsServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSProfileSessionDurationsServiceFactory> instance;
-  return instance.get();
-}
-
 // Session time in incognito is counted towards the session time in the
 // regular profile. That means that for a user that is signed in in their
 // regular profile and that is browsing in incognito profile,
 // Chromium will record the session time as being signed in.
 IOSProfileSessionDurationsServiceFactory::
-    IOSProfileSessionDurationsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("IOSProfileSessionDurationsService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+    IOSProfileSessionDurationsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "IOSProfileSessionDurationsService",
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
-
-IOSProfileSessionDurationsServiceFactory::
-    ~IOSProfileSessionDurationsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(

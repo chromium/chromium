@@ -5,23 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/variations/service/google_groups_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class GoogleGroupsManager;
-class ProfileIOS;
-
-class GoogleGroupsManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class GoogleGroupsManagerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<GoogleGroupsManagerFactory,
+                                                GoogleGroupsManager> {
  public:
-  static GoogleGroupsManager* GetForProfile(ProfileIOS* profile);
-  static GoogleGroupsManagerFactory* GetInstance();
+  explicit GoogleGroupsManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<GoogleGroupsManagerFactory>;
-
-  GoogleGroupsManagerFactory();
-  ~GoogleGroupsManagerFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

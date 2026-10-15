@@ -8,28 +8,14 @@
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-BookmarkModelMetricsService* BookmarkModelMetricsServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BookmarkModelMetricsService>(
-      profile, /*create=*/true);
-}
-
-// static
-BookmarkModelMetricsServiceFactory*
-BookmarkModelMetricsServiceFactory::GetInstance() {
-  static base::NoDestructor<BookmarkModelMetricsServiceFactory> instance;
-  return instance.get();
-}
-
-BookmarkModelMetricsServiceFactory::BookmarkModelMetricsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BookmarkModelMetricsServiceFactory",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+BookmarkModelMetricsServiceFactory::BookmarkModelMetricsServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "BookmarkModelMetricsServiceFactory",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(ios::BookmarkModelFactory::GetInstance());
 }
-
-BookmarkModelMetricsServiceFactory::~BookmarkModelMetricsServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 BookmarkModelMetricsServiceFactory::BuildServiceInstanceFor(
