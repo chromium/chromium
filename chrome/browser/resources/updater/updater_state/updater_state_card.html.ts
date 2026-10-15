@@ -11,7 +11,6 @@ export function getHtml(this: UpdaterStateCardElement) {
   assert(
       this.scope !== undefined && this.version !== undefined &&
       this.installPath !== undefined);
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <div class="card">
@@ -35,7 +34,9 @@ export function getHtml(this: UpdaterStateCardElement) {
         <div>
           ${this.formattedLastCheckedRelative}
         </div>
-      ` : html`$i18n{never}`}
+      ` : html`
+        $i18n{never}
+      `}
     </div>
   </div>
   <div class="row">
@@ -48,7 +49,9 @@ export function getHtml(this: UpdaterStateCardElement) {
         <div>
           ${this.formattedLastStartedRelative}
         </div>
-      ` : html`$i18n{never}`}
+      ` : html`
+        $i18n{never}
+      `}
     </div>
   </div>
   <div class="row">
@@ -63,7 +66,9 @@ export function getHtml(this: UpdaterStateCardElement) {
       <div class="label">$i18n{inactiveVersions}</div>
       <div class="value">
         <ul>
-          ${this.inactiveVersions.map(version => html`<li>${version}</li>`)}
+          ${this.inactiveVersions.map(version => html`
+            <li>${version}</li>
+          `)}
         </ul>
       </div>
     </div>
@@ -71,5 +76,4 @@ export function getHtml(this: UpdaterStateCardElement) {
   <div class="spacer"></div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

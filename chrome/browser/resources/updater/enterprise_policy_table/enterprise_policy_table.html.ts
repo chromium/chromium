@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {EnterprisePolicyTableElement} from './enterprise_policy_table.js';
 
 export function getHtml(this: EnterprisePolicyTableElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <a href="chrome://policy" target="_blank" rel="noopener noreferrer">
@@ -34,5 +33,4 @@ ${this.hasOnlyDefaultValues ? html`
   `)}
 `}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionsSectionElement} from './extensions_section.js';
 
 export function getHtml(this: ExtensionsSectionElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="extensionsSection">
   <div id="header-row">
@@ -17,17 +16,12 @@ export function getHtml(this: ExtensionsSectionElement) {
       <span id="title">${this.title_}</span>
       <!-- Make the icon focusable since it has a tooltip. cr-icon is used here
       to support custom tooltip widths. -->
-      <cr-icon id="tooltip-icon"
-          icon="cr:info"
-          tabindex="0"
-          role="img"
+      <cr-icon id="tooltip-icon" icon="cr:info" tabindex="0" role="img"
           aria-label="${this.tooltip_}">
       </cr-icon>
     </div>
-    <cr-expand-button id="expandButton" no-hover
-        ?expanded="${this.expanded_}"
-        @expanded-changed="${this.onExpandedChanged_}"
-        role="button"
+    <cr-expand-button id="expandButton" no-hover ?expanded="${this.expanded_}"
+        @expanded-changed="${this.onExpandedChanged_}" role="button"
         aria-label="${this.title_}">
     </cr-expand-button>
   </div>
@@ -49,5 +43,4 @@ export function getHtml(this: ExtensionsSectionElement) {
   </cr-collapse>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

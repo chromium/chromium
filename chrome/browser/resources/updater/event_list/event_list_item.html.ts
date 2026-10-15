@@ -10,7 +10,6 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {EventListItemElement} from './event_list_item.js';
 
 export function getHtml(this: EventListItemElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.event !== undefined ? html`
   <cr-expand-button ?expanded="${this.expanded}"
@@ -26,7 +25,6 @@ ${this.event !== undefined ? html`
         <div class="event-scope-column">
           ${this.scope ? html`
             <scope-icon .scope="${this.scope}"></scope-icon>
-            </scope-icon>
           ` : ''}
         </div>
         <div class="event-type-column">
@@ -36,8 +34,7 @@ ${this.event !== undefined ? html`
         </div>
         <div class="event-description-icon-column">
           ${this.eventSummaryIcon ? html`
-            <cr-icon icon="${this.eventSummaryIcon}">
-            </cr-icon>
+            <cr-icon icon="${this.eventSummaryIcon}"></cr-icon>
           ` : ''}
         </div>
         <span class="event-description-column">
@@ -87,16 +84,14 @@ ${this.event !== undefined ? html`
     ` : ''}
     ${this.policies !== undefined ? html`
       <div>
-      <h3>Enterprise Policies</h3>
-      <enterprise-policy-table .policies="${this.policies}"
-          .appId="${this.appId}">
-      </enterprise-policy-table>
+        <h3>Enterprise Policies</h3>
+        <enterprise-policy-table .policies="${this.policies}"
+            .appId="${this.appId}">
+        </enterprise-policy-table>
       </div>
     ` : ''}
-    <raw-event-details .events="${[this.event]}">
-    </raw-event-details>
+    <raw-event-details .events="${[this.event]}"></raw-event-details>
   </cr-collapse>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

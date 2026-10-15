@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {SyncConfirmationAppRefreshElement} from './sync_confirmation_app_refresh.js';
 
 export function getHtml(this: SyncConfirmationAppRefreshElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 
 <!--
@@ -16,7 +16,8 @@ export function getHtml(this: SyncConfirmationAppRefreshElement) {
   which user clicks to indicate consent.
 -->
 
-<div class="main-container tangible-sync-style
+<div
+    class="main-container tangible-sync-style
     ${this.getMaybeDialogClass_()}">
   <div id="contentContainer" class="${this.getAnimationClass_()}">
     <div id="avatarContainer">
@@ -49,47 +50,46 @@ export function getHtml(this: SyncConfirmationAppRefreshElement) {
       `)}
     </div>
     <div class="sync-info-desc secondary"
-          ?hidden="${this.useClickableSyncInfoDesc_}" consent-description>
+        ?hidden="${this.useClickableSyncInfoDesc_}" consent-description>
       $i18n{syncConfirmationSyncInfoDesc}
     </div>
-    <localized-link class="sync-info-desc secondary"
-        consent-description
+    <localized-link class="sync-info-desc secondary" consent-description
         ?hidden="${!this.useClickableSyncInfoDesc_}"
         localized-string="$i18n{syncConfirmationSyncInfoDesc}"
         @link-clicked="${this.onDisclaimerLinkClicked_}">
     </localized-link>
-    <div class="action-row ${this.getAnimationClass_()}
+    <div
+        class="action-row ${this.getAnimationClass_()}
         ${this.getMaybeDialogClass_()}">
-      ${this.anyButtonClicked_ ? html`<div class="spinner"></div>` : ''}
+      ${this.anyButtonClicked_ ? html`
+        <div class="spinner"></div>
+      ` : ''}
       <div class="action-container ${this.getMaybeDialogClass_()}">
-        <cr-button id="confirmButton"
-            class="${this.getConfirmButtonClass_()}"
+        <cr-button id="confirmButton" class="${this.getConfirmButtonClass_()}"
             @click="${this.onConfirmClick_}"
             ?disabled="${this.anyButtonClicked_}" consent-confirmation
             ?autofocus="${this.isModalDialog_}">
           $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-        <if expr="is_macosx or is_linux or is_chromeos">
-          <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
-              ?disabled="${this.anyButtonClicked_}" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
-        <cr-button id="notNowButton"
-            class="${this.getNotNowButtonClass_()}"
+<if expr="is_macosx or is_linux or is_chromeos">
+        <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
+            ?disabled="${this.anyButtonClicked_}" consent-confirmation>
+          $i18n{syncConfirmationSettingsLabel}
+        </cr-button>
+</if>
+        <cr-button id="notNowButton" class="${this.getNotNowButtonClass_()}"
             @click="${this.onUndoClick_}" ?disabled="${this.anyButtonClicked_}">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
-        <if expr="not (is_macosx or is_linux or is_chromeos)">
-          <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
-              ?disabled="${this.anyButtonClicked_}" consent-confirmation>
-            $i18n{syncConfirmationSettingsLabel}
-          </cr-button>
-        </if>
+<if expr="not (is_macosx or is_linux or is_chromeos)">
+        <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
+            ?disabled="${this.anyButtonClicked_}" consent-confirmation>
+          $i18n{syncConfirmationSettingsLabel}
+        </cr-button>
+</if>
       </div>
     </div>
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

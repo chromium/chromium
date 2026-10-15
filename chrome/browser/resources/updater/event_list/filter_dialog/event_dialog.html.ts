@@ -10,16 +10,14 @@ import type {EventType} from '../../event_history.js';
 import type {EventDialogElement} from './event_dialog.js';
 
 export function getHtml(this: EventDialogElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
-<filter-dialog .anchorElement="${this.anchorElement}"
-    @close="${this.onClose}">
+<filter-dialog .anchorElement="${this.anchorElement}" @close="${this.onClose}">
   <div class="filter-menu-section-header">$i18n{common}</div>
   ${this.getCommonEventTypes().map(item => html`
     <cr-checkbox class="filter-menu-item"
-        ?checked="${this.pendingSelections.has(item)}"
-        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"
+        ?checked="${this.pendingSelections.has(item)}" data-event-type="${item}"
+        @checked-changed="${this.onCheckedChanged}"
         @keydown="${this.onKeydown}">
       ${localizeEventType(item)}
     </cr-checkbox>
@@ -27,16 +25,15 @@ export function getHtml(this: EventDialogElement) {
   <div class="filter-menu-section-header">$i18n{other}</div>
   ${this.getOtherEventTypes().map((item: EventType) => html`
     <cr-checkbox class="filter-menu-item"
-        ?checked="${this.pendingSelections.has(item)}"
-        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"
+        ?checked="${this.pendingSelections.has(item)}" data-event-type="${item}"
+        @checked-changed="${this.onCheckedChanged}"
         @keydown="${this.onKeydown}">
       ${localizeEventType(item)}
     </cr-checkbox>
   `)}
-  <filter-dialog-footer
-      @cancel-click="${this.onCancelClick}" @apply-click="${this.onApplyClick}">
+  <filter-dialog-footer @cancel-click="${this.onCancelClick}"
+      @apply-click="${this.onApplyClick}">
   </filter-dialog-footer>
 </filter-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

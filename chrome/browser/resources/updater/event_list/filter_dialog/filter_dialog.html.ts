@@ -7,13 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilterDialogElement} from './filter_dialog.js';
 
 export function getHtml(this: FilterDialogElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
-<dialog id="dialog" @close="${this.onClose}"
-    @cancel="${this.onCancel}" @pointerdown="${this.onPointerdown}">
+<dialog id="dialog" @close="${this.onClose}" @cancel="${this.onCancel}"
+    @pointerdown="${this.onPointerdown}">
   <slot></slot>
 </dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -14,15 +14,14 @@ export function getHtml(this: ManagedUserProfileNoticeValuePropElement) {
   <h1 class="title" tabindex="-1">${this.title}</h1>
   <p class="subtitle">${this.subtitle}</p>
   <div class="pill">
-      <img id="avatar" class="avatar" alt="" src="${this.pictureUrl}">
-      <div class="text-container">
-        <p class="account-name">${this.accountName}</p>
-        <p class="email">${this.email}</p>
-      </div>
-      ${
-      this.showEnterpriseBadge ?
-          html`<cr-icon class="icon" icon="cr:domain"></cr-icon>` :
-          ''}
+    <img id="avatar" class="avatar" alt="" src="${this.pictureUrl}">
+    <div class="text-container">
+      <p class="account-name">${this.accountName}</p>
+      <p class="email">${this.email}</p>
+    </div>
+    ${this.showEnterpriseBadge ? html`
+      <cr-icon class="icon" icon="cr:domain"></cr-icon>
+    ` : ''}
   </div>
 </main>
 <!--_html_template_end_-->`;

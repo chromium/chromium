@@ -8,14 +8,13 @@ import {FilterCategory} from './filter_bar.js';
 import type {FilterBarElement} from './filter_bar.js';
 
 export function getHtml(this: FilterBarElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <div class="filter-bar">
   <cr-icon
-      icon="${this.webuiRoundedIconsEnabled_
-          ? 'updater:filter-list'
-          : 'updater:filter-old'}"></cr-icon>
+      icon="${this.webuiRoundedIconsEnabled_ ? 'updater:filter-list' :
+                                               'updater:filter-old'}">
+  </cr-icon>
   ${this.filterOrder.map(item => html`
     <div class="chip-wrapper">
       <button class="chip" ?disabled="${this.isEditingViaInput(item)}"
@@ -27,8 +26,7 @@ export function getHtml(this: FilterBarElement) {
       </button>
       <cr-icon-button iron-icon="cr:close" data-filter-category="${item}"
           ?disabled="${this.isEditingViaInput(item)}"
-          @click="${this.onRemoveFilterClick}"
-          aria-label="$i18n{removeFilter}">
+          @click="${this.onRemoveFilterClick}" aria-label="$i18n{removeFilter}">
       </cr-icon-button>
     </div>
   `)}
@@ -42,7 +40,7 @@ export function getHtml(this: FilterBarElement) {
   ${this.filterOrder.length > 0 ? html`
     <button id="clear-filters-button" @click="${this.onClearFiltersClick}"
         aria-label="$i18n{clearAllFilters}">
-      &times;
+      ×
     </button>
   ` : ''}
 
@@ -62,16 +60,14 @@ export function getHtml(this: FilterBarElement) {
     ` : ''}
     ${this.filterMenuState === FilterCategory.EVENT ? html`
       <event-dialog .anchorElement="${this.getDialogAnchor()}"
-          .initialSelections="${
-              this.filterSettings.eventTypes}"
+          .initialSelections="${this.filterSettings.eventTypes}"
           @filter-change="${this.onEventTypeFilterChange}"
           @close="${this.onFilterDialogClose}">
       </event-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.OUTCOME ? html`
       <outcome-dialog .anchorElement="${this.getDialogAnchor()}"
-          .initialSelections="${
-              this.filterSettings.updateOutcomes}"
+          .initialSelections="${this.filterSettings.updateOutcomes}"
           @filter-change="${this.onUpdateOutcomeFilterChange}"
           @close="${this.onFilterDialogClose}">
       </outcome-dialog>
@@ -94,5 +90,4 @@ export function getHtml(this: FilterBarElement) {
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

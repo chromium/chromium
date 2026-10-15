@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilterDialogFooterElement} from './filter_dialog_footer.js';
 
 export function getHtml(this: FilterDialogFooterElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <div class="filter-menu-footer">
@@ -19,5 +18,4 @@ export function getHtml(this: FilterDialogFooterElement) {
   </cr-button>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

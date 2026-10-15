@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SignalsDisclaimerRefreshElement} from './signals_disclaimer_refresh.js';
 
 export function getHtml(this: SignalsDisclaimerRefreshElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="avatarContainer" class="avatar-container">
   <img id="avatar" class="avatar" alt="$i18n{avatarAccessibilityLabel}"
@@ -44,5 +43,4 @@ export function getHtml(this: SignalsDisclaimerRefreshElement) {
   </section>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

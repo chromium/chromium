@@ -14,8 +14,9 @@ export function getHtml(this: ProfileCardElement) {
       ?disabled="${this.disabled}"
       aria-label="${this.profileState.profileCardButtonLabel}">
     <div id="avatarContainer">
-      <img class="profile-avatar ${
-      this.profileState.hasAvatarRing ? 'with-avatar-ring' : ''}"
+      <img
+          class="profile-avatar ${
+              this.profileState.hasAvatarRing ? 'with-avatar-ring' : ''}"
           alt="" .src="${this.profileState.avatarIcon}">
       <div id="iconContainer"
           ?hidden="${!this.profileState.avatarBadge.length}">
@@ -30,9 +31,9 @@ export function getHtml(this: ProfileCardElement) {
         ?hidden="${!this.profileState.needsSignin}">
       <div>$i18n{needsSigninPrompt}</div>
       <cr-icon id="forceSigninIcon"
-          icon="${
-      this.webuiRoundedIconsEnabled_ ? 'profiles:lock-filled' :
-                                       'profiles:lock-old'}"></cr-icon>
+          icon="${this.webuiRoundedIconsEnabled_ ? 'profiles:lock-filled' :
+                                                   'profiles:lock-old'}">
+      </cr-icon>
     </div>
   </cr-button>
   <div id="profileNameInputWrapper">
@@ -45,11 +46,12 @@ export function getHtml(this: ProfileCardElement) {
         auto-validate spellcheck="false"
         @pointerenter="${this.onNameInputPointerenter_}"
         @pointerleave="${this.onNameInputPointerleave_}"
-        ?disabled="${
-      isGlicVersion() || this.profileState.hasEnterpriseLabel}" required>
+        ?disabled="${isGlicVersion() || this.profileState.hasEnterpriseLabel}"
+        required>
     </cr-input>
-    <div id="hoverUnderline" ?hidden="${
-      isGlicVersion() || this.profileState.hasEnterpriseLabel}"></div>
+    <div id="hoverUnderline"
+        ?hidden="${isGlicVersion() || this.profileState.hasEnterpriseLabel}">
+    </div>
   </div>
   <profile-card-menu .profileState="${this.profileState}"
       ?hidden="${isGlicVersion()}">

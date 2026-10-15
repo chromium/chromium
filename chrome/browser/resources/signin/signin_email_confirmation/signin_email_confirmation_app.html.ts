@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {SigninEmailConfirmationAppElement} from './signin_email_confirmation_app.js';
 
 export function getHtml(this: SigninEmailConfirmationAppElement) {
   return html`<!--_html_template_start_-->
 <div class="container">
-  <div class="top-title-bar" id="dialogTitle">
-  </div>
+  <div class="top-title-bar" id="dialogTitle"></div>
   <div class="details">
     <cr-radio-group selected="createNewUser">
-      <cr-radio-button id="createNewUserRadioButton"
-          name="createNewUser">
+      <cr-radio-button id="createNewUserRadioButton" name="createNewUser">
         <div class="radio-button-title-container">
           $i18n{signinEmailConfirmationCreateProfileButtonTitle}
         </div>

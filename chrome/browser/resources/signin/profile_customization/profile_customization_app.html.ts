@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ProfileCustomizationAppElement} from './profile_customization_app.js';
 
 export function getHtml(this: ProfileCustomizationAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-view-manager role="dialog" id="viewManager" class="in-dialog-design"
     aria-labelledby="title" aria-describedby="content">
@@ -25,7 +25,8 @@ export function getHtml(this: ProfileCustomizationAppElement) {
           ` : ''}
           ${this.isLocalProfileCreation_ ? html`
             <div class="avatar-badge">
-              <cr-icon-button id="customizeAvatarIcon" iron-icon="cr:edit-filled"
+              <cr-icon-button id="customizeAvatarIcon"
+                  iron-icon="cr:edit-filled"
                   @click="${this.onCustomizeAvatarClick_}"
                   title="$i18n{profileCustomizationCustomizeAvatarLabel}"
                   aria-label="$i18n{profileCustomizationCustomizeAvatarLabel}">
@@ -38,28 +39,25 @@ export function getHtml(this: ProfileCustomizationAppElement) {
       <div id="body">
         <div id="title">${this.welcomeTitle_}</div>
       </div>
-        <div id="inputTitle"
-          ?hidden="${!this.isRefreshedUI_}">
-          $i18n{profileCustomizationInputTitle}
-        </div>
-        <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
-            @value-changed="${this.onProfileNameValueChanged_}"
-            aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
-            placeholder="${this.getNameInputPlaceHolder_()}" autofocus
-            error-message="$i18n{profileCustomizationInputErrorMessage}"
-            required spellcheck="false" @blur="${this.onNameInputBlur_}"
-            ?disabled="${this.hasEnterpriseLabel}">
-              <cr-icon id="policyIcon" icon="cr:domain" slot="suffix"
-                ?hidden="${!this.hasEnterpriseLabel}">
-              </cr-icon>
-        </cr-input>
-        <cr-tooltip
-          for="policyIcon" position="top">
-          $i18n{controlledSettingPolicy}
-        </cr-tooltip>
+      <div id="inputTitle" ?hidden="${!this.isRefreshedUI_}">
+        $i18n{profileCustomizationInputTitle}
+      </div>
+      <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
+          @value-changed="${this.onProfileNameValueChanged_}"
+          aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
+          placeholder="${this.getNameInputPlaceHolder_()}" autofocus
+          error-message="$i18n{profileCustomizationInputErrorMessage}" required
+          spellcheck="false" @blur="${this.onNameInputBlur_}"
+          ?disabled="${this.hasEnterpriseLabel}">
+        <cr-icon id="policyIcon" icon="cr:domain" slot="suffix"
+            ?hidden="${!this.hasEnterpriseLabel}">
+        </cr-icon>
+      </cr-input>
+      <cr-tooltip for="policyIcon" position="top">
+        $i18n{controlledSettingPolicy}
+      </cr-tooltip>
 
-      <div id="themePickerTitle"
-          ?hidden="${!this.isRefreshedUI_}">
+      <div id="themePickerTitle" ?hidden="${!this.isRefreshedUI_}">
         $i18n{profileCustomizationThemePickerLabel}
       </div>
       <div id="pickThemeContainer">
@@ -73,8 +71,7 @@ export function getHtml(this: ProfileCustomizationAppElement) {
           $i18n{profileCustomizationDoneLabel}
         </cr-button>
         ${this.shouldShowCancelButton_() ? html`
-          <cr-button id="skipButton"
-              @click="${this.onSkipCustomizationClick_}">
+          <cr-button id="skipButton" @click="${this.onSkipCustomizationClick_}">
             $i18n{profileCustomizationSkipLabel}
           </cr-button>
         ` : ''}
@@ -118,5 +115,4 @@ export function getHtml(this: ProfileCustomizationAppElement) {
 
 </cr-view-manager>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,10 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DiceWebSigninInterceptAppElement} from './dice_web_signin_intercept_app.js';
 
 export function getHtml(this: DiceWebSigninInterceptAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
-     aria-describedby="contents">
+    aria-describedby="contents">
   ${this.interceptionParameters_.useV2ProfileSwitchDesign ? html`
     <div id="headerV2">
       <svg>
@@ -22,9 +21,11 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
         <img class="avatar" alt=""
             src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
         <div class="work-badge"
-            ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+            ?hidden="${!this.interceptionParameters_.interceptedAccount
+                            .avatarBadge.length}">
           <cr-icon class="icon" aria-hidden="true"
-              icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+              icon="${
+                  this.interceptionParameters_.interceptedAccount.avatarBadge}">
           </cr-icon>
         </div>
       </div>
@@ -34,7 +35,7 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
       <div id="headerV2">
         <svg>
           <use href="images/split_header.svg#EXPORT_primary"
-              id="headerImagePrimary" >
+              id="headerImagePrimary">
           </use>
           <use href="images/split_header.svg#EXPORT_intercepted"
               id="headerImageIntercepted">
@@ -44,19 +45,24 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
           <img class="avatar" alt=""
               src="${this.interceptionParameters_.primaryAccount.pictureUrl}">
           <div class="work-badge"
-              ?hidden="${!this.interceptionParameters_.primaryAccount.avatarBadge.length}">
+              ?hidden="${!this.interceptionParameters_.primaryAccount
+                              .avatarBadge.length}">
             <cr-icon class="icon"
-                icon="${this.interceptionParameters_.primaryAccount.avatarBadge}">
+                icon="${
+                    this.interceptionParameters_.primaryAccount.avatarBadge}">
             </cr-icon>
           </div>
         </div>
         <div class="avatar-container-v2" id="avatarIntercepted">
           <img class="avatar" alt=""
-              src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
+              src="${
+                  this.interceptionParameters_.interceptedAccount.pictureUrl}">
           <div class="work-badge"
-              ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+              ?hidden="${!this.interceptionParameters_.interceptedAccount
+                              .avatarBadge.length}">
             <cr-icon class="icon"
-                icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+                icon="${this.interceptionParameters_.interceptedAccount
+                            .avatarBadge}">
             </cr-icon>
           </div>
         </div>
@@ -65,12 +71,17 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
       <div id="header">
         <div id="headerText">${this.interceptionParameters_.headerText}</div>
         <div id="avatarContainer">
-          <img class="avatar" alt="${this.interceptionParameters_.interceptedAccount.userBadgeAltText}"
-              src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
+          <img class="avatar"
+              alt="${this.interceptionParameters_.interceptedAccount
+                         .userBadgeAltText}"
+              src="${
+                  this.interceptionParameters_.interceptedAccount.pictureUrl}">
           <div class="work-badge" id="badge"
-              ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+              ?hidden="${!this.interceptionParameters_.interceptedAccount
+                              .avatarBadge.length}">
             <cr-icon class="icon" aria-hidden="true"
-                icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+                icon="${this.interceptionParameters_.interceptedAccount
+                            .avatarBadge}">
             </cr-icon>
           </div>
         </div>
@@ -95,15 +106,16 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   </div>
 
   <div id="actionRow">
-    ${this.acceptButtonClicked_ ? html`<div class="spinner"></div>` : ''}
+    ${this.acceptButtonClicked_ ? html`
+      <div class="spinner"></div>
+    ` : ''}
     <div class="action-container">
       <cr-button id="acceptButton" class="action-button" autofocus
           @click="${this.onAcceptClick_}"
           ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.confirmButtonLabel}
       </cr-button>
-      <cr-button id="cancelButton"
-          class="tonal-button"
+      <cr-button id="cancelButton" class="tonal-button"
           @click="${this.onCancelClick_}"
           ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.cancelButtonLabel}
@@ -112,5 +124,4 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -8,7 +8,6 @@ import {PageDataSource} from './app.js';
 import type {UpdaterAppElement} from './app.js';
 
 export function getHtml(this: UpdaterAppElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <header>
@@ -74,5 +73,4 @@ export function getHtml(this: UpdaterAppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

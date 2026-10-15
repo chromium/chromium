@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {SyncDisabledConfirmationAppElement} from './sync_disabled_confirmation_app.js';
 
 export function getHtml(this: SyncDisabledConfirmationAppElement) {
@@ -23,8 +24,8 @@ export function getHtml(this: SyncDisabledConfirmationAppElement) {
     </div>
   </div>
   <div class="action-container">
-    <cr-button class="action-button" id="confirmButton"
-        consent-confirmation @click="${this.onConfirmClick_}">
+    <cr-button class="action-button" id="confirmButton" consent-confirmation
+        @click="${this.onConfirmClick_}">
       $i18n{syncDisabledConfirmationConfirmLabel}
     </cr-button>
     <cr-button id="undoButton" @click="${this.onUndoClick_}"

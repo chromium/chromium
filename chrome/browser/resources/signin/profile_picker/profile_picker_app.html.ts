@@ -15,15 +15,19 @@ export function getHtml(this: ProfilePickerAppElement) {
   <profile-picker-main-view id="mainView" slot="view">
   </profile-picker-main-view>
 
-  <cr-lazy-render-lit id="profileTypeChoice" .template="${() => html`
-      <profile-type-choice slot="view"
-          .profileThemeInfo="${this.newProfileThemeInfo!}"
-          .profileCreationInProgress="${this.profileCreationInProgress}">
-      </profile-type-choice>`}">
+  <cr-lazy-render-lit id="profileTypeChoice"
+      .template="${() => html`
+        <profile-type-choice slot="view"
+            .profileThemeInfo="${this.newProfileThemeInfo!}"
+            .profileCreationInProgress="${this.profileCreationInProgress}">
+        </profile-type-choice>
+      `}">
   </cr-lazy-render-lit>
 
   <cr-lazy-render-lit id="profileSwitch"
-      .template="${() => html`<profile-switch slot="view"></profile-switch>`}">
+      .template="${() => html`
+        <profile-switch slot="view"></profile-switch>
+      `}">
   </cr-lazy-render-lit>
 </cr-view-manager>
 <!--_html_template_end_-->`;

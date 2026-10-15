@@ -9,7 +9,6 @@ import type {EnterpriseCompanionStateCardElement} from './enterprise_companion_s
 
 export function getHtml(this: EnterpriseCompanionStateCardElement) {
   assert(this.installPath !== undefined);
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <div class="card">
@@ -32,5 +31,4 @@ export function getHtml(this: EnterpriseCompanionStateCardElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

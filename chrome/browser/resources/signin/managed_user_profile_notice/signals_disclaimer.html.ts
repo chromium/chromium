@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SignalsDisclaimerElement} from './signals_disclaimer.js';
 
 export function getHtml(this: SignalsDisclaimerElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <main class="${this.isModalDialog ? 'modal-dialog' : 'profile-picker'}">
@@ -48,5 +47,4 @@ export function getHtml(this: SignalsDisclaimerElement) {
   </div>
 </main>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -23,7 +23,8 @@ export function getHtml(this: ManagedUserProfileNoticeDataHandlingElement) {
     <cr-radio-button name="${BrowsingDataHandling.MERGE}"
         label="${this.mergeDataChoiceTitle}">
       <p>${this.mergeDataChoiceDetails}</p>
-  </cr-radio-button>
+    </cr-radio-button>
+  </cr-radio-group>
 </main>
 <!--_html_template_end_-->`;
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TypeDialogElement} from './type_dialog.js';
 
 export function getHtml(this: TypeDialogElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 <filter-dialog .anchorElement="${this.anchorElement}" @close="${this.onClose}">
@@ -20,5 +19,4 @@ export function getHtml(this: TypeDialogElement) {
   `)}
 </filter-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

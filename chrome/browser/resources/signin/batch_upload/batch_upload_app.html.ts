@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BatchUploadAppElement} from './batch_upload_app.js';
 
 export function getHtml(this: BatchUploadAppElement) {
-  // clang-format off
   return html`
 <div id="batchUploadDialog">
   <div id="header">
@@ -15,28 +14,25 @@ export function getHtml(this: BatchUploadAppElement) {
     <div id="subtitle">${this.dialogSubtitle_}</div>
 
     <div id="account-info-row">
-      <img id="account-icon" alt=""
-          src="${this.accountInfo_.dataPictureUrl}">
+      <img id="account-icon" alt="" src="${this.accountInfo_.dataPictureUrl}">
       <div id="email">${this.accountInfo_.email}</div>
     </div>
   </div>
 
   <div id="dataContainer" class="custom-scrollbar">
     <div id="dataSections">
-      ${this.dataSections_.map((section, sectionIndex) =>
-      html`
-      <data-section .dataContainer="${section}" data-index="${sectionIndex}"
-          @update-view-height="${this.onUpdateViewHeight_}"
-          @toggle-changed="${this.onSectionToggleChanged_}">
-      </data-section>
+      ${this.dataSections_.map((section, sectionIndex) => html`
+        <data-section .dataContainer="${section}" data-index="${sectionIndex}"
+            @update-view-height="${this.onUpdateViewHeight_}"
+            @toggle-changed="${this.onSectionToggleChanged_}">
+        </data-section>
       `)}
     </div>
   </div>
 
   <div id="action-row">
     <cr-button id="saveButton" class="action-button"
-        ?disabled="${!this.isSaveEnabled_}"
-        @click="${this.onSaveClick_}">
+        ?disabled="${!this.isSaveEnabled_}" @click="${this.onSaveClick_}">
       ${this.i18n('saveToAccount')}
     </cr-button>
     <cr-button id="cancelButton" class="tonal-button"
@@ -46,5 +42,4 @@ export function getHtml(this: BatchUploadAppElement) {
   </div>
 
 </div>`;
-  // clang-format on
 }

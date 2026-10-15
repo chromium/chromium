@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ChromeSigninAppElement} from './chrome_signin_app.js';
 
 export function getHtml(this: ChromeSigninAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
     aria-describedby="contents">
 
   <div id="header-container">
     <img id="product-logo"
-      srcset="chrome://theme/current-channel-logo@1x 1x,
+        srcset="chrome://theme/current-channel-logo@1x 1x,
               chrome://theme/current-channel-logo@2x 2x"
-      role="presentation">
+        role="presentation">
 
     <h1 id="title">${this.interceptionParameters_.title}</h1>
     <div id="subtitle">${this.interceptionParameters_.subtitle}</div>
@@ -31,7 +31,8 @@ export function getHtml(this: ChromeSigninAppElement) {
         <div class="managed-user-badge"
             ?hidden="${!this.interceptionParameters_.managedUserBadge.length}">
           <cr-icon class="icon" aria-hidden="true"
-              icon="${this.interceptionParameters_.managedUserBadge}"></cr-icon>
+              icon="${this.interceptionParameters_.managedUserBadge}">
+          </cr-icon>
         </div>
       </div>
 
@@ -43,7 +44,9 @@ export function getHtml(this: ChromeSigninAppElement) {
             aria-label="${this.getAcceptButtonAriaLabel_()}"
             @click="${this.onAcceptClick_}">
           <div id="acceppt-button-content">
-            ${this.i18n('chromeSigninAcceptText', this.interceptionParameters_.givenName)}
+            ${this.i18n(
+                'chromeSigninAcceptText',
+                this.interceptionParameters_.givenName)}
           </div>
         </cr-button>
         <cr-button id="cancel-button" @click="${this.onCancelClick_}">
@@ -56,5 +59,4 @@ export function getHtml(this: ChromeSigninAppElement) {
 
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,11 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {RawEventDetailsElement} from './raw_event_details.js';
 
 export function getHtml(this: RawEventDetailsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.events.length > 0 ? html`
-  <cr-expand-button
-      ?expanded="${this.expanded}"
+  <cr-expand-button ?expanded="${this.expanded}"
       @expanded-changed="${this.onExpandedChanged}"
       expand-title="${this.label}">
     ${this.label}
@@ -23,5 +21,4 @@ ${this.events.length > 0 ? html`
   </cr-collapse>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,11 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DateDialogElement} from './date_dialog.js';
 
 export function getHtml(this: DateDialogElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
-<filter-dialog .anchorElement="${this.anchorElement}"
-    @close="${this.onClose}">
+<filter-dialog .anchorElement="${this.anchorElement}" @close="${this.onClose}">
   <div class="filter-menu-date-inputs">
     <label for="start-date">$i18n{startDate}</label>
     <input type="datetime-local" id="start-date"
@@ -22,11 +20,9 @@ export function getHtml(this: DateDialogElement) {
         .valueAsNumber="${this.getPendingEndTime()}"
         @input="${this.onEndTimeInput}">
   </div>
-  <filter-dialog-footer
-      @cancel-click="${this.onCancelClick}"
+  <filter-dialog-footer @cancel-click="${this.onCancelClick}"
       @apply-click="${this.onDateApplyClick}">
   </filter-dialog-footer>
 </filter-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

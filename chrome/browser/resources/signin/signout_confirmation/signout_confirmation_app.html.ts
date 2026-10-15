@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SignoutConfirmationAppElement} from './signout_confirmation_app.js';
 
 export function getHtml(this: SignoutConfirmationAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="signoutConfirmationDialog">
   <div id="header">
@@ -35,14 +34,16 @@ export function getHtml(this: SignoutConfirmationAppElement) {
         ?hidden="${!this.showVerifyReauthButton_()}">
       ${this.data_.verifyButtonLabel}
     </cr-button>
-    <cr-button id="acceptButton" class="action-button
-        ${this.isUnoPhase2FollowUpEnabled_ && this.data_.hasUnsyncedData ?
-            'delete-button' : ''}"
+    <cr-button id="acceptButton"
+        class="action-button
+        ${
+            this.isUnoPhase2FollowUpEnabled_ && this.data_.hasUnsyncedData ?
+            'delete-button' :
+            ''}"
         @click="${this.onAcceptButtonClick_}" autofocus>
       ${this.data_.acceptButtonLabel}
     </cr-button>
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

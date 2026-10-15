@@ -8,10 +8,9 @@ import {isGlicVersion} from './profile_picker_flags.js';
 import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
 
 export function getHtml(this: ProfilePickerMainViewElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${isGlicVersion() ? html`
-  <link href="glic_profile_branding.css" rel="stylesheet" />
+  <link href="glic_profile_branding.css" rel="stylesheet">
 ` : ''}
 <div class="flex-container">
   <div class="title-container">
@@ -53,9 +52,10 @@ ${isGlicVersion() ? html`
       ?hidden="${!this.guestModeEnabled_}"
       ?disabled="${this.pickerButtonsDisabled_}">
     <cr-icon
-        icon="${this.webuiRoundedIconsEnabled_
-            ? 'profiles:account-box'
-            : 'profiles:account-box-old'}" slot="prefix-icon"></cr-icon>
+        icon="${this.webuiRoundedIconsEnabled_ ? 'profiles:account-box' :
+                                                 'profiles:account-box-old'}"
+        slot="prefix-icon">
+    </cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>
 
@@ -64,8 +64,7 @@ ${isGlicVersion() ? html`
       <span id="ask-on-startup-label" aria-hidden="true">
         $i18n{askOnStartupText}
       </span>
-      <cr-toggle id="askOnStartup"
-          aria-labelledby="ask-on-startup-label"
+      <cr-toggle id="askOnStartup" aria-labelledby="ask-on-startup-label"
           ?checked="${this.askOnStartup_}"
           @checked-changed="${this.onAskOnStartupCheckedChanged_}">
       </cr-toggle>
@@ -79,8 +78,6 @@ ${isGlicVersion() ? html`
   `}
 </div>
 
-<signin-error-dialog id="signinErrorDialog">
-</signin-error-dialog>
+<signin-error-dialog id="signinErrorDialog"></signin-error-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

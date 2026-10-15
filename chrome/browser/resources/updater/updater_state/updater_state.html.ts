@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UpdaterStateElement} from './updater_state.js';
 
 export function getHtml(this: UpdaterStateElement) {
-  // clang-format off
   return html`
 <!--_html_template_start_-->
 ${this.error ? html`
@@ -31,9 +30,8 @@ ${this.shouldShowUserUpdaterState() ? html`
       .version="${this.userUpdaterState.activeVersion}"
       .inactiveVersions="${this.userUpdaterState.inactiveVersions}"
       .lastChecked="${this.userUpdaterState.lastChecked}"
-      .lastStarted="${this.userUpdaterState.lastStarted}"
-      .installPath="${this.filePathToString(
-          this.userUpdaterState.installationDirectory)}">
+      .lastStarted="${this.userUpdaterState.lastStarted}" .installPath="${
+          this.filePathToString(this.userUpdaterState.installationDirectory)}">
   </updater-state-card>
 ` : ''}
 ${this.shouldShowEnterpriseCompanionState() ? html`
@@ -47,5 +45,4 @@ ${this.shouldShowNoUpdatersFound() ? html`
   <div id="no-updater-message">$i18n{noUpdaterFound}</div>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }
