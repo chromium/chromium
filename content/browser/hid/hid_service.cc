@@ -25,6 +25,7 @@
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/device_features.h"
@@ -106,18 +107,29 @@ HidService::HidService(
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (delegate && render_frame_host_) {
     delegate->AddObserver(GetBrowserContext(), this);
-#if !BUILDFLAG(IS_ANDROID)
-  } else if (service_worker_version_) {
-    // For service worker case, it relies on ServiceWorkerHidDelegateObserver to
-    // be the broker between HidDelegate and HidService.
-    auto context = service_worker_version_->context();
-    if (context) {
-      context->hid_delegate_observer()->RegisterHidService(
-          service_worker_version_->registration_id(),
-          weak_factory_.GetWeakPtr());
-    }
-#endif
+    return;
   }
+
+  if (!service_worker_version_) {
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID) ||
+      !base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // For service worker case, it relies on ServiceWorkerHidDelegateObserver to
+  // be the broker between HidDelegate and HidService.
+  auto context = service_worker_version_->context();
+  if (!context) {
+    return;
+  }
+  context->hid_delegate_observer()->RegisterHidService(
+      service_worker_version_->registration_id(), weak_factory_.GetWeakPtr());
 }
 
 HidService::HidService(RenderFrameHostImpl* render_frame_host)
@@ -214,10 +226,12 @@ void HidService::Create(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(blink::features::kWebHID)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID) ||
+      !base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers)) {
     return;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Avoid creating the HidService if there is no HID delegate to provide
   // the implementation.
@@ -330,13 +344,11 @@ void HidService::RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
                                         bool is_fido_allowed) {
   // If the origin is allowed to access FIDO and `device` is a known FIDO U2F
   // security key, do not remove any reports.
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kSecurityKeyHidInterfacesAreFido) &&
       is_known_security_key && is_fido_allowed) {
     return;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::vector<device::mojom::HidCollectionInfoPtr> collections;
   if (base::FeatureList::IsEnabled(features::kWebHidRecursiveFiltering)) {
@@ -399,25 +411,33 @@ void HidService::RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
 void HidService::RegisterClient(
     mojo::PendingAssociatedRemote<device::mojom::HidManagerClient> client) {
   clients_.Add(std::move(client));
-#if !BUILDFLAG(IS_ANDROID)
-  if (service_worker_version_ && service_worker_version_->context()) {
-    // HidService is expected to have only one HidManagerClient when it is for a
-    // service worker. One renderer side of a service worker has its own
-    // associated HidService.
-    CHECK_EQ(1u, clients_.size());
-    // When a service worker is woken up by a device connection event, the
-    // client might not have yet registered with the HidService or the
-    // HidService hasn't been created yet when service worker is in running
-    // state. This is because service worker is set to running state after
-    // script evaluation but inter-processes request triggered from the script
-    // evaluation that creates HidService or registers a client might not be
-    // done in the browser process. To handle this situation, pending callbacks
-    // are stored and to be processed when registering the client.
-    service_worker_version_->context()
-        ->hid_delegate_observer()
-        ->ProcessPendingCallbacks(service_worker_version_.get());
+  if (!service_worker_version_ || !service_worker_version_->context()) {
+    return;
   }
-#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID) ||
+      !base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // HidService is expected to have only one HidManagerClient when it is for a
+  // service worker. One renderer side of a service worker has its own
+  // associated HidService.
+  CHECK_EQ(1u, clients_.size());
+  // When a service worker is woken up by a device connection event, the
+  // client might not have yet registered with the HidService or the
+  // HidService hasn't been created yet when service worker is in running
+  // state. This is because service worker is set to running state after
+  // script evaluation but inter-processes request triggered from the script
+  // evaluation that creates HidService or registers a client might not be
+  // done in the browser process. To handle this situation, pending callbacks
+  // are stored and to be processed when registering the client.
+  service_worker_version_->context()
+      ->hid_delegate_observer()
+      ->ProcessPendingCallbacks(service_worker_version_.get());
 }
 
 void HidService::GetDevices(GetDevicesCallback callback) {

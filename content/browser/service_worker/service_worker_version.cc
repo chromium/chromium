@@ -71,6 +71,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -449,12 +450,17 @@ void ServiceWorkerVersion::SetStatus(Status status) {
   if (status == INSTALLED) {
     embedded_worker_->OnWorkerVersionInstalled();
   } else if (status == ACTIVATED) {
-#if !BUILDFLAG(IS_ANDROID)
     // Notify the hid delegate observer if the active service worker has any hid
     // event handlers.
-    context_->hid_delegate_observer()->UpdateHasEventHandlers(
-        registration_id_, has_hid_event_handlers_);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(blink::features::kWebHID) &&
+        base::FeatureList::IsEnabled(
+            features::kWebHidOnDesktopAndroidServiceWorkers))
+#endif  // BUILDFLAG(IS_ANDROID)
+    {
+      context_->hid_delegate_observer()->UpdateHasEventHandlers(
+          registration_id_, has_hid_event_handlers_);
+    }
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
     // Notify the usb delegate observer if the active service worker has any usb

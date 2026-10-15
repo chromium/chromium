@@ -2014,6 +2014,8 @@ source_set("browser") {
     "service_worker/service_worker_device_delegate_observer.h",
     "service_worker/service_worker_fetch_dispatcher.cc",
     "service_worker/service_worker_fetch_dispatcher.h",
+    "service_worker/service_worker_hid_delegate_observer.cc",
+    "service_worker/service_worker_hid_delegate_observer.h",
     "service_worker/service_worker_host.cc",
     "service_worker/service_worker_host.h",
     "service_worker/service_worker_info.cc",
@@ -3391,10 +3393,6 @@ source_set("browser") {
       # Not available on Android.
       "network_sandbox.cc",
       "network_sandbox.h",
-
-      # WebHID is not supported in service workers on Android
-      "service_worker/service_worker_hid_delegate_observer.cc",
-      "service_worker/service_worker_hid_delegate_observer.h",
 
       # Most speech code is non-Android.
       "speech/network_speech_recognition_engine_impl.cc",

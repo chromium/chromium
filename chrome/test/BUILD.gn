@@ -769,6 +769,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/enterprise/net:platform_browser_tests",
     "//chrome/browser/enterprise/network_header_injection:browser_tests",
     "//chrome/browser/enterprise/reporting:platform_browser_tests",
+    "//chrome/browser/hid:platform_browser_tests",
     "//chrome/browser/metrics:platform_browser_tests",
     "//chrome/browser/net:platform_browser_tests",
     "//chrome/browser/policy:platform_browser_tests",

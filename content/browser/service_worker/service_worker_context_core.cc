@@ -1508,7 +1508,6 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
   return std::make_tuple(std::move(container_info), std::move(controller));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 ServiceWorkerHidDelegateObserver*
 ServiceWorkerContextCore::hid_delegate_observer() {
   if (!hid_delegate_observer_) {
@@ -1522,7 +1521,6 @@ void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
     std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer) {
   hid_delegate_observer_ = std::move(hid_delegate_observer);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 ServiceWorkerUsbDelegateObserver*

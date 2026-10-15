@@ -1548,9 +1548,14 @@ void ChromeContentRendererClient::
   if (IsStandaloneContentExtensionProcess()) {
     // These Web API features are exposed in extensions.
     blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
-#if !BUILDFLAG(IS_ANDROID)
-    blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    if (base::FeatureList::IsEnabled(blink::features::kWebHID) &&
+        base::FeatureList::IsEnabled(
+            features::kWebHidOnDesktopAndroidServiceWorkers))
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    {
+      blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
+    }
     if (base::FeatureList::IsEnabled(
             blink::features::kClipboardOnExtensionServiceWorker)) {
       blink::WebRuntimeFeatures::EnableClipboardOnExtensionServiceWorker(true);

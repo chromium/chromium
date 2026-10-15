@@ -118,6 +118,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -1891,9 +1892,16 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                                                          std::move(receiver));
       },
       base::Unretained(host)));
-  map->Add<blink::mojom::HidService>(base::BindRepeating(
-      &ServiceWorkerHost::BindHidService, base::Unretained(host)));
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(blink::features::kWebHID) &&
+      base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers))
+#endif  // BUILDFLAG(IS_ANDROID)
+  {
+    map->Add<blink::mojom::HidService>(base::BindRepeating(
+        &ServiceWorkerHost::BindHidService, base::Unretained(host)));
+  }
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(

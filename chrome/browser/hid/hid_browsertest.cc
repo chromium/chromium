@@ -10,23 +10,17 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
-#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
-#include "chrome/browser/hid/hid_connection_tracker.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -36,6 +30,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/buildflags/buildflags.h"
@@ -43,34 +38,42 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
+#include "chrome/browser/hid/hid_pinned_notification.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/hid/hid_pinned_notification.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/app/chrome_command_ids.h"  // nogncheck
+#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
+#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
+#include "chrome/browser/hid/hid_connection_tracker.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/common/webui_url_constants.h"
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/hid/hid_status_icon.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
 using ::testing::Return;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using ::extensions::Extension;
 using ::extensions::ExtensionId;
 using ::extensions::TestExtensionDir;
@@ -204,7 +207,6 @@ constexpr auto kManagedUserAccountId =
     AccountId::Literal::FromUserEmailGaiaId("example@example.com",
                                             GaiaId::Literal("12345"));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Need to fill it with an url.
 constexpr char kPolicySetting[] = R"(
@@ -235,15 +237,25 @@ device::mojom::HidDeviceInfoPtr CreateTestDeviceWithInputAndOutputReports() {
   return device;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 }  // namespace
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Base Test fixture with kEnableWebHidOnExtensionServiceWorker default
 // disabled.
 class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
                                        extensions::ExtensionBrowserTest> {
  public:
   WebHidExtensionBrowserTest() {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebHID,
+         features::kWebHidOnDesktopAndroidServiceWorkers},
+        {});
+#else
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebHID);
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
     // The user is created via RegularLoggedInBrowserTestMixin.
     set_chromeos_user_ = false;
@@ -324,8 +336,8 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
 
   device::FakeHidManager* hid_manager() { return &hid_manager_; }
 
-  void SimulateClickOnSystemTrayIconButton(BrowserWindowInterface* browser,
-                                           const Extension* extension) {
+#if !BUILDFLAG(IS_ANDROID)
+  void SimulateClickOnSystemTrayIconButton(const Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS)
     auto* hid_pinned_notification = static_cast<HidPinnedNotification*>(
         g_browser_process->hid_system_tray_icon());
@@ -335,8 +347,7 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
             hid_pinned_notification->GetIconRendererForTesting());
 
     auto expected_pinned_notification_id =
-        device_pinned_notification_renderer->GetNotificationId(
-            browser->GetProfile());
+        device_pinned_notification_renderer->GetNotificationId(profile());
     auto maybe_indicator_notification =
         display_service_for_system_notification_->GetNotification(
             expected_pinned_notification_id);
@@ -345,7 +356,7 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
         /*action_index=*/0, /*reply=*/std::nullopt);
-    auto* web_contents = browser->GetTabStripModel()->GetActiveWebContents();
+    auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
     EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/hidDevices");
 #else
     // On non-ChromeOS platforms, as they use status icon and there isn't good
@@ -359,22 +370,23 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
-    EXPECT_EQ(browser->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+    EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetURL(),
               "https://support.google.com/chrome?p=webhid");
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
-    EXPECT_EQ(browser->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+    EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetURL(),
               "chrome://settings/content/hidDevices");
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
     EXPECT_EQ(
-        browser->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+        chrome_test_utils::GetActiveWebContents(this)->GetURL(),
         "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +
             extension->id());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -384,6 +396,7 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
       display_service_for_system_notification_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   device::FakeHidManager hid_manager_;
 };
 
@@ -429,10 +442,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
 // the service worker being kept alive with active device session.
 IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
                        DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
-  content::ServiceWorkerContext* context = browser()
-                                               ->GetProfile()
-                                               ->GetDefaultStoragePartition()
-                                               ->GetServiceWorkerContext();
+  content::ServiceWorkerContext* context =
+      profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
   TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
 
@@ -497,7 +508,9 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
       context, service_worker_version_id));
   // Since we have active HID device session at this point, click the HID system
   // tray icon and check right links are opened by the browser.
-  SimulateClickOnSystemTrayIconButton(browser(), extension);
+#if !BUILDFLAG(IS_ANDROID)
+  SimulateClickOnSystemTrayIconButton(extension);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Remove device will close the device session, and worker will stop running
   // when it times out.
@@ -528,7 +541,9 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
       context, service_worker_version_id));
   // Since we have active HID device session at this point, click the HID system
   // tray icon and check right links are opened by the browser.
-  SimulateClickOnSystemTrayIconButton(browser(), extension);
+#if !BUILDFLAG(IS_ANDROID)
+  SimulateClickOnSystemTrayIconButton(extension);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
@@ -539,17 +554,13 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
       "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
       "events/";
 
-  content::ServiceWorkerContext* context = browser()
-                                               ->GetProfile()
-                                               ->GetDefaultStoragePartition()
-                                               ->GetServiceWorkerContext();
+  content::ServiceWorkerContext* context =
+      profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
   TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
   // Set up an observer for console messages reported by service worker
-  TestServiceWorkerConsoleObserver console_observer(browser()
-                                                        ->tab_strip_model()
-                                                        ->GetActiveWebContents()
-                                                        ->GetBrowserContext());
+  TestServiceWorkerConsoleObserver console_observer(
+      chrome_test_utils::GetActiveWebContents(this)->GetBrowserContext());
   TestExtensionDir test_dir;
   constexpr char kBackgroundJs[] = R"(
       chrome.test.sendMessage("ready", function() {
@@ -581,4 +592,30 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
   EXPECT_EQ(console_observer.messages().begin()->message,
             base::UTF8ToUTF16(base::StringPrintf(kWarningMessage, "connect")));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class WebHidExtensionFeatureDisabledBrowserTest
+    : public WebHidExtensionBrowserTest {
+ public:
+  WebHidExtensionFeatureDisabledBrowserTest() {
+    disabled_feature_list_.InitAndDisableFeature(
+        features::kWebHidOnDesktopAndroidServiceWorkers);
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
+                       WebHidUndefinedWhenFeatureDisabled) {
+  constexpr char kBackgroundJs[] = R"(
+    chrome.test.sendMessage("ready", async () => {
+      chrome.test.assertEq(undefined, navigator.hid);
+      chrome.test.notifyPass();
+    });
+  )";
+
+  LoadExtensionAndRunTest(kBackgroundJs);
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

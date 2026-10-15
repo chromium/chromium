@@ -302,9 +302,6 @@ std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
 
 // static
 bool HidBlocklist::IsKnownSecurityKey(uint16_t vendor_id, uint16_t product_id) {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else   // BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           features::kSecurityKeyHidInterfacesAreFido)) {
     return false;
@@ -315,7 +312,6 @@ bool HidBlocklist::IsKnownSecurityKey(uint16_t vendor_id, uint16_t product_id) {
   // if the device has no FIDO collection.
   return std::ranges::contains(kKnownSecurityKeys,
                                VendorProduct{vendor_id, product_id});
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

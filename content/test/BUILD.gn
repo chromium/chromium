@@ -3743,18 +3743,20 @@ test("content_unittests") {
   }
 
   # Tests for platforms that support extensions. Linux requires udev.
-  if (enable_extensions_core && (!is_linux || use_udev)) {
-    sources += [ "../browser/service_worker/service_worker_usb_delegate_observer_unittest.cc" ]
+  is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
+  if (enable_extensions_core && !is_linux_without_udev) {
+    sources += [
+      "../browser/service_worker/service_worker_hid_delegate_observer_unittest.cc",
+      "../browser/service_worker/service_worker_usb_delegate_observer_unittest.cc",
+    ]
   }
 
   # HID support is not available without udev.
-  is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
   if (!is_linux_without_udev) {
     sources += [ "../browser/hid/hid_service_unittest.cc" ]
   }
   if (!is_linux_without_udev && !is_android) {
     sources += [
-      "../browser/service_worker/service_worker_hid_delegate_observer_unittest.cc",
       "../browser/webauth/authenticator_impl_cable_unittest.cc",
       "../browser/webauth/authenticator_impl_pin_unittest.cc",
       "../browser/webauth/authenticator_impl_resident_key_unittest.cc",

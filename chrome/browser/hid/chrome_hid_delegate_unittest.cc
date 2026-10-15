@@ -27,12 +27,14 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/embedded_worker_instance_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/hid_test_util.h"
 #include "services/device/public/cpp/test/scoped_usb_device_manager_overrider.h"
@@ -48,7 +50,7 @@
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -56,7 +58,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
@@ -89,11 +91,11 @@ constexpr AccountId::Literal kTestAccountId =
     AccountId::Literal::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 constexpr std::string_view kPrivilegedExtensionId{
     "ckcendljdlmgnhghiaomidhiiclmapok"};
 constexpr std::string_view kExtensionDocumentFileName{"index.html"};
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 MATCHER_P(HasGuid, matcher, "") {
   return ExplainMatchResult(matcher, arg->guid, result_listener);
@@ -118,13 +120,13 @@ device::mojom::HidDeviceInfoPtr CreateIncompleteFakeDevice() {
   return device;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 device::mojom::HidDeviceInfoPtr CreateFakeFidoDevice() {
   return device::CreateDeviceFromReportDescriptor(
       /*vendor_id=*/0x1234,
       /*product_id=*/0xabcd, device::TestReportDescriptors::FidoU2fHid());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // A mock HidManagerClient implementation that can be used to listen for HID
 // device connection events.
@@ -192,7 +194,14 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 class ChromeHidTestHelper {
  public:
   ChromeHidTestHelper() {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    feature_list_.InitWithFeatures(
+        {blink::features::kWebHID,
+         features::kWebHidOnDesktopAndroidServiceWorkers},
+        {});
+#else
     feature_list_.InitAndEnableFeature(blink::features::kWebHID);
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   }
 
   void SimulateDeviceServiceCrash() {
@@ -243,7 +252,7 @@ class ChromeHidTestHelper {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
   scoped_refptr<const extensions::Extension> CreateExtensionWithId(
@@ -277,7 +286,7 @@ class ChromeHidTestHelper {
     extension_ = CreateExtensionWithId(kPrivilegedExtensionId);
     origin_url_ = extension_->origin().GetURL();
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   void SetUpWebPageOriginUrl() { origin_url_ = GURL(kDefaultTestUrl); }
 
@@ -811,7 +820,7 @@ class ChromeHidTestHelper {
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   void TestFidoDeviceAllowedWithPrivilegedOrigin(
       content::WebContents* web_contents) {
     auto origin = url::Origin::Create(origin_url_);
@@ -913,7 +922,7 @@ class ChromeHidTestHelper {
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   scoped_refptr<const extensions::Extension> extension_;
 #endif
   MockHidManagerClient hid_manager_client_;
@@ -1161,7 +1170,7 @@ class ChromeHidDelegateServiceWorkerTest
   void SetUpOriginUrl() override { SetUpWebPageOriginUrl(); }
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 class ChromeHidDelegateExtensionServiceWorkerTest
     : public ChromeHidDelegateServiceWorkerTestBase {
@@ -1173,6 +1182,20 @@ class ChromeHidDelegateExtensionServiceWorkerTest
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest
+    : public ChromeHidDelegateExtensionServiceWorkerTest {
+ public:
+  ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest() {
+    disabled_feature_list_.InitAndDisableFeature(
+        features::kWebHidOnDesktopAndroidServiceWorkers);
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
 class ChromeHidDelegateExtensionRenderFrameTest
     : public ChromeHidDelegateRenderFrameTestBase {
  public:
@@ -1182,7 +1205,7 @@ class ChromeHidDelegateExtensionRenderFrameTest
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -1223,7 +1246,7 @@ TEST_F(ChromeHidDelegateServiceWorkerTest, HidServiceNotConnected) {
   TestHidServiceNotConnected();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
        FidoDeviceAllowedWithPrivilegedOrigin) {
   TestFidoDeviceAllowedWithPrivilegedOrigin(web_contents());
@@ -1291,7 +1314,17 @@ TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndDisconnect) {
 TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndRemove) {
   TestConnectAndRemove(/*web_contents=*/nullptr);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest,
+       FeatureDisabledOnDesktopAndroid) {
+  ChromeHidDelegate chrome_hid_delegate;
+  EXPECT_FALSE(chrome_hid_delegate.IsServiceWorkerAllowedForOrigin(
+      url::Origin::Create(origin_url_)));
+  TestHidServiceNotConnected();
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
   ChromeHidDelegate chrome_hid_delegate;

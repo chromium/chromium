@@ -27,9 +27,11 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -37,9 +39,12 @@
 #include "chrome/browser/ui/android/device_dialog/hid_chooser_dialog_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -378,13 +383,18 @@ bool ChromeHidDelegate::IsKnownSecurityKey(
 
 bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // WebHID is only available on extension service workers with feature flag
-  // enabled for now.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID) ||
+      !base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers)) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   if (origin.scheme() == extensions::kExtensionScheme) {
     return true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return false;
 }
 

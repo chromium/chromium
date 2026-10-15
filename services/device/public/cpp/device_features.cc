@@ -127,13 +127,11 @@ BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
 // Modifies the internal allowlist behavior that enables privileged extensions
 // to bypass the HID blocklist when accessing FIDO devices. When enabled,
 // privileged extensions can access non-FIDO interfaces on known security keys.
 BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables recursive filtering of nested HID collections to prevent WebHID
 // security bypasses (e.g., nested keyboards or FIDO keys).

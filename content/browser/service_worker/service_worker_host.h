@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
@@ -40,10 +41,6 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
-#endif
 
 namespace content {
 
@@ -96,9 +93,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
-#if !BUILDFLAG(IS_ANDROID)
   void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   void BindUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);

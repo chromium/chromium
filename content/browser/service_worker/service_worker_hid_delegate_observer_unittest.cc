@@ -14,7 +14,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/browser/hid/hid_service.h"
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -24,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_web_contents.h"
@@ -32,6 +35,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "url/origin.h"
@@ -161,7 +165,17 @@ class MockHidManagerClient : public device::mojom::HidManagerClient {
 class ServiceWorkerHidDelegateObserverTest
     : public ServiceWorkerDeviceDelegateObserverTest {
  public:
-  ServiceWorkerHidDelegateObserverTest() = default;
+  ServiceWorkerHidDelegateObserverTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            blink::features::kWebHID,
+#if BUILDFLAG(IS_ANDROID)
+            features::kWebHidOnDesktopAndroidServiceWorkers,
+#endif  // BUILDFLAG(IS_ANDROID)
+        },
+        /*disabled_features=*/{});
+  }
   ServiceWorkerHidDelegateObserverTest(ServiceWorkerHidDelegateObserverTest&) =
       delete;
   ServiceWorkerHidDelegateObserverTest& operator=(
@@ -307,6 +321,7 @@ class ServiceWorkerHidDelegateObserverTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   MockHidManagerClient hid_manager_client_;
   HidTestContentBrowserClient test_client_;
   device::FakeHidManager hid_manager_;

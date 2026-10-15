@@ -1380,6 +1380,12 @@ BASE_FEATURE(kWebBluetooth, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables WebHID support on extension service workers on Desktop Android.
+BASE_FEATURE(kWebHidOnDesktopAndroidServiceWorkers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Controls which backend is used to retrieve OTP on Android. When disabled
 // we use User Consent API.
 BASE_FEATURE(kWebOtpBackendAuto, base::FEATURE_DISABLED_BY_DEFAULT);

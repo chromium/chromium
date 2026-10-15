@@ -30,6 +30,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
@@ -40,6 +41,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -78,6 +80,11 @@ class HidChooserContextTestBase {
 #if !BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitAndEnableFeature(
         features::kSecurityKeyHidInterfacesAreFido);
+#elif BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebHID, features::kSecurityKeyHidInterfacesAreFido,
+         features::kWebHidOnDesktopAndroidServiceWorkers},
+        {});
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -189,7 +196,7 @@ class HidChooserContextTestBase {
     return ConnectDeviceBlocking(CreateDevice(kTestSerialNumber));
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   device::mojom::HidDeviceInfoPtr ConnectFidoDeviceBlocking() {
     auto device = CreateDevice(/*serial_number=*/"");
     device->collections[0]->usage->usage_page = device::mojom::kPageFido;
@@ -215,7 +222,7 @@ class HidChooserContextTestBase {
     device->collections[0]->usage->usage = 1;
     return ConnectDeviceBlocking(std::move(device));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   device::mojom::HidDeviceInfoPtr ConnectDeviceBlocking(
       device::mojom::HidDeviceInfoPtr device) {
@@ -368,11 +375,27 @@ class HidChooserContextTestBase {
 class HidChooserContextTest : public HidChooserContextTestBase,
                               public testing::Test {
  public:
+  HidChooserContextTest() = default;
+
   void SetUp() override {
     DoSetUp(/*is_affiliated=*/true, /*login_user=*/true);
   }
   void TearDown() override { DoTearDown(); }
 };
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class HidChooserContextDesktopAndroidFeatureDisabledTest
+    : public HidChooserContextTest {
+ public:
+  HidChooserContextDesktopAndroidFeatureDisabledTest() {
+    disabled_feature_list_.InitAndDisableFeature(
+        features::kWebHidOnDesktopAndroidServiceWorkers);
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 }  // namespace
 
@@ -1337,7 +1360,7 @@ TEST_F(HidChooserContextTest, ClearBrowsingDataRegressionFromBlock) {
   EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistDeviceIdRule) {
   const auto kFidoAllowedOrigin = url::Origin::Create(
       GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
@@ -1412,7 +1435,22 @@ TEST_P(HidChooserContextAffiliatedTest,
                                  kFidoAndPolicyAllowedOrigin, *device));
   EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+TEST_F(HidChooserContextDesktopAndroidFeatureDisabledTest,
+       FidoDisallowedWhenDesktopAndroidFeatureDisabled) {
+  const auto kFidoAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  EXPECT_FALSE(context()->IsFidoAllowedForOrigin(kFidoAllowedOrigin));
+
+  auto sibling_device = ConnectFidoSiblingDeviceBlocking();
+  EXPECT_TRUE(context()->IsKnownSecurityKey(*sibling_device));
+  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *sibling_device);
+  EXPECT_FALSE(
+      context()->HasDevicePermission(kFidoAllowedOrigin, *sibling_device));
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Boolean parameter means if user is affiliated on the device. Affiliated
 // users belong to the domain that owns the device and is only meaningful

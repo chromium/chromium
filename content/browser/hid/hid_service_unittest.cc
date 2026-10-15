@@ -27,6 +27,7 @@
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -264,7 +265,15 @@ class HidServiceTestHelper {
 class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
  public:
   HidServiceBaseTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kWebHID);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            blink::features::kWebHID,
+#if BUILDFLAG(IS_ANDROID)
+            features::kWebHidOnDesktopAndroidServiceWorkers,
+#endif  // BUILDFLAG(IS_ANDROID)
+        },
+        /*disabled_features=*/{});
   }
   HidServiceBaseTest(HidServiceBaseTest&) = delete;
   HidServiceBaseTest& operator=(HidServiceBaseTest&) = delete;
@@ -425,9 +434,7 @@ class HidServiceFidoTest : public HidServiceBaseTest,
         /*enabled_features=*/
         {
             features::kWebHidRecursiveFiltering,
-#if !BUILDFLAG(IS_ANDROID)
             features::kSecurityKeyHidInterfacesAreFido,
-#endif  // !BUILDFLAG(IS_ANDROID)
         },
         /*disabled_features=*/{});
   }
@@ -436,7 +443,6 @@ class HidServiceFidoTest : public HidServiceBaseTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Test fixture for service worker specific tests.
 class HidServiceServiceWorkerBrowserContextDestroyedTest
     : public HidServiceBaseTest {
@@ -449,7 +455,6 @@ class HidServiceServiceWorkerBrowserContextDestroyedTest
 
   void SetUp() override { GetService(kCreateUsingServiceWorkerContextCore); }
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -1838,9 +1843,7 @@ TEST_P(HidServiceTest, CompositeDeviceWithMousePruned) {
 const HidServiceCreationType kServiceCreationTypes[]{
     kCreateUsingRenderFrameHost,
     kCreateUsingDedicatedWorker,
-#if !BUILDFLAG(IS_ANDROID)
     kCreateUsingServiceWorkerContextCore,
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1853,9 +1856,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 const bool kIsFidoAllowed[]{
     false,
-#if !BUILDFLAG(IS_ANDROID)
     true,
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1871,7 +1872,6 @@ INSTANTIATE_TEST_SUITE_P(
           std::get<1>(info.param) ? "FidoAllowed" : "FidoNotAllowed");
     });
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HidServiceServiceWorkerBrowserContextDestroyedTest, GetDevices) {
   auto device_info = CreateDeviceWithOneReport();
   ConnectDevice(*device_info);
@@ -1932,7 +1932,6 @@ TEST_F(HidServiceServiceWorkerBrowserContextDestroyedTest, RejectOpaqueOrigin) {
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "WebHID is not allowed from an opaque origin.");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HidServiceBaseTest, CreateBlockedWhenHidNotAllowedForFrame) {
   EXPECT_CALL(hid_delegate(), IsHidAllowedForFrame(_)).WillOnce(Return(false));

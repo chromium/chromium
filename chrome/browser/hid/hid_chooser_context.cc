@@ -26,9 +26,11 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -37,11 +39,11 @@
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/hid/hid_common.h"
 #include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
@@ -505,13 +507,13 @@ bool HidChooserContext::HasDevicePermission(
     bool is_device_protected_due_to_fido = std::ranges::contains(
         device.collections, device::mojom::kPageFido,
         [](const auto& c) { return c->usage->usage_page; });
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (base::FeatureList::IsEnabled(
             features::kSecurityKeyHidInterfacesAreFido) &&
         IsKnownSecurityKey(device)) {
       is_device_protected_due_to_fido = true;
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (!is_device_protected_due_to_fido || !IsFidoAllowedForOrigin(origin)) {
       return false;
     }
@@ -560,12 +562,19 @@ bool HidChooserContext::HasDevicePermission(
 }
 
 bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID) ||
+      !base::FeatureList::IsEnabled(
+          features::kWebHidOnDesktopAndroidServiceWorkers)) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   if (origin.scheme() == extensions::kExtensionScheme &&
       kPrivilegedFidoExtensionIds.contains(origin.host())) {
     return true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return false;
 }
