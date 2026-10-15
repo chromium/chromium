@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
@@ -11,18 +12,25 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/base/interaction/polling_state_observer.h"
 
 namespace extensions {
 
-class ExtensionSidePanelInteractiveTest : public ExtensionBrowserTest {
+namespace {
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kOmniboxFocused);
+
+}  // namespace
+
+class ExtensionSidePanelInteractiveTest
+    : public InteractiveBrowserTestMixin<ExtensionBrowserTest> {
  protected:
   SidePanelEntry::Key GetKey(const ExtensionId& id) {
     return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
@@ -140,16 +148,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelInteractiveTest,
                       /*suppress_animations=*/true);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  // Click on the omnibox to focus it.
-  ASSERT_NO_FATAL_FAILURE(
-      ui_test_utils::ClickOnView(browser(), VIEW_ID_OMNIBOX));
-  ASSERT_NO_FATAL_FAILURE(
-      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+  // Click on the omnibox to focus it. The omnibox is located via its element
+  // identifier so that this works for both the Views and WebUI toolbar.
+  RunTestSequence(PollState(kOmniboxFocused,
+                            [this]() {
+                              return ui_test_utils::IsViewFocused(
+                                  browser(), VIEW_ID_OMNIBOX);
+                            }),
+                  MoveMouseTo(kOmniboxElementId), ClickMouse(),
+                  WaitForState(kOmniboxFocused, true));
 
-  LocationBarView* location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-  ASSERT_TRUE(location_bar);
-  EXPECT_TRUE(location_bar->omnibox_view()->HasFocus());
   side_panel_ui->Close();
 }
 
