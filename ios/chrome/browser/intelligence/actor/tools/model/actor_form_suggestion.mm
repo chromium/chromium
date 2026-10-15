@@ -80,8 +80,24 @@ autofill::SuggestionType SuggestionTypeFromRequestedData(
     NSString* display_description = base::SysUTF8ToNSString(suggestion.details);
 
     UIImage* icon = nil;
+    SuggestionIconType suggestionIconType = SuggestionIconType::kNone;
+
     if (suggestion.icon.has_value()) {
       icon = suggestion.icon->ToUIImage();
+    } else {
+      switch (dataType) {
+        case autofill::ActorFormFillingRequestedData::kHomeAddress:
+          suggestionIconType = SuggestionIconType::kAccountHome;
+          break;
+        case autofill::ActorFormFillingRequestedData::kWorkAddress:
+          suggestionIconType = SuggestionIconType::kAccountWork;
+          break;
+        case autofill::ActorFormFillingRequestedData::kContactInformation:
+          suggestionIconType = SuggestionIconType::kContact;
+          break;
+        default:
+          break;
+      }
     }
 
     _formSuggestion =
@@ -90,8 +106,10 @@ autofill::SuggestionType SuggestionTypeFromRequestedData(
                                        icon:icon
                                        type:suggestionType
                                     payload:autofill::Suggestion::Payload()
-                             requiresReauth:YES];
+                             requiresReauth:NO];
+    _formSuggestion.suggestionIconType = suggestionIconType;
   }
   return self;
 }
+
 @end

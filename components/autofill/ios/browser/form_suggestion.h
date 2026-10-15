@@ -86,6 +86,8 @@ enum class SuggestionIconType {
   kBackupPassword = 3,
   // Undo autofill icon
   kUndoAutofill = 4,
+  // Contact information icon.
+  kContact = 5,
 };
 
 // Represents a user-selectable suggestion for a single field within a form
