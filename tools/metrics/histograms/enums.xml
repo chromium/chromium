@@ -7318,13 +7318,6 @@ shown properly on the user-facing crash UI.
   <int value="3" label="ColdPreBrowserObjects"/>
 </enum>
 
-<enum name="LcppHintStatus">
-  <int value="0" label="kSucceedToSet"/>
-  <int value="1" label="kNoLcppData"/>
-  <int value="2" label="kInvalidLcppStat"/>
-  <int value="3" label="kConversionFailure"/>
-</enum>
-
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>

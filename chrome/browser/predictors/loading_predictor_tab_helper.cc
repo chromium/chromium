@@ -187,32 +187,13 @@ bool ShouldConsultOptimizationGuide(const GURL& current_main_frame_url,
          url::Origin::Create(previous_main_frame_url);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class LcppHintStatus {
-  kSucceedToSet = 0,
-  kNoLcppData = 1,
-  kInvalidLcppStat = 2,
-  kConversionFailure = 3,
-  kMaxValue = kConversionFailure,
-};
-
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 GetLCPPHint(content::NavigationHandle& navigation_handle,
             LoadingPredictor& predictor) {
   std::optional<LcppStat> lcpp_stat =
       predictor.resource_prefetch_predictor()->GetLcppStat(
           navigation_handle.GetInitiatorOrigin(), navigation_handle.GetURL());
-  if (!lcpp_stat) {
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kNoLcppData);
-    return std::nullopt;
-  }
-  if (!IsValidLcppStat(*lcpp_stat)) {
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kInvalidLcppStat);
+  if (!lcpp_stat || !IsValidLcppStat(*lcpp_stat)) {
     return std::nullopt;
   }
 
@@ -247,15 +228,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   }
   if (hint) {
     navigation_handle.SetLCPPNavigationHint(hint->Clone());
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kSucceedToSet);
     base::UmaHistogramTimes("LoadingPredictor.SetLCPPNavigationHint.Time",
                             timer.Elapsed());
-  } else {
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kConversionFailure);
   }
 }
 
