@@ -558,10 +558,13 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
         auto* unpinned_container =
             views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
         ASSERT_NE(unpinned_container, nullptr);
-        ASSERT_TRUE(unpinned_container->available_space().is_bounded());
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        .has_value());
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        ->is_bounded());
 
         const int available_space =
-            unpinned_container->available_space().value();
+            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
         const int initial_tab_width = unpinned->children()[0]->view()->width();
 
         // Close tabs until the container transitions to non-overflowing.

@@ -60,11 +60,6 @@ class UnpinnedTabContainerView
   // ignoring any active tab closing mode override.
   int GetUnconstrainedPreferredWidth() const;
 
-  // Sets the main-axis space allocated for this container during TabStripView
-  // layout passes.
-  void SetAvailableSpace(views::SizeBound space) { available_space_ = space; }
-  views::SizeBound available_space() const { return available_space_; }
-
  private:
   // DraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;
@@ -85,9 +80,6 @@ class UnpinnedTabContainerView
 
   const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
-
-  // The available main-axis space allocated by TabStripViewLayout.
-  views::SizeBound available_space_;
 
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 

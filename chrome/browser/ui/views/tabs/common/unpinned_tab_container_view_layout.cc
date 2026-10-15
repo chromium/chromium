@@ -202,10 +202,6 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
 
     layouts.child_layouts.emplace_back(child, true, bounds);
 
-    if (auto* group_view = views::AsViewClass<TabGroupView>(child)) {
-      group_view->SetAvailableSpace(views::SizeBound(child_width));
-    }
-
     if (visible_index < collection.visible_children.size() - 1) {
       x += bounds.width() -
            GetChildOverlap(collection.visible_children[visible_index].view,

@@ -245,8 +245,13 @@ UnpinnedTabContainerView::GetAvailableMainAxisSpaceOverride() const {
   }
   // When not overflowing, return the total available unpinned capacity
   // allocated by TabStripViewLayout so tabs have room to expand.
-  if (available_space_.is_bounded()) {
-    return available_space_;
+  if (scroll_view && scroll_view->parent()) {
+    const views::SizeBounds available_size =
+        scroll_view->parent()->GetAvailableSize(scroll_view);
+    if (available_size.width().is_bounded() &&
+        available_size.width().value() > 0) {
+      return available_size.width();
+    }
   }
   if (scroll_view && scroll_view->width() > 0) {
     return views::SizeBound(scroll_view->width());

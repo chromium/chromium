@@ -809,11 +809,5 @@ void TabStripView::OnScrollButtonsVisibilityChanged() {
   }
 }
 
-void TabStripView::SetAvailableUnpinnedSpace(views::SizeBound space) const {
-  if (unpinned_tabs_container_view_) {
-    unpinned_tabs_container_view_->SetAvailableSpace(space);
-  }
-}
-
 BEGIN_METADATA(TabStripView)
 END_METADATA

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
@@ -621,14 +622,17 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   // Perform a standard layout pass so bounded available space is established.
   tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
 
-  EXPECT_TRUE(unpinned_container->available_space().is_bounded());
+  ASSERT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride().has_value());
+  EXPECT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride()->is_bounded());
   const int original_unpinned_available =
-      unpinned_container->available_space().value();
+      unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
   EXPECT_GT(original_unpinned_available, 0);
 
-  EXPECT_TRUE(group_view->available_space().is_bounded());
-  const int original_group_available = group_view->available_space().value();
-  EXPECT_GT(original_group_available, 0);
+  const int original_group_target_width =
+      GetTabStripViewTargetBounds(group_view).width();
+  EXPECT_GT(original_group_target_width, 0);
 
   // Perform unconstrained layout measurement queries on TabStripView and
   // UnpinnedTabContainerView.
@@ -636,13 +640,16 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   unpinned_container->GetPreferredSize(views::SizeBounds());
 
   // Verify that unbounded size queries did not clear or overwrite the bounded
-  // available space on either container.
-  EXPECT_TRUE(unpinned_container->available_space().is_bounded());
-  EXPECT_EQ(unpinned_container->available_space().value(),
+  // available space or group target width.
+  ASSERT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride().has_value());
+  EXPECT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride()->is_bounded());
+  EXPECT_EQ(unpinned_container->GetAvailableMainAxisSpaceOverride()->value(),
             original_unpinned_available);
 
-  EXPECT_TRUE(group_view->available_space().is_bounded());
-  EXPECT_EQ(group_view->available_space().value(), original_group_available);
+  EXPECT_EQ(GetTabStripViewTargetBounds(group_view).width(),
+            original_group_target_width);
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
@@ -663,11 +670,14 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
 
   tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  ASSERT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride().has_value());
   const int original_unpinned_available =
-      unpinned_container->available_space().value();
-  const int original_group_available = group_view->available_space().value();
+      unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+  const int original_group_target_width =
+      GetTabStripViewTargetBounds(group_view).width();
   ASSERT_GT(original_unpinned_available, 0);
-  ASSERT_GT(original_group_available, 0);
+  ASSERT_GT(original_group_target_width, 0);
 
   // Perform zero-sized layout measurement queries on TabStripView and
   // UnpinnedTabContainerView (e.g. minimum size calculations).
@@ -676,9 +686,12 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   unpinned_container->GetMinimumSize();
   unpinned_container->GetPreferredSize(views::SizeBounds(0, 0));
 
-  EXPECT_EQ(unpinned_container->available_space().value(),
+  ASSERT_TRUE(
+      unpinned_container->GetAvailableMainAxisSpaceOverride().has_value());
+  EXPECT_EQ(unpinned_container->GetAvailableMainAxisSpaceOverride()->value(),
             original_unpinned_available);
-  EXPECT_EQ(group_view->available_space().value(), original_group_available);
+  EXPECT_EQ(GetTabStripViewTargetBounds(group_view).width(),
+            original_group_target_width);
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,

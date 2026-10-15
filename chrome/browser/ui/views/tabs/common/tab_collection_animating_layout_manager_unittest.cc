@@ -764,6 +764,153 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 }
 
 TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       NestedContainerRecalculatesTargetTopDownOnChildInvalidation) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Simulates a parent container (`UnpinnedTabContainerView`) that allocates
+  // target bounds to a nested container (`TabGroupView`) during the parent's
+  // target layout calculation. When a child is added to the nested container,
+  // `OnLayoutChanged()` fires on the nested container first (bottom-up), but
+  // defers `RecalculateTarget()` until invalidation bubbles up to the parent
+  // so targets are recalculated in a single top-down pass.
+  class ParentContainerLayoutManager : public views::LayoutManagerBase {
+   public:
+    explicit ParentContainerLayoutManager(std::vector<std::string>* order)
+        : order_(order) {}
+
+   protected:
+    views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds) const override {
+      if (size_bounds.width().is_bounded()) {
+        order_->push_back("parent");
+      }
+      views::ProposedLayout layout;
+      int x = 0;
+      for (views::View* child : host_view()->children()) {
+        const int width = child->GetPreferredSize().width();
+        layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                          gfx::Rect(x, 0, width, 100));
+        x += width;
+      }
+      layout.host_size = gfx::Size(x, 100);
+      return layout;
+    }
+
+   private:
+    raw_ptr<std::vector<std::string>> order_;
+  };
+
+  class ProportionalGroupLayoutManager : public views::LayoutManagerBase {
+   public:
+    explicit ProportionalGroupLayoutManager(std::vector<std::string>* order)
+        : order_(order) {}
+
+   protected:
+    views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds) const override {
+      if (size_bounds.width().is_bounded()) {
+        order_->push_back("group");
+      }
+      views::ProposedLayout layout;
+      const size_t count = host_view()->children().size();
+      if (count == 0) {
+        return layout;
+      }
+      const int preferred_width = static_cast<int>(count) * 20;
+      const int available_width = size_bounds.width().value_or(preferred_width);
+      const int child_width = available_width / static_cast<int>(count);
+      int x = 0;
+      for (views::View* child : host_view()->children()) {
+        layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                          gfx::Rect(x, 0, child_width, 100));
+        x += child_width;
+      }
+      layout.host_size = gfx::Size(available_width, 100);
+      return layout;
+    }
+
+   private:
+    raw_ptr<std::vector<std::string>> order_;
+  };
+
+  widget()->SetBounds(gfx::Rect(0, 0, 200, 100));
+
+  // Register an unrelated sibling container on the same coordinator to verify
+  // it is not recalculated when `group_view` is invalidated.
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> sibling_delegate;
+  auto sibling_host = std::make_unique<views::View>();
+  auto* sibling_layout_manager = sibling_host->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(
+              TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal),
+          sibling_delegate, animation_coordinator(),
+          TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
+  sibling_host->SetBounds(0, 0, 100, 100);
+  views::test::RunScheduledLayout(sibling_host.get());
+  auto* sibling_target_layout = static_cast<TestLayoutManager*>(
+      sibling_layout_manager->target_layout_manager());
+
+  std::vector<std::string> target_calculation_order;
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> group_delegate;
+
+  auto* group_view = host_view()->AddChildView(std::make_unique<views::View>());
+  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
+      std::make_unique<ParentContainerLayoutManager>(&target_calculation_order),
+      *layout_manager_delegate(), animation_coordinator(),
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
+
+  auto* group_layout_manager = group_view->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<ProportionalGroupLayoutManager>(
+              &target_calculation_order),
+          group_delegate, animation_coordinator(),
+          TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
+
+  auto* child1 = group_view->AddChildView(std::make_unique<views::View>());
+  widget()->LayoutRootViewIfNecessary();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  widget()->LayoutRootViewIfNecessary();
+
+  ASSERT_EQ(layout_manager()->target_layout().GetLayoutFor(group_view)->bounds,
+            gfx::Rect(0, 0, 20, 100));
+  ASSERT_EQ(group_layout_manager->target_layout().GetLayoutFor(child1)->bounds,
+            gfx::Rect(0, 0, 20, 100));
+
+  target_calculation_order.clear();
+  const int sibling_count_before =
+      sibling_target_layout->calculate_proposed_layout_count();
+
+  // Adding `child2` to `group_view` triggers `group_view`'s `OnLayoutChanged()`
+  // first, which defers target recalculation until invalidation bubbles up to
+  // `host_view()`. `PropagateRecalculateTarget()` then runs once top-down
+  // ("parent" then "group"), updating `group_view`'s target width in the
+  // parent to 40 before `group_view` calculates its target layout, and
+  // skipping the unrelated `sibling_host`.
+  auto* child2 = group_view->AddChildView(std::make_unique<views::View>());
+  EXPECT_THAT(target_calculation_order,
+              testing::ElementsAre("parent", "group"));
+  EXPECT_EQ(sibling_target_layout->calculate_proposed_layout_count(),
+            sibling_count_before);
+  EXPECT_EQ(layout_manager()->target_layout().GetLayoutFor(group_view)->bounds,
+            gfx::Rect(0, 0, 40, 100));
+  EXPECT_EQ(group_layout_manager->target_layout().GetLayoutFor(child1)->bounds,
+            gfx::Rect(0, 0, 20, 100));
+  EXPECT_EQ(group_layout_manager->target_layout().GetLayoutFor(child2)->bounds,
+            gfx::Rect(20, 0, 20, 100));
+
+  // Stepping through animation ticks should not trigger additional target
+  // recalculations on either the parent or nested group container.
+  target_calculation_order.clear();
+  while (layout_manager()->is_animating() ||
+         group_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+  }
+  EXPECT_THAT(target_calculation_order, testing::IsEmpty());
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
        LayoutSkipsRecalculateTargetDuringAnimationUnlessSizeBoundsChange) {
   gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);

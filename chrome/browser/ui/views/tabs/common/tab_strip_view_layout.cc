@@ -150,6 +150,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   int unpinned_width = unpinned_preferred_width;
   bool show_scroll_buttons = false;
   int overflow_padding = 0;
+  views::SizeBounds unpinned_available_size;
 
   if (available_width.is_bounded()) {
     int available_unpinned_width = std::max(available_width.value() - x, 0);
@@ -175,10 +176,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
           std::max(available_unpinned_width - overflow_padding, 0);
     }
 
-    // Do not overwrite available space during zero-size measurement queries.
+    // Do not update overflow indicators during zero-size measurement queries.
     if (available_width.value() > 0) {
-      tab_strip_view->SetAvailableUnpinnedSpace(
-          views::SizeBound(available_unpinned_width));
       if (unpinned_tabs_scroll_view) {
         unpinned_tabs_scroll_view->SetDrawOverflowIndicator(
             will_overflow_without_scroll_buttons);
@@ -188,6 +187,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
             is_pinned_overflowing);
       }
     }
+    unpinned_available_size =
+        views::SizeBounds(available_unpinned_width, container_height);
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
@@ -211,7 +212,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
 
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,
                                      unpinned_tabs_scroll_view->GetVisible(),
-                                     unpinned_bounds);
+                                     unpinned_bounds, unpinned_available_size);
 
   x += overflow_padding;
 

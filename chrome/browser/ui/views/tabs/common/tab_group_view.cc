@@ -243,10 +243,6 @@ bool TabGroupView::ShouldSnapToTarget(const views::View& child_view) const {
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
-void TabGroupView::SetAvailableSpace(views::SizeBound space) {
-  available_space_ = space;
-}
-
 int TabGroupView::GetCrossoverWidth() const {
   if (orientation_ == TabStripOrientation::kHorizontal) {
     return static_cast<TabGroupViewLayout*>(
@@ -254,16 +250,6 @@ int TabGroupView::GetCrossoverWidth() const {
         ->CalculateHorizontalCrossoverWidth(this);
   }
   return GetMinimumSize().width();
-}
-
-std::optional<views::SizeBound>
-TabGroupView::GetAvailableMainAxisSpaceOverride() const {
-  if (orientation_ == TabStripOrientation::kHorizontal) {
-    if (available_space_.is_bounded()) {
-      return available_space_;
-    }
-  }
-  return std::nullopt;
 }
 
 void TabGroupView::OnAnimationEnded() {
@@ -353,9 +339,6 @@ void TabGroupView::SetIsCollapsed(bool is_collapsed) {
     return;
   }
   is_collapsed_ = is_collapsed;
-  // Reset the cached available space so stale collapsed bounds (which only
-  // accommodated the header chip) do not constrain group tabs when expanding.
-  available_space_ = views::SizeBound();
   InvalidateLayout();
 }
 
