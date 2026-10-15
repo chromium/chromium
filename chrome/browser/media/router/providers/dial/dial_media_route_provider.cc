@@ -72,7 +72,9 @@ void DialMediaRouteProvider::Init(
 
 DialMediaRouteProvider::~DialMediaRouteProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(media_sink_queries_.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572960442): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(media_sink_queries_.empty());
   media_sink_service_->RemoveObserver(this);
 }
 
