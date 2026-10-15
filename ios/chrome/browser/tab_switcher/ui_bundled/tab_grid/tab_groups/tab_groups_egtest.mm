@@ -313,9 +313,6 @@ void TapTabGroupTitle() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-  if ([self isRunningTest:@selector(testUpdateGroupByTappingTitle)]) {
-    config.features_enabled.push_back(kOpenEditGroupViewByTappingTitle);
-  }
   if ([self isRunningTest:@selector(testCreateGroupFromTabInAnotherWindow)]) {
     config.features_disabled.push_back(kChromeNextIa);
   } else {

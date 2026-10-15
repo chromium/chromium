@@ -7937,11 +7937,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "open-edit-group-view-by-tapping-title",
-    "owners": [ "achara@google.com", "bling-meridian@google.com" ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "open-system-account-settings-directly",
     "owners": [ "bsazonov@chromium.org", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 160

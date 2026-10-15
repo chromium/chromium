@@ -21,22 +21,6 @@ constexpr CGFloat kTitleVerticalInset = 8;
 constexpr CGFloat kTitleBackgroundCornerRadius = 16;
 constexpr CGFloat kTitleBackgroundAlpha = 0.2;
 
-// Returns the horizontal inset constraint for the title and dot views.
-CGFloat GetHorizontalInsetForConstraints() {
-  if (IsOpenEditGroupViewByTappingTitleEnabled()) {
-    return kTitleHorizontalInset;
-  }
-  return 0;
-}
-
-// Returns the vertical inset constraint for the title view.
-CGFloat GetVerticalInsetForConstraints() {
-  if (IsOpenEditGroupViewByTappingTitleEnabled()) {
-    return kTitleVerticalInset;
-  }
-  return 0;
-}
-
 }  // namespace
 
 @implementation TabGroupHeader {
@@ -80,7 +64,7 @@ CGFloat GetVerticalInsetForConstraints() {
     [NSLayoutConstraint activateConstraints:@[
       [_coloredDotView.leadingAnchor
           constraintEqualToAnchor:_titleButton.leadingAnchor
-                         constant:GetHorizontalInsetForConstraints()],
+                         constant:kTitleHorizontalInset],
       [_coloredDotView.centerYAnchor
           constraintEqualToAnchor:_titleView.centerYAnchor],
 
@@ -90,13 +74,11 @@ CGFloat GetVerticalInsetForConstraints() {
 
       [_titleView.trailingAnchor
           constraintEqualToAnchor:_titleButton.trailingAnchor
-                         constant:-GetHorizontalInsetForConstraints()],
-      [_titleView.topAnchor
-          constraintEqualToAnchor:_titleButton.topAnchor
-                         constant:GetVerticalInsetForConstraints()],
-      [_titleView.bottomAnchor
-          constraintEqualToAnchor:_titleButton.bottomAnchor
-                         constant:-GetVerticalInsetForConstraints()],
+                         constant:-kTitleHorizontalInset],
+      [_titleView.topAnchor constraintEqualToAnchor:_titleButton.topAnchor
+                                           constant:kTitleVerticalInset],
+      [_titleView.bottomAnchor constraintEqualToAnchor:_titleButton.bottomAnchor
+                                              constant:-kTitleVerticalInset],
 
       [_titleButton.topAnchor constraintEqualToAnchor:self.topAnchor],
       [_titleButton.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
@@ -130,9 +112,7 @@ CGFloat GetVerticalInsetForConstraints() {
                     value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
                     range:NSMakeRange(0, title.length)];
   _titleView.attributedText = boldTitle;
-  if (IsOpenEditGroupViewByTappingTitleEnabled()) {
-    _titleButton.accessibilityLabel = title;
-  }
+  _titleButton.accessibilityLabel = title;
 }
 
 - (void)setColor:(UIColor*)color {
@@ -141,10 +121,6 @@ CGFloat GetVerticalInsetForConstraints() {
   }
   _color = color;
   _coloredDotView.backgroundColor = color;
-
-  if (!IsOpenEditGroupViewByTappingTitleEnabled()) {
-    return;
-  }
 
   UIButtonConfiguration* containerConfiguration = _titleButton.configuration;
   containerConfiguration.background.backgroundColor =
@@ -194,10 +170,6 @@ CGFloat GetVerticalInsetForConstraints() {
 
 // Configures the title button.
 - (UIButton*)titleButton {
-  if (!IsOpenEditGroupViewByTappingTitleEnabled()) {
-    return [[UIButton alloc] init];
-  }
-
   UIBackgroundConfiguration* backgroundConfiguration =
       [UIBackgroundConfiguration clearConfiguration];
   // This visualEffect should stay in sync with the one used for the

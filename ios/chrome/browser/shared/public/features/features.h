@@ -823,12 +823,6 @@ BASE_DECLARE_FEATURE(kBackgroundRefreshRegressionTest);
 // Returns the current arm for the BackgroundRefreshRegressionTest experiment.
 BackgroundRefreshRegressionTestArm GetBackgroundRefreshRegressionTestArm();
 
-// Enables the OpenEditGroupViewByTappingTitle feature.
-BASE_DECLARE_FEATURE(kOpenEditGroupViewByTappingTitle);
-
-// Returns true if the OpenEditGroupViewByTappingTitle feature is enabled.
-bool IsOpenEditGroupViewByTappingTitleEnabled();
-
 // Returns true if the UpdateTabGroupColors feature is enabled.
 bool IsUpdateTabGroupColorsEnabled();
 

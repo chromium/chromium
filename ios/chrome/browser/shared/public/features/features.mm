@@ -1024,13 +1024,6 @@ BackgroundRefreshRegressionTestArm GetBackgroundRefreshRegressionTestArm() {
   return kBackgroundRefreshRegressionTestArmParam.Get();
 }
 
-BASE_FEATURE(kOpenEditGroupViewByTappingTitle,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsOpenEditGroupViewByTappingTitleEnabled() {
-  return base::FeatureList::IsEnabled(kOpenEditGroupViewByTappingTitle);
-}
-
 bool IsUpdateTabGroupColorsEnabled() {
   return base::FeatureList::IsEnabled(tab_groups::kUpdateTabGroupColors);
 }

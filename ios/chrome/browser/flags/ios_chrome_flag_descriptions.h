@@ -1626,11 +1626,6 @@ inline constexpr char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
 
-inline constexpr char kOpenEditGroupViewByTappingTitleName[] =
-    "OpenEditGroupViewByTappingTitle";
-inline constexpr char kOpenEditGroupViewByTappingTitleDescription[] =
-    "Enables the OpenEditGroupViewByTappingTitle feature.";
-
 inline constexpr char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 inline constexpr char kOptimizationGuideDebugLogsDescription[] =
