@@ -47,7 +47,6 @@ static_library("accessibility") {
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/common",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/language_packs",

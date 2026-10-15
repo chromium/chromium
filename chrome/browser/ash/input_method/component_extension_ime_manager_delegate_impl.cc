@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -24,7 +25,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -422,7 +422,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
 
     if (!component_ime.path.IsAbsolute()) {
       base::FilePath resources_path;
-      if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+      if (!base::PathService::Get(ash::DIR_RESOURCES, &resources_path)) {
         NOTREACHED();
       }
       component_ime.path = resources_path.Append(component_ime.path);

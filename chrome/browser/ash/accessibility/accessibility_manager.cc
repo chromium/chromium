@@ -17,6 +17,7 @@
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_extension_constants.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/url_constants.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -574,7 +574,7 @@ AccessibilityManager::AccessibilityManager(
   }
 
   base::FilePath resources_path;
-  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+  if (!base::PathService::Get(ash::DIR_RESOURCES, &resources_path)) {
     NOTREACHED();
   }
 
@@ -2326,7 +2326,7 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
   }
 
   base::FilePath resources_path;
-  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+  if (!base::PathService::Get(ash::DIR_RESOURCES, &resources_path)) {
     NOTREACHED();
   }
 
