@@ -9,8 +9,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_metric_reporting_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"

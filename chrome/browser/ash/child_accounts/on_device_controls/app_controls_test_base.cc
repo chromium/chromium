@@ -9,7 +9,6 @@
 
 #include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"

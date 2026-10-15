@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "build/buildflag.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"

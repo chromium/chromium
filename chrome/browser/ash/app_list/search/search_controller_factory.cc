@@ -12,7 +12,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider.h"
 #include "chrome/browser/ash/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_app_shortcuts_search_provider.h"

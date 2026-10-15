@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_launcher_base.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"

@@ -28,8 +28,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
