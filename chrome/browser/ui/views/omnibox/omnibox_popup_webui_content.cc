@@ -25,14 +25,17 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     LocationBar* location_bar,
     OmniboxController* controller,
     bool include_location_bar_cutout,
-    bool wants_focus)
+    bool wants_focus,
+    bool set_content_url)
     : OmniboxPopupWebUIBaseContent(
           presenter,
           location_bar,
           controller,
           /*top_rounded_corners=*/!include_location_bar_cutout),
       wants_focus_(wants_focus) {
-  SetContentURL(chrome::kChromeUIOmniboxPopupURL);
+  if (set_content_url) {
+    SetContentURL(chrome::kChromeUIOmniboxPopupURL);
+  }
 }
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;

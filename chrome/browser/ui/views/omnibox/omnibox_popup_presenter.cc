@@ -23,7 +23,7 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
   SetWebUIContent(std::make_unique<OmniboxPopupWebUIContent>(
       this, this->location_bar(), controller,
       /*include_location_bar_cutout=*/true,
-      /*wants_focus=*/false));
+      /*wants_focus=*/false, /*set_content_url=*/true));
 
   // By initializing `content_height_` to 1, we ensure the widget starts 1px
   // taller than the location bar on first show. This creates a tiny visible
