@@ -10,7 +10,6 @@
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
 #import "components/optimization_guide/core/delivery/prediction_model_store.h"
-#import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "ios/chrome/browser/optimization_guide/model/chrome_profile_download_service_tracker.h"
 
 class ApplicationLocaleStorage;

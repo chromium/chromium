@@ -19,7 +19,6 @@
 #include "components/optimization_guide/core/delivery/prediction_model_component_update_listener.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 

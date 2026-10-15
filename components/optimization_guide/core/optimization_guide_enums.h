@@ -88,50 +88,6 @@ enum class RaceNavigationFetchAttemptStatus {
       kDeprecatedRaceNavigationFetchNotAttemptedTooManyConcurrentFetches,
 };
 
-// Performance class of this device.
-//
-// These values are persisted to logs and prefs. Entries should not be
-// renumbered and numeric values should never be reused.
-enum class OnDeviceModelPerformanceClass : int {
-  kUnknown = 0,
-
-  // See on_device_model::mojom::PerformanceClass for explanation of these.
-  kError = 1,
-  kVeryLow = 2,
-  kLow = 3,
-  kMedium = 4,
-  kHigh = 5,
-  kVeryHigh = 6,
-
-  // WARNING!: If you add a new performance class, please be aware of
-  // `IsPerformanceClassCompatibleWithOnDeviceModel`.
-
-  // The service crashed, so a valid value was not returned.
-  kServiceCrash = 7,
-
-  // GPU was blocklisted.
-  kGpuBlocked = 8,
-
-  // Native library failed to load.
-  kFailedToLoadLibrary = 9,
-
-  // This must be kept in sync with
-  // OnDeviceModelPerformanceClass in optimization/enums.xml.
-
-  // Insert new values before this line.
-  kMaxValue = kFailedToLoadLibrary,
-};
-
-
-
-// Whether a response is complete or not.
-enum class ResponseCompleteness {
-  // This is a partial response, more output may follow.
-  kPartial,
-  // The response is complete and no more output will be produced.
-  kComplete,
-};
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

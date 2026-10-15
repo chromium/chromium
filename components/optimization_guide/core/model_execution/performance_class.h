@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "components/prefs/pref_service.h"
@@ -17,6 +16,40 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
 
 namespace optimization_guide {
+
+// Performance class of this device.
+//
+// These values are persisted to logs and prefs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class OnDeviceModelPerformanceClass : int {
+  kUnknown = 0,
+
+  // See on_device_model::mojom::PerformanceClass for explanation of these.
+  kError = 1,
+  kVeryLow = 2,
+  kLow = 3,
+  kMedium = 4,
+  kHigh = 5,
+  kVeryHigh = 6,
+
+  // WARNING!: If you add a new performance class, please be aware of
+  // `IsPerformanceClassCompatibleWithOnDeviceModel`.
+
+  // The service crashed, so a valid value was not returned.
+  kServiceCrash = 7,
+
+  // GPU was blocklisted.
+  kGpuBlocked = 8,
+
+  // Native library failed to load.
+  kFailedToLoadLibrary = 9,
+
+  // This must be kept in sync with
+  // OnDeviceModelPerformanceClass in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kFailedToLoadLibrary,
+};
 
 // Convert from mojo enum.
 OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(

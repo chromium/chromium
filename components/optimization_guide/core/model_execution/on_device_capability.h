@@ -53,6 +53,14 @@ enum class OnDeviceError : int {
   kMaxValue = kFailedToRunSafety
 };
 
+// Whether a response is complete or not.
+enum class ResponseCompleteness {
+  // This is a partial response, more output may follow.
+  kPartial,
+  // The response is complete and no more output will be produced.
+  kComplete,
+};
+
 // A response type used for OnDeviceSession.
 struct StreamingResponse {
   // The response proto. This may be incomplete until `is_complete` is true.
