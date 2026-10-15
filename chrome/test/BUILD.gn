@@ -1779,8 +1779,7 @@ if (!is_android) {
       "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     ]
 
-    sources =
-        [ "../../components/live_caption/views/caption_bubble_browsertest.cc" ]
+    sources = []
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
       "--single-process-tests",

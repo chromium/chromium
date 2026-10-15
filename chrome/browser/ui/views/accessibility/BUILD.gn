@@ -125,11 +125,22 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = []
+    sources = [ "caption_bubble_browsertest.cc" ]
     deps = [
       ":accessibility",
+      "//base/test:test_support",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:confirm_bubble",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/test:test_support",
+      "//components/live_caption",
+      "//components/live_caption:constants",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base:test_support",
     ]
 
     if (!is_chromeos) {

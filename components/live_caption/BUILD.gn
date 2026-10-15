@@ -169,6 +169,15 @@ if (!is_android && !is_ios) {
       ]
     }
 
+    if (toolkit_views) {
+      sources += [ "views/caption_bubble_unittest.cc" ]
+      deps += [
+        "//ui/gfx",
+        "//ui/views",
+        "//ui/views:test_support",
+      ]
+    }
+
     if (is_chromeos) {
       sources += [
         "caption_bubble_context_remote_unittest.cc",

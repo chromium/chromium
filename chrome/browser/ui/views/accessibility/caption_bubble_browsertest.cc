@@ -25,7 +25,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "caption_bubble_model.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/confirm_bubble.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -36,6 +35,7 @@
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 #include "components/live_caption/views/translation_view_wrapper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -217,21 +217,6 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(CaptionBubbleBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleBrowserTest, InvokeUi_NoWiggleOnResize) {
-  ShowUi("NoWiggleOnResize");
-  views::Widget* widget = bubble_->GetWidget();
-  gfx::Point initial_origin = widget->GetWindowBoundsInScreen().origin();
-
-  model_->SetPartialText("A new line of text.");
-  model_->CommitPartialText();
-
-  base::RunLoop().RunUntilIdle();
-
-  gfx::Point new_origin = widget->GetWindowBoundsInScreen().origin();
-  EXPECT_EQ(initial_origin, new_origin);
-  DismissUi();
 }
 
 }  // namespace
