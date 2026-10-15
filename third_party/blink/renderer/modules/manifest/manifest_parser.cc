@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/part.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -710,17 +710,10 @@ std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
   return color.Rgb();
 }
 
-std::optional<icu::Locale> ManifestParser::ParseLocaleKey(
+std::optional<base::i18n::LanguageTag> ManifestParser::ParseLocaleKey(
     const String& locale_str) {
-  UErrorCode status = U_ZERO_ERROR;
   StringUtf8Adaptor locale_utf8(locale_str);
-  icu::Locale locale =
-      icu::Locale::forLanguageTag(locale_utf8.AsStringView(), status);
-  if (U_FAILURE(status) || locale.isBogus() ||
-      locale == icu::Locale::getRoot()) {
-    return std::nullopt;
-  }
-  return locale;
+  return base::i18n::GetLanguageTagFromString(locale_utf8.AsStringView());
 }
 
 KURL ManifestParser::ParseURL(const JSONObject* object,
@@ -1170,9 +1163,10 @@ Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
   return ParseImageResourceArray("icons", object);
 }
 
-HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
+HashMap<base::i18n::LanguageTag, Vector<mojom::blink::ManifestImageResourcePtr>>
 ManifestParser::ParseIconsLocalized(const JSONObject* object) {
-  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<base::i18n::LanguageTag,
+          Vector<mojom::blink::ManifestImageResourcePtr>>
       localized_icons;
   JSONValue* json_value = object->Get("icons_localized");
   if (!json_value) {
@@ -1189,7 +1183,7 @@ ManifestParser::ParseIconsLocalized(const JSONObject* object) {
     const JSONObject::Entry& entry = icons_localized_object->at(i);
     const String& locale_str = entry.first;
 
-    std::optional<icu::Locale> locale = ParseLocaleKey(locale_str);
+    std::optional<base::i18n::LanguageTag> locale = ParseLocaleKey(locale_str);
     if (!locale.has_value()) {
       AddErrorInfo(StrCat({"property 'icons_localized' entry for '", locale_str,
                            "' ignored, invalid locale key."}));
@@ -2820,11 +2814,12 @@ void ManifestParser::AddErrorInfo(const String& error_msg,
   errors_.push_back(std::move(error));
 }
 
-HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseLocalizedField(const JSONObject* object,
                                     const String& field_name) {
   JSONObject* localized_value = object->GetJSONObject(field_name);
-  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr> result;
+  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
+      result;
   if (!localized_value) {
     return result;
   }
@@ -2839,7 +2834,7 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
       continue;
     }
 
-    std::optional<icu::Locale> locale = ParseLocaleKey(key);
+    std::optional<base::i18n::LanguageTag> locale = ParseLocaleKey(key);
     if (!locale.has_value()) {
       AddErrorInfo(StrCat({"property '", field_name, "' entry for '", key,
                            "' ignored, invalid locale key."}));
@@ -2893,10 +2888,8 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
 
     // Validate the language tag if present.
     if (!lang.empty()) {
-      UErrorCode status = U_ZERO_ERROR;
       StringUtf8Adaptor lang_utf8(lang);
-      icu::Locale::forLanguageTag(lang_utf8.AsStringView(), status);
-      if (U_FAILURE(status)) {
+      if (!base::i18n::GetLanguageTagFromString(lang_utf8.AsStringView())) {
         AddErrorInfo(StrCat({"property '", field_name, "' entry for '", key,
                              "' ignored, invalid language tag '", lang, "'."}));
         continue;
@@ -2917,17 +2910,17 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
   return result;
 }
 
-HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "name_localized");
 }
 
-HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseShortNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "short_name_localized");
 }
 
-HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseDescriptionLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "description_localized");
 }

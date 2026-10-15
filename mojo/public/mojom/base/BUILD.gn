@@ -77,20 +77,6 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.LanguageTag"
-          cpp = "::base::i18n::LanguageTag"
-        },
-      ]
-      traits_headers = [ "//mojo/public/cpp/base/language_tag_mojom_traits.h" ]
-      traits_public_deps = [
-        "//base",
-        "//base:i18n",
-        "//mojo/public/cpp/base:shared_typemap_traits",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "mojo_base.mojom.SafeBaseName"
           cpp = "::base::SafeBaseName"
         },
@@ -621,6 +607,25 @@ mojom_component("base") {
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
     },
+
+    # Split from `common_typemaps` because `blink_cpp_typemaps` must include
+    # `base_hash_traits.h` so `base::i18n::LanguageTag` can be used as a key in
+    # `blink::HashMap`, whereas non-Blink targets cannot include Blink headers.
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.LanguageTag"
+          cpp = "::base::i18n::LanguageTag"
+          default_constructible = false
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/language_tag_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//base:i18n",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
   ]
 
   if (is_android) {
@@ -728,6 +733,27 @@ mojom_component("base") {
       ]
       traits_public_deps = [
         "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+
+    # Includes `base_hash_traits.h` so `base::i18n::LanguageTag` can be used as
+    # a key in `blink::HashMap` in Blink Mojo bindings.
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.LanguageTag"
+          cpp = "::base::i18n::LanguageTag"
+          default_constructible = false
+        },
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/base/language_tag_mojom_traits.h",
+        "//third_party/blink/renderer/platform/wtf/base_hash_traits.h",
+      ]
+      traits_public_deps = [
+        "//base",
+        "//base:i18n",
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
     },

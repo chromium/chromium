@@ -425,8 +425,8 @@ _CONFIG = [
             'third_party/blink/public/common/manifest/',
         ],
         'allowed': [
-            # ICU types for locale handling in manifest localization maps.
-            'icu::Locale',
+            # BCP47 language tags used as keys in manifest localization maps.
+            'base::i18n::LanguageTag',
             # Abseil containers for locale-keyed maps.
             'absl::flat_hash_map',
             # Base types for string conversions and error handling.
@@ -2589,6 +2589,10 @@ _CONFIG = [
             'net::IsValidTopLevelMimeType',
             'net::ParseMimeTypeWithoutParameter',
             'net::registry_controlled_domains::.+',
+            # BCP47 language tags used as keys in manifest localization maps.
+            'base::i18n::GetKnownLanguageTag',
+            'base::i18n::GetLanguageTagFromString',
+            'base::i18n::LanguageTag',
             # Needed to use the liburlpattern API.
             "absl::StatusOr",
             'liburlpattern::.+',

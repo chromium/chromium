@@ -539,6 +539,7 @@ source_set("web_applications") {
   deps = [
     ":features",
     "//base",
+    "//base:i18n",
     "//build:branding_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",

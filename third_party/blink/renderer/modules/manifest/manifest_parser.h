@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/strong_alias.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-blink-forward.h"
@@ -21,15 +22,14 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/manifest/icu_locale_hash_traits.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace gfx {
 class Size;
@@ -162,9 +162,10 @@ class MODULES_EXPORT ManifestParser {
   std::optional<RGBA32> ParseColor(const JSONObject* object, const String& key);
 
   // Helper function to validate a BCP 47 locale string and return the parsed
-  // icu::Locale. Returns a null optional if the locale string is invalid or
-  // represents the root/undetermined locale.
-  std::optional<icu::Locale> ParseLocaleKey(const String& locale_str);
+  // language tag. Returns a null optional if the locale string is not a valid
+  // BCP47 locale.
+  std::optional<base::i18n::LanguageTag> ParseLocaleKey(
+      const String& locale_str);
 
   // Helper function to parse URLs present on a given |dictionary| in a given
   // field identified by its |key|. The URL is first parsed as a string then
@@ -290,10 +291,11 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'icons_localized' field of a Manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-process-a-_localized-image-resource-member
-  // Returns a map of Locale to vectors of ManifestImageResourcePtr with
+  // Returns a map of language tags to vectors of ManifestImageResourcePtr with
   // the successfully parsed localized icons, if any. An empty map is returned
   // if the field was not present or empty.
-  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<base::i18n::LanguageTag,
+          Vector<mojom::blink::ManifestImageResourcePtr>>
   ParseIconsLocalized(const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
@@ -593,16 +595,16 @@ class MODULES_EXPORT ManifestParser {
                                                 const PatternInit& init,
                                                 const KURL& base_url);
 
-  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseLocalizedField(const JSONObject* object, const String& field_name);
 
-  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseNameLocalized(const JSONObject* object);
 
-  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseShortNameLocalized(const JSONObject* object);
 
-  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(

@@ -93,16 +93,6 @@ struct BLINK_COMMON_EXPORT StructTraits<
                    blink::Manifest::ManifestLocalizedTextObject* out);
 };
 
-// StructTraits for icu::Locale - enables automatic conversion in mojo.
-// Serializes using ICU's getName() format ("en_US").
-// This allows icu::Locale to be used as map keys with mojom Locale type.
-template <>
-struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::LocaleDataView,
-                                        icu::Locale> {
-  static std::string_view tag(const icu::Locale& locale);
-  static bool Read(blink::mojom::LocaleDataView data, icu::Locale* out);
-};
-
 template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestShortcutItemDataView,
@@ -132,28 +122,28 @@ struct BLINK_COMMON_EXPORT
   }
 
   static const std::optional<
-      absl::flat_hash_map<icu::Locale,
+      absl::flat_hash_map<base::i18n::LanguageTag,
                           std::vector<blink::Manifest::ImageResource>>>&
   icons_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.icons_localized;
   }
 
   static const std::optional<
-      absl::flat_hash_map<icu::Locale,
+      absl::flat_hash_map<base::i18n::LanguageTag,
                           blink::Manifest::ManifestLocalizedTextObject>>&
   name_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.name_localized;
   }
 
   static const std::optional<
-      absl::flat_hash_map<icu::Locale,
+      absl::flat_hash_map<base::i18n::LanguageTag,
                           blink::Manifest::ManifestLocalizedTextObject>>&
   short_name_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.short_name_localized;
   }
 
   static const std::optional<
-      absl::flat_hash_map<icu::Locale,
+      absl::flat_hash_map<base::i18n::LanguageTag,
                           blink::Manifest::ManifestLocalizedTextObject>>&
   description_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.description_localized;

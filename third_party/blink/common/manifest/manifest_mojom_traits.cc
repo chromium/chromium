@@ -93,35 +93,6 @@ bool StructTraits<blink::mojom::ManifestImageResourceDataView,
   return true;
 }
 
-// StructTraits for icu::Locale to/from blink::mojom::Locale.
-// This enables automatic conversion of icu::Locale in mojo maps and structs.
-// Serializes using ICU's canonical format ("en_US") which matches the
-// hash function and avoids allocation.
-std::string_view StructTraits<blink::mojom::LocaleDataView, icu::Locale>::tag(
-    const icu::Locale& locale) {
-  CHECK(!locale.isBogus()) << "Attempting to serialize bogus locale: "
-                           << locale.getName();
-  return locale.getName();
-}
-
-bool StructTraits<blink::mojom::LocaleDataView, icu::Locale>::Read(
-    blink::mojom::LocaleDataView data,
-    icu::Locale* out) {
-  // Use std::string to guarantee NUL termination for icu::Locale constructor.
-  std::string locale_name;
-  if (!data.ReadTag(&locale_name)) {
-    return false;
-  }
-
-  icu::Locale locale(locale_name.c_str());
-  if (locale.isBogus()) {
-    return false;
-  }
-
-  *out = std::move(locale);
-  return true;
-}
-
 bool StructTraits<blink::mojom::ManifestShortcutItemDataView,
                   ::blink::Manifest::ShortcutItem>::
     Read(blink::mojom::ManifestShortcutItemDataView data,

@@ -791,19 +791,10 @@ mojom("mojom_platform") {
     },
 
     {
-      # Note: This Locale typemap is intentionally duplicated in both
-      # cpp_typemaps (for Chromium code) and blink_cpp_typemaps (for Blink
-      # renderer code). The Blink variant includes icu_locale_hash_traits.h
-      # to enable using icu::Locale as a WTF::HashMap key.
       types = [
         {
           mojom = "blink.mojom.DisplayOverrideItem"
           cpp = "::blink::Manifest::DisplayOverride"
-        },
-
-        {
-          mojom = "blink.mojom.Locale"
-          cpp = "::icu::Locale"
         },
 
         {
@@ -1000,23 +991,6 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request_headers_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/renderer/platform/wtf" ]
-    },
-    {
-      # Note: This Locale typemap is intentionally duplicated in both
-      # cpp_typemaps and blink_cpp_typemaps. The Blink variant includes
-      # icu_locale_hash_traits.h to enable using icu::Locale as a WTF::HashMap
-      # key.
-      types = [
-        {
-          mojom = "blink.mojom.Locale"
-          cpp = "::icu::Locale"
-        },
-      ]
-      traits_headers = [
-        "//third_party/blink/renderer/modules/manifest/icu_locale_hash_traits.h",
-        "//third_party/blink/public/common/manifest/manifest_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//third_party/icu" ]
     },
     {
       types = [

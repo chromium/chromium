@@ -266,6 +266,7 @@ component("wtf") {
   public_deps = [
     ":wtf_buildflags",
     "//base",
+    "//base:i18n",
     "//base/third_party/double_conversion",
     "//components/crash/core/common:crash_key",
     "//third_party/icu",

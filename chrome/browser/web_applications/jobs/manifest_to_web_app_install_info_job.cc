@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -70,19 +71,15 @@ constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
-// Concept to ensure a map type has icu::Locale as its key type.
-template <typename MapType>
-concept IsMapKeyedLocale =
-    std::same_as<typename MapType::key_type, icu::Locale>;
-
 // Finds a value in a locale-keyed map, first trying exact match, then
 // language-only fallback.
 // The returned pointer is only valid as long as |localized_map| remains
 // unmodified. Callers must use the result immediately and not store it.
-template <IsMapKeyedLocale MapType>
+template <typename MapType>
+  requires std::same_as<typename MapType::key_type, base::i18n::LanguageTag>
 const typename MapType::mapped_type* FindLocalizedValue(
     const MapType& localized_map,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   if (localized_map.empty()) {
     return nullptr;
   }
@@ -91,8 +88,7 @@ const typename MapType::mapped_type* FindLocalizedValue(
     return &it->second;
   }
   // Fall back to language-only ("en") match if no exact match ("en-US") found.
-  icu::Locale language_only(application_locale.getLanguage());
-  it = localized_map.find(language_only);
+  it = localized_map.find(application_locale.WithLanguageSubtagOnly());
   if (it != localized_map.end()) {
     return &it->second;
   }
@@ -101,10 +97,10 @@ const typename MapType::mapped_type* FindLocalizedValue(
 
 // Matches a localized text object from a map based on |application_locale|.
 blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
-    const base::flat_map<icu::Locale,
+    const base::flat_map<base::i18n::LanguageTag,
                          blink::mojom::ManifestLocalizedTextObjectPtr>&
         localized_map,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   const blink::mojom::ManifestLocalizedTextObjectPtr* result =
       FindLocalizedValue(localized_map, application_locale);
   return result ? (*result).Clone() : nullptr;
@@ -112,7 +108,7 @@ blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
 
 const std::vector<blink::Manifest::ImageResource>& GetLocalizedShortcutIcons(
     const blink::Manifest::ShortcutItem& shortcut,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   if (shortcut.icons_localized.has_value() &&
       !shortcut.icons_localized->empty()) {
     const std::vector<blink::Manifest::ImageResource>* localized_icons =
@@ -126,7 +122,7 @@ const std::vector<blink::Manifest::ImageResource>& GetLocalizedShortcutIcons(
 
 const std::u16string& GetLocalizedShortcutName(
     const blink::Manifest::ShortcutItem& shortcut,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   if (shortcut.name_localized.has_value() &&
       !shortcut.name_localized->empty()) {
     const blink::Manifest::ManifestLocalizedTextObject* localized =
@@ -140,7 +136,7 @@ const std::u16string& GetLocalizedShortcutName(
 
 LocalizedText GetLocalizedTitleFromManifestFields(
     const blink::mojom::Manifest& manifest,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   blink::mojom::ManifestLocalizedTextObjectPtr localized_name;
   if (manifest.name_localized.has_value()) {
     localized_name =
@@ -169,7 +165,7 @@ LocalizedText GetLocalizedTitleFromManifestFields(
 
 LocalizedText GetLocalizedDescriptionFromManifestFields(
     const blink::mojom::Manifest& manifest,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   if (manifest.description_localized.has_value()) {
     blink::mojom::ManifestLocalizedTextObjectPtr localized_description =
         MatchLocalizedText(*manifest.description_localized, application_locale);
@@ -189,8 +185,9 @@ LocalizedText GetLocalizedDescriptionFromManifestFields(
 }
 
 const std::vector<blink::Manifest::ImageResource>&
-GetLocalizedIconsFromManifest(const blink::mojom::Manifest& manifest,
-                              const icu::Locale& application_locale) {
+GetLocalizedIconsFromManifest(
+    const blink::mojom::Manifest& manifest,
+    const base::i18n::LanguageTag& application_locale) {
   if (manifest.icons_localized.has_value() &&
       !manifest.icons_localized->empty()) {
     const std::vector<blink::Manifest::ImageResource>* localized_icons =
@@ -282,7 +279,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
 void PopulateWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ShortcutItem>& shortcuts,
     WebAppInstallInfo* web_app_info,
-    const icu::Locale& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   std::vector<WebAppShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
@@ -769,10 +766,8 @@ void ManifestToWebAppInstallInfoJob::FetchIconsInternal(
 
 void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   // Create the application locale once for all localization lookups.
-  const icu::Locale application_locale(g_browser_process->GetFeatures()
-                                           ->application_locale_storage()
-                                           ->Get()
-                                           .c_str());
+  const base::i18n::LanguageTag application_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
 
   install_info().title =
       GetLocalizedTitleFromManifestFields(*manifest_, application_locale);

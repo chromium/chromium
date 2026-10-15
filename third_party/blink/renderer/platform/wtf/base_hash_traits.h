@@ -8,9 +8,13 @@
 #include <cstdint>
 #include <limits>
 
+#include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/token.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 
@@ -52,6 +56,29 @@ struct HashTraits<base::UnguessableToken>
                std::numeric_limits<uint64_t>::max())
         .value();
   }
+};
+
+// Enables `base::i18n::LanguageTag` to be used as a key in `blink::HashMap`,
+// e.g. for the locale-keyed maps in the Blink manifest Mojo bindings.
+// Special sentinel values that do not form any valid bcp47 code are used as the
+// empty/deleted value.
+template <>
+struct HashTraits<base::i18n::LanguageTag>
+    : GenericHashTraits<base::i18n::LanguageTag> {
+  static uint32_t GetHash(const base::i18n::LanguageTag& tag) {
+    return HashString24(base::as_byte_span(tag.tag_string()));
+  }
+
+  static base::i18n::LanguageTag EmptyValue() {
+    return base::i18n::LanguageTag(PassKey(), "__empty__");
+  }
+
+  static base::i18n::LanguageTag DeletedValue() {
+    return base::i18n::LanguageTag(PassKey(), "__deleted__");
+  }
+
+ private:
+  using PassKey = base::PassKey<HashTraits<base::i18n::LanguageTag>>;
 };
 
 }  // namespace blink

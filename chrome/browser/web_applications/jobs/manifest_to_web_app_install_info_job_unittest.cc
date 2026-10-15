@@ -12,7 +12,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -1324,7 +1327,17 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
 class ManifestToWebAppInstallInfoLocalizationTest
     : public ManifestToWebAppInstallInfoJobTest {
  protected:
-  std::pair<icu::Locale, blink::mojom::ManifestLocalizedTextObjectPtr>
+  // Converts `locale` into a `base::i18n::LanguageTag`, failing the test if it
+  // is not a valid BCP47 language tag.
+  static base::i18n::LanguageTag ToLanguageTag(const std::string& locale) {
+    std::optional<base::i18n::LanguageTag> tag =
+        base::i18n::GetLanguageTagFromString(locale);
+    CHECK(tag.has_value()) << "Not a valid language tag: " << locale;
+    return *tag;
+  }
+
+  std::pair<base::i18n::LanguageTag,
+            blink::mojom::ManifestLocalizedTextObjectPtr>
   AddLocalizedText(const std::string& locale,
                    const std::u16string& value,
                    const std::optional<std::u16string>& lang = std::nullopt,
@@ -1334,14 +1347,16 @@ class ManifestToWebAppInstallInfoLocalizationTest
     localized_text->value = value;
     localized_text->lang = lang;
     localized_text->dir = dir;
-    return {icu::Locale(locale.c_str()), std::move(localized_text)};
+    return {ToLanguageTag(locale), std::move(localized_text)};
   }
 
   // Saves the current application locale and returns a ScopedClosureRunner
   // that restores it when destroyed.
   base::ScopedClosureRunner SaveAndRestoreLocale() {
-    std::string original_locale =
-        g_browser_process->GetFeatures()->application_locale_storage()->Get();
+    std::string original_locale(g_browser_process->GetFeatures()
+                                    ->application_locale_storage()
+                                    ->GetTag()
+                                    .tag_string());
     return base::ScopedClosureRunner(base::BindOnce(
         [](std::string locale) {
           g_browser_process->GetFeatures()->application_locale_storage()->Set(
@@ -1370,7 +1385,7 @@ class ManifestToWebAppInstallInfoLocalizationTest
         localized_text.lang = lang;
         localized_text.dir = dir;
         shortcut_item.name_localized->insert(
-            {icu::Locale(locale.c_str()), std::move(localized_text)});
+            {ToLanguageTag(locale), std::move(localized_text)});
       }
     }
     return shortcut_item;
@@ -1402,8 +1417,7 @@ class ManifestToWebAppInstallInfoLocalizationTest
         icon.sizes = {gfx::Size(kIconSize, kIconSize)};
         icon.purpose = {Purpose::ANY};
         icons.push_back(icon);
-        shortcut_item.icons_localized->insert(
-            {icu::Locale(locale.c_str()), icons});
+        shortcut_item.icons_localized->insert({ToLanguageTag(locale), icons});
         web_contents_manager().GetOrCreateIconState(icon_url).bitmaps = {
             GetBasicIconBitmap()};
       }
@@ -1732,7 +1746,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   manifest->icons_localized.emplace();
 
   std::vector<blink::Manifest::ImageResource> empty_icons;
-  manifest->icons_localized->insert({icu::Locale("en-US"), empty_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("en-US"), empty_icons});
 
   g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
 
@@ -1762,7 +1777,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   en_us_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
   en_us_icon.purpose = {Purpose::ANY};
   en_us_icons.push_back(en_us_icon);
-  manifest->icons_localized->insert({icu::Locale("en-US"), en_us_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("en-US"), en_us_icons});
   web_contents_manager().GetOrCreateIconState(en_us_icon_url).bitmaps = {
       GetBasicIconBitmap()};
 
@@ -1773,7 +1789,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   fr_fr_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
   fr_fr_icon.purpose = {Purpose::ANY};
   fr_fr_icons.push_back(fr_fr_icon);
-  manifest->icons_localized->insert({icu::Locale("fr-FR"), fr_fr_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("fr-FR"), fr_fr_icons});
   web_contents_manager().GetOrCreateIconState(fr_fr_icon_url).bitmaps = {
       GetBasicIconBitmap()};
 
@@ -1802,7 +1819,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   en_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
   en_icon.purpose = {Purpose::ANY};
   en_icons.push_back(en_icon);
-  manifest->icons_localized->insert({icu::Locale("en"), en_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("en"), en_icons});
   web_contents_manager().GetOrCreateIconState(en_icon_url).bitmaps = {
       GetBasicIconBitmap()};
 
@@ -1832,7 +1850,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   de_de_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
   de_de_icon.purpose = {Purpose::ANY};
   de_de_icons.push_back(de_de_icon);
-  manifest->icons_localized->insert({icu::Locale("de-DE"), de_de_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("de-DE"), de_de_icons});
   web_contents_manager().GetOrCreateIconState(de_de_icon_url).bitmaps = {
       GetBasicIconBitmap()};
 
@@ -1880,7 +1899,8 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
   web_contents_manager().GetOrCreateIconState(en_us_icon_128_url).bitmaps = {
       icon_128_bitmap};
 
-  manifest->icons_localized->insert({icu::Locale("en-US"), en_us_icons});
+  manifest->icons_localized->insert(
+      {base::i18n::GetKnownLanguageTag("en-US"), en_us_icons});
 
   g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
 

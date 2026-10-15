@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,7 +54,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
@@ -333,7 +333,7 @@ TEST_F(ManifestSilentUpdateCommandTest,
       localized_icon};
   GetPageManifest()->icons_localized.emplace();
   GetPageManifest()->icons_localized->insert(
-      {icu::Locale("en-US"), localized_icons});
+      {base::i18n::GetKnownLanguageTag("en-US"), localized_icons});
   web_contents_manager().GetOrCreateIconState(kLocalizedIconUrl).bitmaps = {
       gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
 

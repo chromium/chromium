@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,6 +115,61 @@ TEST(BaseHashTraitsTest, TokenHashTraitsValues) {
       0u);
 
   EXPECT_FALSE(HashTraits<base::Token>::DeletedValue().is_zero());
+}
+
+TEST(BaseHashTraitsTest, LanguageTagHashMap) {
+  HashMap<base::i18n::LanguageTag, String> map;
+  const base::i18n::LanguageTag tag1 = base::i18n::GetKnownLanguageTag("en-US");
+  const base::i18n::LanguageTag tag2 = base::i18n::GetKnownLanguageTag("pt-BR");
+
+  EXPECT_TRUE(map.empty());
+  map.insert(tag1, "tag1");
+  map.insert(tag2, "tag2");
+  EXPECT_EQ(map.size(), 2u);
+
+  EXPECT_TRUE(map.Contains(tag1));
+  EXPECT_TRUE(map.Contains(tag2));
+  EXPECT_EQ(map.at(tag1), "tag1");
+  EXPECT_EQ(map.at(tag2), "tag2");
+
+  // Tags that differ only by subtag are distinct keys.
+  EXPECT_FALSE(map.Contains(base::i18n::GetKnownLanguageTag("en")));
+
+  EXPECT_EQ(map.Take(tag1), "tag1");
+  EXPECT_EQ(map.size(), 1u);
+  EXPECT_FALSE(map.Contains(tag1));
+  EXPECT_TRUE(map.Contains(tag2));
+}
+
+TEST(BaseHashTraitsTest, LanguageTagHashSet) {
+  HashSet<base::i18n::LanguageTag> set;
+  const base::i18n::LanguageTag tag1 = base::i18n::GetKnownLanguageTag("en");
+  const base::i18n::LanguageTag tag2 = base::i18n::GetKnownLanguageTag("de-DE");
+
+  set.insert(tag1);
+  set.insert(tag2);
+  EXPECT_EQ(set.size(), 2u);
+
+  EXPECT_TRUE(set.Contains(tag1));
+  EXPECT_TRUE(set.Contains(tag2));
+
+  set.erase(tag1);
+  EXPECT_FALSE(set.Contains(tag1));
+  EXPECT_TRUE(set.Contains(tag2));
+}
+
+TEST(BaseHashTraitsTest, LanguageTagHashTraitsValues) {
+  using Traits = HashTraits<base::i18n::LanguageTag>;
+
+  // The empty and deleted sentinels must be distinct from each other and from
+  // any real language tag.
+  EXPECT_NE(Traits::EmptyValue(), Traits::DeletedValue());
+  EXPECT_NE(Traits::EmptyValue(), base::i18n::GetKnownLanguageTag("en"));
+  EXPECT_NE(Traits::DeletedValue(), base::i18n::GetKnownLanguageTag("en"));
+
+  // Hashing the sentinels should not crash.
+  EXPECT_NE(Traits::GetHash(Traits::EmptyValue()),
+            Traits::GetHash(Traits::DeletedValue()));
 }
 
 }  // namespace

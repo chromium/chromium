@@ -322,6 +322,7 @@ source_set("headers") {
     ":make_runtime_feature_state_contexts_headers",
     ":preloading_headers",
     "//base",
+    "//base:i18n",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
