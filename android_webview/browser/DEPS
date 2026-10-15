@@ -141,6 +141,7 @@ include_rules = [
   "+third_party/crashpad/crashpad/util",
   "+third_party/zlib/google/compression_utils.h",
 
+  "+ui/accessibility/accessibility_features.h",
   "+ui/display",
   "+ui/gfx",
   "+ui/gl",

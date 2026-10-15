@@ -99,6 +99,22 @@ public class ContentFeatureList {
 
     public static final String DIPS_TTL = "DIPSTtl";
 
+    private static final MutableFlagWithSafeDefault sAccessibilityAndroidBackgroundThread =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    AccessibilityFeatures.ACCESSIBILITY_ANDROID_BACKGROUND_THREAD,
+                    false);
+
+    /**
+     * Checks "AccessibilityAndroidBackgroundThread" feature flag, including that current
+     * environment is at least required Android SDK 30 (R). Matches
+     * `features::IsAccessibilityAndroidBackgroundThreadEnabled()` in C++.
+     */
+    public static boolean enabledAccessibilityAndroidBackgroundThread() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && sAccessibilityAndroidBackgroundThread.isEnabled();
+    }
+
     private static final MutableFlagWithSafeDefault sAccessibilityCheckJavaNodeCacheFreshness =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),

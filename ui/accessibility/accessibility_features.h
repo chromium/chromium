@@ -251,6 +251,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidMath);
 AX_BASE_EXPORT bool IsAccessibilityAndroidMathEnabled();
 
+// When enabled, web content accessibility runs on a background thread instead
+// of the UI thread. Use `IsAccessibilityAndroidBackgroundThreadEnabled()` to
+// check it. It returns true only when the device runs Android R or later and
+// the feature is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidBackgroundThread);
+AX_BASE_EXPORT bool IsAccessibilityAndroidBackgroundThreadEnabled();
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the new native C++ implementation for Read Aloud,

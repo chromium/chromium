@@ -33,6 +33,7 @@
 #include "storage/browser/blob/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
@@ -204,6 +205,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // DISABLED_TEMPORARY: crbug.com/40652382. WebXR is not yet supported
   // on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebXr);
+
+  // DISABLED_TEMPORARY: crbug.com/548048933. Accessibility on a background
+  // thread is not yet supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      ::features::kAccessibilityAndroidBackgroundThread);
 
   // DISABLED_TEMPORARY: crbug.com/40831925. Digital Goods API is not yet
   // supported on WebView.
