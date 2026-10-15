@@ -1066,9 +1066,6 @@ bool ReadAnythingAppController::PostProcessSelection() {
     if (model_.is_empty()) {
       DrawEmptyState();
     } else {
-      // TODO(b/40927698): When Read Aloud is playing and content is selected
-      // in the main panel, don't re-draw with the updated selection until
-      // Read Aloud is paused.
       bool should_recompute_display_nodes = !model_.content_node_ids().empty();
       VLOG(1) << "In PostProcessSelection content node size: "
               << model_.content_node_ids().size()
