@@ -936,9 +936,9 @@ public class HistoryUiTest {
 
         performMenuAction(R.id.search_menu_id);
 
-        var clients = new ArrayList<HistoryProvider.ClientInfo>();
-        clients.add(new HistoryProvider.ClientInfo(List.of("client_1", "client_1b"), "Pixel 8"));
-        clients.add(new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook"));
+        var clients = new ArrayList<HistoryProvider.ClientGroup>();
+        clients.add(new HistoryProvider.ClientGroup(List.of("client_1", "client_1b"), "Pixel 8"));
+        clients.add(new HistoryProvider.ClientGroup(List.of("client_2"), "Chromebook"));
         mAdapter.onQueryClientsComplete(clients);
 
         clientFilter.getChipViewForTesting().performClick();
@@ -968,14 +968,14 @@ public class HistoryUiTest {
         performMenuAction(R.id.search_menu_id);
 
         mAdapter.onQueryClientsComplete(
-                List.of(new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8")));
+                List.of(new HistoryProvider.ClientGroup(List.of("client_1"), "Pixel 8")));
         Assert.assertFalse(clientFilter.isVisible());
         Assert.assertEquals(View.GONE, clientFilter.getChipViewForTesting().getVisibility());
 
         mAdapter.onQueryClientsComplete(
                 List.of(
-                        new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8"),
-                        new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook")));
+                        new HistoryProvider.ClientGroup(List.of("client_1"), "Pixel 8"),
+                        new HistoryProvider.ClientGroup(List.of("client_2"), "Chromebook")));
         Assert.assertTrue(clientFilter.isVisible());
         Assert.assertEquals(View.VISIBLE, clientFilter.getChipViewForTesting().getVisibility());
     }
@@ -988,8 +988,8 @@ public class HistoryUiTest {
         performMenuAction(R.id.search_menu_id);
         mAdapter.onQueryClientsComplete(
                 List.of(
-                        new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8"),
-                        new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook")));
+                        new HistoryProvider.ClientGroup(List.of("client_1"), "Pixel 8"),
+                        new HistoryProvider.ClientGroup(List.of("client_2"), "Chromebook")));
 
         // The client list comes from the synced devices, not from the history results, so a
         // search with zero results doesn't affect the client filter with or without a selection.

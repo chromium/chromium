@@ -20,12 +20,14 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
+
+using history::BrowsingHistoryService;
+using ClientGroup = history::BrowsingHistoryService::ClientGroup;
 
 namespace jni_zero {
 template <>
@@ -44,11 +46,10 @@ inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
 
 // Declared before `BrowsingHistoryBridge_jni.h`, which instantiates it, and
 // defined after it because the implementation calls
-// `Java_BrowsingHistoryBridge_createClientInfo` from that header.
+// `Java_BrowsingHistoryBridge_createClientGroup` from that header.
 template <>
-ScopedJavaLocalRef<jobject> ToJniType<syncer::DeviceInfo>(
-    JNIEnv* env,
-    const syncer::DeviceInfo& device);
+ScopedJavaLocalRef<jobject> ToJniType<ClientGroup>(JNIEnv* env,
+                                                   const ClientGroup& client);
 }  // namespace jni_zero
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -56,15 +57,12 @@ ScopedJavaLocalRef<jobject> ToJniType<syncer::DeviceInfo>(
 
 namespace jni_zero {
 template <>
-ScopedJavaLocalRef<jobject> ToJniType<syncer::DeviceInfo>(
-    JNIEnv* env,
-    const syncer::DeviceInfo& device) {
-  return Java_BrowsingHistoryBridge_createClientInfo(
-      env, std::vector<std::string>{device.guid()}, device.client_name());
+ScopedJavaLocalRef<jobject> ToJniType<ClientGroup>(JNIEnv* env,
+                                                   const ClientGroup& client) {
+  return Java_BrowsingHistoryBridge_createClientGroup(env, client.client_ids,
+                                                      client.name);
 }
 }  // namespace jni_zero
-
-using history::BrowsingHistoryService;
 
 const int kMaxQueryCount = 150;
 
@@ -136,15 +134,8 @@ void BrowsingHistoryBridge::GetAllAppIds() {
   browsing_history_service_->GetAllAppIds();
 }
 
-std::vector<const syncer::DeviceInfo*> BrowsingHistoryBridge::GetAllClients() {
-  syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-  if (device_info_sync_service &&
-      device_info_sync_service->GetDeviceInfoTracker()) {
-    return device_info_sync_service->GetDeviceInfoTracker()
-        ->GetAllChromeDeviceInfo();
-  }
-  return {};
+std::vector<ClientGroup> BrowsingHistoryBridge::GetAllClients() {
+  return browsing_history_service_->GetSyncedDevicesForFiltering();
 }
 
 void BrowsingHistoryBridge::OnGetAllAppIds(

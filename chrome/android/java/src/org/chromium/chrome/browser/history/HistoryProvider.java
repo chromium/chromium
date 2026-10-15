@@ -13,12 +13,12 @@ import java.util.Objects;
 /** Provides methods needed for querying and managing browsing history. */
 @NullMarked
 public interface HistoryProvider {
-    /** Information about a synced client device. */
-    class ClientInfo {
+    /** Information about a group of synced client devices that share a name. */
+    class ClientGroup {
         public final List<String> clientIds;
         public final String name;
 
-        public ClientInfo(List<String> clientIds, String name) {
+        public ClientGroup(List<String> clientIds, String name) {
             this.clientIds = clientIds;
             this.name = name;
         }
@@ -26,7 +26,7 @@ public interface HistoryProvider {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof ClientInfo that)) return false;
+            if (!(o instanceof ClientGroup that)) return false;
             return Objects.equals(clientIds, that.clientIds) && Objects.equals(name, that.name);
         }
 
@@ -74,9 +74,9 @@ public interface HistoryProvider {
         /**
          * Called after {@link BrowsingHistoryBridge#queryClients()} is complete.
          *
-         * @param items The list of synced client devices.
+         * @param items The list of synced client device groups.
          */
-        default void onQueryClientsComplete(List<ClientInfo> items) {}
+        default void onQueryClientsComplete(List<ClientGroup> items) {}
     }
 
     /** Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events. */

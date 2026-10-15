@@ -29,7 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
-import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
+import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -461,7 +461,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     @Override
-    public void onQueryClientsComplete(List<ClientInfo> items) {
+    public void onQueryClientsComplete(List<ClientGroup> items) {
         mManager.onQueryClientsComplete(items);
 
         // Same as for apps: querying clients may complete after the search mode is entered (or

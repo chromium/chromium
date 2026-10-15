@@ -585,7 +585,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         buildAppInfoList(items);
     }
 
-    void onQueryClientsComplete(List<HistoryProvider.ClientInfo> items) {
+    void onQueryClientsComplete(List<HistoryProvider.ClientGroup> items) {
         buildClientInfoList(items);
     }
 
@@ -625,10 +625,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHostFilter.setItems(hostInfoList);
     }
 
-    private void buildClientInfoList(List<HistoryProvider.ClientInfo> clients) {
+    private void buildClientInfoList(List<HistoryProvider.ClientGroup> clients) {
         var clientInfoList = new ArrayList<FilterItem<List<String>>>();
         Drawable icon = AppCompatResources.getDrawable(mActivity, R.drawable.devices_black_24dp);
-        for (HistoryProvider.ClientInfo client : clients) {
+        for (HistoryProvider.ClientGroup client : clients) {
             if (client.clientIds != null && !client.clientIds.isEmpty()) {
                 // A client can be associated with multiple IDs. All of them are used when
                 // querying history for the selected client.

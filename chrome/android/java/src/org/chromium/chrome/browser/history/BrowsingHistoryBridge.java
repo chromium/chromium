@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
+import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
@@ -75,16 +75,16 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
     @Override
     public void queryClients() {
-        List<ClientInfo> clients =
+        List<ClientGroup> clients =
                 BrowsingHistoryBridgeJni.get().getAllClients(mNativeHistoryBridge);
         if (mObserver != null) mObserver.onQueryClientsComplete(clients);
     }
 
     @CalledByNative
-    public static ClientInfo createClientInfo(
+    public static ClientGroup createClientGroup(
             @JniType("std::vector<std::string>") List<String> clientIds,
             @JniType("std::string") String clientName) {
-        return new ClientInfo(clientIds, clientName);
+        return new ClientGroup(clientIds, clientName);
     }
 
     @Override
@@ -242,8 +242,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
         void getAllAppIds(long nativeBrowsingHistoryBridge);
 
-        @JniType("std::vector<const syncer::DeviceInfo*>")
-        List<ClientInfo> getAllClients(long nativeBrowsingHistoryBridge);
+        @JniType("std::vector<history::BrowsingHistoryService::ClientGroup>")
+        List<ClientGroup> getAllClients(long nativeBrowsingHistoryBridge);
 
         void addPageToHistoryForTesting( // IN-TEST
                 @JniType("Profile*") Profile profile,
