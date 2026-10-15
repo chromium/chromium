@@ -25,11 +25,13 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -248,6 +250,55 @@ class DataProtectionClipboardDistilledURLTest
   std::unique_ptr<content::WebContents> test_web_contents_;
 };
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+// Adds two iframes, focuses the second and returns an endpoint for the first.
+content::ClipboardEndpoint InitiatingFrameEndpointWithSiblingFocused(
+    content::WebContents* web_contents) {
+  content::WebContentsTester::For(web_contents)
+      ->NavigateAndCommit(GURL("https://main.com"));
+  auto* main_frame =
+      content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame());
+  content::RenderFrameHost* initiating_frame =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://initiating.com"),
+          main_frame->AppendChild("initiating"));
+  content::RenderFrameHost* sibling_frame =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://sibling.com"), main_frame->AppendChild("sibling"));
+  content::FocusWebContentsOnFrame(web_contents, sibling_frame);
+
+  return content::CreateClipboardEndpoint(*initiating_frame);
+}
+
+// Stores the frame URL chain of each request in `chain`. Reset the factory
+// before `chain` goes out of scope.
+void SetFrameUrlChainCapturingFactory(
+    google::protobuf::RepeatedPtrField<std::string>& chain) {
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindLambdaForTesting(
+          [&chain](
+              content::WebContents* web_contents,
+              enterprise_connectors::ContentAnalysisDelegate::Data data,
+              enterprise_connectors::ContentAnalysisDelegate::CompletionCallback
+                  callback,
+              enterprise_connectors::DeepScanAccessPoint access_point) {
+            auto delegate = enterprise_connectors::test::
+                FakeContentAnalysisDelegate::Create(
+                    base::DoNothing(),
+                    base::BindRepeating(
+                        [](const std::string&, const base::FilePath&) {
+                          return enterprise_connectors::test::
+                              FakeContentAnalysisDelegate::SuccessfulResponse(
+                                  {"dlp"});
+                        }),
+                    "dm_token", web_contents, std::move(data),
+                    std::move(callback), access_point);
+            chain = delegate->frame_url_chain();
+            return delegate;
+          }));
+}
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
 }  // namespace
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
@@ -376,6 +427,44 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 
   EXPECT_FALSE(future.Get());
 }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       PasteFrameUrlChainUsesInitiatingFrame) {
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  content::RenderViewHostTestEnabler rvh_enabler;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain;
+  SetFrameUrlChainCapturingFactory(frame_url_chain);
+
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteIfAllowedByPolicy(
+      NoBrowserContextSourceEndpoint(),
+      InitiatingFrameEndpointWithSiblingFocused(web_contents.get()),
+      {.size = 100}, MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+
+  ASSERT_EQ(frame_url_chain.size(), 1);
+  EXPECT_EQ(frame_url_chain[0], "https://initiating.com/");
+}
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
   auto source = CopyEndpoint(GURL("https://source.com"));
@@ -1486,6 +1575,43 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
   EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
   EXPECT_EQ(future.Get<1>().text, std::u16string(100, 'a'));
   EXPECT_FALSE(future.Get<2>().has_value());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyFrameUrlChainUsesInitiatingFrame) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  content::RenderViewHostTestEnabler rvh_enabler;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain;
+  SetFrameUrlChainCapturingFactory(frame_url_chain);
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      InitiatingFrameEndpointWithSiblingFocused(web_contents.get()),
+      CopyMetadata(), MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+
+  ASSERT_EQ(frame_url_chain.size(), 1);
+  EXPECT_EQ(frame_url_chain[0], "https://initiating.com/");
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

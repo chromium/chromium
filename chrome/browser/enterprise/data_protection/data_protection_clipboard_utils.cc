@@ -279,6 +279,9 @@ void OnIsClipboardOwnerByContentAnalysis(
           source, destination,
           enterprise_connectors::kOnBulkDataEntryScopePref);
   dialog_data.source_content_area_email = source.active_user;
+  if (content::RenderFrameHost* rfh = destination.render_frame_host()) {
+    dialog_data.initiating_frame_id = rfh->GetGlobalId();
+  }
 
   if (is_files) {
     dialog_data.paths = std::move(clipboard_paste_data.file_paths);
@@ -387,6 +390,9 @@ void CopyIfAllowedByContentAnalysis(
   delegate_data.source_content_area_email =
       enterprise_connectors::ContentAreaUserProvider::GetUser(source);
   delegate_data.AddClipboardData(data);
+  if (content::RenderFrameHost* rfh = source.render_frame_host()) {
+    delegate_data.initiating_frame_id = rfh->GetGlobalId();
+  }
 
   // Write a placeholder to the OS clipboard while the scan is ongoing.
   // The original data is saved to be pasted if the user pastes in the same tab.
