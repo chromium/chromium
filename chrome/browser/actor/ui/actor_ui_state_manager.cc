@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -281,8 +282,8 @@ void ActorUiStateManager::OnActorTaskStateChange(
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
   if (ActorTask* task = actor_service_->GetTask(id)) {
     std::vector<tabs::TabInterface*> tabs;
-    for (const tabs::TabHandle& handle : task->GetTabs()) {
-      if (tabs::TabInterface* tab = handle.Get()) {
+    for (ActorSurfaceHandle actor_surface_handle : task->GetActorSurfaces()) {
+      if (tabs::TabInterface* tab = actor_surface_handle.GetTabHandle().Get()) {
         tabs.push_back(tab);
       }
     }
@@ -470,10 +471,16 @@ std::optional<std::string> ActorUiStateManager::GetActorTaskTitle(TaskId id) {
 std::optional<raw_ptr<tabs::TabInterface>>
 ActorUiStateManager::GetLastActedOnTab(TaskId id) {
   if (ActorTask* task = actor_service_->GetTask(id)) {
-    actor::ActorTask::TabHandleSet tabs = task->GetLastActedTabs();
     // TODO(crbug.com/441064175): Will need to be updated for multi-tab
     // actuation.
-    return tabs.empty() ? nullptr : tabs.begin()->Get();
+    for (ActorSurfaceHandle actor_surface_handle :
+         task->GetLastActedActorSurfaces()) {
+      if (tabs::TabHandle tab = actor_surface_handle.GetTabHandle();
+          tab != tabs::TabHandle::Null()) {
+        return tab.Get();
+      }
+    }
+    return nullptr;
   }
   if (auto it = stopped_task_info_.find(id); it != stopped_task_info_.end()) {
     return it->second.last_acted_on_tab_handle.Get();

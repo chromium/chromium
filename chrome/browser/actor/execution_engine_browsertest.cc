@@ -423,8 +423,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, FirstActionOnBlockedSite) {
 
   // Even though the first action failed, the tab should still be associated
   // with the task.
-  EXPECT_TRUE(
-      actor_task().GetLastActedTabs().contains(active_tab()->GetHandle()));
+  EXPECT_TRUE(actor_task().GetLastActedActorSurfaces().contains(
+      ActorSurfaceHandle::From(active_tab()->GetHandle())));
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PrerenderBlockedSite) {

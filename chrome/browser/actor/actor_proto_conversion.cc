@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tool_request_variant.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
@@ -1415,7 +1416,7 @@ apc::TabObservation::TabObservationResult ToTabObservationResult(
 }
 
 void FetchCallback(
-    TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     base::WeakPtr<Profile> profile,
     TaskId task_id,
     base::RepeatingClosure barrier,
@@ -1435,7 +1436,7 @@ void FetchCallback(
   }
 
   auto* actor_service = actor::ActorKeyedService::Get(profile.get());
-  TabInterface* const tab = tab_handle.Get();
+  ActorSurface* const actor_surface = actor_surface_handle.Get();
 
   if (!GetTabObservationResultOverrideForTesting().is_null()) {
     // TODO(bokan): result might not have a value in which case this CHECKs (but
@@ -1445,7 +1446,7 @@ void FetchCallback(
     return;
   }
 
-  if (!tab || !tab->GetContents()) {
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     actor_service->GetJournal().Log(GURL(), task_id, "FetchCallback",
                                     JournalDetailsBuilder()
                                         .Add("tabId", tab_observation->id())
@@ -1456,7 +1457,7 @@ void FetchCallback(
     return;
   }
 
-  if (tab->GetContents()->IsCrashed()) {
+  if (actor_surface->GetWebContents()->IsCrashed()) {
     actor_service->GetJournal().Log(GURL(), task_id, "FetchCallback",
                                     JournalDetailsBuilder()
                                         .Add("tabId", tab_observation->id())
@@ -1772,10 +1773,11 @@ void BuildActionsResultWithObservations(
       BrowserCollection::Order::kActivation);
 #endif
 
-  absl::flat_hash_map<tabs::TabInterface*, apc::TabObservation*> tabs_to_fetch;
+  absl::flat_hash_map<ActorSurfaceHandle, apc::TabObservation*> tabs_to_fetch;
 
-  ActorTask::TabHandleSet last_acted_tabs = task.GetLastActedTabs();
-  for (const tabs::TabHandle& handle : last_acted_tabs) {
+  const ActorTask::ActorSurfaceHandleSet last_acted_actor_surfaces =
+      task.GetLastActedActorSurfaces();
+  for (ActorSurfaceHandle actor_surface_handle : last_acted_actor_surfaces) {
     // Include a TabObservation entry for acted on tabs. If the tab no longer
     // exists or the fetch context failed, the observation will be empty.
     // TODO(crbug.com/434263095): We should probably avoid capturing
@@ -1783,8 +1785,13 @@ void BuildActionsResultWithObservations(
     // implemented by not putting the tab into the LastActedTabs set.
     // TODO(b/565820285): Decide how to handle headless surfaces here: observe
     // them, or skip them until headless observation is supported.
-    TabInterface* tab = handle.Get();
-    if (!tab) {
+    TabHandle handle = actor_surface_handle.GetTabHandle();
+    if (handle == TabHandle::Null()) {
+      continue;
+    }
+
+    ActorSurface* actor_surface = actor_surface_handle.Get();
+    if (!actor_surface) {
       apc::TabObservation* tab_observation = response->add_tabs();
       tab_observation->set_id(handle.raw_value());
       tab_observation->set_result(
@@ -1794,7 +1801,7 @@ void BuildActionsResultWithObservations(
                                           .Add("tabId", handle.raw_value())
                                           .AddError("TabWentAway")
                                           .Build());
-    } else if (!tab->GetContents()
+    } else if (!actor_surface->GetWebContents()
                     ->GetPrimaryMainFrame()
                     ->IsRenderFrameLive()) {
       // TODO(crbug.com/392167142): We should also handle the crashed subframes.
@@ -1810,8 +1817,8 @@ void BuildActionsResultWithObservations(
                                           .Build());
     } else {
       apc::TabObservation* tab_observation = response->add_tabs();
-      tabs_to_fetch.emplace(tab, tab_observation);
-      tab_observation->set_id(tab->GetHandle().raw_value());
+      tabs_to_fetch.emplace(actor_surface_handle, tab_observation);
+      tab_observation->set_id(handle.raw_value());
       if (skip_async_observation_information) {
         tab_observation->set_result(apc::TabObservation::TAB_OBSERVATION_OK);
       }
@@ -1828,8 +1835,8 @@ void BuildActionsResultWithObservations(
     // because they're intended to be used only from the LoadAndExtractTool,
     // which doesn't add any tabs to the task's set, and is always the only
     // action in the task. Still, if there is overlap, use the new observation.
-    tabs::TabHandle handle(tab_observation.id());
-    if (last_acted_tabs.contains(handle)) {
+    if (last_acted_actor_surfaces.contains(
+            ActorSurfaceHandle::From(TabHandle(tab_observation.id())))) {
       continue;
     }
 
@@ -1839,7 +1846,7 @@ void BuildActionsResultWithObservations(
   actor_service->GetJournal().Log(
       GURL(), task.id(), "Observing Tabs",
       JournalDetailsBuilder()
-          .Add("tab_observations", last_acted_tabs.size())
+          .Add("tab_observations", last_acted_actor_surfaces.size())
           .Add("tabs_to_fetch", tabs_to_fetch.size())
           .Build());
 
@@ -1858,15 +1865,16 @@ void BuildActionsResultWithObservations(
                      task.id(), skip_async_observation_information,
                      screenshot_collection_options, std::move(response),
                      std::move(journal_entry)));
-  for (auto& [tab, tab_observation] : tabs_to_fetch) {
+  for (auto& [actor_surface_handle, tab_observation] : tabs_to_fetch) {
     // tab_observation can be Unretained because the underlying APC is owned
     // by the barrier which is ref-counted.
-    actor_service->RequestTabObservation(
-        *tab, task.id(), screenshot_collection_options,
-        base::BindOnce(FetchCallback, tab->GetHandle(), profile->GetWeakPtr(),
-                       task.id(), barrier, base::Unretained(tab_observation),
-                       action_results, actions_start_time,
-                       base::TimeTicks::Now(), base::Unretained(latency_info)));
+    actor_service->RequestActorSurfaceObservation(
+        actor_surface_handle, task.id(), screenshot_collection_options,
+        base::BindOnce(FetchCallback, actor_surface_handle,
+                       profile->GetWeakPtr(), task.id(), barrier,
+                       base::Unretained(tab_observation), action_results,
+                       actions_start_time, base::TimeTicks::Now(),
+                       base::Unretained(latency_info)));
   }
 }
 

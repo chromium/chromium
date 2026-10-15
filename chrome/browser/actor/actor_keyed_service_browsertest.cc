@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -631,7 +632,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
   task->ObserveTabOnce(tab2->GetHandle());
 
-  EXPECT_FALSE(task->GetLastActedTabs().contains(tab2->GetHandle()));
+  EXPECT_FALSE(task->GetLastActedActorSurfaces().contains(
+      ActorSurfaceHandle::From(tab2->GetHandle())));
 
   browser2->GetWindow()->Close();
 }

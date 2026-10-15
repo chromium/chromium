@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -637,8 +638,31 @@ void ActorKeyedService::RequestTabObservation(
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
     base::OnceCallback<void(TabObservationResult)> callback) {
+  RequestActorSurfaceObservation(
+      ActorSurfaceHandle::From(tab.GetHandle()), task_id,
+      std::move(screenshot_collection_options), std::move(callback));
+}
+
+void ActorKeyedService::RequestActorSurfaceObservation(
+    ActorSurfaceHandle actor_surface_handle,
+    TaskId task_id,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
+    base::OnceCallback<void(TabObservationResult)> callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::RequestTabObservation");
-  if (tab.GetProfile() != profile_.get()) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  if (!actor_surface) {
+    journal_.Log(GURL(), task_id, "RequestTabObservation",
+                 JournalDetailsBuilder().AddError("Tab went away").Build());
+    std::move(callback).Run(
+        base::unexpected(page_content_annotations::FetchPageContextErrorDetails{
+            .error_code = page_content_annotations::FetchPageContextError::
+                kWebContentsWentAway,
+            .message = "Tab went away"}));
+    return;
+  }
+  if (!GetSurfaceRegistry().Get(actor_surface_handle)) {
     journal_.Log(GURL(), task_id, "RequestTabObservation",
                  JournalDetailsBuilder()
                      .AddError("Cross-profile tab observation denied")
@@ -650,7 +674,8 @@ void ActorKeyedService::RequestTabObservation(
             .message = "Cross-profile tab observation denied"}));
     return;
   }
-  const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
+  const GURL& last_committed_url =
+      actor_surface->GetWebContents()->GetLastCommittedURL();
   auto journal_entry = journal_.CreatePendingAsyncEntry(
       last_committed_url, task_id, MakeBrowserTrackUUID(task_id),
       "RequestTabObservation", {});
@@ -678,11 +703,11 @@ void ActorKeyedService::RequestTabObservation(
   // 32 is the value specified in the TabObservation proto comment.
   options.annotated_page_content_options->max_meta_elements = 32;
   page_content_annotations::FetchPageContext(
-      *tab.GetContents(), options,
+      *actor_surface->GetWebContents(), options,
       CreateActorJournalFetchPageProgressListener(journal_.GetSafeRef(),
                                                   last_committed_url, task_id),
       base::BindOnce(
-          [](base::WeakPtr<tabs::TabInterface> tab,
+          [](ActorSurfaceHandle actor_surface_handle,
              base::OnceCallback<void(TabObservationResult)> callback,
              std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
                  pending_journal_entry,
@@ -728,16 +753,19 @@ void ActorKeyedService::RequestTabObservation(
                     base::as_byte_span(data), iframe_data);
               }
 
-              if (tab) {
-                actor::ActorTabData::From(tab.get())->DidObserveContent(
-                    fetch_result.annotated_page_content_result->proto,
-                    actor::ApcSource::kActor);
+              if (ActorSurface* actor_surface = actor_surface_handle.Get()) {
+                // Null for headless surfaces.
+                if (ActorTabData* tab_data = actor_surface->GetActorTabData()) {
+                  tab_data->DidObserveContent(
+                      fetch_result.annotated_page_content_result->proto,
+                      actor::ApcSource::kActor);
+                }
               }
             }
 
             std::move(callback).Run(std::move(result).value());
           },
-          tab.GetWeakPtr(), std::move(callback), std::move(journal_entry),
+          actor_surface_handle, std::move(callback), std::move(journal_entry),
           last_committed_url));
 }
 

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor/action_result.h"
@@ -25,6 +26,8 @@
 class Profile;
 
 namespace actor {
+
+class ActorSurface;
 
 // Collects the results of tab and window observations after ActorKeyedService
 // has performed actions.
@@ -92,14 +95,14 @@ class TabObservationController {
 #if BUILDFLAG(IS_ANDROID)
   void PopulateAndroidOffscreenWindowObservations(ActorTask* task);
 #endif
-  std::vector<tabs::TabInterface*> PopulateTabObservations(ActorTask* task);
+  std::vector<ActorSurfaceHandle> PopulateTabObservations(ActorTask* task);
   void StartFetchingObservations(
-      const std::vector<tabs::TabInterface*>& tabs_to_fetch);
-  void FetchObservation(tabs::TabInterface* tab,
+      const std::vector<ActorSurfaceHandle>& tabs_to_fetch);
+  void FetchObservation(ActorSurfaceHandle actor_surface_handle,
                         optimization_guide::proto::TabObservation* observation,
                         base::RepeatingClosure barrier);
   void OnTabObservationFetched(
-      tabs::TabHandle tab_handle,
+      ActorSurfaceHandle actor_surface_handle,
       optimization_guide::proto::TabObservation* observation,
       base::TimeTicks fetch_start_time,
       base::RepeatingClosure barrier,
@@ -107,15 +110,15 @@ class TabObservationController {
   void OnAllObservationsDone();
 
   // Crash and retry handling.
-  bool ReloadCrashedTab(tabs::TabInterface& crashed_tab);
-  void OnReloadDone(tabs::TabHandle tab_handle,
+  bool ReloadCrashedTab(ActorSurface& crashed_tab);
+  void OnReloadDone(ActorSurfaceHandle actor_surface_handle,
                     ObservationDelayController::Result reload_result);
   void ScheduleRetry();
 
   ActorTask* GetActorTask() const;
 
-  bool ShouldTakeScreenshot(tabs::TabHandle tab_handle) const;
-  bool ShouldExtractPageContent(tabs::TabHandle tab_handle) const;
+  bool ShouldTakeScreenshot(ActorSurfaceHandle actor_surface_handle) const;
+  bool ShouldExtractPageContent(ActorSurfaceHandle actor_surface_handle) const;
 
   raw_ptr<Profile> profile_;
   TaskId task_id_;

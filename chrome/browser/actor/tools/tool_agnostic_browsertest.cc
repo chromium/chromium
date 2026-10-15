@@ -469,14 +469,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
       MakeNavigateRequest(*active_tab(), url_target.spec());
   ActResultFuture result;
 
-  ASSERT_TRUE(actor_task().GetLastActedTabs().empty());
+  ASSERT_TRUE(actor_task().GetLastActedActorSurfaces().empty());
 
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
 
   // Ensure the tab was added to the tab set even though the tool failed before
   // invoking.
-  EXPECT_FALSE(actor_task().GetLastActedTabs().empty());
+  EXPECT_FALSE(actor_task().GetLastActedActorSurfaces().empty());
 }
 
 // Ensures that a Tool that would normally return !page_stabilization_required

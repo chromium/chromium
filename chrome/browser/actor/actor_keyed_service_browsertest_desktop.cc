@@ -6,6 +6,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -77,12 +78,15 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       browser()->tab_strip_model()->GetTabAtIndex(1);
   ASSERT_TRUE(second_tab);
   tabs::TabHandle second_tab_handle = second_tab->GetHandle();
+  const ActorSurfaceHandle second_actor_surface_handle =
+      ActorSurfaceHandle::From(second_tab_handle);
 
   // Observe the second tab.
   task->ObserveTabOnce(second_tab_handle);
 
-  // Verify it is in LastActedTabs.
-  EXPECT_TRUE(task->GetLastActedTabs().contains(second_tab_handle));
+  // Verify it is in LastActedActorSurfaces.
+  EXPECT_TRUE(
+      task->GetLastActedActorSurfaces().contains(second_actor_surface_handle));
 
   // Close the second tab.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
@@ -94,8 +98,9 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
-  // Verify it is NO LONGER in LastActedTabs.
-  EXPECT_FALSE(task->GetLastActedTabs().contains(second_tab_handle));
+  // Verify it is NO LONGER in LastActedActorSurfaces.
+  EXPECT_FALSE(
+      task->GetLastActedActorSurfaces().contains(second_actor_surface_handle));
 }
 
 }  // namespace

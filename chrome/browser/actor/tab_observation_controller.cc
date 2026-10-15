@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -43,16 +44,18 @@ BASE_FEATURE(kGlicRetryFailedObservations, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kObservationRetryDelay{
     &kGlicRetryFailedObservations, "delay", base::Seconds(5)};
 
-tabs::TabInterface* GetCrashedTab(actor::ActorTask& task) {
-  for (tabs::TabHandle tab_handle : task.GetLastActedTabs()) {
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (!tab) {
+ActorSurface* GetCrashedTab(actor::ActorTask& task) {
+  for (ActorSurfaceHandle actor_surface_handle :
+       task.GetLastActedActorSurfaces()) {
+    ActorSurface* actor_surface = actor_surface_handle.Get();
+    // TODO(b/565820285): Handle headless surfaces once they're observed.
+    if (!actor_surface || !actor_surface->IsTab()) {
       continue;
     }
 
-    content::WebContents* contents = tab->GetContents();
+    content::WebContents* contents = actor_surface->GetWebContents();
     if (contents && contents->IsCrashed()) {
-      return tab;
+      return actor_surface;
     }
   }
 
@@ -127,7 +130,7 @@ void TabObservationController::StartImpl() {
 
   if (base::FeatureList::IsEnabled(kGlicReloadAfterPerformActionsCrash) &&
       !attempted_reload_after_crash_) {
-    if (tabs::TabInterface* crashed_tab = GetCrashedTab(*task)) {
+    if (ActorSurface* crashed_tab = GetCrashedTab(*task)) {
       attempted_reload_after_crash_ = true;
       if (ReloadCrashedTab(*crashed_tab)) {
         return;
@@ -149,8 +152,7 @@ void TabObservationController::PerformObservation() {
   result_ = std::make_unique<ObservationResult>();
 
   PopulateWindowObservations(task);
-  std::vector<tabs::TabInterface*> tabs_to_fetch =
-      PopulateTabObservations(task);
+  std::vector<ActorSurfaceHandle> tabs_to_fetch = PopulateTabObservations(task);
 
   StartFetchingObservations(tabs_to_fetch);
 }
@@ -253,26 +255,34 @@ void TabObservationController::PopulateAndroidOffscreenWindowObservations(
 }
 #endif
 
-std::vector<tabs::TabInterface*>
+std::vector<ActorSurfaceHandle>
 TabObservationController::PopulateTabObservations(ActorTask* task) {
-  std::vector<tabs::TabInterface*> tabs_to_fetch;
-  ActorTask::TabHandleSet last_acted_tabs = task->GetLastActedTabs();
-  for (const tabs::TabHandle& handle : last_acted_tabs) {
-    tabs::TabInterface* tab = handle.Get();
-    optimization_guide::proto::TabObservation tab_observation;
-    tab_observation.set_id(handle.raw_value());
+  std::vector<ActorSurfaceHandle> tabs_to_fetch;
+  const ActorTask::ActorSurfaceHandleSet last_acted_actor_surfaces =
+      task->GetLastActedActorSurfaces();
+  for (ActorSurfaceHandle actor_surface_handle : last_acted_actor_surfaces) {
+    // TODO(b/565820285): Decide how to handle headless surfaces here: observe
+    // them, or skip them until headless observation is supported.
+    tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
+    if (tab_handle == tabs::TabHandle::Null()) {
+      continue;
+    }
 
-    if (!tab) {
+    ActorSurface* actor_surface = actor_surface_handle.Get();
+    optimization_guide::proto::TabObservation tab_observation;
+    tab_observation.set_id(tab_handle.raw_value());
+
+    if (!actor_surface) {
       tab_observation.set_result(optimization_guide::proto::TabObservation::
                                      TAB_OBSERVATION_TAB_WENT_AWAY);
-    } else if (!tab->GetContents()
+    } else if (!actor_surface->GetWebContents()
                     ->GetPrimaryMainFrame()
                     ->IsRenderFrameLive()) {
       tab_observation.set_result(optimization_guide::proto::TabObservation::
                                      TAB_OBSERVATION_PAGE_CRASHED);
     } else {
-      bool take_screenshot = ShouldTakeScreenshot(handle);
-      bool extract_apc = ShouldExtractPageContent(handle);
+      bool take_screenshot = ShouldTakeScreenshot(actor_surface_handle);
+      bool extract_apc = ShouldExtractPageContent(actor_surface_handle);
 
       if (skip_async_observation_information_ ||
           (!take_screenshot && !extract_apc)) {
@@ -286,7 +296,7 @@ TabObservationController::PopulateTabObservations(ActorTask* task) {
               action_results_);
         }
       } else {
-        tabs_to_fetch.push_back(tab);
+        tabs_to_fetch.push_back(actor_surface_handle);
       }
     }
 
@@ -295,8 +305,8 @@ TabObservationController::PopulateTabObservations(ActorTask* task) {
 
   // Add additional observations (e.g. from LoadAndExtractTool).
   for (const auto& additional_obs : task->GetAdditionalTabObservations()) {
-    tabs::TabHandle handle(additional_obs.id());
-    if (last_acted_tabs.contains(handle)) {
+    if (last_acted_actor_surfaces.contains(
+            ActorSurfaceHandle::From(tabs::TabHandle(additional_obs.id())))) {
       continue;
     }
     result_->tab_observations.push_back(additional_obs);
@@ -306,7 +316,7 @@ TabObservationController::PopulateTabObservations(ActorTask* task) {
 }
 
 void TabObservationController::StartFetchingObservations(
-    const std::vector<tabs::TabInterface*>& tabs_to_fetch) {
+    const std::vector<ActorSurfaceHandle>& tabs_to_fetch) {
   actor::RecordPageContextTabCount(tabs_to_fetch.size());
 
   if (tabs_to_fetch.empty()) {
@@ -319,55 +329,55 @@ void TabObservationController::StartFetchingObservations(
       base::BindOnce(&TabObservationController::OnAllObservationsDone,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  for (tabs::TabInterface* tab : tabs_to_fetch) {
+  for (ActorSurfaceHandle actor_surface_handle : tabs_to_fetch) {
     // Find the observation we just added.
     optimization_guide::proto::TabObservation* observation = nullptr;
     for (auto& obs : result_->tab_observations) {
-      if (obs.id() == tab->GetHandle().raw_value()) {
+      if (obs.id() == actor_surface_handle.GetTabHandle().raw_value()) {
         observation = &obs;
         break;
       }
     }
     CHECK(observation);
 
-    FetchObservation(tab, observation, barrier);
+    FetchObservation(actor_surface_handle, observation, barrier);
   }
 }
 
 void TabObservationController::FetchObservation(
-    tabs::TabInterface* tab,
+    ActorSurfaceHandle actor_surface_handle,
     optimization_guide::proto::TabObservation* observation,
     base::RepeatingClosure barrier) {
   auto* actor_service = actor::ActorKeyedService::Get(profile_);
 
-  actor_service->RequestTabObservation(
-      *tab, task_id_, screenshot_collection_options_,
+  actor_service->RequestActorSurfaceObservation(
+      actor_surface_handle, task_id_, screenshot_collection_options_,
       base::BindOnce(&TabObservationController::OnTabObservationFetched,
-                     weak_ptr_factory_.GetWeakPtr(), tab->GetHandle(),
+                     weak_ptr_factory_.GetWeakPtr(), actor_surface_handle,
                      observation, base::TimeTicks::Now(), barrier));
 }
 
 void TabObservationController::OnTabObservationFetched(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     optimization_guide::proto::TabObservation* observation,
     base::TimeTicks fetch_start_time,
     base::RepeatingClosure barrier,
     ActorKeyedService::TabObservationResult result) {
   base::ScopedClosureRunner run_barrier_at_return(barrier);
 
-  tabs::TabInterface* const tab = tab_handle.Get();
+  ActorSurface* const actor_surface = actor_surface_handle.Get();
 
-  if (!tab || !tab->GetContents()) {
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     observation->set_result(optimization_guide::proto::TabObservation::
                                 TAB_OBSERVATION_TAB_WENT_AWAY);
-  } else if (tab->GetContents()->IsCrashed()) {
+  } else if (actor_surface->GetWebContents()->IsCrashed()) {
     observation->set_result(optimization_guide::proto::TabObservation::
                                 TAB_OBSERVATION_PAGE_CRASHED);
   } else if (!result.has_value()) {
     observation->set_result(ToTabObservationResult(result.error().error_code));
   } else {
-    bool take_screenshot = ShouldTakeScreenshot(tab_handle);
-    bool extract_apc = ShouldExtractPageContent(tab_handle);
+    bool take_screenshot = ShouldTakeScreenshot(actor_surface_handle);
+    bool extract_apc = ShouldExtractPageContent(actor_surface_handle);
 
     page_content_annotations::FetchPageContextResult& fetch_result = **result;
     bool has_apc = fetch_result.annotated_page_content_result.has_value();
@@ -481,9 +491,8 @@ void TabObservationController::OnAllObservationsDone() {
   std::move(done_callback_).Run(this, std::move(result_));
 }
 
-bool TabObservationController::ReloadCrashedTab(
-    tabs::TabInterface& crashed_tab) {
-  content::WebContents* contents = crashed_tab.GetContents();
+bool TabObservationController::ReloadCrashedTab(ActorSurface& crashed_tab) {
+  content::WebContents* contents = crashed_tab.GetWebContents();
   if (!contents) {
     return false;
   }
@@ -501,20 +510,21 @@ bool TabObservationController::ReloadCrashedTab(
 }
 
 void TabObservationController::OnReloadDone(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     ObservationDelayController::Result reload_result) {
   if (reload_result ==
       actor::ObservationDelayController::Result::kPageNavigated) {
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (tab) {
+    ActorSurface* actor_surface = actor_surface_handle.Get();
+    if (actor_surface) {
       size_t last_navigation_count = reload_observer_->NavigationCount();
       auto* actor_service = actor::ActorKeyedService::Get(profile_);
       reload_observer_ = std::make_unique<actor::ObservationDelayController>(
           task_id_, actor_service->GetJournal());
       reload_observer_->SetNavigationCount(last_navigation_count + 1);
       reload_observer_->Wait(
-          *tab, base::BindOnce(&TabObservationController::OnReloadDone,
-                               weak_ptr_factory_.GetWeakPtr(), tab_handle));
+          *actor_surface,
+          base::BindOnce(&TabObservationController::OnReloadDone,
+                         weak_ptr_factory_.GetWeakPtr(), actor_surface_handle));
       return;
     }
   }
@@ -537,11 +547,8 @@ ActorTask* TabObservationController::GetActorTask() const {
 }
 
 bool TabObservationController::ShouldTakeScreenshot(
-    tabs::TabHandle tab_handle) const {
-  // Callers only pass live tabs, so From() resolves to the tab's surface.
-  // TODO(b/567721071): Pass the surface once observations iterate surfaces.
-  switch (observation_strategy_.GetScreenshotPolicy(
-      ActorSurfaceHandle::From(tab_handle))) {
+    ActorSurfaceHandle actor_surface_handle) const {
+  switch (observation_strategy_.GetScreenshotPolicy(actor_surface_handle)) {
     case ScreenshotPolicy::kSkipped:
       return false;
     case ScreenshotPolicy::kRequested:
@@ -553,11 +560,9 @@ bool TabObservationController::ShouldTakeScreenshot(
 }
 
 bool TabObservationController::ShouldExtractPageContent(
-    tabs::TabHandle tab_handle) const {
-  // Callers only pass live tabs, so From() resolves to the tab's surface.
-  // TODO(b/567721071): Pass the surface once observations iterate surfaces.
+    ActorSurfaceHandle actor_surface_handle) const {
   switch (observation_strategy_.GetPageContentExtractionPolicy(
-      ActorSurfaceHandle::From(tab_handle))) {
+      actor_surface_handle)) {
     case PageContentExtractionPolicy::kSkipped:
       return false;
     case PageContentExtractionPolicy::kRequested:

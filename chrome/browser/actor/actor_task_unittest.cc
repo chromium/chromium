@@ -374,7 +374,8 @@ TEST_F(ActorTaskTest, ObserveTabOnceAndActing) {
 
   // Transitively verify ObserveTabOnce does not double add if already present.
   task_->ObserveTabOnce(mock_tab.GetHandle());
-  EXPECT_TRUE(task_->GetLastActedTabs().contains(mock_tab.GetHandle()));
+  EXPECT_TRUE(task_->GetLastActedActorSurfaces().contains(
+      ActorSurfaceHandle::From(mock_tab.GetHandle())));
 }
 
 TEST_F(ActorTaskTest, GetLastActuatedTabPreservedAfterTaskCompleted) {
@@ -392,7 +393,7 @@ TEST_F(ActorTaskTest, GetLastActuatedTabPreservedAfterTaskCompleted) {
   task_->Stop(ActorTask::StoppedReason::kTaskComplete);
 
   EXPECT_TRUE(task_->GetTabs().empty());
-  EXPECT_TRUE(task_->GetLastActedTabs().empty());
+  EXPECT_TRUE(task_->GetLastActedActorSurfaces().empty());
   EXPECT_EQ(task_->GetLastActuatedTab(), &mock_tab);
   EXPECT_EQ(task_->GetLastActuatedTabHandle().raw_value(),
             mock_tab.GetHandle().raw_value());
@@ -896,14 +897,15 @@ TEST_F(ActorTaskTest, AddActorSurface_RejectsCrossProfileSurface) {
 TEST_F(ActorTaskTest, ObserveTabOnce_RejectsNonExistentAndCrossProfileTab) {
   tabs::TabHandle non_existent_handle(99999);
   task_->ObserveTabOnce(non_existent_handle);
-  EXPECT_FALSE(task_->GetLastActedTabs().contains(non_existent_handle));
+  EXPECT_FALSE(task_->GetLastActedActorSurfaces().contains(
+      ActorSurfaceHandle::From(non_existent_handle)));
 
   std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
       CreateCrossProfileMockTab();
 
   task_->ObserveTabOnce(cross_profile_tab->GetHandle());
-  EXPECT_FALSE(
-      task_->GetLastActedTabs().contains(cross_profile_tab->GetHandle()));
+  EXPECT_FALSE(task_->GetLastActedActorSurfaces().contains(
+      ActorSurfaceHandle::From(cross_profile_tab->GetHandle())));
 }
 
 // Uses a mock tab that has a real WebContents and a registered surface, as

@@ -175,6 +175,15 @@ class ActorKeyedService : public KeyedService,
           screenshot_collection_options,
       base::OnceCallback<void(TabObservationResult)> callback);
 
+  // Request a TabObservation be generated from the given surface.
+  void RequestActorSurfaceObservation(
+      ActorSurfaceHandle actor_surface_handle,
+      TaskId task_id,
+      std::optional<page_content_annotations::ScreenshotOptions::
+                        ScreenshotCollectionOptions>
+          screenshot_collection_options,
+      base::OnceCallback<void(TabObservationResult)> callback);
+
   // A TabObservationResult may return the successful side of the base::expected
   // but the partial errors in the FetchPageContextResult may be considered a
   // failing result for actor. Returns a failing string in any case the result
