@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -92,8 +91,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   enum class FocusAfterBlur {
     // The web contents, e.g. after the user clicked into the page.
     kWebContents,
-    // Nowhere. The user moved to another window, so only Views focus is
-    // cleared, as focusing the web contents would reactivate this window.
+    // Nowhere. Another window, such as a bubble, took activation, so only
+    // Views focus is cleared, as focusing the web contents would reactivate
+    // this window.
     kNone,
     // Wherever it already is. Another view in the browser window took focus,
     // so it's left there.
@@ -104,7 +104,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // Observes the browser widget's activation (to keep the location bar as its
   // stored focus view while the popup is active) and the popup widget's own
   // activation (Escape handling, macOS key window restoration). The browser or
-  // popup widget deactivating schedules `BlurIfBrowserWindowInactive()`.
+  // popup widget deactivating schedules `BlurIfBrowserOrPopupInactive()`.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void StopForwardingEvents();
 
@@ -130,17 +130,31 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // text or keyword mode. See `FocusAfterBlur` for what happens to the browser
   // window's focus.
   void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
-  // Blurs the omnibox if the user left the browser window, i.e. neither the
-  // browser widget nor its child widgets are active.
-  void BlurIfBrowserWindowInactive();
-  // If the omnibox is focused with the full popup open, blurs it after the
-  // user moved to another window, and sets what the browser window restores
-  // focus to when it's reactivated.
+  // Blurs the omnibox unless the browser window, including the popup, is
+  // active. Any other window taking activation, including a bubble anchored to
+  // the browser window, blurs it, as with the Views omnibox.
+  void BlurIfBrowserOrPopupInactive();
+  // If the omnibox is focused with the full popup open, blurs it after another
+  // window, such as a bubble, took activation, and sets what the browser window
+  // restores focus to when it's reactivated.
   void BlurForWindowDeactivation();
 
   // Returns the browser window's widget. In macOS immersive fullscreen this is
   // not the location bar's widget, which is then a non-activatable overlay.
   views::Widget* GetBrowserWidget();
+
+  // Returns whether the browser widget or this popup's widget is active. This
+  // is true while the omnibox is focused, since the popup then holds
+  // activation, and false once another window, such as a bubble anchored to
+  // the browser window, takes activation. On Linux and Windows, the popup only
+  // counts while the browser's platform window is also active. Returns false
+  // if there is no browser widget.
+  bool IsBrowserOrPopupActive();
+
+  // Returns whether a focus request may activate the popup. This is
+  // `IsBrowserOrPopupActive()`, plus, on Mac, a child widget such as a bubble
+  // anchored to the browser window holding activation.
+  bool CanTakeFocus();
 
   // Returns the browser window's focus manager, or null if there is none.
   views::FocusManager* GetBrowserFocusManager();
@@ -158,10 +172,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       browser_focus_manager_observation_{this};
   base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
       app_menu_control_observation_{this};
-
-  // Subscription to the browser widget's paint-as-active changes while the
-  // popup is shown.
-  base::CallbackListSubscription browser_paint_as_active_subscription_;
 
   // Used to determine where a click event happened to decide if the popup
   // should be deactivated.
