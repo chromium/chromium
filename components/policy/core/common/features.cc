@@ -32,9 +32,6 @@ BASE_FEATURE(kUseCECFlagInPolicyData, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kInitializePoliciesForSignedInUserInNewEntryPoints,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidUseAdminsForEnterpriseInfo,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseRestrictionsManagerInAppRestrictionsProvider,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
