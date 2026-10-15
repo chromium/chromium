@@ -35,13 +35,6 @@ specific_include_rules = {
     "+chrome/browser/signin",
   ],
 
-  # TODO(crbug.com/387248794): LegacyTokenHandleFetcher's shutdown-notifier
-  # factory lives in this same file, so the factory dependency cannot be
-  # injected away from it.
-  "legacy_token_handle_fetcher\\.cc": [
-    "+chrome/browser/signin/identity_manager_factory.h",
-  ],
-
   # AccountReconcilor is looked up lazily on purpose: injecting it from the
   # factory would create it -- and start a reconcile cycle -- as soon as
   # OAuth2LoginManager is built.
