@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -44,17 +44,8 @@ PerformanceEntryType LargestContentfulPaint::EntryTypeEnum() const {
 }
 
 Element* LargestContentfulPaint::element() const {
-  if (!Performance::CanExposeNode(element_)) {
-    return nullptr;
-  }
-
-  // Do not expose |element_| when the document is not 'fully active'.
-  const Document& document = element_->GetDocument();
-  if (!document.IsActive() || !document.GetFrame()) {
-    return nullptr;
-  }
-
-  return element_.Get();
+  return Performance::CanExposeNode(element_, source()) ? element_.Get()
+                                                        : nullptr;
 }
 
 void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {

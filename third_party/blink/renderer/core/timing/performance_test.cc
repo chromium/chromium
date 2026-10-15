@@ -501,4 +501,36 @@ TEST_F(PerformanceTest, GetEntriesByTypeUseCounters) {
   }
 }
 
+TEST_F(PerformanceTest, CanExposeNodeRequiresMatchingSourceWindow) {
+  V8TestingScope main_scope;
+  V8TestingScope other_scope;
+
+  LocalDOMWindow* main_window = main_scope.GetFrame().DomWindow();
+  LocalDOMWindow* other_window = other_scope.GetFrame().DomWindow();
+  ASSERT_TRUE(main_window);
+  ASSERT_TRUE(other_window);
+
+  Node* main_node = main_scope.GetDocument().documentElement();
+  Node* other_node = other_scope.GetDocument().documentElement();
+  ASSERT_TRUE(main_node);
+  ASSERT_TRUE(other_node);
+
+  EXPECT_TRUE(Performance::CanExposeNode(main_node, main_window));
+  EXPECT_TRUE(Performance::CanExposeNode(other_node, other_window));
+  EXPECT_FALSE(Performance::CanExposeNode(other_node, main_window));
+  EXPECT_FALSE(Performance::CanExposeNode(main_node, other_window));
+  EXPECT_FALSE(Performance::CanExposeNode(main_node, nullptr));
+
+  auto* main_performance = DOMWindowPerformance::performance(*main_window);
+  PerformanceEventTiming* entry = PerformanceEventTiming::Create(
+      AtomicString("pointerdown"),
+      PerformanceEventTiming::EventTimingReportingInfo{}, false, main_window,
+      main_performance->NavigationId().web_exposed_id);
+  entry->SetTarget(other_node);
+  EXPECT_EQ(nullptr, entry->target());
+
+  entry->SetTarget(main_node);
+  EXPECT_EQ(main_node, entry->target());
+}
+
 }  // namespace blink

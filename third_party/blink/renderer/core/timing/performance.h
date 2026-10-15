@@ -350,7 +350,7 @@ class CORE_EXPORT Performance : public EventTarget {
 
   bool HasObserverFor(PerformanceEntry::EntryType) const;
   // Determine whether a given Node can be exposed via a Web Perf API.
-  static bool CanExposeNode(Node*);
+  static bool CanExposeNode(Node*, const DOMWindow* source);
 
   ScriptObject toJSONForBinding(ScriptState*) const;
 

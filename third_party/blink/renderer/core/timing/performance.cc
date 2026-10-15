@@ -1367,15 +1367,17 @@ DOMHighResTimeStamp Performance::now() const {
 }
 
 // static
-bool Performance::CanExposeNode(Node* node) {
+bool Performance::CanExposeNode(Node* node, const DOMWindow* source) {
   if (!node || !node->isConnected() || node->IsInShadowTree() ||
       node->IsPseudoElement()) {
     return false;
   }
 
-  // Do not expose |node| when the document is not 'fully active'.
+  // Do not expose |node| when the document is not 'fully active', or when
+  // |node| does not belong to the source window's active document.
   const Document& document = node->GetDocument();
-  if (!document.IsActive() || !document.GetFrame()) {
+  if (!document.IsActive() || !document.GetFrame() ||
+      document.domWindow() != source) {
     return false;
   }
 

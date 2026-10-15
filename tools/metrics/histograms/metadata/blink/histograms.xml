@@ -5329,8 +5329,8 @@ chromium-metrics-reviews@google.com.
     The duration of a single user interaction:
     https://web.dev/better-responsiveness-metric/#group-events-into-interactions
 
-    This metric is emitted once for every interaction in the web contents
-    {InteractionType}
+    This metric has several variants, each of which is a subset of the AllTypes
+    superset.
   </summary>
   <token key="InteractionType">
     <variant name="AllTypes"
@@ -5338,6 +5338,9 @@ chromium-metrics-reviews@google.com.
                  maximum event duration for the keydown, keypress, keyup,
                  pointerdown, pointerup, mousedown, mouseup, and click event
                  is reported."/>
+    <variant name="CrossFrameTarget"
+        summary="of interactions where the input handling frame differed from
+                 the hit-test target frame (e.g. a same-process subframe)."/>
     <variant name="Drag"
         summary="of type drag. The maximum event duration for the
                  pointerdown, pointerup, mousedown, mouseup, and click event
@@ -5345,6 +5348,12 @@ chromium-metrics-reviews@google.com.
     <variant name="Keyboard"
         summary="of type keyboard. The maximum event duration for the
                  keydown, keypress, and keyup event is reported."/>
+    <variant name="MainFrame"
+        summary="of interactions targeting the main frame directly (excluding
+                 cross-frame targets)."/>
+    <variant name="MainFrameIncludingCrossFrameTarget"
+        summary="of interactions targeting the main frame or a cross-frame
+                 target handled by the main frame."/>
     <variant name="TapOrClick"
         summary="of type click or tap. The maximum event duration for the
                  pointerdown, pointerup, mousedown, mouseup, and click event

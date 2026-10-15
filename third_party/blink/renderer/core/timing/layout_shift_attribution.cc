@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
@@ -16,19 +17,25 @@ namespace blink {
 LayoutShiftAttribution* LayoutShiftAttribution::Create(
     Node* node,
     DOMRectReadOnly* previous,
-    DOMRectReadOnly* current) {
-  return MakeGarbageCollected<LayoutShiftAttribution>(node, previous, current);
+    DOMRectReadOnly* current,
+    DOMWindow* source) {
+  return MakeGarbageCollected<LayoutShiftAttribution>(node, previous, current,
+                                                      source);
 }
 
 LayoutShiftAttribution::LayoutShiftAttribution(Node* node,
                                                DOMRectReadOnly* previous,
-                                               DOMRectReadOnly* current)
-    : node_(node), previous_rect_(previous), current_rect_(current) {}
+                                               DOMRectReadOnly* current,
+                                               DOMWindow* source)
+    : node_(node),
+      previous_rect_(previous),
+      current_rect_(current),
+      source_(source) {}
 
 LayoutShiftAttribution::~LayoutShiftAttribution() = default;
 
 Node* LayoutShiftAttribution::node() const {
-  return Performance::CanExposeNode(node_) ? node_ : nullptr;
+  return Performance::CanExposeNode(node_, source_) ? node_ : nullptr;
 }
 
 Node* LayoutShiftAttribution::rawNodeForInspector() const {
@@ -55,6 +62,7 @@ void LayoutShiftAttribution::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   visitor->Trace(previous_rect_);
   visitor->Trace(current_rect_);
+  visitor->Trace(source_);
   ScriptWrappable::Trace(visitor);
 }
 

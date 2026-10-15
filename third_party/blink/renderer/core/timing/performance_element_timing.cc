@@ -81,7 +81,7 @@ PerformanceEntryType PerformanceElementTiming::EntryTypeEnum() const {
 }
 
 Element* PerformanceElementTiming::element() const {
-  return Performance::CanExposeNode(element_) ? element_ : nullptr;
+  return Performance::CanExposeNode(element_, source()) ? element_ : nullptr;
 }
 
 std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {

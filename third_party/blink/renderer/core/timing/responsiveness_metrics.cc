@@ -50,6 +50,10 @@ const char kHistogramMaxEventDuration[] =
 const char kHistogramAllTypes[] = ".AllTypes";
 const char kHistogramKeyboard[] = ".Keyboard";
 const char kHistogramTapOrClick[] = ".TapOrClick";
+const char kHistogramMainFrame[] = ".MainFrame";
+const char kHistogramCrossFrameTarget[] = ".CrossFrameTarget";
+const char kHistogramMainFrameIncludingCrossFrameTarget[] =
+    ".MainFrameIncludingCrossFrameTarget";
 
 constexpr char kUserInteractionTraceEventCategory[] = "latency";
 
@@ -611,6 +615,18 @@ void ResponsivenessMetrics::RecordUserInteractionHistograms(
     LogResponsivenessHistogram(duration, kHistogramTapOrClick);
   } else {
     LogResponsivenessHistogram(duration, kHistogramKeyboard);
+  }
+
+  const auto* reporting_info = entry.GetEventTimingReportingInfo();
+  if (reporting_info->is_main_frame && !reporting_info->is_cross_frame_target) {
+    LogResponsivenessHistogram(duration, kHistogramMainFrame);
+  }
+  if (reporting_info->is_cross_frame_target) {
+    LogResponsivenessHistogram(duration, kHistogramCrossFrameTarget);
+  }
+  if (reporting_info->is_main_frame || reporting_info->is_cross_frame_target) {
+    LogResponsivenessHistogram(duration,
+                               kHistogramMainFrameIncludingCrossFrameTarget);
   }
 }
 

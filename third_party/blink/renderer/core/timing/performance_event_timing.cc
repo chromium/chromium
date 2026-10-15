@@ -126,7 +126,7 @@ DOMHighResTimeStamp PerformanceEventTiming::processingEnd() const {
 }
 
 Node* PerformanceEventTiming::target() const {
-  return Performance::CanExposeNode(target_) ? target_ : nullptr;
+  return Performance::CanExposeNode(target_, source()) ? target_ : nullptr;
 }
 
 void PerformanceEventTiming::SetTarget(EventTarget* target) {

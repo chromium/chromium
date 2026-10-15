@@ -49,7 +49,7 @@ PerformanceEntryType PerformanceScrollTiming::EntryTypeEnum() const {
 }
 
 Node* PerformanceScrollTiming::target() const {
-  return Performance::CanExposeNode(target_) ? target_ : nullptr;
+  return Performance::CanExposeNode(target_, source()) ? target_ : nullptr;
 }
 
 void PerformanceScrollTiming::BuildJSONValue(V8ObjectBuilder& builder) const {

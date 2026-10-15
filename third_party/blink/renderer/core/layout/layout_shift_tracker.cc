@@ -623,10 +623,11 @@ LayoutShift::AttributionList LayoutShiftTracker::CreateAttributionList() const {
             << "Attribution rects will be in physical pixels.";
       }
     }
-    list.push_back(LayoutShiftAttribution::Create(
-        DOMNodeIds::NodeForId(att.node_id),
-        DOMRectReadOnly::FromRectF(old_css_rect),
-        DOMRectReadOnly::FromRectF(new_css_rect)));
+    list.push_back(
+        LayoutShiftAttribution::Create(DOMNodeIds::NodeForId(att.node_id),
+                                       DOMRectReadOnly::FromRectF(old_css_rect),
+                                       DOMRectReadOnly::FromRectF(new_css_rect),
+                                       frame_view_->GetFrame().DomWindow()));
   }
   return list;
 }

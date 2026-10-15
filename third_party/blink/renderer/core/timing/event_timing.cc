@@ -22,6 +22,9 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
 namespace blink {
+
+BASE_FEATURE(kEventTimingUseTargetFrame, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Returns true when the type of the event is one of the standard input events
@@ -89,6 +92,19 @@ bool IsNavigationEventType(const Event& event) {
 UIEventTiming::UIEventTiming(LocalFrame* frame, const Event& event) {
   if (IsStandardEventType(event)) {
     timing_.emplace(base::PassKey<UIEventTiming>(), frame, event);
+  }
+}
+
+UIEventTiming::UIEventTiming(LocalFrame* handling_frame,
+                             LocalFrame* target_frame,
+                             const Event& event)
+    : UIEventTiming(base::FeatureList::IsEnabled(kEventTimingUseTargetFrame)
+                        ? target_frame
+                        : handling_frame,
+                    event) {
+  if (PerformanceEventTiming* entry = GetEntry()) {
+    entry->GetEventTimingReportingInfo()->is_cross_frame_target =
+        handling_frame != target_frame;
   }
 }
 

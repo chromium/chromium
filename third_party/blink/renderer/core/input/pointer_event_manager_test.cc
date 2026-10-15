@@ -13,10 +13,13 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
@@ -1002,6 +1005,61 @@ TEST_F(PanActionPointerEventTest, PanActionSentAcrossFrames) {
       Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   test::RunPendingTasks();
   ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
+}
+
+TEST_F(PointerEventManagerTest,
+       TouchPointerEventTimingAttributedToTargetFrame) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest child_resource("https://sub.example.com/child.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <body style='margin: 0; padding: 0;'>
+      <iframe id='child' src='https://sub.example.com/child.html'
+              style='width: 300px; height: 300px; border: none;'></iframe>
+    </body>
+  )HTML");
+  child_resource.Complete(R"HTML(
+    <body style='margin: 0; padding: 0;'>
+      <div id='target' style='width: 200px; height: 200px;'>Tap here</div>
+    </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* callback = MakeGarbageCollected<CheckPointerEventListenerCallback>();
+  GetDocument().addEventListener(event_type_names::kPointerdown, callback);
+
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("child")));
+  ASSERT_TRUE(iframe);
+  Document* child_document = iframe->contentDocument();
+  ASSERT_TRUE(child_document);
+
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerDown,
+                             WebPointerProperties::PointerType::kTouch),
+      {}, {}, ui::LatencyInfo()));
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerUp,
+                             WebPointerProperties::PointerType::kTouch),
+      {}, {}, ui::LatencyInfo()));
+
+  WindowPerformance* main_perf =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  WindowPerformance* child_perf =
+      DOMWindowPerformance::performance(*child_document->domWindow());
+  ASSERT_TRUE(main_perf);
+  ASSERT_TRUE(child_perf);
+
+  EXPECT_EQ(0u,
+            main_perf->eventCounts()->Map().at(event_type_names::kPointerdown));
+  EXPECT_EQ(0u,
+            main_perf->eventCounts()->Map().at(event_type_names::kPointerup));
+  EXPECT_EQ(
+      1u, child_perf->eventCounts()->Map().at(event_type_names::kPointerdown));
+  EXPECT_EQ(1u,
+            child_perf->eventCounts()->Map().at(event_type_names::kPointerup));
 }
 
 }  // namespace blink

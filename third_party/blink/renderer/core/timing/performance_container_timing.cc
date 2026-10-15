@@ -62,11 +62,12 @@ PerformanceEntryType PerformanceContainerTiming::EntryTypeEnum() const {
 }
 
 Element* PerformanceContainerTiming::rootElement() const {
-  return Performance::CanExposeNode(root_element_) ? root_element_ : nullptr;
+  return Performance::CanExposeNode(root_element_, source()) ? root_element_
+                                                             : nullptr;
 }
 
 Element* PerformanceContainerTiming::lastPaintedElement() const {
-  return Performance::CanExposeNode(last_painted_element_)
+  return Performance::CanExposeNode(last_painted_element_, source())
              ? last_painted_element_
              : nullptr;
 }

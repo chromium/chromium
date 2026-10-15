@@ -160,7 +160,10 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
   pointer_event->SetTrusted(true);
-  UIEventTiming event_timing(frame_, *pointer_event);
+  Node* target_node = target->ToNode();
+  LocalFrame* target_frame =
+      target_node ? target_node->GetDocument().GetFrame() : nullptr;
+  UIEventTiming event_timing(frame_.Get(), target_frame, *pointer_event);
 
   if (event_type == event_type_names::kPointerdown ||
       event_type == event_type_names::kPointerover ||
@@ -172,7 +175,7 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
     }
   }
 
-  if (Node* target_node = target->ToNode()) {
+  if (target_node) {
     if (RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
       if (event_type == event_type_names::kPointerdown) {
         pointer_event_factory_->SetPointerDownTarget(

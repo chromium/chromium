@@ -12,6 +12,7 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class DOMWindow;
 class Node;
 class ScriptObject;
 class ScriptState;
@@ -22,10 +23,12 @@ class CORE_EXPORT LayoutShiftAttribution : public ScriptWrappable {
  public:
   static LayoutShiftAttribution* Create(Node*,
                                         DOMRectReadOnly* previous,
-                                        DOMRectReadOnly* current);
+                                        DOMRectReadOnly* current,
+                                        DOMWindow* source);
   LayoutShiftAttribution(Node*,
                          DOMRectReadOnly* previous,
-                         DOMRectReadOnly* current);
+                         DOMRectReadOnly* current,
+                         DOMWindow* source);
   ~LayoutShiftAttribution() override;
 
   Node* node() const;
@@ -41,6 +44,7 @@ class CORE_EXPORT LayoutShiftAttribution : public ScriptWrappable {
   WeakMember<Node> node_;
   Member<DOMRectReadOnly> previous_rect_;
   Member<DOMRectReadOnly> current_rect_;
+  WeakMember<DOMWindow> source_;
 };
 
 }  // namespace blink

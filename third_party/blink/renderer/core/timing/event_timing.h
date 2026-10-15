@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
+
+CORE_EXPORT BASE_DECLARE_FEATURE(kEventTimingUseTargetFrame);
 
 class Event;
 class LocalFrame;
@@ -62,6 +65,9 @@ class CORE_EXPORT UIEventTiming final {
 
  public:
   UIEventTiming(LocalFrame* frame, const Event& event);
+  UIEventTiming(LocalFrame* handling_frame,
+                LocalFrame* target_frame,
+                const Event& event);
 
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     return timing_ ? timing_->GetInteractionIdInfo() : std::nullopt;

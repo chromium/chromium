@@ -94,6 +94,14 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     // dispatched with the input events, beforeinput event's processing time is
     // nested under keypress event.
     bool is_processing_fully_nested_in_another_event = false;
+
+    // True when the EventTiming was recorded in a main frame.
+    bool is_main_frame = false;
+
+    // True when the input handling frame (e.g. local root in
+    // MouseEventManager/PointerEventManager) differed from the hit-test target
+    // node's frame (i.e. a same-process subframe target).
+    bool is_cross_frame_target = false;
   };
 
   static PerformanceEventTiming* Create(
