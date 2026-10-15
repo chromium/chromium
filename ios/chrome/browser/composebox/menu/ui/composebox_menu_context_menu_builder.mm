@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_context_menu_builder.h"
 
+#import <utility>
+#import <vector>
+
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
@@ -191,12 +194,18 @@ struct MenuItemAvailability {
   if (!_inputState.allowModelPicker) {
     return nil;
   }
-  using enum ComposeboxMenuItemType;
+
+  std::vector<ComposeboxMenuItemType> modelItemTypes;
+  for (ComposeboxModelOption model : ComposeboxModelOptionSet::All()) {
+    if (model == ComposeboxModelOption::kNone) {
+      continue;
+    }
+    modelItemTypes.push_back(MenuItemTypeForModel(model));
+  }
 
   // Note: When possible, 'Regular' is meant to be replaced by 'Auto'.
   return
-      [self inlineMenuFromItemTypes:{kModelRegular, kModelAuto, kModelThinking,
-                                     kModelThinkingNoGenUI, kModelFlash}
+      [self inlineMenuFromItemTypes:std::move(modelItemTypes)
                           withTitle:[_inputState.uiConfig modelSectionHeader]];
 }
 
