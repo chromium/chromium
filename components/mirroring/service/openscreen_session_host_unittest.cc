@@ -1071,6 +1071,36 @@ TEST_F(OpenscreenSessionHostTest, PreservesBandwidthWhenNoFramesDropped) {
   StopSession();
 }
 
+TEST_F(OpenscreenSessionHostTest,
+       DoesNotCollapseBandwidthFromStaleFrameDropsBeforeStaticScreen) {
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+
+  // A frame is dropped at session startup (when bandwidth_estimate <= 0) or
+  // while bandwidth is saturated at the 5 Mbps cap.
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(0);
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+
+  fake_sender_ptr->set_frames_dropped(2);
+  UpdateBandwidthEstimate(6250000);
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+
+  // Later, the screen becomes static and the bandwidth estimate drops, but no
+  // new frames are dropped during the static period. Bandwidth must be
+  // preserved.
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
 TEST_F(OpenscreenSessionHostTest, CanRequestRefresh) {
   CreateSession(SessionType::VIDEO_ONLY);
 

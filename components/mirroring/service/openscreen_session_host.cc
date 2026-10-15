@@ -1038,6 +1038,12 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate() {
 void OpenscreenSessionHost::UpdateBandwidthEstimate(
     const int bandwidth_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const int current_frames_dropped =
+      video_sender_ ? video_sender_->GetFramesDropped() : 0;
+  const bool frames_dropped_since_last_update =
+      video_sender_ && (current_frames_dropped > num_video_frames_dropped_);
+  num_video_frames_dropped_ = current_frames_dropped;
+
   // Nothing to do yet.
   if (bandwidth_estimate <= 0) {
     return;
@@ -1053,20 +1059,8 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate(
     constexpr double kConservativeIncrease = 1.1;
     usable_bandwidth_ = std::min<uint32_t>(
         usable_bandwidth_ * kConservativeIncrease, usable_bandwidth);
-    if (video_sender_) {
-      num_video_frames_dropped_ = video_sender_->GetFramesDropped();
-    }
   } else if (usable_bandwidth < usable_bandwidth_) {
-    bool should_decrease_bandwidth = true;
-    if (video_sender_) {
-      const int current_frames_dropped = video_sender_->GetFramesDropped();
-      should_decrease_bandwidth =
-          current_frames_dropped > num_video_frames_dropped_;
-      if (should_decrease_bandwidth) {
-        num_video_frames_dropped_ = current_frames_dropped;
-      }
-    }
-    if (should_decrease_bandwidth) {
+    if (!video_sender_ || frames_dropped_since_last_update) {
       usable_bandwidth_ = usable_bandwidth;
     }
   }
