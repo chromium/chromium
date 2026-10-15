@@ -126,6 +126,8 @@ class DebugHeaderBuilder {
       case RefreshResult::kFatalError:
       case RefreshResult::kRefreshedAsWaiter:
       case RefreshResult::kInScopeRefreshNotYetNeeded:
+      // Only reported to requests that have already been destroyed.
+      case RefreshResult::kCanceled:
         return;
       case RefreshResult::kInitializedService:
         NOTREACHED();
@@ -1664,11 +1666,16 @@ void SessionServiceImpl::RefreshSessionInternal(
       auto req_it = std::ranges::find_if(
           *deferred_reqs, [](const auto& req) { return !!req.request; });
       if (req_it == deferred_reqs->end()) {
-        // All deferred requests were cancelled or destroyed.
-        // TODO(crbug.com/509885112): We should call UnblockWaitingRequests()
-        // here to drain the queue of deferred requests because all the requests
-        // have already been canceled. Use a new `RefreshResult::kCancelled` for
-        // this.
+        // All deferred requests were destroyed (e.g. canceled) while the key
+        // was being restored, so there is no request to refresh on behalf of.
+        // The queue must still be drained: a stale `deferred_requests_` entry
+        // looks like an in-flight refresh, so later deferred requests and
+        // pre-warms would wait on it, and proactive refreshes would not start.
+        // Note that this invalidates `deferred_reqs`.
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceBoundSessionsDrainDeferredOnAllCanceled)) {
+          UnblockWaitingRequests(session_key, RefreshResult::kCanceled);
+        }
         return;
       }
 

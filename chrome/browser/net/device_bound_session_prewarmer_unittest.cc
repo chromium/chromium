@@ -1134,6 +1134,11 @@ const PrewarmMetricsTestCase kPrewarmMetricsTestCases[] = {
      std::nullopt,
      ".OtherTransientError",
      std::nullopt},
+    {"Canceled",
+     {RefreshResult::kCanceled},
+     base::Seconds(10),
+     ".OtherTransientError",
+     std::nullopt},
     // Mixed results are recorded under the least successful outcome.
     {"MixedSuccessAndNotYetNeeded",
      {RefreshResult::kInScopeRefreshNotYetNeeded, RefreshResult::kRefreshed},

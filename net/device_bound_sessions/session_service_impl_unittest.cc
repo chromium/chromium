@@ -2917,6 +2917,11 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
     return std::distance(begin, end);
   }
 
+  // Returns the number of registration and refresh fetches in progress.
+  size_t GetOngoingRegistrationFetchesCount() {
+    return service().registration_fetchers_.size();
+  }
+
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
       SessionService::OnAccessCallback on_access_callback,
       const SessionKey& session_key,
@@ -2954,6 +2959,42 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
     service().OnGetCookiesAfterProactiveRefresh(
         session_key, std::move(callbacks), refresh_result, cookies,
         excluded_cookies);
+  }
+
+  // Loads a session for `kTestUrl` whose binding key has not been restored, so
+  // that refreshing it first restores the key asynchronously. The key restore
+  // is expected once, and its callback is saved to `restore_key_callback`.
+  void LoadSessionWithUnrestoredKey(
+      SessionStore::RestoreSessionBindingKeyCallback* restore_key_callback) {
+    EXPECT_CALL(store(), LoadSessions);
+    service().LoadSessionsAsync();
+    ASSERT_OK_AND_ASSIGN(
+        std::unique_ptr<Session> session,
+        Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
+    SessionStore::SessionsMap session_map;
+    session_map.insert({SessionKey{SchemefulSite(kTestUrl), session->id()},
+                        std::move(session)});
+    FinishLoadingSessions(std::move(session_map));
+
+    EXPECT_CALL(
+        store(),
+        RestoreSessionBindingKey(
+            SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+        .WillOnce(SaveArgByMove<2>(restore_key_callback));
+  }
+
+  // Defers a new request on the session loaded by
+  // `LoadSessionWithUnrestoredKey()`, then destroys the request.
+  void DeferRequestThenDestroyIt(
+      SessionService::RefreshCompleteCallback callback) {
+    net::TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+        context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate);
+    DbscRequest dbsc_request(request.get());
+    service().DeferRequestForRefresh(
+        dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+        std::move(callback));
   }
 
   void TearDown() override {
@@ -3403,6 +3444,94 @@ TEST_F(SessionServiceImplWithStoreTest,
                 request2->isolation_info(), origin2);
 
   EXPECT_EQ(future2.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       DrainDeferredRequestsWhenAllWaitersCanceledDuringKeyRestore) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsDrainDeferredOnAllCanceled);
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  ASSERT_NO_FATAL_FAILURE(LoadSessionWithUnrestoredKey(&restore_key_callback));
+
+  // The first request starts restoring the key, and the second one waits for
+  // the same refresh. Both are destroyed before the key is restored.
+  base::test::TestFuture<RefreshResult> trigger_future;
+  DeferRequestThenDestroyIt(trigger_future.GetCallback());
+  ASSERT_TRUE(restore_key_callback);
+  base::test::TestFuture<RefreshResult> waiter_future;
+  DeferRequestThenDestroyIt(waiter_future.GetCallback());
+
+  // With no request left to refresh for, the queue is drained.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_EQ(trigger_future.Take(), RefreshResult::kCanceled);
+  EXPECT_EQ(waiter_future.Take(), RefreshResult::kCanceled);
+
+  // So a later request starts a new refresh instead of waiting on the abandoned
+  // one.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
+  EXPECT_CALL(store(), SaveSession);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate);
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       AllWaitersCanceledDuringKeyRestoreDisabledByKillSwitch) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kDeviceBoundSessionsDrainDeferredOnAllCanceled);
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  ASSERT_NO_FATAL_FAILURE(LoadSessionWithUnrestoredKey(&restore_key_callback));
+
+  base::test::TestFuture<RefreshResult> trigger_future;
+  DeferRequestThenDestroyIt(trigger_future.GetCallback());
+  ASSERT_TRUE(restore_key_callback);
+
+  // The abandoned refresh is left in the queue.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_FALSE(trigger_future.IsReady());
+
+  // So a later request waits on it instead of starting a new refresh.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate);
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       PrewarmSessionsForUrl_DeferredRequestsDestroyedDuringKeyRestoration) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsDrainDeferredOnAllCanceled);
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  ASSERT_NO_FATAL_FAILURE(LoadSessionWithUnrestoredKey(&restore_key_callback));
+
+  DeferRequestThenDestroyIt(base::DoNothing());
+  ASSERT_TRUE(restore_key_callback);
+
+  // The pre-warm waits for the pending refresh instead of starting its own.
+  base::test::TestFuture<SessionPrewarmResult> prewarm_future;
+  service().PrewarmSessionsForUrl(kTestUrl, prewarm_future.GetCallback());
+  EXPECT_FALSE(prewarm_future.IsReady());
+
+  // Draining the abandoned refresh completes the pre-warm too.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_THAT(prewarm_future.Get().results,
+              ElementsAre(RefreshResult::kCanceled));
 }
 
 TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {

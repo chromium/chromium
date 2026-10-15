@@ -50,12 +50,16 @@ TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeSessionParams) {
 }
 
 TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeRefreshResult) {
-  net::device_bound_sessions::RefreshResult input =
-      net::device_bound_sessions::RefreshResult::kInScopeRefreshNotYetNeeded;
-  net::device_bound_sessions::RefreshResult output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
-              network::mojom::DeviceBoundSessionRefreshResult>(input, output));
-  EXPECT_EQ(input, output);
+  using net::device_bound_sessions::RefreshResult;
+  for (RefreshResult input :
+       {RefreshResult::kInScopeRefreshNotYetNeeded, RefreshResult::kCanceled}) {
+    SCOPED_TRACE(static_cast<int>(input));
+    RefreshResult output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<
+            network::mojom::DeviceBoundSessionRefreshResult>(input, output));
+    EXPECT_EQ(input, output);
+  }
 }
 
 }  // namespace

@@ -52,6 +52,7 @@ PrewarmOutcome GetPrewarmOutcome(
     case net::device_bound_sessions::RefreshResult::kServerError:
     case net::device_bound_sessions::RefreshResult::kSigningQuotaExceeded:
     case net::device_bound_sessions::RefreshResult::kTransientSigningError:
+    case net::device_bound_sessions::RefreshResult::kCanceled:
       return PrewarmOutcome::kOtherTransientError;
   }
   NOTREACHED();
@@ -197,6 +198,9 @@ bool DeviceBoundSessionPrewarmer::IsTransientError(
     case net::device_bound_sessions::RefreshResult::kServerError:
     case net::device_bound_sessions::RefreshResult::kTransientSigningError:
     case net::device_bound_sessions::RefreshResult::kSigningQuotaExceeded:
+    // The refresh this pre-warm joined was abandoned, so the session may still
+    // need one.
+    case net::device_bound_sessions::RefreshResult::kCanceled:
       return true;
   }
   NOTREACHED();

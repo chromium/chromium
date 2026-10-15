@@ -512,6 +512,9 @@ BASE_FEATURE(kDeviceBoundSessionsPersistExpiryOnRefresh,
 BASE_FEATURE(kDeviceBoundSessionsIncludeAudienceClaim,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionsDrainDeferredOnAllCanceled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

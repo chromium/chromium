@@ -2053,6 +2053,9 @@ String BuildProtocolDeviceBoundSessionRefreshResult(
     case net::device_bound_sessions::RefreshResult::kInScopeRefreshNotYetNeeded:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           InScopeRefreshNotYetNeeded;
+    case net::device_bound_sessions::RefreshResult::kCanceled:
+      return protocol::Network::RefreshEventDetails::RefreshResultEnum::
+          Canceled;
   }
 }
 // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionRefreshResult,//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)

@@ -2139,6 +2139,7 @@ domain Network
         RefreshedAsWaiter
         TransientSigningError
         InScopeRefreshNotYetNeeded
+        Canceled
       # LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult,//content/browser/devtools/protocol/network_handler.cc:DeviceBoundSessionRefreshResult)
       # If there was a fetch attempt, the result of that.
       optional DeviceBoundSessionFetchResult fetchResult

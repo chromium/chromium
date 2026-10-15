@@ -564,6 +564,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsPersistExpiryOnRefresh);
 // and refresh JWT payloads.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsIncludeAudienceClaim);
 
+// Kill switch for draining a session's deferred requests queue when every
+// request in it is destroyed while the session's binding key is being restored.
+// Without this, the abandoned queue entry looks like an in-flight refresh, so
+// later requests and pre-warms for the session wait on it until the session is
+// deleted, and proactive refreshes do not start.
+// TODO(crbug.com/509885112): Remove once this has shipped to stable.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsDrainDeferredOnAllCanceled);
+
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are
