@@ -86,9 +86,9 @@ int GetIconIdAndroid(RequestType type) {
 const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
   switch (type) {
     case RequestType::kAmbientLogin:
-      // TODO(https://crbug.com/532206357): This is a placeholder. This should
-      // be a dynamic icon if possible.
-      return vector_icons::kPasskeyIcon;
+      // This icon is provided by
+      // `AmbientLoginPermissionRequest::GetIconForChip()`.
+      NOTREACHED();
     case RequestType::kArSession:
     case RequestType::kVrSession:
       return ::features::IsRoundedIconsEnabled()
@@ -272,7 +272,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       // TODO(crbug.com/40252825): use a dedicated icon
       return gfx::VectorIcon::EmptyIcon();
     case RequestType::kAmbientLogin:
-      return gfx::VectorIcon::EmptyIcon();
+      // This icon is provided by
+      // `AmbientLoginPermissionRequest::GetBlockedIconForChip()`.
+      NOTREACHED();
     case RequestType::kKeyboardLock:
       return ::features::IsRoundedIconsEnabled()
                  ? vector_icons::kKeyboardLockOffIcon

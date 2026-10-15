@@ -15,6 +15,10 @@
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ambient_signin {
 
 enum class CredentialType {
@@ -97,7 +101,13 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   // `federated_selected_callback_` when the permission request is accepted.
   void SelectFederatedCredential(size_t index);
 
+  // Returns the vector icon representing a credential of the given `type`.
+  // Used both for credential rows in the bubble and for the omnibox chip.
+  static const gfx::VectorIcon& GetCredentialIcon(CredentialType type);
+
   // permissions::PermissionRequest:
+  permissions::IconId GetIconForChip() const override;
+  permissions::IconId GetBlockedIconForChip() const override;
   std::u16string GetMessageTextFragment() const override;
 
  private:

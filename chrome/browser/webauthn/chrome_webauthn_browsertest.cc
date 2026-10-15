@@ -38,6 +38,10 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -60,6 +64,7 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -86,6 +91,7 @@
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1284,7 +1290,21 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUISingleCredential) {
           permission_request_manager->Requests().front().get());
   EXPECT_EQ(ambient_request->credentials().size(), 1u);
 
+  ChipController* chip_controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->GetChipController();
+  ASSERT_NE(chip_controller, nullptr);
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_EQ(chip_controller->chip()->GetTextForTesting(),
+            l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_PERMISSION_CHIP));
+  ASSERT_NE(chip_controller->permission_prompt_model(), nullptr);
+  EXPECT_EQ(&chip_controller->permission_prompt_model()->GetIcon(),
+            &ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+                ambient_signin::CredentialType::kPasskey));
+
   permission_request_manager->Accept(std::monostate());
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));

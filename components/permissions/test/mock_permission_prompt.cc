@@ -83,7 +83,7 @@ MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
 #endif  // BUILDFLAG(IS_ANDROID)
 #else
     EXPECT_FALSE(request->GetMessageTextFragment().empty());
-    EXPECT_FALSE(permissions::GetIconId(request_type).is_empty());
+    EXPECT_FALSE(request->GetIconForChip().is_empty());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     EXPECT_EQ(request->ShouldUseTwoOriginPrompt(),
               request_type == permissions::RequestType::kStorageAccess);

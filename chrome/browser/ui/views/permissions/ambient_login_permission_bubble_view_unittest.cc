@@ -14,8 +14,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/grit/generated_resources.h"
@@ -925,6 +927,73 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, OnlyIdpNameIsElidedAtStart) {
       views::AsViewClass<views::Label>(row2_labels->children()[1]);
   ASSERT_NE(row2_email_label, nullptr);
   EXPECT_EQ(row2_email_label->GetElideBehavior(), gfx::ELIDE_TAIL);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       ChipModelUsesTopCredentialIconAndSignInText) {
+  const GURL origin("https://example.com");
+  const std::u16string expected_chip_text =
+      l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_PERMISSION_CHIP);
+
+  // Top credential is a passkey.
+  {
+    MockAmbientDelegate delegate(origin, u"alice@example.com",
+                                 u"Google Password Manager");
+    PermissionPromptChipModel chip_model(delegate.GetWeakPtr());
+    EXPECT_EQ(chip_model.GetChipText(), expected_chip_text);
+    EXPECT_EQ(&chip_model.GetIcon(),
+              &ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+                  ambient_signin::CredentialType::kPasskey));
+
+    // A collapsed chip shows the "blocked" icon, which for ambient sign-in is
+    // still the credential icon.
+    chip_model.UpdateAutoCollapsePromptChipState(/*is_collapsed=*/true);
+    EXPECT_EQ(&chip_model.GetIcon(),
+              &ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+                  ambient_signin::CredentialType::kPasskey));
+  }
+
+  // Top credential is a password.
+  {
+    std::vector<ambient_signin::PasskeyOrPasswordCredential> creds = {
+        {u"bob@example.com", u"Google Password Manager",
+         ambient_signin::CredentialType::kPassword},
+        {u"alice@example.com", u"Google Password Manager",
+         ambient_signin::CredentialType::kPasskey}};
+    std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+    requests.push_back(
+        std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+            origin, origin, std::move(creds), base::DoNothing(),
+            base::DoNothing()));
+    MockAmbientDelegate delegate(origin);
+    delegate.set_requests(std::move(requests));
+
+    PermissionPromptChipModel chip_model(delegate.GetWeakPtr());
+    EXPECT_EQ(chip_model.GetChipText(), expected_chip_text);
+    EXPECT_EQ(&chip_model.GetIcon(),
+              &ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+                  ambient_signin::CredentialType::kPassword));
+  }
+
+  // Top credential is a federated credential.
+  {
+    std::vector<ambient_signin::FederatedCredential> fed_creds = {
+        {u"idp.example.com", u"Carol", u"carol@example.com",
+         GURL("https://idp.example.com")}};
+    std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+    requests.push_back(
+        std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+            origin, origin,
+            std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
+            base::NullCallback(), std::move(fed_creds), base::DoNothing(),
+            base::DoNothing()));
+    MockAmbientDelegate delegate(origin);
+    delegate.set_requests(std::move(requests));
+
+    PermissionPromptChipModel chip_model(delegate.GetWeakPtr());
+    EXPECT_EQ(chip_model.GetChipText(), expected_chip_text);
+    EXPECT_EQ(&chip_model.GetIcon(), &GooglePasswordManagerVectorIcon());
+  }
 }
 
 }  // namespace

@@ -122,9 +122,21 @@ bool ShouldIgnorePermissionRequest(
   return !can_display_prompt;
 }
 
+bool IsAmbientLoginRequest(permissions::PermissionPrompt::Delegate* delegate) {
+  const auto& requests = delegate->Requests();
+  return requests.size() == 1 && requests.front()->request_type() ==
+                                     permissions::RequestType::kAmbientLogin;
+}
+
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
-  // Permission request chip should not be shown if `delegate->Requests()` were
-  // requested without a user gesture.
+  // Ambient login requests are made without a user gesture, but always display
+  // a permission chip in the omnibox.
+  if (IsAmbientLoginRequest(delegate)) {
+    return true;
+  }
+
+  // Otherwise, the permission request chip should not be shown if
+  // `delegate->Requests()` were requested without a user gesture.
   if (!permissions::PermissionUtil::HasUserGesture(delegate)) {
     return false;
   }

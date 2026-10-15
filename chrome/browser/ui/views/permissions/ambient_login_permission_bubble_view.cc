@@ -22,19 +22,16 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -63,18 +60,6 @@ constexpr int kViewportBottomMargin = 48;
 // Domains are elided at the start, since their end is the most significant
 // part.
 constexpr gfx::ElideBehavior kIdpNameElideBehavior = gfx::ELIDE_HEAD;
-
-const gfx::VectorIcon& GetCredentialIcon(ambient_signin::CredentialType type) {
-  switch (type) {
-    case ambient_signin::CredentialType::kPasskey:
-      return features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
-                                               : vector_icons::kPasskeyOldIcon;
-    case ambient_signin::CredentialType::kPassword:
-      return features::IsRoundedIconsEnabled()
-                 ? vector_icons::kPasswordManagerIcon
-                 : vector_icons::kPasswordManagerOldIcon;
-  }
-}
 
 // Returns the icon shown when there is no more specific icon, e.g. for a
 // federated credential without an account picture.
@@ -144,7 +129,9 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
     username = cred.username;
     provider = cred.provider_name;
     credential_icon = ui::ImageModel::FromVectorIcon(
-        GetCredentialIcon(cred.type), ui::kColorIcon, kIconSize);
+        ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+            cred.type),
+        ui::kColorIcon, kIconSize);
   } else if (!ambient_request->federated_credentials().empty()) {
     const ambient_signin::FederatedCredential& fed_cred =
         ambient_request->federated_credentials().front();
@@ -399,7 +386,9 @@ AmbientLoginPermissionBubbleView::CreateCredentialRow(
   HoverButton::Params params;
   params.icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          GetCredentialIcon(credential.type), ui::kColorIcon, kIconSize));
+          ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
+              credential.type),
+          ui::kColorIcon, kIconSize));
   if (credential.type == ambient_signin::CredentialType::kPasskey &&
       !credential.display_name.empty() && credential.display_name != username) {
     params.title = credential.display_name;

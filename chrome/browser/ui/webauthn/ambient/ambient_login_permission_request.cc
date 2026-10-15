@@ -8,11 +8,15 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ambient_signin {
 
@@ -99,6 +103,40 @@ void AmbientLoginPermissionRequest::OnPermissionDecided(
   if (caller_permission_decided_callback_) {
     caller_permission_decided_callback_.Run(decision, request_data);
   }
+}
+
+// static
+const gfx::VectorIcon& AmbientLoginPermissionRequest::GetCredentialIcon(
+    CredentialType type) {
+  switch (type) {
+    case CredentialType::kPasskey:
+      return features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
+                                               : vector_icons::kPasskeyOldIcon;
+    case CredentialType::kPassword:
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kPasswordManagerIcon
+                 : vector_icons::kPasswordManagerOldIcon;
+  }
+}
+
+permissions::IconId AmbientLoginPermissionRequest::GetIconForChip() const {
+  if (!credentials_.empty()) {
+    return GetCredentialIcon(credentials_.front().type);
+  }
+  // This matches the bubble's icon for a federated credential without an
+  // account picture.
+  // TODO(crbug.com/532206357): When the top federated credential has an
+  // account picture, the bubble shows that picture. Showing it in the chip as
+  // well needs `ui::ImageModel` support in the permission chip, which only
+  // accepts vector icons today.
+  return GooglePasswordManagerVectorIcon();
+}
+
+permissions::IconId AmbientLoginPermissionRequest::GetBlockedIconForChip()
+    const {
+  // Ambient sign-in has no blocked state. If the chip collapses, it keeps
+  // showing the credential icon.
+  return GetIconForChip();
 }
 
 std::u16string AmbientLoginPermissionRequest::GetMessageTextFragment() const {

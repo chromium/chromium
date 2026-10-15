@@ -334,6 +334,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
 
   <if expr="not is_android">
+    <message name="IDS_AMBIENT_LOGIN_PERMISSION_CHIP" desc="Button text representing a prompt to sign in to a website. When clicked, shows a permission prompt bubble with available credentials.">
+      Sign in?
+    </message>
     <message name="IDS_GEOLOCATION_PERMISSION_CHIP" desc="Button text representing a request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
       Use your location?
     </message>

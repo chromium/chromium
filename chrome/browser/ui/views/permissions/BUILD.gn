@@ -190,6 +190,7 @@ if (toolkit_views) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/permission_bubble:test_support",
       "//chrome/browser/ui/views:title_origin_label",
       "//chrome/browser/ui/views/controls",

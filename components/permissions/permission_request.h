@@ -133,11 +133,11 @@ class PermissionRequest {
 
   // Returns prompt icon appropriate for displaying on the chip button in the
   // location bar.
-  IconId GetIconForChip();
+  virtual IconId GetIconForChip() const;
 
   // Returns prompt icon appropriate for displaying on the quiet chip button in
   // the location bar.
-  IconId GetBlockedIconForChip();
+  virtual IconId GetBlockedIconForChip() const;
 
   // Returns prompt text appropriate for displaying on the chip button in the
   // location bar.

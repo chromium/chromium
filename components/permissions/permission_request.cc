@@ -244,18 +244,20 @@ bool PermissionRequest::IsConfirmationChipSupported() {
   return permissions::IsConfirmationChipSupported(request_type());
 }
 
-IconId PermissionRequest::GetIconForChip() {
+IconId PermissionRequest::GetIconForChip() const {
   return permissions::GetIconId(request_type());
 }
 
-IconId PermissionRequest::GetBlockedIconForChip() {
+IconId PermissionRequest::GetBlockedIconForChip() const {
   return permissions::GetBlockedIconId(request_type());
 }
 
 std::optional<std::u16string> PermissionRequest::GetRequestChipText(
     ChipTextType type) const {
   static base::NoDestructor<std::map<RequestType, std::vector<int>>> kMessageIds(
-      {{RequestType::kArSession,
+      {{RequestType::kAmbientLogin,
+        {IDS_AMBIENT_LOGIN_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
+       {RequestType::kArSession,
         {IDS_AR_PERMISSION_CHIP, -1,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
