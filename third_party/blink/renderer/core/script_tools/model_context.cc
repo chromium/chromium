@@ -402,8 +402,8 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
 
   // Serializing `inputSchema` above can run script (e.g., a `toJSON()` method)
   // that makes the document inactive, for example by removing its iframe. The
-  // rest of this method requires an active document (e.g., it uses the frame
-  // and `model_context_host_remote_`), so check again.
+  // rest of this method requires an active document (e.g., it uses
+  // `model_context_host_remote_`), so check again.
   if (!document_->IsActive()) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
@@ -469,9 +469,6 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
   script_tool->title = tool->hasTitle() ? tool->title() : String();
   script_tool->description = tool->description();
   script_tool->input_schema = input_schema;
-  // TODO(https://crbug.com/509568047): Stop setting these two members.
-  script_tool->tool_owner_frame_token = document_->GetFrame()->GetFrameToken();
-  script_tool->origin = document_->GetExecutionContext()->GetSecurityOrigin();
   script_tool->exposed_origins = std::move(exposed_origins);
 
   if (tool->hasAnnotations()) {
@@ -937,9 +934,6 @@ void ModelContext::RegisterDeclarativeTool(
   script_tool->description = declarative_tool->ToolDescription();
   script_tool->title = declarative_tool->ToolTitle();
   script_tool->input_schema = declarative_tool->ComputeInputSchema();
-  // TODO(https://crbug.com/509568047): Stop setting these two members.
-  script_tool->tool_owner_frame_token = document_->GetFrame()->GetFrameToken();
-  script_tool->origin = document_->GetExecutionContext()->GetSecurityOrigin();
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
@@ -1111,7 +1105,7 @@ ScriptPromise<IDLSequence<Tool>> ModelContext::getTools(
 
 void ModelContext::OnGetScriptToolsCompleted(
     ScriptPromiseResolver<IDLSequence<Tool>>* resolver,
-    Vector<mojom::blink::ScriptToolPtr> tools) {
+    Vector<mojom::blink::ExposedScriptToolPtr> tools) {
   HeapVector<Member<Tool>> result_tools;
   result_tools.ReserveInitialCapacity(tools.size());
 
@@ -1120,8 +1114,9 @@ void ModelContext::OnGetScriptToolsCompleted(
   ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
 
-  for (auto& t : tools) {
-    Frame* frame = Frame::ResolveFrame(t->tool_owner_frame_token);
+  for (auto& exposed_tool : tools) {
+    mojom::blink::ScriptToolPtr& t = exposed_tool->tool;
+    Frame* frame = Frame::ResolveFrame(exposed_tool->tool_owner_frame_token);
     // If we can't resolve the token into a concrete frame, that means the
     // document could have been discarded by the time the response IPC comes
     // back to the renderer. In that case, the tool is unusable from our
@@ -1142,7 +1137,8 @@ void ModelContext::OnGetScriptToolsCompleted(
     }
 
     result_tools.push_back(MakeGarbageCollected<Tool>(
-        frame->DomWindow(), std::move(t), input_schema));
+        frame->DomWindow(), std::move(exposed_tool->origin), std::move(t),
+        input_schema));
   }
 
   resolver->Resolve(result_tools);

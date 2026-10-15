@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_TOOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_TOOL_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -20,6 +21,7 @@ class DOMWindow;
 class ScriptObject;
 class ScriptState;
 class ScriptValue;
+class SecurityOrigin;
 
 // The web-exposed representation of a tool registered via WebMCP, returned by
 // `ModelContext.getTools()`. See `tool.idl`.
@@ -39,10 +41,12 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
 
  public:
   // `window` is the (non-null) window of the document that registered the
-  // tool; `script_tool` is a snapshot of the tool's state. `input_schema` is
-  // `script_tool->input_schema` already parsed into a script value, and is
-  // empty iff `script_tool->input_schema` is null.
+  // tool, and `origin` is that document's origin; `script_tool` is a snapshot
+  // of the tool's state. `input_schema` is `script_tool->input_schema` already
+  // parsed into a script value, and is empty iff `script_tool->input_schema` is
+  // null.
   Tool(DOMWindow* window,
+       scoped_refptr<const SecurityOrigin> origin,
        mojom::blink::ScriptToolPtr script_tool,
        const ScriptValue& input_schema);
   ~Tool() override;
@@ -88,6 +92,7 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
   // `ModelContext::executeTool()` reject. Collection changes nothing further
   // that script can see.
   WeakMember<DOMWindow> window_;
+  const scoped_refptr<const SecurityOrigin> origin_;
   mojom::blink::ScriptToolPtr script_tool_;
   TraceWrapperV8Reference<v8::Value> input_schema_;
 };

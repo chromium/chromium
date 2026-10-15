@@ -248,7 +248,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void OnGetScriptToolsCompleted(
       ScriptPromiseResolver<IDLSequence<Tool>>* resolver,
-      Vector<mojom::blink::ScriptToolPtr> tools);
+      Vector<mojom::blink::ExposedScriptToolPtr> tools);
 
   void OnExecuteScriptToolCompleted(
       ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,

@@ -14,10 +14,14 @@
 namespace blink {
 
 Tool::Tool(DOMWindow* window,
+           scoped_refptr<const SecurityOrigin> origin,
            mojom::blink::ScriptToolPtr script_tool,
            const ScriptValue& input_schema)
-    : window_(window), script_tool_(std::move(script_tool)) {
+    : window_(window),
+      origin_(std::move(origin)),
+      script_tool_(std::move(script_tool)) {
   CHECK(window_);
+  CHECK(origin_);
   CHECK(script_tool_);
   // The browser only accepts (and therefore only returns) tools that were
   // registered with a `tool_id`.
@@ -55,7 +59,7 @@ DOMWindow* Tool::window() const {
 }
 
 String Tool::origin() const {
-  return script_tool_->origin->ToString();
+  return origin_->ToString();
 }
 
 ScriptObject Tool::inputSchema(ScriptState* script_state) const {

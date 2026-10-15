@@ -56,13 +56,25 @@ struct ScriptTool {
   ScriptToolAnnotations? annotations;
   // See the documentation in `model_context.idl` for more about this member.
   array<url.mojom.Origin> exposed_origins;
+};
 
-  // The token of the frame that registered this tool.
+// A `ScriptTool` as exposed to a (possibly cross-document) caller of
+// `ModelContextHost::GetScriptTools()`, along with information about the
+// document that registered it. Unlike `tool`, which originates from the
+// registering renderer, the other members are computed by the browser process
+// when the tool is exposed to the caller.
+struct ExposedScriptTool {
+  ScriptTool tool;
+  // A token for the frame that registered `tool`, which the caller document can
+  // resolve into a (local or remote) frame.
   blink.mojom.FrameToken tool_owner_frame_token;
-  // The origin of the frame that registered this tool. This can be an opaque
-  // origin, however it would only have access to tools on its own origin, as no
-  // other document would be able to express its origin in `exposed_origins`
-  // above.
+  // The origin of the frame that registered `tool`. This is opaque only if the
+  // registering document has an opaque origin (e.g., a sandboxed iframe). Such
+  // a tool is only ever exposed to documents that are same-origin with it,
+  // i.e., ones that share that exact opaque origin (in practice, the
+  // registering document itself), since an opaque origin can't be listed in
+  // `ScriptTool::exposed_origins` or matched by `GetScriptTools()`'s
+  // `from_origins`.
   url.mojom.Origin origin;
 };
 
@@ -94,7 +106,8 @@ interface ModelContextHost {
   // Returns all script tools visible to the caller document, optionally filtered
   // by `from_origins`. If `from_origins` is empty, it defaults to returning
   // only tools that are same-origin with the caller document.
-  GetScriptTools(array<url.mojom.Origin> from_origins) => (array<ScriptTool> tools);
+  GetScriptTools(array<url.mojom.Origin> from_origins)
+      => (array<ExposedScriptTool> tools);
 
   // Executes a ScriptTool hosted in another Document. The tool is located by
   // its `tool_id`, which is unique and unguessable. `tool_owner_frame_token`
