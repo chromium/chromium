@@ -250,10 +250,11 @@ LocationBarView::LocationBarView(BrowserWindowInterface* browser,
             return false;
           }
 
-          // Show focus ring when the Omnibox is visibly focused and the popup
-          // is closed.
+          // Show focus ring when the Omnibox is visibly focused and either the
+          // popup is closed or it's the full WebUI popup, which keeps the
+          // focused look (see `ShouldUsePopupOpenAppearance()`).
           return v->GetOmniboxController()->edit_model()->is_caret_visible() &&
-                 !v->GetOmniboxController()->IsPopupOpen();
+                 !v->ShouldUsePopupOpenAppearance();
         }));
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     views::InstallPillHighlightPathGenerator(this);
@@ -790,10 +791,10 @@ void LocationBarView::Layout(PassKey) {
   //    https://expired.badssl.com.
   //  - If a selected keyword label is visible, e.g., "Search History".
   // Indent the icon and the text when all of the following conditions are met:
-  //  - The popup is open.
+  //  - The popup is open, and it isn't the full WebUI popup.
   //  - The location icon view does *not* display a label.
   //  - The selected keyword view is *not* visible.
-  const bool should_indent = (omnibox_controller_->IsPopupOpen() ||
+  const bool should_indent = (ShouldUsePopupOpenAppearance() ||
                               omnibox_feature_configs::AdjustOmniboxIndent()
                                   .Get()
                                   .indent_input_when_popup_closed) &&
@@ -1049,8 +1050,8 @@ void LocationBarView::Update(WebContents* contents) {
 
   RefreshContentSettingViews();
   RefreshPageActionIconViews();
-  location_icon_view_->Update(
-      /*suppress_animations=*/contents, GetOmniboxController()->IsPopupOpen());
+  location_icon_view_->Update(/*suppress_animations=*/contents,
+                              ShouldUsePopupOpenAppearance());
 
   if (contents) {
     omnibox_view_->OnTabChanged(contents);
@@ -1273,6 +1274,19 @@ void LocationBarView::SetPermissionPromptShowing(bool showing) {
   }
 }
 
+bool LocationBarView::ShouldUsePopupOpenAppearance() const {
+  // The full popup covers the location bar, so the native look underneath
+  // isn't visible while it's on screen, and any frame where it isn't on screen
+  // shows a normal focused omnibox instead of a hollow one. The AIM popup
+  // (`kAim`) keeps today's behavior.
+  if (is_full_webui_omnibox_ &&
+      GetOmniboxController()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
+    return false;
+  }
+  return GetOmniboxController()->IsPopupOpen();
+}
+
 bool LocationBarView::ShouldHidePageActionIcons() const {
   if (!omnibox_view_) {
     return false;
@@ -1284,9 +1298,10 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
     return true;
   }
 
-  // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
-  // The page action icons are not relevant to the displayed suggestions.
-  return GetOmniboxController()->IsPopupOpen();
+  // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest,
+  // except under the full WebUI popup, which keeps the focused look. The page
+  // action icons are not relevant to the displayed suggestions.
+  return ShouldUsePopupOpenAppearance();
 }
 
 // Returns information about visible page actions in the location bar.
@@ -2012,8 +2027,8 @@ void LocationBarView::OnChanged() {
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
 
-  location_icon_view_->Update(
-      /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
+  location_icon_view_->Update(/*suppress_animations=*/false,
+                              ShouldUsePopupOpenAppearance());
   clear_all_button_->SetVisible(
       omnibox_view_ &&
       GetOmniboxController()->edit_model()->user_input_in_progress() &&
@@ -2100,8 +2115,8 @@ void LocationBarView::OnTouchUiChanged() {
   for (ContentSettingImageView* view : content_setting_views_) {
     view->SetFontList(font_list);
   }
-  location_icon_view_->Update(
-      /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
+  location_icon_view_->Update(/*suppress_animations=*/false,
+                              ShouldUsePopupOpenAppearance());
   PreferredSizeChanged();
 }
 

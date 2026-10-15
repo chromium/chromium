@@ -2802,10 +2802,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           "WaitForFocusOutsideLocationBar"));
 }
 
-// Verifies that the native LocationBarView focus ring remains hidden
-// across all popup state transitions in Full WebUI mode.
+// Verifies that in Full WebUI mode the native LocationBarView focus ring
+// paints under the focused full popup and hides on blur, without focus leaking
+// into the native OmniboxViewViews.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       LocationBarFocusRingHiddenInFullWebUIMode) {
+                       LocationBarFocusRingInFullWebUIMode) {
   if (IsWebUIToolbarEnabled()) {
     // This test covers the focus ring on the Views `LocationBarView`. The
     // WebUI toolbar has no `LocationBarView`, so there is nothing to check.
@@ -2819,6 +2820,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       if (!location_bar) {
         return;
       }
+      EXPECT_FALSE(location_bar->omnibox_view()->HasFocus());
       auto* focus_ring = views::FocusRing::Get(location_bar);
       if (focus_ring) {
         EXPECT_EQ(focus_ring->ShouldPaintForTesting(), should_paint);
@@ -2827,11 +2829,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   };
 
   RunTestSequence(
-      // 1. Open tab and focus WebUI popup -> native focus ring should not
-      // paint.
+      // 1. Open tab and focus WebUI popup -> native focus ring paints under
+      // the full popup while native OmniboxViewViews stays unfocused.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      WaitForWebUIInputValue("chrome://version"), check_focus_ring(false),
-      // 2. Click webpage body to dismiss -> focus ring should still not paint.
+      WaitForWebUIInputValue("chrome://version"), check_focus_ring(true),
+      // 2. Click webpage body to dismiss -> focus ring stops painting.
       ClickWebPageBody(kTab1),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForOmniboxFocus(false), check_focus_ring(false));

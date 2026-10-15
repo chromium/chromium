@@ -461,8 +461,6 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps, bool select_all) {
     last_consumed_native_selection_.reset();
   }
 
-  // Set popup state to kFull before setting focus state to prevent focus ring
-  // flicker during the transition.
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
   controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
