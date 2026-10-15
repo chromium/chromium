@@ -25,6 +25,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/containers/to_vector.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #if BUILDFLAG(USE_DBUS)
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -106,6 +112,20 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Browser windows pick their WM_CLASS / app_id when they are created, so
+  // find out which profiles have a per-profile desktop entry before the first
+  // window is opened. This is a handful of stat() calls for profiles other
+  // than the default profile.
+  if (base::FeatureList::IsEnabled(features::kLinuxPerProfileAppId)) {
+    shell_integration_linux::DetectInstalledPerProfileDesktopEntries(
+        base::ToVector(g_browser_process->profile_manager()
+                           ->GetProfileAttributesStorage()
+                           .GetAllProfilesAttributes(),
+                       &ProfileAttributesEntry::GetPath));
+  }
 #endif
 
   ChromeBrowserMainPartsPosix::PreProfileInit();

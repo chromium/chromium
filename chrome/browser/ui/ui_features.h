@@ -40,6 +40,10 @@ BASE_DECLARE_FEATURE(kInfoBarInlineLinks);
 
 BASE_DECLARE_FEATURE(kKeyboardLockHeldEscExitsTabFullscreen);
 
+#if BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kLinuxPerProfileAppId);
+#endif
+
 // All feature flags associated with Glow Up, apart from those in
 // ui_base_features.h
 BASE_DECLARE_FEATURE(kTabStripDeclutter);

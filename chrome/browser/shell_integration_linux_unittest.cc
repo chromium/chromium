@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/shell_integration_linux.h"
-#include "chrome/browser/shell_integration.h"
 
 #include <stddef.h>
 
@@ -27,11 +26,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/version_info/channel.h"
 #include "components/webapps/common/web_app_id.h"
@@ -40,7 +44,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "url/gurl.h"
-#include "base/test/scoped_path_override.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/test/base/scoped_channel_override.h"
@@ -777,6 +780,107 @@ TEST(ShellIntegrationTest, GetXdgAppIdForWebAppWithDesktopIdPrefix) {
   EXPECT_EQ("org.example.Browser.chrome-extensionid-Profile_1",
             GetXdgAppIdForWebApp("_crx_extensionid",
                                  base::FilePath("/tmp/Profile 1")));
+}
+
+TEST(ShellIntegrationTest, GetPerProfileDesktopId) {
+  const base::FilePath kUserDataDir("/home/user/.config/google-chrome");
+
+  // The default profile keeps the browser's main identity.
+  EXPECT_EQ("", internal::GetPerProfileDesktopId(
+                    kUserDataDir.Append(chrome::kInitialProfile), kUserDataDir,
+                    "google-chrome.desktop"));
+
+  // Other profiles get a per-profile ID based on the desktop base name and
+  // the profile directory, with spaces replaced.
+  EXPECT_EQ(
+      "google-chrome-Profile_1",
+      internal::GetPerProfileDesktopId(kUserDataDir.Append("Profile 1"),
+                                       kUserDataDir, "google-chrome.desktop"));
+  EXPECT_EQ("google-chrome-beta-Profile_2",
+            internal::GetPerProfileDesktopId(kUserDataDir.Append("Profile 2"),
+                                             kUserDataDir,
+                                             "google-chrome-beta.desktop"));
+  EXPECT_EQ("com.google.Chrome-Profile_1",
+            internal::GetPerProfileDesktopId(kUserDataDir.Append("Profile 1"),
+                                             kUserDataDir,
+                                             "com.google.Chrome.desktop"));
+
+  // Profiles outside of the default user data directory, e.g. when
+  // --user-data-dir is used, keep the browser's main identity.
+  EXPECT_EQ("", internal::GetPerProfileDesktopId(
+                    base::FilePath("/tmp/udd/Profile 1"), kUserDataDir,
+                    "google-chrome.desktop"));
+  EXPECT_EQ("", internal::GetPerProfileDesktopId(base::FilePath(), kUserDataDir,
+                                                 "google-chrome.desktop"));
+
+  // Characters that aren't valid in D-Bus names are replaced, including each
+  // byte of non-ASCII UTF-8 characters.
+  EXPECT_EQ("google-chrome-Pr__file_1-x_y",
+            internal::GetPerProfileDesktopId(
+                kUserDataDir.Append("Pr\u00f6file 1-x.y"), kUserDataDir,
+                "google-chrome.desktop"));
+}
+
+TEST(ShellIntegrationTest, InstalledPerProfileDesktopId) {
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list(features::kLinuxPerProfileAppId);
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+
+  base::FilePath user_data_dir;
+  ASSERT_TRUE(chrome::GetDefaultUserDataDirectory(&user_data_dir));
+  const base::FilePath default_profile =
+      user_data_dir.Append(chrome::kInitialProfile);
+  const base::FilePath profile_1 = user_data_dir.Append("Profile 1");
+  const base::FilePath profile_2 = user_data_dir.Append("Profile 2");
+  const std::string profile_1_id = GetPerProfileDesktopId(profile_1);
+  ASSERT_FALSE(profile_1_id.empty());
+
+  // Only Profile 1 has a desktop entry.
+  const base::FilePath applications =
+      data_home.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications));
+  ASSERT_TRUE(base::WriteFile(applications.Append(profile_1_id + ".desktop"),
+                              "[Desktop Entry]\n"));
+
+  DetectInstalledPerProfileDesktopEntries(
+      {default_profile, profile_1, profile_2});
+  EXPECT_EQ("", GetInstalledPerProfileDesktopId(default_profile));
+  EXPECT_EQ(profile_1_id, GetInstalledPerProfileDesktopId(profile_1));
+  EXPECT_EQ("", GetInstalledPerProfileDesktopId(profile_2));
+
+  // Desktop entries can also be registered and unregistered directly.
+  SetPerProfileDesktopEntryInstalled(profile_2, true);
+  EXPECT_EQ(GetPerProfileDesktopId(profile_2),
+            GetInstalledPerProfileDesktopId(profile_2));
+  SetPerProfileDesktopEntryInstalled(profile_1, false);
+  EXPECT_EQ("", GetInstalledPerProfileDesktopId(profile_1));
+
+  // Removing the file is noticed on the next detection.
+  SetPerProfileDesktopEntryInstalled(profile_1, true);
+  ASSERT_TRUE(base::DeleteFile(applications.Append(profile_1_id + ".desktop")));
+  DetectInstalledPerProfileDesktopEntries({profile_1});
+  EXPECT_EQ("", GetInstalledPerProfileDesktopId(profile_1));
+
+  SetPerProfileDesktopEntryInstalled(profile_2, false);
+}
+
+TEST(ShellIntegrationTest, InstalledPerProfileDesktopIdFeatureDisabled) {
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLinuxPerProfileAppId);
+
+  base::FilePath user_data_dir;
+  ASSERT_TRUE(chrome::GetDefaultUserDataDirectory(&user_data_dir));
+  const base::FilePath profile_1 = user_data_dir.Append("Profile 1");
+
+  SetPerProfileDesktopEntryInstalled(profile_1, true);
+  EXPECT_EQ("", GetInstalledPerProfileDesktopId(profile_1));
+  SetPerProfileDesktopEntryInstalled(profile_1, false);
 }
 
 TEST(ShellIntegrationLinuxTest,

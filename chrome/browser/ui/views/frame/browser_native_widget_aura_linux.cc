@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
@@ -72,6 +74,19 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
         browser.GetProfile()->GetPath());
   } else {
     params.wayland_app_id = params.wm_class_class;
+    // Give windows of non-default profiles their own identity if a matching
+    // desktop entry is installed, so the desktop environment can show them
+    // with the profile's own launcher and icon. Off-the-record windows use the
+    // identity of their original profile.
+    if (browser.GetProfile()) {
+      const std::string desktop_id =
+          shell_integration_linux::GetInstalledPerProfileDesktopId(
+              browser.GetProfile()->GetOriginalProfile()->GetPath());
+      if (!desktop_id.empty()) {
+        params.wm_class_name = desktop_id;
+        params.wayland_app_id = desktop_id;
+      }
+    }
   }
 
   return params;

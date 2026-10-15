@@ -51,6 +51,16 @@ BASE_FEATURE(kInfoBarInlineLinks, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardLockHeldEscExitsTabFullscreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX)
+// Gives browser windows of non-default profiles their own identity for the
+// desktop environment: the X11 WM_CLASS res_name and the Wayland app_id are set
+// to a per-profile desktop entry ID (e.g. "google-chrome-Profile_1"), so the
+// shell can match the windows to a per-profile .desktop file and icon. The
+// per-profile ID is only used when a desktop entry with that ID is installed,
+// so windows never end up without a matching .desktop file.
+BASE_FEATURE(kLinuxPerProfileAppId, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kTabStripDeclutter, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
