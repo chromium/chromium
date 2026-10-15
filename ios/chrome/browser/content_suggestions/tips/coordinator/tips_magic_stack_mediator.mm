@@ -28,10 +28,33 @@
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_seed_colors.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
 #import "url/gurl.h"
 #import "url/url_util.h"
+
+namespace {
+// Index of the Violet seed color in `kSeedColors`.
+constexpr size_t kVioletSeedColorIndex = 8;
+static_assert(kVioletSeedColorIndex < kSeedColors.size());
+
+// Number of preset background themes displayed in the actionable NTP Theme tip.
+constexpr size_t kPresetThemeCount = 2;
+
+// Holds a preset custom background proto and its downloaded thumbnail image.
+struct NtpCustomBackgroundWithImage {
+  sync_pb::NtpCustomBackground proto;
+  UIImage* image = [[UIImage alloc] init];
+};
+
+}  // namespace
 
 using segmentation_platform::TipIdentifier;
 
@@ -56,6 +79,14 @@ using segmentation_platform::TipIdentifier;
 
   // The bookmark model used to check if a shoping page is bookmarked.
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+
+  // The home customization service used to update the background and store the
+  // selected theme.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
+
+  // The preset background themes and their thumbnail images displayed in the
+  // actionable NTP theme tip.
+  std::vector<NtpCustomBackgroundWithImage> _presetBackgrounds;
 }
 
 - (instancetype)initWithIdentifier:(TipIdentifier)identifier
@@ -64,7 +95,9 @@ using segmentation_platform::TipIdentifier;
                      bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                       imageFetcher:
                           (std::unique_ptr<image_fetcher::ImageDataFetcher>)
-                              imageFetcher {
+                              imageFetcher
+    backgroundCustomizationService:
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService {
   self = [super init];
 
   if (self) {
@@ -79,6 +112,7 @@ using segmentation_platform::TipIdentifier;
     _shoppingService = shoppingService;
     _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(imageFetcher);
+    _backgroundCustomizationService = backgroundCustomizationService;
 
     if (!_prefObserverBridge) {
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
@@ -88,6 +122,8 @@ using segmentation_platform::TipIdentifier;
       _prefObserverBridge->ObserveChangesForPreference(
           ntp_tiles::prefs::kTipsHomeModuleEnabled,
           &_profilePrefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kIosRecentlyUsedBackgrounds, &_profilePrefChangeRegistrar);
     }
   }
 
@@ -98,6 +134,7 @@ using segmentation_platform::TipIdentifier;
   _shoppingService = nil;
   _imageFetcher = nullptr;
   _bookmarkModel = nullptr;
+  _backgroundCustomizationService = nullptr;
 
   _profilePrefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
@@ -120,6 +157,9 @@ using segmentation_platform::TipIdentifier;
           IsMagicStackTipsV2IosActionableEnabled()) {
     _actionableConfig = [[NTPThemeActionableTipConfig alloc] init];
     _actionableConfig.audience = self;
+    _actionableConfig.colorPalettes = [self buildNTPThemeColorPalettes];
+    _actionableConfig.selectedIndex = 0;
+    [self fetchPresetBackgroundImages];
   }
 
   if (_config.identifier == TipIdentifier::kLensShop) {
@@ -139,10 +179,15 @@ using segmentation_platform::TipIdentifier;
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   CHECK(_profilePrefService);
-  CHECK_EQ(preferenceName, ntp_tiles::prefs::kTipsHomeModuleEnabled);
-  if (!_profilePrefService->GetBoolean(
-          ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
-    [self.delegate removeTipsModuleWithCompletion:nil];
+  if (preferenceName == ntp_tiles::prefs::kTipsHomeModuleEnabled) {
+    if (!_profilePrefService->GetBoolean(
+            ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
+      [self.delegate removeTipsModuleWithCompletion:nil];
+    }
+  } else if (preferenceName == prefs::kIosRecentlyUsedBackgrounds) {
+    if (_actionableConfig && _presetBackgrounds.empty()) {
+      [self fetchPresetBackgroundImages];
+    }
   }
 }
 
@@ -160,6 +205,33 @@ using segmentation_platform::TipIdentifier;
   // audience.
   [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemePhotoPicker];
+}
+
+- (void)didSelectNTPThemeAtIndex:(NSInteger)index {
+  if (!_backgroundCustomizationService) {
+    return;
+  }
+  _actionableConfig.selectedIndex = index;
+
+  if (index == 0) {
+    _backgroundCustomizationService->ClearCurrentBackground();
+  } else if (index == 1) {
+    const SeedColor& seedColor = kSeedColors[kVioletSeedColorIndex];
+    _backgroundCustomizationService->SetBackgroundColor(
+        seedColor.color, SchemeVariantToProtoEnum(seedColor.variant));
+  } else if (index >= 2 &&
+             static_cast<size_t>(index - 2) < _presetBackgrounds.size()) {
+    const sync_pb::NtpCustomBackground& background =
+        _presetBackgrounds[index - 2].proto;
+    GURL thumbnailURL =
+        AddOptionsToImageURL(RemoveOptionsFromImageURL(background.url()).spec(),
+                             GetThumbnailImageOptions());
+    _backgroundCustomizationService->SetCurrentBackground(
+        GURL(background.url()), thumbnailURL, background.attribution_line_1(),
+        background.attribution_line_2(),
+        GURL(background.attribution_action_url()), background.collection_id());
+  }
+  _backgroundCustomizationService->StoreCurrentTheme();
 }
 
 #pragma mark - Private
@@ -226,6 +298,72 @@ using segmentation_platform::TipIdentifier;
   }
 
   _config.productImageData = data;
+  [self.delegate tipsMagicStackMediatorDidReconfigureItem];
+}
+
+// Loads up to `kPresetThemeCount` preset backgrounds and fetches their
+// thumbnail images.
+- (void)fetchPresetBackgroundImages {
+  if (!_backgroundCustomizationService || !_imageFetcher) {
+    return;
+  }
+  _presetBackgrounds.clear();
+  for (const RecentlyUsedBackground& recent :
+       _backgroundCustomizationService->GetRecentlyUsedBackgrounds()) {
+    if (const HomeCustomBackground* customBg =
+            std::get_if<HomeCustomBackground>(&recent)) {
+      if (const sync_pb::NtpCustomBackground* ntpBg =
+              std::get_if<sync_pb::NtpCustomBackground>(customBg)) {
+        _presetBackgrounds.push_back(
+            NtpCustomBackgroundWithImage{.proto = *ntpBg});
+        if (_presetBackgrounds.size() == kPresetThemeCount) {
+          break;
+        }
+      }
+    }
+  }
+
+  __weak TipsMagicStackMediator* weakSelf = self;
+  for (size_t i = 0; i < _presetBackgrounds.size(); ++i) {
+    GURL thumbnailURL = AddOptionsToImageURL(
+        RemoveOptionsFromImageURL(_presetBackgrounds[i].proto.url()).spec(),
+        GetThumbnailImageOptions());
+    _imageFetcher->FetchImageData(
+        thumbnailURL,
+        base::BindOnce(^(const std::string& imageData,
+                         const image_fetcher::RequestMetadata& metadata) {
+          [weakSelf onPresetBackgroundImageFetched:imageData atIndex:i];
+        }),
+        NO_TRAFFIC_ANNOTATION_YET);
+  }
+}
+
+- (NSArray<NewTabPageColorPalette*>*)buildNTPThemeColorPalettes {
+  const SeedColor& violet = kSeedColors[kVioletSeedColorIndex];
+  return @[
+    [[NewTabPageColorPalette alloc] init],
+    CreateColorPaletteFromSeedColor(UIColorFromRGB(violet.color),
+                                    violet.variant),
+  ];
+}
+
+// Updates `_actionableConfig.backgroundImages` when a preset thumbnail image
+// finishes downloading.
+- (void)onPresetBackgroundImageFetched:(const std::string&)imageData
+                               atIndex:(size_t)index {
+  UIImage* image =
+      [UIImage imageWithData:[NSData dataWithBytes:imageData.data()
+                                            length:imageData.size()]];
+  if (!image || !_actionableConfig || index >= _presetBackgrounds.size()) {
+    return;
+  }
+  _presetBackgrounds[index].image = image;
+  NSMutableArray<UIImage*>* backgroundImages =
+      [NSMutableArray arrayWithCapacity:_presetBackgrounds.size()];
+  for (const NtpCustomBackgroundWithImage& background : _presetBackgrounds) {
+    [backgroundImages addObject:background.image];
+  }
+  _actionableConfig.backgroundImages = backgroundImages;
   [self.delegate tipsMagicStackMediatorDidReconfigureItem];
 }
 

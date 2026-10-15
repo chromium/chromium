@@ -20,6 +20,7 @@
 - (instancetype)copyWithZone:(NSZone*)zone {
   NTPThemeActionableTipConfig* config = [[super copyWithZone:zone] init];
   config.colorPalettes = [self.colorPalettes copyWithZone:zone];
+  config.backgroundImages = [self.backgroundImages copyWithZone:zone];
   config.selectedIndex = self.selectedIndex;
   config.audience = self.audience;
   return config;
@@ -29,6 +30,16 @@
 
 - (ContentSuggestionsModuleType)type {
   return ContentSuggestionsModuleType::kTipsNTPThemeActionable;
+}
+
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
+  if ([super hasDifferentContentsFromConfig:config]) {
+    return YES;
+  }
+  NTPThemeActionableTipConfig* otherConfig =
+      static_cast<NTPThemeActionableTipConfig*>(config);
+  return ![self.backgroundImages isEqualToArray:otherConfig.backgroundImages] ||
+         self.selectedIndex != otherConfig.selectedIndex;
 }
 
 @end

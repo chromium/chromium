@@ -357,13 +357,15 @@ class MagicStackRankingModelTest : public PlatformTest {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     app_store_bundle_service_ = std::make_unique<TestAppStoreBundleService>();
 
-    _tipsMediator = [[TipsMagicStackMediator alloc]
-        initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
-        profilePrefService:GetProfile()->GetPrefs()
-           shoppingService:shopping_service_.get()
-             bookmarkModel:bookmark_model_.get()
-              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
-                               GetProfile()->GetSharedURLLoaderFactory())];
+    _tipsMediator = [[TipsMagicStackMediator
+        alloc] initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
+                    profilePrefService:GetProfile()->GetPrefs()
+                       shoppingService:shopping_service_.get()
+                         bookmarkModel:bookmark_model_.get()
+                          imageFetcher:
+                              std::make_unique<image_fetcher::ImageDataFetcher>(
+                                  GetProfile()->GetSharedURLLoaderFactory())
+        backgroundCustomizationService:nullptr];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(

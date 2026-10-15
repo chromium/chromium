@@ -23,10 +23,13 @@
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -47,15 +50,22 @@ class TipsMagicStackMediatorTest : public PlatformTest {
     profile_pref_service_.registry()->RegisterBooleanPref(
         ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
 
+    HomeBackgroundCustomizationService::RegisterProfilePrefs(
+        profile_pref_service_.registry());
+
     // Create a `TipsMagicStackMediator` with an initial unknown
     // `TipIdentifier`.
     mediator_ = [[TipsMagicStackMediator alloc]
-        initWithIdentifier:TipIdentifier::kUnknown
-        profilePrefService:&profile_pref_service_
-           shoppingService:shopping_service_.get()
-             bookmarkModel:bookmark_model_.get()
-              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
-                               profile_->GetSharedURLLoaderFactory())];
+                    initWithIdentifier:TipIdentifier::kUnknown
+                    profilePrefService:&profile_pref_service_
+                       shoppingService:shopping_service_.get()
+                         bookmarkModel:bookmark_model_.get()
+                          imageFetcher:
+                              std::make_unique<image_fetcher::ImageDataFetcher>(
+                                  profile_->GetSharedURLLoaderFactory())
+        backgroundCustomizationService:
+            HomeBackgroundCustomizationServiceFactory::GetForProfile(
+                profile_.get())];
   }
 
   void TearDown() override {
@@ -159,4 +169,25 @@ TEST_F(TipsMagicStackMediatorTest,
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kLensShop];
   EXPECT_EQ(nil, mediator_.actionableConfig);
   EXPECT_EQ(mediator_.config, mediator_.activeConfig);
+}
+
+// Tests that selecting an NTP theme swatch updates `selectedIndex` and applies
+// the theme to `HomeBackgroundCustomizationService`.
+TEST_F(TipsMagicStackMediatorTest, AppliesSelectedNTPThemeAtIndex) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      segmentation_platform::features::kMagicStackTipsV2Ios,
+      {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+        "true"}});
+  [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
+  ASSERT_NE(nil, mediator_.actionableConfig);
+  HomeBackgroundCustomizationService* service =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
+
+  [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:1];
+  EXPECT_EQ(1, mediator_.actionableConfig.selectedIndex);
+  EXPECT_TRUE(service->GetCurrentColorTheme().has_value());
+  [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:0];
+  EXPECT_EQ(0, mediator_.actionableConfig.selectedIndex);
+  EXPECT_FALSE(service->GetCurrentColorTheme().has_value());
 }

@@ -457,13 +457,17 @@ using segmentation_platform::TipIdentifier;
 
   if (areTipsCardsEnabled) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
-        initWithIdentifier:TipIdentifier::kUnknown
-        profilePrefService:prefs
-           shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
-                               profile)
-             bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
-              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
-                               profile->GetSharedURLLoaderFactory())];
+                    initWithIdentifier:TipIdentifier::kUnknown
+                    profilePrefService:prefs
+                       shoppingService:commerce::ShoppingServiceFactory::
+                                           GetForProfile(profile)
+                         bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                           profile)
+                          imageFetcher:std::make_unique<
+                                           image_fetcher::ImageDataFetcher>(
+                                           profile->GetSharedURLLoaderFactory())
+        backgroundCustomizationService:
+            HomeBackgroundCustomizationServiceFactory::GetForProfile(profile)];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
 

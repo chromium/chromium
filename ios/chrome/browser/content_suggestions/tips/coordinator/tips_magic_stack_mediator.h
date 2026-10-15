@@ -17,6 +17,7 @@ class PrefService;
 @class TipsModuleConfig;
 @class MagicStackModule;
 @class NTPThemeActionableTipConfig;
+class HomeBackgroundCustomizationService;
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
@@ -51,13 +52,16 @@ enum class TipIdentifier;
     presentationAudience;
 
 // Default initializer.
-- (instancetype)
-    initWithIdentifier:(segmentation_platform::TipIdentifier)identifier
-    profilePrefService:(PrefService*)profilePrefService
-       shoppingService:(commerce::ShoppingService*)shoppingService
-         bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-          imageFetcher:
-              (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
+- (instancetype)initWithIdentifier:
+                    (segmentation_platform::TipIdentifier)identifier
+                profilePrefService:(PrefService*)profilePrefService
+                   shoppingService:(commerce::ShoppingService*)shoppingService
+                     bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                      imageFetcher:
+                          (std::unique_ptr<image_fetcher::ImageDataFetcher>)
+                              imageFetcher
+    backgroundCustomizationService:
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

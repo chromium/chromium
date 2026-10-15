@@ -18,6 +18,10 @@
 // The color palettes displayed as circular swatches in the module.
 @property(nonatomic, copy) NSArray<NewTabPageColorPalette*>* colorPalettes;
 
+// The thumbnail images for the preset background themes displayed as circular
+// swatches in the module.
+@property(nonatomic, copy) NSArray<UIImage*>* backgroundImages;
+
 // The index of the currently selected color swatch.
 @property(nonatomic, assign) NSInteger selectedIndex;
 
