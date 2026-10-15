@@ -265,6 +265,18 @@ class ParseArgsTest(unittest.TestCase):
     args = run.parse_args(argv)
     self.assertEqual(args.checkout_dir, run.pathlib.Path('third_party/dawn'))
 
+  def testPromptFlags(self):
+    argv = ['-B', 'bucket', '-b', 'builder', '-t', 'some_test']
+    args = run.parse_args(
+      argv + ['--keep-gn-args', '--skip-config-validation', 'compile']
+    )
+    self.assertTrue(args.keep_gn_args)
+    self.assertTrue(args.skip_config_validation)
+    with self.assertRaises(SystemExit):
+      run.parse_args(
+        argv + ['--keep-gn-args', '--overwrite-gn-args', 'compile']
+      )
+
 
 if __name__ == '__main__':
   unittest.main()

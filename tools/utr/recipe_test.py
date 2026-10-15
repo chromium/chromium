@@ -41,6 +41,16 @@ class LegacyRunnerTests(unittest.TestCase):
     self.mock_input = patch_input.start()
     self.addCleanup(patch_input.stop)
 
+    patch_agent = mock.patch(
+      'recipe.gclient_utils.GetAiAgentEnvVars', return_value=[]
+    )
+    patch_agent.start()
+    self.addCleanup(patch_agent.stop)
+
+    patch_isatty = mock.patch('sys.stdin.isatty', return_value=True)
+    patch_isatty.start()
+    self.addCleanup(patch_isatty.stop)
+
     patch_terminal_size = mock.patch('os.get_terminal_size')
     mock_terminal_size = patch_terminal_size.start()
     mock_terminal_size.return_value = (128, 1)
@@ -263,6 +273,108 @@ class LegacyRunnerTests(unittest.TestCase):
       input_props = json.loads(stdin_write.args[0])
       self.assertTrue(input_props['rerun_options']['bypass_branch_check'])
       self.assertTrue(input_props['rerun_options']['skip_instrumentation'])
+
+  def testAbortsWithoutPromptingForAgents(self):
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
+    with (
+      mock.patch('asyncio.create_subprocess_exec', return_value=self.subp_mock),
+      mock.patch(
+        'recipe.gclient_utils.GetAiAgentEnvVars', return_value=['AI_AGENT']
+      ),
+      self.assertLogs(level='ERROR'),
+    ):
+      with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
+      exit_code, error_msg = runner.run_recipe()
+    self.assertEqual(exit_code, 1)
+    self.assertEqual(error_msg, 'Aborted at a recipe prompt (non-interactive)')
+    self.mock_input.assert_not_called()
+
+  def testPromptFlagsSetRerunProps(self):
+    cases = {
+      'keep_gn_args': {'bypass_gn_args': True, 'preserve_gn_args': True},
+      'overwrite_gn_args': {'bypass_gn_args': True, 'preserve_gn_args': False},
+      'skip_config_validation': {'skip_config_validation': True},
+    }
+    for kwarg, expected in cases.items():
+      with self.subTest(kwarg):
+        runner = recipe.LegacyRunner(
+          self.tmp_dir,
+          {},
+          'some-project',
+          'some-bucket',
+          'some-builder',
+          [],
+          False,
+          False,
+          False,
+          self.build_dir,
+          **{kwarg: True},
+        )
+        self.subp_mock.reset_mock()
+        with mock.patch(
+          'asyncio.create_subprocess_exec', return_value=self.subp_mock
+        ):
+          runner.run_recipe()
+        input_props = json.loads(self.subp_mock.mock_calls[0].args[0])
+        for key, val in expected.items():
+          self.assertEqual(input_props['rerun_options'][key], val)
+
+
+class NonInteractivePromptTests(unittest.TestCase):
+  def _log(self, props, sent_rerun_props=None):
+    options = [
+      recipe.RerunOption('first', props),
+      recipe.RerunOption('abort', {}),
+    ]
+    with self.assertLogs(level='ERROR') as logs:
+      recipe._log_non_interactive(options, 'reason', sent_rerun_props or {})
+    return logs.output[0]
+
+  def testNonInteractiveReason(self):
+    patch_agent = 'recipe.gclient_utils.GetAiAgentEnvVars'
+    with mock.patch(patch_agent, return_value=['AI_AGENT']):
+      self.assertIn('AI_AGENT', recipe._get_non_interactive_reason())
+    with (
+      mock.patch(patch_agent, return_value=[]),
+      mock.patch('sys.stdin.isatty', return_value=False),
+    ):
+      self.assertIn('not interactive', recipe._get_non_interactive_reason())
+    with (
+      mock.patch(patch_agent, return_value=[]),
+      mock.patch('sys.stdin.isatty', return_value=True),
+    ):
+      self.assertIsNone(recipe._get_non_interactive_reason())
+
+  def testSuggestsFlagsOnlyForSafePrompts(self):
+    self.assertIn(
+      '--keep-gn-args',
+      self._log({'bypass_gn_args': True, 'preserve_gn_args': True}),
+    )
+    self.assertIn(
+      '--no-coverage-instrumentation',
+      self._log({'bypass_branch_check': True}),
+    )
+    msg = self._log(
+      {'bypass_gclient': True, 'bypass_gn_args': True},
+      sent_rerun_props={'bypass_gn_args': True},
+    )
+    self.assertNotIn('--', msg)
+    self.assertIn('Fix the mismatch', msg)
+    msg = self._log({'skip_config_validation': True})
+    self.assertIn('If this is expected', msg)
+    self.assertIn('--skip-config-validation', msg)
 
 
 if __name__ == '__main__':

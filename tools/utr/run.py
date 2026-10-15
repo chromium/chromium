@@ -217,6 +217,28 @@ def add_test_args(parser):
   )
 
 
+def add_prompt_args(parser):
+  # Answer recipe prompts up front, e.g. for agents.
+  gn_group = parser.add_mutually_exclusive_group()
+  gn_group.add_argument(
+    '--keep-gn-args',
+    action='store_true',
+    help="If local args.gn differs from the builder's, keep it.",
+  )
+  gn_group.add_argument(
+    '--overwrite-gn-args',
+    action='store_true',
+    help="If local args.gn differs from the builder's, overwrite it with the "
+    "builder's args.",
+  )
+  parser.add_argument(
+    '--skip-config-validation',
+    action='store_true',
+    help="Proceed even if the builder's config may not fit this machine, e.g. "
+    'a supported cross-compile such as Windows from Linux.',
+  )
+
+
 def parse_args(args=None):
   """Parse cmd line args.
 
@@ -231,6 +253,7 @@ def parse_args(args=None):
     formatter_class=argparse.RawDescriptionHelpFormatter,
   )
   add_common_args(parser)
+  add_prompt_args(parser)
   subparsers = parser.add_subparsers(dest='run_mode')
 
   compile_subp = subparsers.add_parser(
@@ -398,6 +421,9 @@ def _main_impl():
       use_autoninja=not skip_compile and args.use_autoninja,
       omit_default_test_args=args.omit_default_test_args,
       src_dir=src_dir,
+      overwrite_gn_args=args.overwrite_gn_args,
+      keep_gn_args=args.keep_gn_args,
+      skip_config_validation=args.skip_config_validation,
     )
     exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2

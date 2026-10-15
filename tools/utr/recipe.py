@@ -25,12 +25,23 @@ logging.getLogger('markdown_it').setLevel(logging.WARNING)
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+sys.path.append(str(_SRC_DIR.joinpath('third_party', 'depot_tools')))
+import gclient_utils
 
 _RECLIENT_CLI = _SRC_DIR.joinpath(
   'buildtools', 'reclient_cfgs', 'configure_reclient_cfgs.py'
 )
 _SISO_CLI = _SRC_DIR.joinpath('build', 'config', 'siso', 'configure_siso.py')
 _DEFAULT_RBE_PROJECT = 'rbe-chrome-untrusted'
+
+# Flags that answer a recipe prompt up front, keyed by the RerunOptions field
+# the recipe sets for that prompt. Prompts without an entry (e.g. bypass_gclient
+# for .gclient mismatches) need the user to fix their setup, so no flag is
+# suggested for them.
+_PROMPT_FLAGS = {
+  'bypass_gn_args': '--keep-gn-args or --overwrite-gn-args',
+  'bypass_branch_check': '--no-coverage-instrumentation',
+}
 
 RerunOption = namedtuple('RerunOption', ['prompt', 'properties'])
 
@@ -72,6 +83,43 @@ def check_luci_context_auth():
   return True
 
 
+def _format_options(rerun_props):
+  return '/'.join(
+    f'({option.prompt[0]}){option.prompt[1:]}' for option in rerun_props
+  )
+
+
+def _get_non_interactive_reason():
+  """Returns why no prompt can be shown, or None if prompting is fine."""
+  agent_env_vars = gclient_utils.GetAiAgentEnvVars()
+  if agent_env_vars:
+    return 'AI agent environment detected (%s)' % ', '.join(agent_env_vars)
+  if not sys.stdin.isatty():
+    return 'stdin is not interactive'
+  return None
+
+
+def _log_non_interactive(rerun_props, reason, sent_rerun_props):
+  """Logs why no prompt is shown and how to proceed without one."""
+  new_props = set(rerun_props[0].properties) - set(sent_rerun_props)
+  flag_keys = new_props & _PROMPT_FLAGS.keys()
+  if flag_keys:
+    hint = f'Re-run with {_PROMPT_FLAGS[flag_keys.pop()]}.'
+  elif 'skip_config_validation' in new_props:
+    hint = (
+      'If this is expected (e.g. a supported cross-compile), re-run with '
+      '--skip-config-validation.'
+    )
+  else:
+    hint = 'Fix the mismatch described above and re-run.'
+  logging.error(
+    '[red]%s, so UTR did not ask how to proceed (%s). %s[/]',
+    reason,
+    _format_options(rerun_props),
+    hint,
+  )
+
+
 def get_prompt_resp(rerun_props):
   """Prompts the user for how to continue based on recipe output
 
@@ -82,9 +130,7 @@ def get_prompt_resp(rerun_props):
     Dict of properties to use for the next recipe invocation. None or an empty
         dict of properties indicate the recipe should not be reinvoked.
   """
-  options = '/'.join(
-    f'({option.prompt[0]}){option.prompt[1:]}' for option in rerun_props
-  )
+  options = _format_options(rerun_props)
   prompt = f'How do you wish to proceed? Please enter {options} to confirm: '
   resp = input(prompt).strip().lower()
 
@@ -124,6 +170,9 @@ class LegacyRunner:
     no_siso=False,
     use_autoninja=False,
     src_dir=None,
+    overwrite_gn_args=False,
+    keep_gn_args=False,
+    skip_config_validation=False,
     **kwargs,
   ):
     """Constructor for LegacyRunner
@@ -148,11 +197,18 @@ class LegacyRunner:
       no_siso: If True, disabled Siso during compile and isolate.
       use_autoninja: If True, uses autoninja during compile.
       src_dir: pathlib.Path to the source checkout directory.
+      overwrite_gn_args: If True, overwrites args.gn if differing from builder.
+      keep_gn_args: If True, keeps local args.gn if differing from builder.
+      skip_config_validation: If True, proceeds even if the builder's config
+          may not fit this machine (e.g. a supported cross-compile).
       **kwargs: Additional args to passthrough to the recipe's input props.
     """
     self._recipes_py = recipes_py
     self._skip_coverage = skip_coverage
     self._skip_prompts = skip_prompts
+    self._overwrite_gn_args = overwrite_gn_args
+    self._keep_gn_args = keep_gn_args
+    self._skip_config_validation = skip_config_validation
     self._console_printer = console.Console()
     assert self._recipes_py.exists()
 
@@ -261,6 +317,14 @@ class LegacyRunner:
     if self._skip_coverage:
       merged_rerun_props['bypass_branch_check'] = True
       merged_rerun_props['skip_instrumentation'] = True
+    if self._overwrite_gn_args:
+      merged_rerun_props['bypass_gn_args'] = True
+      merged_rerun_props['preserve_gn_args'] = False
+    elif self._keep_gn_args:
+      merged_rerun_props['bypass_gn_args'] = True
+      merged_rerun_props['preserve_gn_args'] = True
+    if self._skip_config_validation:
+      merged_rerun_props['skip_config_validation'] = True
     return merged_rerun_props
 
   def _get_cmd_output(self, cmd):
@@ -418,6 +482,16 @@ class LegacyRunner:
       logging.warning('')
       self._console_printer.print(pretty_md)
       logging.warning('')
+      non_interactive_reason = (
+        None if self._skip_prompts else _get_non_interactive_reason()
+      )
+      if non_interactive_reason:
+        _log_non_interactive(
+          rerun_prop_options,
+          non_interactive_reason,
+          self._merge_rerun_props(rerun_props or {}),
+        )
+        return 1, 'Aborted at a recipe prompt (non-interactive)'
       if not self._skip_prompts:
         rerun_props = get_prompt_resp(rerun_prop_options)
       else:
