@@ -528,7 +528,8 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
     const auto& keyframe = keyframes_[i];
     double computed_offset = keyframe->ComputedOffset().value();
 
-    if (computed_offset == 0) {
+    if (!RuntimeEnabledFeatures::NeutralKeyframeEasingComplianceEnabled() &&
+        computed_offset == 0) {
       zero_offset_easing = &keyframe->Easing();
     }
 
@@ -555,8 +556,9 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
   // Add synthetic keyframes and determine if the keyframe values are static.
   has_synthetic_keyframes_ = false;
   for (const auto& entry : *keyframe_groups_) {
-    if (entry.value->AddSyntheticKeyframeIfRequired(zero_offset_easing))
+    if (entry.value->AddSyntheticKeyframeIfRequired(zero_offset_easing)) {
       has_synthetic_keyframes_ = true;
+    }
 
     entry.value->RemoveRedundantKeyframes();
     entry.value->CheckIfStatic(*this);

@@ -4551,6 +4551,17 @@
       base_feature: "none",
     },
     {
+      // See crbug.com/567611289
+      // Per https://www.w3.org/TR/web-animations-1/
+      // #the-effect-value-of-a-keyframe-animation-effect:
+      // Keyframes not affecting the target property are to be removed prior
+      // to populating interval endpoints. Blink's longstanding behavior was
+      // not spec-compliant. Introducing a kill-switch to allow a quick revert
+      // should this be a breaking change for sites.
+      name: "NeutralKeyframeEasingCompliance",
+      status: "stable"
+    },
+    {
       // See crbug.com/521921832
       // Any potential behavioral changes excepting bugfixes from the V2 implementation (including
       // changes to when the histogram is reported, like early-outs in Animation::PreCommit) are behind
