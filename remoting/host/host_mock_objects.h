@@ -151,8 +151,6 @@ class MockClientSessionControl : public ClientSessionControl {
               (override));
 };
 
-
-
 class MockClientSessionEvents : public ClientSessionEvents {
  public:
   MockClientSessionEvents();
@@ -380,6 +378,11 @@ class MockChromotingSessionServices : public mojom::ChromotingSessionServices {
               (mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver),
               (override));
 #endif
+  MOCK_METHOD(void,
+              SetAgentStatus,
+              (const protocol::TerminalControl::AgentInfo& agent_status,
+               SetAgentStatusCallback callback),
+              (override));
 };
 
 class MockChromotingHostServicesProvider

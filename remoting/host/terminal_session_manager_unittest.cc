@@ -306,8 +306,7 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   StartManager();
 
   // Restored persistent terminals should exist in sorted order.
-  EXPECT_THAT(manager_.GetTerminalSessionIds(),
-              testing::ElementsAre(10, 20));
+  EXPECT_THAT(manager_.GetTerminalSessionIds(), testing::ElementsAre(10, 20));
   EXPECT_NE(manager_.GetTerminalSession(10), nullptr);
   EXPECT_NE(manager_.GetTerminalSession(20), nullptr);
 
@@ -315,8 +314,7 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   EXPECT_EQ(post_restore_id, 21);
 }
 
-TEST_F(TerminalSessionManagerTest,
-       DetachAllSessionsCancelsPendingRestoration) {
+TEST_F(TerminalSessionManagerTest, DetachAllSessionsCancelsPendingRestoration) {
   FakeTerminalSession::SetPersistentTerminalIds({10, 20});
   manager_.Start(output_callback_.Get(), exit_callback_.Get(),
                  process_info_callback_.Get());
@@ -349,7 +347,8 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
   ASSERT_TRUE(base::test::RunUntil(
       [this] { return manager_.GetTerminalSessionIds().size() == 2u; }));
 
-  // After restoration completes, CreateTerminal should succeed without collision.
+  // After restoration completes, CreateTerminal should succeed without
+  // collision.
   ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, CreateTerminal());
   EXPECT_EQ(post_restore_id, 21);
 }

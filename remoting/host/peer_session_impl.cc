@@ -674,6 +674,43 @@ void PeerSessionImpl::ControlTerminal(
   }
 }
 
+void PeerSessionImpl::SetAgentStatus(
+    const protocol::TerminalControl::AgentInfo& agent_status,
+    SetAgentStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+  if (!channels_connected_ || !terminal_session_manager_ ||
+      !agent_status.has_terminal_id()) {
+    return;
+  }
+
+  bool has_valid_agent_state =
+      agent_status.has_agent_state() &&
+      agent_status.agent_state() !=
+          protocol::TerminalControl::AgentInfo::UNSPECIFIED;
+  if (!has_valid_agent_state && !agent_status.has_conversation_title()) {
+    return;
+  }
+
+  int32_t terminal_id = agent_status.terminal_id();
+  if (!terminal_session_manager_->GetTerminalSession(terminal_id)) {
+    LOG(WARNING) << "Dropping SetAgentStatus for unknown terminal ID: "
+                 << terminal_id;
+    return;
+  }
+
+  protocol::TerminalControl response;
+  auto* agent_info = response.mutable_agent_info();
+  agent_info->set_terminal_id(terminal_id);
+  if (has_valid_agent_state) {
+    agent_info->set_agent_state(agent_status.agent_state());
+  }
+  if (agent_status.has_conversation_title()) {
+    agent_info->set_conversation_title(agent_status.conversation_title());
+  }
+  connection_->client_stub()->DeliverTerminalControl(response);
+}
+
 void PeerSessionImpl::OnTerminalCreated(
     base::expected<int32_t, TerminalError> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -708,6 +745,9 @@ void PeerSessionImpl::SendTerminalProcessInfo(int32_t terminal_id,
                                               bool is_active,
                                               std::string_view process_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!channels_connected_) {
+    return;
+  }
   protocol::TerminalControl response;
   auto* process_info = response.mutable_process_info();
   process_info->set_terminal_id(terminal_id);

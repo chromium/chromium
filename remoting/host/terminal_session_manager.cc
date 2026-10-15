@@ -61,9 +61,8 @@ void TerminalSessionManager::CreateTerminal(CreateTerminalCallback callback) {
   }
   int32_t id = next_id_++;
 
-  auto wrapped_exit_callback =
-      base::BindRepeating(&TerminalSessionManager::OnTerminalExited,
-                          weak_factory_.GetWeakPtr());
+  auto wrapped_exit_callback = base::BindRepeating(
+      &TerminalSessionManager::OnTerminalExited, weak_factory_.GetWeakPtr());
 
   std::unique_ptr<TerminalSession> session = TerminalSession::Create(
       output_callback_, std::move(wrapped_exit_callback),
@@ -222,9 +221,8 @@ void TerminalSessionManager::RestoreTerminal(int32_t terminal_id) {
     LOG(ERROR) << "Invalid terminal ID: " << terminal_id;
     return;
   }
-  auto wrapped_exit_callback =
-      base::BindRepeating(&TerminalSessionManager::OnTerminalExited,
-                          weak_factory_.GetWeakPtr());
+  auto wrapped_exit_callback = base::BindRepeating(
+      &TerminalSessionManager::OnTerminalExited, weak_factory_.GetWeakPtr());
 
   std::unique_ptr<TerminalSession> session = TerminalSession::Create(
       output_callback_, std::move(wrapped_exit_callback),

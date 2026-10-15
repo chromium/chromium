@@ -59,6 +59,14 @@ mojom("mojom") {
       mojom = "remoting.mojom.SessionOptions"
       cpp = "::remoting::SessionOptions"
     },
+    {
+      mojom = "remoting.mojom.AgentState"
+      cpp = "::remoting::protocol::TerminalControl_AgentInfo_AgentState"
+    },
+    {
+      mojom = "remoting.mojom.AgentStatus"
+      cpp = "::remoting::protocol::TerminalControl_AgentInfo"
+    },
   ]
   if (remoting_multi_process) {
     mojom_typemap_types += [

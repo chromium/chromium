@@ -19,6 +19,7 @@
 #include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/common.mojom.h"
+#include "remoting/proto/control.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
@@ -30,7 +31,6 @@
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/mojom/webrtc_types.mojom.h"
 #include "remoting/proto/audio.pb.h"
-#include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "remoting/protocol/transport.h"
@@ -900,6 +900,59 @@ TEST(RemotingMojomTraitsTest, SessionOptionsRoundTrip) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionOptions>(
       empty_input, empty_output));
   EXPECT_EQ(empty_input, empty_output);
+}
+
+TEST(RemotingMojomTraitsTest, AgentStatusRoundTrip) {
+  using AgentInfo = protocol::TerminalControl::AgentInfo;
+  constexpr AgentInfo::AgentState kStates[] = {
+      AgentInfo::IDLE,
+      AgentInfo::WORKING,
+      AgentInfo::TOOL_USE,
+      AgentInfo::REVIEWING,
+      AgentInfo::AUTHENTICATING,
+      AgentInfo::INITIALIZING,
+      protocol::TerminalControl_AgentInfo_AgentState_ERROR,
+  };
+
+  for (AgentInfo::AgentState state : kStates) {
+    AgentInfo input;
+    input.set_terminal_id(42);
+    input.set_agent_state(state);
+    input.set_conversation_title("My Terminal");
+
+    AgentInfo output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(input, output));
+    EXPECT_TRUE(output.has_terminal_id());
+    EXPECT_EQ(output.terminal_id(), 42);
+    EXPECT_TRUE(output.has_agent_state());
+    EXPECT_EQ(output.agent_state(), state);
+    EXPECT_TRUE(output.has_conversation_title());
+    EXPECT_EQ(output.conversation_title(), "My Terminal");
+  }
+
+  AgentInfo state_only_input;
+  state_only_input.set_terminal_id(7);
+  state_only_input.set_agent_state(AgentInfo::WORKING);
+  AgentInfo state_only_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(
+      state_only_input, state_only_output));
+  EXPECT_TRUE(state_only_output.has_terminal_id());
+  EXPECT_EQ(state_only_output.terminal_id(), 7);
+  EXPECT_EQ(state_only_output.agent_state(), AgentInfo::WORKING);
+  EXPECT_FALSE(state_only_output.has_conversation_title());
+
+  AgentInfo title_only_input;
+  title_only_input.set_terminal_id(5);
+  title_only_input.set_conversation_title("Custom Title");
+  AgentInfo title_only_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(
+      title_only_input, title_only_output));
+  EXPECT_TRUE(title_only_output.has_terminal_id());
+  EXPECT_EQ(title_only_output.terminal_id(), 5);
+  EXPECT_FALSE(title_only_output.has_agent_state());
+  EXPECT_TRUE(title_only_output.has_conversation_title());
+  EXPECT_EQ(title_only_output.conversation_title(), "Custom Title");
 }
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)

@@ -200,3 +200,34 @@ struct SessionOptions {
   int32? av1_encoder_speed;
 };
 // LINT.ThenChange(//remoting/base/session_options.h:SessionOptions)
+
+// LINT.IfChange(AgentStatus)
+// Current state of an AI coding agent running on the host.
+// Maps to C++ enum:
+// `::remoting::protocol::TerminalControl_AgentInfo_AgentState`
+// (defined in remoting/proto/control.pb.h).
+enum AgentState {
+  kIdle = 1,
+  kWorking = 2,
+  kToolUse = 3,
+  kReviewing = 4,
+  kAuthenticating = 5,
+  kInitializing = 6,
+  kError = 7,
+};
+
+// Status of a terminal / AI coding agent running on the host.
+// Maps to C++ type: `::remoting::protocol::TerminalControl_AgentInfo`
+// (defined in remoting/proto/control.pb.h).
+struct AgentStatus {
+  // The terminal in which the agent is running.
+  int32 terminal_id;
+
+  // The current state of the agent, if being updated.
+  AgentState? agent_state;
+
+  // The title for the terminal tab, if being updated.
+  string? conversation_title;
+};
+// LINT.ThenChange(//remoting/proto/control.proto:AgentStatus)
+

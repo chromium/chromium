@@ -52,7 +52,8 @@ class TerminalSessionManager {
   // Behavior:
   // - GetTerminalSessionIds() returns the list of terminal session IDs that
   //   have been restored so far.
-  // - GetTerminalSession(id) returns the TerminalSession pointer for any session
+  // - GetTerminalSession(id) returns the TerminalSession pointer for any
+  // session
   //   that has already been restored. It is safe to call with any ID returned
   //   by GetTerminalSessionIds().
   // - If CreateTerminal() is called while restoration is in progress, it will

@@ -189,6 +189,8 @@ class PeerSessionImpl : public PeerSession,
   void BindSecurityKeyForwarder(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 #endif
+  void SetAgentStatus(const protocol::TerminalControl::AgentInfo& agent_status,
+                      SetAgentStatusCallback callback) override;
 
   protocol::Transport* transport() override;
 

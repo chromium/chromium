@@ -664,6 +664,31 @@ bool mojo::StructTraits<remoting::mojom::SessionOptionsDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::AgentStatusDataView,
+                        ::remoting::protocol::TerminalControl_AgentInfo>::
+    Read(remoting::mojom::AgentStatusDataView data_view,
+         ::remoting::protocol::TerminalControl_AgentInfo* out_status) {
+  std::optional<::remoting::protocol::TerminalControl_AgentInfo_AgentState>
+      state;
+  if (!data_view.ReadAgentState(&state)) {
+    return false;
+  }
+  std::optional<std::string_view> conversation_title;
+  if (!data_view.ReadConversationTitle(&conversation_title)) {
+    return false;
+  }
+  out_status->Clear();
+  out_status->set_terminal_id(data_view.terminal_id());
+  if (state.has_value()) {
+    out_status->set_agent_state(*state);
+  }
+  if (conversation_title.has_value()) {
+    out_status->set_conversation_title(*conversation_title);
+  }
+  return true;
+}
+
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 // static

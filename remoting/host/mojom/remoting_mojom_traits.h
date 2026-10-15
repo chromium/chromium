@@ -36,6 +36,7 @@
 #include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/common.mojom-shared.h"
+#include "remoting/proto/control.pb.h"
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/base/desktop_environment_options.h"
@@ -45,7 +46,6 @@
 #include "remoting/host/mojom/remoting_host.mojom-shared.h"
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
-#include "remoting/proto/control.pb.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
@@ -507,10 +507,11 @@ class UnionTraits<
       const ::remoting::Result<std::vector<uint8_t>,
                                ::remoting::protocol::FileTransfer_Error>&
           result) {
-    if (result.is_success())
+    if (result.is_success()) {
       return remoting::mojom::ReadChunkResultDataView::Tag::kData;
-    else if (result.is_error())
+    } else if (result.is_error()) {
       return remoting::mojom::ReadChunkResultDataView::Tag::kError;
+    }
 
     NOTREACHED();
   }
@@ -634,10 +635,11 @@ class UnionTraits<
       const ::remoting::Result<base::FilePath,
                                ::remoting::protocol::FileTransfer_Error>&
           result) {
-    if (result.is_success())
+    if (result.is_success()) {
       return remoting::mojom::FileChooserResultDataView::Tag::kFilepath;
-    else if (result.is_error())
+    } else if (result.is_error()) {
       return remoting::mojom::FileChooserResultDataView::Tag::kError;
+    }
 
     NOTREACHED();
   }
@@ -1728,6 +1730,88 @@ class StructTraits<remoting::mojom::SessionOptionsDataView,
 
   static bool Read(remoting::mojom::SessionOptionsDataView data_view,
                    ::remoting::SessionOptions* out_options);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::AgentState,
+                  ::remoting::protocol::TerminalControl_AgentInfo_AgentState> {
+  static remoting::mojom::AgentState ToMojom(
+      ::remoting::protocol::TerminalControl_AgentInfo_AgentState input) {
+    switch (input) {
+      case ::remoting::protocol::TerminalControl_AgentInfo::IDLE:
+        return remoting::mojom::AgentState::kIdle;
+      case ::remoting::protocol::TerminalControl_AgentInfo::WORKING:
+        return remoting::mojom::AgentState::kWorking;
+      case ::remoting::protocol::TerminalControl_AgentInfo::TOOL_USE:
+        return remoting::mojom::AgentState::kToolUse;
+      case ::remoting::protocol::TerminalControl_AgentInfo::REVIEWING:
+        return remoting::mojom::AgentState::kReviewing;
+      case ::remoting::protocol::TerminalControl_AgentInfo::AUTHENTICATING:
+        return remoting::mojom::AgentState::kAuthenticating;
+      case ::remoting::protocol::TerminalControl_AgentInfo::INITIALIZING:
+        return remoting::mojom::AgentState::kInitializing;
+      case ::remoting::protocol::TerminalControl_AgentInfo_AgentState_ERROR:
+        return remoting::mojom::AgentState::kError;
+      case ::remoting::protocol::TerminalControl_AgentInfo::UNSPECIFIED:
+        break;
+    }
+    NOTREACHED();
+  }
+
+  static std::optional<
+      ::remoting::protocol::TerminalControl_AgentInfo_AgentState>
+  FromMojom(remoting::mojom::AgentState input) {
+    switch (input) {
+      case remoting::mojom::AgentState::kIdle:
+        return ::remoting::protocol::TerminalControl_AgentInfo::IDLE;
+      case remoting::mojom::AgentState::kWorking:
+        return ::remoting::protocol::TerminalControl_AgentInfo::WORKING;
+      case remoting::mojom::AgentState::kToolUse:
+        return ::remoting::protocol::TerminalControl_AgentInfo::TOOL_USE;
+      case remoting::mojom::AgentState::kReviewing:
+        return ::remoting::protocol::TerminalControl_AgentInfo::REVIEWING;
+      case remoting::mojom::AgentState::kAuthenticating:
+        return ::remoting::protocol::TerminalControl_AgentInfo::AUTHENTICATING;
+      case remoting::mojom::AgentState::kInitializing:
+        return ::remoting::protocol::TerminalControl_AgentInfo::INITIALIZING;
+      case remoting::mojom::AgentState::kError:
+        return ::remoting::protocol::TerminalControl_AgentInfo_AgentState_ERROR;
+    }
+    return std::nullopt;
+  }
+};
+
+template <>
+class StructTraits<remoting::mojom::AgentStatusDataView,
+                   ::remoting::protocol::TerminalControl_AgentInfo> {
+ public:
+  static int32_t terminal_id(
+      const ::remoting::protocol::TerminalControl_AgentInfo& status) {
+    return status.terminal_id();
+  }
+
+  static std::optional<
+      ::remoting::protocol::TerminalControl_AgentInfo_AgentState>
+  agent_state(const ::remoting::protocol::TerminalControl_AgentInfo& status) {
+    return status.has_agent_state() &&
+                   status.agent_state() !=
+                       ::remoting::protocol::TerminalControl_AgentInfo::
+                           UNSPECIFIED
+               ? std::optional<::remoting::protocol::
+                                   TerminalControl_AgentInfo_AgentState>(
+                     status.agent_state())
+               : std::nullopt;
+  }
+
+  static std::optional<std::string_view> conversation_title(
+      const ::remoting::protocol::TerminalControl_AgentInfo& status) {
+    return status.has_conversation_title()
+               ? std::optional<std::string_view>(status.conversation_title())
+               : std::nullopt;
+  }
+
+  static bool Read(remoting::mojom::AgentStatusDataView data_view,
+                   ::remoting::protocol::TerminalControl_AgentInfo* out_status);
 };
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)

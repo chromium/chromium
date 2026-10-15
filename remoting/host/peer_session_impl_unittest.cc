@@ -1120,6 +1120,121 @@ TEST_F(PeerSessionImplTest, ControlTerminal_RemoveRequest) {
   peer_session_.reset();
 }
 
+TEST_F(PeerSessionImplTest, SetAgentStatus_ForwardsForActiveTerminalOnly) {
+  CreatePeerSession();
+  ConnectPeerSession();
+
+  mojo::Remote<mojom::ChromotingSessionServices> session_services;
+  peer_session_->OnSessionServicesClientConnected(
+      session_services.BindNewPipeAndPassReceiver());
+
+  protocol::TerminalControl::AgentInfo status;
+  status.set_terminal_id(1);
+  status.set_agent_state(protocol::TerminalControl::AgentInfo::TOOL_USE);
+  status.set_conversation_title("My Terminal");
+
+  // Ignored before terminal mode is enabled.
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(0);
+  base::test::TestFuture<void> ack1;
+  session_services->SetAgentStatus(status, ack1.GetCallback());
+  ASSERT_TRUE(ack1.Wait());
+
+  ASSERT_NO_FATAL_FAILURE(EnableTerminalMode());
+
+  // Ignored before terminal 1 is created.
+  base::test::TestFuture<void> ack2;
+  session_services->SetAgentStatus(status, ack2.GetCallback());
+  ASSERT_TRUE(ack2.Wait());
+
+  // Create terminal 1.
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+
+  // Ignored for non-existent terminal ID 99.
+  protocol::TerminalControl::AgentInfo unknown_status = status;
+  unknown_status.set_terminal_id(99);
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(0);
+  base::test::TestFuture<void> ack3;
+  session_services->SetAgentStatus(unknown_status, ack3.GetCallback());
+  ASSERT_TRUE(ack3.Wait());
+
+  // Ignored when terminal_id is missing.
+  protocol::TerminalControl::AgentInfo missing_id_status;
+  missing_id_status.set_agent_state(
+      protocol::TerminalControl::AgentInfo::WORKING);
+  base::test::TestFuture<void> ack_missing_id;
+  session_services->SetAgentStatus(missing_id_status,
+                                   ack_missing_id.GetCallback());
+  ASSERT_TRUE(ack_missing_id.Wait());
+
+  // Ignored when agent_state is UNSPECIFIED and conversation_title is unset.
+  protocol::TerminalControl::AgentInfo unspecified_status;
+  unspecified_status.set_terminal_id(1);
+  unspecified_status.set_agent_state(
+      protocol::TerminalControl::AgentInfo::UNSPECIFIED);
+  base::test::TestFuture<void> ack_unspecified;
+  session_services->SetAgentStatus(unspecified_status,
+                                   ack_unspecified.GetCallback());
+  ASSERT_TRUE(ack_unspecified.Wait());
+
+  // Forwarded for active terminal 1.
+  protocol::TerminalControl received_control;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce(testing::SaveArg<0>(&received_control));
+  base::test::TestFuture<void> ack4;
+  session_services->SetAgentStatus(status, ack4.GetCallback());
+  ASSERT_TRUE(ack4.Wait());
+  ASSERT_TRUE(received_control.has_agent_info());
+  EXPECT_EQ(received_control.agent_info().terminal_id(), 1);
+  EXPECT_EQ(received_control.agent_info().agent_state(),
+            protocol::TerminalControl::AgentInfo::TOOL_USE);
+  EXPECT_EQ(received_control.agent_info().conversation_title(), "My Terminal");
+
+  // Forwarded with agent_state only.
+  protocol::TerminalControl::AgentInfo state_only;
+  state_only.set_terminal_id(1);
+  state_only.set_agent_state(protocol::TerminalControl::AgentInfo::REVIEWING);
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce(testing::SaveArg<0>(&received_control));
+  base::test::TestFuture<void> ack_state_only;
+  session_services->SetAgentStatus(state_only, ack_state_only.GetCallback());
+  ASSERT_TRUE(ack_state_only.Wait());
+  ASSERT_TRUE(received_control.has_agent_info());
+  EXPECT_EQ(received_control.agent_info().terminal_id(), 1);
+  EXPECT_EQ(received_control.agent_info().agent_state(),
+            protocol::TerminalControl::AgentInfo::REVIEWING);
+  EXPECT_FALSE(received_control.agent_info().has_conversation_title());
+
+  // Forwarded with conversation_title only.
+  protocol::TerminalControl::AgentInfo title_only;
+  title_only.set_terminal_id(1);
+  title_only.set_conversation_title("Title Only");
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce(testing::SaveArg<0>(&received_control));
+  base::test::TestFuture<void> ack_title_only;
+  session_services->SetAgentStatus(title_only, ack_title_only.GetCallback());
+  ASSERT_TRUE(ack_title_only.Wait());
+  ASSERT_TRUE(received_control.has_agent_info());
+  EXPECT_EQ(received_control.agent_info().terminal_id(), 1);
+  EXPECT_FALSE(received_control.agent_info().has_agent_state());
+  EXPECT_EQ(received_control.agent_info().conversation_title(), "Title Only");
+
+  // Closing terminal 1 stops further SetAgentStatus updates for it.
+  protocol::TerminalControl remove_req;
+  remove_req.mutable_remove_request()->set_terminal_id(1);
+  peer_session_->ControlTerminal(remove_req);
+
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(0);
+  base::test::TestFuture<void> ack5;
+  session_services->SetAgentStatus(status, ack5.GetCallback());
+  ASSERT_TRUE(ack5.Wait());
+
+  peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  peer_session_.reset();
+}
+
 TEST_F(PeerSessionImplTest, AdvertisesTerminalModeCapabilityByDefault) {
   EXPECT_CALL(
       client_stub_,

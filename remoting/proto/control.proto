@@ -276,10 +276,8 @@ message ActiveDisplay {
   optional int64 screen_id = 1;
 }
 
-
-// Next ID: 16
+// Next ID: 10
 message TerminalControl {
-
   // Message sent by the client to the host to create a terminal.
   message CreateTerminal {}
 
@@ -377,6 +375,32 @@ message TerminalControl {
     optional bool is_terminated = 4;
   }
 
+  // LINT.IfChange(AgentStatus)
+  // Next ID: 4
+  message AgentInfo {
+    enum AgentState {
+      UNSPECIFIED = 0;
+      IDLE = 1;
+      WORKING = 2;
+      TOOL_USE = 3;
+      REVIEWING = 4;
+      AUTHENTICATING = 5;
+      INITIALIZING = 6;
+      ERROR = 7;
+    }
+
+    optional int32 terminal_id = 1;
+
+    // The current state of the AI coding agent running in this terminal, if
+    // any.
+    optional AgentState agent_state = 2;
+
+    // The title for the active agent conversation. While an agent is active,
+    // this value takes precedence over any title set via escape sequences.
+    optional string conversation_title = 3;
+  }
+  // LINT.ThenChange(//remoting/host/mojom/common.mojom:AgentStatus)
+
   // Message sent by the client to the host to resize a terminal.
   //
   // Next ID: 4
@@ -386,7 +410,8 @@ message TerminalControl {
     optional uint32 height = 3;
   }
 
-  // Message sent by the client to the host (or host to client) to close a terminal.
+  // Message sent by the client to the host (or host to client) to close a
+  // terminal.
   //
   // Next ID: 2
   message CloseTerminal {
@@ -402,9 +427,9 @@ message TerminalControl {
     ProcessInfo process_info = 6;
     ResizeTerminal resize_terminal = 7;
     CloseTerminal close_terminal = 8;
+    AgentInfo agent_info = 9;
   }
 }
-
 
 // The position of the mouse cursor on the host. If the client receives a
 // HostCursorPosition with the fractional_coordinate, it should render the

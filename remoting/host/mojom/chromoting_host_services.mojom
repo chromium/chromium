@@ -4,6 +4,7 @@
 
 module remoting.mojom;
 
+import "remoting/host/mojom/common.mojom";
 import "remoting/host/mojom/webauthn_proxy.mojom";
 import "remoting/host/mojom/remote_security_key.mojom";
 import "remoting/host/mojom/remote_url_opener.mojom";
@@ -40,4 +41,9 @@ interface ChromotingSessionServices {
   // different mechanisms for sending the SK requests.
   [EnableIf=is_win]
   BindSecurityKeyForwarder(pending_receiver<SecurityKeyForwarder> receiver);
+
+  // Updates the status of an AI coding agent running on the host and forwards
+  // it to the connected client. Successive invocations of this method patch the
+  // existing status, leaving omitted optional fields unchanged.
+  SetAgentStatus(AgentStatus agent_status) => ();
 };
