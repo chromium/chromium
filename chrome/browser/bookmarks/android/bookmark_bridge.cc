@@ -1134,7 +1134,9 @@ void BookmarkBridge::MoveBookmark(JNIEnv* env,
   long bookmark_id = JavaBookmarkIdGetId(env, j_bookmark_id_obj);
   int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
   const BookmarkNode* node = GetNodeByID(bookmark_id, type);
-  CHECK(IsEditable(node), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572776255): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsEditable(node));
 
   long parent_bookmark_id = JavaBookmarkIdGetId(env, j_parent_id_obj);
   int parent_type = JavaBookmarkIdGetType(env, j_parent_id_obj);
