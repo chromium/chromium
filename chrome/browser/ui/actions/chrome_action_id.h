@@ -266,6 +266,7 @@
     IDC_CONTENT_CONTEXT_GLICSHAREIMAGE) \
   E(kActionContentContextGlicSmartSuggestion, \
     IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION) \
+  E(kActionContentContextIndigo, IDC_CONTENT_CONTEXT_INDIGO) \
   E(kActionContentContextTranslateImageWithWeb) \
   E(kActionContentContextTranslateImageWithLens) \
   /* Audio/video items. */ \

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -29,6 +30,8 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -47,6 +50,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
@@ -1600,6 +1604,114 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageContextMenuResultMetrics) {
       histogram_tester.GetTotalCountsForPrefix("Glic.WebContentsContextMenu."),
       testing::ElementsAre(
           testing::Pair("Glic.WebContentsContextMenu.Image", 2)));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       IndigoContextMenuEligibilityAndExecution) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kIndigo, features::kIndigoContextMenu},
+      /*disabled_features=*/{});
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  testing::NiceMock<page_actions::MockPageActionController>
+      mock_page_action_controller;
+  indigo::IndigoPageActionController indigo_controller(
+      mock_tab, mock_page_action_controller);
+
+  content::ContextMenuParams image_params = CreateParams(MenuItem::IMAGE);
+  image_params.has_image_contents = true;
+  content::ContextMenuParams page_params = CreateParams(MenuItem::PAGE);
+
+  {
+    // Ineligible page -> hidden on both image and page context menus.
+    TestRenderViewContextMenu image_menu(*web_contents()->GetPrimaryMainFrame(),
+                                         image_params);
+    image_menu.SetBrowser(GetBrowser());
+    image_menu.Init();
+    EXPECT_FALSE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+
+    TestRenderViewContextMenu page_menu(*web_contents()->GetPrimaryMainFrame(),
+                                        page_params);
+    page_menu.SetBrowser(GetBrowser());
+    page_menu.Init();
+    EXPECT_FALSE(page_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+  }
+
+  {
+    // Eligible page -> visible on both image and page context menus, and
+    // ShownEntryPoint metric is deduplicated per page load.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        indigo::kForceIndigoSwitch);
+
+    base::HistogramTester histogram_tester;
+
+    TestRenderViewContextMenu image_menu(*web_contents()->GetPrimaryMainFrame(),
+                                         image_params);
+    image_menu.SetBrowser(GetBrowser());
+    image_menu.Init();
+    EXPECT_TRUE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+
+    TestRenderViewContextMenu page_menu(*web_contents()->GetPrimaryMainFrame(),
+                                        page_params);
+    page_menu.SetBrowser(GetBrowser());
+    page_menu.Init();
+    EXPECT_TRUE(page_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+
+    histogram_tester.ExpectUniqueSample(
+        "Indigo.PageAction.ShownEntryPoint",
+        indigo::IndigoPageActionEntryPoint::kContextMenu, 1);
+
+    image_menu.ExecuteCommand(IDC_CONTENT_CONTEXT_INDIGO, 0);
+    histogram_tester.ExpectUniqueSample(
+        "Indigo.PageAction.ClickedEntryPoint",
+        indigo::IndigoPageActionEntryPoint::kContextMenu, 1);
+  }
+
+  {
+    // Simplified menu path (kMenuSimplification enabled) -> also visible on
+    // both image (via AppendLensGeminiSection) and page context menus.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        indigo::kForceIndigoSwitch);
+
+    base::test::ScopedFeatureList simplified_feature;
+    simplified_feature.InitAndEnableFeature(features::kMenuSimplification);
+
+    TestRenderViewContextMenu image_menu(*web_contents()->GetPrimaryMainFrame(),
+                                         image_params);
+    image_menu.SetBrowser(GetBrowser());
+    image_menu.Init();
+    EXPECT_TRUE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+
+    TestRenderViewContextMenu page_menu(*web_contents()->GetPrimaryMainFrame(),
+                                        page_params);
+    page_menu.SetBrowser(GetBrowser());
+    page_menu.Init();
+    EXPECT_TRUE(page_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+  }
+
+  {
+    // Feature flag disabled -> hidden even when page is eligible.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        indigo::kForceIndigoSwitch);
+
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitAndDisableFeature(features::kIndigoContextMenu);
+
+    TestRenderViewContextMenu image_menu(*web_contents()->GetPrimaryMainFrame(),
+                                         image_params);
+    image_menu.SetBrowser(GetBrowser());
+    image_menu.Init();
+    EXPECT_FALSE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+  }
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party

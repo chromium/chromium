@@ -75,6 +75,9 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -683,13 +686,14 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE, 170},
        {IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU, 171},
        {IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, 172},
+       {IDC_CONTENT_CONTEXT_INDIGO, 173},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {kUmaMaxValueKey, 173}});
+       {kUmaMaxValueKey, 174}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -731,13 +735,14 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
        {IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY, 33},
        {IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED, 34},
        {IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE, 35},
+       {IDC_CONTENT_CONTEXT_INDIGO, 36},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {kUmaMaxValueKey, 36}});
+       {kUmaMaxValueKey, 37}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:ContextMenuOptionDesktop)
 
   switch (type) {
@@ -1358,6 +1363,10 @@ void RenderViewContextMenu::InitMenu() {
     if (content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE)) {
       AppendGlicShareImageItem();
+    }
+
+    if (media_image) {
+      AppendIndigoItem();
     }
   }
 
@@ -2432,6 +2441,22 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
   }
 }
 
+void RenderViewContextMenu::AppendIndigoItem() {
+  if (!CanAppendIndigoItem()) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
+  auto* controller = indigo::IndigoPageActionController::From(tab);
+  CHECK(controller);
+  menu_model_.AddItemWithStringIdAndIcon(
+      IDC_CONTENT_CONTEXT_INDIGO, IDS_INDIGO_CONTEXT_MENU_TEXT,
+      ui::ImageModel::FromVectorIcon(
+          indigo::IndigoPageActionController::GetEntryPointVectorIcon(),
+          ui::kColorMenuIcon, kTabMenuIconSize));
+  controller->OnContextMenuShown();
+}
+
 void RenderViewContextMenu::AppendAudioItems() {
   AppendMediaItems();
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2647,6 +2672,9 @@ void RenderViewContextMenu::AppendPageItems() {
       AppendSaveToMemoryBanksItem();
     }
 
+    // Indigo (Try it on)
+    AppendIndigoItem();
+
     // Open in reading mode & Listen to this page
     AppendReadAnythingItem();
 
@@ -2699,6 +2727,7 @@ void RenderViewContextMenu::AppendPageItems() {
     if (glic_below_search) {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
+    AppendIndigoItem();
 
     if (experiment_group ==
         features::ReadAnythingMenuShuffleExperimentGroup::kDefault) {
@@ -2721,6 +2750,7 @@ void RenderViewContextMenu::AppendPageItems() {
       if (glic_below_search) {
         MaybeAppendOpenGlicItem(/*add_separator=*/false);
       }
+      AppendIndigoItem();
     }
     if (!use_simplified_text_selection) {
       AppendReadAnythingItem();
@@ -3740,6 +3770,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:
     case IDC_CONTENT_CONTEXT_GLIC:
     case IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION:
+    case IDC_CONTENT_CONTEXT_INDIGO:
       return true;
 
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
@@ -4044,6 +4075,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_GLICSHAREIMAGE:
       ExecGlicShareImage();
+      break;
+
+    case IDC_CONTENT_CONTEXT_INDIGO:
+      ExecIndigo();
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
@@ -5306,6 +5341,23 @@ void RenderViewContextMenu::ExecGlicShareImage() {
   }
 }
 
+void RenderViewContextMenu::ExecIndigo() {
+  // See `ExecGlic()` for why the source document must still be active.
+  content::RenderFrameHost* source_frame =
+      source_document_at_menu_open_.AsRenderFrameHostIfValid();
+  if (!source_frame ||
+      &source_frame->GetPage() != &source_web_contents_->GetPrimaryPage()) {
+    return;
+  }
+
+  // Invokes the page-level Try on You image replacement flow on the detected
+  // product image.
+  if (auto* controller = indigo::IndigoPageActionController::From(
+          tabs::TabInterface::MaybeGetFromContents(source_web_contents_))) {
+    controller->InvokeAction(indigo::EntryPoint::kContextMenu);
+  }
+}
+
 void RenderViewContextMenu::ExecExitFullscreen() {
   BrowserWindowInterface* browser = GetBrowser();
   if (!browser) {
@@ -6190,6 +6242,22 @@ bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
              optimization_guide::PageContextEligibilityStatus::kEligible;
 }
 
+bool RenderViewContextMenu::CanAppendIndigoItem() const {
+  if (!base::FeatureList::IsEnabled(features::kIndigo) ||
+      !base::FeatureList::IsEnabled(features::kIndigoContextMenu)) {
+    return false;
+  }
+
+  if (!IsNormalBrowser() || IsAnyGlicWebContents(this)) {
+    return false;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
+  auto* controller = indigo::IndigoPageActionController::From(tab);
+  return controller && controller->IsPageEligible();
+}
+
 void RenderViewContextMenu::AppendLensGeminiSection() {
   if (!features::IsMenuSimplificationEnabled()) {
     return;
@@ -6201,13 +6269,16 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
   bool can_glic = content_type_->SupportsGroup(
                       ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
                   CanAppendGlicShareImageItem();
+  bool can_indigo = content_type_->SupportsGroup(
+                        ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE) &&
+                    CanAppendIndigoItem();
   bool can_image_search =
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
       params_.has_image_contents && IsSearchAllowedByPolicy() &&
       GetImageSearchProvider() != nullptr;
 
-  if (!can_region && !can_glic && !can_image_search) {
+  if (!can_region && !can_glic && !can_indigo && !can_image_search) {
     return;
   }
 
@@ -6221,6 +6292,9 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
   }
   if (can_glic) {
     AppendGlicShareImageItem();
+  }
+  if (can_indigo) {
+    AppendIndigoItem();
   }
 
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
