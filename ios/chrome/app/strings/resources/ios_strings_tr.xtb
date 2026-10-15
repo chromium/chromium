@@ -359,7 +359,7 @@
 <translation id="205013082884273671">Ekranınızdaki her şeyi arayın</translation>
 <translation id="2054044186557130763">Kuruluşunuz tarafından yönetilen <ph name="NAME" /> <ph name="EMAIL" /> olarak oturum açın.</translation>
 <translation id="2059166748188874810">Belediye</translation>
-<translation id="2060638295449304809">Bu adres yalnızca bu cihaza kaydedilir. Adresi diğer cihazlarınızda kullanmak için <ph name="USER_EMAIL" /> Google Hesabınıza kaydedin</translation>
+<translation id="2060638295449304809">Bu adres yalnızca bu cihazda kayıtlı. Adresi diğer cihazlarınızda kullanmak için <ph name="USER_EMAIL" /> adlı Google Hesabınıza kaydedin.</translation>
 <translation id="20638360198452347">Birim türü seçici</translation>
 <translation id="2067852168641682340">Her zaman bu hesaba kaydet</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 sekme}other{{count} sekme}}</translation>
@@ -943,7 +943,7 @@
 <translation id="3967327056943561740">Yer İşaretleri</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3968685670440571540">Şifreler ve Otomatik Doldurma'yı kullanmaya başladığınızdan beri</translation>
-<translation id="3973560090698854095">Ayrıca, <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı adresler de silinir.</translation>
+<translation id="3973560090698854095"><ph name="USER_EMAIL" /> adlı Google Hesabınıza kayıtlı adresler de silinir.</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> olarak oturum açtınız. Hesap menüsünü açın.</translation>
 <translation id="3986739045730058129">Sekmeye gidin</translation>
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
@@ -962,7 +962,7 @@
 <translation id="4018440314314549819">Kayıtlı Şifreleri Otomatik Olarak Doldurun</translation>
 <translation id="4021447724486050609">Tarayıcınızı güncelleyin</translation>
 <translation id="4021931095789478915">${url} URL'sini okuma listesine ekle</translation>
-<translation id="4028871427853484857">Hesaba kaydet…</translation>
+<translation id="4028871427853484857">Hesaba kaydet</translation>
 <translation id="4038354071007134711">Bu cihazdaki hiçbir uygulama dosyayı açamıyor.</translation>
 <translation id="4042870976416480368">Sayfada Bul</translation>
 <translation id="4045441967987592849">Yeniden aç</translation>

@@ -2033,7 +2033,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2541706104884128042">Nova hora de dormir definida</translation>
 <translation id="2542050502251273923">Configura o nível de depuração do gerenciador de conexão de rede e outros serviços usando ff_debug.</translation>
 <translation id="254274314549093389">Resultado da atualização: <ph name="OUTCOMES" /></translation>
-<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}one{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}other{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para estes apps. <ph name="MANAGE_LINK" />}}</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para esse app. <ph name="MANAGE_LINK" />}one{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para esse app. <ph name="MANAGE_LINK" />}other{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para esses apps. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Esta guia</translation>
 <translation id="2546302722632337735">Não permitir que os sites usem identificadores para abrir conteúdo protegido</translation>
 <translation id="2546991196809436099">Aumente o zoom para ampliar os itens na tela. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
@@ -5619,7 +5619,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5249818097095743806">Use sua chave de segurança</translation>
 <translation id="5250372599208556903">O <ph name="SEARCH_ENGINE_NAME" /> usa sua localização para que você tenha acesso a conteúdo local. É possível alterar isso em <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5254233580564156835">Uso da memória: <ph name="MEMORY_USAGE" /></translation>
-<translation id="5254678337198156877">Esses dados do app serão compartilhados entre o "<ph name="APP_NAME" />" e os apps instalados.</translation>
+<translation id="5254678337198156877">Esses dados do app serão compartilhados entre "<ph name="APP_NAME" />" e os apps instalados por ele.</translation>
 <translation id="5255726914791076208">Quando você edita a chave de acesso, sua conta de <ph name="RP_ID" /> não muda.</translation>
 <translation id="5256174546894739043">Perguntar quando um site quiser acompanhar suas mãos</translation>
 <translation id="52566111838498928">Carregando fontes…</translation>
@@ -7477,7 +7477,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6715735940363172819">Os sites não podem usar seu microfone</translation>
 <translation id="6716049856796700977">Nada pode usar seu local. No entanto, seu local ainda poderá ficar visível para apps e sites usando seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="671868032356459320">Escopo do atualizador: <ph name="OUTCOMES" /></translation>
-<translation id="6718728708077839052">Gerenciar permissões do app principal</translation>
+<translation id="6718728708077839052">Gerenciar permissões do app principal.</translation>
 <translation id="671928215901716392">Bloquear tela</translation>
 <translation id="6719839880830057298">Upload de arquivo concluído</translation>
 <translation id="6720077015462788541">Salve e use suas senhas em todos os dispositivos</translation>

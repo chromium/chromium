@@ -1640,7 +1640,7 @@
 <translation id="3748009735914587286">금속(고광택)</translation>
 <translation id="3748647055058832337">이 판매자에서 사용할 수 없음</translation>
 <translation id="3749600200023337912">저장된 자동 결제 수단이 이 결제에 사용될 수 있습니다. Chrome에서 전자 지갑 또는 결제 앱을 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
-<translation id="3752181611900535304">계정에 주소를 저장하시겠습니까?</translation>
+<translation id="3752181611900535304">계정에 주소를 저장하시겠어요?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
 <translation id="3757511311058373406">자동 탐색 필터</translation>
@@ -1765,7 +1765,7 @@
 <translation id="3961148744525529027">결제 핸들러 시트가 절반 높이로 열림</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
-<translation id="3965672182149944205">주소를 저장하시겠습니까?</translation>
+<translation id="3965672182149944205">주소를 저장하시겠어요?</translation>
 <translation id="3966044442021752214">제품 안전</translation>
 <translation id="396761677631735618">터치하여 입력할 수 있는 포인트 카드가 절반 높이로 열렸습니다.</translation>
 <translation id="3970239200223030389">발급일</translation>
@@ -2000,7 +2000,7 @@
 <translation id="4304485328308299773">제품, 서비스 또는 경험에 대한 고객 평가를 읽어보고 리뷰를 참고하여 결정을 내리세요</translation>
 <translation id="4305666528087210886">파일에 액세스할 수 없음</translation>
 <translation id="4306349443295056740">OCSP 서명</translation>
-<translation id="4306529830550717874">주소를 저장하시겠습니까?</translation>
+<translation id="4306529830550717874">주소를 저장하시겠어요?</translation>
 <translation id="4306812610847412719">클립보드</translation>
 <translation id="4308567447483056043">사용자가 제휴되어 있지 않으므로 이 정책은 무시됩니다. 이 정책을 적용하려면 Chrome 브라우저와 프로필을 관리 콘솔에서 같은 조직으로 관리해야 합니다.</translation>
 <translation id="4310496734563057511">이 기기를 다른 사용자와 공유하는 경우, Windows Hello를 사용 설정하면 저장된 비밀번호를 사용할 때마다 본인 인증이 완료됩니다.</translation>
@@ -3099,7 +3099,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" />(<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">배송 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="6159908896951210943">격식을 갖춰 작성</translation>
-<translation id="6162403104168428984">주소를 업데이트하시겠습니까?</translation>
+<translation id="6162403104168428984">주소를 업데이트하시겠어요?</translation>
 <translation id="6164605812717770913">부모님 또는 보호자가 이 사이트 방문을 허용하지 않았습니다. 차단 해제를 요청할 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6167577165590485365">마지막 가져오기 시도:</translation>
@@ -4143,7 +4143,7 @@
 <translation id="7927046851848613453">입력한 양식뿐만 아니라 조회한 페이지에서 티켓, 이벤트, 기타 정보를 저장합니다. 그런 다음 이벤트 티켓, 포인트 카드와 같은 패스에 빠르게 액세스합니다. 저장된 정보는 내 기기 및 Google 제품 전반에 표시될 수 있습니다.</translation>
 <translation id="7930282586031445870">선구매 후지불 서비스 약관 화면이 닫혔습니다.</translation>
 <translation id="7932035970207573919">직장 주소, <ph name="ADDRESS" /></translation>
-<translation id="793209273132572360">주소를 업데이트하시겠습니까?</translation>
+<translation id="793209273132572360">주소를 업데이트하시겠어요?</translation>
 <translation id="7932579305932748336">코팅</translation>
 <translation id="79338296614623784">올바른 전화번호를 입력하세요.</translation>
 <translation id="7934414805353235750"><ph name="URL" />에서 보호된 콘텐츠를 재생하려고 합니다. Google에서 기기의 ID를 인증해야 합니다.</translation>
@@ -4635,7 +4635,7 @@
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8806696968588872703">플라스틱(새틴)</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
-<translation id="8811470563853401328">계정에 주소를 저장하시겠습니까?</translation>
+<translation id="8811470563853401328">계정에 주소를 저장하시겠어요?</translation>
 <translation id="8811725516933141693">@gemini를 입력하여 Gemini와 채팅하기</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8814707942599948500">봉투 C8</translation>

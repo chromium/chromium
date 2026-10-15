@@ -895,7 +895,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="247903268499247848">Hareket ve ışık sensörlerine izin verilmiyor</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2479410451996844060">Geçersiz arama URL'si.</translation>
-<translation id="2480300195898055381">Google Hesabınızda, <ph name="USER_EMAIL" /></translation>
+<translation id="2480300195898055381"><ph name="USER_EMAIL" /> adlı Google Hesabınıza kaydedilecek</translation>
 <translation id="248064299258688299"><ph name="EXTENSION_NAME" /> uzantısı şu bilgiyi veriyor:</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="248348093745724435">Makine politikaları</translation>
@@ -2538,7 +2538,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5233071178832586743">Yöneticiniz; yönetilen profil, tarayıcı ve bazı cihaz bilgilerine erişebilir. Aşağıdakiler gibi bilgileri görebilir:</translation>
 <translation id="5234764350956374838">Kapat</translation>
-<translation id="5238301240406177137">Hesaba Kaydet</translation>
+<translation id="5238301240406177137">Hesaba kaydet</translation>
 <translation id="5239119062986868403">Normal Fiyat</translation>
 <translation id="5239623327352565343">Konuma izin veriliyor</translation>
 <translation id="5242610955375133957">Kuru Film</translation>
@@ -3401,7 +3401,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6681790815630918386">CVC kaydedildi</translation>
 <translation id="6687230248707087982">Zarf (Düz)</translation>
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
-<translation id="6688743156324860098">Güncelle…</translation>
+<translation id="6688743156324860098">Güncelle</translation>
 <translation id="6688775486821967877">Sanal kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="6688851075017682769">Ülkeye göre test adresi</translation>
 <translation id="6689249931105087298">Siyah nokta sıkıştırma ile göreli</translation>
@@ -4812,7 +4812,7 @@ Ek ayrıntılar:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Sekme'ye basın, ardından yolculuğunuzu devam ettirmek ve Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="9119042192571987207">Yüklendi</translation>
 <translation id="9119764377203471454">Dosya eklenemiyor</translation>
-<translation id="9120593907434185157">Adresi kaydet</translation>
+<translation id="9120593907434185157">Adresi kaydedin</translation>
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9131119348384879525">Gizli içerik yakalansın mı?</translation>
 <translation id="9133985615769429248">Bu cihazı başkalarıyla paylaşıyorsanız kayıtlı bir şifre kullandığınızda kimliğinizi doğrulamak için ekran kilidinizi kullanabilirsiniz</translation>

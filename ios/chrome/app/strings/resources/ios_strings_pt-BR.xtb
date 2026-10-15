@@ -943,7 +943,7 @@
 <translation id="3967327056943561740">Favoritos</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3968685670440571540">desde que você começou a usar Senhas e Preenchimento Automático</translation>
-<translation id="3973560090698854095">Essa ação exclui os endereços salvos na sua Conta do Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="3973560090698854095">Esta ação exclui os endereços salvos na sua Conta do Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="398604237578616937">Login feito como <ph name="USER_EMAIL" />. Abra o menu de contas.</translation>
 <translation id="3986739045730058129">Acessar a guia</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
@@ -1419,7 +1419,7 @@
 <translation id="5477188385487393357">Pule a etapa de copiar e colar</translation>
 <translation id="5478327362747197944">Crie eventos do Google Agenda clicando em uma data em uma página da Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, esportes e muito mais com base nos seus interesses?</translation>
-<translation id="5483838506518938965">Está tudo pronto</translation>
+<translation id="5483838506518938965">Tudo pronto!</translation>
 <translation id="5487521232677179737">Remover dados</translation>
 <translation id="5494920125229734069">Selecionar todas</translation>
 <translation id="5499648645977734083">Gerenciar formas de pagamento…</translation>
@@ -1600,7 +1600,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
 <translation id="6063802271331271857">Transforme imagens com o Remix</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
-<translation id="6074656473835429958">Receber notificações</translation>
+<translation id="6074656473835429958">Receba notificações</translation>
 <translation id="607620096698446287">Não foi possível fazer upload do arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">Fixar site</translation>
 <translation id="6077126322656614846">Acesso permitido à câmera</translation>

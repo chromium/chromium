@@ -585,7 +585,7 @@
 <translation id="2761898608071930085">Utiliser un autre compte</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{Ajoutez jusqu'à 1 image}one{Ajoutez jusqu'à {COUNT} image}other{Ajoutez jusqu'à {COUNT} images}}</translation>
-<translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notifications par e-mail</translation>
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -943,7 +943,7 @@
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968685670440571540">depuis que vous utilisez "Mots de passe et saisie automatique"</translation>
-<translation id="3973560090698854095">Cela supprime les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
+<translation id="3973560090698854095">Cela supprimera les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrir le menu du compte.</translation>
 <translation id="3986739045730058129">Accéder à l'onglet</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>

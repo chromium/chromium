@@ -2694,7 +2694,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3028445648481691885">Đã huỷ quá trình tải xuống</translation>
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
 <translation id="3029808567601324798">Thời gian chờ khoá</translation>
-<translation id="3030772324014024606">Sửa</translation>
+<translation id="3030772324014024606">Chỉnh sửa</translation>
 <translation id="3030795534674718505">Được phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3030967311408872958">Từ tối đến sáng</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
@@ -5099,7 +5099,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4853328060971905294">Bật (bật hiệu ứng đánh dấu dòng)</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
 <translation id="4854603338816296098">Đã xoá địa chỉ</translation>
-<translation id="485480310608090163">Các quyền và tuỳ chọn cài đặt khác</translation>
+<translation id="485480310608090163">Các quyền và chế độ cài đặt khác</translation>
 <translation id="4857304314344645169">Xem nội dung giải thích từng bước về mọi vấn đề</translation>
 <translation id="4857506880242459832">Hỏi Google về trang trước đó: <ph name="PAGE_TITLE" /></translation>
 <translation id="485806788160414322">Phát hoặc tạm dừng nội dung nghe nhìn</translation>
@@ -5619,7 +5619,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5249818097095743806">Sử dụng khoá bảo mật của bạn</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> sử dụng vị trí của bạn để cung cấp cho bạn nội dung địa phương. Bạn có thể thay đổi cài đặt này trong <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5254233580564156835">Mức sử dụng bộ nhớ: <ph name="MEMORY_USAGE" /></translation>
-<translation id="5254678337198156877">Dữ liệu trên ứng dụng này sẽ được chia sẻ giữa "<ph name="APP_NAME" />" và các ứng dụng được cài đặt trên đó.</translation>
+<translation id="5254678337198156877">Dữ liệu trên ứng dụng này sẽ được chia sẻ giữa "<ph name="APP_NAME" />" và các ứng dụng mà ứng dụng này cài đặt.</translation>
 <translation id="5255726914791076208">Khi bạn chỉnh sửa khoá đăng nhập, tài khoản <ph name="RP_ID" /> của bạn sẽ không thay đổi</translation>
 <translation id="5256174546894739043">Hỏi khi có trang web muốn theo dõi tay bạn</translation>
 <translation id="52566111838498928">Đang tải phông chữ...</translation>

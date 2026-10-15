@@ -1231,7 +1231,7 @@
 <translation id="4556953949326137018">当您使用“添加到日历”或“创建 Google 文档”等建议的操作时，系统会将所选区域的内容发送到 Google 服务器以执行建议的操作，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
-<translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备也可能会自动下载并安装来自 Google、运营商及设备制造商的更新和应用，且此过程可能会使用移动数据。部分应用可能包含应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="4563880231729913339">手指 3</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>

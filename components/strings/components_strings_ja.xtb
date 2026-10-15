@@ -1974,7 +1974,7 @@
 <translation id="4271652479722040953">拡張機能が Chrome に追加されると、これらの拡張機能に関するデータが分析のため第三者に送信され、管理者に公開される可能性があります。こうしたデータには、名前、インストール時間、インストール元などの拡張機能に関する情報と、拡張機能に関連するアクティビティ（タブの変更、ウェブサイトへの接続、Cookie へのアクセスなど）が含まれます。このデータは、Chrome ウェブストアからインストールされた拡張機能と、ストア以外からインストールされた拡張機能の両方について収集されます。</translation>
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
-<translation id="4276974990916607331">今はしない</translation>
+<translation id="4276974990916607331">スキップ</translation>
 <translation id="4277028893293644418">パスワードを再設定</translation>
 <translation id="4277442707759481607">トピックに関する知識をテストする練習問題を作成して</translation>
 <translation id="4277529130885813215">別のデバイスを使用</translation>
@@ -2542,7 +2542,7 @@
 <translation id="5239119062986868403">一般的な価格</translation>
 <translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5242610955375133957">ドライフィルム</translation>
-<translation id="5243004157379865295">住所を更新</translation>
+<translation id="5243004157379865295">住所の更新</translation>
 <translation id="5244521145258281926">[Google アカウントを管理] ボタンです。実行すると、Google アカウントで情報、プライバシー、セキュリティを管理できます</translation>
 <translation id="5244732203286792411">読み込んでいます...
     しばらくお待ちください。</translation>
@@ -4812,7 +4812,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9119764377203471454">添付ファイルを追加できません</translation>
-<translation id="9120593907434185157">住所を保存</translation>
+<translation id="9120593907434185157">住所の保存</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9131119348384879525">機密コンテンツをキャプチャしますか？</translation>
 <translation id="9133985615769429248">このデバイスを他のユーザーと共有している場合、保存したパスワードの入力時に画面ロックを使用して本人確認を行うことができます</translation>

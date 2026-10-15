@@ -2009,7 +2009,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4316057107946726368">Vui lòng nhập thông báo giải thích dài tối đa <ph name="MAX_CHAR_COUNT" /> ký tự. Bạn đã nhập <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> ký tự.</translation>
 <translation id="4318312030194671742">Dịch vụ sắp xếp Paint Preview</translation>
 <translation id="4318566738941496689">Tên thiết bị và địa chỉ mạng của bạn</translation>
-<translation id="432088302786119211">{COUNT,plural, =1{Đường liên kết đã nhận từ <ph name="DEVICE_NAME" />}other{# đường liên kết đã nhận từ <ph name="DEVICE_NAME" />}}</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Đã nhận đường liên kết từ <ph name="DEVICE_NAME" />}other{Đã nhận # đường liên kết từ <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Khay 17</translation>
 <translation id="4325863107915753736">Không tìm được bài viết</translation>
 <translation id="4326324639298822553">Kiểm tra ngày hết hạn của bạn và thử lại</translation>
@@ -2978,7 +2978,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5968022600320704045">Không có kết quả tìm kiếm nào</translation>
 <translation id="5968400720580217226">Chế độ AI</translation>
 <translation id="5969199813874624822">Lưu và theo dõi giá</translation>
-<translation id="5972020793760134803">Chuyển thẻ</translation>
+<translation id="5972020793760134803">Chuyển sang thẻ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Cuộn thứ sáu</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>

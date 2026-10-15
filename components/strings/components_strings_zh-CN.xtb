@@ -232,7 +232,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384725838384960382">安全付款凭证身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
-<translation id="138810468159004008">访问该网站时允许</translation>
+<translation id="138810468159004008">在访问期间允许</translation>
 <translation id="1391145880481608015">详细了解此警告</translation>
 <translation id="139161720020179799">深灰色 1</translation>
 <translation id="1391625539203220400">要将 IBAN 保存到此设备吗？</translation>
@@ -244,7 +244,7 @@
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406370515365284486">系统仍会保存您的支付方式</translation>
 <translation id="1406500794671479665">正在验证...</translation>
-<translation id="1406812885827747674">仅这次访问时允许</translation>
+<translation id="1406812885827747674">仅此一次</translation>
 <translation id="14070772729708640">文件已成功上传到“<ph name="CLOUD_PROVIDER" />”上的“<ph name="FOLDER_NAME" />”</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408696301184924537">如需下次自动填充此 IBAN，请将其保存到您的 Google 账号中</translation>
@@ -737,7 +737,7 @@
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登录<ph name="END_LINK" /> Wi-Fi 网络</translation>
-<translation id="2228057197024893428">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="2228057197024893428">此地址目前已保存在 Chrome 中。如需在各 Google 产品中通用，请将其保存到您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2229456043301340598">已忽略重复的快捷字词：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="222962001646502673">深灰色 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
@@ -923,7 +923,7 @@
 <translation id="2524461107774643265">添加更多信息</translation>
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
-<translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
+<translation id="2526280916094749336">保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
@@ -1636,7 +1636,7 @@
 <translation id="3748009735914587286">金属（高光）</translation>
 <translation id="3748647055058832337">此商家不可用</translation>
 <translation id="3749600200023337912">系统可能会使用您已保存的自动支付方式来支付此款项。如需在 Chrome 中关闭电子钱包或支付应用，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
-<translation id="3752181611900535304">是否将地址保存到账号？</translation>
+<translation id="3752181611900535304">要将地址保存到账号吗？</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
 <translation id="3757511311058373406">自动浏览过滤条件</translation>
@@ -2406,7 +2406,7 @@
 <translation id="5018422839182700155">无法打开此网页</translation>
 <translation id="5018802455907704660">16 x 20 英寸</translation>
 <translation id="5019198164206649151">后备存储状态不佳</translation>
-<translation id="5019293549442035120">您可以在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
+<translation id="5019293549442035120">保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="5019819206251569004">移动传感器和光传感器</translation>
 <translation id="5019952743397118625">已设置 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不会控制开发者模式在扩展程序页面上的使用情况。</translation>
 <translation id="5020862932518041900">无论您是采纳还是忽略建议，Chrome 都会不断学习，确保只为您呈现与您相关的内容</translation>
@@ -2686,7 +2686,7 @@
 <translation id="5481604577800516617">窗口和标签页的排列</translation>
 <translation id="5481682542063333508">提供写作帮助</translation>
 <translation id="54817484435770891">添加有效地址</translation>
-<translation id="5483838506518938965">一切都已就绪</translation>
+<translation id="5483838506518938965">一切就绪</translation>
 <translation id="5484396522446324950">样式</translation>
 <translation id="5485100387355669506">超粗</translation>
 <translation id="5485973315555778056">云端设备</translation>
@@ -3031,7 +3031,7 @@
 <translation id="6051221802930200923">您目前无法访问 <ph name="SITE" />，因为此网站使用了证书锁定。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="6051898664905071243">页数：</translation>
 <translation id="605237284704429106">正在填充 IBAN</translation>
-<translation id="6053584886670442526">您可在各种 Google 产品中使用已保存的地址。此地址已保存到您的 Google 账号 (<ph name="ACCOUNT" />)。</translation>
+<translation id="6053584886670442526">保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055982527635883756">信封（存档用）</translation>
 <translation id="6059925163896151826">USB 设备</translation>
@@ -3094,7 +3094,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸（<ph name="ORIENTATION" />）</translation>
 <translation id="6157877588268064908">要查看送货方式和要求，请选择相应地址</translation>
 <translation id="6159908896951210943">正式</translation>
-<translation id="6162403104168428984">更新地址？</translation>
+<translation id="6162403104168428984">要更新地址吗？</translation>
 <translation id="6164605812717770913">家长或监护人认为此网站不适合你访问。你可以请求家长或监护人取消屏蔽。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
@@ -3895,7 +3895,7 @@
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到与以下网址对应的网页：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="752189128961566325">您可以在各种 Google 产品中使用该地址</translation>
+<translation id="752189128961566325">此地址可在各 Google 产品中通用</translation>
 <translation id="7524958309155133228">询问 <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">创建</translation>
 <translation id="7525804896095537619">名称不得为空</translation>
@@ -4139,7 +4139,7 @@
 <translation id="7927046851848613453">不只可以保存您填写的表单信息，您浏览的网页中的票券、活动及其他信息也能一并保存。随后，您就能轻松使用各类卡券，例如活动门票和会员卡。您保存的信息可能会显示在您的设备上以及各项 Google 产品中。</translation>
 <translation id="7930282586031445870">“先买后付”服务条款界面已关闭。</translation>
 <translation id="7932035970207573919">工作地址：<ph name="ADDRESS" /></translation>
-<translation id="793209273132572360">更新地址？</translation>
+<translation id="793209273132572360">要更新地址吗？</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保护的内容。Google 将对您的设备进行身份验证。</translation>
@@ -4392,7 +4392,7 @@
 <translation id="8363929499301563123">网站 Cookie（最近访问过的网站上的已登录状态将被保留）</translation>
 <translation id="8364627913115013041">未设置。</translation>
 <translation id="836616551641291797">详细了解您的浏览器的管理方式</translation>
-<translation id="8367705492654390392">有问题，尽管问</translation>
+<translation id="8367705492654390392">尽情提问</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服务</translation>
@@ -4632,7 +4632,7 @@
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8806696968588872703">塑料（磨光）</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
-<translation id="8811470563853401328">是否将地址保存到账号？</translation>
+<translation id="8811470563853401328">要将地址保存到账号吗？</translation>
 <translation id="8811725516933141693">输入 @gemini 即可与 Gemini 聊天</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8814707942599948500">C8 信封</translation>

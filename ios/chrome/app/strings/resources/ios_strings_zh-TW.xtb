@@ -585,7 +585,7 @@
 <translation id="2761898608071930085">使用其他帳戶</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可加入 1 張圖像}other{最多可加入 {COUNT} 張圖像}}</translation>
-<translation id="2772667768515195373">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="2772667768515195373">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="USER_EMAIL" />) 。</translation>
 <translation id="2773344962924806829">電子郵件通知</translation>
 <translation id="2781331604911854368">開啟</translation>
 <translation id="2781692009645368755">Google Pay</translation>

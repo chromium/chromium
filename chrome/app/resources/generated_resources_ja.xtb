@@ -2019,7 +2019,7 @@
 <translation id="2541706104884128042">お休み時間が変更されました</translation>
 <translation id="2542050502251273923">ff_debug を使用して、ネットワーク接続マネージャーと他のサービスのデバッグレベルを設定します。</translation>
 <translation id="254274314549093389">更新の結果: <ph name="OUTCOMES" /></translation>
-<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも適用されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも適用されます。<ph name="MANAGE_LINK" />}}</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも許可されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも許可されます。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">このタブ</translation>
 <translation id="2546302722632337735">識別子の使用と保護されたコンテンツの再生をサイトに許可しない</translation>
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
@@ -7755,7 +7755,7 @@
 <translation id="6929639755025587400">アプリをインストールしています…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が拒否されました}other{# 個の拡張機能が拒否されました}}</translation>
 <translation id="6930337524857202955">新しいダウンロードがあります</translation>
-<translation id="6930477763029357444"><ph name="APP_NAME" /> に許可した権限は、<ph name="PARENT_APP_NAME" /> とインストール済みの関連アプリにも適用されます。</translation>
+<translation id="6930477763029357444"><ph name="APP_NAME" /> に許可した権限は、<ph name="PARENT_APP_NAME" /> とそのインストール済みアプリにも許可されます。</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">クリックの感度</translation>
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>

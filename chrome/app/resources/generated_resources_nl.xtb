@@ -1937,7 +1937,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2484743711056182585">Toegang intrekken</translation>
 <translation id="2484909293434545162">Als een site cookies gebruikt, komt deze hier te staan</translation>
 <translation id="2485394160472549611">De beste keuzes voor jou</translation>
-<translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="2485422356828889247">Verwijderen</translation>
 <translation id="248676429071089168">Swipe omhoog om de pagina omlaag te verplaatsen</translation>
 <translation id="2487067538648443797">Nieuwe bookmark toevoegen</translation>
 <translation id="2487602042876349837"><ph name="VIEW_ONE_ORIENTATION" /> Nu bekijken is <ph name="VIEW_ONE_PERCENT" /> breed, <ph name="VIEW_TWO_ORIENTATION" /> Nu bekijken is <ph name="VIEW_TWO_PERCENT" /> breed.</translation>
@@ -3011,7 +3011,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3289668031376215426">Automatisch hoofdlettergebruik</translation>
 <translation id="3289856944988573801">Gebruik ethernet of wifi om op updates te controleren.</translation>
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
-<translation id="3292966601422448005">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor de geïnstalleerde versies van de app.</translation>
+<translation id="3292966601422448005">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor de bijbehorende geïnstalleerde apps.</translation>
 <translation id="3293080634164207409">Tabbladen toevoegen</translation>
 <translation id="329324683265785818">Afspelen/onderbreken, sneltoets k</translation>
 <translation id="3293644607209440645">Deze pagina verzenden</translation>

@@ -691,6 +691,25 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Nota: Esta política también se aplica a las extensiones de componentes, como la extensión Hangout Services.</translation>
 <translation id="148194404518916594">Permitir que los usuarios utilicen la función Tocar para buscar</translation>
 <translation id="1484190167468437592">Inhabilitar el audio en mono</translation>
+<translation id="1484391060024155139">Esta política configura <ph name="PRODUCT_NAME" /> para que ordene sus algoritmos de cifrado preferidos en TLS 1.3, de forma que se refleje una preferencia por los algoritmos que se hayan aprobado conforme a un régimen de cumplimiento específico.
+
+Si se define esta política, no se garantiza que se negocien algoritmos específicos.
+
+Esta política permite que los operadores de servidores que quieran admitir clientes con y sin requisitos de cumplimiento normativo distingan entre esos clientes y solo usen determinados algoritmos no predeterminados con mayor potencia criptográfica para aquellos clientes que estén configurados explícitamente para preferirlos.
+
+Si se asigna el valor <ph name="CNSA_NAME" /> a esta política, se configura <ph name="PRODUCT_NAME" /> para que prefiera los algoritmos de cifrado necesarios para cumplir los requisitos de las versiones 1.0 y 2.0 del Commercial National Security Algorithm Suite (CNSA 1.0 y 2.0).
+
+Si no se define esta política o se le asigna el valor <ph name="DEFAULT_NAME" />, <ph name="PRODUCT_NAME" /> se configurará para que use sus algoritmos de cifrado predeterminados.
+
+No es necesario definir esta política por motivos de seguridad. La criptografía predeterminada que usa <ph name="PRODUCT_NAME" /> es lo suficientemente potente como para resistir un ataque de fuerza bruta que utilice toda la energía del Sol.
+
+Si se define esta política, <ph name="PRODUCT_NAME" /> será más lento al acceder a sitios web.
+
+Esta política solo afecta a TLS 1.3 y QUIC, no a versiones anteriores de TLS.
+
+Esta política se puede definir para el equipo y para el usuario. Si se define para el usuario, la política solo afectará a las solicitudes de red iniciadas por el perfil de usuario y puede que no afecte a las solicitudes de red realizadas por <ph name="PRODUCT_NAME" /> para llevar a cabo tareas en segundo plano en todo el navegador; esas las controla el valor a nivel de equipo. Si esta política se define tanto a nivel de equipo como de usuario, se aplicará el valor a nivel de equipo, a menos que la política <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> haya cambiado el orden de prioridad de las políticas.
+
+En las versiones 155 y anteriores, esta política se aplica exclusivamente a todo el equipo.</translation>
 <translation id="1486021504508098388">Enviar información sobre la retroiluminación</translation>
 <translation id="1487722536912664411">Permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
@@ -10418,6 +10437,25 @@ Si se habilita esta política, XSLT estará disponible, independientemente del e
 Si se inhabilita esta política, XSLT no estará disponible, independientemente del estado predeterminado de la función en el navegador.
 Si no se define esta política, la disponibilidad de XSLT se determinará según la configuración predeterminada del navegador y las pruebas de campo.
 Esta política es una medida temporal y se eliminará en la versión M164.</translation>
+<translation id="7416280188470120885">Esta política configura <ph name="PRODUCT_NAME" /> para que ordene sus algoritmos de acuerdo de claves preferidos (grupos admitidos) en TLS 1.3, de forma que se refleje una preferencia por los algoritmos que se hayan aprobado conforme a un régimen de cumplimiento específico.
+
+Si se define esta política, no se garantiza que se negocien algoritmos específicos.
+
+Esta política permite que los operadores de servidores que quieran admitir clientes con y sin requisitos de cumplimiento normativo distingan entre esos clientes y solo usen determinados algoritmos no predeterminados con mayor potencia criptográfica para aquellos clientes que estén configurados explícitamente para preferirlos.
+
+Si se asigna el valor <ph name="CNSA2_NAME" /> a esta política, se configura <ph name="PRODUCT_NAME" /> para que prefiera los métodos de intercambio de claves necesarios para cumplir los requisitos del Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Si no se define esta política o se le asigna el valor <ph name="DEFAULT_NAME" />, <ph name="PRODUCT_NAME" /> se configura para que use sus métodos predeterminados de intercambio de claves.
+
+No es necesario definir esta política por motivos de seguridad. La criptografía predeterminada que usa <ph name="PRODUCT_NAME" /> es lo suficientemente potente como para resistir un ataque de fuerza bruta que utilice toda la energía del Sol.
+
+Si se define esta política, <ph name="PRODUCT_NAME" /> será más lento al acceder a sitios web.
+
+Esta política solo afecta a TLS 1.3 y QUIC, no a versiones anteriores de TLS.
+
+Esta política se puede definir para el equipo y para el usuario. Si se define para el usuario, la política solo afectará a las solicitudes de red iniciadas por el perfil de usuario y puede que no afecte a las solicitudes de red realizadas por <ph name="PRODUCT_NAME" /> para llevar a cabo tareas en segundo plano en todo el navegador; esas las controla el valor a nivel de equipo. Si esta política se define tanto a nivel de equipo como de usuario, se aplicará el valor a nivel de equipo, a menos que la política <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> haya cambiado el orden de prioridad de las políticas.
+
+En las versiones 155 y anteriores, esta política se aplica exclusivamente a todo el equipo.</translation>
 <translation id="7417438464912687020">Permitir conexiones de acceso remoto a este equipo</translation>
 <translation id="7417972229667085380">Porcentaje que permite ajustar el retraso de inactividad en el modo de presentación (política obsoleta)</translation>
 <translation id="7421230730436851224">No poner nunca el proceso de audio en un entorno aislado</translation>

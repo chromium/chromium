@@ -359,7 +359,7 @@
 <translation id="205013082884273671">Tìm kiếm nội dung bất kỳ trên màn hình</translation>
 <translation id="2054044186557130763">Đăng nhập bằng <ph name="NAME" /> <ph name="EMAIL" /> do tổ chức của bạn quản lý.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
-<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
+<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng địa chỉ này trên các thiết bị khác, hãy lưu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Bộ chọn loại đơn vị</translation>
 <translation id="2067852168641682340">Luôn lưu vào tài khoản này</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 thẻ}other{{count} thẻ}}</translation>

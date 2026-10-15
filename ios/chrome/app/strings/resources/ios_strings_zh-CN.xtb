@@ -359,7 +359,7 @@
 <translation id="205013082884273671">屏幕内容，一搜即得</translation>
 <translation id="2054044186557130763">以<ph name="NAME" /> (<ph name="EMAIL" />) 的身份登录，该账号由组织管理。</translation>
 <translation id="2059166748188874810">自治市</translation>
-<translation id="2060638295449304809">此地址仅会保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中</translation>
+<translation id="2060638295449304809">此地址仅保存在本设备上。如需在其他设备上使用，请将其保存到您的 Google 账号：<ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2067852168641682340">每次都保存到此账号</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 个标签页}other{{count} 个标签页}}</translation>
@@ -585,7 +585,7 @@
 <translation id="2761898608071930085">使用其他账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可添加 1 张图片}other{最多可添加 {COUNT} 张图片}}</translation>
-<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
+<translation id="2772667768515195373">保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1034,7 +1034,7 @@
 <translation id="4278390842282768270">允许</translation>
 <translation id="4279431713294750185">滑动边缘即可前进。</translation>
 <translation id="4282944936010261425">没有需要解决的安全问题。</translation>
-<translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
+<translation id="4286718549648564014">地址已迁移到您的账号：<ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">标为已读</translation>
 <translation id="428768789042547925">新变化</translation>
 <translation id="4289309730265289297">照片库</translation>
@@ -1419,7 +1419,7 @@
 <translation id="5477188385487393357">无需复制和粘贴</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
-<translation id="5483838506518938965">一切都已就绪</translation>
+<translation id="5483838506518938965">一切就绪</translation>
 <translation id="5487521232677179737">清除数据</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5499648645977734083">管理支付方式…</translation>
@@ -2362,7 +2362,7 @@
 <translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
-<translation id="8367705492654390392">有问题，尽管问</translation>
+<translation id="8367705492654390392">尽情提问</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368198938968349418">开启自动填充功能…</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>

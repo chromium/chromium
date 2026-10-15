@@ -1026,7 +1026,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1782101999402987960">Updates werden von deinem Administrator blockiert</translation>
 <translation id="1784707308176068866">Im Hintergrund ausführen, wenn dies von einer mit Chrome zusammenarbeitenden nativen Anwendung angefordert wird</translation>
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
-<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Durch das Deinstallieren von „<ph name="APP_NAME" />“ wird auch diese App deinstalliert:}other{Durch das Deinstallieren von „<ph name="APP_NAME" />“ werden auch diese Apps deinstalliert:}}</translation>
+<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Durch das Deinstallieren von <ph name="APP_NAME" /> wird auch diese App deinstalliert:}other{Durch das Deinstallieren von <ph name="APP_NAME" /> werden auch diese Apps deinstalliert:}}</translation>
 <translation id="1785698972112179866">Melde dich an, um auf deine Lesezeichen und weitere Daten von <ph name="DEVICE" /> zuzugreifen</translation>
 <translation id="1786290960428378411">Anfrage zum Lesen und Ändern läuft</translation>
 <translation id="1789543093145556097">Immer ausblenden</translation>
@@ -2020,7 +2020,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2541706104884128042">Neue Schlafenszeit festgelegt</translation>
 <translation id="2542050502251273923">Hiermit wird das Fehlerbehebungslevel des Netzwerkverbindungsmanagers und anderer Services mithilfe von ff_debug festgelegt.</translation>
 <translation id="254274314549093389">Update-Ergebnis: <ph name="OUTCOMES" /></translation>
-<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="MANAGE_LINK" />}other{Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf diese Apps angewendet. <ph name="MANAGE_LINK" />}}</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Für die App <ph name="APP_NAME" /> erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="MANAGE_LINK" />}other{Für die App <ph name="APP_NAME" /> erteilte Berechtigungen werden auch auf diese Apps angewendet. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Dieser Tab</translation>
 <translation id="2546302722632337735">Websites dürfen keine Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
 <translation id="2546991196809436099">Durch Zoomen kannst du Bildschirmelemente vergrößern. Verwende die Suchtaste + Strg + M, um die Lupe zu aktivieren oder zu deaktivieren.</translation>
@@ -5603,7 +5603,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5249818097095743806">Sicherheitsschlüssel verwenden</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> verwendet deinen Standort, um dir lokale Inhalte bereitzustellen. Du kannst dies unter <ph name="SETTINGS_LINK" /> ändern.</translation>
 <translation id="5254233580564156835">Arbeitsspeichernutzung: <ph name="MEMORY_USAGE" /></translation>
-<translation id="5254678337198156877">Diese App-Daten werden zwischen „<ph name="APP_NAME" />“ und den zugehörigen installierten Apps geteilt.</translation>
+<translation id="5254678337198156877">Diese App-Daten werden zwischen <ph name="APP_NAME" /> und den zugehörigen installierten Apps geteilt.</translation>
 <translation id="5255726914791076208">Das Bearbeiten deines Passkeys hat keine Auswirkungen auf dein <ph name="RP_ID" />-Konto</translation>
 <translation id="5256174546894739043">Nachfragen, wenn eine Website meine Handbewegungen verfolgen möchte</translation>
 <translation id="52566111838498928">Schriftarten werden geladen…</translation>
@@ -7169,7 +7169,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="650457560773015827">Linke Taste</translation>
 <translation id="6504601948739128893">Darf keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="6504611359718185067">Internetverbindung herstellen, um einen Drucker hinzuzufügen</translation>
-<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ möchte die folgende App auf diesem Gerät installieren:}other{„<ph name="APP_NAME" />“ möchte die folgenden Apps auf diesem Gerät installieren:}}</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> möchte die folgende App auf diesem Gerät installieren:}other{<ph name="APP_NAME" /> möchte die folgenden Apps auf diesem Gerät installieren:}}</translation>
 <translation id="6508248480704296122">Verknüpft mit <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511827214781912955">Du kannst „<ph name="FILENAME" />“ löschen, damit andere Nutzer dieses Geräts deine Passwörter nicht sehen können</translation>
@@ -7755,7 +7755,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6929639755025587400">App wird installiert…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde abgelehnt}other{# Erweiterungen wurden abgelehnt}}</translation>
 <translation id="6930337524857202955">Neuer Download verfügbar</translation>
-<translation id="6930477763029357444">Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf die App „<ph name="PARENT_APP_NAME" />“ und die von ihr installierten Apps angewendet.</translation>
+<translation id="6930477763029357444">Für <ph name="APP_NAME" /> erteilte Berechtigungen werden auch auf <ph name="PARENT_APP_NAME" /> und die davon installierten Apps angewendet.</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Klickempfindlichkeit</translation>
 <translation id="6933321725007230600">&amp;Synchronisierung aktivieren…</translation>
@@ -9625,7 +9625,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8351419472474436977">Diese Erweiterung hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="8352287103893778223">Titel der Tabgruppe</translation>
 <translation id="8353683614194668312">Berechtigungen:</translation>
-<translation id="8354125743472063725">Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="BEGIN_LINK" />Berechtigungen für übergeordnete App verwalten<ph name="END_LINK" /></translation>
+<translation id="8354125743472063725">Für <ph name="APP_NAME" /> erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="BEGIN_LINK" />Berechtigungen für übergeordnete App verwalten<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du hast dieses Gerät bereits registriert. Es muss nicht noch einmal registriert werden.</translation>
 <translation id="8357883857705092796">Nicht erkannte Websites</translation>

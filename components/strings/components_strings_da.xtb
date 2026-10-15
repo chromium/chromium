@@ -2227,7 +2227,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4731638775147756694">Denne app er blokeret af din administrator</translation>
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
-<translation id="473414950835101501">Brug dine kameraer</translation>
+<translation id="473414950835101501">Bruge dine kameraer</translation>
 <translation id="4736089601076994090">Udløber: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
@@ -2366,7 +2366,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4936573216809994970">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om 1 time</translation>
 <translation id="4939748144644852809">Flyttet til højre</translation>
 <translation id="4941627891654116707">Skriftstørrelse</translation>
-<translation id="4943620199112228840">Brug dine mikrofoner</translation>
+<translation id="4943620199112228840">Bruge dine mikrofoner</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="494701040141924538">OK, luk meddelelsen</translation>
 <translation id="4951038790614970523">Tekst, du klipper eller kopierer til udklipsholderen, sendes til Google Cloud eller tredjeparter, hvor den analyseres. Indholdet kan f.eks. blive scannet for følsomme oplysninger, og det kan blive gemt i henhold til virksomhedspolitikker og være synligt for din administrator.</translation>
@@ -2821,7 +2821,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="568292603005599551">Billedposition X</translation>
 <translation id="5684874026226664614">Ups! Denne side kunne ikke oversættes.</translation>
 <translation id="5689199277474810259">Eksportér i JSON</translation>
-<translation id="5689516760719285838">Placering</translation>
+<translation id="5689516760719285838">Lokation</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates-værdien er ikke relevant og anvendes ikke, medmindre politikken DnsOverHttpsMode er angivet som enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">"Gem kort" er åbnet i fuld højde.</translation>
 <translation id="5701381305118179107">Centrér</translation>

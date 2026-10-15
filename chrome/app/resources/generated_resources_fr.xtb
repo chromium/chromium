@@ -5080,7 +5080,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4852383141291180386">Gérer les notifications des applis</translation>
 <translation id="4852916668365817106">Couleur du curseur</translation>
 <translation id="4853020600495124913">Ouvrir dans une &amp;nouvelle fenêtre</translation>
-<translation id="4853328060971905294">Activée (activer la sélection de la ligne)</translation>
+<translation id="4853328060971905294">Activée (activer le focus ligne)</translation>
 <translation id="4854317507773910281">Sélectionnez un compte parental pour la demande d'autorisation</translation>
 <translation id="4854603338816296098">Adresse supprimée</translation>
 <translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
@@ -5587,7 +5587,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5233736638227740678">&amp;Coller</translation>
 <translation id="5234764350956374838">Ignorer</translation>
-<translation id="5235050375939235066">Désinstaller l'application ?</translation>
+<translation id="5235050375939235066">Désinstaller l'appli ?</translation>
 <translation id="5235750401727657667">Remplace la page qui s'affiche lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="523862956770478816">Autorisations liées aux sites</translation>
@@ -6013,7 +6013,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5576472948015790634">Vous pouvez désormais gérer vos groupes d'onglets et vos discussions Gemini au même endroit. Vous pouvez retirer cet élément à tout moment.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
 <translation id="5578387000057347457">Saisissez un prompt personnalisé ou mettez du texte en surbrillance pour créer une image</translation>
-<translation id="557893471177655572">Essayer la sélection de la ligne</translation>
+<translation id="557893471177655572">Essayer le focus ligne</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}one{{ITEM_COUNT} élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}other{{ITEM_COUNT} éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-les dans votre compte Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Supprimer <ph name="SITE" /> de la liste <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Vue fractionnée</translation>
@@ -7761,7 +7761,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6929639755025587400">Installation de l'appli…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
 <translation id="6930337524857202955">Nouveau téléchargement disponible</translation>
-<translation id="6930477763029357444">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront également pour <ph name="PARENT_APP_NAME" /> et ses applis installées.</translation>
+<translation id="6930477763029357444">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront aussi valables pour <ph name="PARENT_APP_NAME" /> et ses applis installées.</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Sensibilité du clic</translation>
 <translation id="6933321725007230600">Activer la &amp;synchronisation…</translation>
@@ -8080,7 +8080,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7186903260115204164">Ajoutez des dessins à main levée, des signatures et des mises en surbrillance avec le nouvel outil Draw</translation>
 <translation id="7186935534137027449">Commande d'appli</translation>
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
-<translation id="7188755083797868960">Ouvrir le mode Lecture plus rapidement avec un raccourci. Appuyer sur Alt+Maj+R pour activer/désactiver le mode Lecture.</translation>
+<translation id="7188755083797868960">Ouvrez plus vite le mode Lecture avec un raccourci. Appuyez sur Alt+Maj+R pour activer/désactiver ce mode.</translation>
 <translation id="7189234443051076392">Assurez-vous de disposer de suffisamment d'espace sur votre appareil</translation>
 <translation id="7189558282078169397">Onglets d'autres appareils</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
@@ -8502,7 +8502,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7502528909759062987">Suspendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Revenir à Gemini</translation>
 <translation id="7502804472671406749">Le site peut faire défiler les onglets partagés et zoomer dessus</translation>
-<translation id="750314150962284310">Sélection de la ligne</translation>
+<translation id="750314150962284310">Focus ligne</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503259455663961898">Le modifier pour moi</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur le site sera conservée sur votre clé de sécurité.</translation>
@@ -10837,7 +10837,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> souhaite obtenir des informations provenant de votre appareil mobile</translation>
 <translation id="988320949174893488">Saccadée de façon occasionnelle</translation>
 <translation id="988978206646512040">Phrase secrète obligatoire</translation>
-<translation id="989111665033316622">Désactivée (désactiver la sélection de la ligne)</translation>
+<translation id="989111665033316622">Désactivé (désactiver le focus ligne)</translation>
 <translation id="992032470292211616">Les extensions, les applications et les thèmes peuvent endommager votre appareil. Voulez-vous vraiment continuer ?</translation>
 <translation id="992256792861109788">Rose</translation>
 <translation id="994087375490600917">Panneaux latéraux</translation>

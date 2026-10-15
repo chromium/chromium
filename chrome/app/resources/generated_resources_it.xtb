@@ -10264,7 +10264,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8855242995793521265">Non rallenta in modo significativo il browser o il dispositivo.</translation>
 <translation id="8856028055086294840">Ripristina app e pagine</translation>
 <translation id="885701979325669005">Dati memorizzati dai siti</translation>
-<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Vuoi installare l'app?}other{Vuoi installare le app?}}</translation>
+<translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Installare l'app?}other{Installare le app?}}</translation>
 <translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8858449624332155432">Policy configurata con valori in conflitto provenienti da più sorgenti.</translation>
 <translation id="8859174528519900719">Frame secondario: <ph name="SUBFRAME_SITE" /></translation>
