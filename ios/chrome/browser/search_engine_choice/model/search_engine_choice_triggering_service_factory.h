@@ -5,30 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_TRIGGERING_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_TRIGGERING_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
-
-class SearchEngineChoiceTriggeringService;
 
 // Singleton that owns all SearchEngineChoiceTriggeringService and associates
 // them with ChromeBrowserState.
 class SearchEngineChoiceTriggeringServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SearchEngineChoiceTriggeringServiceFactory,
+          SearchEngineChoiceTriggeringService> {
  public:
-  static SearchEngineChoiceTriggeringServiceFactory* GetInstance();
-  static SearchEngineChoiceTriggeringService* GetForProfile(
-      ProfileIOS* profile);
+  explicit SearchEngineChoiceTriggeringServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SearchEngineChoiceTriggeringServiceFactory>;
-
-  SearchEngineChoiceTriggeringServiceFactory();
-  ~SearchEngineChoiceTriggeringServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

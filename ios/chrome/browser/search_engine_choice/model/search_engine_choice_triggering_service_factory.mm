@@ -18,33 +18,15 @@
 
 namespace ios {
 
-// static
-SearchEngineChoiceTriggeringServiceFactory*
-SearchEngineChoiceTriggeringServiceFactory::GetInstance() {
-  static base::NoDestructor<SearchEngineChoiceTriggeringServiceFactory>
-      instance;
-  return instance.get();
-}
-
-// static
-SearchEngineChoiceTriggeringService*
-SearchEngineChoiceTriggeringServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<SearchEngineChoiceTriggeringService>(
-          profile,
-          /*create=*/true);
-}
-
 SearchEngineChoiceTriggeringServiceFactory::
-    SearchEngineChoiceTriggeringServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SearchEngineChoiceTriggeringService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+    SearchEngineChoiceTriggeringServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "SearchEngineChoiceTriggeringService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::SearchEngineChoiceServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
-
-SearchEngineChoiceTriggeringServiceFactory::
-    ~SearchEngineChoiceTriggeringServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SearchEngineChoiceTriggeringServiceFactory::BuildServiceInstanceFor(
