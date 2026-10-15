@@ -29,8 +29,9 @@ GlicPrivateApiTestBase::GlicPrivateApiTestBase() {
   ComponentLoader::EnableBackgroundExtensionsForTesting();
   UseHttpsTestServer();
 
-  embedded_test_server()->SetCertHostnames(
-      {"gemini.google.com", "example.com"});
+  embedded_test_server()->SetCertHostnames({"gemini.google.com",
+                                            "gemini-staging.corp.google.com",
+                                            "www.google.com", "example.com"});
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   EXPECT_TRUE(embedded_test_server()->Start());
 }

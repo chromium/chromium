@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/api/glic_private/glic_private_api.h"
 
+#include <algorithm>
+#include <array>
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
@@ -44,6 +47,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -74,6 +79,15 @@ constexpr char kGlicApiInvokeSyntheticFieldTrialName[] =
     "GlicApiInvokeSyntheticFieldTrial";
 constexpr char kUniversalCartGroupName[] = "UniversalCart";
 constexpr char kGlicServiceNotAvailable[] = "Glic service not available";
+// Gemini Web origins, including corp and staging ones, that may embed
+// subframes that call glicPrivate.
+constexpr auto kGeminiOrigins = std::to_array<std::string_view>({
+    "https://gemini.google.com",
+    "https://gemini.corp.google.com",
+    "https://gemini-autopush.corp.google.com",
+    "https://gemini-preprod.corp.google.com",
+    "https://gemini-staging.corp.google.com",
+});
 
 using PromptCallback =
     base::OnceCallback<void(extensions::api::glic_private::ErrorCode,
@@ -364,11 +378,28 @@ content::RenderFrameHost* GetRfhForDocumentId(
       document_id);
 }
 
+bool IsGeminiOrigin(const url::Origin& origin) {
+  return std::ranges::any_of(kGeminiOrigins, [&](std::string_view gemini) {
+    return origin.IsSameOriginWith(GURL(gemini));
+  });
+}
+
 std::optional<extensions::api::glic_private::ErrorCode> ValidateRenderFrameHost(
     Profile* profile,
     content::RenderFrameHost* rfh) {
-  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+  // Reject documents outside the primary page, e.g. in prerendered,
+  // back/forward cached or fenced frame pages.
+  if (!rfh || !rfh->GetMainFrame()->IsInPrimaryMainFrame()) {
     return api::glic_private::ErrorCode::kLocalInvalidDocumentId;
+  }
+  // Subframes (e.g. Universal Cart embedded in gemini.google.com) are only
+  // allowed if every ancestor is a Gemini Web frame. Otherwise another page
+  // could embed a Google subframe to make Glic act on that page.
+  for (content::RenderFrameHost* ancestor = rfh->GetParent(); ancestor;
+       ancestor = ancestor->GetParent()) {
+    if (!IsGeminiOrigin(ancestor->GetLastCommittedOrigin())) {
+      return api::glic_private::ErrorCode::kLocalInvalidDocumentId;
+    }
   }
   if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
                            *rfh)) {
