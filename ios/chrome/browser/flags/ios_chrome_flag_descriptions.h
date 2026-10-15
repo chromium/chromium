@@ -1401,6 +1401,12 @@ inline constexpr char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "
     "cpu-exception, diskwrite-exception)";
 
+inline constexpr char kMigrateToSigninReauthCoordinatorName[] =
+    "Migrate to SigninReauthCoordinator";
+inline constexpr char kMigrateToSigninReauthCoordinatorDescription[] =
+    "When enabled, primary account reauthentication flows use "
+    "SigninReauthCoordinator instead of SigninCoordinator.";
+
 inline constexpr char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 inline constexpr char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";

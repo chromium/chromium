@@ -7037,6 +7037,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "migrate-to-signin-reauth-coordinator",
+    "owners": [ "bsazonov@chromium.org", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "mobile-ntp-promo-on-desktop",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 152

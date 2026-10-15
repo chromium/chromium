@@ -738,6 +738,13 @@ BASE_DECLARE_FEATURE(kMigrateAccountManagerDelegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
+// Migrates primary account reauthentication flows from `SigninCoordinator` to
+// `SigninReauthCoordinator`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kMigrateToSigninReauthCoordinator);
+#endif
+
+#if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kNoAccountWebSignin);
 #endif
