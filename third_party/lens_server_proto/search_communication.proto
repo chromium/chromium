@@ -52,6 +52,15 @@ message ClientToSearchMessage {
     repeated RemovedContext removed_contexts = 2;
   }
 
+  // Notification sent when attached context changes to provide vsrid tokens
+  // for search suggestions.
+  message OnSuggestInputsChanged {
+    // Provisional contexts to attach to /complete/search requests. Contains
+    // the full set of contexts currently attached for the turn (empty when all
+    // are removed).
+    repeated AddedContext added_contexts = 1;
+  }
+
   // Reports the state of the context added for the next turn (tabs and Lens
   // chip). Context from previous turns is not included.
   message OnContextStateChanged {
@@ -80,6 +89,10 @@ message ClientToSearchMessage {
     // Response to an OnSubmitQueryRequest, returning the finalized contexts
     // for the query being submitted.
     OnSubmitQueryResponse on_submit_query_response = 3;
+
+    // Fired when attached context changes to provide vsrid tokens for search
+    // suggestions.
+    OnSuggestInputsChanged on_suggest_inputs_changed = 4;
 
     // Reports the state of the context added for the next turn.
     OnContextStateChanged on_context_state_changed = 5;
