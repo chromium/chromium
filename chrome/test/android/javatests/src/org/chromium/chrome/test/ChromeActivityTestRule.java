@@ -91,6 +91,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivityTestRule<T> {
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
+    private static final long DEFERRED_STARTUP_TIMEOUT_MS = 20000L;
     private static final String TAG = "TestRule";
     private static final Tracker sDisabledTracker = new TestTracker();
 
@@ -261,7 +262,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        assertTrue(waitForDeferredStartup(activity));
+        assertTrue("Deferred startup never completed", waitForDeferredStartup(activity));
 
         assertNotNull(tab);
         assertNotNull(tab.getView());
@@ -274,10 +275,12 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public static boolean waitForDeferredStartup(ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
                 activity::deferredStartupPostedForTesting,
-                20000L,
+                DEFERRED_STARTUP_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        // CriteriaHelper scales timeouts internally; waitForDeferredStartupCompleteForTesting does
+        // not.
         return DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL));
+                ScalableTimeout.scaleTimeout(DEFERRED_STARTUP_TIMEOUT_MS));
     }
 
     @Override

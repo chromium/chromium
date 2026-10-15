@@ -46,7 +46,7 @@ public class CctTransitTestRule implements TestRule {
         sentinel.setAsEntryPoint();
 
         CctPageStation page = CctPageStation.newBuilder().withEntryPoint().build();
-        return sentinel.runTo(() -> mActivityTestRule.startActivityCompletely(intent))
+        return sentinel.runTo(() -> mActivityTestRule.startCustomTabActivityWithIntent(intent))
                 .arriveAt(page);
     }
 
