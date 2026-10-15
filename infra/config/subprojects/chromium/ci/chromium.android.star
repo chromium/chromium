@@ -3499,7 +3499,6 @@ ci.builder(
         os_type = targets.os_type.ANDROID,
     ),
     ssd = None,
-    gardener_rotations = args.ignore_default(None),
     #tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x64",
