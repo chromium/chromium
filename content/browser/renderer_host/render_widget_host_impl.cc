@@ -2231,9 +2231,6 @@ void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
 }
 
 void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
-  if (delegate_) {
-    delegate_->OnDragSourceEnded();
-  }
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (!blink_frame_widget_) {
     return;

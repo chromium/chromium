@@ -1096,7 +1096,6 @@ class CONTENT_EXPORT WebContentsImpl
   void OnStartDragging(
       DropData* drop_data,
       const GlobalRenderFrameHostToken& source_rfh_token) override;
-  void OnDragSourceEnded() override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DidCancelNavigationBeforeStart(
       NavigationHandle* navigation_handle) override;
@@ -2942,13 +2941,6 @@ class CONTENT_EXPORT WebContentsImpl
   // preparing to swap frames. Notably, this will be true while dispatching
   // RenderFrameHostChanged() and RenderViewHostChanged() events.
   bool is_swapping_render_frame_hosts_ = false;
-
-  void SetDragSource(const DragId& drag_id,
-                     const GlobalRenderFrameHostToken& source_rfh_token);
-
-
-  std::optional<DragId> active_drag_id_;
-
   const UniqueToken web_contents_token_;
   std::optional<base::trace_event::TrackRegistration<perfetto::StateTrack>>
       tracing_track_;

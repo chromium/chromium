@@ -25,7 +25,6 @@
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
-#include "base/types/strong_alias.h"
 #include "base/types/token_type.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -183,7 +182,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
  public:
   using UniqueToken = base::TokenType<class WebContentsTokenTag>;
-  using DragId = base::StrongAlias<class DragIdTag, base::UnguessableToken>;
 
   // Marks a WebContents as a privileged-contents host: it indicates that the
   // embedder (e.g., //chrome) is loading a trusted, network-hosted site and
@@ -451,12 +449,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // return nullptr if the RenderFrameHost is shutting down.
   CONTENT_EXPORT static WebContents* FromFrameTreeNodeId(
       FrameTreeNodeId frame_tree_node_id);
-
-  // Returns the WebContents associated with the given drag ID, provided the
-  // drag originated from the given BrowserContext. Returns nullptr if the drag
-  // is not found or originated from a different BrowserContext.
-  CONTENT_EXPORT static WebContents* FromDragId(BrowserContext* browser_context,
-                                                const DragId& drag_id);
 
   // A callback that returns a pointer to a WebContents. The callback can
   // always be used, but it may return nullptr: if the info used to

@@ -47,7 +47,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -131,8 +130,6 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
-#include "content/browser/web_contents/drag_source_document_tracker.h"
-#include "content/browser/web_contents/drag_source_map.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
@@ -152,7 +149,6 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
@@ -865,28 +861,6 @@ WebContents* WebContents::FromFrameTreeNodeId(
     return nullptr;
   }
   return WebContentsImpl::FromFrameTreeNode(frame_tree_node);
-}
-
-// static
-WebContents* WebContents::FromDragId(BrowserContext* browser_context,
-                                     const DragId& drag_id) {
-  auto* map = DragSourceMap::GetOrCreate(browser_context);
-  GlobalRenderFrameHostToken source_rfh_token = map->GetDragSource(drag_id);
-  if (source_rfh_token == GlobalRenderFrameHostToken()) {
-    return nullptr;
-  }
-
-  RenderFrameHost* rfh = RenderFrameHost::FromFrameToken(source_rfh_token);
-  if (!rfh || !rfh->IsActive()) {
-    return nullptr;
-  }
-
-  auto* tracker = DragSourceDocumentTracker::GetForCurrentDocument(rfh);
-  if (!tracker || !tracker->has_drag_id(drag_id)) {
-    return nullptr;
-  }
-
-  return WebContents::FromRenderFrameHost(rfh);
 }
 
 WebContentsImpl* WebContentsImpl::FromRenderWidgetHostImpl(
@@ -7305,13 +7279,6 @@ void WebContentsImpl::ExecuteCustomContextMenuCommand(
   }
 }
 
-void WebContentsImpl::SetDragSource(
-    const DragId& drag_id,
-    const GlobalRenderFrameHostToken& source_rfh_token) {
-  DragSourceMap::GetOrCreate(GetBrowserContext())
-      ->SetDragSource(drag_id, source_rfh_token);
-}
-
 gfx::NativeView WebContentsImpl::GetNativeView() {
   return view_->GetNativeView();
 }
@@ -8232,43 +8199,9 @@ void WebContentsImpl::OnStartDragging(
     return;
   }
 
-  DragId drag_id(base::UnguessableToken::Create());
-
-  DragSourceDocumentTracker::GetOrCreateForCurrentDocument(source_frame)
-      ->AddDragId(drag_id);
-
-  active_drag_id_ = drag_id;
-  SetDragSource(drag_id, source_rfh_token);
-  drop_data->drag_id = drag_id.value();
-
+  drop_data->drag_id = base::UnguessableToken::Create();
   observers_.NotifyObservers(&WebContentsObserver::DidStartDrag, source_frame,
                              *drop_data);
-}
-
-void WebContentsImpl::OnDragSourceEnded() {
-  if (active_drag_id_) {
-    // We intentionally do not remove the drag source from DragSourceMap here.
-    // On macOS, the drag can end synchronously from the OS perspective before
-    // the async drop handling finishes, causing a race condition if we clear
-    // the mapping. The mapping will be cleaned up by the
-    // DragSourceDocumentTracker when the source document is destroyed.
-    // However, to prevent memory leaks on long-lived pages if a drag is
-    // cancelled or unconsumed, we post a deferred task to clean it up after 10
-    // seconds.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<WebContentsImpl> web_contents, DragId drag_id) {
-              if (!web_contents) {
-                return;
-              }
-              DragSourceMap::Get(web_contents->GetBrowserContext())
-                  ->RemoveDragSource(drag_id);
-            },
-            weak_factory_.GetWeakPtr(), *active_drag_id_),
-        base::Seconds(10));
-    active_drag_id_.reset();
-  }
 }
 
 void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {

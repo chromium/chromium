@@ -62,7 +62,6 @@ class RenderWidgetHostViewBase;
 class RenderViewHostDelegateView;
 class TextInputManager;
 class VisibleTimeRequestTrigger;
-class WebContents;
 enum class KeyboardEventProcessingResult;
 
 //
@@ -342,9 +341,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void OnStartDragging(
       DropData* drop_data,
       const GlobalRenderFrameHostToken& source_rfh_token) {}
-
-  // Notifies the delegate that a drag source has ended.
-  virtual void OnDragSourceEnded() {}
 
   // Returns the delegated ink point renderer associated with this WebContents
   // for dispatching delegated ink points to viz. This also attempts to setup
