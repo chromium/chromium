@@ -157,6 +157,9 @@ extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // BrowserView.
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView;
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline;
+// If enabled, the Full WebUI Omnibox shows a button in the input that opens a
+// form to file dogfood feedback.
+extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupDogfoodFeedback;
 // The maximum number of autocomplete result snapshots cached for stale match
 // activation.
 extern const base::FeatureParam<int> kWebUIOmniboxFullPopupSnapshotCacheSize;

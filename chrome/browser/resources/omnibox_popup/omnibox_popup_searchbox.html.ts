@@ -63,6 +63,18 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           </div>
         ` :
                                        ''}
+        ${
+      this.omniboxDogfoodFeedbackEnabled_ ? html`
+          <div slot="action-buttons"
+              class="searchbox-icon-button-container dogfood">
+            <button id="dogfoodFeedbackButton" class="searchbox-icon-button"
+                @click="${this.onDogfoodFeedbackClick_}"
+                title="Submit Omnibox Dogfood Feedback"
+                aria-label="Submit Omnibox Dogfood Feedback">
+            </button>
+          </div>
+        ` :
+                                            ''}
         <cr-searchbox-compose-button id="composeButton" slot="compose-button"
             ?dynamic="${this.searchboxDynamicAnimation_}"
             ?has-user-input="${this.hasUserInput_}"

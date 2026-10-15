@@ -264,18 +264,21 @@ omnibox-popup-contextual-entrypoint {
   margin-inline-end: 4px;
 }
 
-.searchbox-icon-button-container.debug {
+.searchbox-icon-button-container.debug,
+.searchbox-icon-button-container.dogfood {
   align-self: center;
   cursor: pointer;
   margin-inline-end: 6px;
   pointer-events: auto;
 }
 
-.searchbox-icon-button-container.debug:hover {
+.searchbox-icon-button-container.debug:hover,
+.searchbox-icon-button-container.dogfood:hover {
   background-color: var(--color-omnibox-results-background-hovered);
 }
 
-#debugButton {
+#debugButton,
+#dogfoodFeedbackButton {
   -webkit-mask-image:
       url(//resources/cr_components/searchbox/icons/dino_cr23_old.svg);
   -webkit-mask-position: center;
@@ -287,6 +290,10 @@ omnibox-popup-contextual-entrypoint {
       var(--color-omnibox-results-icon));
   height: var(--cr-searchbox-icon-size-in-searchbox, 16px);
   width: var(--cr-searchbox-icon-size-in-searchbox, 16px);
+}
+
+#dogfoodFeedbackButton {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/dogfood.svg);
 }
 
 :host([multi-line-enabled]) {

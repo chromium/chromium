@@ -560,6 +560,8 @@ const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_UseBrowserView", false};
 const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_Multiline", false};
+const base::FeatureParam<bool> kWebUIOmniboxFullPopupDogfoodFeedback{
+    &internal::kWebUIOmniboxFullPopup, "Omnibox_DogfoodFeedback", false};
 const base::FeatureParam<int> kWebUIOmniboxFullPopupSnapshotCacheSize{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_SnapshotCacheSize", 10};
 const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation{

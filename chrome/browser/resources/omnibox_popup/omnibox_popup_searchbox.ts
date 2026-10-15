@@ -124,6 +124,7 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      omniboxDogfoodFeedbackEnabled_: {type: Boolean},
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -245,6 +246,8 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor omniboxPopupDebugEnabled_: boolean =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
+  protected accessor omniboxDogfoodFeedbackEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxDogfoodFeedbackEnabled');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -645,6 +648,10 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onDebugClick_() {
     this.popupPageHandler_.openDevTools();
+  }
+
+  protected onDogfoodFeedbackClick_() {
+    this.popupPageHandler_.openDogfoodFeedback();
   }
 
   focusInput() {

@@ -1170,10 +1170,13 @@ const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupUseBrowserView[] = {
     {"Omnibox_UseBrowserView", "true"}};
 const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupMultiline[] = {
     {"Omnibox_Multiline", "true"}};
+const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupDogfoodFeedback[] = {
+    {"Omnibox_DogfoodFeedback", "true"}};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
     {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
     {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
+    {"- with Dogfood Feedback", kWebUIOmniboxFullPopupDogfoodFeedback, nullptr},
 };
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {

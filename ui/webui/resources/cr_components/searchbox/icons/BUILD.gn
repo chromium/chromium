@@ -31,6 +31,7 @@ generate_grd("build_grdp") {
     "dino_cr23.svg",
     "dino_cr23_old.svg",
     "dock_to_right.svg",
+    "dogfood.svg",
     "drive_docs.svg",
     "drive_docs_old.svg",
     "drive_folder.svg",
