@@ -71,8 +71,6 @@ source_set("browser") {
     "//ui/base",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("util") {
@@ -90,7 +88,6 @@ source_set("util") {
     "//ios/web/public/security",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 optimize_js("autofill_js") {

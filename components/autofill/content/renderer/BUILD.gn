@@ -71,8 +71,6 @@ static_library("renderer") {
     "//ui/base",
     "//ui/events/blink",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

@@ -82,8 +82,6 @@ static_library("common") {
     "//ui/gfx/geometry",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("credit_card_number_validation") {
@@ -126,8 +124,6 @@ component("features") {
   ]
 
   deps = [ "//base" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

@@ -1467,10 +1467,7 @@ static_library("browser") {
     ]
   }
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":amount_extraction_heuristic_regexes_proto",
@@ -1636,7 +1633,6 @@ static_library("legal_message_line") {
     "//ui/gfx/range",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("payments_sync_utils") {
@@ -1992,10 +1988,7 @@ static_library("test_support") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 }
 
 bundle_data("unit_tests_bundle_data") {
