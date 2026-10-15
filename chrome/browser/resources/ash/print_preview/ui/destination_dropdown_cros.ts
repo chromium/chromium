@@ -89,6 +89,11 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       pdfPosinset: Number,
 
       drivePosinset: Number,
+
+      opened_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -113,7 +118,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   declare pdfPosinset: number;
   declare drivePosinset: number;
 
-  private opened_: boolean = false;
+  declare private opened_: boolean;
   private dropdownRefitPending_: boolean = false;
 
   override ready() {

@@ -73,6 +73,14 @@ export class PrintPreviewScalingSettingsElement extends
         type: Object,
         value: ScalingType,
       },
+
+      alignPdfDefaultPrintSettingsWithHTML_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'alignPdfDefaultPrintSettingsWithHTML');
+        },
+      },
     };
   }
 
@@ -112,8 +120,7 @@ export class PrintPreviewScalingSettingsElement extends
   /**
    * Whether the Finch flag `alignPdfDefaultPrintSettingsWithHTML` is on.
    */
-  private alignPdfDefaultPrintSettingsWithHTML_: boolean =
-      loadTimeData.getBoolean('alignPdfDefaultPrintSettingsWithHTML');
+  declare private alignPdfDefaultPrintSettingsWithHTML_: boolean;
 
   override onProcessSelectChange(value: string) {
     const isCustom = value === ScalingType.CUSTOM.toString();
