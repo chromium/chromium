@@ -26,7 +26,6 @@ DEFINE_USER_DATA(SplitViewIphController);
 SplitViewIphController::SplitViewIphController(
     BrowserWindowInterface* interface)
     : browser_window_interface_(interface),
-      recent_tabs_(kNumTabsTracked),
       scoped_data_(interface->GetUnownedUserDataHost(), *this) {
   browser_window_interface_->GetTabStripModel()->AddObserver(this);
 }
@@ -66,21 +65,28 @@ void SplitViewIphController::OnTabStripModelChanged(
 
   if (selection.active_tab_changed()) {
     tabs::TabInterface* const active_tab = selection.new_tab;
+    if (!active_tab) {
+      return;
+    }
 
-    if (recent_tabs_.size() < kNumTabsTracked ||
-        (recent_tabs_[kMostRecentTabTrackerIndex] != active_tab &&
-         recent_tabs_[kLeastRecentTabTrackerIndex] != active_tab)) {
+    if (!std::ranges::contains(recent_tabs_, active_tab)) {
       AddNewTabToTracker(active_tab);
-    } else if (++tab_switch_count_ >= kIphTabSwitchCount) {
-      const bool is_split_view_pinned =
-          browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
-              prefs::kPinSplitTabButton);
+    } else if (recent_tabs_.size() == kNumTabsTracked) {
+      if (recent_tabs_.front() != active_tab) {
+        std::swap(recent_tabs_[kMostRecentTabTrackerIndex],
+                  recent_tabs_[kLeastRecentTabTrackerIndex]);
+      }
+      if (++tab_switch_count_ >= kIphTabSwitchCount) {
+        const bool is_split_view_pinned =
+            browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kPinSplitTabButton);
 
-      // Only attempt to show the promo when the split tabs toolbar button is
-      // not pinned, which would indicate the user has already used the split
-      // tabs feature.
-      if (!is_split_view_pinned) {
-        MaybeShowPromo(feature_engagement::kIPHSideBySideTabSwitchFeature);
+        // Only attempt to show the promo when the split tabs toolbar button is
+        // not pinned, which would indicate the user has already used the split
+        // tabs feature.
+        if (!is_split_view_pinned) {
+          MaybeShowPromo(feature_engagement::kIPHSideBySideTabSwitchFeature);
+        }
       }
     }
   }
@@ -100,16 +106,7 @@ void SplitViewIphController::AddNewTabToTracker(tabs::TabInterface* new_tab) {
 void SplitViewIphController::RemoveTabFromTracker(
     const TabStripModelChange::Remove* remove_contents) {
   for (const auto& contents : remove_contents->contents) {
-    if (recent_tabs_.empty()) {
-      return;
-    }
-
-    if (recent_tabs_[kMostRecentTabTrackerIndex] == contents.tab) {
-      recent_tabs_.pop_front();
-    } else if (recent_tabs_.size() == kNumTabsTracked &&
-               recent_tabs_[kLeastRecentTabTrackerIndex] == contents.tab) {
-      recent_tabs_.pop_back();
-    }
+    base::Erase(recent_tabs_, contents.tab);
   }
 }
 
