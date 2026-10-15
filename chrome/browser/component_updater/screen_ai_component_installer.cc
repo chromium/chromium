@@ -138,13 +138,13 @@ void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
 void RegisterScreenAIComponent(ComponentUpdateService* cus) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
-  // Only register once.
-  if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
-      screen_ai::ScreenAIInstallState::State::kNotDownloaded) {
+  // Only register if eligible for download (not downloaded or previously
+  // failed). Setting state to downloading prevents duplicate registrations.
+  auto* install_state = screen_ai::ScreenAIInstallState::GetInstance();
+  if (!install_state->MayTryDownload()) {
     return;
   }
-  screen_ai::ScreenAIInstallState::GetInstance()->SetState(
-      screen_ai::ScreenAIInstallState::State::kDownloading);
+  install_state->SetState(screen_ai::ScreenAIInstallState::State::kDownloading);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ScreenAIComponentInstallerPolicy>());
