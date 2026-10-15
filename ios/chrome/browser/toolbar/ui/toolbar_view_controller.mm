@@ -2186,7 +2186,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
                                     constant:
                                         kLocationBarStackViewMarginLandscape],
     [_locationBarContainer.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
 
     widthConstraint,
   ];
