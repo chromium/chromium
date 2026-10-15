@@ -601,9 +601,6 @@ static_library("test_support") {
   }
 
   if (toolkit_views) {
-    # TODO(crbug.com/353332589): Move chooser_bubble_testapi sources to
-    # //chrome/browser/ui/views.
-    sources += [ "../browser/ui/views/chooser_bubble_testapi_views.cc" ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/omnibox",

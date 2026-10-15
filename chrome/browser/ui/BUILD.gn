@@ -2031,6 +2031,7 @@ static_library("test_support") {
       "//ui/views:test_support",
     ]
     sources += [
+      "views/chooser_bubble_testapi_views.cc",
       "views/extensions/extensions_menu_test_util.cc",
       "views/extensions/extensions_menu_test_util.h",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.cc",
