@@ -5386,12 +5386,6 @@ inline constexpr char kAccessibilityAndroidMathDescription[] =
     "Exposes additional MathML information in "
     "AccessibilityNodeInfoCompat.MathInfoCompat to screen readers.";
 
-inline constexpr char kAccessibilityExtendedSelectionName[] =
-    "Accessibility Extended Selection";
-inline constexpr char kAccessibilityExtendedSelectionDescription[] =
-    "When enabled, extended selections are sent to Android through "
-    "setSelection API add received using ACTION_SET_EXTENDED_SELECTION.";
-
 inline constexpr char kAccessibilityRequestScopedContentChangedEventsName[] =
     "Accessibility Request Scoped Content Changed Events";
 inline constexpr char
@@ -5400,15 +5394,6 @@ inline constexpr char
         "to signal content changed events next to a boolean value that will "
         "determine if this event should cause a nodes's children to be "
         "rerendered if there've been structural changes.";
-
-inline constexpr char kAccessibilitySetSelectableOnAllNodesWithTextName[] =
-    "AccessibilitySetSelectableOnAllNodesWithTextName";
-inline constexpr char
-    kAccessibilitySetSelectableOnAllNodesWithTextDescription[] =
-        "When enabled, the accessibility tree for the web contents will "
-        "include "
-        "isTextSelectable and the ACTION_SET_SELECTION action on all relevant "
-        "nodes.";
 
 inline constexpr char kAccessibilityManageBroadcastReceiverOnBackgroundName[] =
     "Manage accessibility Broadcast Receiver on a background thread";

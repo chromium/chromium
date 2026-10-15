@@ -28,8 +28,6 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
-    public static final String ACCESSIBILITY_EXTENDED_SELECTION = "AccessibilityExtendedSelection";
-
     public static final String ACCESSIBILITY_IME_GET_FORMATTED_TEXT =
             "AccessibilityImeGetFormattedText";
 
@@ -39,9 +37,6 @@ public class ContentFeatureList {
             "AccessibilityPopulateSupplementalDescriptionApi";
 
     public static final String ACCESSIBILITY_SEQUENTIAL_FOCUS = "AccessibilitySequentialFocus";
-
-    public static final String ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT =
-            "AccessibilitySetSelectableOnAllNodesWithText";
 
     public static final String ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND =
             "AccessibilityManageBroadcastReceiverOnBackground";

@@ -1453,10 +1453,6 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
     &kAccessibilityDeprecateJavaNodeCache, "disable_cache", false};
 
-// When enabled, extended selections are sent to Android through setSelection
-// API.
-BASE_FEATURE(kAccessibilityExtendedSelection, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, syncs accessibility focus when WebView gains focus.
 BASE_FEATURE(kAccessibilitySyncFocusOnViewFocusGain,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1509,11 +1505,6 @@ BASE_FEATURE(kAccessibilityPopulateSupplementalDescriptionApi,
 // Enables the reactive synchronization of accessibility and keyboard focus,
 // relying on new Android framework behavior.
 BASE_FEATURE(kAccessibilitySequentialFocus, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, set selectable on all nodes with text, and support
-// ACTION_SET_SELECTION.
-BASE_FEATURE(kAccessibilitySetSelectableOnAllNodesWithText,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables posting registering, unregistering the broadcast receiver to the
 // background thread.

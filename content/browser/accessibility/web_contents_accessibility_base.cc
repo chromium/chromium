@@ -1979,11 +1979,6 @@ void WebContentsAccessibilityBase::PopulateAccessibilityNodeInfoSelection(
         /* selectionEnd= */ node->GetSelectionEnd());
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityExtendedSelection)) {
-    return;
-  }
-
   // The selection of the whole page is only exposed on the root of the main
   // frame's tree.
   BrowserAccessibilityManagerAndroid* root_manager =
@@ -2226,13 +2221,10 @@ bool WebContentsAccessibilityBase::PopulateAccessibilityEvent(
       break;
     }
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_SELECTION_CHANGED: {
-      // Selection details are set as an extended selection on the node's root
-      // when `kAccessibilityExtendedSelection` is enabled. For backward
-      // compatibility, they are also set as event properties for editable
-      // nodes.
-      if (!base::FeatureList::IsEnabled(
-              features::kAccessibilityExtendedSelection) ||
-          node->IsTextField()) {
+      // Selection details are set as an extended selection on the node's root.
+      // For backward compatibility (before extended selection was supported),
+      // they are also set as event properties for editable nodes.
+      if (node->IsTextField()) {
         std::u16string text = node->GetTextContentUTF16();
         int selection_start = node->GetSelectionStart();
         int selection_end = node->GetSelectionEnd();
@@ -2381,9 +2373,6 @@ bool WebContentsAccessibilityBase::SetExtendedSelection(
     int32_t end_node_id,
     int32_t end_node_offset,
     int32_t end_offset_type) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection));
-
   std::optional<ExtendedSelectionOffsetType> start_offset_enum =
       AsExtendedSelectionOffsetType(start_offset_type);
   if (!start_offset_enum) {
@@ -2482,9 +2471,6 @@ bool WebContentsAccessibilityBase::SetExtendedSelection(
 
 bool WebContentsAccessibilityBase::ClearExtendedSelection(JNIEnv* env,
                                                           int32_t id) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection));
-
   // The action is only accepted on the root of the main frame's tree, for the
   // same reason as in `SetExtendedSelection`.
   BrowserAccessibilityManagerAndroid* root_manager =

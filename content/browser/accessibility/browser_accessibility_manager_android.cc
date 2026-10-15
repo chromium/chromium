@@ -318,10 +318,6 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
       android_node->GetUniqueId(),
       android_node->manager()->GetBrowserAccessibilityRoot() == android_node);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityExtendedSelection)) {
-    return;
-  }
   // TODO(crbug.com/481134054): Fire a selection changed event on the root of
   // the main frame when the focused frame changes or is removed, since the
   // selection of the page is the selection of the focused frame, and remove the
@@ -414,58 +410,48 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
   // since the selection exposed on Android is strictly that of the focused
   // frame.
   std::optional<SelectionRange> selection = GetSelectionRange();
-  const bool extended_selection_enabled =
-      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection);
   const bool expose_children_enabled = base::FeatureList::IsEnabled(
       features::kAccessibilityExposeNonAtomicTextFieldChildren);
 
-  if (extended_selection_enabled) {
-    bool should_send_to_root = false;
+  bool should_send_to_root = false;
 
-    if (expose_children_enabled) {
-      // Send the event to the root of the main frame if selection should be
-      // cleared, or multiple nodes are selected, or
-      // a non-atomic text field. Atomic text fields will continue to receive
-      // their event on them, the rest should go to the main frame's root.
-      // Note that this is to support contenteditables, where the
-      // contenteditable root itself is a non-atomic text field, and its
-      // children may be editable.
-      should_send_to_root = !selection.has_value() ||
-                            selection->focus.node != selection->anchor.node ||
-                            !selection->focus.node->IsAtomicTextField();
-    } else {
-      // Send the event to the root of the main frame if selection should be
-      // cleared, or multiple nodes are selected, or the node is not editable.
-      should_send_to_root = !selection.has_value() ||
-                            selection->focus.node != selection->anchor.node ||
-                            !selection->focus.node->IsTextField();
-    }
+  if (expose_children_enabled) {
+    // Send the event to the root of the main frame if selection should be
+    // cleared, or multiple nodes are selected, or
+    // a non-atomic text field. Atomic text fields will continue to receive
+    // their event on them, the rest should go to the main frame's root.
+    // Note that this is to support contenteditables, where the
+    // contenteditable root itself is a non-atomic text field, and its
+    // children may be editable.
+    should_send_to_root = !selection.has_value() ||
+                          selection->focus.node != selection->anchor.node ||
+                          !selection->focus.node->IsAtomicTextField();
+  } else {
+    // Send the event to the root of the main frame if selection should be
+    // cleared, or multiple nodes are selected, or the node is not editable.
+    should_send_to_root = !selection.has_value() ||
+                          selection->focus.node != selection->anchor.node ||
+                          !selection->focus.node->IsTextField();
+  }
 
-    if (should_send_to_root) {
-      FireSelectionChangedOnMainFrameRoot(wcax);
-      return;
-    }
-  } else if (!selection.has_value()) {
-    // If focus object does not exist and extended selection is not
-    // enabled, there is nothing more to do since previous selection node is
-    // not known here and can't be cleared.
+  if (should_send_to_root) {
+    FireSelectionChangedOnMainFrameRoot(wcax);
     return;
   }
 
   // Send event to the focus node.
   CHECK(selection->focus.node);
   wcax->HandleTextSelectionChanged(selection->focus.node->GetUniqueId());
-  if (extended_selection_enabled) {
-    // The event is sent to the text field, but the extended selection which is
-    // exposed on the root of the main frame is the page selection, and now must
-    // be updated.
-    auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
-        GetManagerForRootFrame());
-    if (root_manager) {
-      if (auto* android_root_object = static_cast<BrowserAccessibilityAndroid*>(
-              root_manager->GetBrowserAccessibilityRoot())) {
-        wcax->ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
-      }
+
+  // The event is sent to the text field, but the extended selection which is
+  // exposed on the root of the main frame is the page selection, and now must
+  // be updated.
+  auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+      GetManagerForRootFrame());
+  if (root_manager) {
+    if (auto* android_root_object = static_cast<BrowserAccessibilityAndroid*>(
+            root_manager->GetBrowserAccessibilityRoot())) {
+      wcax->ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
     }
   }
 }

@@ -62,7 +62,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRA_SELECTION_END_OFFSET_TYPE;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRA_SELECTION_START_OFFSET_TYPE;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.OFFSET_TYPE_TEXT;
-import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
@@ -1759,9 +1758,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return false;
         } else if (action == ACTION_SET_EXTENDED_SELECTION.getId()) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
-                return false;
-            }
-            if (!ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
                 return false;
             }
             if (arguments == null) {

@@ -44,7 +44,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.common.ContentInternalFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.testservice.EventMatcher;
@@ -506,7 +505,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
     public void testDumpTreeWithInitialSelection() throws Throwable {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -710,10 +708,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @EnableFeatures({
-        ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN,
-        ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION
-    })
+    @EnableFeatures({ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN})
     public void testSelectionInContentEditable() throws Throwable {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -920,7 +915,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
     public void testExtendedSelection() throws Throwable {
         String html =
                 """

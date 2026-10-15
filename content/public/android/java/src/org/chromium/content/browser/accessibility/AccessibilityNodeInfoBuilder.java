@@ -79,8 +79,6 @@ import org.chromium.ax.mojom.TextStyle;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
@@ -239,11 +237,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setFieldRequired(isRequired);
         node.setContentInvalid(contentInvalid);
         node.setHeading(isHeading);
-
-        if (ContentFeatureMap.isEnabled(
-                ContentFeatureList.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT)) {
-            node.setTextSelectable(textSelectable);
-        }
+        node.setTextSelectable(textSelectable);
 
         List<String> availableExtraData = new ArrayList<>();
         if (hasImage) {

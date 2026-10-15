@@ -730,14 +730,8 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
                 "When enabled, profile store methods do not trigger startup."),
         Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_EXTENDED_SELECTION,
-                "Register, un-register Accessibility extended selection."),
-        Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND,
                 "Register, un-register Accessibility broadcast receiver on a background thread."),
-        Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT,
-                "Register, un-register Accessibility selection on all nodes with text."),
         Flag.baseFeature(
                 "BatteryStatusManagerBroadcastReceiverInBackground",
                 "Register, unregister Battery Status Manager broadcast receiver on a background"

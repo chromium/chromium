@@ -30,7 +30,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content.common.ContentInternalFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeoutException;
 @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DisableFeatures(ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
-@EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
 @TestAnimations.EnableAnimations
 public class WebContentsAccessibilityEventsTest {
     private WebContentsObserver mWebContentsObserver;
