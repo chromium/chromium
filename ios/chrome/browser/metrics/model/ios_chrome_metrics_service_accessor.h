@@ -14,6 +14,7 @@
 #include "components/variations/synthetic_trials.h"
 
 class ApplicationBreadcrumbsLogger;
+class BackendPromoService;
 class DiscoverFeedExperimentsTracker;
 class IOSChromeSyncClient;
 class OptimizationGuideService;
@@ -50,6 +51,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  private:
   friend class IOSChromeMetricsServicesManagerClient;
   friend class ApplicationBreadcrumbsLogger;
+  friend class BackendPromoService;
   friend class CrashesDOMHandler;
   friend class DiscoverFeedExperimentsTracker;
   friend class tab_groups::TabGroupSyncServiceFactory;
