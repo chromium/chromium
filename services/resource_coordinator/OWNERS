@@ -3,5 +3,3 @@ joenotcharles@google.com
 
 # Emeritus
 chrisha@chromium.org
-
-per-file BUILD.gn=file://services/resource_coordinator/memory_instrumentation/OWNERS
