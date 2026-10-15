@@ -319,13 +319,13 @@ def _configure_display(adb_path, adb_port):
 
 
 def _bind_mount_test_data_root(adb_path, adb_port):
-    """Configures an ext4-backed bind mount for /sdcard/chromium_tests_root.
+    """Configures a bind mount for /sdcard/chromium_tests_root.
 
-    On Starnix Cuttlefish emulators, file-backed mmap() fails with ENODEV on
-    files located under /sdcard because /sdcard is backed by Android's FUSE
-    mount (/storage/emulated/0). Bind-mounting an ext4 directory from
-    /data/local/tmp over /sdcard/chromium_tests_root allows mmap() to succeed
-    for test data dependencies (e.g., icudtl.dat).
+    On Starnix emulators, file-backed mmap() is unsupported over Android's
+    FUSE filesystem (/sdcard). Bind-mounting the test data root directly
+    from underlying media storage bypasses FUSE while ensuring unprivileged
+    test processes have permissions for both mmap() and creating temporary
+    directories.
     """
     target = f'127.0.0.1:{adb_port}'
     logging.info("Configuring mmap-capable test data root on Starnix...")
@@ -333,77 +333,41 @@ def _bind_mount_test_data_root(adb_path, adb_port):
     if not _wait_adb_shell(
         adb_path,
         adb_port,
-        ['test -d /sdcard && echo ready'],
+        [
+            'grep -q /storage/emulated /proc/mounts && '
+            'test -d /mnt/pass_through/0/emulated/0 && echo ready'
+        ],
         'ready',
     ):
         logging.error("Timed out waiting for /sdcard to be mounted.")
         return False
 
-    subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'mkdir',
-            '-p',
-            '/data/local/tmp/chromium_tests_root',
-        ],
-        capture_output=True,
-        text=True,
-    )
-    subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'chmod',
-            '777',
-            '/data/local/tmp/chromium_tests_root',
-        ],
-        capture_output=True,
-        text=True,
-    )
-    res_mkdir = subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'mkdir',
-            '-p',
-            '/sdcard/chromium_tests_root',
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if res_mkdir.returncode != 0 or res_mkdir.stderr.strip():
-        logging.warning(
-            f"mkdir /sdcard/chromium_tests_root failed: "
-            f"{res_mkdir.stdout.strip()} {res_mkdir.stderr.strip()}"
+    def _run_shell_cmd(cmd):
+        res = subprocess.run(
+            [adb_path, '-s', target, 'shell'] + cmd,
+            capture_output=True,
+            text=True,
         )
-    res = subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'mount',
-            '--bind',
-            '/data/local/tmp/chromium_tests_root',
-            '/sdcard/chromium_tests_root',
-        ],
-        capture_output=True,
-        text=True,
+        if res.returncode != 0 or res.stderr.strip():
+            logging.warning(
+                f"{' '.join(cmd)} failed (code {res.returncode}): "
+                f"{res.stdout.strip()} {res.stderr.strip()}"
+            )
+            return False
+        return True
+
+    source_root = '/mnt/pass_through/0/emulated/0/chromium_tests_root'
+    _run_shell_cmd(['mkdir', '-p', source_root])
+    _run_shell_cmd(['chmod', '777', source_root])
+    _run_shell_cmd(
+        ['chcon', '-R', 'u:object_r:media_rw_data_file:s0', source_root]
     )
-    if res.returncode != 0 or res.stderr.strip():
-        logging.warning(
-            f"mount --bind output: {res.stdout.strip()} {res.stderr.strip()}"
-        )
-    else:
+    _run_shell_cmd(['mkdir', '-p', '/sdcard/chromium_tests_root'])
+    if _run_shell_cmd(
+        ['mount', '--bind', source_root, '/sdcard/chromium_tests_root']
+    ):
         logging.info(
-            "Successfully bind-mounted /data/local/tmp/chromium_tests_root "
+            f"Successfully bind-mounted {source_root} "
             "over /sdcard/chromium_tests_root"
         )
     return True
