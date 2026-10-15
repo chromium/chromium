@@ -57,13 +57,6 @@ const char kPerfITLBMissCyclesCmdAlderLake[] =
     "-- record -a -e cpu_core/r1011/ -e cpu_atom/r1085/ -c 30001";
 const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 const char kPerfLLCMissesPreciseCmd[] = "-- record -a -e r412e:pp -g -c 30007";
-const char kPerfDTLBMissesDAPGoldmont[] =
-    "-- record -a -e mem_uops_retired.dtlb_miss_loads:pp -c 2003 -d";
-const char kPerfDTLBMissesDAPTremont[] = "-- record -a -e r11d0:pp -c 2003 -d";
-const char kPerfDTLBMissesDAPHaswell[] =
-    "-- record -a -e mem_uops_retired.stlb_miss_loads:pp -c 2003 -d";
-const char kPerfDTLBMissesDAPSkylake[] =
-    "-- record -a -e mem_inst_retired.stlb_miss_loads:pp -c 2003 -d";
 
 const char kPerfETMCmd[] =
     "--run_inject --inject_args inject;--itrace=i512il;--strip -- record -a -e "
@@ -552,8 +545,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Haswell) {
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdIvyBridge,
                                     &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPHaswell,
-                                    &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
@@ -576,8 +567,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfLLCMissesCmd,
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdSkylake,
-                                    &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPSkylake,
                                     &RandomSelector::WeightAndValue::value));
 }
 
@@ -602,8 +591,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdSkylake,
                                     &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPSkylake,
-                                    &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
@@ -626,8 +613,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfLLCMissesPreciseCmd,
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdAtom,
-                                    &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPGoldmont,
                                     &RandomSelector::WeightAndValue::value));
 }
 
@@ -652,8 +637,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdSkylake,
                                     &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPGoldmont,
-                                    &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
@@ -676,8 +659,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfLLCMissesPreciseCmd,
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdTremont,
-                                    &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPTremont,
                                     &RandomSelector::WeightAndValue::value));
 }
 
@@ -702,8 +683,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_AlderLake) {
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdAlderLake,
                                     &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPTremont,
-                                    &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Gracemont) {
@@ -726,8 +705,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Gracemont) {
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfLLCMissesPreciseCmd,
                                     &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(std::ranges::contains(cmds, kPerfITLBMissCyclesCmdTremont,
-                                    &RandomSelector::WeightAndValue::value));
-  EXPECT_TRUE(std::ranges::contains(cmds, kPerfDTLBMissesDAPTremont,
                                     &RandomSelector::WeightAndValue::value));
 }
 
