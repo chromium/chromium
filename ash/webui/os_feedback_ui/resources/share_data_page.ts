@@ -55,6 +55,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       screenshotUrl: {type: String, readOnly: false, notify: true},
       shouldShowBluetoothCheckbox:
           {type: Boolean, readOnly: false, notify: true},
+      shouldShowWifiDebugLogsCheckbox:
+          {type: Boolean, value: false, readOnly: false, notify: true},
       shouldShowAutofillCheckbox:
           {type: Boolean, readOnly: false, notify: true},
     };
@@ -63,7 +65,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   declare feedbackContext: FeedbackContext;
   declare screenshotUrl: string;
   declare shouldShowBluetoothCheckbox: boolean;
-  shouldShowWifiDebugLogsCheckbox = false;
+  declare shouldShowWifiDebugLogsCheckbox: boolean;
   declare shouldShowAutofillCheckbox: boolean;
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 
