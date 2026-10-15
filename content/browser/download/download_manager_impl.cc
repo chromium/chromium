@@ -1211,6 +1211,19 @@ void DownloadManagerImpl::InterceptNavigation(
   ui::PageTransition transition_type =
       static_cast<ui::PageTransition>(resource_request->transition_type);
 
+  // Capture the initiator's StoragePartitionConfig now so that the download is
+  // associated with the correct partition even if the initiating frame is
+  // detached before CheckDownloadAllowed() completes.
+  auto storage_partition_config =
+      StoragePartitionConfig::CreateDefault(browser_context_);
+  auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (ftn && ftn->current_frame_host()) {
+    storage_partition_config = ftn->current_frame_host()
+                                   ->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetStoragePartitionConfig();
+  }
+
   WebContents::Getter web_contents_getter =
       base::BindRepeating(WebContents::FromFrameTreeNodeId, frame_tree_node_id);
 
@@ -1220,7 +1233,7 @@ void DownloadManagerImpl::InterceptNavigation(
           weak_factory_.GetWeakPtr(), frame_tree_node_id,
           std::move(resource_request), std::move(url_chain), cert_status,
           std::move(response_head), std::move(response_body),
-          std::move(url_loader_client_endpoints));
+          std::move(url_loader_client_endpoints), storage_partition_config);
 
   delegate_->CheckDownloadAllowed(
       std::move(web_contents_getter), url, method, std::move(request_initiator),
@@ -1593,6 +1606,7 @@ void DownloadManagerImpl::InterceptNavigationOnChecksComplete(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    const StoragePartitionConfig& storage_partition_config,
     bool is_download_allowed) {
   if (!is_download_allowed) {
     DropDownload();
@@ -1603,17 +1617,12 @@ void DownloadManagerImpl::InterceptNavigationOnChecksComplete(
   int render_frame_id = -1;
   GURL site_url, tab_url, tab_referrer_url;
   RenderFrameHost* render_frame_host = nullptr;
-  auto storage_partition_config =
-      StoragePartitionConfig::CreateDefault(browser_context_);
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (ftn) {
     render_frame_host = ftn->current_frame_host();
     if (render_frame_host) {
       render_process_id = render_frame_host->GetProcess()->GetDeprecatedID();
       render_frame_id = render_frame_host->GetRoutingID();
-      storage_partition_config = render_frame_host->GetSiteInstance()
-                                     ->GetSecurityPrincipal()
-                                     .GetStoragePartitionConfig();
     }
     auto* web_contents = WebContentsImpl::FromFrameTreeNode(ftn);
     DCHECK(web_contents);

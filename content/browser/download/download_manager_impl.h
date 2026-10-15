@@ -297,6 +297,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      const StoragePartitionConfig& storage_partition_config,
       bool is_download_allowed);
   void BeginResourceDownloadOnChecksComplete(
       std::unique_ptr<download::DownloadUrlParameters> params,

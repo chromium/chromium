@@ -655,9 +655,46 @@ class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
     callbacks->swap(delayed_callbacks_);
   }
 
+  void CheckDownloadAllowed(
+      const WebContents::Getter& web_contents_getter,
+      const GURL& url,
+      const std::string& request_method,
+      std::optional<url::Origin> request_initiator,
+      bool from_download_cross_origin_redirect,
+      bool content_initiated,
+      const std::string& mime_type,
+      std::optional<ui::PageTransition> page_transition,
+      CheckDownloadAllowedCallback check_download_allowed_cb) override {
+    if (delay_check_download_allowed_) {
+      delayed_check_download_allowed_cb_ = std::move(check_download_allowed_cb);
+      if (on_check_download_allowed_intercepted_) {
+        std::move(on_check_download_allowed_intercepted_).Run();
+      }
+      return;
+    }
+    ShellDownloadManagerDelegate::CheckDownloadAllowed(
+        web_contents_getter, url, request_method, std::move(request_initiator),
+        from_download_cross_origin_redirect, content_initiated, mime_type,
+        page_transition, std::move(check_download_allowed_cb));
+  }
+
+  void DelayNextCheckDownloadAllowed(base::OnceClosure on_intercepted) {
+    delay_check_download_allowed_ = true;
+    on_check_download_allowed_intercepted_ = std::move(on_intercepted);
+  }
+
+  void RunDelayedCheckDownloadAllowedCallback(bool allow) {
+    delay_check_download_allowed_ = false;
+    ASSERT_TRUE(delayed_check_download_allowed_cb_);
+    std::move(delayed_check_download_allowed_cb_).Run(allow);
+  }
+
  private:
   bool delay_download_open_;
   std::vector<DownloadOpenDelayedCallback> delayed_callbacks_;
+  bool delay_check_download_allowed_ = false;
+  base::OnceClosure on_check_download_allowed_intercepted_;
+  CheckDownloadAllowedCallback delayed_check_download_allowed_cb_;
 };
 
 // Get the next created download.
@@ -4870,6 +4907,63 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadIgnoresXFO) {
 
   EXPECT_EQ(FILE_PATH_LITERAL("foo"),
             downloads[0]->GetTargetFilePath().BaseName().value());
+}
+
+// When a navigation in a subframe is intercepted as a download and the
+// embedder's CheckDownloadAllowed() decision arrives after the subframe has
+// been detached, the download should still be associated with the
+// StoragePartition that hosted the subframe rather than falling back to the
+// default partition.
+IN_PROC_BROWSER_TEST_F(
+    DownloadContentTest,
+    InterceptedSubframeDownloadUsesInitiatorStoragePartition) {
+  // Route a.test to a non-default StoragePartition.
+  CustomStoragePartitionBrowserClient browser_client(GURL("http://a.test/"));
+
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test)"));
+  GURL download_url(
+      embedded_test_server()->GetURL("a.test", "/download/download-test.lib"));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  StoragePartitionConfig initiator_config = child->current_frame_host()
+                                                ->GetSiteInstance()
+                                                ->GetSecurityPrincipal()
+                                                .GetStoragePartitionConfig();
+  ASSERT_FALSE(initiator_config.is_default());
+
+  // Navigate the subframe to a download response while holding the embedder's
+  // CheckDownloadAllowed() decision.
+  base::RunLoop intercept_loop;
+  GetDownloadManagerDelegate()->DelayNextCheckDownloadAllowed(
+      intercept_loop.QuitClosure());
+  DownloadCreateObserver download_observer(DownloadManagerForShell(shell()));
+  EXPECT_TRUE(BeginNavigateIframeToURL(web_contents, "child-0", download_url));
+  intercept_loop.Run();
+
+  // Detach the subframe before the decision is delivered.
+  RenderFrameDeletedObserver child_deleted(child->current_frame_host());
+  EXPECT_TRUE(ExecJs(root->current_frame_host(),
+                     "document.getElementById('child-0').remove();"));
+  EXPECT_TRUE(child_deleted.WaitUntilDeleted());
+  ASSERT_EQ(0u, root->child_count());
+
+  // Allow the download to proceed and wait for it to be created.
+  GetDownloadManagerDelegate()->RunDelayedCheckDownloadAllowedCallback(true);
+  download::DownloadItem* download = download_observer.WaitForFinished();
+  ASSERT_TRUE(download);
+
+  StoragePartitionConfig download_config =
+      DownloadManagerForShell(shell())
+          ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+              download->GetSerializedEmbedderDownloadData());
+  EXPECT_FALSE(download_config.is_default());
+  EXPECT_EQ(initiator_config, download_config);
 }
 
 // Verify that the response body of non-successful server response can be
