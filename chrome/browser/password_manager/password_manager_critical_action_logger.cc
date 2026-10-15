@@ -4,8 +4,8 @@
 
 #include "chrome/browser/password_manager/password_manager_critical_action_logger.h"
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
@@ -28,7 +28,11 @@ PasswordManagerCriticalActionLogger::~PasswordManagerCriticalActionLogger() =
     default;
 
 void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
+    critical_actions::ActionType action_type,
     PasswordManagerDriver* driver) {
+  CHECK(action_type == critical_actions::ActionType::kGooglePasswordManager ||
+        action_type == critical_actions::ActionType::kFederatedLogin);
+
   if (!base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
     return;
@@ -54,10 +58,7 @@ void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
 
   critical_actions::CriticalActionEntry entry =
       critical_actions::CriticalActionEntry::Builder()
-          .SetCriticalActionId(
-              base::Uuid::GenerateRandomV4().AsLowercaseString())
-          .SetTimestamp(base::Time::Now())
-          .SetActionType(critical_actions::ActionType::kGooglePasswordManager)
+          .SetActionType(action_type)
           .SetActionSource(critical_actions::ActionSource::kPasswordManager)
           .SetConversationId(task->source_info().id.value_or(""))
           .SetActorTaskId(task->id().is_null()

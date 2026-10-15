@@ -79,6 +79,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
 #include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -1412,7 +1413,8 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
 void ChromePasswordManagerClient::OnPasswordFilled(
     password_manager::PasswordManagerDriver* driver) {
   if (critical_action_logger_) {
-    critical_action_logger_->MaybeLogCriticalAction(driver);
+    critical_action_logger_->MaybeLogCriticalAction(
+        critical_actions::ActionType::kGooglePasswordManager, driver);
   }
 }
 
@@ -2077,12 +2079,24 @@ void ChromePasswordManagerClient::OnNonPasswordLoginDetected() {
       opener_web_contents
           ? ChromePasswordManagerClient::FromWebContents(opener_web_contents)
           : nullptr;
-  if (opener_client) {
-    opener_client->password_manager_.OnNonPasswordLoginDetected();
-    return;
-  }
+  ChromePasswordManagerClient* target_client =
+      opener_client ? opener_client : this;
 
-  password_manager_.OnNonPasswordLoginDetected();
+  target_client->password_manager_.OnNonPasswordLoginDetected();
+
+  // Log on `this` only if it has an active Actor task and a live, active
+  // primary main frame, otherwise delegate to the opener (e.g. a closing login
+  // popup), as the action would be dropped without a navigation ID.
+  const bool can_log_on_self =
+      IsActorTaskActive() && !web_contents()->IsBeingDestroyed() &&
+      web_contents()->GetPrimaryMainFrame()->IsActive();
+
+  ChromePasswordManagerClient* logger_client =
+      (!can_log_on_self && opener_client) ? opener_client : this;
+  if (logger_client->critical_action_logger_) {
+    logger_client->critical_action_logger_->MaybeLogCriticalAction(
+        critical_actions::ActionType::kFederatedLogin);
+  }
 }
 
 void ChromePasswordManagerClient::OnFieldTypesDetermined(

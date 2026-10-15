@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_CRITICAL_ACTION_LOGGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -18,9 +19,9 @@ namespace password_manager {
 
 class PasswordManagerDriver;
 
-// A helper class that handles Google Password Manager (GPM) critical action
-// logging. It encapsulates navigation observation and logs critical actions via
-// CriticalActionService.
+// A helper class that handles Google Password Manager (GPM) and federated login
+// critical action logging. It encapsulates navigation observation and logs
+// critical actions via CriticalActionService.
 class PasswordManagerCriticalActionLogger
     : public content::WebContentsObserver {
  public:
@@ -34,8 +35,11 @@ class PasswordManagerCriticalActionLogger
 
   ~PasswordManagerCriticalActionLogger() override;
 
-  // Logs critical action telemetry if the feature is enabled.
-  void MaybeLogCriticalAction(PasswordManagerDriver* driver);
+  // Logs critical action telemetry if the feature is enabled. `driver` can be
+  // null if the action is not associated with a specific frame (e.g.,
+  // federated login).
+  void MaybeLogCriticalAction(critical_actions::ActionType action_type,
+                              PasswordManagerDriver* driver = nullptr);
 
  private:
   // content::WebContentsObserver:

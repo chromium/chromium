@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
@@ -29,6 +32,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -109,11 +113,7 @@ class PasswordManagerCriticalActionLoggerTest
         std::make_unique<password_manager::PasswordManagerCriticalActionLogger>(
             web_contents(), profile());
 
-    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-        test_url_, web_contents());
-    simulator->Start();
-    nav_id_ = simulator->GetNavigationHandle()->GetNavigationId();
-    simulator->Commit();
+    nav_id_ = CommitNavigation(web_contents());
   }
 
   void TearDown() override {
@@ -129,7 +129,18 @@ class PasswordManagerCriticalActionLoggerTest
     return logger_.get();
   }
 
+  tabs::MockTabInterface* mock_tab() { return &mock_tab_; }
+
   int64_t nav_id() const { return nav_id_; }
+
+  int64_t CommitNavigation(content::WebContents* contents) {
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        test_url_, contents);
+    simulator->Start();
+    int64_t nav_id = simulator->GetNavigationHandle()->GetNavigationId();
+    simulator->Commit();
+    return nav_id;
+  }
 
   actor::TaskId StartActorTask() {
     auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
@@ -139,6 +150,13 @@ class PasswordManagerCriticalActionLoggerTest
     actor_service->GetTask(task_id)->AddTab(
         mock_tab_.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
     return task_id;
+  }
+
+  std::unique_ptr<content::WebContents> CreateWebContentsWithClient() {
+    std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+    autofill::ChromeAutofillClient::CreateForWebContents(contents.get());
+    ChromePasswordManagerClient::CreateForWebContents(contents.get());
+    return contents;
   }
 
  private:
@@ -165,6 +183,7 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
                                SaveArg<1>(&recorded_nav_id)));
 
   logger()->MaybeLogCriticalAction(
+      critical_actions::ActionType::kGooglePasswordManager,
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           web_contents()->GetPrimaryMainFrame()));
 
@@ -178,10 +197,34 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
 }
 
 TEST_F(PasswordManagerCriticalActionLoggerTest,
+       LogsFederatedLoginCriticalActionWhenActorTaskIsActive) {
+  actor::TaskId task_id = StartActorTask();
+
+  critical_actions::CriticalActionEntry recorded_entry;
+  int64_t recorded_nav_id = 0;
+
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId)
+      .WillOnce(testing::DoAll(SaveArg<0>(&recorded_entry),
+                               SaveArg<1>(&recorded_nav_id)));
+
+  logger()->MaybeLogCriticalAction(
+      critical_actions::ActionType::kFederatedLogin);
+
+  EXPECT_EQ(recorded_nav_id, nav_id());
+  EXPECT_EQ(recorded_entry.action_type,
+            critical_actions::ActionType::kFederatedLogin);
+  EXPECT_EQ(recorded_entry.action_source,
+            critical_actions::ActionSource::kPasswordManager);
+  EXPECT_EQ(recorded_entry.actor_task_id,
+            base::NumberToString(task_id.value()));
+}
+
+TEST_F(PasswordManagerCriticalActionLoggerTest,
        DoesNotLogCriticalActionWhenNoActorTaskIsActive) {
   EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId).Times(0);
 
   logger()->MaybeLogCriticalAction(
+      critical_actions::ActionType::kGooglePasswordManager,
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           web_contents()->GetPrimaryMainFrame()));
 }
@@ -197,6 +240,7 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
   EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId).Times(0);
 
   logger()->MaybeLogCriticalAction(
+      critical_actions::ActionType::kGooglePasswordManager,
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           web_contents()->GetPrimaryMainFrame()));
 }
@@ -216,4 +260,119 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
   // Verify that the call happened and clear expectations so that
   // TearDown's DeleteContents() doesn't trigger noise.
   testing::Mock::VerifyAndClearExpectations(mock_service());
+}
+
+TEST_F(PasswordManagerCriticalActionLoggerTest,
+       OnFedCmFederatedLoginLogsCriticalAction) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContentsWithClient();
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(web_contents.get());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       mock_tab());
+
+  int64_t expected_nav_id = CommitNavigation(web_contents.get());
+
+  actor::TaskId task_id = StartActorTask();
+
+  // Failed FedCM login should not log a critical action.
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId).Times(0);
+  static_cast<content::WebContentsObserver*>(client)->OnFedCmFederatedLogin(
+      false);
+
+  // Successful FedCM login should log a kFederatedLogin critical action.
+  critical_actions::CriticalActionEntry recorded_entry;
+  int64_t recorded_nav_id = 0;
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId)
+      .WillOnce(testing::DoAll(SaveArg<0>(&recorded_entry),
+                               SaveArg<1>(&recorded_nav_id)));
+  static_cast<content::WebContentsObserver*>(client)->OnFedCmFederatedLogin(
+      true);
+
+  EXPECT_EQ(recorded_nav_id, expected_nav_id);
+  EXPECT_EQ(recorded_entry.action_type,
+            critical_actions::ActionType::kFederatedLogin);
+  EXPECT_EQ(recorded_entry.action_source,
+            critical_actions::ActionSource::kPasswordManager);
+  EXPECT_EQ(recorded_entry.actor_task_id,
+            base::NumberToString(task_id.value()));
+}
+
+// Verifies that when federated login occurs in a Relying Party (RP) tab with an
+// active Actor task, the critical action is logged on the RP tab itself even if
+// it has an opener.
+TEST_F(PasswordManagerCriticalActionLoggerTest,
+       OnFedCmFederatedLoginWhenTabHasOpenerLogsCriticalAction) {
+  std::unique_ptr<content::WebContents> opener_web_contents =
+      CreateWebContentsWithClient();
+  int64_t opener_nav_id = CommitNavigation(opener_web_contents.get());
+
+  std::unique_ptr<content::WebContents> rp_web_contents =
+      CreateWebContentsWithClient();
+  ChromePasswordManagerClient* rp_client =
+      ChromePasswordManagerClient::FromWebContents(rp_web_contents.get());
+  tabs::TabLookupFromWebContents::CreateForWebContents(rp_web_contents.get(),
+                                                       mock_tab());
+  content::WebContentsTester::For(rp_web_contents.get())
+      ->SetOpener(opener_web_contents.get());
+
+  int64_t expected_nav_id = CommitNavigation(rp_web_contents.get());
+  ASSERT_NE(expected_nav_id, opener_nav_id);
+
+  actor::TaskId task_id = StartActorTask();
+
+  critical_actions::CriticalActionEntry recorded_entry;
+  int64_t recorded_nav_id = 0;
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId)
+      .WillOnce(testing::DoAll(SaveArg<0>(&recorded_entry),
+                               SaveArg<1>(&recorded_nav_id)));
+
+  static_cast<content::WebContentsObserver*>(rp_client)->OnFedCmFederatedLogin(
+      true);
+
+  EXPECT_EQ(recorded_nav_id, expected_nav_id);
+  EXPECT_EQ(recorded_entry.action_type,
+            critical_actions::ActionType::kFederatedLogin);
+  EXPECT_EQ(recorded_entry.action_source,
+            critical_actions::ActionSource::kPasswordManager);
+  EXPECT_EQ(recorded_entry.actor_task_id,
+            base::NumberToString(task_id.value()));
+}
+
+// Verifies that when federated login occurs in a popup window (which has no
+// active Actor task), critical action logging is delegated to its opener tab.
+TEST_F(PasswordManagerCriticalActionLoggerTest,
+       OnNonPasswordLoginDetectedDelegationLogsCriticalAction) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContentsWithClient();
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       mock_tab());
+
+  int64_t expected_nav_id = CommitNavigation(web_contents.get());
+
+  actor::TaskId task_id = StartActorTask();
+
+  // Create a popup WebContents with web_contents as its opener.
+  std::unique_ptr<content::WebContents> popup_web_contents =
+      CreateWebContentsWithClient();
+  ChromePasswordManagerClient* popup_client =
+      ChromePasswordManagerClient::FromWebContents(popup_web_contents.get());
+  content::WebContentsTester::For(popup_web_contents.get())
+      ->SetOpener(web_contents.get());
+
+  critical_actions::CriticalActionEntry recorded_entry;
+  int64_t recorded_nav_id = 0;
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId)
+      .WillOnce(testing::DoAll(SaveArg<0>(&recorded_entry),
+                               SaveArg<1>(&recorded_nav_id)));
+
+  popup_client->OnNonFedCmFederatedLogin();
+
+  EXPECT_EQ(recorded_nav_id, expected_nav_id);
+  EXPECT_EQ(recorded_entry.action_type,
+            critical_actions::ActionType::kFederatedLogin);
+  EXPECT_EQ(recorded_entry.action_source,
+            critical_actions::ActionSource::kPasswordManager);
+  EXPECT_EQ(recorded_entry.actor_task_id,
+            base::NumberToString(task_id.value()));
 }
