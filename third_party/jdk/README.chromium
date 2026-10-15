@@ -43,7 +43,7 @@ To roll to a new JDK major version:
  * Change the package in 3pp/fetch.py
  * Wait for the 3pp packager to create a new package
  * Land a manual roll by:
-   * Updating Instance ID in //DEPS
+   * Updating jdk_version in //DEPS
      * Make sure to run the codesearch trybots "gen-android-try" and "gen-webview-try"
      * And also the 3pp trybot: "3pp-linux-amd64-packager"
    * Updating Version: at the top of this file.
