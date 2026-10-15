@@ -15,3 +15,6 @@ virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-i
 crbug.com/514528222 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-constructor.https.html [ Pass Timeout ]
 crbug.com/514384316 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-setsinkid.https.html [ Pass Timeout ]
 crbug.com/514359173 [ Mac Release ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-sinkid-state-change.https.html [ Pass Timeout ]
+
+# Flaky FAIL on linux-rel-cft headless_shell_wpt_tests.
+b/573649217 [ Linux ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Failure Pass ]
