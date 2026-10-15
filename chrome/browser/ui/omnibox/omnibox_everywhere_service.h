@@ -39,9 +39,6 @@ class OmniboxEverywhereFeaturePromoController;
 
 class OmniboxEverywhereService : public KeyedService {
  public:
-  static constexpr int kInPlaceWindowWidth = 800;
-  static constexpr int kInPlaceWindowHeight = 600;
-
   struct RegionCaptureSource {
     enum class Type { kAllDisplays, kSpecificDisplay };
     Type type = Type::kAllDisplays;
@@ -104,7 +101,6 @@ class OmniboxEverywhereService : public KeyedService {
 
   static gfx::Rect CalculateInPlaceWindowBounds(const gfx::Rect& popup_bounds,
                                                 const gfx::Rect& work_area);
-  gfx::Rect GetInPlaceWindowBounds() const;
 
   // Acquires a ScopedProfileKeepAlive for this profile while the popup widget
   // is active or being shown. Returns true if profile keep alive was acquired
@@ -123,6 +119,7 @@ class OmniboxEverywhereService : public KeyedService {
   }
 
  private:
+  gfx::Rect GetInPlaceWindowBounds() const;
   void NavigateInBrowserWindow(
       BrowserWindowInterface* bwi,
       const GURL& url,
