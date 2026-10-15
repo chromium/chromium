@@ -1764,6 +1764,11 @@ inline constexpr char kGeicEnabledDescription[] =
     "of GEiC and fall back to consumer Gemini, even if a Gemini Enterprise "
     "policy or experiment applies to this profile.";
 
+inline constexpr char kGeicGuestUrlName[] = "GEiC guest URL";
+inline constexpr char kGeicGuestUrlDescription[] =
+    "Configures the guest URL loaded into the Gemini Enterprise in Chrome "
+    "(GEiC) side panel.";
+
 inline constexpr char kGlassFrameName[] = "Glass Frame";
 inline constexpr char kGlassFrameDescription[] =
     "Enables a glass effect on the browser frame.";

@@ -9978,6 +9978,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"geic-enabled", flag_descriptions::kGeicEnabledName,
      flag_descriptions::kGeicEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGeic)},
+    {"geic-guest-url", flag_descriptions::kGeicGuestUrlName,
+     flag_descriptions::kGeicGuestUrlDescription, kOsDesktop,
+     STRING_VALUE_TYPE(switches::kGeicGuestURL, "")},
 
     {"glass-frame", flag_descriptions::kGlassFrameName,
      flag_descriptions::kGlassFrameDescription, kOsMac,

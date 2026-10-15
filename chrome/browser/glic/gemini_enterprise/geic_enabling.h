@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_
 #define CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_
 
+#include "chrome/common/chrome_switches.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class BrowserContext;
 namespace geic {
 
 // Optional command line switch for manual developer overrides of the guest URL.
-inline constexpr char kGeicGuestURLSwitch[] = "geic-guest-url";
+inline constexpr auto& kGeicGuestURLSwitch = switches::kGeicGuestURL;
 
 // Returns true if the `features::kGeic` feature and its `enabled` parameter are
 // enabled, independent of profile state or guest URL configuration.

@@ -5530,6 +5530,15 @@
     "expiry_milestone": 158
   },
   {
+    "name": "geic-guest-url",
+    "owners": [
+      "austinzzr@google.com",
+      "sugandhagoyal@google.com",
+      "//chrome/browser/geic/OWNERS"
+    ],
+    "expiry_milestone": 158
+  },
+  {
     "name": "gemini-actor",
     "owners": [
       "nicolasmacbeth@google.com",

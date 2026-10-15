@@ -1062,6 +1062,9 @@ inline constexpr char kGuest[] = "guest";
 // Overrides the glic guest URL.
 inline constexpr char kGlicGuestURL[] = "glic-guest-url";
 
+// Overrides the GEiC guest URL.
+inline constexpr char kGeicGuestURL[] = "geic-guest-url";
+
 inline constexpr char kSkillsV2Origin[] = "skills-v2-origin";
 
 
