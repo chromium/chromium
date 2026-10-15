@@ -74,7 +74,6 @@ class EmailOneTimeTokenFetcher {
       base::TimeTicks network_request_start_time,
       std::optional<std::string> response_body);
 
-
   // Helper to extract the HTTP status code from the URL loader.
   std::optional<net::HttpStatusCode> GetHttpResponseCode() const;
 
@@ -108,7 +107,7 @@ class EmailOneTimeTokenFetcher {
   // The timestamp when the email was received on the server.
   base::Time email_received_timestamp_;
 
-  // Owned by `OneTimeTokenServiceImpl`.
+  // Owned by `GmailOtpBackendImpl`.
   raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;
 
   // A final callback for when the request completes.

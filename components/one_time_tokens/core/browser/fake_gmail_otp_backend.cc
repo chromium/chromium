@@ -23,12 +23,8 @@ FakeGmailOtpBackend::FakeGmailOtpBackend()
 
 FakeGmailOtpBackend::~FakeGmailOtpBackend() = default;
 
-void FakeGmailOtpBackend::SetLogSink(OneTimeTokenLogSink* log_sink) {
-  log_sink_ = log_sink;
-}
-
-OneTimeTokenLogSink* FakeGmailOtpBackend::GetLogSink() const {
-  return log_sink_;
+OneTimeTokenLogSink* FakeGmailOtpBackend::GetLogSink() {
+  return &log_sink_;
 }
 
 ExpiringSubscription FakeGmailOtpBackend::Subscribe(base::Time expiration,

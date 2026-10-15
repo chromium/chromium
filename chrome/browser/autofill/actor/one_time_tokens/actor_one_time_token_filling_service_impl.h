@@ -49,7 +49,7 @@ class ActorFillingObserver;
 
 // Implementation for the ActorOneTimeTokenFillingService. This is owned by
 // `actor::ExecutionEngine`. It's called by the AttemptOtpFillingTool and
-// interacts with the backend OneTimeTokenService.
+// interacts with the `GmailOtpBackend`.
 class ActorOneTimeTokenFillingServiceImpl
     : public ActorOneTimeTokenFillingService,
       public content::WebContentsObserver {
@@ -99,8 +99,8 @@ class ActorOneTimeTokenFillingServiceImpl
       const GURL& url,
       base::expected<one_time_tokens::GmailOtpRetriever::Result,
                      one_time_tokens::OneTimeTokenRetrievalError> result);
-  // Receives log messages emitted by `OneTimeTokenService` (and underlying
-  // backend fetchers) via `LOG_OTT` and forwards them to `journal_`.
+  // Receives log messages emitted to the log sink of the `GmailOtpBackend` via
+  // `LOG_OTT` and forwards them to `journal_`.
   void OnBackendLogMessage(std::string_view message);
 
   raw_ptr<Profile> profile_ = nullptr;

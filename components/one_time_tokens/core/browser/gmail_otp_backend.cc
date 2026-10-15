@@ -22,9 +22,10 @@ GmailOtpBackend::~GmailOtpBackend() = default;
 // static
 std::unique_ptr<GmailOtpBackend> GmailOtpBackend::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager& identity_manager) {
-  return std::make_unique<GmailOtpBackendImpl>(std::move(url_loader_factory),
-                                               identity_manager);
+    signin::IdentityManager& identity_manager,
+    OneTimeTokenLogSink::LogHandler log_handler) {
+  return std::make_unique<GmailOtpBackendImpl>(
+      std::move(url_loader_factory), identity_manager, std::move(log_handler));
 }
 
 }  // namespace one_time_tokens

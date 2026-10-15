@@ -6,10 +6,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -17,6 +21,7 @@
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_user_data_processing_consent_response.pb.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
@@ -27,6 +32,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace one_time_tokens {
@@ -921,6 +927,40 @@ TEST_F(GmailOtpBackendImplTest, SubscribeRunsExpirationCallback) {
                          base::DoNothing(), expired.GetCallback());
   task_environment_.FastForwardBy(base::Seconds(11));
   EXPECT_TRUE(expired.IsReady());
+}
+
+// Tests that a `LogHandler` passed to `GmailOtpBackendImpl` is registered with
+// `GetLogSink()` for the lifetime of the backend.
+TEST_F(GmailOtpBackendImplTest, LogHandlerRegisteredInConstructor) {
+  base::test::TestFuture<std::string> log_future;
+  GmailOtpBackendImpl backend(
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      *identity_test_env_.identity_manager(),
+      base::BindRepeating(
+          [](base::RepeatingCallback<void(std::string)> cb,
+             std::string_view message) { cb.Run(std::string(message)); },
+          log_future.GetRepeatingCallback()));
+
+  EXPECT_TRUE(backend.GetLogSink()->IsActive());
+  LOG_OTT(backend.GetLogSink()) << "test log message";
+  EXPECT_EQ(log_future.Take(), "test log message");
+}
+
+// Tests that the backend emits its logs to the `LogHandler` passed to it.
+TEST_F(GmailOtpBackendImplTest, LogsToLogHandler) {
+  std::vector<std::string> log_messages;
+  GmailOtpBackendImpl backend(
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      *identity_test_env_.identity_manager(),
+      base::BindLambdaForTesting([&](std::string_view message) {
+        log_messages.emplace_back(message);
+      }));
+
+  backend.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(
+          EncryptedMessageReference("encrypted_reference")));
+
+  EXPECT_THAT(log_messages, testing::Contains("Tickle received"));
 }
 
 }  // namespace one_time_tokens

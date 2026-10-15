@@ -23,7 +23,6 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
-#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,8 +42,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
@@ -109,6 +108,23 @@ class TestActorChromeAutofillClient : public TestContentAutofillClient {
       ContentAutofillDriver& driver) override {
     return std::make_unique<TestBrowserAutofillManager>(&driver);
   }
+};
+
+class MockJournalObserver : public ::actor::AggregatedJournal::Observer {
+ public:
+  explicit MockJournalObserver(::actor::AggregatedJournal& journal)
+      : journal_(journal.GetSafeRef()) {
+    journal.AddObserver(this);
+  }
+  ~MockJournalObserver() override { journal_->RemoveObserver(this); }
+
+  MOCK_METHOD(void,
+              WillAddJournalEntry,
+              (const ::actor::AggregatedJournal::Entry& entry),
+              (override));
+
+ private:
+  base::SafeRef<::actor::AggregatedJournal> journal_;
 };
 
 class ActorOneTimeTokenFillingServiceImplTest
@@ -483,8 +499,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
 // Tests that `RetrieveOtp` fails gracefully when the OTP service is null.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
   NavigateAndCommit(GURL("https://example.com"));
-  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
   GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
@@ -1195,8 +1209,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        FetchUserDataProcessingConsent_NullBackend) {
-  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
   GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
@@ -1205,6 +1217,30 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       future;
   service().FetchUserDataProcessingConsent(future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+// Tests that log messages emitted to the log sink of the `GmailOtpBackend` are
+// forwarded to the journal.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ForwardsGmailOtpBackendLogsToJournal) {
+  MockJournalObserver observer(journal_);
+  EXPECT_CALL(
+      observer,
+      WillAddJournalEntry(testing::Field(
+          &::actor::AggregatedJournal::Entry::data,
+          testing::Pointee(testing::AllOf(
+              testing::Field(&::actor::mojom::JournalEntry::event,
+                             "ActorOneTimeTokenFillingServiceImpl::"
+                             "OneTimeTokenServiceLog"),
+              testing::Field(
+                  &::actor::mojom::JournalEntry::details,
+                  testing::Contains(testing::Pointee(testing::AllOf(
+                      testing::Field(&::actor::mojom::JournalDetails::key,
+                                     "message"),
+                      testing::Field(&::actor::mojom::JournalDetails::value,
+                                     "test log message"))))))))));
+
+  LOG_OTT(gmail_otp_backend().GetLogSink()) << "test log message";
 }
 
 }  // namespace

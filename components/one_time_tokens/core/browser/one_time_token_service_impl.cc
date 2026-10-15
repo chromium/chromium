@@ -33,15 +33,9 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
   if (log_handler) {
     log_subscription_ = log_sink_.AddLogHandler(std::move(log_handler));
   }
-  if (gmail_.backend) {
-    gmail_.backend->SetLogSink(&log_sink_);
-  }
 }
-OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() {
-  if (gmail_.backend) {
-    gmail_.backend->SetLogSink(nullptr);
-  }
-}
+
+OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
 
 OneTimeTokenLogSink* OneTimeTokenServiceImpl::log_sink() {
   return &log_sink_;

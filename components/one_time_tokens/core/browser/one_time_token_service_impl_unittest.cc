@@ -98,8 +98,7 @@ class MockGmailOtpBackend : public GmailOtpBackend {
                               &OneTimeToken::on_device_arrival_time,
                               OneTimeTokenCacheProjection()) {}
 
-  void SetLogSink(OneTimeTokenLogSink* log_sink) override {}
-  OneTimeTokenLogSink* GetLogSink() const override { return nullptr; }
+  OneTimeTokenLogSink* GetLogSink() override { return nullptr; }
 
   MOCK_METHOD(ExpiringSubscription,
               Subscribe,

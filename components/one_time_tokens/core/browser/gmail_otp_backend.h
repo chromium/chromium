@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
@@ -29,8 +30,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace one_time_tokens {
-
-class OneTimeTokenLogSink;
 
 // Duration after which notifications expire and won't be processed.
 inline constexpr base::TimeDelta kNotificationExpirationDuration =
@@ -51,13 +50,15 @@ class GmailOtpBackend : public KeyedService {
 
   ~GmailOtpBackend() override;
 
-  // Creates a new instance of the backend.
+  // Creates a new instance of the backend. If `log_handler` is provided, it is
+  // registered with the backend's log sink for the lifetime of the backend.
   static std::unique_ptr<GmailOtpBackend> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager& identity_manager);
+      signin::IdentityManager& identity_manager,
+      OneTimeTokenLogSink::LogHandler log_handler);
 
-  virtual void SetLogSink(OneTimeTokenLogSink* log_sink) = 0;
-  virtual OneTimeTokenLogSink* GetLogSink() const = 0;
+  // Returns the log sink owned by the backend.
+  virtual OneTimeTokenLogSink* GetLogSink() = 0;
 
   // Creates a subscription for new incoming OTPs.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,

@@ -7,6 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/autofill/content/browser/autofill_log_router_factory.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/one_time_token_log_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "content/public/browser/browser_context.h"
@@ -28,6 +30,7 @@ GmailOtpBackendFactory* GmailOtpBackendFactory::GetInstance() {
 GmailOtpBackendFactory::GmailOtpBackendFactory()
     : ProfileKeyedServiceFactory("GmailOtpBackend",
                                  ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(autofill::AutofillLogRouterFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -45,5 +48,7 @@ GmailOtpBackendFactory::BuildServiceInstanceForBrowserContext(
   return one_time_tokens::GmailOtpBackend::Create(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      *identity_manager);
+      *identity_manager,
+      autofill::CreateOneTimeTokenLogHandler(
+          autofill::AutofillLogRouterFactory::GetForBrowserContext(context)));
 }

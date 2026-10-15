@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +22,7 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
@@ -39,7 +40,6 @@ class IdentityManager;
 namespace one_time_tokens {
 
 class EmailOneTimeTokenFetcher;
-class OneTimeTokenLogSink;
 class UserDataProcessingConsentFetcher;
 
 // Concrete implementation of GmailOtpBackend that fetches OTPs and consent
@@ -47,12 +47,13 @@ class UserDataProcessingConsentFetcher;
 class GmailOtpBackendImpl : public GmailOtpBackend,
                             public EmailOneTimeTokenFetchCoordinator::Delegate {
  public:
+  // If `log_handler` is provided, it is registered with `log_sink_` for the
+  // lifetime of this backend.
   GmailOtpBackendImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager& identity_manager);
+      signin::IdentityManager& identity_manager,
+      OneTimeTokenLogSink::LogHandler log_handler = {});
   ~GmailOtpBackendImpl() override;
-
-  void SetLogSink(OneTimeTokenLogSink* log_sink) override;
 
   ExpiringSubscription Subscribe(base::Time expiration,
                                  Callback callback) override;
@@ -81,7 +82,7 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       const OneTimeTokenBackendNotification& notification,
       base::TimeTicks trigger_time) override;
 
-  OneTimeTokenLogSink* GetLogSink() const override;
+  OneTimeTokenLogSink* GetLogSink() override;
 
  private:
   // Keys used by `one_time_token_cache_` to identify and deduplicate tokens.
@@ -126,8 +127,10 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   // Handles tickle-only subscriptions to the `GmailOtpBackend`.
   ExpiringSubscriptionManager<void()> tickle_subscription_manager_;
 
-  // Owned by `OneTimeTokenServiceImpl`, outlives this backend. May be null.
-  raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;
+  // Must outlive `active_fetchers_` and `consent_fetcher_`, which hold pointers
+  // to it.
+  OneTimeTokenLogSink log_sink_;
+  base::CallbackListSubscription log_subscription_;
 
   // Policy for coordinating network requests.
   std::unique_ptr<EmailOneTimeTokenFetchCoordinator> coordinator_;

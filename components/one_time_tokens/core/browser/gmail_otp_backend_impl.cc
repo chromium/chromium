@@ -27,7 +27,8 @@ namespace one_time_tokens {
 
 GmailOtpBackendImpl::GmailOtpBackendImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager& identity_manager)
+    signin::IdentityManager& identity_manager,
+    OneTimeTokenLogSink::LogHandler log_handler)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
       coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)),
@@ -36,16 +37,16 @@ GmailOtpBackendImpl::GmailOtpBackendImpl(
           &OneTimeTokenBackendNotification::notification_received_timeticks),
       one_time_token_cache_(kGmailTokenCacheDuration,
                             &OneTimeToken::on_device_arrival_time,
-                            OneTimeTokenCacheProjection()) {}
+                            OneTimeTokenCacheProjection()) {
+  if (log_handler) {
+    log_subscription_ = log_sink_.AddLogHandler(std::move(log_handler));
+  }
+}
 
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
-void GmailOtpBackendImpl::SetLogSink(OneTimeTokenLogSink* log_sink) {
-  log_sink_ = log_sink;
-}
-
-OneTimeTokenLogSink* GmailOtpBackendImpl::GetLogSink() const {
-  return log_sink_;
+OneTimeTokenLogSink* GmailOtpBackendImpl::GetLogSink() {
+  return &log_sink_;
 }
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
@@ -61,8 +62,9 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(
   ExpiringSubscription subscription = subscription_manager_.Subscribe(
       expiration, std::move(callback), std::move(expiration_callback));
   if (!url_loader_factory_) {
-    LOG_OTT(log_sink_) << "Subscription failed: SharedURLLoaderFactory is null "
-                          "(backend initialization failed)";
+    LOG_OTT(&log_sink_)
+        << "Subscription failed: SharedURLLoaderFactory is null "
+           "(backend initialization failed)";
     base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
                               false);
     base::UmaHistogramEnumeration(
@@ -116,7 +118,7 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
       subscription_manager_.GetNumberSubscribers() > 0 ||
           tickle_subscription_manager_.GetNumberSubscribers() > 0);
 
-  LOG_OTT(log_sink_) << "Tickle received";
+  LOG_OTT(&log_sink_) << "Tickle received";
 
   if (!notification.email_delivered_timestamp.is_null()) {
     base::TimeDelta latency = notification.notification_received_timestamp -
@@ -140,7 +142,7 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
 
   if (base::TimeTicks::Now() - notification.notification_received_timeticks >
       kNotificationExpirationDuration) {
-    LOG_OTT(log_sink_) << "Incoming tickle ignored: expired";
+    LOG_OTT(&log_sink_) << "Incoming tickle ignored: expired";
     if (base::FeatureList::IsEnabled(features::kGmailOtpRetrievalService)) {
       base::UmaHistogramEnumeration(kTickleArrivalHistogram,
                                     TickleArrival::kExpiredOnArrival);
@@ -155,11 +157,11 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
 
   if (active_fetchers_.contains(notification.encrypted_message_reference) ||
       !notification_cache_.PurgeExpiredAndAdd(notification)) {
-    LOG_OTT(log_sink_) << "Incoming tickle ignored: duplicate";
+    LOG_OTT(&log_sink_) << "Incoming tickle ignored: duplicate";
     return;
   }
 
-  LOG_OTT(log_sink_) << "Incoming tickle accepted into notification cache";
+  LOG_OTT(&log_sink_) << "Incoming tickle accepted into notification cache";
   ProcessCachedNotifications();
 }
 
@@ -170,14 +172,14 @@ bool GmailOtpBackendImpl::HasPendingRequests() const {
 
 void GmailOtpBackendImpl::FetchUserDataProcessingConsent(
     FetchUserDataProcessingConsentCallback callback) {
-  LOG_OTT(log_sink_) << "Fetching user data processing consent.";
+  LOG_OTT(&log_sink_) << "Fetching user data processing consent.";
   pending_consent_callbacks_.push_back(std::move(callback));
   if (consent_fetcher_) {
-    LOG_OTT(log_sink_) << "Consent fetch already in flight, queuing callback.";
+    LOG_OTT(&log_sink_) << "Consent fetch already in flight, queuing callback.";
     return;
   }
   consent_fetcher_ = std::make_unique<UserDataProcessingConsentFetcher>(
-      url_loader_factory_, *identity_manager_, log_sink_);
+      url_loader_factory_, *identity_manager_, &log_sink_);
   consent_fetcher_->Start(
       base::BindOnce(&GmailOtpBackendImpl::OnUserDataProcessingConsentFetched,
                      weakptr_factory_.GetWeakPtr()));
@@ -185,13 +187,13 @@ void GmailOtpBackendImpl::FetchUserDataProcessingConsent(
 
 void GmailOtpBackendImpl::ProcessCachedNotifications() {
   if (subscription_manager_.GetNumberSubscribers() == 0) {
-    LOG_OTT(log_sink_)
+    LOG_OTT(&log_sink_)
         << "Skipping processing of cached notifications: no subscribers.";
     return;
   }
   auto items = notification_cache_.TakeItems();
-  LOG_OTT(log_sink_) << "Processing " << items.size()
-                     << " cached notification(s) for active subscribers.";
+  LOG_OTT(&log_sink_) << "Processing " << items.size()
+                      << " cached notification(s) for active subscribers.";
   for (const auto& notification : std::views::reverse(items)) {
     base::UmaHistogramMediumTimes(
         "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
@@ -210,8 +212,8 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
     const OneTimeTokenBackendNotification& notification,
     base::TimeTicks trigger_time) {
   if (subscription_manager_.GetNumberSubscribers() == 0) {
-    LOG_OTT(log_sink_) << "Aborting Gmail OTP retrieval: all subscribers "
-                          "expired or unsubscribed.";
+    LOG_OTT(&log_sink_) << "Aborting Gmail OTP retrieval: all subscribers "
+                           "expired or unsubscribed.";
     coordinator_->InformOfNetworkRequestFinished(notification);
     return;
   }
@@ -220,12 +222,12 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
       active_fetchers_.try_emplace(notification.encrypted_message_reference);
   CHECK(inserted);
 
-  LOG_OTT(log_sink_) << "Starting EmailOneTimeTokenFetcher for notification.";
+  LOG_OTT(&log_sink_) << "Starting EmailOneTimeTokenFetcher for notification.";
   it->second = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
       notification.encrypted_message_reference.value(),
       notification.notification_received_timeticks,
-      notification.email_received_timestamp, log_sink_);
+      notification.email_received_timestamp, &log_sink_);
 
   it->second->Start(base::BindOnce(
       &GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,
@@ -254,24 +256,24 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   coordinator_->InformOfNetworkRequestFinished(notification);
 
   if (!reply.has_value()) {
-    LOG_OTT(log_sink_) << "Gmail OTP backend retrieval failed: error="
-                       << std::to_underlying(reply.error())
-                       << ". Notifying subscribers.";
+    LOG_OTT(&log_sink_) << "Gmail OTP backend retrieval failed: error="
+                        << std::to_underlying(reply.error())
+                        << ". Notifying subscribers.";
     subscription_manager_.Notify(base::unexpected(reply.error()));
     return;
   }
 
   const OneTimeToken& token = reply.value();
   one_time_token_cache_.PurgeExpiredAndAdd(token);
-  LOG_OTT(log_sink_) << "Gmail OTP backend retrieval succeeded. Notifying "
-                        "subscribers.";
+  LOG_OTT(&log_sink_) << "Gmail OTP backend retrieval succeeded. Notifying "
+                         "subscribers.";
   subscription_manager_.Notify(base::ok(token));
 }
 
 void GmailOtpBackendImpl::OnUserDataProcessingConsentFetched(
     std::optional<UserDataProcessingConsentStates> states) {
-  LOG_OTT(log_sink_) << "Consent fetch completed: "
-                     << (states.has_value() ? "success" : "failed");
+  LOG_OTT(&log_sink_) << "Consent fetch completed: "
+                      << (states.has_value() ? "success" : "failed");
   consent_fetcher_.reset();
   std::vector<FetchUserDataProcessingConsentCallback> callbacks =
       std::move(pending_consent_callbacks_);

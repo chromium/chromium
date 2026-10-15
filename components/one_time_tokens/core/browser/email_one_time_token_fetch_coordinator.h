@@ -32,7 +32,7 @@ class EmailOneTimeTokenFetchCoordinator {
         base::TimeTicks trigger_time) = 0;
 
     // Returns the active log sink.
-    virtual OneTimeTokenLogSink* GetLogSink() const = 0;
+    virtual OneTimeTokenLogSink* GetLogSink() = 0;
   };
 
   explicit EmailOneTimeTokenFetchCoordinator(Delegate& delegate);

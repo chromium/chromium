@@ -28,7 +28,6 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
-#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
@@ -50,7 +49,6 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_frame_util.h"
@@ -208,12 +206,13 @@ ActorOneTimeTokenFillingServiceImpl::ActorOneTimeTokenFillingServiceImpl(
     base::SafeRef<::actor::AggregatedJournal> journal,
     ::actor::TaskId task_id)
     : profile_(profile), journal_(journal), task_id_(task_id) {
-  if (one_time_tokens::OneTimeTokenService* service =
-          OneTimeTokenServiceFactory::GetForProfile(profile);
-      service && service->log_sink()) {
-    log_subscription_ = service->log_sink()->AddLogHandler(base::BindRepeating(
-        &ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage,
-        base::Unretained(this)));
+  if (one_time_tokens::GmailOtpBackend* backend =
+          GmailOtpBackendFactory::GetForProfile(profile);
+      backend && backend->GetLogSink()) {
+    log_subscription_ =
+        backend->GetLogSink()->AddLogHandler(base::BindRepeating(
+            &ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage,
+            base::Unretained(this)));
   }
 }
 
