@@ -8,7 +8,6 @@ import type {DataCollectorItem} from './browser_proxy.js';
 import type {UrlGeneratorElement} from './url_generator.js';
 
 export function getHtml(this: UrlGeneratorElement) {
-  // clang-format off
   return html`<!--html_template_start_-->
 <h1 tabindex="0">${this.i18n('urlGeneratorPageTitle')}</h1>
 <div class="support-tool-title">${this.i18n('supportCaseId')}</div>
@@ -28,10 +27,9 @@ export function getHtml(this: UrlGeneratorElement) {
 
 <div class="data-collector-list" role="group"
     aria-labelledby="data-sources-title">
-  ${this.dataCollectors_.map(
-      (item: DataCollectorItem, index: number) => html`
-    <cr-checkbox class="data-collector-checkbox"
-        ?checked="${item.isIncluded}" data-index="${index}"
+  ${this.dataCollectors_.map((item: DataCollectorItem, index: number) => html`
+    <cr-checkbox class="data-collector-checkbox" ?checked="${item.isIncluded}"
+        data-index="${index}"
         @checked-changed="${this.onDataCollectorCheckedChanged_}" tabindex="0">
       ${item.name}
     </cr-checkbox>
@@ -45,11 +43,11 @@ export function getHtml(this: UrlGeneratorElement) {
   </p>
   <cr-button id="copyURLButton" class="navigation-buttons action-button"
       @click="${this.onCopyUrlClick_}" ?disabled="${this.buttonDisabled_}">
-      ${this.i18n('copyLinkButtonText')}
+    ${this.i18n('copyLinkButtonText')}
   </cr-button>
   <cr-button id="copyTokenButton" class="navigation-buttons action-button"
       @click="${this.onCopyTokenClick_}" ?disabled="${this.buttonDisabled_}">
-      ${this.i18n('copyTokenButtonText')}
+    ${this.i18n('copyTokenButtonText')}
   </cr-button>
 </div>
 <cr-toast id="copyToast" duration="5000" tabindex="0"
@@ -63,6 +61,5 @@ export function getHtml(this: UrlGeneratorElement) {
     ${this.i18n('dismissButtonText')}
   </cr-button>
 </cr-toast>
-  <!--html_template_end_-->`;
-  // clang-format on
+<!--html_template_end_-->`;
 }

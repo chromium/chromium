@@ -8,10 +8,9 @@ import type {UrlItemGridElement} from './url_item_grid.js';
 
 export function getHtml(this: UrlItemGridElement) {
   return html`
-    <cr-grid>
-      ${this.items_.map(item => html`
-        <div id="${item.id}" class="item">urlItem id: ${item.id}</div>
-      `)}
-    </cr-grid>
-  `;
+<cr-grid>
+  ${this.items_.map(item => html`
+    <div id="${item.id}" class="item">urlItem id: ${item.id}</div>
+  `)}
+</cr-grid>`;
 }

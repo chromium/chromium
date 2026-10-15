@@ -8,7 +8,6 @@ import type {SupportToolElement} from './support_tool.js';
 import {SupportToolPageIndex} from './support_tool.js';
 
 export function getHtml(this: SupportToolElement) {
-  // clang-format off
   return html`<!--html_template_start_-->
 <div id="support-tool-pages">
   <cr-page-selector .selected="${this.selectedPage_}"
@@ -53,6 +52,5 @@ export function getHtml(this: SupportToolElement) {
     ${this.i18n('dismissButtonText')}
   </cr-button>
 </cr-toast>
-  <!--html_template_end_-->`;
-  // clang-format on
+<!--html_template_end_-->`;
 }

@@ -8,13 +8,12 @@ import {SplitTabLayout} from './tab_search.mojom-webui.js';
 import type {TabSearchSplitItemElement} from './tab_search_split_item.js';
 
 export function getHtml(this: TabSearchSplitItemElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="iconContainer">
   <div
       class="split-favicons ${
-          this.data.layout === SplitTabLayout.kStacked ? 'stacked' :
-                                                         'side-by-side'}">
+               this.data.layout === SplitTabLayout.kStacked ? 'stacked' :
+                                                              'side-by-side'}">
     ${this.data.tabUrls.slice(0, 2).map((url: string, index: number) => html`
       <div class="split-favicon"
           .style="background-image: ${this.getFaviconUrl_(url, index)}">
@@ -67,5 +66,4 @@ ${this.isCloseable_() ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

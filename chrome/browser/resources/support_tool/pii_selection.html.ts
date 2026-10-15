@@ -8,7 +8,6 @@ import type {PiiSelectionElement} from './pii_selection.js';
 import {PiiRadioButtons} from './pii_selection.js';
 
 export function getHtml(this: PiiSelectionElement) {
-  // clang-format off
   return html`<!--html_template_start_-->
 <h1 tabindex="0">${this.i18n('reviewPiiPageTitle')}</h1>
 <div id="pii-warning-text" class="support-tool-title" tabindex="0">
@@ -46,7 +45,9 @@ export function getHtml(this: PiiSelectionElement) {
         </cr-expand-button>
         <cr-collapse class="pii-item-collapse" ?opened="${item.expandDetails}">
           <div class="pii-details" tabindex="0">
-            ${item.detectedData.map(item => html`<div>${item}</div>`)}
+            ${item.detectedData.map(item => html`
+              <div>${item}</div>
+            `)}
           </div>
         </cr-collapse>
       </div>
@@ -62,6 +63,5 @@ export function getHtml(this: PiiSelectionElement) {
     ${this.i18n('exportButtonText')}
   </cr-button>
 </div>
-  <!--html_template_end_-->`;
-  // clang-format on
+<!--html_template_end_-->`;
 }

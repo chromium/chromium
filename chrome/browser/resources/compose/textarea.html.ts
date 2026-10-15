@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeTextareaElement} from './textarea.js';
 
 export function getHtml(this: ComposeTextareaElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="inputContainer" ?hidden="${this.readonly}">
   <textarea id="input"
@@ -15,12 +14,8 @@ export function getHtml(this: ComposeTextareaElement) {
  • $i18n{inputPlaceholderLine1}
  • $i18n{inputPlaceholderLine2}
  • $i18n{inputPlaceholderLine3}"
-      .value="${this.value}"
-      @input="${this.onInput_}"
-      required
-      autofocus
-      aria-invalid="${this.invalidInput_}"
-      aria-errormessage="error"
+      .value="${this.value}" @input="${this.onInput_}" required autofocus
+      aria-invalid="${this.invalidInput_}" aria-errormessage="error"
       @change="${this.onTextAreaChange_}">
   </textarea>
   <div id="error" class="error" role="region" aria-live="assertive"
@@ -34,16 +29,13 @@ export function getHtml(this: ComposeTextareaElement) {
 
 <div id="readonlyContainer" ?hidden="${!this.readonly}">
   <div id="readonlyText">${this.value}</div>
-  <div id="editButtonContainer"
-      ?hidden="${!this.shouldShowEditIcon_()}">
+  <div id="editButtonContainer" ?hidden="${!this.shouldShowEditIcon_()}">
     <cr-icon-button id="editButton"
-        iron-icon="${this.webuiRoundedIconsEnabled_
-            ? 'compose:edit'
-            : 'compose:edit-old'}"
+        iron-icon="${this.webuiRoundedIconsEnabled_ ? 'compose:edit' :
+                                                      'compose:edit-old'}"
         title="$i18n{editButton}" @click="${this.onEditClick_}">
     </cr-icon-button>
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

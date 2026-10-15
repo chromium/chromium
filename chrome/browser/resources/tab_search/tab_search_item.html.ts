@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabSearchItemElement} from './tab_search_item.js';
 
 export function getHtml(this: TabSearchItemElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="iconContainer">
   <div class="favicon" .style="background-image:${this.faviconUrl_()}"></div>
@@ -32,7 +31,8 @@ export function getHtml(this: TabSearchItemElement) {
       <bdi id="secondaryTextInner"></bdi>
     </div>
     ${!this.hideTimestamp ? html`
-      <div class="separator" ?hidden="${!this.data.hostname || this.hideUrl}">•
+      <div class="separator" ?hidden="${!this.data.hostname || this.hideUrl}">
+        •
       </div>
       <div id="secondaryTimestamp">${this.data.tab.lastActiveElapsedText}</div>
     ` : ''}
@@ -54,5 +54,4 @@ ${this.isCloseable_() ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

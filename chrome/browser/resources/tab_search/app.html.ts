@@ -7,9 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabSearchAppElement} from './app.js';
 
 export function getHtml(this: TabSearchAppElement) {
-  // clang-format off
   return html`
-<tab-search-page available-height="${this.availableHeight_}">
-</tab-search-page>`;
-  // clang-format on
+<tab-search-page available-height="${this.availableHeight_}"></tab-search-page>`;
 }

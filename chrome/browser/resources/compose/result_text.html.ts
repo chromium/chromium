@@ -7,22 +7,21 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeResultTextElement} from './result_text.js';
 
 export function getHtml(this: ComposeResultTextElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="root">
   <div id="resultText" class="result-text"
       ?hidden="${this.textInput.streamingEnabled}"
-      contenteditable="plaintext-only"
-      @focusin="${this.onFocusin_}"
-      @focusout="${this.onFocusout_}"
-      aria-label="$i18n{resultText}"></div>
+      contenteditable="plaintext-only" @focusin="${this.onFocusin_}"
+      @focusout="${this.onFocusout_}" aria-label="$i18n{resultText}"><!--
+  --></div>
   <div id="partialResultText" class="result-text"
       ?hidden="${!this.textInput.streamingEnabled}"
       contenteditable="${this.partialTextCanEdit_()}"
-      @focusin="${this.onFocusin_}"
-      @focusout="${this.onFocusout_}">${this.displayedChunks_.map(
-          item => html`<span>${item.text}</span>`)}</div>
+      @focusin="${this.onFocusin_}" @focusout="${this.onFocusout_}"><!--
+    -->${this.displayedChunks_.map(item => html`<!--
+      --><span>${item.text}</span><!--
+    -->`)}<!--
+  --></div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabSearchGroupItemElement} from './tab_search_group_item.js';
 
 export function getHtml(this: TabSearchGroupItemElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="iconContainer">
   <!-- TODO(romanarora): Replace with a 16x16 SVG. -->
@@ -36,5 +35,4 @@ export function getHtml(this: TabSearchGroupItemElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
