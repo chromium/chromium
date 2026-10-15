@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_H_
-#define CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_H_
+#ifndef CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_IMPL_H_
 
 #include <stdint.h>
 
@@ -23,6 +23,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
@@ -45,8 +46,9 @@ namespace ttc {
 // Implements the AudioIO subsystem for TTC. Manages microphone
 // capture, speaker playback, and audio hardware routing via the
 // Chrome Audio Service.
-class AudioController : public media::AudioCapturerSource::CaptureCallback,
-                        public media::AudioRendererSink::RenderCallback {
+class AudioControllerImpl : public AudioController,
+                            public media::AudioCapturerSource::CaptureCallback,
+                            public media::AudioRendererSink::RenderCallback {
  public:
   // `pcm_data` holds signed 16-bit interleaved PCM samples.
   using AudioCaptureCallback =
@@ -61,58 +63,36 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   using AudioSystemFactory =
       base::RepeatingCallback<std::unique_ptr<media::AudioSystem>()>;
 
-  explicit AudioController(
+  explicit AudioControllerImpl(
       AudioStreamFactoryBinder factory_binder = AudioStreamFactoryBinder(),
       AudioSystemFactory audio_system_factory = AudioSystemFactory());
-  ~AudioController() override;
+  ~AudioControllerImpl() override;
 
-  AudioController(const AudioController&) = delete;
-  AudioController& operator=(const AudioController&) = delete;
+  AudioControllerImpl(const AudioControllerImpl&) = delete;
+  AudioControllerImpl& operator=(const AudioControllerImpl&) = delete;
 
-  // --- Audio Capture (Microphone Input) ---
-  // Starts capturing microphone audio from `device_id` (or default if empty).
-  // The device's parameters are queried asynchronously, so the capture stream
-  // is only opened once they have been received.
-  void StartCapture(std::string_view device_id = "");
-  void StopCapture();
-  bool is_capturing() const { return capture_requested_; }
-
-  // Subscribes to incoming captured audio frames. Audio is always delivered in
-  // GetBackendInputAudioParameters() format, regardless of the format the
-  // capture device runs at.
+  // AudioController:
+  void StartCapture(std::string_view device_id) override;
+  void StopCapture() override;
+  bool is_capturing() const override;
   base::CallbackListSubscription AddAudioCaptureListener(
-      AudioCaptureCallback callback);
-
-  // Subscribes to calculated RMS audio energy (0.0 to 1.0) of captured
-  // microphone audio for visualizer UI.
+      AudioCaptureCallback callback) override;
   base::CallbackListSubscription AddAudioEnergyListener(
-      AudioEnergyCallback callback);
-
-  // Subscribes to notifications when an audio chunk sequence finishes playback.
+      AudioEnergyCallback callback) override;
   base::CallbackListSubscription AddPlaybackCompletionListener(
-      PlaybackCompletionCallback callback);
-
-  // Subscribes to notifications when an audio capture error occurs.
-  base::CallbackListSubscription AddErrorListener(ErrorCallback callback);
-
-  // --- Audio Playback (Speaker Output) ---
-  // Enqueues signed PCM16 audio data to be rendered natively with specific
-  // parameters.
+      PlaybackCompletionCallback callback) override;
+  base::CallbackListSubscription AddErrorListener(
+      ErrorCallback callback) override;
   void PlayAudio(base::span<const int16_t> pcm_data,
                  const media::AudioParameters& params,
-                 int64_t sequence_number = 0);
-
-  // Enqueues audio data using default 24kHz mono PCM16 parameters.
+                 int64_t sequence_number) override;
   void PlayAudio(base::span<const int16_t> pcm_data,
-                 int64_t sequence_number = 0);
+                 int64_t sequence_number) override;
+  void ClearPlaybackQueue() override;
+  void StopPlayback() override;
+  bool is_playing() const override;
 
-  // Instantly flushes all queued playback audio (used on barge-in /
-  // interruption).
-  void ClearPlaybackQueue();
-  void StopPlayback();
-  bool is_playing() const;
-
-  // --- media::AudioCapturerSource::CaptureCallback ---
+  // media::AudioCapturerSource::CaptureCallback:
   void OnCaptureStarted() override;
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
@@ -122,7 +102,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
                       const std::string& message) override;
   void OnCaptureMuted(bool is_muted) override;
 
-  // --- media::AudioRendererSink::RenderCallback ---
+  // media::AudioRendererSink::RenderCallback:
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
              const media::AudioGlitchInfo& glitch_info,
@@ -200,9 +180,9 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   base::circular_deque<QueuedAudioChunk> playback_queue_
       GUARDED_BY(playback_lock_);
 
-  base::WeakPtrFactory<AudioController> weak_factory_{this};
+  base::WeakPtrFactory<AudioControllerImpl> weak_factory_{this};
 };
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_H_
+#endif  // CHROME_BROWSER_TTC_APP_AUDIO_CONTROLLER_IMPL_H_

@@ -14,7 +14,7 @@
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/app/conversation_impl.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
@@ -271,7 +271,7 @@ std::unique_ptr<Conversation> AppBrowserTestBase::MakeConversation(
     SessionController& session_controller) {
   // Holding on to the receiver without binding it means no real capture stream
   // is ever opened, while keeping the pipe open so that capture doesn't fail.
-  auto audio_controller = std::make_unique<AudioController>(
+  auto audio_controller = std::make_unique<AudioControllerImpl>(
       base::BindLambdaForTesting(
           [this](mojo::PendingReceiver<media::mojom::AudioStreamFactory>
                      receiver) {

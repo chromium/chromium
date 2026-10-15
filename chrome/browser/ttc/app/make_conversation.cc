@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/app/conversation_impl.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "components/ttc/app/ttc_mes_client.h"
@@ -22,8 +22,8 @@ std::unique_ptr<Conversation> MakeConversationImpl(
       std::make_unique<TtcMesClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
               session_controller.GetProfile())),
-      std::make_unique<AudioController>(
-          AudioController::GetDefaultAudioStreamFactoryBinder()),
+      std::make_unique<AudioControllerImpl>(
+          AudioControllerImpl::GetDefaultAudioStreamFactoryBinder()),
       session_controller);
 }
 

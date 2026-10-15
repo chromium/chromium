@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 
 #include <cmath>
 #include <memory>
@@ -37,9 +37,9 @@
 
 namespace ttc {
 
-class AudioControllerTest : public testing::Test {
+class AudioControllerImplTest : public testing::Test {
  public:
-  AudioControllerTest() {
+  AudioControllerImplTest() {
     audio_manager_.SetHasInputDevices(true);
     audio_manager_.SetInputStreamParameters(
         media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -48,11 +48,11 @@ class AudioControllerTest : public testing::Test {
                                /*frames_per_buffer=*/441));
   }
 
-  ~AudioControllerTest() override { audio_manager_.Shutdown(); }
+  ~AudioControllerImplTest() override { audio_manager_.Shutdown(); }
 
  protected:
   // Returns a factory handing out AudioSystems backed by `audio_manager_`.
-  AudioController::AudioSystemFactory GetAudioSystemFactory() {
+  AudioControllerImpl::AudioSystemFactory GetAudioSystemFactory() {
     return base::BindLambdaForTesting(
         [this]() -> std::unique_ptr<media::AudioSystem> {
           return std::make_unique<media::AudioSystemImpl>(&audio_manager_);
@@ -65,8 +65,8 @@ class AudioControllerTest : public testing::Test {
       std::make_unique<media::TestAudioThread>()};
 };
 
-TEST_F(AudioControllerTest, LoopbackCaptureToPlayback) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, LoopbackCaptureToPlayback) {
+  AudioControllerImpl controller;
 
   std::vector<int16_t> captured_pcm;
   base::RunLoop capture_loop;
@@ -119,8 +119,8 @@ TEST_F(AudioControllerTest, LoopbackCaptureToPlayback) {
   }
 }
 
-TEST_F(AudioControllerTest, LoopbackWithDelay) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, LoopbackWithDelay) {
+  AudioControllerImpl controller;
 
   base::RunLoop capture_loop;
   auto capture_sub = controller.AddAudioCaptureListener(
@@ -164,8 +164,8 @@ TEST_F(AudioControllerTest, LoopbackWithDelay) {
   }
 }
 
-TEST_F(AudioControllerTest, AudioEnergyCalculation) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, AudioEnergyCalculation) {
+  AudioControllerImpl controller;
 
   float last_energy = -1.0f;
   base::RunLoop energy_loop;
@@ -193,8 +193,8 @@ TEST_F(AudioControllerTest, AudioEnergyCalculation) {
   EXPECT_EQ(last_energy, 0.0f);
 }
 
-TEST_F(AudioControllerTest, PlaybackQueueClearing) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, PlaybackQueueClearing) {
+  AudioControllerImpl controller;
 
   std::vector<int16_t> pcm_chunk(1600, 0x3030);
   controller.PlayAudio(pcm_chunk, /*sequence_number=*/1);
@@ -214,8 +214,8 @@ TEST_F(AudioControllerTest, PlaybackQueueClearing) {
   }
 }
 
-TEST_F(AudioControllerTest, PartialFrameRendering) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, PartialFrameRendering) {
+  AudioControllerImpl controller;
 
   // 1000 frames of PCM16 mono (2000 bytes)
   std::vector<int16_t> samples(1000, 10000);
@@ -258,8 +258,9 @@ TEST_F(AudioControllerTest, PartialFrameRendering) {
   }
 }
 
-TEST_F(AudioControllerTest, RenderMultiChannelDuplicatesMonoToAllChannels) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest,
+       RenderMultiChannelDuplicatesMonoToAllChannels) {
+  AudioControllerImpl controller;
 
   std::vector<int16_t> samples(200, 15000);
   controller.PlayAudio(samples, /*sequence_number=*/1);
@@ -276,55 +277,55 @@ TEST_F(AudioControllerTest, RenderMultiChannelDuplicatesMonoToAllChannels) {
   }
 }
 
-TEST_F(AudioControllerTest, RenderNullBusReturnsZero) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, RenderNullBusReturnsZero) {
+  AudioControllerImpl controller;
   EXPECT_EQ(
       controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, nullptr),
       0);
 }
 
-TEST_F(AudioControllerTest, PlayEmptyAudioChunkDoesNotQueue) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, PlayEmptyAudioChunkDoesNotQueue) {
+  AudioControllerImpl controller;
   controller.PlayAudio(base::span<const int16_t>(), /*sequence_number=*/1);
   EXPECT_FALSE(controller.is_playing());
 }
 
-TEST_F(AudioControllerTest, PlayPlaceholderAudioChunkDoesNotQueue) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, PlayPlaceholderAudioChunkDoesNotQueue) {
+  AudioControllerImpl controller;
   // A single sample is treated as a placeholder chunk and dropped.
   std::vector<int16_t> tiny_chunk(1, 0);
   controller.PlayAudio(tiny_chunk, /*sequence_number=*/1);
   EXPECT_FALSE(controller.is_playing());
 }
 
-TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
+TEST_F(AudioControllerImplTest, StartAndStopCaptureWithFakeBinder) {
   bool binder_called = false;
   auto fake_binder = base::BindLambdaForTesting(
       [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
         binder_called = true;
       });
 
-  AudioController controller(fake_binder, GetAudioSystemFactory());
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
   EXPECT_FALSE(controller.is_capturing());
 
-  controller.StartCapture();
+  controller.StartCapture(/*device_id=*/"");
   EXPECT_TRUE(controller.is_capturing());
 
   // The stream is only created once the device parameters have been received.
   EXPECT_FALSE(binder_called);
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(binder_called);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return binder_called; }));
   EXPECT_TRUE(controller.is_capturing());
 
   // Redundant StartCapture is a no-op
-  controller.StartCapture();
+  controller.StartCapture(/*device_id=*/"");
   EXPECT_TRUE(controller.is_capturing());
 
   controller.StopCapture();
   EXPECT_FALSE(controller.is_capturing());
 }
 
-TEST_F(AudioControllerTest, StartCaptureWithoutInputDevicesReportsError) {
+TEST_F(AudioControllerImplTest,
+       StartCaptureWithoutInputDevicesReportsError) {
   audio_manager_.SetHasInputDevices(false);
 
   bool binder_called = false;
@@ -332,7 +333,7 @@ TEST_F(AudioControllerTest, StartCaptureWithoutInputDevicesReportsError) {
       [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
         binder_called = true;
       });
-  AudioController controller(fake_binder, GetAudioSystemFactory());
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
 
   std::vector<ErrorCode> errors;
   base::RunLoop error_loop;
@@ -342,7 +343,7 @@ TEST_F(AudioControllerTest, StartCaptureWithoutInputDevicesReportsError) {
         error_loop.Quit();
       }));
 
-  controller.StartCapture();
+  controller.StartCapture(/*device_id=*/"");
   error_loop.Run();
 
   EXPECT_THAT(errors,
@@ -351,8 +352,9 @@ TEST_F(AudioControllerTest, StartCaptureWithoutInputDevicesReportsError) {
   EXPECT_FALSE(binder_called);
 }
 
-TEST_F(AudioControllerTest, CaptureErrorsAreConvertedAndPostedToListeners) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest,
+       CaptureErrorsAreConvertedAndPostedToListeners) {
+  AudioControllerImpl controller;
 
   std::vector<ErrorCode> errors;
   auto error_sub = controller.AddErrorListener(base::BindLambdaForTesting(
@@ -386,8 +388,9 @@ TEST_F(AudioControllerTest, CaptureErrorsAreConvertedAndPostedToListeners) {
   }
 }
 
-TEST_F(AudioControllerTest, CaptureErrorIsDroppedIfControllerIsDestroyed) {
-  auto controller = std::make_unique<AudioController>();
+TEST_F(AudioControllerImplTest,
+       CaptureErrorIsDroppedIfControllerIsDestroyed) {
+  auto controller = std::make_unique<AudioControllerImpl>();
 
   bool error_reported = false;
   auto error_sub = controller->AddErrorListener(
@@ -503,7 +506,7 @@ class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
   std::string last_aec_output_device_id_;
 };
 
-TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
+TEST_F(AudioControllerImplTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
@@ -521,8 +524,8 @@ TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
         fake_factory.Bind(std::move(receiver));
       });
 
-  AudioController controller(fake_binder, GetAudioSystemFactory());
-  controller.StartCapture();
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture(/*device_id=*/"");
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_factory.last_params().sample_rate() > 0; }));
 
@@ -538,7 +541,7 @@ TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
 #endif
 }
 
-TEST_F(AudioControllerTest,
+TEST_F(AudioControllerImplTest,
        HardwareSupportingAllEffectsDoesNotEngageSoftwareProcessing) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   base::test::ScopedFeatureList feature_list;
@@ -560,8 +563,8 @@ TEST_F(AudioControllerTest,
         fake_factory.Bind(std::move(receiver));
       });
 
-  AudioController controller(fake_binder, GetAudioSystemFactory());
-  controller.StartCapture();
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture(/*device_id=*/"");
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_factory.last_params().sample_rate() > 0; }));
 
@@ -572,7 +575,7 @@ TEST_F(AudioControllerTest,
   EXPECT_EQ(fake_factory.last_params().sample_rate(), 48000);
 }
 
-TEST_F(AudioControllerTest, HardwareLackingAecEngagesSoftwareAec) {
+TEST_F(AudioControllerImplTest, HardwareLackingAecEngagesSoftwareAec) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
@@ -589,8 +592,8 @@ TEST_F(AudioControllerTest, HardwareLackingAecEngagesSoftwareAec) {
         fake_factory.Bind(std::move(receiver));
       });
 
-  AudioController controller(fake_binder, GetAudioSystemFactory());
-  controller.StartCapture();
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture(/*device_id=*/"");
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_factory.last_params().sample_rate() > 0; }));
 
@@ -608,8 +611,9 @@ TEST_F(AudioControllerTest, HardwareLackingAecEngagesSoftwareAec) {
 #endif
 }
 
-TEST_F(AudioControllerTest, FifoAggregatesTen10msChunksIntoOne100msChunk) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest,
+       FifoAggregatesTen10msChunksIntoOne100msChunk) {
+  AudioControllerImpl controller;
 
   int callback_count = 0;
   std::vector<int16_t> delivered_pcm;
@@ -642,8 +646,8 @@ TEST_F(AudioControllerTest, FifoAggregatesTen10msChunksIntoOne100msChunk) {
   EXPECT_EQ(delivered_pcm.size(), 1600u);
 }
 
-TEST_F(AudioControllerTest, StopCaptureFlushesFifo) {
-  AudioController controller;
+TEST_F(AudioControllerImplTest, StopCaptureFlushesFifo) {
+  AudioControllerImpl controller;
 
   int callback_count = 0;
   auto capture_sub =

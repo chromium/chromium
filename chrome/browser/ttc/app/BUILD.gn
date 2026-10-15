@@ -6,6 +6,7 @@
 # core. This is enforced via DEPS.
 source_set("public") {
   public = [
+    "public/audio_controller.h",
     "public/conversation.h",
     "public/make_conversation.h",
   ]
@@ -14,12 +15,13 @@ source_set("public") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/ttc/app/public",
+    "//media",
     "//url",
   ]
 }
 
 source_set("app") {
-  public = [ "audio_controller.h" ]
+  public = [ "audio_controller_impl.h" ]
   public_deps = [
     ":public",
     "//base",
@@ -37,7 +39,7 @@ source_set("app") {
 
 source_set("impl") {
   sources = [
-    "audio_controller.cc",
+    "audio_controller_impl.cc",
     "conversation_impl.cc",
     "conversation_impl.h",
     "make_conversation.cc",
@@ -63,7 +65,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "audio_controller_unittest.cc",
+    "audio_controller_impl_unittest.cc",
     "conversation_impl_unittest.cc",
   ]
   deps = [

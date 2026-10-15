@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/app/audio_controller.h"
-
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/app/conversation_impl.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "content/public/test/browser_test.h"

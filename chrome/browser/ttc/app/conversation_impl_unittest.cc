@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -127,8 +127,8 @@ class ConversationImplTest : public testing::Test {
   ConversationImpl& CreateConversation() {
     conversation_ = std::make_unique<ConversationImpl>(
         std::make_unique<MockTtcBackend>(),
-        std::make_unique<AudioController>(GetAudioStreamFactoryBinder(),
-                                          GetAudioSystemFactory()),
+        std::make_unique<AudioControllerImpl>(GetAudioStreamFactoryBinder(),
+                                              GetAudioSystemFactory()),
         session_controller_);
     return *conversation_;
   }
@@ -137,19 +137,20 @@ class ConversationImplTest : public testing::Test {
     return static_cast<MockTtcBackend&>(*conversation_->backend());
   }
 
-  AudioController& audio_controller() {
-    return *conversation_->audio_controller();
+  AudioControllerImpl& audio_controller() {
+    return static_cast<AudioControllerImpl&>(
+        *conversation_->audio_controller());
   }
 
   // Returns a binder dropping the audio stream factory receiver, so that no
   // real audio service is reached.
-  AudioController::AudioStreamFactoryBinder GetAudioStreamFactoryBinder() {
+  AudioControllerImpl::AudioStreamFactoryBinder GetAudioStreamFactoryBinder() {
     return base::BindLambdaForTesting(
         [](mojo::PendingReceiver<media::mojom::AudioStreamFactory>) {});
   }
 
   // Returns a factory handing out AudioSystems backed by `audio_manager_`.
-  AudioController::AudioSystemFactory GetAudioSystemFactory() {
+  AudioControllerImpl::AudioSystemFactory GetAudioSystemFactory() {
     return base::BindLambdaForTesting(
         [this]() -> std::unique_ptr<media::AudioSystem> {
           return std::make_unique<media::AudioSystemImpl>(&audio_manager_);

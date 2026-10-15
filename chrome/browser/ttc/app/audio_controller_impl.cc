@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/audio_controller_impl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -62,8 +62,10 @@ constexpr int kDefaultPlaybackFramesPerBuffer = 2400;  // 100ms chunks
 // is handled automatically by the Chrome Audio Service.
 constexpr int kDefaultPlaybackSampleRate = 24000;
 
-AudioController::AudioStreamFactoryBinder& GetDefaultBinderForTestingStorage() {
-  static base::NoDestructor<AudioController::AudioStreamFactoryBinder> binder;
+AudioControllerImpl::AudioStreamFactoryBinder&
+GetDefaultBinderForTestingStorage() {
+  static base::NoDestructor<AudioControllerImpl::AudioStreamFactoryBinder>
+      binder;
   return *binder;
 }
 
@@ -125,7 +127,7 @@ GetSoftwareCaptureSettingsIfNeeded(
 // sequence, but Convert() runs on the realtime capture thread.
 // TODO(bokan): This comes from SpeechRecognizerImpl - consider creating a
 // shareable implementation.
-class AudioController::CaptureConverter
+class AudioControllerImpl::CaptureConverter
     : public media::AudioConverter::InputCallback {
  public:
   CaptureConverter(const media::AudioParameters& input_params,
@@ -177,7 +179,7 @@ class AudioController::CaptureConverter
 };
 
 // static
-media::AudioParameters AudioController::GetBackendInputAudioParameters() {
+media::AudioParameters AudioControllerImpl::GetBackendInputAudioParameters() {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Mono(),
                                 kBackendInputSampleRate,
@@ -185,7 +187,8 @@ media::AudioParameters AudioController::GetBackendInputAudioParameters() {
 }
 
 // static
-media::AudioParameters AudioController::GetDefaultPlaybackAudioParameters() {
+media::AudioParameters
+AudioControllerImpl::GetDefaultPlaybackAudioParameters() {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Mono(),
                                 kDefaultPlaybackSampleRate,
@@ -193,53 +196,54 @@ media::AudioParameters AudioController::GetDefaultPlaybackAudioParameters() {
 }
 
 // static
-base::AutoReset<AudioController::AudioStreamFactoryBinder>
-AudioController::SetDefaultAudioStreamFactoryBinderForTesting(
+base::AutoReset<AudioControllerImpl::AudioStreamFactoryBinder>
+AudioControllerImpl::SetDefaultAudioStreamFactoryBinderForTesting(
     AudioStreamFactoryBinder binder) {
   return base::AutoReset<AudioStreamFactoryBinder>(
       &GetDefaultBinderForTestingStorage(), std::move(binder));
 }
 
 // static
-AudioController::AudioStreamFactoryBinder
-AudioController::GetDefaultAudioStreamFactoryBinder() {
+AudioControllerImpl::AudioStreamFactoryBinder
+AudioControllerImpl::GetDefaultAudioStreamFactoryBinder() {
   if (GetDefaultBinderForTestingStorage()) {
     return GetDefaultBinderForTestingStorage();
   }
   return content::GetAudioServiceStreamFactoryBinder();
 }
 
-AudioController::AudioController(AudioStreamFactoryBinder factory_binder,
-                                 AudioSystemFactory audio_system_factory)
+AudioControllerImpl::AudioControllerImpl(
+    AudioStreamFactoryBinder factory_binder,
+    AudioSystemFactory audio_system_factory)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       factory_binder_(std::move(factory_binder)),
       audio_system_factory_(std::move(audio_system_factory)),
       capture_fifo_(std::make_unique<media::AudioPushFifo>(
-          base::BindRepeating(&AudioController::DeliverCapturedAudio,
+          base::BindRepeating(&AudioControllerImpl::DeliverCapturedAudio,
                               base::Unretained(this)))) {
   // Initialize the FIFO with the delivery chunk size. AudioPushFifo requires
   // Reset() to be called at least once before Push().
   capture_fifo_->Reset(kBackendInputSamplesPerChunk);
   capture_callback_runner_ = base::BindPostTask(
       main_task_runner_,
-      base::BindRepeating(&AudioController::OnCapturedAudioOnMainThread,
+      base::BindRepeating(&AudioControllerImpl::OnCapturedAudioOnMainThread,
                           weak_factory_.GetWeakPtr()));
   render_callback_runner_ = base::BindPostTask(
       main_task_runner_,
-      base::BindRepeating(&AudioController::OnAudioRenderedOnMainThread,
+      base::BindRepeating(&AudioControllerImpl::OnAudioRenderedOnMainThread,
                           weak_factory_.GetWeakPtr()));
   error_callback_runner_ = base::BindPostTask(
       main_task_runner_,
-      base::BindRepeating(&AudioController::OnAudioErrorOnMainThread,
+      base::BindRepeating(&AudioControllerImpl::OnAudioErrorOnMainThread,
                           weak_factory_.GetWeakPtr()));
 }
 
-AudioController::~AudioController() {
+AudioControllerImpl::~AudioControllerImpl() {
   StopCapture();
   StopPlayback();
 }
 
-media::AudioSystem* AudioController::GetAudioSystem() {
+media::AudioSystem* AudioControllerImpl::GetAudioSystem() {
   if (!audio_system_) {
     audio_system_ = audio_system_factory_
                         ? audio_system_factory_.Run()
@@ -248,7 +252,7 @@ media::AudioSystem* AudioController::GetAudioSystem() {
   return audio_system_.get();
 }
 
-void AudioController::StartCapture(std::string_view device_id) {
+void AudioControllerImpl::StartCapture(std::string_view device_id) {
   if (capture_requested_ || !factory_binder_) {
     return;
   }
@@ -259,11 +263,11 @@ void AudioController::StartCapture(std::string_view device_id) {
 
   GetAudioSystem()->GetInputStreamParameters(
       capture_device_id_,
-      base::BindOnce(&AudioController::OnInputDeviceParametersReceived,
+      base::BindOnce(&AudioControllerImpl::OnInputDeviceParametersReceived,
                      weak_factory_.GetWeakPtr(), capture_device_id_));
 }
 
-void AudioController::OnInputDeviceParametersReceived(
+void AudioControllerImpl::OnInputDeviceParametersReceived(
     const std::string& device_id,
     const std::optional<media::AudioParameters>& device_params) {
   if (!capture_requested_ || audio_capturer_source_ ||
@@ -319,7 +323,7 @@ void AudioController::OnInputDeviceParametersReceived(
   audio_capturer_source_->Start();
 }
 
-void AudioController::StopCapture() {
+void AudioControllerImpl::StopCapture() {
   capture_requested_ = false;
   capture_device_id_.clear();
   if (audio_capturer_source_) {
@@ -331,29 +335,34 @@ void AudioController::StopCapture() {
   capture_converter_.reset();
 }
 
-base::CallbackListSubscription AudioController::AddAudioCaptureListener(
+bool AudioControllerImpl::is_capturing() const {
+  return capture_requested_;
+}
+
+base::CallbackListSubscription AudioControllerImpl::AddAudioCaptureListener(
     AudioCaptureCallback callback) {
   return capture_callbacks_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription AudioController::AddAudioEnergyListener(
+base::CallbackListSubscription AudioControllerImpl::AddAudioEnergyListener(
     AudioEnergyCallback callback) {
   return energy_callbacks_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription AudioController::AddPlaybackCompletionListener(
+base::CallbackListSubscription
+AudioControllerImpl::AddPlaybackCompletionListener(
     PlaybackCompletionCallback callback) {
   return completion_callbacks_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription AudioController::AddErrorListener(
+base::CallbackListSubscription AudioControllerImpl::AddErrorListener(
     ErrorCallback callback) {
   return error_callbacks_.Add(std::move(callback));
 }
 
-void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
-                                const media::AudioParameters& params,
-                                int64_t sequence_number) {
+void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
+                                    const media::AudioParameters& params,
+                                    int64_t sequence_number) {
   // Ignore empty or placeholder/preamble chunks (< 2 samples) that carry no
   // usable audio and can cause buffer underruns.
   if (pcm_data.size() < 2u) {
@@ -368,28 +377,28 @@ void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
   CreateAudioOutputDevice(params);
 }
 
-void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
-                                int64_t sequence_number) {
+void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
+                                    int64_t sequence_number) {
   PlayAudio(pcm_data, GetDefaultPlaybackAudioParameters(), sequence_number);
 }
 
-void AudioController::ClearPlaybackQueue() {
+void AudioControllerImpl::ClearPlaybackQueue() {
   base::AutoLock auto_lock(playback_lock_);
   playback_queue_.clear();
   energy_callbacks_.Notify(0.0f);
 }
 
-void AudioController::StopPlayback() {
+void AudioControllerImpl::StopPlayback() {
   ClearPlaybackQueue();
   output_device_.reset();
 }
 
-bool AudioController::is_playing() const {
+bool AudioControllerImpl::is_playing() const {
   base::AutoLock auto_lock(playback_lock_);
   return !playback_queue_.empty();
 }
 
-void AudioController::CreateAudioOutputDevice(
+void AudioControllerImpl::CreateAudioOutputDevice(
     const media::AudioParameters& params) {
   if (output_device_ || !factory_binder_) {
     return;
@@ -403,12 +412,12 @@ void AudioController::CreateAudioOutputDevice(
   output_device_->Play();
 }
 
-void AudioController::OnCaptureStarted() {}
+void AudioControllerImpl::OnCaptureStarted() {}
 
-void AudioController::Capture(const media::AudioBus* audio_source,
-                              base::TimeTicks audio_capture_time,
-                              const media::AudioGlitchInfo& glitch_info,
-                              double volume) {
+void AudioControllerImpl::Capture(const media::AudioBus* audio_source,
+                                  base::TimeTicks audio_capture_time,
+                                  const media::AudioGlitchInfo& glitch_info,
+                                  double volume) {
   // NOTE: This callback is executed on the real-time audio capture thread.
   // We convert and re-buffer via capture_fifo_ here, then post to
   // main_task_runner_ via capture_callback_runner_ for thread safety.
@@ -431,8 +440,8 @@ void AudioController::Capture(const media::AudioBus* audio_source,
   }
 }
 
-void AudioController::DeliverCapturedAudio(const media::AudioBus& audio_bus,
-                                           int frame_delay) {
+void AudioControllerImpl::DeliverCapturedAudio(const media::AudioBus& audio_bus,
+                                               int frame_delay) {
   // `frame_delay` indicates the offset of the first frame in `audio_bus`
   // relative to the latest Push() call (negative when output includes frames
   // queued in previous pushes). Since TTC streams audio chunks sequentially
@@ -455,26 +464,28 @@ void AudioController::DeliverCapturedAudio(const media::AudioBus& audio_bus,
   capture_callback_runner_.Run(std::move(pcm_data), params, energy);
 }
 
-void AudioController::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
-                                     const std::string& message) {
+void AudioControllerImpl::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   VLOG(1) << "AudioController audio capture error: " << message;
   ErrorCode error_code = CaptureErrorToErrorCode(code);
   error_callback_runner_.Run(error_code);
 }
 
-void AudioController::OnCaptureMuted(bool is_muted) {}
+void AudioControllerImpl::OnCaptureMuted(bool is_muted) {}
 
-void AudioController::OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
-                                                  media::AudioParameters params,
-                                                  float energy) {
+void AudioControllerImpl::OnCapturedAudioOnMainThread(
+    std::vector<int16_t> pcm_data,
+    media::AudioParameters params,
+    float energy) {
   capture_callbacks_.Notify(pcm_data, params);
   energy_callbacks_.Notify(energy);
 }
 
-int AudioController::Render(base::TimeDelta delay,
-                            base::TimeTicks delay_timestamp,
-                            const media::AudioGlitchInfo& glitch_info,
-                            media::AudioBus* dest) {
+int AudioControllerImpl::Render(base::TimeDelta delay,
+                                base::TimeTicks delay_timestamp,
+                                const media::AudioGlitchInfo& glitch_info,
+                                media::AudioBus* dest) {
   if (!dest || dest->frames() == 0) {
     return 0;
   }
@@ -529,17 +540,18 @@ int AudioController::Render(base::TimeDelta delay,
   return dest->frames();
 }
 
-void AudioController::OnRenderError() {
+void AudioControllerImpl::OnRenderError() {
   VLOG(1) << "AudioController audio render error";
 }
 
-void AudioController::OnAudioRenderedOnMainThread(int64_t completed_sequence) {
+void AudioControllerImpl::OnAudioRenderedOnMainThread(
+    int64_t completed_sequence) {
   if (completed_sequence >= 0) {
     completion_callbacks_.Notify(completed_sequence);
   }
 }
 
-void AudioController::OnAudioErrorOnMainThread(ErrorCode error_code) {
+void AudioControllerImpl::OnAudioErrorOnMainThread(ErrorCode error_code) {
   error_callbacks_.Notify(error_code);
 }
 

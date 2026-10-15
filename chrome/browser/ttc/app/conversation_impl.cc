@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
-#include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -46,7 +46,7 @@ void ConversationImpl::Start() {
   audio_capture_error_subscription_ =
       audio_controller_->AddErrorListener(base::BindRepeating(
           &ConversationImpl::OnBackendError, base::Unretained(this)));
-  audio_controller_->StartCapture();
+  audio_controller_->StartCapture(/*device_id=*/"");
 
   backend_->Connect(this);
 

@@ -38,6 +38,7 @@ if (enable_ttc_webui) {
 source_set("core") {
   public = [
     "entrypoint_controller.h",
+    "eval_audio_controller.h",
     "page_context.h",
     "session_controller.h",
     "session_journal.h",
@@ -68,6 +69,7 @@ source_set("core") {
     "//components/page_content_annotations/content",
     "//components/ttc/app/public",
     "//content/public/browser",
+    "//media",
     "//ui/base/unowned_user_data",
     "//url",
   ]
@@ -85,6 +87,8 @@ source_set("impl") {
     "actor_task_holder.cc",
     "actor_task_holder.h",
     "entrypoint_controller.cc",
+    "eval_audio_controller.cc",
+    "eval_audio_controller.h",
     "page_context.cc",
     "page_context_util.cc",
     "page_context_util.h",
