@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
@@ -23,6 +24,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -92,6 +94,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
@@ -118,23 +121,25 @@ public class SearchActivityUnitTest {
     private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
     private static final String HISTOGRAM_SUFFIX_HUB = ".Hub";
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock SearchActivityUtils.TestDelegate mUtils;
-    private @Mock TemplateUrlService mTemplateUrlSvc;
-    private @Mock Profile mProfile;
-    private @Mock TemplateUrlServiceFactoryJni mTemplateUrlFactoryJni;
-    private @Mock WebContents mWebContents;
-    private @Mock Tab mTab;
-    private @Mock SearchActivity.SearchActivityDelegate mDelegate;
-    private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
-    private @Mock TopResumedActivityChangedObserver mTopResumedObserver;
-    private @Mock UmaActivityObserver mUmaObserver;
-    private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
-    private @Mock LocationBarCoordinator mLocationBarCoordinator;
-    private @Mock UrlBarCoordinator mUrlCoordinator;
-    private @Mock StatusCoordinator mStatusCoordinator;
-    private @Mock BackPressManager mBackPressManager;
-    private @Captor ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SearchActivityUtils.TestDelegate mUtils;
+    @Mock private TemplateUrlService mTemplateUrlSvc;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlServiceFactoryJni mTemplateUrlFactoryJni;
+    @Mock private WebContents mWebContents;
+    @Mock private Tab mTab;
+    @Mock private SearchActivity.SearchActivityDelegate mDelegate;
+    @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Mock private TopResumedActivityChangedObserver mTopResumedObserver;
+    @Mock private UmaActivityObserver mUmaObserver;
+    @Mock private LocationBarBackgroundDrawable mSearchBoxBackground;
+    @Mock private LocationBarCoordinator mLocationBarCoordinator;
+    @Mock private UrlBarCoordinator mUrlCoordinator;
+    @Mock private StatusCoordinator mStatusCoordinator;
+    @Mock private BackPressManager mBackPressManager;
+    @Mock private IntentCallback mIntentCallback;
+    @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
+
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -797,7 +802,9 @@ public class SearchActivityUnitTest {
         clearInvocations(mLocationBarCoordinator);
 
         mActivity.onNewIntent(buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET));
-        verify(mLocationBarCoordinator).setUrlBarFocus(mAutocompleteInputCaptor.capture());
+        // endSession() ends the previous input (null), then beginQuery() begins the new one.
+        verify(mLocationBarCoordinator, times(2))
+                .setUrlBarFocus(mAutocompleteInputCaptor.capture());
         assertEquals(
                 AutocompleteRequestType.SEARCH,
                 mAutocompleteInputCaptor.getValue().getRequestType());
@@ -896,6 +903,7 @@ public class SearchActivityUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
     public void onTopResumedActivityChanged_clearOmniboxFocusIfNotActive() {
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.SEARCH_WIDGET), false);
         mLocationBar.requestOmniboxFocus();
@@ -928,6 +936,73 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
         mActivity.onTopResumedActivityChanged(false);
         histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void bindCallbackToCurrentSession_forwardsResultForSameSession() {
+        var intent =
+                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
+                        .setRequestType(AutocompleteRequestType.AI_MODE)
+                        .build();
+        mActivity.handleNewIntent(intent, /* activityPresent= */ false);
+        IntentCallback wrapped = mActivity.bindCallbackToCurrentSession(mIntentCallback);
+
+        Intent data = new Intent();
+        wrapped.onIntentCompleted(Activity.RESULT_OK, data);
+        verify(mIntentCallback).onIntentCompleted(Activity.RESULT_OK, data);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void bindCallbackToCurrentSession_dropsResultAfterNewIntent() {
+        var intent =
+                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
+                        .setRequestType(AutocompleteRequestType.AI_MODE)
+                        .build();
+        mActivity.handleNewIntent(intent, /* activityPresent= */ false);
+        IntentCallback wrapped = mActivity.bindCallbackToCurrentSession(mIntentCallback);
+
+        mActivity.handleNewIntent(intent, /* activityPresent= */ true);
+        wrapped.onIntentCompleted(Activity.RESULT_OK, new Intent());
+        verify(mIntentCallback, never()).onIntentCompleted(anyInt(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void bindCallbackToCurrentSession_nullCallback_returnsNull() {
+        mActivity.handleNewIntent(
+                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                /* activityPresent= */ false);
+        assertNull(mActivity.bindCallbackToCurrentSession(null));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void bindCallbackToCurrentSession_flagDisabled_returnsCallbackUnchanged() {
+        mActivity.handleNewIntent(
+                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                /* activityPresent= */ false);
+        assertEquals(mIntentCallback, mActivity.bindCallbackToCurrentSession(mIntentCallback));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void onTopResumedActivityChanged_keepsDraftOnFocusLoss() {
+        mActivity.handleNewIntent(
+                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                /* activityPresent= */ false);
+        mLocationBar.requestOmniboxFocus();
+
+        mActivity.onTopResumedActivityChanged(false);
+        assertTrue(mUrlBar.hasFocus());
+        verify(mLocationBarCoordinator, never()).setUrlBarFocus(null);
+
+        // The retained draft is discarded when a new session starts.
+        mActivity.handleNewIntent(
+                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                /* activityPresent= */ true);
+        verify(mLocationBarCoordinator).setUrlBarFocus(null);
     }
 
     @Test

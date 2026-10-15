@@ -31,7 +31,10 @@ import org.robolectric.Shadows;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -206,6 +209,33 @@ public class SearchActivityClientImplUnitTest {
                         SearchType.TEXT,
                         AutocompleteRequestType.AI_MODE),
                 intent.getAction());
+    }
+
+    private static boolean hasNoHistoryFlag(Intent intent) {
+        return (intent.getFlags() & Intent.FLAG_ACTIVITY_NO_HISTORY) != 0;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void intentBuilder_noHistoryByDefault() {
+        var intent = mClient.newIntentBuilder().build();
+        assertTrue(hasNoHistoryFlag(intent));
+        intent = mClient.newIntentBuilder().setMayLaunchChildActivities(false).build();
+        assertTrue(hasNoHistoryFlag(intent));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void intentBuilder_mayLaunchChildActivities_omitsNoHistory() {
+        var intent = mClient.newIntentBuilder().setMayLaunchChildActivities(true).build();
+        assertFalse(hasNoHistoryFlag(intent));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void intentBuilder_mayLaunchChildActivities_flagDisabled_keepsNoHistory() {
+        var intent = mClient.newIntentBuilder().setMayLaunchChildActivities(true).build();
+        assertTrue(hasNoHistoryFlag(intent));
     }
 
     @Test

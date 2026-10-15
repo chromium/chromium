@@ -82,6 +82,22 @@ public interface SearchActivityClient {
          */
         IntentBuilder setRequestType(@AutocompleteRequestType int requestType);
 
+        /**
+         * Sets whether the search session may launch child activities for result, e.g. Camera or a
+         * file picker for AI Mode attachments. The default value is `false`: SearchActivity is
+         * launched with FLAG_ACTIVITY_NO_HISTORY and finishes as soon as the user leaves it. When
+         * `true`, the flag is omitted so SearchActivity survives the child activity and receives
+         * its result.
+         *
+         * <p>Intent flags are not part of {@link Intent#filterEquals}, so PendingIntents that only
+         * differ in this setting resolve to the same PendingIntent. Such callers must also vary the
+         * action, e.g. through {@link #setRequestType}.
+         *
+         * @param mayLaunchChildActivities Whether the session may launch child activities.
+         * @return The IntentBuilder instance for method chaining.
+         */
+        IntentBuilder setMayLaunchChildActivities(boolean mayLaunchChildActivities);
+
         /** Returns the intent capturing all the relevant details. */
         Intent build();
     }
