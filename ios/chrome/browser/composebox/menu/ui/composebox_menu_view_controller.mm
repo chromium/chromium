@@ -56,8 +56,8 @@ const CGFloat kEstimatedNavigationItemSpacing = 56.0;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
   [_mainMenuVC.view layoutIfNeeded];
-  [self.menuDelegate composeboxMenuViewControllerDidChangeMenuPage:self];
 }
 
 #pragma mark - UINavigationControllerDelegate
