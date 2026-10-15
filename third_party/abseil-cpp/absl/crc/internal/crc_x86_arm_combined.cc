@@ -593,6 +593,8 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
   // instruction, and up to kMaxStreams blocks computed with PCLMULQDQ, which
   // are combined in the end.
   static constexpr size_t kMaxStreams = 3;
+  // When copying, at most kMaxCopyStreams streams are used in total.
+  static constexpr size_t kMaxCopyStreams = 3;
 };
 
 template <size_t num_crc_streams, size_t num_pclmul_streams,
@@ -745,6 +747,9 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
                   "Invalid number of crc streams");
     static_assert(num_pclmul_streams >= 0 && num_pclmul_streams <= kMaxStreams,
                   "Invalid number of pclmul streams");
+    constexpr StreamCounts kStreams = GetStreamCounts(copy_type);
+    constexpr size_t kNumActiveCrcStreams = kStreams.crc;
+    constexpr size_t kNumActivePclmulStreams = kStreams.pclmul;
     const uint8_t* p = static_cast<const uint8_t*>(bytes);
     const uint8_t* e = p + length;
     char* d = static_cast<char*>(dst);
@@ -779,15 +784,15 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     }
 
     size_t bs = static_cast<size_t>(e - p) /
-                (num_crc_streams + num_pclmul_streams) / 64;
+                (kNumActiveCrcStreams + kNumActivePclmulStreams) / 64;
     const uint8_t* stream_start = p;
     const uint8_t* crc_streams[kMaxStreams];
-    for (size_t i = 0; i < num_crc_streams; i++) {
+    for (size_t i = 0; i < kNumActiveCrcStreams; i++) {
       crc_streams[i] = stream_start;
       stream_start += bs * 64;
     }
     const uint8_t* pclmul_streams[kMaxStreams];
-    for (size_t i = 0; i < num_pclmul_streams; i++) {
+    for (size_t i = 0; i < kNumActivePclmulStreams; i++) {
       pclmul_streams[i] = stream_start;
       stream_start += bs * 64;
     }
@@ -796,11 +801,11 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     uint8_t* dst_pclmul_streams[kMaxStreams];
     if constexpr (copy_type != CopyType::kNone) {
       uint8_t* dst_stream_start = reinterpret_cast<uint8_t*>(d);
-      for (size_t i = 0; i < num_crc_streams; i++) {
+      for (size_t i = 0; i < kNumActiveCrcStreams; i++) {
         dst_crc_streams[i] = dst_stream_start;
         dst_stream_start += bs * 64;
       }
-      for (size_t i = 0; i < num_pclmul_streams; i++) {
+      for (size_t i = 0; i < kNumActivePclmulStreams; i++) {
         dst_pclmul_streams[i] = dst_stream_start;
         dst_stream_start += bs * 64;
       }
@@ -812,26 +817,26 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 
     V256 pclmul_v0_0[kMaxStreams];
     V256 pclmul_v1_0[kMaxStreams];
-    for (size_t j = 0; j < num_pclmul_streams; j++) {
+    for (size_t j = 0; j < kNumActivePclmulStreams; j++) {
       V256_LoadPairU(pclmul_streams[j], &pclmul_v0_0[j], &pclmul_v1_0[j]);
     }
 
     if constexpr (copy_type != CopyType::kNone) {
-      for (size_t j = 0; j < num_crc_streams; j++) {
+      for (size_t j = 0; j < kNumActiveCrcStreams; j++) {
         Copy64Bytes<copy_type>(dst_crc_streams[j], crc_streams[j]);
         dst_crc_streams[j] += 64;
       }
-      for (size_t j = 0; j < num_pclmul_streams; j++) {
+      for (size_t j = 0; j < kNumActivePclmulStreams; j++) {
         Store64Bytes<copy_type>(dst_pclmul_streams[j], pclmul_v0_0[j],
                                 pclmul_v1_0[j]);
         dst_pclmul_streams[j] += 64;
       }
     }
 
-    if (num_crc_streams == 1) {
+    if (kNumActiveCrcStreams == 1) {
       l64_crc[0] = Process64BytesCRC(crc_streams[0], l64_crc[0]);
       crc_streams[0] += 16 * 4;
-    } else if (num_crc_streams == 2) {
+    } else if (kNumActiveCrcStreams == 2) {
       Process64BytesCRC2Streams(crc_streams[0], crc_streams[1], l64_crc);
       crc_streams[0] += 16 * 4;
       crc_streams[1] += 16 * 4;
@@ -845,21 +850,21 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 
     // Align to 32 bytes for vpclmul implementation.
     alignas(32) V128 partialCRC[kMaxStreams][4];
-    for (size_t i = 0; i < num_pclmul_streams; i++) {
+    for (size_t i = 0; i < kNumActivePclmulStreams; i++) {
       InitPclmulStream(pclmul_v0_0[i], pclmul_v1_0[i], partialCRC[i]);
       pclmul_streams[i] += 64;
     }
 
     for (size_t i = 1; i < bs; i++) {
       // Prefetch data for next iterations.
-      for (size_t j = 0; j < num_crc_streams; j++) {
+      for (size_t j = 0; j < kNumActiveCrcStreams; j++) {
         PrefetchToLocalCache(crc_streams[j] + kPrefetchHorizon);
       }
-      for (size_t j = 0; j < num_pclmul_streams; j++) {
+      for (size_t j = 0; j < kNumActivePclmulStreams; j++) {
         PrefetchToLocalCache(pclmul_streams[j] + kPrefetchHorizon);
       }
 
-      for (size_t j = 0; j < num_pclmul_streams; j++) {
+      for (size_t j = 0; j < kNumActivePclmulStreams; j++) {
         if constexpr (copy_type != CopyType::kNone) {
           ProcessPclmulStream<copy_type>(pclmul_streams[j],
                                          dst_pclmul_streams[j], partialCRC[j]);
@@ -871,10 +876,10 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
         pclmul_streams[j] += 64;
       }
 
-      if (num_crc_streams == 1) {
+      if (kNumActiveCrcStreams == 1) {
         l64_crc[0] = Process64BytesCRC(crc_streams[0], l64_crc[0]);
         crc_streams[0] += 16 * 4;
-      } else if (num_crc_streams == 2) {
+      } else if (kNumActiveCrcStreams == 2) {
         Process64BytesCRC2Streams(crc_streams[0], crc_streams[1], l64_crc);
         crc_streams[0] += 16 * 4;
         crc_streams[1] += 16 * 4;
@@ -886,7 +891,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
         crc_streams[2] += 16 * 4;
       }
       if constexpr (copy_type != CopyType::kNone) {
-        for (size_t j = 0; j < num_crc_streams; j++) {
+        for (size_t j = 0; j < kNumActiveCrcStreams; j++) {
           Copy64Bytes<copy_type>(dst_crc_streams[j], crc_streams[j] - 64);
           dst_crc_streams[j] += 64;
         }
@@ -895,7 +900,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 
     // PCLMULQDQ based streams require special final step;
     // CRC based don't.
-    for (size_t i = 0; i < num_pclmul_streams; i++) {
+    for (size_t i = 0; i < kNumActivePclmulStreams; i++) {
       l64_pclmul[i] = FinalizePclmulStream(partialCRC[i]);
     }
 
@@ -903,27 +908,28 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     static_assert(64 % (1 << kNumDroppedBits) == 0);
     uint32_t magic = ComputeZeroConstant(bs * 64);
     l64 = l64_crc[0];
-    for (size_t i = 1; i < num_crc_streams; i++) {
+    for (size_t i = 1; i < kNumActiveCrcStreams; i++) {
       l64 = MultiplyWithExtraX33(static_cast<uint32_t>(l64), magic);
       l64 ^= l64_crc[i];
     }
-    for (size_t i = 0; i < num_pclmul_streams; i++) {
+    for (size_t i = 0; i < kNumActivePclmulStreams; i++) {
       l64 = MultiplyWithExtraX33(static_cast<uint32_t>(l64), magic);
       l64 ^= l64_pclmul[i];
     }
 
     // Update p and d.
-    if constexpr (num_pclmul_streams > 0) {
-      p = pclmul_streams[num_pclmul_streams - 1];
+    if constexpr (kNumActivePclmulStreams > 0) {
+      p = pclmul_streams[kNumActivePclmulStreams - 1];
       if constexpr (copy_type != CopyType::kNone) {
-        d = reinterpret_cast<char*>(dst_pclmul_streams[num_pclmul_streams - 1]);
+        d = reinterpret_cast<char*>(
+            dst_pclmul_streams[kNumActivePclmulStreams - 1]);
         size_t remaining_to_copy = static_cast<size_t>(e - p);
         std::memcpy(d, p, remaining_to_copy);
       }
     } else {
-      p = crc_streams[num_crc_streams - 1];
+      p = crc_streams[kNumActiveCrcStreams - 1];
       if constexpr (copy_type != CopyType::kNone) {
-        d = reinterpret_cast<char*>(dst_crc_streams[num_crc_streams - 1]);
+        d = reinterpret_cast<char*>(dst_crc_streams[kNumActiveCrcStreams - 1]);
         size_t remaining_to_copy = static_cast<size_t>(e - p);
         std::memcpy(d, p, remaining_to_copy);
       }
@@ -966,6 +972,32 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
   }
 
  private:
+  struct StreamCounts {
+    size_t crc;
+    size_t pclmul;
+  };
+
+  // Returns the number of crc and pclmul streams to use. Copying adds loads and
+  // stores, so fewer streams are needed to saturate the dispatch width. In copy
+  // mode, at most kMaxCopyStreams of the configured streams are used, taken in
+  // the order: pclmul 1, crc 1, pclmul 2, crc 2, pclmul 3, crc 3.
+  static constexpr StreamCounts GetStreamCounts(CopyType copy_type) {
+    if (copy_type == CopyType::kNone) {
+      return {num_crc_streams, num_pclmul_streams};
+    }
+    StreamCounts counts = {0, 0};
+    for (size_t i = 0; i < kMaxStreams; i++) {
+      if (i < num_pclmul_streams &&
+          counts.crc + counts.pclmul < kMaxCopyStreams) {
+        counts.pclmul++;
+      }
+      if (i < num_crc_streams && counts.crc + counts.pclmul < kMaxCopyStreams) {
+        counts.crc++;
+      }
+    }
+    return counts;
+  }
+
   ABSL_INTERNAL_ATTRIBUTE_AVX ABSL_ATTRIBUTE_ALWAYS_INLINE void
   InitPclmulStream(V256 v0, V256 v1, V128* partialCRC) const {
     if constexpr (pclmul_stream_type == PclmulStreamType::NONE) {
@@ -1046,9 +1078,6 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
   CpuType type = GetCpuType();
   switch (type) {
-    case CpuType::kAmdRome:
-      return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
-          3, 0, PclmulStreamType::PCLMUL>();
     case CpuType::kIntelHaswell:
     case CpuType::kAmdNaples:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
@@ -1057,13 +1086,14 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kAmdGenoa:
     case CpuType::kAmdSiena:
     case CpuType::kAmdTurin:
+    case CpuType::kAmdVenice:
 #if defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD) &&                   \
     (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) && \
     (!defined(_MSC_VER) || defined(__clang__))
       // We don't have vector pclmul on arm, but this still needs to
       // compile.
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
-          3, 1, PclmulStreamType::VPCLMUL>();
+          2, 2, PclmulStreamType::VPCLMUL>();
 #else
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 1, PclmulStreamType::PCLMUL>();
@@ -1088,6 +1118,7 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 2, PclmulStreamType::PCLMUL>();
     // PCLMULQDQ is slow, don't use it.
+    case CpuType::kAmdRome:
     case CpuType::kIntelIvybridge:
     case CpuType::kIntelSandybridge:
     case CpuType::kIntelWestmere:

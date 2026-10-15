@@ -1488,6 +1488,7 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/base:hardening",
         "//absl/base:iterator_traits_internal",
+        "//absl/cleanup",
     ],
 )
 

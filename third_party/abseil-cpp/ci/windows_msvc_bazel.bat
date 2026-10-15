@@ -29,24 +29,24 @@ IF EXIST "%KOKORO_GFILE_DIR%\distdir\abseil-cpp_vendor.tar.gz" (
 :: Set the standard version, [c++17|c++latest]
 :: https://msdn.microsoft.com/en-us/library/mt490614.aspx
 :: The default is c++17 if not set on command line.
-IF "%STD%"=="" SET STD=c++17
+IF NOT DEFINED STD SET STD=c++17
 
 :: Set the compilation_mode (fastbuild|opt|dbg)
 :: https://docs.bazel.build/versions/master/user-manual.html#flag--compilation_mode
 :: The default is fastbuild
-IF "%COMPILATION_MODE%"=="" SET COMPILATION_MODE=fastbuild
+IF NOT DEFINED COMPILATION_MODE SET COMPILATION_MODE=fastbuild
 
 :: Copy the alternate option file, if specified.
-IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
+IF DEFINED ALTERNATE_OPTIONS copy %ALTERNATE_OPTIONS% absl\base\options.h
 
 :: To upgrade Bazel, first download a new binary from
 :: https://github.com/bazelbuild/bazel/releases and copy it to
 :: /google/data/rw/teams/absl/kokoro/windows.
 "%KOKORO_GFILE_DIR%\bazel-9.1.0-windows-x86_64.exe" ^
   test ... ^
-  --compilation_mode=%COMPILATION_MODE% ^
+  --compilation_mode="%COMPILATION_MODE%" ^
   --copt=/WX ^
-  --cxxopt=/std:%STD% ^
+  --cxxopt="/std:%STD%" ^
   --define=absl=1 ^
   --enable_bzlmod=true ^
   --keep_going ^

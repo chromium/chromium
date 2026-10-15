@@ -112,6 +112,11 @@ class StatusRep {
       absl::FunctionRef<void(absl::string_view, const absl::Cord&)> visitor)
       const;
 
+  // Returns the raw payload list, or nullptr if there are none. Unlike
+  // `ForEachPayload`, this does not hide `kStackTraceUrl` payloads and does not
+  // invalidate `type_url` lifetimes in debug builds; callers must handle both.
+  const Payloads* absl_nullable payloads() const { return payloads_.get(); }
+
   absl::Span<const SourceLocation> GetSourceLocations() const;
   void AddSourceLocation(absl::SourceLocation loc);
 

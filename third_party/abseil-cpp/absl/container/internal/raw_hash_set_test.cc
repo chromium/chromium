@@ -3797,6 +3797,90 @@ TEST(Table, HeterogeneousLookupOverloads) {
   EXPECT_TRUE((VerifyResultOf<CallCount, TransparentTable>()));
 }
 
+TEST(Table, StringViewConversionCount) {
+  DisableSampling();
+
+  struct ConvertibleToStringView {
+    absl::string_view value;
+    mutable int num_conversions = 0;
+
+    operator absl::string_view() const {  // NOLINT(runtime/explicit)
+      ++num_conversions;
+      return value;
+    }
+  };
+
+  const auto test_table = [](auto soo) {
+    using Policy = ValuePolicy<absl::string_view, /*kTransferable=*/true,
+                               /*kSoo=*/decltype(soo)::value>;
+    using Table = raw_hash_set<Policy, hash_default_hash<absl::string_view>,
+                               hash_default_eq<absl::string_view>>;
+    Table t;
+
+    // Empty table: no conversion to string_view.
+    {
+      ConvertibleToStringView k{"a"};
+      EXPECT_EQ(t.find(k), t.end());
+      EXPECT_EQ(k.num_conversions, 0);
+    }
+    {
+      ConvertibleToStringView k{"a"};
+      t.lazy_emplace(k, [&](const auto& ctor) {
+        EXPECT_EQ(k.num_conversions, 0);
+        ctor("a");
+      });
+    }
+
+    // Single-element table: 1 conversion to string_view.
+    ASSERT_TRUE(RawHashSetTestOnlyAccess::GetCommon(t).is_small());
+    {
+      ConvertibleToStringView k{"a"};
+      EXPECT_NE(t.find(k), t.end());
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+    {
+      ConvertibleToStringView k{"b"};
+      EXPECT_EQ(t.find(k), t.end());
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+    {
+      ConvertibleToStringView k{"a"};
+      EXPECT_FALSE(t.emplace(k).second);
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+
+    // Many-element table: 1 conversion to string_view.
+    t.insert("b");
+    t.insert("c");
+    ASSERT_FALSE(RawHashSetTestOnlyAccess::GetCommon(t).is_small());
+    {
+      ConvertibleToStringView k{"a"};
+      EXPECT_NE(t.find(k), t.end());
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+    {
+      ConvertibleToStringView k{"z"};
+      EXPECT_EQ(t.find(k), t.end());
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+    {
+      ConvertibleToStringView k{"a"};
+      EXPECT_FALSE(t.emplace(k).second);
+      EXPECT_EQ(k.num_conversions, 1);
+    }
+    {
+      ConvertibleToStringView k{"d"};
+      t.lazy_emplace(k, [&](const auto& ctor) {
+        EXPECT_EQ(k.num_conversions, 1);
+        ctor("d");
+      });
+    }
+  };
+
+  test_table(/*soo=*/std::false_type{});
+  test_table(/*soo=*/std::true_type{});
+}
+
 TEST(Iterator, IsDefaultConstructible) {
   StringTable::iterator i;
   EXPECT_TRUE(i == StringTable::iterator());

@@ -80,7 +80,10 @@ XX	+1924-09909	America/Mexico_City	Central Standard (CST) - Saskatchewan; centra
 XX	-2709-10926	Pacific/Easter	Easter Island
 #
 # -06/-05 - CST/CDT (North America DST)
-XX	+415100-0873900	America/Chicago	Central (CST/CDT) - US & Canada; Mexico near US border
+XX	+415100-0873900	America/Chicago	Central (CST/CDT) - US; Mexico near US border; central Nunavut
+#
+# -06/-05 - CST/CDT (North America DST) until 2026-11-01 02:00; then EST
+XX	+4953-09709	America/Winnipeg	Eastern Standard (EST) - Manitoba, northwestern Ontario
 #
 # -05
 XX	-1203-07703	America/Lima	eastern South America

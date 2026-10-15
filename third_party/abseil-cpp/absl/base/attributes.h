@@ -88,8 +88,13 @@
 #if ABSL_HAVE_ATTRIBUTE(format) || (defined(__GNUC__) && !defined(__clang__))
 #define ABSL_PRINTF_ATTRIBUTE(string_index, first_to_check) \
   __attribute__((__format__(__printf__, string_index, first_to_check)))
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::format)
+#define ABSL_SCANF_ATTRIBUTE(string_index, first_to_check) \
+  [[gnu::format(scanf, string_index, first_to_check)]]
+#else
 #define ABSL_SCANF_ATTRIBUTE(string_index, first_to_check) \
   __attribute__((__format__(__scanf__, string_index, first_to_check)))
+#endif
 #else
 #define ABSL_PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define ABSL_SCANF_ATTRIBUTE(string_index, first_to_check)
@@ -479,26 +484,16 @@
 // Example:
 //
 //   int foo() ABSL_ATTRIBUTE_HOT;
-#if defined(__cplusplus) && defined(__clang__) && \
-    ABSL_HAVE_CPP_ATTRIBUTE(gnu::hot)
-#define ABSL_ATTRIBUTE_HOT                                       \
-  _Pragma("clang diagnostic push")                               \
-      _Pragma("clang diagnostic error \"-Wignored-attributes\"") \
-          [[gnu::hot]] /*                                     */ \
-          _Pragma("clang diagnostic pop")
+#if defined(__cplusplus) && ABSL_HAVE_CPP_ATTRIBUTE(gnu::hot)
+#define ABSL_ATTRIBUTE_HOT [[gnu::hot]]
 #elif ABSL_HAVE_ATTRIBUTE(hot) || (defined(__GNUC__) && !defined(__clang__))
 #define ABSL_ATTRIBUTE_HOT __attribute__((hot))
 #else
 #define ABSL_ATTRIBUTE_HOT
 #endif
 
-#if defined(__cplusplus) && defined(__clang__) && \
-    ABSL_HAVE_CPP_ATTRIBUTE(gnu::cold)
-#define ABSL_ATTRIBUTE_COLD                                      \
-  _Pragma("clang diagnostic push")                               \
-      _Pragma("clang diagnostic error \"-Wignored-attributes\"") \
-          [[gnu::cold]] /*                                   */  \
-          _Pragma("clang diagnostic pop")
+#if defined(__cplusplus) && ABSL_HAVE_CPP_ATTRIBUTE(gnu::cold)
+#define ABSL_ATTRIBUTE_COLD [[gnu::cold]]
 #elif ABSL_HAVE_ATTRIBUTE(cold) || (defined(__GNUC__) && !defined(__clang__))
 #define ABSL_ATTRIBUTE_COLD __attribute__((cold))
 #else
@@ -854,7 +849,7 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 // Note that `ABSL_CONST_INIT` must not be used on a variable declared
 // constexpr.
 #if defined(__cpp_constinit) && __cpp_constinit >= 201907L
-#define ABSL_CONST_INIT constinit
+#define ABSL_CONST_INIT constinit  // NOLINT(clang-diagnostic-pre-c++20-compat)
 #elif ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
 #define ABSL_CONST_INIT [[clang::require_constant_initialization]]
 #else

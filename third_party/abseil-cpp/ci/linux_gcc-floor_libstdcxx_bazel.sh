@@ -33,7 +33,7 @@ if [[ -z ${COMPILATION_MODE:-} ]]; then
 fi
 
 if [[ -z ${EXCEPTIONS_MODE:-} ]]; then
-  EXCEPTIONS_MODE="-fno-exceptions -fexceptions"
+  EXCEPTIONS_MODE="-fno-exceptions"
 fi
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
@@ -44,16 +44,16 @@ docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
 docker run "${DOCKER_CONTAINER}" /opt/gcc-10/bin/gcc -v
 docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
 
-# USE_BAZEL_CACHE=1 only works on Kokoro.
+# Bazel cache only works on Kokoro.
 # Without access to the credentials this won't work.
-if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
-  DOCKER_EXTRA_ARGS="--volume=${KOKORO_KEYSTORE_DIR}:/keystore:ro ${DOCKER_EXTRA_ARGS:-}"
+if [[ ${KOKORO_KEYSTORE_DIR:-} ]]; then
+  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_KEYSTORE_DIR},target=/keystore,readonly ${DOCKER_EXTRA_ARGS:-}"
   # Bazel doesn't track changes to tools outside of the workspace
   # (e.g. /usr/bin/gcc), so by appending the docker container to the
-  # remote_http_cache url, we make changes to the container part of
+  # remote_cache url, we make changes to the container part of
   # the cache key. Hashing the key is to make it shorter and url-safe.
   container_key=$(echo ${DOCKER_CONTAINER} | sha256sum | head -c 16)
-  BAZEL_EXTRA_ARGS="--remote_http_cache=https://storage.googleapis.com/absl-bazel-remote-cache/${container_key} --google_credentials=/keystore/73103_absl-bazel-remote-cache ${BAZEL_EXTRA_ARGS:-}"
+  BAZEL_EXTRA_ARGS="--remote_cache=https://storage.googleapis.com/absl-bazel-remote-cache/${container_key} --google_credentials=/keystore/73103_absl-bazel-remote-cache ${BAZEL_EXTRA_ARGS:-}"
 fi
 
 # Use Bazel Vendor mode to reduce reliance on external dependencies.
@@ -73,13 +73,13 @@ for std in ${STD}; do
         --env="CC=/opt/gcc-10/bin/gcc" \
         --env="BAZEL_CXXOPTS=-std=${std}" \
         --env="BAZEL_LINKOPTS=-L/opt/gcc-10/lib64:-Wl,-rpath=/opt/gcc-10/lib64" \
-        --volume="${ABSEIL_ROOT}:/abseil-cpp:ro" \
+        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
-        /bin/bash --login -c "
+        /bin/sh -c "
         /usr/local/bin/bazel test ... \
           --compilation_mode=\"${compilation_mode}\" \
           --copt=\"${exceptions_mode}\" \

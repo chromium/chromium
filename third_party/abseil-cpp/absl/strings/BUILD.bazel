@@ -1170,6 +1170,7 @@ cc_test(
     deps = [
         ":string_view",
         ":strings",
+        "//absl/algorithm:container",
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",
         "//absl/container:btree",

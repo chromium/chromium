@@ -63,12 +63,12 @@ for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
       # TODO(absl-team): Enable -Werror once all warnings are fixed.
       time cmake ${ABSEIL_ROOT} \
         -GXcode \
-        -DBUILD_SHARED_LIBS=${build_shared} \
+        -DBUILD_SHARED_LIBS="${build_shared}" \
         -DABSL_BUILD_TESTING=ON \
-        -DCMAKE_BUILD_TYPE=${compilation_mode} \
+        -DCMAKE_BUILD_TYPE="${compilation_mode}" \
         -DCMAKE_CXX_STANDARD=17 \
         -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--no-undefined" \
-        -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
+        -DABSL_BUILD_MONOLITHIC_SHARED_LIBS="${monolithic_shared}" \
         -DABSL_GOOGLETEST_DOWNLOAD_URL="${ABSL_GOOGLETEST_DOWNLOAD_URL}"
       time cmake --build .
       time TZDIR=${ABSEIL_ROOT}/absl/time/internal/cctz/testdata/zoneinfo \

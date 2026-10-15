@@ -401,7 +401,8 @@ class linked_hash_set {
   std::pair<iterator, bool> insert(const key_arg<K>& k) {
     return InsertInternal(list_.end(), k);
   }
-  template <typename K = key_type, K* = nullptr>
+  template <typename K = key_type,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   std::pair<iterator, bool> insert(key_arg<K>&& k) {
     return InsertInternal(list_.end(), std::move(k));
   }
@@ -414,11 +415,12 @@ class linked_hash_set {
   iterator insert(const_iterator hint, const key_arg<K>& k) {
     return InsertInternal(hint, k).first;
   }
-  template <
-      typename K = key_type, K* = nullptr,
-      std::enable_if_t<!std::is_convertible_v<key_arg<K>&&, const_iterator> &&
-                           !std::is_convertible_v<key_arg<K>&&, iterator>,
-                       int> = 0>
+  template <typename K = key_type,
+            std::enable_if_t<
+                !std::is_reference_v<K> &&
+                    !std::is_convertible_v<key_arg<K>&&, const_iterator> &&
+                    !std::is_convertible_v<key_arg<K>&&, iterator>,
+                int> = 0>
   iterator insert(const_iterator hint, key_arg<K>&& k) {
     return InsertInternal(hint, std::move(k)).first;
   }

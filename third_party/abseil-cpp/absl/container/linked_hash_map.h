@@ -436,7 +436,8 @@ class linked_hash_map {
     return LazyEmplaceInternal(key).first->second;
   }
 
-  template <class K = key_type, K* = nullptr>
+  template <class K = key_type,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   mapped_type& operator[](key_arg<K>&& key) {
     return LazyEmplaceInternal(std::forward<key_arg<K>>(key)).first->second;
   }
@@ -485,19 +486,22 @@ class linked_hash_map {
   //   union { int n : 1; };
   //   linked_hash_map<int, int> m;
   //   m.insert_or_assign(n, n);
-  template <class K = key_type, class V = mapped_type, K* = nullptr,
-            V* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<K> && !std::is_reference_v<V>,
+                             int> = 0>
   std::pair<iterator, bool> insert_or_assign(key_arg<K>&& k, V&& v) {
     return InsertOrAssignInternal(std::forward<key_arg<K>>(k),
                                   std::forward<V>(v));
   }
 
-  template <class K = key_type, class V = mapped_type, K* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   std::pair<iterator, bool> insert_or_assign(key_arg<K>&& k, const V& v) {
     return InsertOrAssignInternal(std::forward<key_arg<K>>(k), v);
   }
 
-  template <class K = key_type, class V = mapped_type, V* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<V>, int> = 0>
   std::pair<iterator, bool> insert_or_assign(const key_arg<K>& k, V&& v) {
     return InsertOrAssignInternal(k, std::forward<V>(v));
   }
@@ -507,19 +511,22 @@ class linked_hash_map {
     return InsertOrAssignInternal(k, v);
   }
 
-  template <class K = key_type, class V = mapped_type, K* = nullptr,
-            V* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<K> && !std::is_reference_v<V>,
+                             int> = 0>
   iterator insert_or_assign(const_iterator, key_arg<K>&& k, V&& v) {
     return insert_or_assign(std::forward<key_arg<K>>(k), std::forward<V>(v))
         .first;
   }
 
-  template <class K = key_type, class V = mapped_type, K* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   iterator insert_or_assign(const_iterator, key_arg<K>&& k, const V& v) {
     return insert_or_assign(std::forward<key_arg<K>>(k), v).first;
   }
 
-  template <class K = key_type, class V = mapped_type, V* = nullptr>
+  template <class K = key_type, class V = mapped_type,
+            std::enable_if_t<!std::is_reference_v<V>, int> = 0>
   iterator insert_or_assign(const_iterator, const key_arg<K>& k, V&& v) {
     return insert_or_assign(k, std::forward<V>(v)).first;
   }
@@ -540,7 +547,8 @@ class linked_hash_map {
     return {list_iter, true};
   }
 
-  template <class K = key_type, class... Args, K* = nullptr>
+  template <class K = key_type, class... Args,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   iterator try_emplace(const_iterator, key_arg<K>&& k, Args&&... args) {
     return try_emplace(std::forward<key_arg<K>>(k), std::forward<Args>(args)...)
         .first;
@@ -551,7 +559,8 @@ class linked_hash_map {
     return emplace(std::forward<Args>(args)...).first;
   }
 
-  template <class K = key_type, typename... Args, K* = nullptr>
+  template <class K = key_type, typename... Args,
+            std::enable_if_t<!std::is_reference_v<K>, int> = 0>
   std::pair<iterator, bool> try_emplace(key_arg<K>&& key, Args&&... args) {
     return LazyEmplaceInternal(std::forward<key_arg<K>>(key),
                                std::forward<Args>(args)...);

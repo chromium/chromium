@@ -198,7 +198,7 @@ char* FormatOffset(char* ep, int offset, const char* mode) {
   // as the result of a failed load_time_zone().
   char sign = '+';
   if (offset < 0) {
-    offset = -offset;  // bounded by 24h so no overflow
+    offset = -offset;  // bounded by -25h so no overflow
     sign = '-';
   }
   const int seconds = offset % 60;
@@ -219,7 +219,7 @@ char* FormatOffset(char* ep, int offset, const char* mode) {
     ep = Format02d(ep, minutes);
     if (sep != '\0') *--ep = sep;
   }
-  ep = Format02d(ep, hours);
+  ep = Format02d(ep, hours);  // bounded by 26h so fits in two digits
   *--ep = sign;
   return ep;
 }

@@ -1998,7 +1998,7 @@ TEST(FormatParse, RoundTrip) {
     EXPECT_EQ(in, out);  // RFC1123_full includes %z
   }
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
   // Initial investigations indicate the %c does not roundtrip on Windows.
   // TODO: Figure out what is going on here (perhaps a locale problem).
 #elif defined(__EMSCRIPTEN__)

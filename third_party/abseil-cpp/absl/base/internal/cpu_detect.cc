@@ -231,6 +231,8 @@ CpuType GetAmdCpuType() {
       switch (model_num) {
         case 0x2:
           return CpuType::kAmdTurin;
+        case 0x50:
+          return CpuType::kAmdVenice;
         default:
           return CpuType::kUnknown;
       }

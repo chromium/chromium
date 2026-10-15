@@ -29,11 +29,11 @@ if [[ -z ${STD:-} ]]; then
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
-  COMPILATION_MODE="fastbuild opt"
+  COMPILATION_MODE="fastbuild"
 fi
 
 if [[ -z ${EXCEPTIONS_MODE:-} ]]; then
-  EXCEPTIONS_MODE="-fno-exceptions -fexceptions"
+  EXCEPTIONS_MODE="-fno-exceptions"
 fi
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
@@ -44,24 +44,24 @@ docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
 docker run "${DOCKER_CONTAINER}" /opt/llvm/bin/clang -v
 docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
 
-# USE_BAZEL_CACHE=1 only works on Kokoro.
+# Bazel cache only works on Kokoro.
 # Without access to the credentials this won't work.
-if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
+if [[ ${KOKORO_KEYSTORE_DIR:-} ]]; then
   DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_KEYSTORE_DIR},target=/keystore,readonly ${DOCKER_EXTRA_ARGS:-}"
   # Bazel doesn't track changes to tools outside of the workspace
   # (e.g. /usr/bin/gcc), so by appending the docker container to the
-  # remote_http_cache url, we make changes to the container part of
+  # remote_cache url, we make changes to the container part of
   # the cache key. Hashing the key is to make it shorter and url-safe.
   container_key=$(echo ${DOCKER_CONTAINER} | sha256sum | head -c 16)
   BAZEL_EXTRA_ARGS="--remote_cache=https://storage.googleapis.com/absl-bazel-remote-cache/${container_key} --google_credentials=/keystore/73103_absl-bazel-remote-cache ${BAZEL_EXTRA_ARGS:-}"
 fi
 
-# Avoid depending on external sites like GitHub by checking --distdir for
-# external dependencies first.
-# https://docs.bazel.build/versions/master/guide.html#distdir
-if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -d "${KOKORO_GFILE_DIR}/distdir" ]]; then
-  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly ${DOCKER_EXTRA_ARGS:-}"
-  BAZEL_EXTRA_ARGS="--distdir=/distdir ${BAZEL_EXTRA_ARGS:-}"
+# Use Bazel Vendor mode to reduce reliance on external dependencies.
+# See https://bazel.build/external/vendor and the Dockerfile for
+# an explaination of how this works.
+if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" ]]; then
+  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly --env=BAZEL_VENDOR_ARCHIVE=/distdir/abseil-cpp_vendor.tar.gz ${DOCKER_EXTRA_ARGS:-}"
+  BAZEL_EXTRA_ARGS="--vendor_dir=/abseil-cpp_vendor ${BAZEL_EXTRA_ARGS:-}"
 fi
 
 # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html#available-checks
@@ -83,7 +83,7 @@ for std in ${STD}; do
         --rm \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
-        /bin/bash --login -c "
+        /bin/sh -c "
         /usr/local/bin/bazel test ... \
           --compilation_mode=\"${compilation_mode}\" \
           --copt=\"${exceptions_mode}\" \

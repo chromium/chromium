@@ -562,6 +562,11 @@ struct HashKey {
   size_t operator()(size_t seed) const {
     return HashElement<Hash, kIsAbsl, kSeedShift>{hash, seed}(key);
   }
+
+  // Static version of the above to pass to type erased functions.
+  static size_t GetHash(void* data, size_t seed) {
+    return (*static_cast<const HashKey*>(data))(seed);
+  }
   const Hash& hash;
   const Key& key;
 };

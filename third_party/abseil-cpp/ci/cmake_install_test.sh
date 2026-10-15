@@ -44,7 +44,7 @@ time docker run \
     --rm \
     ${DOCKER_EXTRA_ARGS:-} \
     ${DOCKER_CONTAINER} \
-    /bin/bash -c "cmake /abseil-cpp-ro && make -j$(nproc) && make install"
+    /bin/sh -c "cmake /abseil-cpp-ro && make -j$(nproc) && make install"
 
 # Verify that a more complicated project works.
 for link_type in ${LINK_TYPE}; do
@@ -60,5 +60,5 @@ for link_type in ${LINK_TYPE}; do
     --rm \
     ${DOCKER_EXTRA_ARGS:-} \
     ${DOCKER_CONTAINER} \
-    /bin/bash -c "cp -r /abseil-cpp-ro/* . && CMake/install_test_project/test.sh"
+    /bin/sh -c "cp -r /abseil-cpp-ro/* . && CMake/install_test_project/test.sh"
 done

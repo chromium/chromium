@@ -1546,7 +1546,9 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // Asserts that the capacity is not a sentinel invalid value.
   void AssertNotDebugCapacity() const {
     if constexpr (SwisstableGenerationsOrDebugEnabled()) {
-      AssertNotDebugCapacityImpl();
+      if (ABSL_PREDICT_FALSE(!maybe_invalid_capacity().IsValid())) {
+        AssertNotDebugCapacityImpl();
+      }
     }
   }
 
@@ -2174,22 +2176,24 @@ constexpr size_t OptimalMemcpySizeForSooSlotTransfer(
   return 8;
 }
 
+using HashForKeyFn = size_t (*)(void* hasher, size_t seed);
+
 // Resizes SOO table to the NextCapacity(SooCapacity()) and prepares insert for
 // the given new_hash. Returns the new slot.
 // All possible template combinations are defined in cc file to improve
 // compilation time.
 template <size_t SooSlotMemcpySize, bool TransferUsesMemcpy>
 void* GrowSooTableToNextCapacityAndPrepareInsert(
-    CommonFields& common, const PolicyFunctions& policy,
-    absl::FunctionRef<size_t(size_t)> get_hash, bool force_sampling);
+    CommonFields& common, const PolicyFunctions& policy, void* hasher,
+    HashForKeyFn get_hash, bool force_sampling);
 
 // PrepareInsert for small tables (is_small()==true).
 // Returns the new slot.
 // Hash is only computed if the table is sampled or grew to large size
 // (is_small()==false).
 void* PrepareInsertSmallNonSoo(CommonFields& common,
-                               const PolicyFunctions& policy,
-                               absl::FunctionRef<size_t(size_t)> get_hash);
+                               const PolicyFunctions& policy, void* hasher,
+                               HashForKeyFn get_hash);
 
 // Resizes table with allocated slots and change the table seed.
 // Tables with SOO enabled must have capacity > policy.soo_capacity.
@@ -2237,6 +2241,15 @@ void Destruct(CommonFields& c, const DtorPolicy& policy,
 // REQUIRES: std::is_empty_v<Alloc> && dealloc == kStandardDeallocBackingArrayFn
 template <bool kSooEnabled>
 void Destruct(CommonFields& c, const DtorPolicy& policy);
+
+using EqualToKeyFn = bool (*)(void* set, const void* key, void* slot);
+
+// Asserts that hash and equal functors provided by the user are consistent,
+// meaning that `eq(k1, k2)` implies `hash(k1)==hash(k2)`.
+void AssertHashEqConsistentImpl(CommonFields& common, const void* hash_fn,
+                                HashSlotFn hash_slot, size_t slot_size,
+                                bool soo_enabled, size_t hash, const void* key,
+                                EqualToKeyFn equal);
 
 // Type-erased versions of raw_hash_set::erase_meta_only_{small,large}.
 void EraseMetaOnlySmall(CommonFields& c, bool soo_enabled, size_t slot_size);
@@ -2346,13 +2359,45 @@ using IsAllocMoveSameAsCopy =
                                               Alloc>::template rebind_alloc<T>>,
         T, void>>>;
 
+template <class T>
+using ShouldStructurallyPreferPassByValue = std::bool_constant<
+    // Check if size is a power of 2, to ensure cheap calls.
+    absl::has_single_bit(sizeof(T)) &&
+    // Check if copying 1-2 registers is enough. We don't want (for example) 32
+    // one-byte values to move around, since that sometimes results in poor
+    // codegen.
+    alignof(T) * 2 >= sizeof(T) &&
+    sizeof(T) <= sizeof(std::pair<void*, size_t>)>;
+
+template <class T>
+using ShouldSemanticallyPreferPassByValue =
+    std::bool_constant<std::is_trivially_move_constructible_v<T> &&
+                       std::is_trivially_destructible_v<T>>;
+
+// Checks the given type to see if it is a good candidate for accepting by value
+// instead of by rvalue-reference. This includes both a semantic constraint
+// (to ensure correctness), as well as a structural constraint (to ensure
+// performance).
+template <class T>
+using ShouldPreferPassByValue =
+    std::bool_constant<ShouldSemanticallyPreferPassByValue<T>::value &&
+                       ShouldStructurallyPreferPassByValue<std::conditional_t<
+                           std::is_void_v<T>, char, T>>::value>;
+
+// This is a 'struct' instead of 'using' in order to avoid eager evaluation for
+// callers that may be passing incomplete types.
+template <class T>
+struct AddConstRefIfExpensive
+    : std::conditional<ShouldPreferPassByValue<T>::value, T, const T&> {
+  static_assert(std::is_same_v<remove_cvref_t<T>, T>,
+                "passed types must be unqualified");
+};
+
 template <class T, class Alloc = std::allocator<T>>
-using PreferredParamType = std::conditional_t<
-    IsAllocMoveSameAsCopy<T, Alloc>::value,
-    std::conditional_t<std::is_arithmetic_v<T> || std::is_enum_v<T> ||
-                           std::is_member_pointer_v<T>,
-                       T, const T&>,
-    T&&>;
+using PreferredParamType =
+    typename std::conditional_t<IsAllocMoveSameAsCopy<T, Alloc>::value,
+                                AddConstRefIfExpensive<T>,
+                                std::add_rvalue_reference<T>>::type;
 
 // A SwissTable.
 //
@@ -2427,11 +2472,6 @@ class raw_hash_set {
   using key_arg = typename KeyArgImpl::template type<K, key_type>;
 
   using slot_type = typename PolicyTraits::slot_type;
-
-  using IsDefaultPolicy =
-      std::bool_constant<std::is_same_v<Hash, typename Policy::DefaultHash> &&
-                         std::is_same_v<Eq, typename Policy::DefaultEq> &&
-                         std::is_same_v<Alloc, typename Policy::DefaultAlloc>>;
 
   constexpr static bool kIsAbslHash =
       std::is_same_v<hasher, absl::Hash<key_type>> ||
@@ -3415,7 +3455,7 @@ class raw_hash_set {
     AssertOnFind(key);
     if (is_small()) return find_small(key);
     prefetch_heap_block();
-    return find_large(key);
+    return find_large<FindLargeKey<key_arg<K>>>(key);
   }
 
   template <class K = key_type>
@@ -3570,13 +3610,14 @@ class raw_hash_set {
 
   // TODO(b/289225379): consider having a helper class that has the impls for
   // SOO functionality.
-  template <class K = key_type>
-  ABSL_ATTRIBUTE_ALWAYS_INLINE iterator find_small(const key_arg<K>& key) {
+  template <class K>
+  ABSL_ATTRIBUTE_ALWAYS_INLINE iterator find_small(const K& key) {
     return empty() || !equal_to(key, single_slot()) ? end() : single_iterator();
   }
 
-  template <class K = key_type>
-  iterator find_large(const key_arg<K>& key) {
+  template <class K>
+  iterator find_large(absl::type_identity_t<K> key) {
+    static_assert(std::is_same_v<K, FindLargeKey<K>>);
     const size_t cap = common().capacity();
     ABSL_ASSUME(cap > kMaxSmallCapacity);
     const size_t hash = hash_of(key);
@@ -3590,10 +3631,13 @@ class raw_hash_set {
 #ifndef ABSL_HAVE_MEMORY_SANITIZER
       absl::PrefetchToLocalCache(slot_array + seq.offset());
 #endif
-      for (uint32_t i : g.Match(h2)) {
-        const size_t offset = seq.offset(i);
-        if (ABSL_PREDICT_TRUE(equal_to(key, slot_array + offset)))
-          return iterator_at_ptr(ctrl + offset, slot_array + offset);
+      // Predict one iteration (common case for find-hit).
+      if (auto match = g.Match(h2); ABSL_PREDICT_TRUE(match)) {
+        do {
+          const size_t offset = seq.offset(*match);
+          if (ABSL_PREDICT_TRUE(equal_to(key, slot_array + offset)))
+            return iterator_at_ptr(ctrl + offset, slot_array + offset);
+        } while (ABSL_PREDICT_FALSE(++match));
       }
       if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return end();
       seq.next();
@@ -3838,14 +3882,14 @@ class raw_hash_set {
     }
     constexpr bool kUseMemcpy =
         PolicyTraits::transfer_uses_memcpy() && SooEnabled();
+    using Hasher = HashKey<hasher, K, kIsAbslHash, kSeedShift>;
+    Hasher hash_key{hash_ref(), key};
     slot = to_slot(
         GrowSooTableToNextCapacityAndPrepareInsert<
             kUseMemcpy ? OptimalMemcpySizeForSooSlotTransfer(sizeof(slot_type))
                        : 0,
-            kUseMemcpy>(
-            common(), GetPolicyFunctions(),
-            HashKey<hasher, K, kIsAbslHash, kSeedShift>{hash_ref(), key},
-            force_sampling));
+            kUseMemcpy>(common(), GetPolicyFunctions(), &hash_key,
+                        &Hasher::GetHash, force_sampling));
     return {slot, true};
   }
 
@@ -3860,14 +3904,17 @@ class raw_hash_set {
         return {single_slot(), false};
       }
     }
-    return {to_slot(PrepareInsertSmallNonSoo(
-                common(), GetPolicyFunctions(),
-                HashKey<hasher, K, kIsAbslHash, kSeedShift>{hash_ref(), key})),
+    using Hasher = HashKey<hasher, K, kIsAbslHash, kSeedShift>;
+    Hasher hash_key{hash_ref(), key};
+    return {to_slot(PrepareInsertSmallNonSoo(common(), GetPolicyFunctions(),
+                                             &hash_key, &Hasher::GetHash)),
             true};
   }
 
   template <class K>
-  std::pair<slot_type*, bool> find_or_prepare_insert_large(const K& key) {
+  std::pair<slot_type*, bool> find_or_prepare_insert_large(
+      absl::type_identity_t<K> key) {
+    static_assert(std::is_same_v<K, FindLargeKey<K>>);
     prefetch_heap_block();
     const size_t cap = capacity();
     const size_t hash = hash_of(key);
@@ -3881,24 +3928,25 @@ class raw_hash_set {
 #ifndef ABSL_HAVE_MEMORY_SANITIZER
       absl::PrefetchToLocalCache(slot_array + seq.offset());
 #endif
-      for (uint32_t i : g.Match(h2)) {
-        slot_type* slot = slot_array + seq.offset(i);
-        if (ABSL_PREDICT_TRUE(equal_to(key, slot))) {
-          return {slot, false};
-        }
+      // Predict one iteration (common case for insert-hit).
+      if (auto match = g.Match(h2); ABSL_PREDICT_TRUE(match)) {
+        do {
+          slot_type* slot = slot_array + seq.offset(*match);
+          if (ABSL_PREDICT_TRUE(equal_to(key, slot))) return {slot, false};
+        } while (ABSL_PREDICT_FALSE(++match));
       }
       auto mask_empty = g.MaskEmpty();
       if (ABSL_PREDICT_TRUE(mask_empty)) {
         size_t target_group_offset = seq.offset();
-        void* slot = SwisstableGenerationsEnabled()
-                         ? PrepareInsertLargeGenerationsEnabled(
-                               common(), GetPolicyFunctions(), hash, mask_empty,
-                               target_group_offset,
-                               HashKey<hasher, K, kIsAbslHash, kSeedShift>{
-                                   hash_ref(), key})
-                         : PrepareInsertLarge(
-                               common(), GetPolicyFunctions(), hash, mask_empty,
-                               target_group_offset);
+        void* slot =
+            SwisstableGenerationsEnabled()
+                ? PrepareInsertLargeGenerationsEnabled(
+                      common(), GetPolicyFunctions(), hash, mask_empty,
+                      target_group_offset,
+                      HashKey<hasher, absl::remove_cvref_t<K>, kIsAbslHash,
+                              kSeedShift>{hash_ref(), key})
+                : PrepareInsertLarge(common(), GetPolicyFunctions(), hash,
+                                     mask_empty, target_group_offset);
         return {to_slot(slot), true};
       }
       seq.next();
@@ -3921,6 +3969,12 @@ class raw_hash_set {
   // Asserts that the capacity is not a sentinel invalid value.
   void AssertNotDebugCapacity() const { common().AssertNotDebugCapacity(); }
 
+  template <class K>
+  static bool equal_to_key_fn(void* set, const void* key, void* slot) {
+    return static_cast<const raw_hash_set*>(set)->equal_to(
+        *static_cast<const K*>(key), to_slot(slot));
+  }
+
   // Asserts that hash and equal functors provided by the user are consistent,
   // meaning that `eq(k1, k2)` implies `hash(k1)==hash(k2)`.
   template <class K>
@@ -3936,26 +3990,10 @@ class raw_hash_set {
         std::is_same_v<key_equal, std::equal_to<key_type>>;
     if constexpr (kIsDebug && !kIsStringAbslHashEq && !kIsScalarAbslHashEq) {
       if (empty()) return;
-
-      const size_t hash_of_arg = hash_of(key);
-      const auto assert_consistent = [&](const ctrl_t*, void* slot) {
-        const bool is_key_equal = equal_to(key, to_slot(slot));
-        if (!is_key_equal) return;
-
-        [[maybe_unused]] const bool is_hash_equal =
-            hash_of_arg == hash_of(to_slot(slot));
-        assert((!is_key_equal || is_hash_equal) &&
-               "eq(k1, k2) must imply that hash(k1) == hash(k2). "
-               "hash/eq functors are inconsistent.");
-      };
-
-      if (is_small()) {
-        assert_consistent(/*unused*/ nullptr, single_slot());
-        return;
-      }
-      // We only do validation for small tables so that it's constant time.
-      if (capacity() > 16) return;
-      IterateOverFullSlots(common(), sizeof(slot_type), assert_consistent);
+      AssertHashEqConsistentImpl(
+          common(), get_hash_ref_fn(common()), get_hash_slot_fn(),
+          sizeof(slot_type), SooEnabled(), hash_of(key), &key,
+          &equal_to_key_fn<K>);
     }
   }
 
@@ -3966,7 +4004,7 @@ class raw_hash_set {
   std::pair<slot_type*, bool> find_or_prepare_insert(const K& key) {
     AssertOnFind(key);
     return is_small() ? find_or_prepare_insert_small(key)
-                      : find_or_prepare_insert_large(key);
+                      : find_or_prepare_insert_large<FindLargeKey<K>>(key);
   }
 
   // Constructs the value in the space pointed by the iterator. This only works
@@ -4010,6 +4048,23 @@ class raw_hash_set {
 
  private:
   friend struct RawHashSetTestOnlyAccess;
+
+  // For string-like keys, we convert to string_view when calling find*_large()
+  // operations to (a) avoid repeatedly (i) branching on SSO or (ii) calling
+  // strlen(), (b) share code between the string-like types, (c) avoid
+  // materializing string_view on the stack just to pass a reference to it. Note
+  // that we don't pass FindLargeKey to find*_small() to avoid unnecessarily
+  // constructing string_view for small empty tables. Note: we use
+  // type_identity_t and static_asserts to ensure that the key type in
+  // find*_large is FindLargeKey. (type_identity_t ensures that the template
+  // argument is not deduced and must be specified explicitly.)
+  // TODO(ezb): extend this to other types (e.g. small trivial types).
+  template <class K>
+  using FindLargeKey = std::conditional_t<
+      std::is_same_v<hasher, absl::container_internal::StringHash> &&
+          std::is_same_v<key_equal, absl::container_internal::StringEq> &&
+          std::is_convertible_v<const K&, absl::string_view>,
+      const absl::string_view, const K&>;
 
   // Prefetch the heap-allocated memory region to resolve potential TLB and
   // cache misses. This is intended to overlap with execution of calculating the
@@ -4088,6 +4143,11 @@ class raw_hash_set {
     // TODO(b/397453582): Remove support for const hasher.
     return const_cast<std::remove_const_t<hasher>*>(&h->hash_ref());
   }
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return PolicyTraits::template get_hash_slot_fn<hasher, kIsAbslHash,
+                                                   kSeedShift>();
+  }
+
   static void transfer_n_slots_fn(void* set, void* dst, void* src,
                                   size_t count) {
     auto* src_slot = to_slot(src);
@@ -4206,8 +4266,7 @@ class raw_hash_set {
         // for standard layout and alignof(Hash) <= alignof(CommonFields).
         std::is_empty_v<hasher> ? &GetRefForEmptyClass
                                 : &raw_hash_set::get_hash_ref_fn,
-        PolicyTraits::template get_hash_slot_fn<hasher, kIsAbslHash,
-                                                kSeedShift>(),
+        get_hash_slot_fn(),
         PolicyTraits::transfer_uses_memcpy()
             ? TransferNRelocatable<sizeof(slot_type)>
             : &raw_hash_set::transfer_n_slots_fn,
@@ -4358,17 +4417,17 @@ struct HashtableDebugAccess<Set, std::void_t<typename Set::raw_hash_set>> {
 // Extern template instantiations reduce binary size and linker input size.
 // Function definition is in raw_hash_set.cc.
 extern template void* GrowSooTableToNextCapacityAndPrepareInsert<0, false>(
-    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    CommonFields&, const PolicyFunctions&, void*, HashForKeyFn,
     bool);
 extern template void* GrowSooTableToNextCapacityAndPrepareInsert<1, true>(
-    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    CommonFields&, const PolicyFunctions&, void*, HashForKeyFn,
     bool);
 extern template void* GrowSooTableToNextCapacityAndPrepareInsert<4, true>(
-    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    CommonFields&, const PolicyFunctions&, void*, HashForKeyFn,
     bool);
 #if UINTPTR_MAX == UINT64_MAX
 extern template void* GrowSooTableToNextCapacityAndPrepareInsert<8, true>(
-    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    CommonFields&, const PolicyFunctions&, void*, HashForKeyFn,
     bool);
 #endif
 

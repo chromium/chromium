@@ -431,6 +431,7 @@ cc_library(
     deps = [
         ":platform",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/numeric:int128",
     ],
 )

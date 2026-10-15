@@ -28,8 +28,8 @@ if [[ -r "${KOKORO_GFILE_DIR:-}/distdir/googletest-${ABSL_GOOGLETEST_VERSION}.ta
   DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly ${DOCKER_EXTRA_ARGS:-}"
 fi
 
-if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
-  ABSL_CMAKE_CXX_STANDARDS="17 20"
+if [[ -z ${STD:-} ]]; then
+  STD="17"
 fi
 
 if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then
@@ -47,7 +47,7 @@ fi
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
 
-for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
+for std in ${STD}; do
   for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
     for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
       if [[ $build_shared == "OFF" ]]; then
@@ -67,14 +67,14 @@ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
           -e CXXFLAGS="-Werror" \
           ${DOCKER_EXTRA_ARGS:-} \
           "${DOCKER_CONTAINER}" \
-          /bin/bash -c "
+          /bin/sh -c "
             cmake /abseil-cpp \
-              -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
-              -DBUILD_SHARED_LIBS=${build_shared} \
+              -DABSL_GOOGLETEST_DOWNLOAD_URL=\"${ABSL_GOOGLETEST_DOWNLOAD_URL}\" \
+              -DBUILD_SHARED_LIBS=\"${build_shared}\" \
               -DABSL_BUILD_TESTING=ON \
-              -DCMAKE_BUILD_TYPE=${compilation_mode} \
-              -DCMAKE_CXX_STANDARD=${std} \
-              -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
+              -DCMAKE_BUILD_TYPE=\"${compilation_mode}\" \
+              -DCMAKE_CXX_STANDARD=\"${std}\" \
+              -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=\"${monolithic_shared}\" \
               -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
             make -j$(nproc) && \
             TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \

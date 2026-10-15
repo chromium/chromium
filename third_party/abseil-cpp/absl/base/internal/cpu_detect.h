@@ -32,6 +32,7 @@ enum class CpuType {
   kAmdGenoa,
   kAmdSiena,
   kAmdTurin,
+  kAmdVenice,
   kAmdRyzenV3000,
   kIntelCascadelakeXeon,
   kIntelSkylakeXeon,

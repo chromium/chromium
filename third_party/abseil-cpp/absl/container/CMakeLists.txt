@@ -1239,6 +1239,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+     absl::cleanup
      absl::config
      absl::core_headers
      absl::hardening

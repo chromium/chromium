@@ -1022,10 +1022,8 @@ struct NonTriviallyCopyableUDT {
   NonTriviallyCopyableUDT(const NonTriviallyCopyableUDT& rhs) : c(rhs.c) {
     s_num_instance++;
   }
-  NonTriviallyCopyableUDT& operator=(const NonTriviallyCopyableUDT& rhs) {
-    c = rhs.c;
-    return *this;
-  }
+  NonTriviallyCopyableUDT& operator=(const NonTriviallyCopyableUDT& rhs) =
+      default;
   ~NonTriviallyCopyableUDT() { s_num_instance--; }
 
   static uint64_t s_num_instance;
