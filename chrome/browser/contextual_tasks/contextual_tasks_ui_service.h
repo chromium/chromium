@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -132,14 +133,16 @@ class ContextualTasksUiService : public KeyedService {
 
   // A notification that the browser attempted to navigate to the AI page. If
   // this method is being called, it means the navigation was blocked and it
-  // should be processed by this method.
+  // should be processed by this method. `transition` is the transition of the
+  // blocked navigation.
   // TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
   // should not be used. It is only used by the legacy HandleNavigationImpl
   // which will be cleaned up (see comment there).
   virtual void OnNavigationToAiPageIntercepted(
       const GURL& url,
       base::WeakPtr<tabs::TabInterface> source_tab,
-      bool is_to_new_tab);
+      bool is_to_new_tab,
+      ui::PageTransition transition);
 
   // A notification to this service that a link in the AI thread was clicked by
   // the user. This will open a tab and associate it with the visible thread.

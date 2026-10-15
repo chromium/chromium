@@ -382,7 +382,8 @@ void ContextualTasksUiService::RemoveObserver(Observer* observer) {
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> source_tab,
-    bool is_to_new_tab) {
+    bool is_to_new_tab,
+    ui::PageTransition transition) {
   OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
                               "OnNavigationToAiPageIntercepted called for URL: "
                            << url;
@@ -499,8 +500,14 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: "
              "OnNavigationToAiPageIntercepted loading in source tab";
-      source_tab->GetContents()->GetController().LoadURLWithParams(
-          content::NavigationController::LoadURLParams(ui_url));
+      content::NavigationController::LoadURLParams load_params(ui_url);
+      // Keep the transition of a new navigation so ActorNavigationThrottle
+      // can confirm user UI navigations. Reloads and history navigations keep
+      // the default.
+      if (ui::PageTransitionIsNewNavigation(transition)) {
+        load_params.transition_type = transition;
+      }
+      source_tab->GetContents()->GetController().LoadURLWithParams(load_params);
       contextual_task_web_contents = source_tab->GetContents();
     } else {
       OMNIBOX_LOG("nav_trace")
@@ -2796,7 +2803,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         base::BindOnce(
             &ContextualTasksUiService::OnNavigationToAiPageIntercepted,
             weak_ptr_factory_.GetWeakPtr(), url_params.url,
-            tab ? tab->GetWeakPtr() : nullptr, is_to_new_tab));
+            tab ? tab->GetWeakPtr() : nullptr, is_to_new_tab,
+            url_params.transition));
     return true;
   }
 
