@@ -36,21 +36,21 @@ namespace {
 // in order to avoid data overwriting. This number can be any positive number,
 // dependent how fast the renderer process can pick up captured data from
 // shared memory.
-const int kRequestedSharedMemoryCount = 10;
+constexpr int kRequestedSharedMemoryCount = 10;
 
 // The number of seconds with missing callbacks before we report a capture
 // error. The value is based on that the Mac audio implementation can defer
 // start for 5 seconds when resuming after standby, and has a startup success
 // check 5 seconds after actually starting, where stats is logged. We must allow
 // enough time for this. See AUAudioInputStream::CheckInputStartupSuccess().
-const int kMissingCallbacksTimeBeforeErrorSeconds = 12;
+constexpr int kMissingCallbacksTimeBeforeErrorSeconds = 12;
 
 // The interval for checking missing callbacks.
-const int kCheckMissingCallbacksIntervalSeconds = 5;
+constexpr int kCheckMissingCallbacksIntervalSeconds = 5;
 
 // How often AudioInputDevice::AudioThreadCallback informs that it has gotten
 // data from the source.
-const int kGotDataCallbackIntervalSeconds = 1;
+constexpr int kGotDataCallbackIntervalSeconds = 1;
 
 base::ThreadType ThreadTypeFromPurpose(AudioInputDevice::Purpose purpose) {
   switch (purpose) {

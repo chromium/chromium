@@ -9,13 +9,13 @@
 
 namespace audio {
 
-const int kTestAudioKey = 1000;
+inline constexpr int kTestAudioKey = 1000;
 
-const char kTestAudioData[] =
+inline constexpr char kTestAudioData[] =
     "RIFF\x28\x00\x00\x00WAVEfmt \x10\x00\x00\x00"
     "\x01\x00\x02\x00\x80\xbb\x00\x00\x00\x77\x01\x00\x02\x00\x10\x00"
     "data\x04\x00\x00\x00\x01\x00\x01\x00";
-const size_t kTestAudioDataSize = sizeof(kTestAudioData) - 1;
+inline constexpr size_t kTestAudioDataSize = sizeof(kTestAudioData) - 1;
 
 }  // namespace audio
 

@@ -13,8 +13,8 @@ namespace media {
 
 namespace {
 
-const int kDefaultInputBufferSize = 1024;
-const int kDefaultSampleRate = 48000;
+constexpr int kDefaultInputBufferSize = 1024;
+constexpr int kDefaultSampleRate = 48000;
 
 }  // namespace
 

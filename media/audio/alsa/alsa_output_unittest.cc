@@ -187,9 +187,9 @@ TEST_F(AlsaPcmOutputStreamTest, ConstructedState) {
 }
 
 TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
-  constexpr const double kMicrosPerFrame =
+  constexpr double kMicrosPerFrame =
       static_cast<double>(1000000) / kTestSampleRate;
-  const double kPacketFramesInMinLatency =
+  constexpr double kPacketFramesInMinLatency =
       AlsaPcmOutputStream::kMinLatencyMicros / kMicrosPerFrame / 2.0;
 
   // Test that packets which would cause a latency under less than
@@ -220,7 +220,7 @@ TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
   Mock::VerifyAndClear(mock_manager_.get());
 
   // Test that having more packets ends up with a latency based on packet size.
-  const int kOverMinLatencyPacketSize = kPacketFramesInMinLatency + 1;
+  constexpr int kOverMinLatencyPacketSize = kPacketFramesInMinLatency + 1;
   int64_t expected_micros = AudioTimestampHelper::FramesToTime(
                                 kOverMinLatencyPacketSize * 2, kTestSampleRate)
                                 .InMicroseconds();

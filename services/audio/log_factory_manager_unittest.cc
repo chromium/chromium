@@ -107,8 +107,8 @@ TEST_F(LogFactoryManagerTest, LogFactoryManagerQueuesRequestsAndSetsFactory) {
   CreateLogFactoryManager();
 
   // Create a log before setting the log factory.
-  const int kComponentId1 = 1;
-  const double kVolume1 = 0.5;
+  constexpr int kComponentId1 = 1;
+  constexpr double kVolume1 = 0.5;
   media::AudioLogFactory* log_factory = log_factory_manager_->GetLogFactory();
   std::unique_ptr<media::AudioLog> log1 = log_factory->CreateAudioLog(
       media::AudioLogFactory::AudioComponent::kAudioOutputStream,
@@ -137,8 +137,8 @@ TEST_F(LogFactoryManagerTest, LogFactoryManagerQueuesRequestsAndSetsFactory) {
   task_environment_.RunUntilIdle();
 
   // Create another log after the factory is already set.
-  const int kComponentId2 = 2;
-  const double kVolume2 = 0.1;
+  constexpr int kComponentId2 = 2;
+  constexpr double kVolume2 = 0.1;
   EXPECT_CALL(
       mock_factory,
       MockCreateAudioLog(media::mojom::AudioLogComponent::kInputController,

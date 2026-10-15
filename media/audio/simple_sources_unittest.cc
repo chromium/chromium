@@ -89,7 +89,7 @@ TEST(SimpleSources, OnError) {
 void VerifyContainsTestFile(const AudioBus* audio_bus) {
   // Convert the test data (little-endian) into floats and compare. We need to
   // index past the first bytes in the data, which contain the wav header.
-  const int kFirstSampleIndex = 12 + 8 + 16 + 8;
+  constexpr int kFirstSampleIndex = 12 + 8 + 16 + 8;
   std::array<int16_t, 2> data;
   data[0] = kTestAudioData[kFirstSampleIndex];
   data[0] |= (kTestAudioData[kFirstSampleIndex + 1] << 8);
@@ -112,7 +112,7 @@ void VerifyContainsTestFile(const AudioBus* audio_bus) {
 }
 
 TEST(SimpleSources, FileSourceTestDataWithoutLooping) {
-  const int kNumFrames = 10;
+  constexpr int kNumFrames = 10;
 
   // Create a temporary file filled with WAV data.
   base::FilePath temp_path;
@@ -147,7 +147,7 @@ TEST(SimpleSources, FileSourceTestDataWithoutLooping) {
 }
 
 TEST(SimpleSources, FileSourceTestDataWithLooping) {
-  const int kNumFrames = 10;
+  constexpr int kNumFrames = 10;
 
   // Create a temporary file filled with WAV data.
   base::FilePath temp_path;

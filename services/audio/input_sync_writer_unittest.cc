@@ -36,7 +36,7 @@ namespace audio {
 namespace {
 
 // Number of audio buffers in the faked ring buffer.
-const int kSegments = 10;
+constexpr int kSegments = 10;
 
 }  // namespace
 

@@ -53,7 +53,7 @@ namespace {
 
 using OpenOutcome = media::AudioInputStream::OpenOutcome;
 
-const int kMaxInputChannels = 3;
+constexpr int kMaxInputChannels = 3;
 constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
 constexpr base::TimeDelta kPeriodicLogInterval = base::Seconds(15);
 
@@ -86,7 +86,7 @@ constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 // A warning will be logged when the microphone audio volume is below this
 // threshold.
-const int kLowLevelMicrophoneLevelPercent = 10;
+constexpr int kLowLevelMicrophoneLevelPercent = 10;
 
 // Logs if the user has enabled the microphone mute or not. This is normally
 // done by marking a checkbox in an audio-settings UI which is unique for each
@@ -139,7 +139,7 @@ float AveragePower(const media::AudioBus& buffer) {
 
   // Convert average power level to dBFS units, and pin it down to zero if it
   // is insignificantly small.
-  const float kInsignificantPower = 1.0e-10f;  // -100 dBFS
+  constexpr float kInsignificantPower = 1.0e-10f;  // -100 dBFS
   const float power_dbfs = average_power < kInsignificantPower
                                ? -std::numeric_limits<float>::infinity()
                                : 10.0f * log10f(average_power);

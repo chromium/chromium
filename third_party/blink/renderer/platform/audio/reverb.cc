@@ -47,8 +47,8 @@ namespace blink {
 
 // Empirical gain calibration tested across many impulse responses to ensure
 // perceived volume is same as dry (unprocessed) signal
-const float kGainCalibration = -58;
-const float kGainCalibrationSampleRate = 44100;
+constexpr float kGainCalibration = -58;
+constexpr float kGainCalibrationSampleRate = 44100;
 
 // A minimum power value to when normalizing a silent (or very quiet) impulse
 // response

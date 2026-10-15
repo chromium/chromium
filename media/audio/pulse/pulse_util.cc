@@ -44,7 +44,7 @@ constexpr char kBrowserDisplayName[] = "chromium-browser";
 #endif
 
 #if defined(DLOPEN_PULSEAUDIO)
-static const base::FilePath::CharType kPulseLib[] =
+constexpr base::FilePath::CharType kPulseLib[] =
     FILE_PATH_LITERAL("libpulse.so.0");
 #endif
 

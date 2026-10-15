@@ -11,7 +11,7 @@
 
 namespace audio {
 
-const int kMaxPendingLogRequests = 500;
+constexpr int kMaxPendingLogRequests = 500;
 
 struct LogFactoryAdapter::PendingLogRequest {
   PendingLogRequest(media::mojom::AudioLogComponent component,

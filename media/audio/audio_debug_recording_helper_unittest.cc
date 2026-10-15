@@ -34,7 +34,7 @@ namespace media {
 
 namespace {
 
-const base::FilePath::CharType kFileName[] =
+constexpr base::FilePath::CharType kFileName[] =
     FILE_PATH_LITERAL("debug_recording.output.1.wav");
 
 }  // namespace

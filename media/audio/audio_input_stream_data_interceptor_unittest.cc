@@ -27,9 +27,9 @@ using testing::Return;
 using testing::StrictMock;
 using testing::Mock;
 
-const double kMaxVolume = 0.1234;
-const double kNewVolume = 0.2345;
-const double kVolume = 0.3456;
+constexpr double kMaxVolume = 0.1234;
+constexpr double kNewVolume = 0.2345;
+constexpr double kVolume = 0.3456;
 
 class MockStream : public AudioInputStream {
  public:

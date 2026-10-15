@@ -60,9 +60,9 @@ class MockStream : public media::AudioOutputStream {
   MOCK_METHOD0(Flush, void());
 };
 
-const uint32_t kPlatformErrorDisconnectReason = static_cast<uint32_t>(
+constexpr uint32_t kPlatformErrorDisconnectReason = static_cast<uint32_t>(
     media::mojom::AudioOutputStreamObserver::DisconnectReason::kPlatformError);
-const uint32_t kTerminatedByClientDisconnectReason =
+constexpr uint32_t kTerminatedByClientDisconnectReason =
     static_cast<uint32_t>(media::mojom::AudioOutputStreamObserver::
                               DisconnectReason::kTerminatedByClient);
 
@@ -980,8 +980,8 @@ TEST_F(OutputStreamAudibilityHelperTest, Poll_SmallGlitches_StaysAudible) {
 
   // These values are taken directly from AudibilityHelper's implementation,
   // in output_stream.cc.
-  const base::TimeDelta kGlitchTolerance = base::Milliseconds(100);
-  const base::TimeDelta kPollingPeriod = base::Seconds(1) / 15;
+  constexpr base::TimeDelta kGlitchTolerance = base::Milliseconds(100);
+  constexpr base::TimeDelta kPollingPeriod = base::Seconds(1) / 15;
 
   base::TimeDelta glitch_length;
   std::optional<base::TimeTicks> glitch_start;

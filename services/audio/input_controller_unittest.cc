@@ -65,10 +65,10 @@ namespace audio {
 
 namespace {
 
-const int kSampleRate = media::AudioParameters::kAudioCDSampleRate;
+constexpr int kSampleRate = media::AudioParameters::kAudioCDSampleRate;
 const media::ChannelLayoutConfig kChannelLayoutConfig =
     media::ChannelLayoutConfig::Stereo();
-const int kSamplesPerPacket = kSampleRate / 100;
+constexpr int kSamplesPerPacket = kSampleRate / 100;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 // Stream parameters for the voice isolation tests: VoiceIsolationHandler only

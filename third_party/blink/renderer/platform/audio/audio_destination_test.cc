@@ -329,7 +329,7 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
       WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
   const int requested_frames = audio_destination->FramesPerBuffer();
 
-  const int kRenderCount = 3;
+  constexpr int kRenderCount = 3;
 
   auto glitches = std::to_array<media::AudioGlitchInfo>({
       {.duration = base::Milliseconds(120), .count = 3},

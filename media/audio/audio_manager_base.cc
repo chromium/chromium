@@ -36,17 +36,17 @@ namespace media {
 
 namespace {
 
-const int kStreamCloseDelaySeconds = 5;
+constexpr int kStreamCloseDelaySeconds = 5;
 
 // Default maximum number of output streams that can be open simultaneously
 // for all platforms.
-const int kDefaultMaxOutputStreams = 16;
+constexpr int kDefaultMaxOutputStreams = 16;
 
 // Default maximum number of input streams that can be open simultaneously
 // for all platforms.
-const int kMaxInputStreams = 16;
+constexpr int kMaxInputStreams = 16;
 
-const int kMaxInputChannels = 3;
+constexpr int kMaxInputChannels = 3;
 
 // Helper function to pass as callback when the audio debug recording is not
 // enabled.

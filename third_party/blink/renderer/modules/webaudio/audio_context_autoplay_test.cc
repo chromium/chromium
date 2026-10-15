@@ -32,8 +32,8 @@ namespace blink {
 
 namespace {
 
-const char* const kAutoplayMetric = "WebAudio.Autoplay";
-const char* const kAutoplayCrossOriginMetric = "WebAudio.Autoplay.CrossOrigin";
+constexpr char kAutoplayMetric[] = "WebAudio.Autoplay";
+constexpr char kAutoplayCrossOriginMetric[] = "WebAudio.Autoplay.CrossOrigin";
 
 class AudioContextAutoplayTestPlatform : public TestingPlatformSupport {
  public:

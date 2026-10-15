@@ -31,7 +31,7 @@
 namespace audio {
 
 namespace {
-const int kMaxInputChannels = 3;
+constexpr int kMaxInputChannels = 3;
 
 using InputStreamErrorCode = media::mojom::InputStreamErrorCode;
 using DisconnectReason =

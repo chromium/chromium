@@ -38,10 +38,10 @@ namespace audio {
 namespace {
 
 // Volume percent.
-const double kOutputVolumePercent = 0.8;
+constexpr double kOutputVolumePercent = 0.8;
 
 // Keep alive timeout for audio stream.
-const int kKeepAliveMs = 1500;
+constexpr int kKeepAliveMs = 1500;
 
 }  // namespace
 

@@ -54,7 +54,7 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(4U, handler->data().size());
-  const char kData[] = "\x01\x00\x01\x00";
+  constexpr char kData[] = "\x01\x00\x01\x00";
   ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =
@@ -80,7 +80,7 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(8U, handler->data().size());
-  const char kData[] = "\x00\x01\x00\x00\x01\x00\x00\x00";
+  constexpr char kData[] = "\x00\x01\x00\x00\x01\x00\x00\x00";
   ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =
@@ -106,7 +106,7 @@ TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(8U, handler->data().size());
-  const char kData[] = "\x01\x00\x00\x00\x01\x00\x00\x00";
+  constexpr char kData[] = "\x01\x00\x00\x00\x01\x00\x00\x00";
   ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =

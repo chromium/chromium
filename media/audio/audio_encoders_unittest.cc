@@ -721,7 +721,7 @@ TEST_P(AudioOpusEncoderTest, ExtraData) {
 }
 
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
-  const int kOpusDecoderSampleRate = 48000;
+  constexpr int kOpusDecoderSampleRate = 48000;
   const int kOpusDecoderFramesPerBuffer = AudioTimestampHelper::TimeToFrames(
       kOpusBufferDuration, kOpusDecoderSampleRate);
 

@@ -29,7 +29,7 @@ namespace audio {
 
 namespace {
 
-const base::FilePath::CharType kBaseFileName[] =
+constexpr base::FilePath::CharType kBaseFileName[] =
     FILE_PATH_LITERAL("base_file_name");
 
 // Empty function bound and passed to DebugRecording::CreateWavFile and

@@ -69,8 +69,8 @@ class SyncReaderBitstreamTest : public TestWithParam<OverflowTestCase> {
 };
 
 TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
-  const int kSampleRate = 44100;
-  const int kFramesPerBuffer = 1;
+  constexpr int kSampleRate = 44100;
+  constexpr int kFramesPerBuffer = 1;
   AudioParameters params(AudioParameters::AUDIO_BITSTREAM_AC3,
                          media::ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFramesPerBuffer);
@@ -128,8 +128,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #else
 TEST(SyncReaderBitstreamTest, BitstreamNotSupported) {
-  const int kSampleRate = 44100;
-  const int kFramesPerBuffer = 1;
+  constexpr int kSampleRate = 44100;
+  constexpr int kFramesPerBuffer = 1;
   AudioParameters params(AudioParameters::AUDIO_BITSTREAM_AC3,
                          media::ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFramesPerBuffer);

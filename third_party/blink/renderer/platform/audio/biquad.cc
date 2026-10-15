@@ -782,7 +782,7 @@ double Biquad::TailFrame(int coef_index, double max_frame) const {
   // this, we assume that we've reached the tail of the response.
   // Currently, this means that the impulse is less than 1 bit of a
   // 16-bit PCM value.
-  const double kMaxTailAmplitude = 1 / 32768.0;
+  constexpr double kMaxTailAmplitude = 1 / 32768.0;
 
   // Find the roots of 1+a1/z+a2/z^2 = 0.  Or equivalently,
   // z^2+a1*z+a2 = 0.  From the quadratic formula the roots are

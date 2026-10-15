@@ -89,7 +89,7 @@ class AudioArray final {
 
     // Minimum alignment requirements for arrays so that we can use SIMD.
 #if defined(ARCH_CPU_X86_FAMILY)
-    const unsigned kAlignment = 32;
+    constexpr unsigned kAlignment = 32;
 #else
     constexpr unsigned kAlignment = 16;
 #endif

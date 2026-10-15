@@ -43,14 +43,14 @@ namespace audio {
 
 namespace {
 
-const uint32_t kDefaultSharedMemoryCount = 10;
-const bool kDoEnableAGC = true;
-const bool kDoNotEnableAGC = false;
-const bool kValidStream = true;
-const bool kInvalidStream = false;
-const bool kMuted = true;
-const bool kNotMuted = false;
-const char* kDefaultDeviceId = "default";
+constexpr uint32_t kDefaultSharedMemoryCount = 10;
+constexpr bool kDoEnableAGC = true;
+constexpr bool kDoNotEnableAGC = false;
+constexpr bool kValidStream = true;
+constexpr bool kInvalidStream = false;
+constexpr bool kMuted = true;
+constexpr bool kNotMuted = false;
+constexpr char kDefaultDeviceId[] = "default";
 
 class MockStreamClient : public media::mojom::AudioInputStreamClient {
  public:

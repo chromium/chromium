@@ -242,7 +242,7 @@ static snd_pcm_t* OpenDevice(media::AlsaWrapper* wrapper,
 }
 
 static std::string DeviceNameToControlName(const std::string& device_name) {
-  const char kMixerPrefix[] = "hw";
+  constexpr char kMixerPrefix[] = "hw";
   std::string control_name;
   size_t pos1 = device_name.find(':');
   if (pos1 == std::string::npos) {

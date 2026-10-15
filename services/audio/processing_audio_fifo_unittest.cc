@@ -22,11 +22,11 @@
 
 namespace audio {
 
-const int kSampleRate = 48000;
-const int kFramesPerBuffer = kSampleRate / 200;  // 5ms, for testing.
-const int kTestToneFrequency = 440;
-const int kTestFifoSize = 4;
-const double kTestVolume = 0.567;
+constexpr int kSampleRate = 48000;
+constexpr int kFramesPerBuffer = kSampleRate / 200;  // 5ms, for testing.
+constexpr int kTestToneFrequency = 440;
+constexpr int kTestFifoSize = 4;
+constexpr double kTestVolume = 0.567;
 
 struct TestCaptureData {
   TestCaptureData(std::unique_ptr<media::AudioBus> audio_bus,

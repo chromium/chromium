@@ -18,7 +18,7 @@
 
 namespace {
 
-const char kNormalizedDefaultDeviceId[] = "";
+constexpr char kNormalizedDefaultDeviceId[] = "";
 
 // Helper function which returns a consistent representation of the default
 // device ID.

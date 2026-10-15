@@ -96,10 +96,10 @@ struct TestAudioManagerFactory<std::nullptr_t> {
   }
 };
 
-const char kRealDefaultInputDeviceID[] = "input2";
-const char kRealDefaultOutputDeviceID[] = "output3";
-const char kRealCommunicationsInputDeviceID[] = "input1";
-const char kRealCommunicationsOutputDeviceID[] = "output1";
+constexpr char kRealDefaultInputDeviceID[] = "input2";
+constexpr char kRealDefaultOutputDeviceID[] = "output3";
+constexpr char kRealCommunicationsInputDeviceID[] = "input1";
+constexpr char kRealCommunicationsOutputDeviceID[] = "output1";
 
 void CheckDescriptionLabels(const AudioDeviceDescriptions& descriptions,
                             const std::string& real_default_id,

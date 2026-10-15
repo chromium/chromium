@@ -31,7 +31,7 @@ namespace media {
 
 namespace {
 
-const size_t kMemorySegmentCount = 10u;
+constexpr size_t kMemorySegmentCount = 10u;
 
 class MockAudioInputIPC : public AudioInputIPC {
  public:
