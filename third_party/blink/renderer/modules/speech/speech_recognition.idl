@@ -25,7 +25,7 @@
 
 // https://w3c.github.io/speech-api/#speechrecognition
 
-enum AvailabilityStatus {
+enum SpeechRecognitionAvailabilityStatus {
     // On-device speech recognition is not supported.
     "unavailable",
 
@@ -79,7 +79,7 @@ dictionary SpeechRecognitionOptions {
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
-    ] static Promise<AvailabilityStatus> available(SpeechRecognitionOptions options);
+    ] static Promise<SpeechRecognitionAvailabilityStatus> available(SpeechRecognitionOptions options);
     [
         CallWith=ScriptState,
         RaisesException,

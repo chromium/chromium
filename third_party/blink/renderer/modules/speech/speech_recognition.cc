@@ -49,9 +49,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_quality.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -108,23 +108,23 @@ enum class WebSpeechDownloadActivationOutcome {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:WebSpeechDownloadActivationOutcome,
 // //third_party/blink/renderer/modules/speech/speech_recognition_test.cc:WebSpeechDownloadActivationOutcome)
 
-blink::V8AvailabilityStatus AvailabilityStatusToV8(
+blink::V8SpeechRecognitionAvailabilityStatus AvailabilityStatusToV8(
     media::mojom::blink::AvailabilityStatus status) {
   switch (status) {
     case media::mojom::blink::AvailabilityStatus::kUnavailable:
-      return blink::V8AvailabilityStatus(
-          blink::V8AvailabilityStatus::Enum::kUnavailable);
+      return blink::V8SpeechRecognitionAvailabilityStatus(
+          blink::V8SpeechRecognitionAvailabilityStatus::Enum::kUnavailable);
     case media::mojom::blink::AvailabilityStatus::kDownloadable:
     case media::mojom::blink::AvailabilityStatus::
         kDownloadableWithoutTransientUserActivation:
-      return blink::V8AvailabilityStatus(
-          blink::V8AvailabilityStatus::Enum::kDownloadable);
+      return blink::V8SpeechRecognitionAvailabilityStatus(
+          blink::V8SpeechRecognitionAvailabilityStatus::Enum::kDownloadable);
     case media::mojom::blink::AvailabilityStatus::kDownloading:
-      return blink::V8AvailabilityStatus(
-          blink::V8AvailabilityStatus::Enum::kDownloading);
+      return blink::V8SpeechRecognitionAvailabilityStatus(
+          blink::V8SpeechRecognitionAvailabilityStatus::Enum::kDownloading);
     case media::mojom::blink::AvailabilityStatus::kAvailable:
-      return blink::V8AvailabilityStatus(
-          blink::V8AvailabilityStatus::Enum::kAvailable);
+      return blink::V8SpeechRecognitionAvailabilityStatus(
+          blink::V8SpeechRecognitionAvailabilityStatus::Enum::kAvailable);
   }
 }
 
@@ -226,10 +226,10 @@ void SpeechRecognition::abort() {
 
 // Returns a promise that resolves to a enum indicating whether on-device
 // speech recognition is available for a given BCP-47 language code.
-ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
-    ScriptState* script_state,
-    const blink::SpeechRecognitionOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise<V8SpeechRecognitionAvailabilityStatus>
+SpeechRecognition::available(ScriptState* script_state,
+                             const blink::SpeechRecognitionOptions* options,
+                             ExceptionState& exception_state) {
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
   UseCounter::Count(window, WebFeature::kWebSpeechSttAvailable);
   auto* controller = SpeechRecognitionController::From(window);
@@ -244,9 +244,9 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
     return EmptyPromise();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AvailabilityStatus>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<V8SpeechRecognitionAvailabilityStatus>>(
+      script_state, exception_state.GetContext());
   auto result = resolver->Promise();
   bool is_cross_origin_iframe = window.IsCrossSiteSubframeIncludingScheme();
 
@@ -268,7 +268,8 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
     controller->AvailableOnDevice(
         options->langs(), SpeechRecognitionQualityToMojom(quality),
         BindOnce(
-            [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
+            [](ScriptPromiseResolver<V8SpeechRecognitionAvailabilityStatus>*
+                   resolver,
                media::mojom::blink::AvailabilityStatus status) {
               resolver->Resolve(AvailabilityStatusToV8(status));
             },
