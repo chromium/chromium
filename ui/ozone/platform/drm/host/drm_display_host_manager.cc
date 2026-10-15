@@ -55,8 +55,8 @@ const int kAuthFailSleepMs = 100;
 const int kLogAuthFailDelayMs = 1000;
 
 // Maximum number of attempts to authenticate the DRM device before proceeding.
-// With kAuthFailSleepMs = 100, 10 attempts corresponds to ~1 second.
-constexpr int kMaxAuthAttempts = 10;
+// With kAuthFailSleepMs = 100, 50 attempts corresponds to ~5 seconds.
+constexpr int kMaxAuthAttempts = 50;
 
 constexpr std::array<std::string_view, 3> kDisplayActionString = {
     "ADD",
