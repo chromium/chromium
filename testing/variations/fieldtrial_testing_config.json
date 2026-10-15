@@ -4447,6 +4447,27 @@
             ]
         }
     ],
+    "ClientSideDetectionImageEmbeddingMatch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CsdImageEmbeddingMatchWithIntelligentScan": "true"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionImageEmbeddingMatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [
