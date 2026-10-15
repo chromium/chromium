@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_link_drop_handler.h"
@@ -520,11 +521,9 @@ views::View* TabDragHandlerImpl::ViewFromTabSlot(TabSlotView* view) const {
     if (tab->IsSplit()) {
       // If the dragged tab view is in a split, return the split's tab view
       // instead.
-      const TabCollectionNode* split_node =
-          root_node_->GetParentNodeForHandle(tab->GetHandle());
-      CHECK(split_node);
-      CHECK_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
-      return split_node->view();
+      views::View* split_view = node.view()->parent();
+      CHECK(views::IsViewClass<SplitTabView>(split_view));
+      return split_view;
     }
   }
 

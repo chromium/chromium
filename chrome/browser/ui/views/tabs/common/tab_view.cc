@@ -1103,7 +1103,12 @@ void TabView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
 
 void TabView::OnCollapseStateChanged(
     tabs::VerticalTabStripCollapseState state) {
-  collapsed_ = state == tabs::VerticalTabStripCollapseState::kCollapsed;
+  const bool collapsed =
+      state == tabs::VerticalTabStripCollapseState::kCollapsed;
+  if (collapsed_ != collapsed) {
+    collapsed_ = collapsed;
+    InvalidateLayout();
+  }
 }
 
 void TabView::OnTabStateChanged() {

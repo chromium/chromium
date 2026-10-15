@@ -106,6 +106,15 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &TabGroupView::ResetCollectionNode, base::Unretained(this)));
 
+  if (orientation_ == TabStripOrientation::kVertical) {
+    auto* state_controller =
+        collection_node_->GetController()->GetStateController();
+    CHECK(state_controller);
+    collapsed_state_changed_subscription_ =
+        state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+            &TabGroupView::OnCollapseStateChanged, base::Unretained(this)));
+  }
+
   TabGroup* const tab_group =
       const_cast<TabGroup*>(GetTabGroupFromNode(collection_node_));
 
@@ -300,6 +309,7 @@ std::unique_ptr<views::View> TabGroupView::DetachChildView(
 void TabGroupView::ResetCollectionNode() {
   HideHoverCard(TabSlotController::HoverCardUpdateType::kTabRemoved);
   node_destroyed_subscription_ = {};
+  collapsed_state_changed_subscription_ = {};
   tab_group_data_changed_subscription_ = {};
   tab_group_data_observer_.reset();
   collection_node_ = nullptr;
@@ -330,6 +340,11 @@ void TabGroupView::OnDataChanged() {
 
   group_line_->SchedulePaint();
 
+  InvalidateLayout();
+}
+
+void TabGroupView::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
   InvalidateLayout();
 }
 

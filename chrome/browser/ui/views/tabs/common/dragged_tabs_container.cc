@@ -222,6 +222,8 @@ void DraggedTabsContainer::InitializeDragState(
   BuildDragLayout(session_data);
 
   InitializeDragStartAnimation(controller);
+  // Recalculate the target layout now that `dragging_views_` is populated.
+  UpdateTargetLayoutForDrag({});
 }
 
 void DraggedTabsContainer::InitializeDragStartAnimation(
@@ -442,6 +444,9 @@ void DraggedTabsContainer::ResetDragState() {
   last_move_drag_x_ = std::nullopt;
 
   on_scrolled_subscription_.reset();
+  // Invalidate layout after clearing `dragging_views_` so views animate to
+  // their final slots.
+  host_view_->InvalidateLayout();
 }
 
 void DraggedTabsContainer::UpdateDraggingViewTransforms(

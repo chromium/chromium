@@ -131,6 +131,7 @@ class TabGroupView : public TabCollectionZOrderManager,
 
   void ResetCollectionNode();
   void OnDataChanged();
+  void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
   void UpdateChildVisibilityForCollapseState(bool collapsed);
   void ExitFocusMode();
 
@@ -155,6 +156,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   std::unique_ptr<tabs::TabGroupDataObserver> tab_group_data_observer_;
   base::CallbackListSubscription tab_group_data_changed_subscription_;
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 };
 

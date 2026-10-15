@@ -208,6 +208,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
   // `animation_coordinator_`.
   void UpdateCurrentLayout();
 
+  // Returns the available `SizeBounds` used to calculate `target_layout_`.
+  views::SizeBounds GetAvailableHostSize() const;
+
   // Recalculates the target layout and starts/updates animation if necessary.
   // Returns true if a new target layout was computed.
   // Note: This is called in `OnLayoutChanged()` to ensure preferred size
@@ -282,6 +285,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
 
   // Whether this layout manager is currently animating toward `target_layout_`.
   bool is_animating_ = false;
+
+  // The `SizeBounds` used the last time `RecalculateTarget()` ran.
+  views::SizeBounds last_target_size_bounds_;
 
   // Layout states.
   views::ProposedLayout starting_layout_;  // State at start of animation.

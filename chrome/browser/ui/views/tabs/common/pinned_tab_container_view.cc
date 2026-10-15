@@ -66,14 +66,14 @@ PinnedTabContainerView::PinnedTabContainerView(
                      base::Unretained(this)));
 
   if (orientation_ == TabStripOrientation::kVertical) {
-    if (auto* state_controller =
-            collection_node_->GetController()->GetStateController()) {
-      OnCollapseStateChanged(state_controller->GetCollapseState());
-      collapsed_state_changed_subscription_ =
-          state_controller->RegisterOnCollapseChanged(base::BindRepeating(
-              &PinnedTabContainerView::OnCollapseStateChanged,
-              base::Unretained(this)));
-    }
+    auto* state_controller =
+        collection_node_->GetController()->GetStateController();
+    CHECK(state_controller);
+    OnCollapseStateChanged(state_controller->GetCollapseState());
+    collapsed_state_changed_subscription_ =
+        state_controller->RegisterOnCollapseChanged(
+            base::BindRepeating(&PinnedTabContainerView::OnCollapseStateChanged,
+                                base::Unretained(this)));
   }
 }
 
@@ -300,6 +300,7 @@ void PinnedTabContainerView::OnCollapseStateChanged(
   set_drag_axes(state == tabs::VerticalTabStripCollapseState::kCollapsed
                     ? DragAxes::kVerticalOnly
                     : DragAxes::kBoth);
+  InvalidateLayout();
 }
 
 views::ScrollView* PinnedTabContainerView::GetScrollViewForContainer() const {

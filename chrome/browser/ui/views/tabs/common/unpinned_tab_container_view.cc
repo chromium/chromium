@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -109,10 +110,19 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
   node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
       base::BindOnce(&UnpinnedTabContainerView::ResetCollectionNode,
                      base::Unretained(this)));
+
+  if (orientation_ == TabStripOrientation::kVertical) {
+    auto* state_controller =
+        collection_node_->GetController()->GetStateController();
+    CHECK(state_controller);
+    collapsed_state_changed_subscription_ =
+        state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+            &UnpinnedTabContainerView::OnCollapseStateChanged,
+            base::Unretained(this)));
+  }
 }
 
 UnpinnedTabContainerView::~UnpinnedTabContainerView() = default;
-
 
 std::optional<BrowserRootView::DropIndex>
 UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
@@ -255,7 +265,13 @@ int UnpinnedTabContainerView::GetUnconstrainedPreferredWidth() const {
 }
 
 void UnpinnedTabContainerView::ResetCollectionNode() {
+  collapsed_state_changed_subscription_ = {};
   collection_node_ = nullptr;
+}
+
+void UnpinnedTabContainerView::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  InvalidateLayout();
 }
 
 views::ScrollView* UnpinnedTabContainerView::GetScrollViewForContainer() const {

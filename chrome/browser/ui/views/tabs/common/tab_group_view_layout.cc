@@ -119,7 +119,7 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
 
   height +=
       header_bounds.height() + kGroupHeaderVerticalMargin + kTabVerticalPadding;
-  width = std::max(width, header_bounds.width());
+  width = std::max(width, header_bounds.width() + header_bounds.x());
 
   // If the tab strip is not collapsed then the group line is below and left
   // aligned with the header.
@@ -164,7 +164,7 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     height += bounds.height() + kTabVerticalPadding;
-    width = std::max(width, bounds.width());
+    width = std::max(width, bounds.width() + bounds.x());
   }
   // Remove excess padding.
   height -= kTabVerticalPadding;

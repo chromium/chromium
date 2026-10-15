@@ -81,6 +81,7 @@ class UnpinnedTabContainerView
                                const gfx::Point& point_in_screen) const;
 
   void ResetCollectionNode();
+  void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 
   const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
@@ -91,6 +92,7 @@ class UnpinnedTabContainerView
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription collapsed_state_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_H_

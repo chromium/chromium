@@ -346,14 +346,18 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
         child_node->node_view_->GetBoundsInScreen();
     const bool was_focused = child_node->node_view_->HasFocus();
 
+    // Remove the node from `src_parent_node->children_` before detaching the
+    // view so that layout recalculations triggered during view removal do not
+    // include the removed node.
+    std::unique_ptr<TabCollectionNode> removed_node = std::move(*it);
+    src_parent_node->children_.erase(it);
+
     std::unique_ptr<views::View> removed_view =
         src_parent_node->detach_child_from_node_
             ? src_parent_node->detach_child_from_node_.Run(
                   child_node->node_view_)
             : src_parent_node->node_view_->RemoveChildViewT(
                   child_node->node_view_);
-    std::unique_ptr<TabCollectionNode> removed_node = std::move(*it);
-    src_parent_node->children_.erase(it);
 
     dst_parent_node->AddChildNode(std::move(removed_node), new_index);
     if (dst_parent_node->attach_child_to_node_) {

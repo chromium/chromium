@@ -42,9 +42,14 @@ class TestLayoutManager : public views::LayoutManagerBase {
       : axis_(axis) {}
   ~TestLayoutManager() override = default;
 
+  int calculate_proposed_layout_count() const {
+    return calculate_proposed_layout_count_;
+  }
+
  protected:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override {
+    ++calculate_proposed_layout_count_;
     views::ProposedLayout layout;
 
     if (axis_ ==
@@ -97,6 +102,7 @@ class TestLayoutManager : public views::LayoutManagerBase {
 
  private:
   TabCollectionAnimatingLayoutManager::AnimationAxis axis_;
+  mutable int calculate_proposed_layout_count_ = 0;
 };
 
 }  // namespace
@@ -755,6 +761,41 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
   EXPECT_GT(step, 20);
   EXPECT_EQ(prev_pos_in_host, 20);
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       LayoutSkipsRecalculateTargetDuringAnimationUnlessSizeBoundsChange) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  widget()->LayoutRootViewIfNecessary();
+
+  auto* test_layout = static_cast<TestLayoutManager*>(
+      layout_manager()->target_layout_manager());
+
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_TRUE(layout_manager()->is_animating());
+
+  const int count_after_start = test_layout->calculate_proposed_layout_count();
+  int frames = 0;
+  while (layout_manager()->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(5));
+    widget()->LayoutRootViewIfNecessary();
+    ++frames;
+  }
+  EXPECT_GT(frames, 10);
+  // `LayoutImpl()` should not recalculate the target layout on animation ticks
+  // when available `SizeBounds` are unchanged.
+  EXPECT_EQ(test_layout->calculate_proposed_layout_count(), count_after_start);
+
+  // Resizing the widget changes `GetAvailableHostSize()`, which should cause
+  // `LayoutImpl()` to recalculate the target layout without `InvalidateLayout`.
+  widget()->SetBounds(gfx::Rect(0, 0, 150, 100));
+  widget()->LayoutRootViewIfNecessary();
+  EXPECT_GT(test_layout->calculate_proposed_layout_count(), count_after_start);
 }
 
 INSTANTIATE_TEST_SUITE_P(

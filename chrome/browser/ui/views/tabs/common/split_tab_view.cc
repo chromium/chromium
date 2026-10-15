@@ -48,13 +48,15 @@ SplitTabView::SplitTabView(TabCollectionNode* collection_node)
           &SplitTabView::ResetCollectionNode, base::Unretained(this)));
 
   CHECK(collection_node_->GetController());
-  auto* state_controller =
-      collection_node_->GetController()->GetStateController();
-  CHECK(state_controller);
-  OnCollapseStateChanged(state_controller->GetCollapseState());
-  collapsed_state_changed_subscription_ =
-      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
-          &SplitTabView::OnCollapseStateChanged, base::Unretained(this)));
+  if (orientation_ == TabStripOrientation::kVertical) {
+    auto* state_controller =
+        collection_node_->GetController()->GetStateController();
+    CHECK(state_controller);
+    OnCollapseStateChanged(state_controller->GetCollapseState());
+    collapsed_state_changed_subscription_ =
+        state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+            &SplitTabView::OnCollapseStateChanged, base::Unretained(this)));
+  }
 
   // Ensures this view gets mouse events as well its children.
   SetNotifyEnterExitOnChild(true);
@@ -363,7 +365,12 @@ views::ProposedLayout SplitTabView::CalculateVerticalLayout(
 
 void SplitTabView::OnCollapseStateChanged(
     tabs::VerticalTabStripCollapseState state) {
-  collapsed_ = state == tabs::VerticalTabStripCollapseState::kCollapsed;
+  const bool collapsed =
+      state == tabs::VerticalTabStripCollapseState::kCollapsed;
+  if (collapsed_ != collapsed) {
+    collapsed_ = collapsed;
+    InvalidateLayout();
+  }
 }
 
 std::unique_ptr<views::View> SplitTabView::RemoveChildViewForReparenting(
@@ -378,14 +385,14 @@ std::unique_ptr<views::View> SplitTabView::RemoveChildViewForReparenting(
           .animation_axis =
               TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal,
           // Note: Tabs are removed from the split view collection from the
-          // front first so it is necessary to test the number of children
-          // in the collection when computing the animation direction.
-          .animation_direction =
-              (children.size() == 2 && children[0] == child_view)
-                  ? TabCollectionAnimatingLayoutManager::AnimationDirection::
-                        kEndToStart
-                  : TabCollectionAnimatingLayoutManager::AnimationDirection::
-                        kStartToEnd,
+          // front first and the node is removed from `collection_node_` before
+          // detaching the view, so 1 remaining child indicates the first tab
+          // is being removed.
+          .animation_direction = children.size() == 1
+                                     ? TabCollectionAnimatingLayoutManager::
+                                           AnimationDirection::kEndToStart
+                                     : TabCollectionAnimatingLayoutManager::
+                                           AnimationDirection::kStartToEnd,
       });
 
   // Ensure we remove the child view before setting source layout info to
