@@ -14,10 +14,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Content for the Finds opt-in bottom sheet. */
 @NullMarked
 class FindsOptInBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
     private final View mContentView;
     private final Runnable mOnBackPress;
     private final Runnable mOnDestroy;
@@ -54,6 +57,11 @@ class FindsOptInBottomSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mOnDestroy.run();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
     }
 
     @Override
