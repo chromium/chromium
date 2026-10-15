@@ -20,84 +20,32 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
-import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 /** Unit tests for {@link FlatTabListDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class FlatTabListDataProviderUnitTest {
-    private static final @TabId int TAB1_ID = 1;
-    private static final @TabId int TAB2_ID = 2;
-    private static final @TabId int TAB3_ID = 3;
-    private static final @TabId int TAB4_ID = 4;
-    private static final Token TAB_GROUP_ID = new Token(/* high= */ 1L, /* low= */ 2L);
-    private static final Token TAB_GROUP_ID_2 = new Token(/* high= */ 3L, /* low= */ 4L);
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private TabModel mTabModel;
-    @Mock private TabModel mOtherTabModel;
-    @Mock private Tab mTab1;
-    @Mock private Tab mTab2;
-    @Mock private Tab mTab3;
-    @Mock private Tab mTab4;
-    @Mock private TabListDataObserver mObserver;
+public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase {
     @Mock private TabListDataObserver mSecondObserver;
 
-    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
-
-    private final List<Tab> mModelTabs = new ArrayList<>();
-    private final List<Tab> mOtherModelTabs = new ArrayList<>();
     private final Predicate<Tab> mInCurrentGroupFilter = this::isInCurrentGroup;
-    private final SettableNullableObservableSupplier<TabModel> mTabModelSupplier =
-            ObservableSuppliers.createNullable();
 
     private @Nullable Token mCurrentTabGroupId = TAB_GROUP_ID;
-    private @Nullable Tab mSelectedTab;
-    private TabModelObserver mTabModelObserver;
-    private TabGroupObserver mTabGroupObserver;
-    private FlatTabListDataProvider mProvider;
-
-    @Before
-    public void setUp() {
-        when(mTab1.getId()).thenReturn(TAB1_ID);
-        when(mTab2.getId()).thenReturn(TAB2_ID);
-        when(mTab3.getId()).thenReturn(TAB3_ID);
-        when(mTab4.getId()).thenReturn(TAB4_ID);
-
-        stubBackedTabModel(mTabModel, mModelTabs);
-        stubBackedTabModel(mOtherTabModel, mOtherModelTabs);
-    }
 
     // ============================================================================================
     // Value Semantics Tests
@@ -905,123 +853,15 @@ public class FlatTabListDataProviderUnitTest {
     // Test Helpers
     // ============================================================================================
 
-    private void stubBackedTabModel(TabModel model, List<Tab> tabs) {
-        when(model.isTabStateInitialized()).thenReturn(true);
-        when(model.iterator()).thenAnswer(invocation -> tabs.iterator());
-        when(model.getTabAt(anyInt()))
-                .thenAnswer(
-                        invocation -> {
-                            int index = invocation.getArgument(0);
-                            return index >= 0 && index < tabs.size() ? tabs.get(index) : null;
-                        });
-        when(model.index())
-                .thenAnswer(
-                        invocation -> {
-                            if (mSelectedTab == null) return TabList.INVALID_TAB_INDEX;
-                            int index = tabs.indexOf(mSelectedTab);
-                            return index < 0 ? TabList.INVALID_TAB_INDEX : index;
-                        });
-    }
-
-    private void captureObserver(TabModel model) {
-        verify(model).addObserver(mTabModelObserverCaptor.capture());
-        mTabModelObserver = mTabModelObserverCaptor.getValue();
-        verify(model).addTabGroupObserver(mTabGroupObserverCaptor.capture());
-        mTabGroupObserver = mTabGroupObserverCaptor.getValue();
-    }
-
-    private void setModelTabs(Tab... tabs) {
-        mModelTabs.clear();
-        mModelTabs.addAll(Arrays.asList(tabs));
-    }
-
-    private void addTab(Tab tab, int modelIndex) {
-        mModelTabs.add(modelIndex, tab);
-        mTabModelObserver.didAddTab(
-                tab,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND,
-                /* markedForSelection= */ false);
-    }
-
-    private void moveTab(Tab tab, int newIndex) {
-        int curIndex = mModelTabs.indexOf(tab);
-        mModelTabs.remove(curIndex);
-        mModelTabs.add(newIndex, tab);
-        mTabModelObserver.didMoveTab(tab, newIndex, curIndex);
-    }
-
-    private void moveTabWithinGroup(Tab tab, int newIndex) {
-        int curIndex = mModelTabs.indexOf(tab);
-        mModelTabs.remove(curIndex);
-        mModelTabs.add(newIndex, tab);
-        mTabGroupObserver.didMoveWithinGroup(tab, curIndex, newIndex);
-    }
-
-    private void closeTab(Tab tab) {
-        mModelTabs.remove(tab);
-        mTabModelObserver.didRemoveTabForClosure(tab);
-    }
-
-    private void undoCloseTab(Tab tab, int modelIndex) {
-        mModelTabs.add(modelIndex, tab);
-        mTabModelObserver.tabClosureUndone(tab);
-    }
-
-    private void selectTab(Tab tab, @TabId int prevSelectedTabId) {
-        mSelectedTab = tab;
-        mTabModelObserver.didSelectTab(tab, TabSelectionType.FROM_USER, prevSelectedTabId);
-    }
-
-    private static void groupTabs(@Nullable Token groupId, Tab... tabs) {
-        for (Tab tab : tabs) {
-            when(tab.getTabGroupId()).thenReturn(groupId);
-        }
-    }
-
     private boolean isInCurrentGroup(Tab tab) {
         return mCurrentTabGroupId != null && mCurrentTabGroupId.equals(tab.getTabGroupId());
     }
 
     private void createProvider(@Nullable Predicate<Tab> filter) {
-        mProvider = new FlatTabListDataProvider(mTabModelSupplier, filter);
-        mProvider.addObserver(mObserver);
+        initProvider(new FlatTabListDataProvider(mTabModelSupplier, filter));
     }
 
     private void setUpProviderWithTabs(@Nullable Predicate<Tab> filter, Tab... tabs) {
-        setModelTabs(tabs);
-        mTabModelSupplier.set(mTabModel);
-        createProvider(filter);
-        mProvider.requestDataReset();
-        captureObserver(mTabModel);
-        clearInvocations(mObserver);
-    }
-
-    private void assertItems(TabItem... expected) {
-        assertEquals(List.of(expected), mProvider.getItemsForTesting());
-    }
-
-    private void assertResetWithItems(TabItem... expected) {
-        List<TabListItem> expectedList = List.of(expected);
-        verify(mObserver).onDataReset(expectedList);
-        assertEquals(expectedList, mProvider.getItemsForTesting());
-    }
-
-    private static TabItem item(@TabId int tabId) {
-        return new TabItem(
-                tabId,
-                /* isSelected= */ false,
-                /* isPinned= */ false,
-                /* isMultiSelected= */ false);
-    }
-
-    private static TabItem selected(@TabId int tabId) {
-        return new TabItem(
-                tabId, /* isSelected= */ true, /* isPinned= */ false, /* isMultiSelected= */ false);
-    }
-
-    private static TabItem pinned(@TabId int tabId) {
-        return new TabItem(
-                tabId, /* isSelected= */ false, /* isPinned= */ true, /* isMultiSelected= */ false);
+        initProviderWithTabs(new FlatTabListDataProvider(mTabModelSupplier, filter), tabs);
     }
 }
