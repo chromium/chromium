@@ -5,14 +5,17 @@
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 
 #include "ash/constants/generative_ai_country_restrictions.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/account_id/account_id.h"
 #include "components/manta/manta_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -41,9 +44,10 @@ base::expected<bool, Error> CanUseMahiService() {
       return false;
     }
 
-    // MantaService might not be available in tests.
-    if (manta::MantaService* service =
-            manta::MantaServiceFactory::GetForProfile(profile);
+    // The active user session always has an annotated account. The service may
+    // still be null when manta is disabled for the user.
+    if (manta::MantaService* service = MantaServiceProvider::Get().Find(
+            CHECK_DEREF(AnnotatedAccountId::Get(profile)));
         service) {
       switch (service->CanAccessMantaFeaturesWithoutMinorRestrictions()) {
         case manta::FeatureSupportStatus::kSupported:

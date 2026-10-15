@@ -36,10 +36,11 @@
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/history/history_service_provider.h"
+#include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -47,6 +48,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/manta_service.h"
 #include "components/session_manager/core/session.h"
@@ -191,8 +193,8 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
     return nullptr;
   }
 
-  if (manta::MantaService* service =
-          manta::MantaServiceFactory::GetForProfile(profile)) {
+  if (manta::MantaService* service = ash::MantaServiceProvider::Get().Find(
+          CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)))) {
     auto provider = service->CreateMahiProvider();
     if (!provider) {
       LogProviderCreationStatus(
