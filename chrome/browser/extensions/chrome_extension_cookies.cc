@@ -41,7 +41,8 @@ ChromeExtensionCookies::ChromeExtensionCookies(Profile* profile)
 
   std::optional<content::CookieStoreConfig> creation_config;
 
-  if (profile_->IsIncognitoProfile() || profile_->AsTestingProfile()) {
+  if (profile_->IsPrimaryOTRProfileWithRegularParent() ||
+      profile_->AsTestingProfile()) {
     creation_config.emplace(content::CookieStoreConfig());
   } else {
     creation_config.emplace(content::CookieStoreConfig(
