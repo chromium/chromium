@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1076,6 +1077,27 @@ TEST_F(AppShimManagerTest, FailToLaunch) {
   EXPECT_NE(nullptr, host_aa_.get());
   std::move(launch_callback).Run(base::Process());
   EXPECT_EQ(nullptr, host_aa_.get());
+}
+
+TEST_F(AppShimManagerTest, DontLaunchShimWhileShuttingDown) {
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+
+  // Neither the initial launch nor the retry that recreates the shim should
+  // launch a shim process while the browser is shutting down.
+  EXPECT_CALL(*delegate_, DoLaunchShim(_, _, _, _)).Times(0);
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+
+  // The launch failure is reported asynchronously.
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Once both launch attempts have failed, the host gives up and is deleted.
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
+  EXPECT_TRUE(base::test::RunUntil([&] { return !host_aa_; }));
+
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
 }
 
 TEST_F(AppShimManagerTest, FailToConnect) {
@@ -2220,6 +2242,32 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   EXPECT_TRUE(provider.is_connected());
 }
 
+TEST_F(AppShimManagerTest, LaunchNotificationProviderWhileShuttingDown) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+
+  // No app shim should be launched in the background while the browser is
+  // shutting down.
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(_)).Times(0);
+  EXPECT_CALL(*delegate_, DoLaunchShim(_, _, _, _)).Times(0);
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
+      manager_->LaunchNotificationProvider(kTestAppIdA);
+  // Instead `provider` is bound to the dummy implementation.
+  EXPECT_TRUE(provider.is_bound());
+  provider.FlushForTesting();
+  EXPECT_TRUE(provider.is_connected());
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
+}
+
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
       {features::kAppShimNotificationAttribution,
@@ -2378,6 +2426,10 @@ TEST_F(AppShimManagerTest,
   // Report that the process terminated.
   ASSERT_TRUE(terminated_callback);
   std::move(terminated_callback).Run();
+
+  // The relaunch attempt fails since no profiles are loaded anymore, after
+  // which the host gives up.
+  EXPECT_TRUE(base::test::RunUntil([&] { return !host_aa_; }));
 }
 
 TEST_F(AppShimManagerTest,

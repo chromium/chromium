@@ -658,6 +658,13 @@ Profile* AppShimManager::ProfileForBackgroundShimLaunch(
 void AppShimManager::LaunchShimInBackgroundMode(
     const webapps::AppId& app_id,
     base::OnceCallback<void(AppShimHost*)> callback) {
+  // Don't launch app shims once the browser has started shutting down (see
+  // OnShimLaunchRequested()).
+  if (g_browser_process->IsShuttingDown()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   // A shim can only be launched through an active profile, so find a profile
   // through which to do the launch. This method should only be called for
   // multi-profile apps, for which an arbitrary profile is good enough.
@@ -773,6 +780,21 @@ void AppShimManager::OnShimLaunchRequested(
     web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
     apps::ShimTerminatedCallback terminated_callback) {
+  // Note that launch failures below are reported asynchronously, as they would
+  // be for a real launch, since this can be called synchronously from
+  // AppShimHost::LaunchShim().
+
+  // Don't launch app shims once the browser has started shutting down. By then
+  // the AppShimListener may already have been destroyed and Chrome will exit
+  // soon, so a newly launched shim would likely never connect, and would
+  // instead crash in AppShimController::PollForChromeReady() once Chrome has
+  // exited.
+  if (g_browser_process->IsShuttingDown()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(terminated_callback));
+    return;
+  }
+
   // A shim can only be launched through an active profile, so find a profile
   // through which to do the launch. For multi-profile apps, select one
   // arbitrarily. For non-multi-profile apps, select the specified profile.
@@ -789,7 +811,8 @@ void AppShimManager::OnShimLaunchRequested(
       if (app_state->profiles.empty()) {
         LOG(ERROR)
             << "Attempting to launch shim for which no profiles are loaded.";
-        std::move(terminated_callback).Run();
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, std::move(terminated_callback));
         return;
       }
       CHECK(!app_state->profiles.empty(), base::NotFatalUntil::M161);
@@ -810,7 +833,8 @@ void AppShimManager::OnShimLaunchRequested(
                                                         profile->GetPath()))) {
     LOG(ERROR)
         << "Attempting to launch shim for an app that is no longer installed.";
-    std::move(terminated_callback).Run();
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(terminated_callback));
     return;
   }
 
