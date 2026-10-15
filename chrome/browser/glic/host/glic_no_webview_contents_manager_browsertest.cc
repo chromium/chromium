@@ -1385,4 +1385,33 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewSsrOverlayBrowserTest,
   EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
 }
 
+class GlicNoWebviewGuestInitialSizeBrowserTest
+    : public GlicNoWebviewContentsManagerBrowserTest {
+ public:
+  GlicNoWebviewGuestInitialSizeBrowserTest() {
+    initial_size_feature_list_.InitAndEnableFeature(
+        features::kGlicGuestInitialSize);
+  }
+
+ private:
+  base::test::ScopedFeatureList initial_size_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewGuestInitialSizeBrowserTest,
+                       AppliesInitialSizeWhileWarming) {
+  auto& warming_pool = coordinator().GetWebContentsWarmingPoolForTesting();
+  warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup);
+  auto warmed_contents = warming_pool.GetWarmedWebContents();
+  ASSERT_TRUE(warmed_contents.has_value());
+  ASSERT_TRUE(warmed_contents->guest_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(warmed_contents->guest_contents.get()));
+
+  auto actual_size = warmed_contents->guest_contents->GetRenderWidgetHostView()
+                         ->GetVisibleViewportSize();
+  // Don't check exact size, it may round to a different value than the one
+  // that's specified.
+  EXPECT_GT(actual_size.width(), 0);
+  EXPECT_GT(actual_size.height(), 0);
+}
+
 }  // namespace glic
