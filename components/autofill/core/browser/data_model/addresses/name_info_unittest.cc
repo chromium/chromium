@@ -483,6 +483,157 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithIncompleteNameAndAlternativeName) {
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
 }
 
+// Tests that `FinalizeAfterImport` wipes invalid name and alternative name
+// subcomponents and re-parses the full names even when the root nodes are not
+// user-verified.
+TEST_F(NameInfoTest, FinalizeAfterImportWipeInvalidNameStructure) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillWipeInvalidNameStructure};
+
+  NameInfo name(/*alternative_names_supported=*/true);
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL,
+       .value = "Peter Pan",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Peter",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "A Pan",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "A Pan",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "さとう",
+       .verification_status = VerificationStatus::kParsed}};
+  test::SetFormGroupValues(name, name_values);
+
+  EXPECT_TRUE(name.FinalizeAfterImport());
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_FULL,
+       .value = "Peter Pan",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Peter",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Pan",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "Pan",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kParsed}};
+  test::VerifyFormGroupValues(name, expectation);
+}
+
+// Tests that structured name and alternative name subcomponents are preserved
+// when `NAME_FULL` or `ALTERNATIVE_FULL_NAME` is updated via
+// `SetRawInfoWithVerificationStatus` to a token-equivalent value, and wiped
+// when updated to a non-token-equivalent value.
+TEST_F(NameInfoTest, ResetStructuredNameTokens) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillWipeInvalidNameStructure};
+
+  NameInfo name(/*alternative_names_supported=*/true);
+  name.SetRawInfoWithVerificationStatus(NAME_FULL, u"Peter Pan",
+                                        VerificationStatus::kUserVerified);
+  name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME,
+                                        u"やまもと あおい",
+                                        VerificationStatus::kUserVerified);
+  EXPECT_TRUE(name.FinalizeAfterImport());
+
+  EXPECT_EQ(name.GetRawInfo(NAME_FIRST), u"Peter");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(name.GetRawInfo(NAME_LAST), u"Pan");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST), VerificationStatus::kParsed);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), u"あおい");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_FAMILY_NAME), u"やまもと");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME),
+            VerificationStatus::kParsed);
+
+  // Lift the verification status of the last/family names to `kObserved`.
+  name.SetRawInfoWithVerificationStatus(NAME_LAST, u"Pan",
+                                        VerificationStatus::kObserved);
+  name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                                        VerificationStatus::kObserved);
+
+  // Set new full names that have the same tokens in a different order.
+  name.SetRawInfoWithVerificationStatus(NAME_FULL, u"Pan, Peter",
+                                        VerificationStatus::kUserVerified);
+  name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME,
+                                        u"あおい やまもと",
+                                        VerificationStatus::kUserVerified);
+
+  // After this operation, the structure should be maintained including the
+  // observed status of the last/family names.
+  EXPECT_EQ(name.GetRawInfo(NAME_FIRST), u"Peter");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(name.GetRawInfo(NAME_LAST), u"Pan");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kObserved);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), u"あおい");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_FAMILY_NAME), u"やまもと");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME),
+            VerificationStatus::kObserved);
+
+  // Now set different full names.
+  name.SetRawInfoWithVerificationStatus(NAME_FULL, u"Hook",
+                                        VerificationStatus::kUserVerified);
+  name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"さとう さくら",
+                                        VerificationStatus::kUserVerified);
+
+  // Setting non-equivalent full names should unset the child tokens.
+  EXPECT_EQ(name.GetRawInfo(NAME_FIRST), u"");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(name.GetRawInfo(NAME_LAST), u"");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(name.GetRawInfo(NAME_LAST_FIRST), u"");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST_FIRST),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(name.GetRawInfo(NAME_LAST_SECOND), u"");
+  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST_SECOND),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), u"");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(name.GetRawInfo(ALTERNATIVE_FAMILY_NAME), u"");
+  EXPECT_EQ(name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME),
+            VerificationStatus::kNoStatus);
+}
+
 // Tests that `MergeStructuredName` returns false when alternative name support
 // does not match between profiles.
 TEST_F(NameInfoTest, MergeStructuredName_DissimilarAlternativeNameSupport) {

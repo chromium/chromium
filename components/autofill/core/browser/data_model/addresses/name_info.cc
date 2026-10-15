@@ -58,8 +58,10 @@ bool FinalizeNameAddressComponent(AddressComponent* component) {
 
   bool result = component->CompleteFullTree();
   if (!result) {
-    if (component->GetVerificationStatus() ==
-            VerificationStatus::kUserVerified &&
+    if ((component->GetVerificationStatus() ==
+             VerificationStatus::kUserVerified ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillWipeInvalidNameStructure)) &&
         component->WipeInvalidStructure()) {
       result = component->CompleteFullTree();
     }
@@ -602,6 +604,24 @@ void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
   if (IsAlternativeNameType(type) && !IsAlternativeNameSupported()) {
     return;
   }
+  // If the full name already has a value and is updated to a string with
+  // different tokens, invalidate its child subcomponents so stale name parts
+  // are not retained. If the new value is token-equivalent, keep the existing
+  // substructure.
+  if ((type == NAME_FULL || type == ALTERNATIVE_FULL_NAME) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillWipeInvalidNameStructure)) {
+    const std::u16string current_value =
+        GetRootForType(type)->GetValueForType(type);
+    if (!current_value.empty()) {
+      AreStringTokenEquivalent(value, current_value)
+          ? GetRootForType(type)->SetValueForType(type, value, status)
+          : GetRootForType(type)->SetValueForType(
+                type, value, status,
+                /*invalidate_child_nodes=*/true);
+      return;
+    }
+  }
   GetRootForType(type)->SetValueForType(type, value, status);
 }
 
@@ -622,8 +642,12 @@ bool NameInfo::SetInfoWithVerificationStatus(FieldType type,
                                              std::u16string_view value,
                                              std::string_view app_locale,
                                              VerificationStatus status) {
-  if (type == NAME_FULL ||
-      (type == ALTERNATIVE_FULL_NAME && IsAlternativeNameSupported())) {
+  // When `kAutofillWipeInvalidNameStructure` is enabled, this logic is handled
+  // in `SetRawInfoWithVerificationStatus()`.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillWipeInvalidNameStructure) &&
+      (type == NAME_FULL ||
+       (type == ALTERNATIVE_FULL_NAME && IsAlternativeNameSupported()))) {
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.

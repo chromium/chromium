@@ -1581,6 +1581,97 @@ TEST_F(AutofillProfileTest, TestFinalizeAfterImportUserVerified) {
   }
 }
 
+// Tests that `FinalizeAfterImport` wipes invalid name subcomponents and
+// re-parses the full name even when `NAME_FULL` is not user-verified.
+TEST_F(AutofillProfileTest, TestFinalizeAfterImportWipeInvalidNameStructure) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillWipeInvalidNameStructure};
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Peter Pan",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Peter",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"A Pan",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"A Pan",
+                                           VerificationStatus::kParsed);
+
+  EXPECT_TRUE(profile.FinalizeAfterImport());
+  EXPECT_EQ(profile.GetRawInfo(NAME_FULL), u"Peter Pan");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
+            VerificationStatus::kObserved);
+  EXPECT_EQ(profile.GetRawInfo(NAME_FIRST), u"Peter");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE), u"");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_MIDDLE),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST), u"Pan");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST_FIRST), u"");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST_SECOND), u"Pan");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST_SECOND),
+            VerificationStatus::kParsed);
+}
+
+// Tests that structured name subcomponents are preserved when `NAME_FULL` is
+// updated via `SetRawInfoWithVerificationStatus` to a token-equivalent value,
+// and wiped when updated to a non-token-equivalent value.
+TEST_F(AutofillProfileTest, ResetStructuredNameTokens) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillWipeInvalidNameStructure};
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Peter Pan",
+                                           VerificationStatus::kUserVerified);
+  profile.FinalizeAfterImport();
+
+  EXPECT_EQ(profile.GetRawInfo(NAME_FIRST), u"Peter");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST), u"Pan");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kParsed);
+
+  // Lift the verification status of the last name to be `kObserved`.
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Pan",
+                                           VerificationStatus::kObserved);
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kObserved);
+
+  // Set a new full name that has the same tokens in a different order.
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Pan, Peter",
+                                           VerificationStatus::kUserVerified);
+
+  // After this operation, the structure should be maintained including the
+  // observed status of the last name.
+  EXPECT_EQ(profile.GetRawInfo(NAME_FIRST), u"Peter");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kParsed);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST), u"Pan");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kObserved);
+
+  // Now set a different full name.
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Hook",
+                                           VerificationStatus::kUserVerified);
+
+  // Setting a non-equivalent full name should unset the child tokens.
+  EXPECT_EQ(profile.GetRawInfo(NAME_FIRST), u"");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_FIRST),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST), u"");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+            VerificationStatus::kNoStatus);
+  EXPECT_EQ(profile.GetRawInfo(NAME_LAST_SECOND), u"");
+  EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST_SECOND),
+            VerificationStatus::kNoStatus);
+}
+
 // Tests whether calling `FinalizeAfterImport` where a root node is user
 // verified to be empty, wipes the data from subcomponents.
 TEST_F(AutofillProfileTest, TestFinalizeAfterImportUserVerifiedEmpty) {

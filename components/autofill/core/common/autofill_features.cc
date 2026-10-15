@@ -1147,6 +1147,13 @@ BASE_FEATURE(kAutofillUsePassedFormAndFieldIds,
 BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, `FinalizeNameAddressComponent()` wipes invalid name
+// substructures regardless of the root node's verification status, and
+// `NameInfo::SetRawInfoWithVerificationStatus()` invalidates child nodes when
+// overwriting a non-empty full name with a non-token-equivalent value.
+BASE_FEATURE(kAutofillWipeInvalidNameStructure,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the field classification model uses runtime caching to not run
 // models on the same inputs multiple times.
 // TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill
