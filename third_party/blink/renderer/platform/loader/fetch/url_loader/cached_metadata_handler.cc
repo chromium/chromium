@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
+#include <utility>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -24,7 +26,7 @@ class CachedMetadataSenderImpl : public CachedMetadataSender {
                            mojom::blink::CodeCacheType);
   ~CachedMetadataSenderImpl() override = default;
 
-  void Send(CodeCacheHost*, base::span<const uint8_t>) override;
+  void Send(CodeCacheHost*, mojo_base::BigBuffer) override;
   bool IsServedFromCacheStorage() override { return false; }
 
  private:
@@ -50,14 +52,14 @@ CachedMetadataSenderImpl::CachedMetadataSenderImpl(
 }
 
 void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
-                                    base::span<const uint8_t> data) {
+                                    mojo_base::BigBuffer data) {
   if (!code_cache_host)
     return;
   // TODO(crbug.com/862940): This should use the Blink variant of the
   // interface.
   code_cache_host->get()->DidGenerateCacheableMetadata(
       code_cache_type_, response_url_, original_response_time_,
-      mojo_base::BigBuffer(data));
+      std::move(data));
 }
 
 // This is a CachedMetadataSender implementation that does nothing.
@@ -66,7 +68,7 @@ class NullCachedMetadataSender : public CachedMetadataSender {
   NullCachedMetadataSender() = default;
   ~NullCachedMetadataSender() override = default;
 
-  void Send(CodeCacheHost*, base::span<const uint8_t>) override {}
+  void Send(CodeCacheHost*, mojo_base::BigBuffer) override {}
   bool IsServedFromCacheStorage() override { return false; }
 };
 
@@ -77,7 +79,7 @@ class ServiceWorkerCachedMetadataSender : public CachedMetadataSender {
   explicit ServiceWorkerCachedMetadataSender(const ResourceResponse&);
   ~ServiceWorkerCachedMetadataSender() override = default;
 
-  void Send(CodeCacheHost*, base::span<const uint8_t>) override;
+  void Send(CodeCacheHost*, mojo_base::BigBuffer) override;
   bool IsServedFromCacheStorage() override { return true; }
 
  private:
@@ -92,11 +94,11 @@ ServiceWorkerCachedMetadataSender::ServiceWorkerCachedMetadataSender(
 }
 
 void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost*,
-                                             base::span<const uint8_t> data) {
+                                             mojo_base::BigBuffer data) {
   if (!cache_storage_side_data_writer_.is_bound()) {
     return;
   }
-  cache_storage_side_data_writer_->WriteSideData(mojo_base::BigBuffer(data));
+  cache_storage_side_data_writer_->WriteSideData(std::move(data));
 }
 
 // static

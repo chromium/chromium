@@ -114,7 +114,8 @@ class CachedMetadataHandlerTest : public testing::Test {
     mojo::Receiver<mojom::blink::CodeCacheHost> receiver(
         mojo_code_cache_host.get(), remote.BindNewPipeAndPassReceiver());
     auto code_cache_host = CodeCacheHost::Create(std::move(remote));
-    sender->Send(code_cache_host.get(), kTestData);
+    sender->Send(code_cache_host.get(),
+                 mojo_base::BigBuffer(base::span(kTestData)));
 
     // Flush the receiver pipes to process any pending Mojo messages.
     receiver.FlushForTesting();

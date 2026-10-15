@@ -1182,7 +1182,7 @@ class DummyBackgroundResponseProcessorClient
 class DummyCachedMetadataSender : public CachedMetadataSender {
  public:
   DummyCachedMetadataSender() = default;
-  void Send(CodeCacheHost*, base::span<const uint8_t>) override {}
+  void Send(CodeCacheHost*, mojo_base::BigBuffer) override {}
   bool IsServedFromCacheStorage() override { return false; }
 };
 
@@ -1228,7 +1228,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheDataWithHash(
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
       base::byte_span_from_cstring("X"));
-  return mojo_base::BigBuffer(cache_handler->GetSerializedCachedMetadata());
+  return cache_handler->GetSerializedCachedMetadata();
 }
 
 network::mojom::URLResponseHeadPtr CreateURLResponseHead(

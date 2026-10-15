@@ -191,9 +191,10 @@ size_t ScriptCachedMetadataHandler::GetCodeCacheSize() const {
 void ScriptCachedMetadataHandler::CommitToPersistentStorage(
     CodeCacheHost* code_cache_host) {
   if (cached_metadata_) {
-    sender_->Send(code_cache_host, cached_metadata_->SerializedData());
+    sender_->Send(code_cache_host,
+                  mojo_base::BigBuffer(cached_metadata_->SerializedData()));
   } else {
-    sender_->Send(code_cache_host, base::span<const uint8_t>());
+    sender_->Send(code_cache_host, mojo_base::BigBuffer());
   }
 }
 
@@ -213,35 +214,30 @@ void ScriptCachedMetadataHandlerWithHashing::CommitToPersistentStorage(
 }
 
 // static
-Vector<uint8_t> ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
+mojo_base::BigBuffer ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
     base::span<const uint8_t> hash,
     base::span<const uint8_t> serialized_metadata) {
-  CHECK_EQ(hash.size(), kSha256Bytes);
-  Vector<uint8_t> serialized_data;
-  serialized_data.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(
-      sizeof(CachedMetadataHeaderWithHash) + serialized_metadata.size()));
-  uint32_t marker = CachedMetadataHandler::kSingleEntryWithHashAndPadding;
-  CHECK_EQ(serialized_data.size(),
-           offsetof(CachedMetadataHeaderWithHash, marker));
-  serialized_data.append_range(base::byte_span_from_ref(marker));
-  uint32_t padding = 0;
-  CHECK_EQ(serialized_data.size(),
-           offsetof(CachedMetadataHeaderWithHash, padding));
-  serialized_data.append_range(base::byte_span_from_ref(padding));
-  CHECK_EQ(serialized_data.size(),
-           offsetof(CachedMetadataHeaderWithHash, hash));
-  serialized_data.append_range(hash);
-  CHECK_EQ(serialized_data.size(), sizeof(CachedMetadataHeaderWithHash));
-  serialized_data.append_range(serialized_metadata);
+  CachedMetadataHeaderWithHash hash_header{
+      .marker = CachedMetadataHandler::kSingleEntryWithHashAndPadding,
+      .padding = 0,
+  };
+  base::span(hash_header.hash).copy_from_nonoverlapping(hash);
+
+  mojo_base::BigBuffer serialized_data(sizeof(CachedMetadataHeaderWithHash) +
+                                       serialized_metadata.size());
+  base::span<uint8_t> serialized_data_span(serialized_data);
+  serialized_data_span.take_first(sizeof(CachedMetadataHeaderWithHash))
+      .copy_from_nonoverlapping(base::byte_span_from_ref(hash_header));
+  serialized_data_span.copy_from_nonoverlapping(serialized_metadata);
   return serialized_data;
 }
 
-Vector<uint8_t>
+mojo_base::BigBuffer
 ScriptCachedMetadataHandlerWithHashing::GetSerializedCachedMetadata() const {
   if (cached_metadata() && hash_state_ == kChecked) {
     return AddHashHeader(hash_, cached_metadata()->SerializedData());
   }
-  return Vector<uint8_t>();
+  return mojo_base::BigBuffer();
 }
 
 void ScriptCachedMetadataHandlerWithHashing::ResetForTesting() {

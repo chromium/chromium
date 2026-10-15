@@ -124,10 +124,10 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
 
   // Get the serialized representation of the cached metadata with appropriate
   // with-hashing-specific headers.
-  Vector<uint8_t> GetSerializedCachedMetadata() const;
+  mojo_base::BigBuffer GetSerializedCachedMetadata() const;
 
   // Serializes cached metadata with the hash header prepended.
-  static Vector<uint8_t> AddHashHeader(
+  static mojo_base::BigBuffer AddHashHeader(
       base::span<const uint8_t> hash,
       base::span<const uint8_t> serialized_metadata);
 
@@ -139,6 +139,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
 // The serialized header format for cached metadata which includes a hash of the
 // script text. This header is followed by a second header in the format defined
 // by CachedMetadataHeader, which is in turn followed by the data.
+// NOTE: this struct is stored to disk, do NOT change or reorder its members.
 struct CachedMetadataHeaderWithHash {
   // Only valid value is CachedMetadataHandler::kSingleEntryWithHashAndPadding.
   // Default-initialized to an invalid value to ensure headers are explicitly

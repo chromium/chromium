@@ -676,11 +676,9 @@ class Cache::CodeCacheHandleCallbackForPut final
         const ParkableString::DigestHolder digest_holder = source_text.Digest();
         const SecureStringDigest& digest = digest_holder.Get();
 
-        Vector<uint8_t> serialized_data =
+        batch_operation->response->side_data_for_cache_put =
             ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
                 base::span(digest), cached_metadata->SerializedData());
-        batch_operation->response->side_data_for_cache_put =
-            mojo_base::BigBuffer(base::span(serialized_data));
       } else {
         batch_operation->response->side_data_for_cache_put =
             mojo_base::BigBuffer(cached_metadata->SerializedData());

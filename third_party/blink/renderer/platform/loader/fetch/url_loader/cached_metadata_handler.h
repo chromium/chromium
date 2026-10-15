@@ -56,8 +56,7 @@ class PLATFORM_EXPORT CachedMetadataSender {
       base::span<const uint8_t>);
 
   virtual ~CachedMetadataSender() = default;
-  virtual void Send(CodeCacheHost* code_cache_host,
-                    base::span<const uint8_t>) = 0;
+  virtual void Send(CodeCacheHost* code_cache_host, mojo_base::BigBuffer) = 0;
 
   // IsServedFromCacheStorage is used to alter caching strategy to be more
   // aggressive. See V8CodeCache::GetCompileOptions() for an example.

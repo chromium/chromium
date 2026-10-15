@@ -93,7 +93,7 @@ class MockCachedMetadataSender : public CachedMetadataSender {
  public:
   MockCachedMetadataSender() = default;
 
-  MOCK_METHOD2(Send, void(CodeCacheHost*, base::span<const uint8_t>));
+  MOCK_METHOD(void, Send, (CodeCacheHost*, mojo_base::BigBuffer), (override));
   bool IsServedFromCacheStorage() override { return false; }
 };
 

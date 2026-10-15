@@ -404,12 +404,11 @@ TEST(ScriptResourceTest, ServiceWorkerCodeCacheWithHashLoadedSuccessfully) {
   constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
   scoped_refptr<CachedMetadata> metadata =
       CachedMetadata::Create(kDataTypeId, base::span(kDummyData));
-  Vector<uint8_t> serialized_with_hash =
+  mojo_base::BigBuffer serialized_with_hash =
       ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
           base::span(digest), metadata->SerializedData());
 
-  resource->SetSerializedCachedMetadata(
-      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+  resource->SetSerializedCachedMetadata(std::move(serialized_with_hash));
 
   auto* handler = resource->CacheHandler();
   ASSERT_TRUE(handler);
@@ -473,12 +472,11 @@ TEST(ScriptResourceTest,
   constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
   scoped_refptr<CachedMetadata> metadata =
       CachedMetadata::Create(kDataTypeId, base::span(kDummyData));
-  Vector<uint8_t> serialized_with_hash =
+  mojo_base::BigBuffer serialized_with_hash =
       ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
           base::span(digest), metadata->SerializedData());
 
-  resource->SetSerializedCachedMetadata(
-      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+  resource->SetSerializedCachedMetadata(serialized_with_hash.Clone());
 
   auto* handler = resource->CacheHandler();
   ASSERT_TRUE(handler);
@@ -498,7 +496,7 @@ TEST(ScriptResourceTest,
       ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
   resource_mismatch->ResponseReceived(response);
   resource_mismatch->SetSerializedCachedMetadata(
-      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+      std::move(serialized_with_hash));
   auto* mismatch_handler = resource_mismatch->CacheHandler();
   ASSERT_TRUE(mismatch_handler);
   EXPECT_TRUE(mismatch_handler->GetCachedMetadata(
@@ -590,12 +588,11 @@ TEST(ScriptResourceTest,
   constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
   scoped_refptr<CachedMetadata> metadata =
       CachedMetadata::Create(code_cache_tag, base::span(kDummyData));
-  Vector<uint8_t> serialized_with_hash_a =
+  mojo_base::BigBuffer serialized_with_hash_a =
       ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
           base::span(digest_a.Get()), metadata->SerializedData());
 
-  resource->SetSerializedCachedMetadata(
-      mojo_base::BigBuffer(base::span(serialized_with_hash_a)));
+  resource->SetSerializedCachedMetadata(std::move(serialized_with_hash_a));
   EXPECT_TRUE(handler->GetCachedMetadata(
       code_cache_tag, CachedMetadataHandler::kAllowUnchecked));
 
