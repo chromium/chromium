@@ -97,6 +97,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private final @Px float mModernToolbarBackgroundInnerCornerRadius;
     private final @Px int mPopoverAdditionalWidth;
     private final @Px int mAiChipMarginEnd;
+    private final @Px int mMinTouchTargetSizePx;
     // The holder view dictates our height and width but is otherwise logic-less. It exists to allow
     // us to reparent the LocationBar without needing to explicitly reposition other elements of the
     // toolbar.
@@ -152,6 +153,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_popover_shift);
         mAiChipMarginEnd =
                 resources.getDimensionPixelSize(R.dimen.location_bar_desktop_popover_margin_end);
+        mMinTouchTargetSizePx = resources.getDimensionPixelSize(R.dimen.min_touch_target_size);
 
         @DrawableRes int highlightRes = R.drawable.modern_toolbar_text_box_background_highlight;
         mHoverDrawable = (LayerDrawable) assumeNonNull(getContext().getDrawable(highlightRes));
@@ -197,7 +199,17 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         setOnLongClickListener(this);
 
-        mTargets = new View[] {mUrlBar, mDeleteButton};
+        // Extends the touch targets of location bar action buttons when they are smaller than the
+        // minimum touch target size.
+        mTargets =
+                new View[] {
+                    mDeleteButton,
+                    mMicButton,
+                    mLensButton,
+                    mBookmarkButton,
+                    mZoomButton,
+                    mInstallButton,
+                };
         mScreenWidthDp = getResources().getConfiguration().screenWidthDp;
     }
 
@@ -240,12 +252,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             float y = event.getY();
             float dx = distanceToRange(mCachedTargetBounds.left, mCachedTargetBounds.right, x);
             float dy = distanceToRange(mCachedTargetBounds.top, mCachedTargetBounds.bottom, y);
-            float distance = Math.abs(dx) + Math.abs(dy);
+            float maxDx = Math.max(0, mMinTouchTargetSizePx - target.getWidth()) / 2f;
+            float maxDy = Math.max(0, mMinTouchTargetSizePx - target.getHeight()) / 2f;
+            if (Math.abs(dx) > maxDx || Math.abs(dy) > maxDy) continue;
+
+            float distance = (float) Math.hypot(dx, dy);
             if (selectedTarget == null || distance < selectedDistance) {
                 selectedTarget = target;
                 selectedDistance = distance;
-                newX = x + dx;
-                newY = y + dy;
+                newX = x + dx - mCachedTargetBounds.left;
+                newY = y + dy - mCachedTargetBounds.top;
             }
         }
 
