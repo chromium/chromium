@@ -212,10 +212,12 @@ class PdfAccessibilityTreeBuilderHeuristic {
       ui::AXNodeData** previous_on_line_node,
       size_t* text_run_index);
 
-  void AddRemainingAnnotations(ui::AXNodeData* para_node
+  void AddRemainingAnnotations(
+      base::span<const chrome_pdf::AccessibilityImageInfo> images,
+      ui::AXNodeData* para_node
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-                               ,
-                               bool ocr_applied
+      ,
+      bool ocr_applied
 #endif
   );
 

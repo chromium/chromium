@@ -4709,6 +4709,145 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGraphicsIgnoredWhenFlagDisabled) {
   }
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicFiltersSub5pxUnlabeledImages) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Images anchored at text run 0: a 100x1 horizontal scanline slice and a
+  // 1x100 vertical spacer should be filtered out, while a 5x5 unlabeled image
+  // at the minimum dimension threshold should be kept.
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 10.0f, 100.0f, 1.0f), /*page_object_index=*/0);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 12.0f, 1.0f, 100.0f), /*page_object_index=*/1);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 20.0f, 5.0f, 5.0f), /*page_object_index=*/2);
+
+  // Remaining images after text runs (text_run_index = 1): a 4x4 unlabeled
+  // image should be filtered out, while a 1x1 image with explicit alt text and
+  // a 50x50 unlabeled image should be kept.
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/1,
+      gfx::RectF(10.0f, 150.0f, 4.0f, 4.0f), /*page_object_index=*/3);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Tiny icon", /*text_run_index=*/1,
+      gfx::RectF(10.0f, 160.0f, 1.0f, 1.0f), /*page_object_index=*/4);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/1,
+      gfx::RectF(10.0f, 170.0f, 50.0f, 50.0f), /*page_object_index=*/5);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f}, {normal_style}, MakeCharVector({"Body text"}),
+      {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* para = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
+  ASSERT_EQ(4u, para->GetChildCount());
+
+  const ui::AXNode* anchored_image = para->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, anchored_image);
+  EXPECT_EQ(ax::mojom::Role::kImage, anchored_image->GetRole());
+  CompareRect(gfx::RectF(10.0f, 20.0f, 5.0f, 5.0f),
+              anchored_image->data().relative_bounds.bounds);
+
+  const ui::AXNode* static_text = para->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ("Body text",
+            static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  const ui::AXNode* alt_text_image = para->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, alt_text_image);
+  EXPECT_EQ(ax::mojom::Role::kImage, alt_text_image->GetRole());
+  EXPECT_EQ("Tiny icon", alt_text_image->GetStringAttribute(
+                             ax::mojom::StringAttribute::kName));
+  CompareRect(gfx::RectF(10.0f, 160.0f, 1.0f, 1.0f),
+              alt_text_image->data().relative_bounds.bounds);
+
+  const ui::AXNode* trailing_image = para->GetChildAtIndex(3u);
+  ASSERT_NE(nullptr, trailing_image);
+  EXPECT_EQ(ax::mojom::Role::kImage, trailing_image->GetRole());
+  CompareRect(gfx::RectF(10.0f, 170.0f, 50.0f, 50.0f),
+              trailing_image->data().relative_bounds.bounds);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSub5pxImagesPreservedWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 10.0f, 100.0f, 1.0f), /*page_object_index=*/0);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/1,
+      gfx::RectF(10.0f, 170.0f, 4.0f, 4.0f), /*page_object_index=*/1);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f}, {normal_style}, MakeCharVector({"Body text"}),
+      {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* para = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para);
+  ASSERT_EQ(3u, para->GetChildCount());
+  EXPECT_EQ(ax::mojom::Role::kImage, para->GetChildAtIndex(0u)->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, para->GetChildAtIndex(1u)->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kImage, para->GetChildAtIndex(2u)->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicPageWithOnlySub5pxImages) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 10.0f, 100.0f, 1.0f), /*page_object_index=*/0);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"", /*text_run_index=*/0,
+      gfx::RectF(10.0f, 12.0f, 1.0f, 100.0f), /*page_object_index=*/1);
+
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  EXPECT_EQ(0u, page->GetChildCount());
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicLineHelperRejectsBackwardXJump) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

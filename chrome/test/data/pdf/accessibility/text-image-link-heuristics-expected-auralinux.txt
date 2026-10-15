@@ -18,7 +18,6 @@
 ++++++[link]
 ++++++[image] name='Image 1'
 ++++++[image] name='Unlabeled image'
-++++++[image] name='Unlabeled image'
 ++[landmark] name='Page 2'
 ++++[paragraph]
 ++++++[static] name='Second Page'

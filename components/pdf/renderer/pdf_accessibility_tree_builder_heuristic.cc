@@ -132,6 +132,11 @@ constexpr float kMaxPageNumberWidthRatio = 0.30f;
 constexpr float kMaxGraphicPageAreaRatio = 0.8f;
 constexpr float kMaxGraphicPageHeightRatio = 0.85f;
 
+// Minimum width and height for an unlabeled image to be included in the
+// accessibility tree. Smaller images are typically 1-pixel scanline slices or
+// decorative spacer artifacts.
+constexpr float kMinImageDimension = 5.0f;
+
 // Font size ratio below which a run counts as substantially smaller than the
 // text beside it on the same line, such as a superscript.
 constexpr float kSmallTextFontSizeRatio = 0.85f;
@@ -332,7 +337,7 @@ class LineHelper {
 };
 
 template <typename T>
-bool IsObjectInTextRun(const std::vector<T>& objects,
+bool IsObjectInTextRun(base::span<const T> objects,
                        uint32_t object_index,
                        size_t text_run_index) {
   return (object_index < objects.size() &&
@@ -629,6 +634,22 @@ std::vector<chrome_pdf::AccessibilityFormGraphicInfo> FilterGraphics(
     }
   }
   return filtered_graphics;
+}
+
+std::vector<chrome_pdf::AccessibilityImageInfo> FilterImages(
+    const std::vector<chrome_pdf::AccessibilityImageInfo>& images) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  std::vector<chrome_pdf::AccessibilityImageInfo> filtered_images;
+  for (const auto& image : images) {
+    // Keep images that have explicit alt text or meet the minimum dimensions,
+    // skipping sub-5px scanline slices and decorative spacer artifacts.
+    if (!image.alt_text.empty() ||
+        (image.bounds.width() >= kMinImageDimension &&
+         image.bounds.height() >= kMinImageDimension)) {
+      filtered_images.push_back(image);
+    }
+  }
+  return filtered_images;
 }
 
 HeuristicPageProperties ComputeHeuristicPageProperties(
@@ -1523,8 +1544,13 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
   const gfx::RectF& page_bounds = builder_->page_node()->relative_bounds.bounds;
   std::vector<chrome_pdf::AccessibilityFormGraphicInfo> graphics;
+  std::vector<chrome_pdf::AccessibilityImageInfo> filtered_images;
+  base::span<const chrome_pdf::AccessibilityImageInfo> images =
+      builder_->images();
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     graphics = FilterGraphics(builder_->graphics(), page_bounds);
+    filtered_images = FilterImages(builder_->images());
+    images = filtered_images;
   }
 
   const HeuristicPageProperties page_properties =
@@ -1639,11 +1665,11 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
         continue;
       }
 
-    } else if (IsObjectInTextRun(builder_->images(), current_image_index_,
+    } else if (IsObjectInTextRun(images, current_image_index_,
                                  text_run_index)) {
       BuildStaticNode(&static_text_state);
-      AddImageToParaNode((builder_->images())[current_image_index_++],
-                         block_node, &text_run_index);
+      AddImageToParaNode(images[current_image_index_++], block_node,
+                         &text_run_index);
       continue;
     } else if (IsObjectWithRangeInTextRun(builder_->highlights(),
                                           current_highlight_index_,
@@ -1738,9 +1764,9 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
             ->id);
   }
 
-  AddRemainingAnnotations(block_node, has_ocr_text);
+  AddRemainingAnnotations(images, block_node, has_ocr_text);
 #else
-  AddRemainingAnnotations(block_node);
+  AddRemainingAnnotations(images, block_node);
 #endif
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
@@ -2075,6 +2101,7 @@ void PdfAccessibilityTreeBuilderHeuristic::AddHighlightToParaNode(
 }
 
 void PdfAccessibilityTreeBuilderHeuristic::AddRemainingAnnotations(
+    base::span<const chrome_pdf::AccessibilityImageInfo> images,
     ui::AXNodeData* para_node
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ,
@@ -2084,7 +2111,7 @@ void PdfAccessibilityTreeBuilderHeuristic::AddRemainingAnnotations(
   // If we don't have additional links or images to insert in the tree, then
   // return.
   if (current_link_index_ >= builder_->links().size() &&
-      current_image_index_ >= builder_->images().size()) {
+      current_image_index_ >= images.size()) {
     return;
   }
 
@@ -2109,10 +2136,8 @@ void PdfAccessibilityTreeBuilderHeuristic::AddRemainingAnnotations(
   push_remaining_images = !ocr_applied;
 #endif
   if (push_remaining_images) {
-    for (size_t i = current_image_index_; i < builder_->images().size(); i++) {
-      const chrome_pdf::AccessibilityImageInfo& image_info =
-          (builder_->images())[i];
-      ui::AXNodeData* image_node = builder_->CreateImageNode(image_info);
+    for (const auto& image : images.subspan(current_image_index_)) {
+      ui::AXNodeData* image_node = builder_->CreateImageNode(image);
       para_node->child_ids.push_back(image_node->id);
     }
   }
