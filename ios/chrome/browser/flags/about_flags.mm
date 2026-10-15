@@ -143,7 +143,7 @@ using flags_ui::FeatureEntry;
 
 namespace {
 
-const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
+constexpr FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "SendTabToSelfExtraEntryPoints"},
@@ -163,7 +163,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfMultiTabShare"},
 };
 
-const FeatureEntry::Choice
+constexpr FeatureEntry::Choice
     kWaitThresholdMillisecondsForCapabilitiesApiChoices[] = {
         {flags_ui::kGenericExperimentChoiceDefault, "", ""},
         {"200", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "200"},
@@ -171,19 +171,20 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
-const FeatureEntry::FeatureParam kActorToolsPageStabilityEnabled[] = {
+constexpr FeatureEntry::FeatureParam kActorToolsPageStabilityEnabled[] = {
     {kActorToolsPageStabilityParam, "true"},
 };
-const FeatureEntry::FeatureVariation kActorToolsPageStabilityVariations[] = {
-    {"PageStabilityEnabled", kActorToolsPageStabilityEnabled, nullptr},
+constexpr FeatureEntry::FeatureVariation kActorToolsPageStabilityVariations[] =
+    {
+        {"PageStabilityEnabled", kActorToolsPageStabilityEnabled, nullptr},
 };
 
-const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant1[] = {
-    {"string_variant", "1"}};
-const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant2[] = {
-    {"string_variant", "2"}};
+constexpr FeatureEntry::FeatureParam
+    kAutofillAiWalletPassBranding2026Variant1[] = {{"string_variant", "1"}};
+constexpr FeatureEntry::FeatureParam
+    kAutofillAiWalletPassBranding2026Variant2[] = {{"string_variant", "2"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kAutofillAiWalletPassBranding2026Variations[] = {
         {"Variant 1 (Securely + Wallet)",
          kAutofillAiWalletPassBranding2026Variant1, nullptr},
@@ -191,38 +192,43 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
-    {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlySymbols}};
+constexpr FeatureEntry::FeatureParam
+    kDisableKeyboardAccessoryOnlySymbolsParam[] = {
+        {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlySymbols}};
 
-const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlyFeaturesParam[] =
-    {{kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlyFeatures}};
+constexpr FeatureEntry::FeatureParam
+    kDisableKeyboardAccessoryOnlyFeaturesParam[] = {
+        {kDisableKeyboardAccessoryParam,
+         kDisableKeyboardAccessoryOnlyFeatures}};
 
-const FeatureEntry::FeatureParam kDisableKeyboardAccessoryCompletelyParam[] = {
-    {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryCompletely}};
+constexpr FeatureEntry::FeatureParam
+    kDisableKeyboardAccessoryCompletelyParam[] = {
+        {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryCompletely}};
 
-const FeatureEntry::FeatureVariation kDisableKeyboardAccessoryVariations[] = {
-    {"A) only show symbols", kDisableKeyboardAccessoryOnlySymbolsParam,
-     nullptr},
-    {"B) only show lens and voice search",
-     kDisableKeyboardAccessoryOnlyFeaturesParam, nullptr},
-    {"C) disable completely", kDisableKeyboardAccessoryCompletelyParam,
-     nullptr}};
+constexpr FeatureEntry::FeatureVariation kDisableKeyboardAccessoryVariations[] =
+    {{"A) only show symbols", kDisableKeyboardAccessoryOnlySymbolsParam,
+      nullptr},
+     {"B) only show lens and voice search",
+      kDisableKeyboardAccessoryOnlyFeaturesParam, nullptr},
+     {"C) disable completely", kDisableKeyboardAccessoryCompletelyParam,
+      nullptr}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kEnableFuseboxKeyboardAccessoryOnlySymbolsParam[] = {
         {kEnableFuseboxKeyboardAccessoryParam,
          kEnableFuseboxKeyboardAccessoryOnlySymbols}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kEnableFuseboxKeyboardAccessoryOnlyFeaturesParam[] = {
         {kEnableFuseboxKeyboardAccessoryParam,
          kEnableFuseboxKeyboardAccessoryOnlyFeatures}};
 
-const FeatureEntry::FeatureParam kEnableFuseboxKeyboardAccessoryBothParam[] = {
-    {kEnableFuseboxKeyboardAccessoryParam,
-     kEnableFuseboxKeyboardAccessoryBoth}};
+constexpr FeatureEntry::FeatureParam
+    kEnableFuseboxKeyboardAccessoryBothParam[] = {
+        {kEnableFuseboxKeyboardAccessoryParam,
+         kEnableFuseboxKeyboardAccessoryBoth}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kEnableFuseboxKeyboardAccessoryVariations[] = {
         {"A) only show symbols",
          kEnableFuseboxKeyboardAccessoryOnlySymbolsParam, nullptr},
@@ -230,22 +236,22 @@ const FeatureEntry::FeatureVariation
          kEnableFuseboxKeyboardAccessoryOnlyFeaturesParam, nullptr},
         {"C) enable both", kEnableFuseboxKeyboardAccessoryBothParam, nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "4"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches5[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches5[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "5"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches6[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches6[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches8[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches8[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "8"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches10[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches10[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "10"}};
-const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches12[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches12[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "12"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kOmniboxUIMaxAutocompleteMatchesVariations[] = {
         {"3 matches", kOmniboxUIMaxAutocompleteMatches3, nullptr},
         {"4 matches", kOmniboxUIMaxAutocompleteMatches4, nullptr},
@@ -255,79 +261,81 @@ const FeatureEntry::FeatureVariation
         {"10 matches", kOmniboxUIMaxAutocompleteMatches10, nullptr},
         {"12 matches", kOmniboxUIMaxAutocompleteMatches12, nullptr}};
 
-const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
+constexpr FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
     {kContentPushNotificationsExperimentType, "1"}};
-const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
-    {{kContentPushNotificationsExperimentType, "2"}};
-const FeatureEntry::FeatureParam kContentPushNotificationsEnabledProvisional[] =
-    {{kContentPushNotificationsExperimentType, "3"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
+    kContentPushNotificationsEnabledSetupLists[] = {
+        {kContentPushNotificationsExperimentType, "2"}};
+constexpr FeatureEntry::FeatureParam
+    kContentPushNotificationsEnabledProvisional[] = {
+        {kContentPushNotificationsExperimentType, "3"}};
+constexpr FeatureEntry::FeatureParam
     kContentPushNotificationsPromoRegistrationOnly[] = {
         {kContentPushNotificationsExperimentType, "5"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kContentPushNotificationsProvisionalRegistrationOnly[] = {
         {kContentPushNotificationsExperimentType, "6"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kContentPushNotificationsSetUpListRegistrationOnly[] = {
         {kContentPushNotificationsExperimentType, "7"}};
 
-const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
-    {"Promo", kContentPushNotificationsEnabledPromo, nullptr},
-    {"Set up list", kContentPushNotificationsEnabledSetupLists, nullptr},
-    {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
-     nullptr},
-    {"Promo Registeration Only", kContentPushNotificationsPromoRegistrationOnly,
-     nullptr},
-    {"Provisional Notification Registeration Only",
-     kContentPushNotificationsProvisionalRegistrationOnly, nullptr},
-    {"Set up list Registeration Only",
-     kContentPushNotificationsSetUpListRegistrationOnly, nullptr}};
+constexpr FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] =
+    {{"Promo", kContentPushNotificationsEnabledPromo, nullptr},
+     {"Set up list", kContentPushNotificationsEnabledSetupLists, nullptr},
+     {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
+      nullptr},
+     {"Promo Registeration Only",
+      kContentPushNotificationsPromoRegistrationOnly, nullptr},
+     {"Provisional Notification Registeration Only",
+      kContentPushNotificationsProvisionalRegistrationOnly, nullptr},
+     {"Set up list Registeration Only",
+      kContentPushNotificationsSetUpListRegistrationOnly, nullptr}};
 
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
-const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
+constexpr FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
     {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
     {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
-const FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeOnce[] = {
+constexpr FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
     {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
     {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
-const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeRecurring[] = {
-    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
-    {kEnableRecurringBackgroundRefreshSchedule, "true"},
-    {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
-    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
-const FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeRecurring[] = {
-    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
-    {kEnableRecurringBackgroundRefreshSchedule, "true"},
-    {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
-    {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
-const FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeOnce[] = {
+constexpr FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeRecurring[] =
+    {{kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+     {kEnableRecurringBackgroundRefreshSchedule, "true"},
+     {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
+     {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+constexpr FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeRecurring[] =
+    {{kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+     {kEnableRecurringBackgroundRefreshSchedule, "true"},
+     {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
+     {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
+constexpr FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
     {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
     {kBackgroundRefreshIntervalInSeconds, "0"}};
-const FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeRecurring[] = {
+constexpr FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeRecurring[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "true"},
     {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
     {kBackgroundRefreshIntervalInSeconds, "0"}};
-const FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeOnce[] = {
+constexpr FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
     {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
     {kBackgroundRefreshIntervalInSeconds, "0"}};
-const FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeRecurring[] = {
+constexpr FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeRecurring[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "true"},
     {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
     {kBackgroundRefreshIntervalInSeconds, "0"}};
 
 // Feed Background Refresh Feature Variations.
-const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
+constexpr FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
     {"1hr Interval 1hr Max Age Once", kOneHourIntervalOneHourMaxAgeOnce,
      nullptr},
     {"4hr Interval 6hr Max Age Once", kFourHourIntervalSixHourMaxAgeOnce,
@@ -347,26 +355,26 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
 
 // Download List UI feature flag parameters.
 // IMPORTANT: These values must match DownloadListUIType enum in features.h
-const FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
+constexpr FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
     {kDownloadListUITypeParam, "0"}};
-const FeatureEntry::FeatureParam kDownloadListCustomUIParam[] = {
+constexpr FeatureEntry::FeatureParam kDownloadListCustomUIParam[] = {
     {kDownloadListUITypeParam, "1"}};
-const FeatureEntry::FeatureVariation kDownloadListVariations[] = {
+constexpr FeatureEntry::FeatureVariation kDownloadListVariations[] = {
     {"Default UI", kDownloadListDefaultUIParam, nullptr},
     {"Custom UI", kDownloadListCustomUIParam, nullptr},
 };
 
 // Default browser promo refresh feature flag parameters.
-const FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm1[] = {
+constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm1[] = {
     {kDefaultBrowserPictureInPictureParam,
      kDefaultBrowserPictureInPictureParamEnabled}};
-const FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm2[] = {
+constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm2[] = {
     {kDefaultBrowserPictureInPictureParam,
      kDefaultBrowserPictureInPictureParamDisabledDefaultApps}};
-const FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm3[] = {
+constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm3[] = {
     {kDefaultBrowserPictureInPictureParam,
      kDefaultBrowserPictureInPictureParamEnabledDefaultApps}};
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kDefaultBrowserPictureInPictureVariations[] = {
         {"Picture-in-picture instructions.",
          kDefaultBrowserPictureInPictureArm1, nullptr},
@@ -376,13 +384,13 @@ const FeatureEntry::FeatureVariation
          kDefaultBrowserPictureInPictureArm3, nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kDefaultBrowserNonModalPromoStringsSkipCopyPaste[] = {
         {kDefaultBrowserNonModalPromoStringsParam, "1"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kDefaultBrowserNonModalPromoStringsFewerSteps[] = {
         {kDefaultBrowserNonModalPromoStringsParam, "2"}};
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kDefaultBrowserNonModalPromoStringsVariations[] = {
         {"Skip copy & paste", kDefaultBrowserNonModalPromoStringsSkipCopyPaste,
          nullptr},
@@ -390,29 +398,29 @@ const FeatureEntry::FeatureVariation
          kDefaultBrowserNonModalPromoStringsFewerSteps, nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm1[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm1[] = {
     {"arm", "1"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm2[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm2[] = {
     {"arm", "2"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm3[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm3[] = {
     {"arm", "3"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm4[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm4[] = {
     {"arm", "4"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm5[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm5[] = {
     {"arm", "5"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm6[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm6[] = {
     {"arm", "6"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm7[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm7[] = {
     {"arm", "7"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm8[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm8[] = {
     {"arm", "8"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm9[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm9[] = {
     {"arm", "9"}};
-const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm10[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm10[] = {
     {"arm", "10"}};
 
-const FeatureEntry::FeatureVariation kOmniboxPastePromoExperimentVariations[] =
-    {
+constexpr FeatureEntry::FeatureVariation
+    kOmniboxPastePromoExperimentVariations[] = {
         {"Arm 1", kOmniboxPastePromoExperimentArm1, nullptr},
         {"Arm 2", kOmniboxPastePromoExperimentArm2, nullptr},
         {"Arm 3", kOmniboxPastePromoExperimentArm3, nullptr},
@@ -425,11 +433,11 @@ const FeatureEntry::FeatureVariation kOmniboxPastePromoExperimentVariations[] =
         {"Arm 10", kOmniboxPastePromoExperimentArm10, nullptr},
 };
 
-const FeatureEntry::FeatureParam kSettingsDefaultBrowserCardParam[] = {
+constexpr FeatureEntry::FeatureParam kSettingsDefaultBrowserCardParam[] = {
     {kIOSSettingsDefaultBrowserPromoTypeParam, "0"}};
-const FeatureEntry::FeatureParam kSettingsDefaultBrowserCellParam[] = {
+constexpr FeatureEntry::FeatureParam kSettingsDefaultBrowserCellParam[] = {
     {kIOSSettingsDefaultBrowserPromoTypeParam, "1"}};
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kIOSSettingsDefaultBrowserPromoV2Variations[] = {
         {"SettingsDefaultBrowserCard", kSettingsDefaultBrowserCardParam,
          nullptr},
@@ -437,45 +445,45 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kDefaultBrowserPromoDestinationParam[] = {
+constexpr FeatureEntry::FeatureParam kDefaultBrowserPromoDestinationParam[] = {
     {kDefaultBrowserPromoOverflowMenuTypeParam, "0"}};
-const FeatureEntry::FeatureParam kDefaultBrowserPromoShortcutsParam[] = {
+constexpr FeatureEntry::FeatureParam kDefaultBrowserPromoShortcutsParam[] = {
     {kDefaultBrowserPromoOverflowMenuTypeParam, "1"}};
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kDefaultBrowserPromoOverflowMenuVariations[] = {
         {"Destination", kDefaultBrowserPromoDestinationParam, nullptr},
         {"Shortcuts", kDefaultBrowserPromoShortcutsParam, nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1300;0.14,1398;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1400"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingDemotedBy50[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1250;0.14,1348;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1350"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingPromotedBy50[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1350;0.14,1448;1,1472"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1450"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingPromotedBy100[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1400;0.14,1498;1,1522"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1500"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingMobileMapping[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
@@ -483,7 +491,7 @@ const FeatureEntry::FeatureParam
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1340"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kMlUrlPiecewiseMappedSearchBlendingVariations[] = {
         {"adjusted by 0", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0,
          nullptr},
@@ -497,27 +505,27 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
+constexpr FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
     {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
     {"MlUrlScoringShortcutDocumentSignals", "true"},
 };
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringUnlimitedNumCandidates[] =
-    {
+constexpr FeatureEntry::FeatureParam
+    kOmniboxMlUrlScoringUnlimitedNumCandidates[] = {
         {"MlUrlScoringUnlimitedNumCandidates", "true"},
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
 };
 // Sets Bookmark(1), History Quick(4), History URL(8), Shortcuts(64),
 // Document(512), and History Fuzzy(65536) providers max matches to 10.
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
-    {
+constexpr FeatureEntry::FeatureParam
+    kOmniboxMlUrlScoringMaxMatchesByProvider10[] = {
         {"MlUrlScoringMaxMatchesByProvider",
          "1:10,4:10,8:10,64:10,512:10,65536:10"},
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
 };
 
-const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
+constexpr FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
     {"Enabled with fixes", kOmniboxMlUrlScoringEnabledWithFixes, nullptr},
     {"unlimited suggestion candidates",
      kOmniboxMlUrlScoringUnlimitedNumCandidates, nullptr},
@@ -525,31 +533,33 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
      kOmniboxMlUrlScoringMaxMatchesByProvider10, nullptr},
 };
 
-const FeatureEntry::FeatureParam kMlUrlSearchBlendingStable[] = {
+constexpr FeatureEntry::FeatureParam kMlUrlSearchBlendingStable[] = {
     {"MlUrlSearchBlending_StableSearchBlending", "true"},
     {"MlUrlSearchBlending_MappedSearchBlending", "false"},
 };
-const FeatureEntry::FeatureParam kMlUrlSearchBlendingMappedConservativeUrls[] =
-    {
+constexpr FeatureEntry::FeatureParam
+    kMlUrlSearchBlendingMappedConservativeUrls[] = {
         {"MlUrlSearchBlending_StableSearchBlending", "false"},
         {"MlUrlSearchBlending_MappedSearchBlending", "true"},
         {"MlUrlSearchBlending_MappedSearchBlendingMin", "0"},
         {"MlUrlSearchBlending_MappedSearchBlendingMax", "2000"},
         {"MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold", "1000"},
 };
-const FeatureEntry::FeatureParam kMlUrlSearchBlendingMappedModerateUrls[] = {
-    {"MlUrlSearchBlending_StableSearchBlending", "false"},
-    {"MlUrlSearchBlending_MappedSearchBlending", "true"},
+constexpr FeatureEntry::FeatureParam kMlUrlSearchBlendingMappedModerateUrls[] =
+    {
+        {"MlUrlSearchBlending_StableSearchBlending", "false"},
+        {"MlUrlSearchBlending_MappedSearchBlending", "true"},
 };
-const FeatureEntry::FeatureParam kMlUrlSearchBlendingMappedAggressiveUrls[] = {
-    {"MlUrlSearchBlending_StableSearchBlending", "false"},
-    {"MlUrlSearchBlending_MappedSearchBlending", "true"},
-    {"MlUrlSearchBlending_MappedSearchBlendingMin", "1000"},
-    {"MlUrlSearchBlending_MappedSearchBlendingMax", "4000"},
-    {"MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold", "1500"},
+constexpr FeatureEntry::FeatureParam
+    kMlUrlSearchBlendingMappedAggressiveUrls[] = {
+        {"MlUrlSearchBlending_StableSearchBlending", "false"},
+        {"MlUrlSearchBlending_MappedSearchBlending", "true"},
+        {"MlUrlSearchBlending_MappedSearchBlendingMin", "1000"},
+        {"MlUrlSearchBlending_MappedSearchBlendingMax", "4000"},
+        {"MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold", "1500"},
 };
 
-const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
+constexpr FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
     {"Stable", kMlUrlSearchBlendingStable, nullptr},
     {"Mapped conservative urls", kMlUrlSearchBlendingMappedConservativeUrls,
      nullptr},
@@ -558,17 +568,17 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
+constexpr FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
     {"Small model", {}, "3379590"},
     {"Full model", {}, "3380197"},
 };
 
 // Soft Lock
-const FeatureEntry::FeatureParam kIOSSoftLockNoDelay[] = {
+constexpr FeatureEntry::FeatureParam kIOSSoftLockNoDelay[] = {
     {kIOSSoftLockBackgroundThresholdParam, "0m"},
 };
 
-const FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
+constexpr FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
     {" - No delay", kIOSSoftLockNoDelay, nullptr}};
 
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -602,135 +612,143 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         {"Long period", kAutofillThrottleFilteredDocFormScanLongPeriodParam,
          nullptr}};
 
-const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
+constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
     {first_run::kUpdatedFirstRunSequenceParam, "1"}};
-const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm2[] = {
+constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm2[] = {
     {first_run::kUpdatedFirstRunSequenceParam, "2"}};
-const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm3[] = {
+constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm3[] = {
     {first_run::kUpdatedFirstRunSequenceParam, "3"}};
 
-const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
-    {" - Default browser promo first", kUpdatedFirstRunSequenceArm1, nullptr},
-    {" - Remove sign in & sync conditionally", kUpdatedFirstRunSequenceArm2,
-     nullptr},
-    {" - DB promo first and remove sign in & sync",
-     kUpdatedFirstRunSequenceArm3, nullptr}};
+constexpr FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] =
+    {{" - Default browser promo first", kUpdatedFirstRunSequenceArm1, nullptr},
+     {" - Remove sign in & sync conditionally", kUpdatedFirstRunSequenceArm2,
+      nullptr},
+     {" - DB promo first and remove sign in & sync",
+      kUpdatedFirstRunSequenceArm3, nullptr}};
 
-const FeatureEntry::FeatureParam kSlowFullscreenTransitionSpeed[] = {
+constexpr FeatureEntry::FeatureParam kSlowFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "0"}};
-const FeatureEntry::FeatureParam kDefaultFullscreenTransitionSpeed[] = {
+constexpr FeatureEntry::FeatureParam kDefaultFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "1"}};
-const FeatureEntry::FeatureParam kFastFullscreenTransitionSpeed[] = {
+constexpr FeatureEntry::FeatureParam kFastFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "2"}};
 
-const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
+constexpr FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
     {"Slow speed", kSlowFullscreenTransitionSpeed, nullptr},
     {"Default speed", kDefaultFullscreenTransitionSpeed, nullptr},
     {"Fast speed", kFastFullscreenTransitionSpeed, nullptr}};
 
-const FeatureEntry::FeatureParam kFullscreenScrollThreshold1[] = {
+constexpr FeatureEntry::FeatureParam kFullscreenScrollThreshold1[] = {
     {web::features::kFullscreenScrollThresholdAmount, "1"}};
-const FeatureEntry::FeatureParam kFullscreenScrollThreshold5[] = {
+constexpr FeatureEntry::FeatureParam kFullscreenScrollThreshold5[] = {
     {web::features::kFullscreenScrollThresholdAmount, "5"}};
-const FeatureEntry::FeatureParam kFullscreenScrollThreshold10[] = {
+constexpr FeatureEntry::FeatureParam kFullscreenScrollThreshold10[] = {
     {web::features::kFullscreenScrollThresholdAmount, "10"}};
-const FeatureEntry::FeatureParam kFullscreenScrollThreshold20[] = {
+constexpr FeatureEntry::FeatureParam kFullscreenScrollThreshold20[] = {
     {web::features::kFullscreenScrollThresholdAmount, "20"}};
-const FeatureEntry::FeatureVariation kFullscreenScrollThresholdVariations[] = {
-    {"1px", kFullscreenScrollThreshold1, nullptr},
-    {"5px", kFullscreenScrollThreshold5, nullptr},
-    {"10px", kFullscreenScrollThreshold10, nullptr},
-    {"20px", kFullscreenScrollThreshold20, nullptr}};
+constexpr FeatureEntry::FeatureVariation
+    kFullscreenScrollThresholdVariations[] = {
+        {"1px", kFullscreenScrollThreshold1, nullptr},
+        {"5px", kFullscreenScrollThreshold5, nullptr},
+        {"10px", kFullscreenScrollThreshold10, nullptr},
+        {"20px", kFullscreenScrollThreshold20, nullptr}};
 
-const FeatureEntry::FeatureParam kAnimatedDBPInFREWithActionButtons[] = {
+constexpr FeatureEntry::FeatureParam kAnimatedDBPInFREWithActionButtons[] = {
     {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "0"}};
-const FeatureEntry::FeatureParam kAnimatedDBPInFREWithShowMeHow[] = {
+constexpr FeatureEntry::FeatureParam kAnimatedDBPInFREWithShowMeHow[] = {
     {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "1"}};
-const FeatureEntry::FeatureParam kAnimatedDBPInFREWithInstructions[] = {
+constexpr FeatureEntry::FeatureParam kAnimatedDBPInFREWithInstructions[] = {
     {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "2"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kAnimatedDefaultBrowserPromoInFREVariations[] = {
         {" - with Action Buttons", kAnimatedDBPInFREWithActionButtons, nullptr},
         {" - with Show Me How", kAnimatedDBPInFREWithShowMeHow, nullptr},
         {" - with Instructions", kAnimatedDBPInFREWithInstructions, nullptr}};
 
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "3"}};
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm4[] = {
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm4[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "4"}};
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm5[] = {
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm5[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "5"}};
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "6"}};
 
-const FeatureEntry::FeatureVariation kBestFeaturesScreenInFirstRunVariations[] =
-    {{" - Variant A: General screen, after DB promo",
-      kUpdatedFirstRunSequenceArm1, nullptr},
-     {" - Variant B: General screen, before DB promo",
-      kBestFeaturesScreenInFirstRunArm2, nullptr},
-     {" - Variant C: General screen with passwords item",
-      kBestFeaturesScreenInFirstRunArm3, nullptr},
-     {" - Variant D: Shopping users screen, variant C as fallback",
-      kBestFeaturesScreenInFirstRunArm4, nullptr},
-     {" - Variant E: Show screen to signed-in users only",
-      kBestFeaturesScreenInFirstRunArm5, nullptr},
-     {" - Variant F: Show address bar promo", kBestFeaturesScreenInFirstRunArm6,
-      nullptr}};
+constexpr FeatureEntry::FeatureVariation
+    kBestFeaturesScreenInFirstRunVariations[] = {
+        {" - Variant A: General screen, after DB promo",
+         kUpdatedFirstRunSequenceArm1, nullptr},
+        {" - Variant B: General screen, before DB promo",
+         kBestFeaturesScreenInFirstRunArm2, nullptr},
+        {" - Variant C: General screen with passwords item",
+         kBestFeaturesScreenInFirstRunArm3, nullptr},
+        {" - Variant D: Shopping users screen, variant C as fallback",
+         kBestFeaturesScreenInFirstRunArm4, nullptr},
+        {" - Variant E: Show screen to signed-in users only",
+         kBestFeaturesScreenInFirstRunArm5, nullptr},
+        {" - Variant F: Show address bar promo",
+         kBestFeaturesScreenInFirstRunArm6, nullptr}};
 
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionCrossValidate[] = {
-    {kIOSOneTapMiniMapRestrictionCrossValidateParamName, "true"}};
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionThreshold999[] = {
-    {kIOSOneTapMiniMapRestrictionThreshholdParamName, "0.999"}};
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionMinLength20[] = {
-    {kIOSOneTapMiniMapRestrictionMinCharsParamName, "20"}};
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionMaxSections6[] = {
-    {kIOSOneTapMiniMapRestrictionMaxSectionsParamName, "6"}};
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionLongWords4[] = {
-    {kIOSOneTapMiniMapRestrictionLongestWordMinCharsParamName, "4"}};
-const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionMinAlphaNum60[] = {
-    {kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName, "0.6"}};
+constexpr FeatureEntry::FeatureParam
+    kIOSOneTapMiniMapRestrictionCrossValidate[] = {
+        {kIOSOneTapMiniMapRestrictionCrossValidateParamName, "true"}};
+constexpr FeatureEntry::FeatureParam
+    kIOSOneTapMiniMapRestrictionThreshold999[] = {
+        {kIOSOneTapMiniMapRestrictionThreshholdParamName, "0.999"}};
+constexpr FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionMinLength20[] =
+    {{kIOSOneTapMiniMapRestrictionMinCharsParamName, "20"}};
+constexpr FeatureEntry::FeatureParam
+    kIOSOneTapMiniMapRestrictionMaxSections6[] = {
+        {kIOSOneTapMiniMapRestrictionMaxSectionsParamName, "6"}};
+constexpr FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionLongWords4[] =
+    {{kIOSOneTapMiniMapRestrictionLongestWordMinCharsParamName, "4"}};
+constexpr FeatureEntry::FeatureParam
+    kIOSOneTapMiniMapRestrictionMinAlphaNum60[] = {
+        {kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName, "0.6"}};
 
-const FeatureEntry::FeatureVariation kIOSOneTapMiniMapRestrictionsVariations[] =
-    {{"Revalidate with NSDataDetector",
-      kIOSOneTapMiniMapRestrictionCrossValidate, nullptr},
-     {"Confidence Level (0.999)", kIOSOneTapMiniMapRestrictionThreshold999,
-      nullptr},
-     {"Minimum address length (20 chars)",
-      kIOSOneTapMiniMapRestrictionMinLength20, nullptr},
-     {"Maximum sections (6)", kIOSOneTapMiniMapRestrictionMaxSections6,
-      nullptr},
-     {"Longest word length (4)", kIOSOneTapMiniMapRestrictionLongWords4,
-      nullptr},
-     {"Proportion of alnum chars (60%)",
-      kIOSOneTapMiniMapRestrictionMinAlphaNum60, nullptr}};
+constexpr FeatureEntry::FeatureVariation
+    kIOSOneTapMiniMapRestrictionsVariations[] = {
+        {"Revalidate with NSDataDetector",
+         kIOSOneTapMiniMapRestrictionCrossValidate, nullptr},
+        {"Confidence Level (0.999)", kIOSOneTapMiniMapRestrictionThreshold999,
+         nullptr},
+        {"Minimum address length (20 chars)",
+         kIOSOneTapMiniMapRestrictionMinLength20, nullptr},
+        {"Maximum sections (6)", kIOSOneTapMiniMapRestrictionMaxSections6,
+         nullptr},
+        {"Longest word length (4)", kIOSOneTapMiniMapRestrictionLongWords4,
+         nullptr},
+        {"Proportion of alnum chars (60%)",
+         kIOSOneTapMiniMapRestrictionMinAlphaNum60, nullptr}};
 
-const FeatureEntry::FeatureParam kFeedSwipeInProductHelpStaticInFirstRun[] = {
-    {kFeedSwipeInProductHelpArmParam, "1"}};
-const FeatureEntry::FeatureParam kFeedSwipeInProductHelpStaticInSecondRun[] = {
-    {kFeedSwipeInProductHelpArmParam, "2"}};
-const FeatureEntry::FeatureParam kFeedSwipeInProductHelpAnimated[] = {
+constexpr FeatureEntry::FeatureParam kFeedSwipeInProductHelpStaticInFirstRun[] =
+    {{kFeedSwipeInProductHelpArmParam, "1"}};
+constexpr FeatureEntry::FeatureParam
+    kFeedSwipeInProductHelpStaticInSecondRun[] = {
+        {kFeedSwipeInProductHelpArmParam, "2"}};
+constexpr FeatureEntry::FeatureParam kFeedSwipeInProductHelpAnimated[] = {
     {kFeedSwipeInProductHelpArmParam, "3"}};
 
-const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
+constexpr FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
     {" - Static IPH after the FRE", kFeedSwipeInProductHelpStaticInFirstRun,
      nullptr},
     {"- Static IPH after the second run",
      kFeedSwipeInProductHelpStaticInSecondRun, nullptr},
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated, nullptr}};
 
-const FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
+constexpr FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
     {kWelcomeBackParam, "1"}};
-const FeatureEntry::FeatureParam kWelcomeBackArm2[] = {
+constexpr FeatureEntry::FeatureParam kWelcomeBackArm2[] = {
     {kWelcomeBackParam, "2"}};
-const FeatureEntry::FeatureParam kWelcomeBackArm3[] = {
+constexpr FeatureEntry::FeatureParam kWelcomeBackArm3[] = {
     {kWelcomeBackParam, "3"}};
-const FeatureEntry::FeatureParam kWelcomeBackArm4[] = {
+constexpr FeatureEntry::FeatureParam kWelcomeBackArm4[] = {
     {kWelcomeBackParam, "4"}};
 
-const FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
+constexpr FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
     {" - Variant A: Basics with Locked Incognito", kWelcomeBackArm1, nullptr},
     {" - Variant B: Basics with Save & Autofill Passwords", kWelcomeBackArm2,
      nullptr},
@@ -738,20 +756,22 @@ const FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
     {" - Variant D: Sign-in Benefits", kWelcomeBackArm4, nullptr},
 };
 
-const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestControl[] = {
-    {"regression_test_arm", "control"}};
-const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestBaseline[] = {
-    {"regression_test_arm", "baseline"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestControl[] =
+    {{"regression_test_arm", "control"}};
+constexpr FeatureEntry::FeatureParam
+    kBackgroundRefreshRegressionTestBaseline[] = {
+        {"regression_test_arm", "baseline"}};
+constexpr FeatureEntry::FeatureParam
     kBackgroundRefreshRegressionTestShortPersistenceDelay[] = {
         {"regression_test_arm", "short-persistence-delay"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kBackgroundRefreshRegressionTestLongRefreshInterval[] = {
         {"regression_test_arm", "long-refresh-interval"}};
-const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestNoBeacon[] = {
-    {"regression_test_arm", "no-beacon"}};
+constexpr FeatureEntry::FeatureParam
+    kBackgroundRefreshRegressionTestNoBeacon[] = {
+        {"regression_test_arm", "no-beacon"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kBackgroundRefreshRegressionTestVariations[] = {
         {"Control", kBackgroundRefreshRegressionTestControl, nullptr},
         {"Baseline", kBackgroundRefreshRegressionTestBaseline, nullptr},
@@ -761,15 +781,15 @@ const FeatureEntry::FeatureVariation
          kBackgroundRefreshRegressionTestLongRefreshInterval, nullptr},
         {"No Beacon", kBackgroundRefreshRegressionTestNoBeacon, nullptr}};
 
-const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
-const FeatureEntry::FeatureParam kBestOfAppFREArm2[] = {{"variant", "2"}};
-const FeatureEntry::FeatureParam kBestOfAppFREArm3[] = {{"variant", "3"}};
-const FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
-const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
+constexpr FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
+constexpr FeatureEntry::FeatureParam kBestOfAppFREArm2[] = {{"variant", "2"}};
+constexpr FeatureEntry::FeatureParam kBestOfAppFREArm3[] = {{"variant", "3"}};
+constexpr FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
+constexpr FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
     {"variant", "4"},
     {"manual_upload_uma", "true"}};
 
-const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
+constexpr FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
     {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1, nullptr},
     {" - Variant B: Lens Animated Promo", kBestOfAppFREArm2, nullptr},
     {" - Variant C: Best Features", kBestOfAppFREArm3, nullptr},
@@ -778,20 +798,20 @@ const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
      kBestOfAppFREArm4Upload, nullptr},
 };
 
-const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
+constexpr FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "1"}};
-const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
+constexpr FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "2"}};
-const FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
+constexpr FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "3"}};
-const FeatureEntry::FeatureParam kForceBWGFirstTimeRun[] = {
+constexpr FeatureEntry::FeatureParam kForceBWGFirstTimeRun[] = {
     {kBWGPromoConsentParams, "4"}};
-const FeatureEntry::FeatureParam kSkipNewUserDelay[] = {
+constexpr FeatureEntry::FeatureParam kSkipNewUserDelay[] = {
     {kBWGPromoConsentParams, "5"}};
-const FeatureEntry::FeatureParam kForceGeminiLiveFRE[] = {
+constexpr FeatureEntry::FeatureParam kForceGeminiLiveFRE[] = {
     {kBWGPromoConsentParams, "6"}};
 
-const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
+constexpr FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Single screen for BWG Promo Consent Flow",
      kSingleScreenForBWGPromoConsent, nullptr},
     {"Double screen for BWG Promo Consent Flow",
@@ -801,46 +821,49 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Skip new user delay", kSkipNewUserDelay, nullptr},
     {"Force Live FRE", kForceGeminiLiveFRE, nullptr}};
 
-const FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
+constexpr FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
     {kGeminiActorBackgroundingParam, "false"}};
-const FeatureEntry::FeatureVariation kGeminiActorVariations[] = {
+constexpr FeatureEntry::FeatureVariation kGeminiActorVariations[] = {
     {"Backgrounding Disabled", kGeminiActorBackgroundingDisabled, nullptr}};
 
-const FeatureEntry::FeatureParam kGeminiQuizzesOpenInNewTab[] = {
+constexpr FeatureEntry::FeatureParam kGeminiQuizzesOpenInNewTab[] = {
     {kGeminiQuizzesOpenInNewTabParam, "true"}};
-const FeatureEntry::FeatureVariation kGeminiQuizzesVariations[] = {
+constexpr FeatureEntry::FeatureVariation kGeminiQuizzesVariations[] = {
     {"Open in new tab", kGeminiQuizzesOpenInNewTab, nullptr}};
 
-const FeatureEntry::FeatureParam kGeminiAureusForegroundQuotaRefreshEnabled[] =
-    {{kGeminiAureusForegroundQuotaRefreshParam, "true"}};
-const FeatureEntry::FeatureVariation kGeminiAureusVariations[] = {
+constexpr FeatureEntry::FeatureParam
+    kGeminiAureusForegroundQuotaRefreshEnabled[] = {
+        {kGeminiAureusForegroundQuotaRefreshParam, "true"}};
+constexpr FeatureEntry::FeatureVariation kGeminiAureusVariations[] = {
     {"Foreground Quota Refresh Enabled",
      kGeminiAureusForegroundQuotaRefreshEnabled, nullptr}};
 
-const FeatureEntry::FeatureParam kGeminiLiveSkipIntro[] = {
+constexpr FeatureEntry::FeatureParam kGeminiLiveSkipIntro[] = {
     {kGeminiLiveSkipIntroParam, "true"}};
-const FeatureEntry::FeatureParam kGeminiLiveDisableIPH[] = {
+constexpr FeatureEntry::FeatureParam kGeminiLiveDisableIPH[] = {
     {kGeminiLiveDisableIPHParam, "true"}};
-const FeatureEntry::FeatureParam kGeminiLiveSkipIntroAndDisableIPH[] = {
+constexpr FeatureEntry::FeatureParam kGeminiLiveSkipIntroAndDisableIPH[] = {
     {kGeminiLiveSkipIntroParam, "true"},
     {kGeminiLiveDisableIPHParam, "true"}};
-const FeatureEntry::FeatureVariation kGeminiLiveVariations[] = {
+constexpr FeatureEntry::FeatureVariation kGeminiLiveVariations[] = {
     {"Skip Intro", kGeminiLiveSkipIntro, nullptr},
     {"Disable IPH", kGeminiLiveDisableIPH, nullptr},
     {"Skip Intro and Disable IPH", kGeminiLiveSkipIntroAndDisableIPH, nullptr}};
 
-const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
+constexpr FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
     {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
-const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightConvenience[] =
-    {{kGeminiFREExperimentParam,
-      kGeminiFREExperimentParamLightweightConvenience}};
-const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightPageSharing[] =
-    {{kGeminiFREExperimentParam,
-      kGeminiFREExperimentParamLightweightPageSharing}};
-const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightDiverse[] = {
-    {kGeminiFREExperimentParam, kGeminiFREExperimentParamLightweightDiverse}};
+constexpr FeatureEntry::FeatureParam
+    kGeminiFREExperimentLightweightConvenience[] = {
+        {kGeminiFREExperimentParam,
+         kGeminiFREExperimentParamLightweightConvenience}};
+constexpr FeatureEntry::FeatureParam
+    kGeminiFREExperimentLightweightPageSharing[] = {
+        {kGeminiFREExperimentParam,
+         kGeminiFREExperimentParamLightweightPageSharing}};
+constexpr FeatureEntry::FeatureParam kGeminiFREExperimentLightweightDiverse[] =
+    {{kGeminiFREExperimentParam, kGeminiFREExperimentParamLightweightDiverse}};
 
-const FeatureEntry::FeatureVariation kGeminiFREExperimentVariations[] = {
+constexpr FeatureEntry::FeatureVariation kGeminiFREExperimentVariations[] = {
     {"Visual Rich", kGeminiFREExperimentVisualRich, nullptr},
     {"Lightweight (Convenience)", kGeminiFREExperimentLightweightConvenience,
      nullptr},
@@ -849,31 +872,32 @@ const FeatureEntry::FeatureVariation kGeminiFREExperimentVariations[] = {
     {"Lightweight (Diverse)", kGeminiFREExperimentLightweightDiverse, nullptr},
 };
 
-const FeatureEntry::FeatureParam kGeminiExperimentalGuidedOnboardingForce[] = {
-    {kGeminiExperimentalGuidedOnboardingForceParam, "true"}};
+constexpr FeatureEntry::FeatureParam
+    kGeminiExperimentalGuidedOnboardingForce[] = {
+        {kGeminiExperimentalGuidedOnboardingForceParam, "true"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kGeminiExperimentalGuidedOnboardingVariations[] = {
         {"Force Guided Onboarding", kGeminiExperimentalGuidedOnboardingForce,
          nullptr}};
 
-const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
+constexpr FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
     {kPageActionMenuDirectEntryPointParam, "true"},
 };
-const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
+constexpr FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
     {"Direct Entry Point", kPageActionMenuDirectEntryPoint, nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kProactiveSuggestionsFrameworkPopupBlockerParam[] = {
         {kProactiveSuggestionsFrameworkPopupBlocker, "true"}};
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kProactiveSuggestionsFrameworkVariations[] = {
         {"Popup Blocker", kProactiveSuggestionsFrameworkPopupBlockerParam,
          nullptr}};
 
 // LINT.IfChange(DataSharingVersioningChoices)
-const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
+constexpr FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
     {"Default", "", ""},
     {flag_descriptions::kDataSharingSharedDataTypesEnabled,
      switches::kEnableFeatures, "SharedDataTypesKillSwitch"},
@@ -885,59 +909,62 @@ const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
 };
 // LINT.ThenChange(//chrome/browser/about_flags.cc:DataSharingVersioningChoices)
 
-const FeatureEntry::FeatureParam kComposeboxDevToolsForceFailure[] = {
+constexpr FeatureEntry::FeatureParam kComposeboxDevToolsForceFailure[] = {
     {kForceUploadFailureParam, "true"}};
-const FeatureEntry::FeatureParam kComposeboxDevToolsSlowLoad[] = {
+constexpr FeatureEntry::FeatureParam kComposeboxDevToolsSlowLoad[] = {
     {kImageLoadDelayMsParam, "1000"}};
-const FeatureEntry::FeatureParam kComposeboxDevToolsSlowUpload[] = {
+constexpr FeatureEntry::FeatureParam kComposeboxDevToolsSlowUpload[] = {
     {kUploadDelayMsParam, "3000"}};
 
-const FeatureEntry::FeatureVariation kComposeboxDevToolsVariations[] = {
+constexpr FeatureEntry::FeatureVariation kComposeboxDevToolsVariations[] = {
     {"Force Failure", kComposeboxDevToolsForceFailure, nullptr},
     {"Slow Load (1s)", kComposeboxDevToolsSlowLoad, nullptr},
     {"Slow Upload (3s)", kComposeboxDevToolsSlowUpload, nullptr}};
 
-const FeatureEntry::FeatureParam kComposeboxConditionalPlusButtonHidePreEdit[] =
-    {{kComposeboxConditionalPlusButtonParam, "1"}};
+constexpr FeatureEntry::FeatureParam
+    kComposeboxConditionalPlusButtonHidePreEdit[] = {
+        {kComposeboxConditionalPlusButtonParam, "1"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kComposeboxConditionalPlusButtonVariations[] = {
         {"(Hide Plus button in pre-edit)",
          kComposeboxConditionalPlusButtonHidePreEdit, nullptr}};
 
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopLensNotification[] = {
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopLensNotification[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
     {kMobilePromoOnDesktopNotificationParam, "true"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopESB[] = {
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopESB[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "2"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopESBNotification[] = {
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopESBNotification[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "2"},
     {kMobilePromoOnDesktopNotificationParam, "true"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopAutofill[] = {
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopAutofill[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "3"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopAutofillNotification[] = {
-    {kMobilePromoOnDesktopPromoTypeParam, "3"},
-    {kMobilePromoOnDesktopNotificationParam, "true"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopTabGroups[] = {
+constexpr FeatureEntry::FeatureParam
+    kMobilePromoOnDesktopAutofillNotification[] = {
+        {kMobilePromoOnDesktopPromoTypeParam, "3"},
+        {kMobilePromoOnDesktopNotificationParam, "true"}};
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopTabGroups[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "4"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopTabGroupsNotification[] =
-    {{kMobilePromoOnDesktopPromoTypeParam, "4"},
-     {kMobilePromoOnDesktopNotificationParam, "true"}};
-const FeatureEntry::FeatureParam kMobilePromoOnDesktopPriceTracking[] = {
+constexpr FeatureEntry::FeatureParam
+    kMobilePromoOnDesktopTabGroupsNotification[] = {
+        {kMobilePromoOnDesktopPromoTypeParam, "4"},
+        {kMobilePromoOnDesktopNotificationParam, "true"}};
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopPriceTracking[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "5"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMobilePromoOnDesktopPriceTrackingNotification[] = {
         {kMobilePromoOnDesktopPromoTypeParam, "5"},
         {kMobilePromoOnDesktopNotificationParam, "true"}};
 
-const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
+constexpr FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
     {" - ESB", kMobilePromoOnDesktopESB, nullptr},
     {" - ESB with push notification", kMobilePromoOnDesktopESBNotification,
      nullptr},
@@ -946,47 +973,48 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
      kMobilePromoOnDesktopAutofillNotification, nullptr},
 };
 
-const FeatureEntry::FeatureVariation kMobilePromoOnDesktopWave1Variations[] = {
-    {" - Lens Promo", kMobilePromoOnDesktopLens, nullptr},
-    {" - Lens Promo with push notification",
-     kMobilePromoOnDesktopLensNotification, nullptr},
-    {" - Tab Groups", kMobilePromoOnDesktopTabGroups, nullptr},
-    {" - Tab Groups with push notification",
-     kMobilePromoOnDesktopTabGroupsNotification, nullptr},
-    {" - Price Tracking", kMobilePromoOnDesktopPriceTracking, nullptr},
-    {" - Price Tracking with push notification",
-     kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
+constexpr FeatureEntry::FeatureVariation
+    kMobilePromoOnDesktopWave1Variations[] = {
+        {" - Lens Promo", kMobilePromoOnDesktopLens, nullptr},
+        {" - Lens Promo with push notification",
+         kMobilePromoOnDesktopLensNotification, nullptr},
+        {" - Tab Groups", kMobilePromoOnDesktopTabGroups, nullptr},
+        {" - Tab Groups with push notification",
+         kMobilePromoOnDesktopTabGroupsNotification, nullptr},
+        {" - Price Tracking", kMobilePromoOnDesktopPriceTracking, nullptr},
+        {" - Price Tracking with push notification",
+         kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
 
-const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
+constexpr FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
     {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kWalletApiPrivatePassesEnabledVariations[] = {
         {"1P URL", kWalletApiPrivatePassesUrl, nullptr}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kPersistTabContextFileSystem_WasHidden_FullContext[] = {
         {kPersistTabContextStorageParam, "0"},
         {kPersistTabContextExtractionTimingParam, "0"},
         {kPersistTabContextDataParam, "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kPersistTabContextSqlite_WasHidden_FullContext[] = {
         {kPersistTabContextStorageParam, "1"},
         {kPersistTabContextExtractionTimingParam, "0"},
         {kPersistTabContextDataParam, "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kPersistTabContextSqlite_WasHiddenPageLoad_FullContext[] = {
         {kPersistTabContextStorageParam, "1"},
         {kPersistTabContextExtractionTimingParam, "1"},
         {kPersistTabContextDataParam, "0"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kPersistTabContextSqlite_WasHidden_InnerTextOnly[] = {
         {kPersistTabContextStorageParam, "1"},
         {kPersistTabContextExtractionTimingParam, "0"},
         {kPersistTabContextDataParam, "1"}};
 
-const FeatureEntry::FeatureVariation kPersistTabContextVariations[] = {
+constexpr FeatureEntry::FeatureVariation kPersistTabContextVariations[] = {
     {"FileSystem, On Tab Hide, APC + Inner Text",
      kPersistTabContextFileSystem_WasHidden_FullContext, nullptr},
     {"SQLite, On Tab Hide, APC + Inner Text",
@@ -996,25 +1024,25 @@ const FeatureEntry::FeatureVariation kPersistTabContextVariations[] = {
     {"SQLite, On Tab Hide, Inner Text",
      kPersistTabContextSqlite_WasHidden_InnerTextOnly, nullptr}};
 
-const FeatureEntry::FeatureParam kIOSExpandedSetupListSafariImport[] = {
+constexpr FeatureEntry::FeatureParam kIOSExpandedSetupListSafariImport[] = {
     {kIOSExpandedSetupListVariationParam,
      kIOSExpandedSetupListVariationParamSafariImport}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kIOSExpandedSetupListBackgroundCustomization[] = {
         {kIOSExpandedSetupListVariationParam,
          kIOSExpandedSetupListVariationParamBackgroundCustomization}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     IOSExpandedSetupListVariationParamAllExceptCPE[] = {
         {kIOSExpandedSetupListVariationParam,
          kIOSExpandedSetupListVariationParamAllExceptCPE}};
 
-const FeatureEntry::FeatureParam kIOSExpandedSetupListAll[] = {
+constexpr FeatureEntry::FeatureParam kIOSExpandedSetupListAll[] = {
     {kIOSExpandedSetupListVariationParam,
      kIOSExpandedSetupListVariationParamAll}};
 
-const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
+constexpr FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
     {"Safari Data Import", kIOSExpandedSetupListSafariImport, nullptr},
     {"Home Background Customization",
      kIOSExpandedSetupListBackgroundCustomization, nullptr},
@@ -1023,21 +1051,21 @@ const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
     {"Safari Data Import, Home Background Customization, CPE",
      kIOSExpandedSetupListAll, nullptr}};
 
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam1[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam1[] = {
     {kModelBasedPageClassificationExecutionRateParam, "1"}};
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam10[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam10[] = {
     {kModelBasedPageClassificationExecutionRateParam, "10"}};
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam25[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam25[] = {
     {kModelBasedPageClassificationExecutionRateParam, "25"}};
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam50[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam50[] = {
     {kModelBasedPageClassificationExecutionRateParam, "50"}};
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam75[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam75[] = {
     {kModelBasedPageClassificationExecutionRateParam, "75"}};
-const FeatureEntry::FeatureParam kModelBasedPageClassificationParam100[] = {
+constexpr FeatureEntry::FeatureParam kModelBasedPageClassificationParam100[] = {
     {kModelBasedPageClassificationExecutionRateParam, "100"}};
 
-const FeatureEntry::FeatureVariation kModelBasedPageClassificationVariations[] =
-    {
+constexpr FeatureEntry::FeatureVariation
+    kModelBasedPageClassificationVariations[] = {
         {"(1%)", kModelBasedPageClassificationParam1, nullptr},
         {"(10%)", kModelBasedPageClassificationParam10, nullptr},
         {"(25%)", kModelBasedPageClassificationParam25, nullptr},
@@ -1046,14 +1074,14 @@ const FeatureEntry::FeatureVariation kModelBasedPageClassificationVariations[] =
         {"(100%)", kModelBasedPageClassificationParam100, nullptr},
 };
 
-const FeatureEntry::FeatureParam kAfterEditForExplainGeminiEditMenu[] = {
+constexpr FeatureEntry::FeatureParam kAfterEditForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "1"}};
-const FeatureEntry::FeatureParam kAfterSearchForExplainGeminiEditMenu[] = {
+constexpr FeatureEntry::FeatureParam kAfterSearchForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "2"}};
-const FeatureEntry::FeatureParam kAdjacentForExplainGeminiEditMenu[] = {
+constexpr FeatureEntry::FeatureParam kAdjacentForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "3"}};
 
-const FeatureEntry::FeatureVariation kPositionForExplainGeminiEditMenu[] = {
+constexpr FeatureEntry::FeatureVariation kPositionForExplainGeminiEditMenu[] = {
     {"Explain Gemini shows up after Edit", kAfterEditForExplainGeminiEditMenu,
      nullptr},
     {"Explain Gemini shows up after Search with Google",
@@ -1061,52 +1089,54 @@ const FeatureEntry::FeatureVariation kPositionForExplainGeminiEditMenu[] = {
     {"Explain Gemini shows up adjacent to Search with Google",
      kAdjacentForExplainGeminiEditMenu, nullptr}};
 
-const FeatureEntry::FeatureParam kPageActionMenuIconSparkles1[] = {
+constexpr FeatureEntry::FeatureParam kPageActionMenuIconSparkles1[] = {
     {kPageActionMenuIconParams, "1"}};
-const FeatureEntry::FeatureParam kPageActionMenuIconSparkles2[] = {
+constexpr FeatureEntry::FeatureParam kPageActionMenuIconSparkles2[] = {
     {kPageActionMenuIconParams, "2"}};
 
-const FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
+constexpr FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
     {"Sparkles 1", kPageActionMenuIconSparkles1, nullptr},
     {"Sparkles 2", kPageActionMenuIconSparkles2, nullptr}};
 
-const FeatureEntry::FeatureParam kAssistantContainerParamDebugMode[] = {
+constexpr FeatureEntry::FeatureParam kAssistantContainerParamDebugMode[] = {
     {kAssistantContainerParam, kAssistantContainerParamDebug}};
 
-const FeatureEntry::FeatureParam kAssistantContainer30[] = {
+constexpr FeatureEntry::FeatureParam kAssistantContainer30[] = {
     {kAssistantContainerMediumDetentPercentParam, "30"}};
 
-const FeatureEntry::FeatureParam kAssistantContainer60[] = {
+constexpr FeatureEntry::FeatureParam kAssistantContainer60[] = {
     {kAssistantContainerMediumDetentPercentParam, "60"}};
 
-const FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
+constexpr FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
     {"with debug enabled", kAssistantContainerParamDebugMode, nullptr},
     {"30% medium detent", kAssistantContainer30, nullptr},
     {"60% medium detent", kAssistantContainer60, nullptr}};
 
-const FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmit[] = {
+constexpr FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmit[] = {
     {"auto-submission-type", "DismissThenSubmit"},
 };
-const FeatureEntry::FeatureParam kAutoSubmissionSubmitThenDismiss[] = {
+constexpr FeatureEntry::FeatureParam kAutoSubmissionSubmitThenDismiss[] = {
     {"auto-submission-type", "SubmitThenDismiss"},
 };
-const FeatureEntry::FeatureParam kAutoSubmissionDismissThenBlockThenSubmit[] = {
-    {"auto-submission-type", "DismissThenBlockThenSubmit"},
+constexpr FeatureEntry::FeatureParam
+    kAutoSubmissionDismissThenBlockThenSubmit[] = {
+        {"auto-submission-type", "DismissThenBlockThenSubmit"},
 };
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kAutoSubmissionDismissThenBlockThenSubmitWithWait[] = {
         {"auto-submission-type", "DismissThenBlockThenSubmit"},
         {"auto-submission-use-wait-period", "100"},
 };
-const FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmitWithWait[] = {
-    {"auto-submission-type", "DismissThenSubmit"},
-    {"auto-submission-use-wait-period", "100"},
+constexpr FeatureEntry::FeatureParam
+    kAutoSubmissionDismissThenSubmitWithWait[] = {
+        {"auto-submission-type", "DismissThenSubmit"},
+        {"auto-submission-use-wait-period", "100"},
 };
-const FeatureEntry::FeatureParam kAutoSubmissionScriptSubmit[] = {
+constexpr FeatureEntry::FeatureParam kAutoSubmissionScriptSubmit[] = {
     {"auto-submission-type", "ScriptSubmit"},
 };
 
-const FeatureEntry::FeatureVariation kAutoSubmissionVariations[] = {
+constexpr FeatureEntry::FeatureVariation kAutoSubmissionVariations[] = {
     {"Dismiss then Submit", kAutoSubmissionDismissThenSubmit, nullptr},
     {"Submit then Dismiss", kAutoSubmissionSubmitThenDismiss, nullptr},
     {"Dismiss then Block then Submit",
@@ -1118,26 +1148,26 @@ const FeatureEntry::FeatureVariation kAutoSubmissionVariations[] = {
     {"Script Submit", kAutoSubmissionScriptSubmit, nullptr},
 };
 
-const FeatureEntry::FeatureParam kCrossDeviceSigninDefaultUrl[] = {
+constexpr FeatureEntry::FeatureParam kCrossDeviceSigninDefaultUrl[] = {
     {"url", "https://www.google.com/chrome/go-mobile"},
 };
 
-const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
+constexpr FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
     {"Default URL (https://www.google.com/chrome/go-mobile)",
      kCrossDeviceSigninDefaultUrl, nullptr},
 };
 
-const FeatureEntry::FeatureParam kNewTabPageUICleanupTightPadding[] = {
+constexpr FeatureEntry::FeatureParam kNewTabPageUICleanupTightPadding[] = {
     {kNewTabPageUICleanupArmParam, "1"}};
-const FeatureEntry::FeatureParam kNewTabPageUICleanupMediumPadding[] = {
+constexpr FeatureEntry::FeatureParam kNewTabPageUICleanupMediumPadding[] = {
     {kNewTabPageUICleanupArmParam, "2"}};
-const FeatureEntry::FeatureParam kNewTabPageUICleanupPreferredPadding[] = {
+constexpr FeatureEntry::FeatureParam kNewTabPageUICleanupPreferredPadding[] = {
     {kNewTabPageUICleanupArmParam, "3"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kNewTabPageUICleanupFakeboxBackgroundAndShadow[] = {
         {kNewTabPageUICleanupArmParam, "4"}};
 
-const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
+constexpr FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
     {" - Tight Padding", kNewTabPageUICleanupTightPadding, nullptr},
     {" - Medium Padding", kNewTabPageUICleanupMediumPadding, nullptr},
     {" - Preferred Padding", kNewTabPageUICleanupPreferredPadding, nullptr},
@@ -1179,7 +1209,7 @@ constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
     {" - No Chips", kAimButtonRefactorNoChips, nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU[] = {
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
@@ -1193,7 +1223,7 @@ const FeatureEntry::FeatureParam
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesServerModelExecutionParam,
          "true"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU[] = {
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
@@ -1207,7 +1237,7 @@ const FeatureEntry::FeatureParam
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesServerModelExecutionParam,
          "true"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcCPU[] = {
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
@@ -1218,7 +1248,7 @@ const FeatureEntry::FeatureParam
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
          "false"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcGPU[] = {
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
@@ -1229,13 +1259,13 @@ const FeatureEntry::FeatureParam
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
          "false"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesIgnoreThresholds[] = {
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesIgnoreThresholdsParam,
          "true"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kGeminiContextualSuggestionsCuesVariations[] = {
         {"with on-device classifier (CPU - Title and URL)",
          kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU, nullptr},
@@ -1248,20 +1278,20 @@ const FeatureEntry::FeatureVariation
         {"with thresholds ignored",
          kGeminiContextualSuggestionsCuesIgnoreThresholds, nullptr}};
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesUiModeInfobarThenChip[] = {
         {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
          "infobar_then_chip"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesUiModeInfobarOnly[] = {
         {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
          "infobar_only"}};
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesUiModeOmniboxChipOnly[] = {
         {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
          "omnibox_chip_only"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kGeminiContextualSuggestionsCuesUiModeVariations[] = {
         {"Infobar Then Omnibox Chip",
          kGeminiContextualSuggestionsCuesUiModeInfobarThenChip, nullptr},
@@ -1291,76 +1321,76 @@ constexpr FeatureEntry::Choice kClientSideDetectionIosChoices[] = {
      "ClientSideDetectionEnabledIos"},
 };
 
-const FeatureEntry::FeatureParam kPageClassificationOnDeviceOnly[] = {
+constexpr FeatureEntry::FeatureParam kPageClassificationOnDeviceOnly[] = {
     {kPageClassificationModeParam, "on_device_only"}};
-const FeatureEntry::FeatureParam kPageClassificationVerticalsOnly[] = {
+constexpr FeatureEntry::FeatureParam kPageClassificationVerticalsOnly[] = {
     {kPageClassificationModeParam, "verticals_only"}};
-const FeatureEntry::FeatureParam kPageClassificationOnDeviceWithFallback[] = {
-    {kPageClassificationModeParam, "on_device_with_fallback"}};
+constexpr FeatureEntry::FeatureParam kPageClassificationOnDeviceWithFallback[] =
+    {{kPageClassificationModeParam, "on_device_with_fallback"}};
 
-const FeatureEntry::FeatureVariation kPageClassificationVariations[] = {
+constexpr FeatureEntry::FeatureVariation kPageClassificationVariations[] = {
     {"On-Device Only", kPageClassificationOnDeviceOnly, nullptr},
     {"Verticals Only", kPageClassificationVerticalsOnly, nullptr},
     {"On-Device with Verticals Fallback",
      kPageClassificationOnDeviceWithFallback, nullptr}};
 
-const FeatureEntry::FeatureParam kMagicStackTipsV2IosNonActionableParams[] = {
-    {segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
-     "false"}};
-const FeatureEntry::FeatureParam kMagicStackTipsV2IosActionableParams[] = {
+constexpr FeatureEntry::FeatureParam kMagicStackTipsV2IosNonActionableParams[] =
+    {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+      "false"}};
+constexpr FeatureEntry::FeatureParam kMagicStackTipsV2IosActionableParams[] = {
     {segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
      "true"}};
-const FeatureEntry::FeatureVariation kMagicStackTipsV2IosVariations[] = {
+constexpr FeatureEntry::FeatureVariation kMagicStackTipsV2IosVariations[] = {
     {"(Non-Actionable)", kMagicStackTipsV2IosNonActionableParams, nullptr},
     {"(Actionable)", kMagicStackTipsV2IosActionableParams, nullptr},
 };
 
-const FeatureEntry::FeatureParam kLensSearchTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kLensSearchTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kLensEphemeralModuleSearchVariation},
 };
-const FeatureEntry::FeatureParam kLensShopTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kLensShopTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kLensEphemeralModuleShopVariation},
 };
-const FeatureEntry::FeatureParam kLensTranslateTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kLensTranslateTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kLensEphemeralModuleTranslateVariation},
 };
-const FeatureEntry::FeatureParam kAddressBarPositionTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kAddressBarPositionTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kAddressBarPositionEphemeralModule},
 };
-const FeatureEntry::FeatureParam kSavePasswordsTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kSavePasswordsTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kSavePasswordsEphemeralModule},
 };
-const FeatureEntry::FeatureParam kAutofillPasswordsTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kAutofillPasswordsTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kAutofillPasswordsEphemeralModule},
 };
-const FeatureEntry::FeatureParam kEnhancedSafeBrowsingTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kEnhancedSafeBrowsingTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
 };
 
-const FeatureEntry::FeatureParam kNTPThemeTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kNTPThemeTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kNTPThemeEphemeralModule},
 };
 
-const FeatureEntry::FeatureParam kTipsNotificationTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kTipsNotificationTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kTipsNotificationsEphemeralModule},
 };
 
-const FeatureEntry::FeatureParam kNTPCustomizationTipShowArm[] = {
+constexpr FeatureEntry::FeatureParam kNTPCustomizationTipShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kNTPCustomizationEphemeralModule},
 };
 
-const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
-    {
+constexpr FeatureEntry::FeatureVariation
+    kEphemeralCardRankerCardOverrideOptions[] = {
         {"- Force Show Lens Search Tip", kLensSearchTipShowArm, nullptr},
         {"- Force Show Lens Shop Tip", kLensShopTipShowArm, nullptr},
         {"- Force Show Lens Translate Tip", kLensTranslateTipShowArm, nullptr},
@@ -1378,25 +1408,27 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
+constexpr FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "403"}};
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced500[] = {
+constexpr FeatureEntry::FeatureParam kEnterpriseProxyErrorForced500[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "500"}};
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced502[] = {
+constexpr FeatureEntry::FeatureParam kEnterpriseProxyErrorForced502[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "502"}};
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced503[] = {
+constexpr FeatureEntry::FeatureParam kEnterpriseProxyErrorForced503[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "503"}};
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced504[] = {
+constexpr FeatureEntry::FeatureParam kEnterpriseProxyErrorForced504[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "504"}};
 
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedUnsupported429[] = {
-    {enterprise_net::kForcedDisguisedErrorCodeParamName, "429"}};
+constexpr FeatureEntry::FeatureParam
+    kEnterpriseProxyErrorForcedUnsupported429[] = {
+        {enterprise_net::kForcedDisguisedErrorCodeParamName, "429"}};
 
-const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedSignInRequired[] = {
-    {enterprise_net::kForceSignInRequiredParamName, "true"}};
+constexpr FeatureEntry::FeatureParam
+    kEnterpriseProxyErrorForcedSignInRequired[] = {
+        {enterprise_net::kForceSignInRequiredParamName, "true"}};
 
-const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
-    {
+constexpr FeatureEntry::FeatureVariation
+    kEnterpriseProxyErrorHandlingVariations[] = {
         {"Force 403 (Authorization / Block)", kEnterpriseProxyErrorForced403,
          nullptr},
         {"Force 500 (Internal Server Error)", kEnterpriseProxyErrorForced500,
@@ -1412,11 +1444,11 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
          kEnterpriseProxyErrorForcedSignInRequired, nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kEnableAccountPreviewSwitchingAccountSkipCooldownParams[] = {
         {"SkipCooldown", "true"}};
 
-const FeatureEntry::FeatureVariation
+constexpr FeatureEntry::FeatureVariation
     kEnableAccountPreviewSwitchingAccountVariations[] = {
         {"(Skip Cooldown)",
          kEnableAccountPreviewSwitchingAccountSkipCooldownParams, nullptr}};
@@ -1442,6 +1474,12 @@ const FeatureEntry::FeatureVariation
 //   the array of choices.
 //
 // See the documentation of FeatureEntry for details on the fields.
+//
+// All FeatureEntry tables (kFeatureEntries and the Choice, FeatureParam and
+// FeatureVariation arrays it references) must be constexpr to guarantee they
+// don't introduce static initializers. For example, parameter names must be
+// string literals or char arrays: reading base::FeatureParam::name from an
+// extern param is not a constant expression.
 //
 // When adding a new choice, add it to the end of the list.
 constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
