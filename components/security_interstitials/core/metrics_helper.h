@@ -42,6 +42,7 @@ class MetricsHelper {
     PROCEEDING_DISABLED,
     MAX_DECISION
   };
+  // LINT.IfChange(SecurityInterstitialInteraction)
   enum Interaction {
     TOTAL_VISITS,
     SHOW_ADVANCED,
@@ -62,6 +63,7 @@ class MetricsHelper {
     VIEW_CERTIFICATE,
     MAX_INTERACTION
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:SecurityInterstitialInteraction)
 
   // metric_prefix: Histogram prefix for UMA.
   //                examples: "phishing", "ssl_overridable"
