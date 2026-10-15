@@ -172,6 +172,9 @@ UIColor* AssistantHighlightBackgroundColor() {
   BOOL _isTabGroupVisible;
   // Whether the current tab is in a tab group.
   BOOL _inTabGroup;
+  // Whether forward/backward navigations are currently allowed.
+  BOOL _canNavigateBack;
+  BOOL _canNavigateForward;
   // Context menus for the App Bar buttons.
   UIMenu* _assistantButtonMenu;
   UIMenu* _openNewTabButtonMenu;
@@ -325,8 +328,6 @@ UIColor* AssistantHighlightBackgroundColor() {
   _openNewTabButton.transform = transform;
   _tabGridButton.transform = transform;
   if (IsFiveButtonAppBarLayoutEnabled()) {
-    // TODO(crbug.com/573542581): Ensure the navigation buttons are properly
-    // ordered in the stack in landscape orientations.
     _backButton.transform = transform;
     _forwardButton.transform = transform;
   }
@@ -633,6 +634,18 @@ UIColor* AssistantHighlightBackgroundColor() {
   NOTREACHED();
 }
 
+- (void)setCanNavigateBack:(BOOL)canNavigateBack
+                   forward:(BOOL)canNavigateForward {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (canNavigateBack == _canNavigateBack &&
+      canNavigateForward == _canNavigateForward) {
+    return;
+  }
+  _canNavigateBack = canNavigateBack;
+  _canNavigateForward = canNavigateForward;
+  [self updateNavigationButtons];
+}
+
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
                     highlighted:(BOOL)highlighted
                         enabled:(BOOL)enabled
@@ -724,10 +737,10 @@ UIColor* AssistantHighlightBackgroundColor() {
 // toolbar.
 - (void)updateNavigationButtons {
   CHECK(IsFiveButtonAppBarLayoutEnabled());
-  // TODO(crbug.com/573542581): Not fully implemented yet. Enable/disable
-  // buttons based on whether back/forward navigations are allowed.
-  _backButton.enabled = _buttonsEnabled && !_isTabGridVisible;
-  _forwardButton.enabled = _buttonsEnabled && !_isTabGridVisible;
+  _backButton.enabled =
+      _buttonsEnabled && !_isTabGridVisible && _canNavigateBack;
+  _forwardButton.enabled =
+      _buttonsEnabled && !_isTabGridVisible && _canNavigateForward;
 }
 
 // Updates the vertical position of the buttons according to the fullscreen

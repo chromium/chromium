@@ -56,6 +56,11 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 // Sets whether the current page is the NTP and if it is the Start Surface.
 - (void)setNTPVisible:(BOOL)ntpVisible isStartSurface:(BOOL)isStartSurface;
 
+// Sets whether forward and back navigations are allowed on the current web
+// page.
+- (void)setCanNavigateBack:(BOOL)canNavigateBack
+                   forward:(BOOL)canNavigateForward;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSUMER_H_
