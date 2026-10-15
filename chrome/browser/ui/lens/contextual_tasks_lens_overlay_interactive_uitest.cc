@@ -1170,7 +1170,7 @@ INSTANTIATE_TEST_SUITE_P(
     &contextual_tasks::UserVariationToString);
 
 class ContextualTasksContextMenuAskGoogleInteractiveUiTest
-    : public LensOverlayInteractiveTestBase {
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
  public:
   ContextualTasksContextMenuAskGoogleInteractiveUiTest() = default;
   ~ContextualTasksContextMenuAskGoogleInteractiveUiTest() override = default;
@@ -1184,7 +1184,8 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
          {lens::features::kLensOverlay, {}},
          {lens::features::kLensOverlayEduActionChip,
           {{"max-shown-count", "5"}}},
-         {lens::features::kLensSidePanelUnification, {}},
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
@@ -1201,56 +1202,17 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
         {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
          optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
   }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    LensOverlayInteractiveTestBase::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ContextualTasksContextMenuAskGoogleInteractiveUiTest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<TestingAimEligibilityService>(
-              /*is_aim_eligible=*/true,
-              /*is_cobrowse_eligible=*/true, *profile->GetPrefs(),
-              TemplateURLServiceFactory::GetForProfile(profile));
-        }));
-    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context,
-            base::BindLambdaForTesting([](content::BrowserContext* context) {
-              Profile* profile = Profile::FromBrowserContext(context);
-              return static_cast<std::unique_ptr<KeyedService>>(
-                  std::make_unique<TestingContextualTasksUiService>(
-                      profile,
-                      contextual_tasks::ContextualTasksServiceFactory::
-                          GetForProfile(profile),
-                      IdentityManagerFactory::GetForProfile(profile),
-                      AimEligibilityServiceFactory::GetForProfile(profile),
-                      /*cookie_synchronizer=*/nullptr));
-            }));
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("www.google.com", "127.0.0.1");
-    host_resolver()->AddRule("www.g.ai", "127.0.0.1");
-    LensOverlayInteractiveTestBase::SetUpOnMainThread();
-    WaitForTemplateURLServiceToLoad();
-  }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
 };
 
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User right-clicks the page to open the context menu.
+//  (3) User selects the "Ask Google about this page" item from the context
+//      menu.
+//  (4) The Contextual Tasks side panel opens in zero state with the
+//      kContentAreaContextMenuPage invocation source.
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AskGoogleContextMenuClickOpensSidePanel \
   DISABLED_AskGoogleContextMenuClickOpensSidePanel
@@ -1258,7 +1220,7 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
 #define MAYBE_AskGoogleContextMenuClickOpensSidePanel \
   AskGoogleContextMenuClickOpensSidePanel
 #endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        MAYBE_AskGoogleContextMenuClickOpensSidePanel) {
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1293,7 +1255,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
       EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
       WaitForWebContentsReady(kTabId, page_url),
 
-      MoveMouseTo(kTabId), ClickMouse(ui_controls::RIGHT),
+      RightClickInWebContents(kTabId),
       WaitForShow(RenderViewContextMenu::kAskGoogleAboutThisPageItem),
       SelectMenuItem(RenderViewContextMenu::kAskGoogleAboutThisPageItem,
                      InputType::kMouse),
@@ -1336,7 +1298,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           "source"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User clicks the 3-dot app menu button on the browser toolbar.
+//  (3) User selects the "Ask Google about this page" item from the app menu.
+//  (4) The Contextual Tasks side panel opens in zero state with the kAppMenu
+//      invocation source.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        AskGoogleAppMenuClickOpensSidePanel) {
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1411,7 +1379,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           "Side panel session has kAppMenu invocation source"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to a webpage and pins the Contextual Tasks button in the
+//      toolbar.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) The Contextual Tasks side panel opens in zero state with the
+//      kCobrowsePinnedToolbarButton invocation source.
+//  (4) User clicks the pinned Contextual Tasks toolbar button again to close
+//      the side panel.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        PinnedToolbarButtonClickOpensAndClosesSidePanel) {
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1499,8 +1475,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           false));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to an eligible webpage where the Lens homework action
+//      chip is shown.
+//  (2) User clicks the homework action chip in the location bar.
+//  (3) The Contextual Tasks side panel opens in zero state with the
+//      kHomeworkActionChip invocation source.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        HomeworkActionChipClickOpensSidePanel) {
+  SkipIfIncognito("Lens homework action chip is disabled in Incognito mode.");
   SetupOptimizationFilter();
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1572,8 +1555,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           "Side panel session has kHomeworkActionChip invocation source"));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+    testing::Values(contextual_tasks::UserVariation::kSignedIn,
+                    contextual_tasks::UserVariation::kSignedOut,
+                    contextual_tasks::UserVariation::kIncognito),
+    &contextual_tasks::UserVariationToString);
+
 class ContextualTasksContextMenuSubmenuInteractiveUiTest
-    : public LensOverlayInteractiveTestBase {
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
  public:
   ContextualTasksContextMenuSubmenuInteractiveUiTest() = default;
   ~ContextualTasksContextMenuSubmenuInteractiveUiTest() override = default;
@@ -1583,63 +1574,25 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
         /*enabled_features=*/
         {{contextual_tasks::kContextualTasks, {}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification, {}},
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    LensOverlayInteractiveTestBase::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ContextualTasksContextMenuSubmenuInteractiveUiTest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<TestingAimEligibilityService>(
-              /*is_aim_eligible=*/true,
-              /*is_cobrowse_eligible=*/true, *profile->GetPrefs(),
-              TemplateURLServiceFactory::GetForProfile(profile));
-        }));
-    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context,
-            base::BindLambdaForTesting([](content::BrowserContext* context) {
-              Profile* profile = Profile::FromBrowserContext(context);
-              return static_cast<std::unique_ptr<KeyedService>>(
-                  std::make_unique<TestingContextualTasksUiService>(
-                      profile,
-                      contextual_tasks::ContextualTasksServiceFactory::
-                          GetForProfile(profile),
-                      IdentityManagerFactory::GetForProfile(profile),
-                      AimEligibilityServiceFactory::GetForProfile(profile),
-                      /*cookie_synchronizer=*/nullptr));
-            }));
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("www.google.com", "127.0.0.1");
-    host_resolver()->AddRule("www.g.ai", "127.0.0.1");
-    LensOverlayInteractiveTestBase::SetUpOnMainThread();
-    WaitForTemplateURLServiceToLoad();
-  }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
 };
 
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User right-clicks the page to open the context menu.
+//  (3) User opens the Contextual Tasks submenu and selects "Ask Google about
+//      this page".
+//  (4) The Contextual Tasks side panel opens in zero state with the
+//      kContentAreaContextMenuPage invocation source.
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AskGoogleSubmenuItemClickOpensSidePanel \
   DISABLED_AskGoogleSubmenuItemClickOpensSidePanel
@@ -1647,7 +1600,7 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
 #define MAYBE_AskGoogleSubmenuItemClickOpensSidePanel \
   AskGoogleSubmenuItemClickOpensSidePanel
 #endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
                        MAYBE_AskGoogleSubmenuItemClickOpensSidePanel) {
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1681,7 +1634,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
       EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
       WaitForWebContentsReady(kTabId, page_url),
 
-      MoveMouseTo(kTabId), ClickMouse(ui_controls::RIGHT),
+      RightClickInWebContents(kTabId),
       WaitForShow(RenderViewContextMenu::kContextualTasksSubmenuItem),
       SelectMenuItem(RenderViewContextMenu::kContextualTasksSubmenuItem),
       WaitForShow(RenderViewContextMenu::kAskGoogleAboutThisPageItem),
@@ -1725,7 +1678,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
           "source"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User clicks the 3-dot app menu button on the browser toolbar.
+//  (3) User opens the Contextual Tasks submenu and selects "Ask Google about
+//      this page".
+//  (4) The Contextual Tasks side panel opens in zero state with the kAppMenu
+//      invocation source.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
                        AskGoogleAppMenuSubmenuItemClickOpensSidePanel) {
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
@@ -1801,8 +1761,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
           "Side panel session has kAppMenu invocation source"));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksContextMenuSubmenuInteractiveUiTest,
+    testing::Values(contextual_tasks::UserVariation::kSignedIn,
+                    contextual_tasks::UserVariation::kSignedOut,
+                    contextual_tasks::UserVariation::kIncognito),
+    &contextual_tasks::UserVariationToString);
+
 class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
-    : public LensOverlayInteractiveTestBase {
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
  public:
   ContextualTasksContextMenuRouteOmniboxInteractiveUiTest() = default;
   ~ContextualTasksContextMenuRouteOmniboxInteractiveUiTest() override = default;
@@ -1816,7 +1784,8 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
          {lens::features::kLensOverlay, {}},
          {lens::features::kLensOverlayEduActionChip,
           {{"max-shown-count", "5"}}},
-         {lens::features::kLensSidePanelUnification, {}},
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
@@ -1834,47 +1803,15 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
         {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
          optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
   }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    LensOverlayInteractiveTestBase::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ContextualTasksContextMenuRouteOmniboxInteractiveUiTest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<AimPopupEligibleAimEligibilityService>(
-              *profile->GetPrefs());
-        }));
-  }
-
- private:
-  // Ask Google opens the omnibox only for profiles that get the AIM popup,
-  // which also requires fusebox eligibility.
-  class AimPopupEligibleAimEligibilityService
-      : public TestingAimEligibilityService {
-   public:
-    explicit AimPopupEligibleAimEligibilityService(PrefService& prefs)
-        : TestingAimEligibilityService(/*is_aim_eligible=*/true,
-                                       /*is_cobrowse_eligible=*/true,
-                                       prefs,
-                                       /*template_url_service=*/nullptr) {}
-
-    bool IsFuseboxEligible() const override { return true; }
-  };
-
-  base::CallbackListSubscription create_services_subscription_;
 };
 
+// This tests the following CUJ:
+//  (1) User navigates to a webpage when Ask Google is configured to route to
+//      the Omnibox.
+//  (2) User right-clicks the page and selects "Ask Google about this page".
+//  (3) The Omnibox popup opens in AIM mode (OmniboxPopupState::kAim).
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AskGoogleContextMenuClickOpensOmnibox \
   DISABLED_AskGoogleContextMenuClickOpensOmnibox
@@ -1882,7 +1819,7 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
 #define MAYBE_AskGoogleContextMenuClickOpensOmnibox \
   AskGoogleContextMenuClickOpensOmnibox
 #endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        MAYBE_AskGoogleContextMenuClickOpensOmnibox) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
@@ -1895,7 +1832,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
       EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
       WaitForWebContentsReady(kTabId, page_url),
 
-      MoveMouseTo(kTabId), ClickMouse(ui_controls::RIGHT),
+      RightClickInWebContents(kTabId),
       WaitForShow(RenderViewContextMenu::kAskGoogleAboutThisPageItem),
       SelectMenuItem(RenderViewContextMenu::kAskGoogleAboutThisPageItem,
                      InputType::kMouse),
@@ -1916,7 +1853,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
           "Omnibox popup state is kAim"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to a webpage when Ask Google is configured to route to
+//      the Omnibox.
+//  (2) User clicks the 3-dot app menu button and selects "Ask Google about this
+//      page".
+//  (3) The Omnibox popup opens in AIM mode (OmniboxPopupState::kAim).
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        AskGoogleAppMenuClickOpensOmnibox) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
@@ -1949,7 +1892,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
           "Omnibox popup state is kAim"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to a webpage when Ask Google is configured to route to
+//      the Omnibox and pins the Contextual Tasks toolbar button.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) The Omnibox popup opens in AIM mode (OmniboxPopupState::kAim).
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        PinnedToolbarButtonClickOpensOmnibox) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
@@ -1985,8 +1933,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
           "Omnibox popup state is kAim"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+// This tests the following CUJ:
+//  (1) User navigates to an eligible webpage where the Lens homework action
+//      chip is shown and Ask Google is configured to route to the Omnibox.
+//  (2) User clicks the homework action chip in the location bar.
+//  (3) The Omnibox popup opens in AIM mode (OmniboxPopupState::kAim).
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        HomeworkActionChipClickOpensOmnibox) {
+  SkipIfIncognito("Lens homework action chip is disabled in Incognito mode.");
   SetupOptimizationFilter();
   WaitForTemplateURLServiceToLoad();
 
@@ -2015,6 +1969,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
           },
           "Omnibox popup state is kAim"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+    testing::Values(contextual_tasks::UserVariation::kSignedIn,
+                    contextual_tasks::UserVariation::kSignedOut,
+                    contextual_tasks::UserVariation::kIncognito),
+    &contextual_tasks::UserVariationToString);
 
 class RegionChipTestingContextualTasksUiService
     : public TestingContextualTasksUiService {
