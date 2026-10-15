@@ -32,6 +32,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AutofillSuggestionDialogOnFormPresented"/>
   <variant name="AutofillSuggestionDialogOnFormPreviewChanged"/>
   <variant name="CancelActions"/>
+  <variant name="ClearClientStorage"/>
   <variant name="ClosePanel"/>
   <variant name="ClosePanelAndShutdown"/>
   <variant name="CreateActorTab"/>
@@ -94,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ScrollTo"/>
   <variant name="SetActuationOnWebSetting"/>
   <variant name="SetAudioDucking"/>
+  <variant name="SetClientStorageItem"/>
   <variant name="SetClosedCaptioningSetting"/>
   <variant name="SetContextAccessIndicator"/>
   <variant name="SetLocationPermissionState"/>

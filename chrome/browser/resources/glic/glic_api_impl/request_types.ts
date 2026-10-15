@@ -353,6 +353,8 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 103,
   OpenPinnedTabPicker: 104,
   // Do not reuse deleted request ID: 105,
+  // Do not reuse deleted request ID: 106,
+  // Do not reuse deleted request ID: 107,
 } as const satisfies InterfaceHistogramIds<WebClientHost>;
 export const MAX_REQUEST_ID = Math.max(...Object.values(RECORDED_REQUEST_IDS));
 

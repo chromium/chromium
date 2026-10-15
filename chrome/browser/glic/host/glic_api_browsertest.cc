@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
@@ -5439,6 +5440,47 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   // Active instance should not be hibernated.
   ASSERT_TRUE(instance1->IsShowing());
   ASSERT_FALSE(instance1->IsHibernated());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testClientStorage) {
+  if (!GetParam().no_webview) {
+    ASSERT_OK(OpenGlicForActiveTab());
+    ExecuteJsTest({.params = base::Value(false)});
+    return;
+  }
+  service()->client_data_storage().SetItem("initial_key", "initial_val");
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value(true)});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const auto& storage = service()->client_data_storage().GetAll();
+    auto k1 = storage.find("k1");
+    auto k2 = storage.find("k2");
+    return storage.size() == 2u && k1 != storage.end() && k1->second == "v1" &&
+           k2 != storage.end() && k2->second == "v2" &&
+           !storage.contains("initial_key");
+  }));
+  // Also verify persistence to prefs.
+  service()->client_data_storage().Flush();
+  {
+    const base::DictValue& dict =
+        GetProfile()->GetPrefs()->GetDict(prefs::kGlicClientDataStorage);
+    EXPECT_EQ(dict.size(), 2u);
+    EXPECT_EQ(*dict.FindString("k1"), "v1");
+    EXPECT_EQ(*dict.FindString("k2"), "v2");
+  }
+
+  service()->client_data_storage().SetItem("k1", "v1_updated");
+  service()->client_data_storage().SetItem("external_key", "ext_val");
+
+  ContinueJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return service()->client_data_storage().GetAll().empty(); }));
+  service()->client_data_storage().Flush();
+  EXPECT_TRUE(
+      GetProfile()->GetPrefs()->GetDict(prefs::kGlicClientDataStorage).empty());
 }
 
 auto DefaultTestParamSet() {

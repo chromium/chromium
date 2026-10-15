@@ -137,8 +137,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
 
   registry->RegisterBooleanPref(prefs::kGlicPartitionNeedsCookieSync, true);
+  // TODO(b/573595701): Deprecate and remove
+  // kGlicLocalStorageCopiedToMainPartition.
   registry->RegisterBooleanPref(prefs::kGlicLocalStorageCopiedToMainPartition,
                                 false);
+  registry->RegisterBooleanPref(prefs::kGlicLocalStorageCopiedToPrefs, false);
+  registry->RegisterDictionaryPref(prefs::kGlicClientDataStorage);
   registry->RegisterBooleanPref(prefs::kGlicPreviouslyNotAllowed, false);
 
   registry->RegisterDictionaryPref(prefs::kGlicGeminiEnterpriseSettings);

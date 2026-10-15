@@ -47,6 +47,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_local_storage_migration.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
@@ -181,6 +182,8 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       opt_in_controller_(
           std::make_unique<GlicExperimentalOptInController>(profile)),
+      client_data_storage_(
+          std::make_unique<GlicClientDataStorage>(profile->GetPrefs())),
       instance_coordinator_(std::make_unique<GlicInstanceCoordinatorImpl>(
           profile,
           identity_manager,
@@ -274,7 +277,7 @@ void GlicKeyedService::InitializeAfterConstruction() {
     GlicMediaIntegration::GetFor(profile_);
   }
 #endif
-  MaybeMigrateGlicLocalStorage(profile_);
+  MaybeMigrateGlicLocalStorage(profile_, client_data_storage_.get());
 }
 
 GlicKeyedService::~GlicKeyedService() {
@@ -303,6 +306,7 @@ void GlicKeyedService::Shutdown() {
   experimental_triggering_state_subscription_ = {};
   instance_coordinator().Shutdown();
   legacy_activity_manager_->Shutdown();
+  client_data_storage_->Flush();
 }
 
 LegacyGlicActivityManager& GlicKeyedService::legacy_activity_manager() {

@@ -206,6 +206,10 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "OpenPinnedTabPicker";
     case GlicHostApiRequestId::kOpenContactInfoSettingsPage:
       return "OpenContactInfoSettingsPage";
+    case GlicHostApiRequestId::kSetClientStorageItem:
+      return "SetClientStorageItem";
+    case GlicHostApiRequestId::kClearClientStorage:
+      return "ClearClientStorage";
   }
   return "";
 }
