@@ -5,19 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class PushNotificationProfileService;
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that creates the PushNotificationProfileService and associates that
 // service with ProfileIOS.
 class PushNotificationProfileServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          PushNotificationProfileServiceFactory,
+          PushNotificationProfileService> {
  public:
-  static PushNotificationProfileServiceFactory* GetInstance();
-  static PushNotificationProfileService* GetForProfile(ProfileIOS* profile);
+  explicit PushNotificationProfileServiceFactory(PassKey key);
 
   // Returns the default factory used to build PushNotificationProfileService.
   // Can be registered with AddTestingFactory to use real instances during
@@ -25,11 +23,6 @@ class PushNotificationProfileServiceFactory
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<PushNotificationProfileServiceFactory>;
-
-  PushNotificationProfileServiceFactory();
-  ~PushNotificationProfileServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

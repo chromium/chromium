@@ -10,31 +10,14 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 
-// static
-ProvisionalPushNotificationService*
-ProvisionalPushNotificationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<ProvisionalPushNotificationService>(
-          profile, /*create=*/true);
-}
-
-// static
-ProvisionalPushNotificationServiceFactory*
-ProvisionalPushNotificationServiceFactory::GetInstance() {
-  static base::NoDestructor<ProvisionalPushNotificationServiceFactory> instance;
-  return instance.get();
-}
-
 ProvisionalPushNotificationServiceFactory::
-    ProvisionalPushNotificationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS(
+    ProvisionalPushNotificationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "ProvisionalPushNotificationServiceFactory") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
-
-ProvisionalPushNotificationServiceFactory::
-    ~ProvisionalPushNotificationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ProvisionalPushNotificationServiceFactory::BuildServiceInstanceFor(

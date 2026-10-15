@@ -5,25 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_CROSS_PLATFORM_PROMOS_MODEL_CROSS_PLATFORM_PROMOS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_CROSS_PLATFORM_PROMOS_MODEL_CROSS_PLATFORM_PROMOS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class CrossPlatformPromosService;
-class ProfileIOS;
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all CrossPlatformPromosServices and associates them with
 // Profiles.
-class CrossPlatformPromosServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class CrossPlatformPromosServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          CrossPlatformPromosServiceFactory,
+          CrossPlatformPromosService> {
  public:
-  static CrossPlatformPromosService* GetForProfile(ProfileIOS* profile);
-  static CrossPlatformPromosServiceFactory* GetInstance();
+  explicit CrossPlatformPromosServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<CrossPlatformPromosServiceFactory>;
-
-  CrossPlatformPromosServiceFactory();
-  ~CrossPlatformPromosServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

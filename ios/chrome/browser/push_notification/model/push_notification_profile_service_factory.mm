@@ -33,29 +33,14 @@ std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
 }
 }  // namespace
 
-// static
-PushNotificationProfileServiceFactory*
-PushNotificationProfileServiceFactory::GetInstance() {
-  static base::NoDestructor<PushNotificationProfileServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-PushNotificationProfileService*
-PushNotificationProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<PushNotificationProfileService>(
-      profile, /*create=*/true);
-}
-
-PushNotificationProfileServiceFactory::PushNotificationProfileServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PushNotificationProfileService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+PushNotificationProfileServiceFactory::PushNotificationProfileServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "PushNotificationProfileService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-PushNotificationProfileServiceFactory::
-    ~PushNotificationProfileServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PushNotificationProfileServiceFactory::BuildServiceInstanceFor(

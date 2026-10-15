@@ -7,25 +7,10 @@
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-CrossPlatformPromosService* CrossPlatformPromosServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<CrossPlatformPromosService>(
-      profile, true);
-}
-
-// static
-CrossPlatformPromosServiceFactory*
-CrossPlatformPromosServiceFactory::GetInstance() {
-  static base::NoDestructor<CrossPlatformPromosServiceFactory> instance;
-  return instance.get();
-}
-
-CrossPlatformPromosServiceFactory::CrossPlatformPromosServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("CrossPlatformPromosService") {}
-
-CrossPlatformPromosServiceFactory::~CrossPlatformPromosServiceFactory() =
-    default;
+CrossPlatformPromosServiceFactory::CrossPlatformPromosServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "CrossPlatformPromosService") {}
 
 std::unique_ptr<KeyedService>
 CrossPlatformPromosServiceFactory::BuildServiceInstanceFor(
