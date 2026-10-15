@@ -90,7 +90,9 @@ std::string SmbUrl::GetShare() const {
 }
 
 const std::string& SmbUrl::ToString() const {
-  CHECK(IsValid(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/573534393): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsValid());
 
   return url_;
 }
