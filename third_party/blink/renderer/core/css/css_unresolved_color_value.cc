@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/color_function.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -253,6 +254,22 @@ static double ResolveColorChannel(const CSSPrimitiveValue& value,
   }
 }
 
+static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
+  if (color_space == Color::ColorSpace::kHSL ||
+      color_space == Color::ColorSpace::kHWB) {
+    if (channel == 0) {
+      return true;
+    }
+  }
+  if (color_space == Color::ColorSpace::kLch ||
+      color_space == Color::ColorSpace::kOklch) {
+    if (channel == 2) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // See ColorFunctionParser::ConsumeFunctionalSyntaxColor().
 Color CSSUnresolvedColorValue::Resolve(
     const CSSLengthResolver& length_resolver) const {
@@ -266,6 +283,12 @@ Color CSSUnresolvedColorValue::Resolve(
       channels[i] = ResolveColorChannel(*channels_[i], channel_types_[i],
                                         function_metadata.channel_percentage[i],
                                         length_resolver);
+      // If the channel is a hue then clamp it as an <angle>. If the channel
+      // was parsed as a <number> it will not have been clamped the same way as
+      // if it was an <angle>.
+      if (ColorChannelIsHue(color_space_, i)) {
+        channels[i] = CSSValueClampingUtils::ClampAngle(*channels[i]);
+      }
     }
   }
 
