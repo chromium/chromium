@@ -1190,7 +1190,8 @@ class BottomSheetCoordinator
      *
      * @return True if the animation is running.
      */
-    private boolean isRunningSettleAnimation() {
+    @VisibleForTesting
+    boolean isRunningSettleAnimation() {
         return mSettleAnimator != null;
     }
 
@@ -1673,7 +1674,7 @@ class BottomSheetCoordinator
         if (currentState == SheetState.SCROLLING) {
             if (!isRunningSettleAnimation()) return;
             @SheetState int target = getTargetOrCurrentState();
-            if (target != SheetState.NONE) {
+            if (target == SheetState.FULL) {
                 cancelAnimation();
                 setSheetState(target, animate);
             }

@@ -2986,4 +2986,139 @@ public class BottomSheetCoordinatorUnitTest {
                 MathUtils.EPSILON);
         assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
     }
+
+    @Test
+    public void testOnLayoutChange_MidSettleToFull_CancelsAndRetargetsUpdatedHeight() {
+        int[] contentHeight = new int[] {100};
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(
+                                View.MeasureSpec.getSize(widthMeasureSpec), contentHeight[0]);
+                    }
+                };
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.showHandlebar()).thenReturn(false);
+        when(mSheetContent.getContentView()).thenReturn(contentView);
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+
+        // Start settle animation to FULL.
+        mBottomSheet.setSheetState(SheetState.FULL, true);
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.FULL, mBottomSheet.getTargetSheetState());
+        assertEquals(100f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+
+        // Mid-settle, content height changes.
+        contentHeight[0] = 160;
+        mBottomSheet.onLayoutChange(contentView, 0, 0, 100, 160, 0, 0, 100, 100);
+
+        // The animation should be retargeted to the new height and continue running.
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.FULL, mBottomSheet.getTargetSheetState());
+        assertEquals(160f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+
+        // Complete the animation and verify it settles at the updated height.
+        mBottomSheet.endAnimations();
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(160f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOnLayoutChange_MidSettleToHidden_DoesNotInterruptAnimation() {
+        int[] contentHeight = new int[] {100};
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(
+                                View.MeasureSpec.getSize(widthMeasureSpec), contentHeight[0]);
+                    }
+                };
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.showHandlebar()).thenReturn(false);
+        when(mSheetContent.getContentView()).thenReturn(contentView);
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+
+        // Move to FULL initially.
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(100f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+
+        // Start settle animation to HIDDEN.
+        mBottomSheet.setSheetState(SheetState.HIDDEN, true);
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.HIDDEN, mBottomSheet.getTargetSheetState());
+
+        // Mid-settle to HIDDEN, content height changes.
+        contentHeight[0] = 50;
+        mBottomSheet.onLayoutChange(contentView, 0, 0, 100, 50, 0, 0, 100, 100);
+
+        // The animation to HIDDEN must NOT be interrupted or restarted.
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.HIDDEN, mBottomSheet.getTargetSheetState());
+
+        // Completing animation brings sheet smoothly to HIDDEN.
+        mBottomSheet.endAnimations();
+        assertEquals(SheetState.HIDDEN, mBottomSheet.getSheetState());
+        assertEquals(0f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOnLayoutChange_MidSettleToPeek_DoesNotInterruptAnimation() {
+        int[] contentHeight = new int[] {100};
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(
+                                View.MeasureSpec.getSize(widthMeasureSpec), contentHeight[0]);
+                    }
+                };
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        when(mSheetContent.getPeekHeight()).thenReturn(SHEET_PEEK_HEIGHT);
+        when(mSheetContent.showHandlebar()).thenReturn(false);
+        when(mSheetContent.getContentView()).thenReturn(contentView);
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+
+        // Move to FULL initially.
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(100f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+
+        float expectedPeekHeight = mBottomSheet.getSheetHeightForState(SheetState.PEEK);
+        assertTrue(expectedPeekHeight > 0);
+
+        // Start settle animation to PEEK.
+        mBottomSheet.setSheetState(SheetState.PEEK, true);
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.PEEK, mBottomSheet.getTargetSheetState());
+
+        // Mid-settle to PEEK, content height changes.
+        contentHeight[0] = 50;
+        mBottomSheet.onLayoutChange(contentView, 0, 0, 100, 50, 0, 0, 100, 100);
+
+        // The animation to PEEK must NOT be interrupted or restarted.
+        assertTrue(mBottomSheet.isRunningSettleAnimation());
+        assertEquals(SheetState.PEEK, mBottomSheet.getTargetSheetState());
+
+        // Completing animation brings sheet smoothly to PEEK.
+        mBottomSheet.endAnimations();
+        assertEquals(SheetState.PEEK, mBottomSheet.getSheetState());
+        assertEquals(expectedPeekHeight, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+    }
 }
