@@ -5,6 +5,7 @@
 #ifndef BASE_OBSERVER_LIST_INTERNAL_H_
 #define BASE_OBSERVER_LIST_INTERNAL_H_
 
+#include <memory>
 #include <string>
 #include <type_traits>
 
@@ -29,8 +30,17 @@ template <base::RawPtrTraits ptr_traits = RawPtrTraits::kEmpty,
           bool use_raw_pointer = false>
 class BASE_EXPORT UncheckedObserverAdapter {
  public:
+#if DCHECK_IS_ON()
+  UncheckedObserverAdapter(const void* observer, bool collect_stack)
+      : ptr_(const_cast<void*>(observer)) {
+    if (collect_stack) {
+      stack_ = std::make_unique<base::debug::StackTrace>();
+    }
+  }
+#else
   explicit UncheckedObserverAdapter(const void* observer)
       : ptr_(const_cast<void*>(observer)) {}
+#endif  // DCHECK_IS_ON()
   UncheckedObserverAdapter(const UncheckedObserverAdapter&) = delete;
   UncheckedObserverAdapter& operator=(const UncheckedObserverAdapter&) = delete;
   UncheckedObserverAdapter(UncheckedObserverAdapter&& other) = default;
@@ -51,7 +61,9 @@ class BASE_EXPORT UncheckedObserverAdapter {
   }
 
 #if DCHECK_IS_ON()
-  std::string GetCreationStackString() const { return stack_.ToString(); }
+  std::string GetCreationStackString() const {
+    return stack_ ? stack_->ToString() : std::string();
+  }
 #endif  // DCHECK_IS_ON()
 
  private:
@@ -59,7 +71,7 @@ class BASE_EXPORT UncheckedObserverAdapter {
       std::conditional_t<use_raw_pointer, void*, raw_ptr<void, ptr_traits>>;
   StorageType ptr_;
 #if DCHECK_IS_ON()
-  base::debug::StackTrace stack_;
+  std::unique_ptr<base::debug::StackTrace> stack_;
 #endif  // DCHECK_IS_ON()
 };
 
@@ -70,7 +82,11 @@ class BASE_EXPORT UncheckedObserverAdapter {
 // whilst an iteration is in progress.
 class BASE_EXPORT CheckedObserverAdapter {
  public:
+#if DCHECK_IS_ON()
+  CheckedObserverAdapter(const CheckedObserver* observer, bool collect_stack);
+#else
   explicit CheckedObserverAdapter(const CheckedObserver* observer);
+#endif
 
   // Move-only construction and assignment is required to store this in STL
   // types.
@@ -113,13 +129,15 @@ class BASE_EXPORT CheckedObserverAdapter {
   }
 
 #if DCHECK_IS_ON()
-  std::string GetCreationStackString() const { return stack_.ToString(); }
+  std::string GetCreationStackString() const {
+    return stack_ ? stack_->ToString() : std::string();
+  }
 #endif
 
  private:
   WeakPtr<CheckedObserver> weak_ptr_;
 #if DCHECK_IS_ON()
-  base::debug::StackTrace stack_;
+  std::unique_ptr<base::debug::StackTrace> stack_;
 #endif
 };
 

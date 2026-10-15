@@ -375,7 +375,12 @@ class ObserverList {
       DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
     }
     ++observers_count_;
+#if DCHECK_IS_ON()
+    observers_.emplace_back(
+        ObserverStorageType(observer, /*collect_stack=*/check_empty));
+#else
     observers_.emplace_back(ObserverStorageType(observer));
+#endif
   }
 
   // Removes the given observer from this list. Does nothing if this observer is
