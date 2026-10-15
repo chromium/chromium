@@ -46,6 +46,9 @@ TEST(ContextualTasksUtilsTest, GetLensInvocationSourceForAimZeroState) {
                     DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP),
             lens::LensOverlayInvocationSource::kHomeworkActionChip);
   EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
+                omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE),
+            lens::LensOverlayInvocationSource::kContextualCue);
+  EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
                 omnibox::ChromeAimEntryPoint::IOS_CHROME_APP_BAR_ENTRY_POINT),
             lens::LensOverlayInvocationSource::kAppBarAimButton);
   EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
@@ -162,6 +165,20 @@ TEST(ContextualTasksUtilsTest,
   std::string source;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
   EXPECT_EQ(source, "chrome.crn.hwac");
+}
+
+TEST(ContextualTasksUtilsTest, AppendAimEntryPointParams_ContextualCue) {
+  GURL base_url("https://www.google.com");
+  GURL result_url = AppendAimEntryPointParams(
+      base_url, omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE);
+
+  std::string aep;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "aep", &aep));
+  EXPECT_EQ(aep, "227");
+
+  std::string source;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
+  EXPECT_EQ(source, "chrome.crn.ccue");
 }
 
 TEST(ContextualTasksUtilsTest, AppendAimEntryPointParams_UnknownEntryPoint) {

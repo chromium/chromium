@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ContextualSearchSource) -->
 
 <variants name="ContextualSearchSource">
+  <variant name="ContextualCue"/>
   <variant name="ContextualTasks"/>
   <variant name="Lens"/>
   <variant name="NewTabPage"/>
