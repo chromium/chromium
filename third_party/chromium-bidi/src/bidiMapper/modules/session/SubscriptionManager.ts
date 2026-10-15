@@ -117,11 +117,15 @@ export class SubscriptionManager {
 
   getGoogChannelsSubscribedToEventGlobally(
     eventName: ChromiumBidi.EventNames,
+    // Optional context to route events originating outside a browsing context.
+    userContextId?: Browser.UserContext,
   ): GoogChannel[] {
     const googChannels = new Set<GoogChannel>();
 
     for (const subscription of this.#subscriptions) {
-      if (this.#isSubscribedTo(subscription, eventName)) {
+      if (
+        this.#isSubscribedTo(subscription, eventName, undefined, userContextId)
+      ) {
         googChannels.add(subscription.googChannel);
       }
     }
@@ -133,6 +137,7 @@ export class SubscriptionManager {
     subscription: Subscription,
     moduleOrEvent: ChromiumBidi.EventNames,
     browsingContextId?: BrowsingContext.BrowsingContext,
+    userContextId?: Browser.UserContext,
   ): boolean {
     let includesEvent = false;
     for (const eventName of subscription.eventNames) {
@@ -157,6 +162,11 @@ export class SubscriptionManager {
 
     // user context subscription.
     if (subscription.userContextIds.size !== 0) {
+      // Check exact user context match if provided.
+      if (userContextId !== undefined) {
+        return subscription.userContextIds.has(userContextId);
+      }
+
       if (!browsingContextId) {
         return false;
       }

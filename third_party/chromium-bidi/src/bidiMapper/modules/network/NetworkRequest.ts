@@ -962,6 +962,7 @@ export class NetworkRequest {
       this.#eventManager.registerGlobalPromiseEvent(
         this.#resolveEvent(event),
         event.method,
+        this.#cdpTarget.userContext,
       );
     }
   }

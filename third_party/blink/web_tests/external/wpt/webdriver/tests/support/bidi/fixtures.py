@@ -929,6 +929,7 @@ async def setup_network_test(
         test_url=url("/webdriver/tests/bidi/network/support/empty.html"),
         context=top_context["context"],
         contexts=None,
+        user_contexts=None,
     ):
         nonlocal listeners
 
@@ -949,7 +950,7 @@ async def setup_network_test(
             subscriptions=[subscribe_result["subscription"]]
         )
 
-        await subscribe_events(events, contexts)
+        await subscribe_events(events, contexts, user_contexts)
 
         network_events = {}
         for event in events:

@@ -260,6 +260,21 @@ describe('SubscriptionManager', () => {
         subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
         false,
       );
+      // Verify global events routed with an explicit user context match only subscribed channels.
+      assert.deepEqual(
+        subscriptionManager.getGoogChannelsSubscribedToEventGlobally(
+          SOME_EVENT,
+          SOME_USER_CONTEXT,
+        ),
+        [SOME_CHANNEL],
+      );
+      assert.deepEqual(
+        subscriptionManager.getGoogChannelsSubscribedToEventGlobally(
+          SOME_EVENT,
+          ANOTHER_USER_CONTEXT,
+        ),
+        [],
+      );
     });
 
     it('should not unsubscribe by attributes', () => {

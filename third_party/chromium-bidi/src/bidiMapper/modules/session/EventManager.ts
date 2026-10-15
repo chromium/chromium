@@ -181,13 +181,17 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     );
   }
 
-  registerGlobalEvent(event: ChromiumBidi.Event): void {
+  registerGlobalEvent(
+    event: ChromiumBidi.Event,
+    userContext?: Browser.UserContext,
+  ): void {
     this.registerGlobalPromiseEvent(
       Promise.resolve({
         kind: 'success',
         value: event,
       }),
       event.method,
+      userContext,
     );
   }
 
@@ -221,11 +225,13 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   registerGlobalPromiseEvent(
     event: LazyEvent,
     eventName: ChromiumBidi.EventNames,
+    userContext?: Browser.UserContext,
   ): void {
     const eventWrapper = new EventWrapper(event, null);
     const sortedGoogChannels =
       this.#subscriptionManager.getGoogChannelsSubscribedToEventGlobally(
         eventName,
+        userContext,
       );
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to goog:channels in the subscription priority.
