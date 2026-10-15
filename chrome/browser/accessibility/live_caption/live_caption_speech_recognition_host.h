@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/live_caption/translation_util.h"
 #include "content/public/browser/document_service.h"
@@ -101,13 +104,27 @@ class LiveCaptionSpeechRecognitionHost
   // Processes and returns the text to be dispatched.
   std::string GetTextForDispatch(const std::string& text, bool is_final);
 
-  // Dispatches a speech recognition result for translation.
-  void DispatchTranslation(const media::SpeechRecognitionResult& result);
+  enum class DispatchBehavior {
+    kDefault,
+    kFlush,
+  };
+
+  // Dispatches a speech recognition result for translation. When
+  // `dispatch_behavior` is `kFlush`, bypasses time/punctuation gating (e.g.
+  // when timer expires or when draining pending results).
+  void DispatchTranslation(const media::SpeechRecognitionResult& result,
+                           DispatchBehavior dispatch_behavior);
 
   // Dispatches the speech recognition result to the LiveCaptionController.
   // Processes text for stabilization and updates `stop_transcriptions_`.
   // Returns true if the transcription was successfully dispatched.
   bool DispatchTranscription(const media::SpeechRecognitionResult& result);
+
+  // Flushes the buffered partial result waiting in the gate.
+  void FlushGatedTranslation();
+
+  // Stops the translation gate timer and clears any buffered partial result.
+  void StopTranslationGate();
 
   // Returns true if Live Translate is enabled and the source and target
   // languages differ.
@@ -130,6 +147,16 @@ class LiveCaptionSpeechRecognitionHost
   // Used to cache translations to avoid retranslating the same string. Cleared
   // after every Final to manage the size appropriately.
   TranslationCache translation_cache_;
+
+  // Timer to flush the buffered partial result after max acceptable latency.
+  base::OneShotTimer translation_gate_timer_;
+
+  // Earliest timestamp of the current un-dispatched batch to prevent
+  // starvation.
+  base::TimeTicks batch_start_time_;
+
+  // The latest un-dispatched partial result waiting in the gate.
+  std::optional<media::SpeechRecognitionResult> gated_partial_result_;
 
   // The source language code of the audio stream.
   std::string source_language_;
