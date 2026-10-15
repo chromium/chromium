@@ -69,7 +69,6 @@ namespace ash {
 
 class AuthStatusConsumer;
 class AuthenticatorBuilder;
-class LegacyTokenHandleFetcher;
 class EolNotification;
 class FrozenUpdateNotification;
 class InputEventsBlocker;
@@ -363,8 +362,6 @@ class UserSessionManager
   base::WeakPtr<UserSessionManager> GetUserSessionManagerAsWeakPtr();
 
  private:
-  // Observes the Device Account's LST and informs UserSessionManager about it.
-  class DeviceAccountGaiaTokenObserver;
   friend class test::UserSessionManagerTestApi;
 
   using SigninSessionRestoreStateSet = std::set<AccountId>;
@@ -497,20 +494,10 @@ class UserSessionManager
       InputEventsBlocker* input_events_blocker,
       const locale_util::LanguageSwitchResult& result);
 
-  // Callback invoked when `token_handle_util_` has finished.
-  void OnTokenHandleObtained(const AccountId& account_id, bool success);
-
   // Returns `true` if token handles should be used on this device.
   bool TokenHandlesEnabled();
 
   void CreateTokenHandleStoreIfMissing();
-
-  // Update token handle if the existing token handle is missing/invalid.
-  void UpdateTokenHandleIfRequired(Profile* const profile,
-                                   const AccountId& account_id);
-
-  // Force update token handle.
-  void UpdateTokenHandle(Profile* const profile, const AccountId& account_id);
 
   // Test API methods.
   void InjectAuthenticatorBuilderForTesting(
@@ -547,7 +534,6 @@ class UserSessionManager
       const user_manager::User* user,
       TokenHandleService* token_handle_service);
 
-  void FetchTokenHandleLegacy(Profile* profile, const user_manager::User* user);
   void FetchTokenHandle(Profile* profile, const user_manager::User* user);
 
   const raw_ref<PrefService> local_state_;
@@ -628,9 +614,6 @@ class UserSessionManager
   bool should_obtain_handles_;
 
   raw_ptr<TokenHandleStore> token_handle_store_;
-  std::unique_ptr<LegacyTokenHandleFetcher> token_handle_fetcher_;
-  std::map<Profile*, std::unique_ptr<DeviceAccountGaiaTokenObserver>>
-      token_observers_;
 
   // Whether should launch browser, tests may override this value.
   bool should_launch_browser_;

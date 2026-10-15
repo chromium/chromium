@@ -43,7 +43,6 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -89,7 +88,6 @@
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
-#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
@@ -734,54 +732,6 @@ UserSessionManager::~UserSessionManager() {
   g_instance = nullptr;
 }
 
-// Observes the Device Account's LST and informs UserSessionManager about it.
-// Used by UserSessionManager to keep the user's token handle up to date.
-class UserSessionManager::DeviceAccountGaiaTokenObserver
-    : public account_manager::AccountManager::Observer {
- public:
-  DeviceAccountGaiaTokenObserver(
-      account_manager::AccountManager* account_manager,
-      const AccountId& account_id,
-      base::RepeatingCallback<void(const AccountId& account_id)> callback)
-      : account_id_(account_id), callback_(callback) {
-    account_manager_observation_.Observe(account_manager);
-  }
-
-  DeviceAccountGaiaTokenObserver(const DeviceAccountGaiaTokenObserver&) =
-      delete;
-  DeviceAccountGaiaTokenObserver& operator=(
-      const DeviceAccountGaiaTokenObserver&) = delete;
-
-  ~DeviceAccountGaiaTokenObserver() override = default;
-
-  // account_manager::AccountManager::Observer overrides:
-  void OnTokenUpserted(const account_manager::Account& account) override {
-    if (account.key.account_type() != account_manager::AccountType::kGaia) {
-      return;
-    }
-    if (GaiaId(account.key.id()) != account_id_.GetGaiaId()) {
-      return;
-    }
-
-    callback_.Run(account_id_);
-  }
-
-  void OnAccountRemoved(const account_manager::Account& account) override {
-    // Device Account cannot be removed within session. We could have received
-    // this notification for a secondary account however, so consider this as a
-    // no-op.
-  }
-
- private:
-  // The account being tracked by `this` instance.
-  const AccountId account_id_;
-  // `callback_` is called when `account_id`'s LST changes.
-  base::RepeatingCallback<void(const AccountId& account_id)> callback_;
-  base::ScopedObservation<account_manager::AccountManager,
-                          account_manager::AccountManager::Observer>
-      account_manager_observation_{this};
-};
-
 void UserSessionManager::SetNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {
   CHECK(network_connection_tracker, base::NotFatalUntil::M161);
@@ -792,9 +742,6 @@ void UserSessionManager::SetNetworkConnectionTracker(
 void UserSessionManager::SetShouldObtainHandleInTests(
     bool should_obtain_handles) {
   should_obtain_handles_ = should_obtain_handles;
-  if (!should_obtain_handles_) {
-    token_handle_fetcher_.reset();
-  }
 }
 
 void UserSessionManager::SetAttemptRestartClosureInTests(
@@ -1689,25 +1636,6 @@ void UserSessionManager::InitProfilePreferences(
     VLOG(1) << "Seed IdentityManager with the authenticated account info, "
             << "success=" << !account_id.empty();
 
-    // At this point, the Device Account has been loaded. Start observing its
-    // refresh token for changes, so that token handle can be kept in sync.
-    if (TokenHandlesEnabled()) {
-      auto device_account_token_observer =
-          std::make_unique<DeviceAccountGaiaTokenObserver>(
-              account_manager, user->GetAccountId(),
-              base::BindRepeating(&UserSessionManager::UpdateTokenHandle,
-                                  GetUserSessionManagerAsWeakPtr(), profile));
-      auto it = token_observers_.find(profile);
-      if (it == token_observers_.end()) {
-        token_observers_.emplace(profile,
-                                 std::move(device_account_token_observer));
-      } else {
-        NOTREACHED()
-            << "Found an existing Gaia token observer for this Profile. "
-               "Profile is being erroneously initialized twice?";
-      }
-    }
-
     user = user_manager->FindUser(user_context.GetAccountId());
     bool is_child = user->GetType() == user_manager::UserType::kChild;
     CHECK(is_child ==
@@ -2214,36 +2142,7 @@ void UserSessionManager::OnUserProfileLoaded(Profile* profile,
 
   CreateTokenHandleStoreIfMissing();
 
-  if (!ash::features::IsUseTokenHandleStoreEnabled()) {
-    FetchTokenHandleLegacy(profile, user);
-  } else {
-    FetchTokenHandle(profile, user);
-  }
-}
-
-void UserSessionManager::FetchTokenHandleLegacy(
-    Profile* profile,
-    const user_manager::User* user) {
-  if (IsOnlineSignin(user_context_)) {
-    // If the user has gone through an online Gaia flow, then their LST is
-    // guaranteed to have changed/created. We need to update the token handle,
-    // regardless of the state of the previous token handle, if any.
-    if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
-      // New user.
-      token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
-          profile, token_handle_store_.get(), user_context_.GetAccountId());
-      token_handle_fetcher_->FillForNewUser(
-          user_context_.GetAccessToken(),
-          login::Sha1AsHexForRefreshToken(user_context_.GetRefreshToken()),
-          base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                         GetUserSessionManagerAsWeakPtr()));
-    } else {
-      // Existing user.
-      UpdateTokenHandle(profile, user->GetAccountId());
-    }
-  } else {
-    UpdateTokenHandleIfRequired(profile, user->GetAccountId());
-  }
+  FetchTokenHandle(profile, user);
 }
 
 void UserSessionManager::FetchTokenHandle(Profile* profile,
@@ -2707,13 +2606,6 @@ void UserSessionManager::InjectAuthenticatorBuilderForTesting(
   authenticator_.reset();
 }
 
-void UserSessionManager::OnTokenHandleObtained(const AccountId& account_id,
-                                               bool success) {
-  if (!success)
-    LOG(ERROR) << "OAuth2 token handle fetch failed.";
-  token_handle_fetcher_.reset();
-}
-
 bool UserSessionManager::TokenHandlesEnabled() {
   if (!should_obtain_handles_)
     return false;
@@ -2725,8 +2617,6 @@ bool UserSessionManager::TokenHandlesEnabled() {
 }
 
 void UserSessionManager::Shutdown() {
-  token_handle_fetcher_.reset();
-  token_observers_.clear();
   always_on_vpn_manager_.reset();
   child_policy_observer_.reset();
   help_app_notification_controller_.reset();
@@ -2805,28 +2695,6 @@ void UserSessionManager::CreateTokenHandleStoreIfMissing() {
   if (!token_handle_store_) {
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
-}
-
-void UserSessionManager::UpdateTokenHandleIfRequired(
-    Profile* const profile,
-    const AccountId& account_id) {
-  if (!token_handle_store_->ShouldObtainHandle(account_id)) {
-    return;
-  }
-  if (token_handle_fetcher_.get())
-    return;
-
-  UpdateTokenHandle(profile, account_id);
-}
-
-void UserSessionManager::UpdateTokenHandle(Profile* const profile,
-                                           const AccountId& account_id) {
-  token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
-      profile, token_handle_store_.get(), account_id);
-  token_handle_fetcher_->BackfillToken(
-      base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                     GetUserSessionManagerAsWeakPtr()));
-  token_handle_backfill_tried_for_testing_ = true;
 }
 
 bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {

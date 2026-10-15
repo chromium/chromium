@@ -56,7 +56,7 @@ TokenHandleService::TokenHandleService(
 TokenHandleService::~TokenHandleService() = default;
 
 // `TokenHandleService` listens to LST refreshes, marking the corresponding
-// user's token handle as stale.
+// user's token handle as stale and fetching a new one.
 void TokenHandleService::StartObserving() {
   identity_manager_->AddObserver(this);
 }
@@ -83,9 +83,11 @@ void TokenHandleService::OnRefreshTokenUpdatedForAccount(
   const AccountId& account_id =
       ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
 
-  if (account_info.email == account_id.GetUserEmail()) {
-    token_handle_store_->SetTokenHandleStale(account_id);
+  if (account_info.gaia != account_id.GetGaiaId()) {
+    return;
   }
+  token_handle_store_->SetTokenHandleStale(account_id);
+  MaybeFetchForExistingUser(account_id);
 }
 
 void TokenHandleService::FetchAccessToken(const AccountId& account_id) {
