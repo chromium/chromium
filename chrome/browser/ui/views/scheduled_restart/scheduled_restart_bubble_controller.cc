@@ -6,20 +6,18 @@
 
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_view.h"
+#include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_hats.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
@@ -52,6 +50,10 @@ ScheduledRestartBubbleController::ScheduledRestartBubbleController() {
     scoped_unowned_user_data_.emplace(
         g_browser_process->GetUnownedUserDataHost(), *this);
   }
+  session_restored_subscription_ =
+      SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+          &ScheduledRestartBubbleController::OnSessionRestored,
+          base::Unretained(this)));
 }
 
 ScheduledRestartBubbleController::~ScheduledRestartBubbleController() = default;
@@ -178,6 +180,12 @@ void ScheduledRestartBubbleController::OnBubbleClosed(
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(bubble_widget_));
   }
+}
+
+void ScheduledRestartBubbleController::OnSessionRestored(
+    Profile* profile,
+    int num_tabs_restored) {
+  MaybeLaunchPendingHatsSurvey(profile);
 }
 
 ScheduledRestartManager*

@@ -1588,6 +1588,12 @@ inline constexpr char kRestartInBackgroundOnShutdown[] =
 // to the user, used for nudge cooldown calculations.
 inline constexpr char kScheduledRestartLastNudgeTime[] =
     "restart.scheduled_restart_last_nudge_time";
+
+// Dictionary holding the HaTS product-specific data and a timestamp for a
+// Scheduled Restart survey that is delivered after a "Restart now" relaunch.
+// Cleared as soon as it is read after session restore.
+inline constexpr char kScheduledRestartHatsPendingSurvey[] =
+    "restart.scheduled_restart_hats_pending_survey";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Pref name for controlling presentation of promotions, including full-tab

@@ -114,6 +114,8 @@ inline constexpr char kHatsSurveyTriggerPerformanceControlsPPM[] =
     "performance-ppm";
 inline constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 inline constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
+inline constexpr char kHatsSurveyTriggerScheduledRestart[] =
+    "scheduled-restart";
 inline constexpr char kHatsSurveyTriggerSettings[] = "settings";
 inline constexpr char kHatsSurveyTriggerSEHijacking[] =
     "search-engine-hijacking";

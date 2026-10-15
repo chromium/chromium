@@ -113,6 +113,7 @@ void ScheduledRestartManager::RegisterLocalStatePrefs(
   // downstream CLs to enforce reminder cooldowns.
   registry->RegisterTimePref(prefs::kScheduledRestartLastNudgeTime,
                              base::Time());
+  registry->RegisterDictionaryPref(prefs::kScheduledRestartHatsPendingSurvey);
 }
 
 // static

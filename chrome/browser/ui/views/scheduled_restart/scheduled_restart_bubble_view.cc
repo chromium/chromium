@@ -15,6 +15,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_hats.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -69,7 +72,8 @@ void RecordDialogChoice(
 
 class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
  public:
-  ScheduledRestartDialogDelegate() = default;
+  explicit ScheduledRestartDialogDelegate(bool show_active)
+      : show_active_(show_active) {}
   ~ScheduledRestartDialogDelegate() override {
     if (!action_taken_ && !g_is_replacing_bubble) {
       action_taken_ = true;
@@ -78,11 +82,14 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  void OnRestartNowClicked() {
+  void OnRestartNowClicked(base::WeakPtr<BrowserWindowInterface> browser) {
     action_taken_ = true;
     RecordDialogChoice(
         ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kRestartNow);
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_RestartNow"));
+    LaunchSurveyForChoice(
+        ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kRestartNow,
+        browser.get());
     if (GetRelaunchCallbackForTesting()) {
       GetRelaunchCallbackForTesting().Run();  // IN-TEST
       return;
@@ -103,6 +110,9 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
     if (srm) {
       srm->ScheduleRestartOnIdle();
     }
+    LaunchSurveyForChoice(ScheduledRestartBubbleView::
+                              ScheduledRestartDialogChoice::kScheduledOnIdle,
+                          browser.get());
     if (browser) {
       if (auto* browser_view =
               BrowserView::GetBrowserViewForBrowser(browser.get())) {
@@ -118,18 +128,70 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  void OnClose() {
+  void OnClose(base::WeakPtr<BrowserWindowInterface> browser) {
     if (!action_taken_ && !g_is_replacing_bubble) {
       action_taken_ = true;
       RecordDialogChoice(
           ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed);
       base::RecordAction(base::UserMetricsAction("ScheduledRestart_Close"));
+      LaunchSurveyForChoice(
+          ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed,
+          browser.get());
     }
   }
 
+  base::WeakPtr<ScheduledRestartDialogDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
+  void LaunchSurveyForChoice(
+      ScheduledRestartBubbleView::ScheduledRestartDialogChoice choice,
+      BrowserWindowInterface* browser) {
+    scheduled_restart::MaybeLaunchHatsSurvey(
+        choice, browser, show_active_, base::TimeTicks::Now() - show_time_);
+  }
+
+  const bool show_active_;
+  const base::TimeTicks show_time_ = base::TimeTicks::Now();
   bool action_taken_ = false;
+  base::WeakPtrFactory<ScheduledRestartDialogDelegate> weak_ptr_factory_{this};
 };
+
+// Returns true if the widget closure was initiated by an explicit user action
+// (clicking the close button, pressing Escape, or clicking outside the bubble
+// for an active bubble). Programmatic closes (e.g. `Widget::Close()`, which
+// passes `kUnspecified`) are not considered user dismissals.
+bool IsUserDismissal(views::Widget::ClosedReason reason) {
+  switch (reason) {
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+    case views::Widget::ClosedReason::kEscKeyPressed:
+    case views::Widget::ClosedReason::kLostFocus:
+      return true;
+    case views::Widget::ClosedReason::kUnspecified:
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return false;
+  }
+  NOTREACHED();
+}
+
+// Chained close callback. `delegate` is passed via `WeakPtr` because the
+// synchronous close callback is owned by the Widget and can outlive the
+// DialogModel host/delegate if destruction ordering differs.
+void RunCloseActionThenClosedCallback(
+    base::WeakPtr<ScheduledRestartDialogDelegate> delegate,
+    base::WeakPtr<BrowserWindowInterface> browser,
+    views::Widget::ClosedCallback callback,
+    views::Widget::ClosedReason reason) {
+  if (delegate && IsUserDismissal(reason)) {
+    // If an action was already taken (e.g. Accept or Restart when idle),
+    // `ScheduledRestartDialogDelegate::OnClose` is a no-op via its internal
+    // `action_taken_` guard.
+    delegate->OnClose(browser);
+  }
+  std::move(callback).Run(reason);
+}
 
 }  // namespace
 
@@ -150,7 +212,8 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
     return nullptr;
   }
 
-  auto dialog_delegate = std::make_unique<ScheduledRestartDialogDelegate>();
+  auto dialog_delegate =
+      std::make_unique<ScheduledRestartDialogDelegate>(show_active);
   auto* delegate_ptr = dialog_delegate.get();
 
   ui::DialogModel::Builder builder(std::move(dialog_delegate));
@@ -191,15 +254,20 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
               .SetId(kRestartWhenIdleButtonId))
       .AddOkButton(
           base::BindOnce(&ScheduledRestartDialogDelegate::OnRestartNowClicked,
-                         base::Unretained(delegate_ptr)),
+                         base::Unretained(delegate_ptr), browser->GetWeakPtr()),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_RELAUNCH_RECOMMENDED_RESTART_NOW))
               .SetStyle(ui::ButtonStyle::kProminent)
               .SetId(kRestartNowButtonId))
-      .SetCloseActionCallback(
-          base::BindOnce(&ScheduledRestartDialogDelegate::OnClose,
-                         base::Unretained(delegate_ptr)));
+      // In production, `on_close` is always provided by the controller and
+      // intercepted synchronously via `Widget::MakeCloseSynchronous()`.
+      // `SetCloseActionCallback` remains as a fallback for callers that pass a
+      // null `on_close`, and (together with the close button) keeps Escape
+      // mapped to a close rather than a cancel.
+      .SetCloseActionCallback(base::BindOnce(
+          &ScheduledRestartDialogDelegate::OnClose,
+          base::Unretained(delegate_ptr), browser->GetWeakPtr()));
   if (!show_active) {
     builder.SetIsAlertDialog();
   }
@@ -210,6 +278,21 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
   const auto* layout_provider = ChromeLayoutProvider::Get();
   bubble->set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  // When a non-null `on_close` callback is passed to `CreateBubble()`, Views
+  // registers it via `Widget::MakeCloseSynchronous()`. That causes
+  // `Widget::CloseWithReason()` (invoked on every widget close, including
+  // X-button click, Escape, focus loss, and programmatic `Close()`) to run
+  // `on_close` and return early before reaching
+  // `DialogDelegate::WindowWillClose()`, where `SetCloseActionCallback` is
+  // normally dispatched. Chain `OnClose()` ahead of `on_close` for user
+  // dismissals so dismissal metrics and the HaTS survey still run when the
+  // widget closes synchronously.
+  if (on_close) {
+    on_close = base::BindOnce(&RunCloseActionThenClosedCallback,
+                              delegate_ptr->GetWeakPtr(), browser->GetWeakPtr(),
+                              std::move(on_close));
+  }
 
   std::unique_ptr<views::Widget> widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble).release(),

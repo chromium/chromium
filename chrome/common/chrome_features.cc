@@ -1211,6 +1211,10 @@ const base::FeatureParam<bool>
     kHappinessTrackingSurveysForSecurityPageRequireInteraction{
         &kHappinessTrackingSurveysForSecurityPage,
         "security-page-require-interaction", false};
+
+// Enables or disables HaTS for Scheduled Restarts on Desktop.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopScheduledRestart,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on

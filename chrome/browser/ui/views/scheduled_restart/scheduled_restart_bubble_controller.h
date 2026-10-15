@@ -8,12 +8,14 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget.h"
 
 class BrowserProcess;
 class BrowserWindowInterface;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -87,12 +89,14 @@ class ScheduledRestartBubbleController {
 
   ScheduledRestartManager* GetScheduledRestartManager() const;
   void OnBubbleClosed(views::Widget::ClosedReason reason);
+  void OnSessionRestored(Profile* profile, int num_tabs_restored);
 
   raw_ptr<ScheduledRestartManager> scheduled_restart_manager_for_testing_ =
       nullptr;
   std::unique_ptr<views::Widget> bubble_widget_;
   std::optional<ui::ScopedUnownedUserData<ScheduledRestartBubbleController>>
       scoped_unowned_user_data_;
+  base::CallbackListSubscription session_restored_subscription_;
 };
 
 }  // namespace scheduled_restart
