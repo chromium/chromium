@@ -285,9 +285,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.discount_icon_expanded_text` appears to be unused"/>
 
-    <!-- TODO(crbug.com/40227734): Remove unused resources when UX is finalized. -->
-    <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>
-
     <!-- TODO(crbug.com/40225008): Remove the following 2 lines after the bug is resolved. -->
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_accessibility_text` appears to be unused"/>
