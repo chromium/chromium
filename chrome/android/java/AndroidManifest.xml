@@ -239,6 +239,10 @@ by a child template that "extends" this file.
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
         android:enableOnBackInvokedCallback="true"
         android:zygotePreloadNativeLib="lib{{ library_name }}.so"
+        {% if is_32_bit_multiarch_browser is defined and is_32_bit_multiarch_browser == 'true' %}
+        android:multiArch="true"
+        android:use32bitAbi="true"
+        {% endif %}
         {% block extra_application_attributes %}{% endblock %}>
 
         {% if channel in ['canary', 'dev', 'default'] %}
