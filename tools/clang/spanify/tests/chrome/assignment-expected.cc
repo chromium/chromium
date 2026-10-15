@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -65,8 +64,8 @@ void fct() {
   ee = dd;
 
   // Expected rewrite:
-  // base::PostIncrementSpan(ee);
-  base::PostIncrementSpan(ee);  // Buffer usage, leads e to be rewritten.
+  // ee = ee.subspan(1u);
+  ee = ee.subspan(1u);  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> ff = {};
@@ -75,8 +74,8 @@ void fct() {
   ff = get<int>();
 
   // Expected rewrite:
-  // base::PreIncrementSpan(ff);
-  base::PreIncrementSpan(ff);  // Leads to ff being rewritten.
+  // ff = ff.subspan(1u);
+  ff = ff.subspan(1u);  // Leads to ff being rewritten.
 
   // Exptected rewrite:
   // base::span<int> gg = {};

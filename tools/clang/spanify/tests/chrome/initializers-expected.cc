@@ -1,9 +1,9 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <utility>
 #include <vector>
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -15,8 +15,12 @@ class A {
   A(base::span<int> ptr) : member(ptr) {}
 
   // Expecte rewrite:
-  // int* advanceAndGet() { return base::PostIncrementSpan(member).data(); }
-  int* advanceAndGet() { return base::PostIncrementSpan(member).data(); }
+  // int* advanceAndGet() {
+  //   return std::exchange(member, member.subspan(1u)).data();
+  // }
+  int* advanceAndGet() {
+    return std::exchange(member, member.subspan(1u)).data();
+  }
 
   // Expected rewrite:
   // int* get() { return member.data(); }

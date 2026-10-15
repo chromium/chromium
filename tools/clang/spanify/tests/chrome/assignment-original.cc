@@ -60,7 +60,7 @@ void fct() {
   ee = dd.get();
 
   // Expected rewrite:
-  // base::PostIncrementSpan(ee);
+  // ee = ee.subspan(1u);
   ee++;  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
@@ -70,7 +70,7 @@ void fct() {
   ff = get<int>();
 
   // Expected rewrite:
-  // base::PreIncrementSpan(ff);
+  // ff = ff.subspan(1u);
   ++ff;  // Leads to ff being rewritten.
 
   // Exptected rewrite:

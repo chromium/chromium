@@ -33,8 +33,8 @@ struct S2 {
   S2(int* ptr) : ptr_(ptr) {}
 
   int* get_and_advance() {
-    // Unexpected rewrite (parenthesis not needed surrounding PostIncrementSpan)
-    // return (base::PostIncrementSpan(ptr_)).data();
+    // Expected rewrite:
+    // return std::exchange(ptr_, ptr_.subspan(1u)).data();
     return ptr_++;
   }
 

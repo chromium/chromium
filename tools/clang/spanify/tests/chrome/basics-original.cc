@@ -74,10 +74,11 @@ void fct() {
   }
   int index = buf.size() - 1;
   // Expected rewrite:
-  // char* temp = (base::PostIncrementSpan(expected_data)).data();
+  // char* temp =
+  //     std::exchange(expected_data, expected_data.subspan(1u)).data();
   char* temp = expected_data++;
   // Expected rewrite:
-  // temp = (base::PreIncrementSpan(expected_data)).data();
+  // temp = (expected_data = expected_data.subspan(1u)).data();
   temp = ++expected_data;
   // Expected rewrite:
   // temp = expected_data.subspan(1u).data();
@@ -171,7 +172,7 @@ void fct() {
   char* buf = (char*)malloc(4 * sizeof(int));
   // Leads buf to be rewritten.
   // Expected rewrite:
-  // base::PostIncrementSpan(buf);
+  // buf = buf.subspan(1u);
   buf++;
 
   const char* buf2 = nullptr;
@@ -230,8 +231,8 @@ void fct() {
   memcpy(buf2, buf, 10);
 
   // Expected rewrite:
-  // memcpy((base::PostIncrementSpan(buf2)).data(),
-  //   (base::PreIncrementSpan(buf)).data(), 10);
+  // memcpy(std::exchange(buf2, buf2.subspan(1u)).data(),
+  //   (buf = buf.subspan(1u)).data(), 10);
   memcpy(buf2++, ++buf, 10);
 
   int index = 11;
@@ -241,9 +242,9 @@ void fct() {
   memcpy(buf2 + 1, buf + index, 10);
 
   // Expected rewrite:
-  // int i = (base::PostIncrementSpan(buf))[0];
+  // int i = std::exchange(buf, buf.subspan(1u))[0];
   int i = *buf++;
-  // i = (base::PreIncrementSpan(buf))[0];
+  // i = (buf = buf.subspan(1u))[0];
   i = *++buf;
   // i = (buf.subspan(base::checked_cast<size_t>(index))[0]);
   i = *(buf + index);

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A macro obscures the source location of the operator
-// No expected rewrite, macros are not supported yet because
-// spanifier will generate closing parenthesis in unexpected locations
+// The `++` is in a macro body, so it can't be rewritten in place. `ptr` is
+// excluded and stays a pointer.
 #define PRE_INC(x) ++x
 
 int* test_macro_increment(int buf[3]) {

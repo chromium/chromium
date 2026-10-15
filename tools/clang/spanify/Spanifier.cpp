@@ -21,6 +21,7 @@
 #include "angle_project.h"
 #include "chrome_project.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/IgnoreExpr.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
@@ -197,6 +198,38 @@ bool IsInExcludedMacro(clang::SourceLocation loc,
   return true;
 }
 
+// Returns true if `loc` is spelled in the source as (part of) an argument of
+// the project's unsafe-buffers macro, e.g. `ptr++` in `UNSAFE_TODO(ptr++)`.
+bool IsInUnsafeBuffersMacroArg(clang::SourceLocation loc,
+                               const clang::ASTContext& ast_context,
+                               const clang::SourceManager& source_manager) {
+  if (!loc.isMacroID()) {
+    return false;
+  }
+  // Like in IsInExcludedMacro(), the outermost macro is the interesting one,
+  // e.g. ANGLE_UNSAFE_TODO rather than the ANGLE_UNSAFE_BUFFERS it expands to.
+  std::string outermost_macro_name;
+  while (source_manager.isMacroArgExpansion(loc)) {
+    outermost_macro_name = std::string(clang::Lexer::getImmediateMacroName(
+        loc, source_manager, ast_context.getLangOpts()));
+    loc = source_manager.getImmediateSpellingLoc(loc);
+  }
+  return !loc.isMacroID() &&
+         GetProject()->IsUnsafeBufferMacroName(outermost_macro_name);
+}
+
+// Returns true if `loc` is in a macro that prevents rewriting it in place.
+// Like IsInExcludedMacro(), except that an argument of the project's
+// unsafe-buffers macro is spelled in the source, so it is rewritten in place,
+// e.g. `*ptr++` in `UNSAFE_TODO(*ptr++)`.
+bool IsInExcludedMacroExceptUnsafeBuffersArg(
+    clang::SourceLocation loc,
+    const clang::ASTContext& ast_context,
+    const clang::SourceManager& source_manager) {
+  return !IsInUnsafeBuffersMacroArg(loc, ast_context, source_manager) &&
+         IsInExcludedMacro(loc, ast_context, source_manager);
+}
+
 // Returns true if the Node is inside a macro expansion, except for the case
 // that the Node is inside a macro argument of the exceptional macros (EXPECT_
 // and ASSERT_ family).
@@ -210,6 +243,13 @@ AST_POLYMORPHIC_MATCHER(isInExcludedMacroLocation,
   const clang::SourceManager& source_manager = ast_context.getSourceManager();
 
   return IsInExcludedMacro(std::move(loc), ast_context, source_manager);
+}
+
+// Matcher version of IsInExcludedMacroExceptUnsafeBuffersArg().
+AST_MATCHER(clang::Stmt, isInExcludedMacroLocationExceptUnsafeBuffersArg) {
+  const clang::ASTContext& ast_context = Finder->getASTContext();
+  return IsInExcludedMacroExceptUnsafeBuffersArg(
+      Node.getBeginLoc(), ast_context, ast_context.getSourceManager());
 }
 
 // This iterates over function parameters and matches the ones that match
@@ -810,6 +850,115 @@ const clang::Expr* GetParenAwareExpr(const clang::Expr* expr,
   return current;
 }
 
+// Strips implicit nodes (casts, full-expression wrappers, ...) and parentheses.
+const clang::Stmt* StripImplicitAndParens(const clang::Stmt* stmt) {
+  const auto* expr = clang::dyn_cast_or_null<clang::Expr>(stmt);
+  if (!expr) {
+    return stmt;
+  }
+  return clang::IgnoreExprNodes(const_cast<clang::Expr*>(expr),
+                                clang::IgnoreImplicitSingleStep,
+                                clang::IgnoreParensSingleStep);
+}
+
+// Returns the parent of `expr` as written in the source, skipping implicit
+// nodes and parentheses, to tell how `expr`'s value is used. `child` is set
+// to the parent's direct child, to tell which operand `expr` is.
+clang::DynTypedNode GetSpelledParent(const clang::Expr& expr,
+                                     clang::ASTContext& context,
+                                     const clang::Stmt*& child) {
+  child = &expr;
+  while (true) {
+    const auto parents = context.getParents(*child);
+    if (parents.empty()) {
+      return {};
+    }
+    const auto* parent = parents[0].get<clang::Stmt>();
+    if (parent &&
+        clang::isa<clang::ImplicitCastExpr, clang::FullExpr,
+                   clang::MaterializeTemporaryExpr, clang::CXXBindTemporaryExpr,
+                   clang::ParenExpr>(parent)) {
+      child = parent;
+      continue;
+    }
+    return parents[0];
+  }
+}
+
+// Returns true if `a` and `b` are the same expression, ignoring implicit nodes
+// and parentheses.
+bool IsSameSpelledExpr(const clang::Stmt* a, const clang::Stmt* b) {
+  return a && b && StripImplicitAndParens(a) == StripImplicitAndParens(b);
+}
+
+// Returns true if `expr`'s value is discarded and `expr` can be replaced by an
+// assignment without parentheses. For example `++ptr` in:
+//     ++ptr;
+//     for (...; ...; ++ptr) {}
+//     ++ptr, ++other;
+bool CanBeRewrittenAsBareAssignment(const clang::Expr& expr,
+                                    clang::ASTContext& context) {
+  const clang::Stmt* child = nullptr;
+  const clang::DynTypedNode parent = GetSpelledParent(expr, context, child);
+  const auto* stmt = parent.get<clang::Stmt>();
+  if (!stmt) {
+    return false;  // E.g. a variable initializer.
+  }
+  if (const auto* op = clang::dyn_cast<clang::BinaryOperator>(stmt)) {
+    if (!op->isCommaOp()) {
+      return false;
+    }
+    // The left operand of a comma is always discarded. The right one is the
+    // value of the whole expression, e.g. `argv++` in:
+    //     for (...; ...; argc--, argv++) {}
+    return IsSameSpelledExpr(op->getLHS(), child) ||
+           (IsSameSpelledExpr(op->getRHS(), child) &&
+            CanBeRewrittenAsBareAssignment(*op, context));
+  }
+  if (const auto* cast = clang::dyn_cast<clang::ExplicitCastExpr>(stmt)) {
+    // A C-style cast has higher precedence than `=`, so an increment in a
+    // C-style cast whose operand isn't parenthesized, e.g. `(void)ptr++`,
+    // can't be rewritten as a bare assignment.
+    if (clang::isa<clang::CStyleCastExpr>(cast) &&
+        !clang::isa<clang::ParenExpr>(cast->getSubExprAsWritten())) {
+      return false;
+    }
+    return cast->getType()->isVoidType();
+  }
+  if (clang::isa<clang::CompoundStmt, clang::SwitchCase, clang::LabelStmt,
+                 clang::AttributedStmt>(stmt)) {
+    return true;
+  }
+  if (const auto* if_stmt = clang::dyn_cast<clang::IfStmt>(stmt)) {
+    return IsSameSpelledExpr(if_stmt->getThen(), child) ||
+           IsSameSpelledExpr(if_stmt->getElse(), child);
+  }
+  if (const auto* while_stmt = clang::dyn_cast<clang::WhileStmt>(stmt)) {
+    return IsSameSpelledExpr(while_stmt->getBody(), child);
+  }
+  if (const auto* do_stmt = clang::dyn_cast<clang::DoStmt>(stmt)) {
+    return IsSameSpelledExpr(do_stmt->getBody(), child);
+  }
+  if (const auto* for_stmt = clang::dyn_cast<clang::ForStmt>(stmt)) {
+    return IsSameSpelledExpr(for_stmt->getInit(), child) ||
+           IsSameSpelledExpr(for_stmt->getInc(), child) ||
+           IsSameSpelledExpr(for_stmt->getBody(), child);
+  }
+  if (const auto* range_for = clang::dyn_cast<clang::CXXForRangeStmt>(stmt)) {
+    return IsSameSpelledExpr(range_for->getBody(), child);
+  }
+  return false;
+}
+
+// Returns true if `result` binds, as "unaryOperator", an increment rewritten by
+// RewriteUnaryOperation(). Its rewrite is a parenthesized assignment or a call,
+// so it needs no extra parentheses before `.data()` or `[0]`.
+bool IsBoundToIncrement(const MatchFinder::MatchResult& result) {
+  const auto* op =
+      result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator");
+  return op && op->isIncrementOp();
+}
+
 // It is intentional that this function ignores cast expressions and applies
 // the `.data()` addition to the internal expression. if we have:
 // type* ptr = reinterpret_cast<type*>(buf);  where buf needs to be rewritten
@@ -1233,7 +1382,8 @@ void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
   // Replacement to delete the leading '*'
   std::string begin_replacement_text = " ";
   std::string end_replacement_text = "[0]";
-  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
+  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator") &&
+      !IsBoundToIncrement(result)) {
     // For unaryOperators we still encapsulate the expression with parenthesis.
     begin_replacement_text = "(";
     end_replacement_text = ")[0]";
@@ -1694,8 +1844,6 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
   const std::string key = GetRHS(result);
   auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
 
-  std::string replacement_text = ".data()";
-
   if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
     if (result.Nodes.getNodeAs<clang::Expr>("container_buff_address")) {
       if (result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc") &&
@@ -1705,19 +1853,12 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
       }
       rep_range = EmitContainerPointerRewrites(
           result, key, ContainerPointerRewritesMode::kDontWrapWithBaseSpan);
-    } else {
-      // Insert enclosing parenthesis for expressions with UnaryOperators
-      auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
-      EmitReplacement(key,
-                      GetReplacementDirective(begin_range, "(", source_manager,
-                                              kAppendDataCallPrecedence));
-      replacement_text = ").data()";
     }
   }
 
-  EmitReplacement(
-      key, GetReplacementDirective(rep_range, replacement_text, source_manager,
-                                   -kAppendDataCallPrecedence));
+  EmitReplacement(key,
+                  GetReplacementDirective(rep_range, ".data()", source_manager,
+                                          -kAppendDataCallPrecedence));
 }
 
 // Given that we want to emit `.subspan(expr)`,
@@ -2173,25 +2314,36 @@ std::string GetNodeFromSizeExpr(const clang::Expr* size_expr,
 }
 
 // Rewrite:
-//   `ptr++` or `++ptr`
+//   `++ptr` or `ptr++`
 // Into:
-//   `base::PreIncrementSpan(span)` or `base::PostIncrementSpan(span)`.
+//   `ptr = ptr.subspan(1u)`                if the value is discarded,
+//   `(ptr = ptr.subspan(1u))`              for a pre-increment otherwise,
+//   `std::exchange(ptr, ptr.subspan(1u))`  for a post-increment otherwise.
+// This only uses the span's `subspan()`, so it is the same in every project.
+// Like the pointer arithmetic, incrementing past the end is not allowed.
+//
+// Tests are in: tests/chrome/basics-original.cc,
+// tests/chrome/increment-operands-original.cc and
+// tests/chrome/increment-in-macro-arg-original.cc
 void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto& lang_opts = result.Context->getLangOpts();
 
+  const clang::Expr* increment_expr = nullptr;
   const clang::Expr* operand = nullptr;
   bool is_prefix = false;
   clang::SourceLocation operator_loc;
 
   if (const auto* unary_op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator")) {
+    increment_expr = unary_op;
     operand = unary_op->getSubExpr();
     is_prefix = unary_op->isPrefix();
     operator_loc = unary_op->getOperatorLoc();
   } else if (const auto* cxx_op_call =
                  result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
                      "raw_ptr_operator++")) {
+    increment_expr = cxx_op_call;
     operand = cxx_op_call->getArg(0);
     const auto* method_decl =
         clang::dyn_cast<clang::CXXMethodDecl>(cxx_op_call->getCalleeDecl());
@@ -2215,61 +2367,102 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 
   assert(operator_loc.isValid());
 
-  // Exclude macros because spanifier will generate closing parenthesis in
-  // unexpected locations.
-  if (IsInExcludedMacro(operator_loc, *result.Context, source_manager)) {
+  const std::string key = GetRHS(result);
+
+  // An increment in a macro argument of an unsafe-buffers macro, e.g.
+  //     UNSAFE_TODO(ptr++);
+  // or of the macros allowed by IsInExcludedMacro(), e.g.
+  //     EXPECT_EQ(*ptr++, 1);
+  // is spelled in the source, so it can be rewritten in place. Other macros are
+  // excluded: the spanifier would generate text in unexpected locations, and
+  // leaving the `++` as is would apply it to a span, which doesn't compile.
+  // `deref_expression` uses the same check, so the `*` of `*ptr++` is rewritten
+  // together with the increment.
+  if (IsInExcludedMacroExceptUnsafeBuffersArg(operator_loc, *result.Context,
+                                              source_manager)) {
+    EmitExclusion(key);
+    return;
+  }
+  operator_loc = source_manager.getSpellingLoc(operator_loc);
+
+  // The rewrite writes the operand twice (`p = p.subspan(1u)`), so an operand
+  // with side effects would run them twice, e.g. `items[i++].ptr++`. Don't
+  // rewrite it.
+  const clang::Expr* bare_operand = operand->IgnoreParenImpCasts();
+  if (bare_operand->HasSideEffects(*result.Context)) {
+    EmitExclusion(key);
     return;
   }
 
-  // Get the source range of the operand (the 'ptr' part).
-  clang::SourceRange operand_range =
-      GetExprRange(*operand->IgnoreParenImpCasts(), source_manager, lang_opts);
-  assert(operand_range.isValid());
+  // Get the source range of the operand, including its object if any (e.g.
+  // `obj.ptr`).
+  const clang::CharSourceRange operand_range = clang::Lexer::makeFileCharRange(
+      clang::CharSourceRange::getTokenRange(bare_operand->getSourceRange()),
+      source_manager, lang_opts);
+  // The same range, including the operand's parentheses if any, e.g. `(ptr)`
+  // in `(ptr)++`.
+  const clang::CharSourceRange written_operand_range =
+      clang::Lexer::makeFileCharRange(
+          clang::CharSourceRange::getTokenRange(
+              operand->IgnoreImpCasts()->getSourceRange()),
+          source_manager, lang_opts);
+  // The operand's text can't be copied if it isn't one contiguous piece of
+  // the file, e.g. if part of it comes from a macro body. Don't rewrite it.
+  if (operand_range.isInvalid() || written_operand_range.isInvalid()) {
+    EmitExclusion(key);
+    return;
+  }
+  const std::string operand_text =
+      clang::Lexer::getSourceText(operand_range, source_manager, lang_opts)
+          .str();
+  const std::string advanced_operand =
+      llvm::formatv("{0}.subspan(1u)", operand_text);
 
   clang::SourceLocation operator_end_loc = clang::Lexer::getLocForEndOfToken(
       operator_loc, 0, source_manager, lang_opts);
   assert(operator_end_loc.isValid());
-  clang::SourceRange op_token_range(operator_loc, operator_end_loc);
+  const clang::SourceRange op_token_range(operator_loc, operator_end_loc);
+  // A post-increment's `std::exchange(` is closed where the `++` was, so it
+  // opens before the operand's parentheses:
+  //     (ptr)++  ==>  std::exchange((ptr), ptr.subspan(1u))
+  // A pre-increment's ` = ...` stays inside them, next to the `[0]` or
+  // `.data()` that other rewrites add at the end of "rhs_expr", which the
+  // matchers bind without parentheses:
+  //     *++(ptr)  ==>  ((ptr = ptr.subspan(1u))[0])
+  const clang::SourceRange operand_begin(written_operand_range.getBegin());
+  const clang::SourceRange operand_end(operand_range.getEnd());
 
-  std::string begin_insert_text;
-  clang::SourceRange begin_replacement_range;
-  clang::SourceRange end_replacement_range;
-
-  if (is_prefix) {
-    begin_insert_text =
-        std::string(GetProject()->GetPreIncrementSpanName()) + "(";
-    // Replace the '++' with the helper call.
-    begin_replacement_range = op_token_range;
-    // Insert ")" at the end of the operand.
-    end_replacement_range =
-        clang::SourceRange(operand_range.getEnd(), operand_range.getEnd());
+  // `before_operand` replaces the `++` of a pre-increment, or is inserted
+  // before the operand of a post-increment. `after_operand` is inserted after
+  // the operand of a pre-increment, or replaces the `++` of a post-increment.
+  //
+  // A removed `++` is replaced by a space: `apply_edits.py` treats a deletion
+  // after a `,` as a list element removal, and would remove the comma too.
+  std::string before_operand;
+  std::string after_operand;
+  if (CanBeRewrittenAsBareAssignment(*increment_expr, *result.Context)) {
+    before_operand = is_prefix ? " " : "";
+    after_operand = " = " + advanced_operand;
+  } else if (is_prefix) {
+    before_operand = "(";
+    after_operand = " = " + advanced_operand + ")";
   } else {
-    begin_insert_text =
-        std::string(GetProject()->GetPostIncrementSpanName()) + "(";
-    // Insert the helper call at the beginning of the operand.
-    begin_replacement_range =
-        clang::SourceRange(operand_range.getBegin(), operand_range.getBegin());
-    // Replace "++"" with ")".
-    end_replacement_range = op_token_range;
+    before_operand = "std::exchange(";
+    after_operand = ", " + advanced_operand + ")";
+    EmitReplacement(
+        key, GetIncludeDirective(operand_begin, source_manager, "<utility>"));
   }
 
-  assert(begin_replacement_range.isValid());
-  assert(end_replacement_range.isValid());
-
-  const std::string key = GetRHS(result);
-
-  EmitReplacement(key, GetReplacementDirective(
-                           begin_replacement_range, begin_insert_text,
-                           source_manager, kRewriteUnaryOperationPrecedence));
-
+  if (!before_operand.empty()) {
+    EmitReplacement(
+        key, GetReplacementDirective(is_prefix ? op_token_range : operand_begin,
+                                     before_operand, source_manager,
+                                     kRewriteUnaryOperationPrecedence));
+  }
   EmitReplacement(
-      key, GetReplacementDirective(end_replacement_range, ")", source_manager,
+      key, GetReplacementDirective(is_prefix ? operand_end : op_token_range,
+                                   after_operand, source_manager,
                                    -kRewriteUnaryOperationPrecedence));
-
-  EmitReplacement(key,
-                  GetIncludeDirective(
-                      operand_range, source_manager,
-                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 // Rewrite:
@@ -2349,7 +2542,8 @@ void AddSpanFrontierChange(const std::string& lhs_key,
           .str();
   std::string replacement_text = ".data()";
 
-  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
+  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator") &&
+      !IsBoundToIncrement(result)) {
     // Insert enclosing parenthesis for expressions with UnaryOperators
     auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
     EmitFrontier(lhs_key, rhs_key,
@@ -3908,6 +4102,8 @@ class Spanifier {
         sizeOfExpr(has(rhs_exprs_without_size_nodes)).bind("sizeof_expr"));
     Match(sizeof_array_expr, RewriteArraySizeof);
 
+    // Same macro check as RewriteUnaryOperation(), so that `*` is rewritten
+    // together with the increment in `UNSAFE_TODO(*ptr++)`.
     auto deref_expression = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(anyOf(unaryOperator(hasOperatorName("*"),
@@ -3915,7 +4111,7 @@ class Spanifier {
                    cxxOperatorCallExpr(
                        hasOverloadedOperatorName("*"),
                        hasArgument(0, rhs_exprs_without_size_nodes))),
-             unless(isInExcludedMacroLocation()))
+             unless(isInExcludedMacroLocationExceptUnsafeBuffersArg()))
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 

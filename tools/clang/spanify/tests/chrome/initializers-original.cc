@@ -12,7 +12,9 @@ class A {
   A(int* ptr) : member(ptr) {}
 
   // Expecte rewrite:
-  // int* advanceAndGet() { return base::PostIncrementSpan(member).data(); }
+  // int* advanceAndGet() {
+  //   return std::exchange(member, member.subspan(1u)).data();
+  // }
   int* advanceAndGet() { return member++; }
 
   // Expected rewrite:

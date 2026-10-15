@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/auto_spanification_helper.h"
+#include <utility>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -83,8 +84,8 @@ struct S2 {
 
   int* get_and_advance() {
     // Expected rewrite:
-    // return base::PostIncrementSpan(ptr_).data();
-    return base::PostIncrementSpan(ptr_).data();
+    // return std::exchange(ptr_, ptr_.subspan(1u)).data();
+    return std::exchange(ptr_, ptr_.subspan(1u)).data();
   }
 
   // Expected rewrite:

@@ -60,12 +60,6 @@ class Project {
   }
   virtual std::string_view GetRawSpanIncludePath() const = 0;
   virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;
-  virtual std::string_view GetPreIncrementSpanName() const {
-    return "base::PreIncrementSpan";
-  }
-  virtual std::string_view GetPostIncrementSpanName() const {
-    return "base::PostIncrementSpan";
-  }
   virtual std::string_view GetUnsafeTodoMacroName() const {
     return "UNSAFE_TODO";
   }

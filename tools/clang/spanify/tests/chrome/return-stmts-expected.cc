@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <cstdint>
+#include <utility>
 #include <vector>
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -37,8 +37,8 @@ base::span<int> fct3() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
-  // return base::PostIncrementSpan(var1);
-  return base::PostIncrementSpan(var1);
+  // return std::exchange(var1, var1.subspan(1u));
+  return std::exchange(var1, var1.subspan(1u));
 }
 
 // Expected rewrite:
@@ -48,8 +48,8 @@ base::span<int> fct4() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
-  // return base::PreIncrementSpan(var1);
-  return base::PreIncrementSpan(var1);
+  // return (var1 = var1.subspan(1u));
+  return (var1 = var1.subspan(1u));
 }
 
 // Expected rewrite:
@@ -113,36 +113,36 @@ void usage() {
   // Expected rewrite:
   // base::span<int> v1 = fct1();
   base::span<int> v1 = fct1();
-  // base::PostIncrementSpan(v1);
-  base::PostIncrementSpan(v1);
+  // v1 = v1.subspan(1u);
+  v1 = v1.subspan(1u);
 
   // Expected rewrite:
   // base::span<int> v2 = fct2();
   base::span<int> v2 = fct2();
-  // base::PostIncrementSpan(v2);
-  base::PostIncrementSpan(v2);
+  // v2 = v2.subspan(1u);
+  v2 = v2.subspan(1u);
 
   // Expected rewrite:
   // base::span<int> v3 = fct3();
   base::span<int> v3 = fct3();
-  // base::PostIncrementSpan(v3);
-  base::PostIncrementSpan(v3);
+  // v3 = v3.subspan(1u);
+  v3 = v3.subspan(1u);
 
   // Expected rewrite:
   // base::span<int> v4 = fct4();
   base::span<int> v4 = fct4();
-  // base::PostIncrementSpan(v4);
-  base::PostIncrementSpan(v4);
+  // v4 = v4.subspan(1u);
+  v4 = v4.subspan(1u);
 
   // Expected rewrite:
   // base::span<int> v5 = fct5();
   base::span<int> v5 = fct5();
-  // base::PostIncrementSpan(v5);
-  base::PostIncrementSpan(v5);
+  // v5 = v5.subspan(1u);
+  v5 = v5.subspan(1u);
 
   // Expected rewrite:
   // base::span<char> v6 = fct6();
   base::span<char> v6 = fct6();
-  // base::PostIncrementSpan(v6);
-  base::PostIncrementSpan(v6);
+  // v6 = v6.subspan(1u);
+  v6 = v6.subspan(1u);
 }

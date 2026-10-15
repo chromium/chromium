@@ -165,42 +165,42 @@ void test_for_loop_with_c_array() {
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (int* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (int const* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
@@ -222,42 +222,42 @@ void test_for_loop_with_std_array() {
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (int* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (int const* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<int> it = base::SpanificationArrayBegin(arr);
   //      it != base::SpanificationArrayEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
   //      it != base::SpanificationArrayCEnd(arr);
-  //      base::PreIncrementSpan(it)) {
+  //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }

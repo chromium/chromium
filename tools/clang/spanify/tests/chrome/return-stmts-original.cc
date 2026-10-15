@@ -32,7 +32,7 @@ int* fct3() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   int* var1 = new int[1024];
-  // return base::PostIncrementSpan(var1);
+  // return std::exchange(var1, var1.subspan(1u));
   return var1++;
 }
 
@@ -43,7 +43,7 @@ int* fct4() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   int* var1 = new int[1024];
-  // return base::PreIncrementSpan(var1);
+  // return (var1 = var1.subspan(1u));
   return ++var1;
 }
 
@@ -105,36 +105,36 @@ void usage() {
   // Expected rewrite:
   // base::span<int> v1 = fct1();
   int* v1 = fct1();
-  // base::PostIncrementSpan(v1);
+  // v1 = v1.subspan(1u);
   v1++;
 
   // Expected rewrite:
   // base::span<int> v2 = fct2();
   int* v2 = fct2();
-  // base::PostIncrementSpan(v2);
+  // v2 = v2.subspan(1u);
   v2++;
 
   // Expected rewrite:
   // base::span<int> v3 = fct3();
   int* v3 = fct3();
-  // base::PostIncrementSpan(v3);
+  // v3 = v3.subspan(1u);
   v3++;
 
   // Expected rewrite:
   // base::span<int> v4 = fct4();
   int* v4 = fct4();
-  // base::PostIncrementSpan(v4);
+  // v4 = v4.subspan(1u);
   v4++;
 
   // Expected rewrite:
   // base::span<int> v5 = fct5();
   int* v5 = fct5();
-  // base::PostIncrementSpan(v5);
+  // v5 = v5.subspan(1u);
   v5++;
 
   // Expected rewrite:
   // base::span<char> v6 = fct6();
   char* v6 = fct6();
-  // base::PostIncrementSpan(v6);
+  // v6 = v6.subspan(1u);
   v6++;
 }

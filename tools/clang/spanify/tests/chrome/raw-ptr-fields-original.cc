@@ -77,7 +77,7 @@ struct S2 {
 
   int* get_and_advance() {
     // Expected rewrite:
-    // return base::PostIncrementSpan(ptr_).data();
+    // return std::exchange(ptr_, ptr_.subspan(1u)).data();
     return ptr_++;
   }
 

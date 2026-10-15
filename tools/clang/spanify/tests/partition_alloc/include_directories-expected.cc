@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <utility>
 
-#include "partition_alloc/partition_alloc_base/containers/auto_spanification_helper.h"
 #include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
@@ -37,9 +37,9 @@ struct S2 {
   S2(partition_alloc::internal::base::span<int> ptr) : ptr_(ptr) {}
 
   int* get_and_advance() {
-    // Unexpected rewrite (parenthesis not needed surrounding PostIncrementSpan)
-    // return (base::PostIncrementSpan(ptr_)).data();
-    return (base::PostIncrementSpan(ptr_)).data();
+    // Expected rewrite:
+    // return std::exchange(ptr_, ptr_.subspan(1u)).data();
+    return std::exchange(ptr_, ptr_.subspan(1u)).data();
   }
 
   // Expected rewrite:
