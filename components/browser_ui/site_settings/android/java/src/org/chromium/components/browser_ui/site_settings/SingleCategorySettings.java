@@ -347,6 +347,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             // No need to fetch any data if we're not going to show it, but we do need to update
             // the global toggle to reflect updates in Android settings (e.g. Location).
             resetList();
+            updateContainment();
             return;
         }
 
@@ -1371,6 +1372,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         if (permissionBlockedByOs) {
             maybeShowOsWarning(screen);
+        }
+        if (permissionBlockedByOs || !mCategory.enabledInAndroid(getContext())) {
             screen.removePreference(notificationsVibrate);
             screen.removePreference(mNotificationsQuietUiPref);
             screen.removePreference(mNotificationsTriStatePref);

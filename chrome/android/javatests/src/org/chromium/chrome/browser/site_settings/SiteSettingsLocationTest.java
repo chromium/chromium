@@ -60,6 +60,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -270,6 +271,46 @@ public class SiteSettingsLocationTest {
         SiteSettingsTestHelper.checkPreferencesForCategory(
                 SiteSettingsCategory.Type.DEVICE_LOCATION,
                 BINARY_RADIO_BUTTON_WITH_OS_WARNING_AND_OS_WARNING_EXTRA_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({@Policies.Item(key = "DefaultGeolocationSetting", string = "2")})
+    public void testOnlyExpectedPreferencesDeviceLocationBlockedByPolicy() {
+        // When location is blocked by enterprise policy, no OS permission warnings or empty
+        // expandable groups should be shown regardless of Android/system location settings.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
+        SiteSettingsTestHelper.checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                SiteSettingsTestHelper.BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
+        SiteSettingsTestHelper.checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                SiteSettingsTestHelper.BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        SiteSettingsTestHelper.checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                SiteSettingsTestHelper.BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ false,
+                /* androidEnabled= */ false,
+                /* androidFineEnabled= */ false);
+        SiteSettingsTestHelper.checkPreferencesForCategory(
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                SiteSettingsTestHelper.BINARY_RADIO_BUTTON_AND_INFO_TEXT);
     }
 
     @Test
