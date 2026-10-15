@@ -56,7 +56,7 @@ suite('MainPageTests', function() {
   });
 
   function showingManagedHeader(): boolean {
-    return !!settingsMain.shadowRoot!.querySelector('managed-footnote');
+    return !!settingsMain.shadowRoot.querySelector('managed-footnote');
   }
 
   test('managed header hides when searching', async function() {
@@ -125,7 +125,7 @@ suite('MainPageTests', function() {
    */
   function assertPageVisibility(expected: string) {
     flush();
-    const page = settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
+    const page = settingsMain.shadowRoot.querySelector('settings-basic-page')!;
     assertEquals(
         expected,
         getComputedStyle(page.shadowRoot!.querySelector('#basicPage')!)
@@ -143,9 +143,8 @@ suite('MainPageTests', function() {
     await settingsMain.searchContents('Query1');
     // Simulate navigating into a subpage.
     Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
-    settingsMain.shadowRoot!.querySelector('settings-basic-page')!
-        .dispatchEvent(
-            new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
+    settingsMain.shadowRoot.querySelector('settings-basic-page')!.dispatchEvent(
+        new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
     flush();
 
     // Simulate clicking the left arrow to go back to the search results.

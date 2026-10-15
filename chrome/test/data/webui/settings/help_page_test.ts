@@ -24,7 +24,7 @@ suite('SettingsHelpPage', function() {
     assertTrue(!!settingsMain);
     await flushTasks();
     const aboutPage =
-        settingsMain.shadowRoot!.querySelector('settings-about-page');
+        settingsMain.shadowRoot.querySelector('settings-about-page');
     assertTrue(!!aboutPage);
   });
 });

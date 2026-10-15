@@ -1,0 +1,43 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#noSearchResults {
+  margin-top: 80px;
+  text-align: center;
+}
+
+#noSearchResults div:first-child {
+  font-size: 123%;  /* Should be 16px when 100% is 13px. */
+  margin-bottom: 10px;
+}
+
+managed-footnote {
+  border-top: none;
+  /* margin-bottom is needed to compensate for the next element's 21px
+   * margin at the top and 8px padding at the top. This leaves a 12px
+   * padding between this element's content and the top of the next
+   * element's text. */
+  margin-bottom: calc(-21px - 8px);
+  padding-bottom: 16px;
+  padding-top: 12px;
+  /* The next element spills over this element. This ensures the link
+   * is clickable. */
+  position: relative;
+  z-index: 1;
+}
+
+cr-view-manager {
+  display: block;
+  position: relative;
+}
+
+cr-view-manager [hidden-by-search] {
+  display: none;
+}

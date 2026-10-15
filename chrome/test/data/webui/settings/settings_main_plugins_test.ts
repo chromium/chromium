@@ -4,11 +4,10 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Route, SettingsMainElement} from 'chrome://settings/settings.js';
 import {loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchManager} from './test_search_manager.js';
 
@@ -35,7 +34,6 @@ suite('SettingsMain', function() {
     settingsMain = document.createElement('settings-main');
     settingsMain.toolbarSpinnerActive = false;
     document.body.appendChild(settingsMain);
-    flush();
   }
 
   setup(function() {
@@ -46,10 +44,10 @@ suite('SettingsMain', function() {
   test('UpdatesActiveViewWhenRouteChanges', async function() {
     function assertActive(pluginTag: string, path: string) {
       assertTrue(
-          !!settingsMain.shadowRoot!.querySelector(
+          !!settingsMain.shadowRoot.querySelector(
               `.active[slot=view] > ${pluginTag}`),
           `Element '${pluginTag}' was not active for route '${path}'`);
-      assertFalse(!!settingsMain.shadowRoot!.querySelector(
+      assertFalse(!!settingsMain.shadowRoot.querySelector(
           `.active[slot=view] > :not(${pluginTag}, dom-if)`));
     }
 
@@ -107,12 +105,13 @@ suite('SettingsMain', function() {
     // Navigate to a subpage while search results are displayed. Expecting the
     // cr-view-manager to only show the active view.
     Router.getInstance().navigateTo(routes.FONTS);
+    await microtasksFinished();
     assertFalse(settingsMain.$.switcher.hasAttribute('show-all'));
 
     // Navigate back to the search results. Expecting the cr-view-manager to
     // show all views.
     Router.getInstance().navigateToPreviousRoute();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(settingsMain.$.switcher.hasAttribute('show-all'));
 
     // Clear the search query. Expecting the cr-view-manager to only show the
@@ -170,7 +169,7 @@ suite('SettingsMain', function() {
 
   // Test which section is displayed when chrome://settings/ is visited.
   test('TopLevelRoute', async function() {
-    await flushTasks();
+    await microtasksFinished();
     // Case1: Default (non-guest mode)
     assertFalse(loadTimeData.getBoolean('isGuest'));
     let active = settingsMain.$.switcher.querySelector<HTMLElement>(
@@ -193,10 +192,10 @@ suite('SettingsMain', function() {
   });
 
   test('ResetProfileBannerShown', function() {
-    assertFalse(!!settingsMain.shadowRoot!.querySelector(
+    assertFalse(!!settingsMain.shadowRoot.querySelector(
         'settings-reset-profile-banner'));
     createSettingsMain({showResetProfileBanner: true});
-    assertTrue(!!settingsMain.shadowRoot!.querySelector(
+    assertTrue(!!settingsMain.shadowRoot.querySelector(
         'settings-reset-profile-banner'));
   });
 });
