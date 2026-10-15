@@ -1,0 +1,13 @@
+rootWebArea fontSize=16.00
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph fontSize=16.00
+++++++++staticText name='Visible ' fontSize=16.00
+++++++++++inlineTextBox name='Visible '
+++++++++staticText name='invisible' fontSize=0.00
+++++++++++inlineTextBox name='invisible'
+++++++++staticText name=' text' fontSize=16.00
+++++++++++inlineTextBox name=' text'
+++++++paragraph fontSize=0.00
+++++++++staticText name='Entirely invisible paragraph' fontSize=0.00
+++++++++++inlineTextBox name='Entirely invisible paragraph'

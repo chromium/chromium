@@ -3017,6 +3017,8 @@ data/accessibility/css/font-size-expected-android.txt
 data/accessibility/css/font-size-expected-auralinux.txt
 data/accessibility/css/font-size-expected-blink.txt
 data/accessibility/css/font-size-expected-win.txt
+data/accessibility/css/font-size-zero-expected-blink.txt
+data/accessibility/css/font-size-zero.html
 data/accessibility/css/font-size.html
 data/accessibility/css/font-style-expected-android-assist-data.txt
 data/accessibility/css/font-style-expected-android-external.txt

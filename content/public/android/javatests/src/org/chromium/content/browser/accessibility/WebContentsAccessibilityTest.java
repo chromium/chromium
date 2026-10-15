@@ -6816,12 +6816,11 @@ public class WebContentsAccessibilityTest {
                         new SpanRange(new BackgroundColorSpan(0xFFFFFF00), 47, 52),
                         new SpanRange(new StyleSpan(Typeface.ITALIC), 41, 47)));
 
-        // TODO: crbug.com/426007976 - Add back missing span once zero font size nodes are fixed.
         testCases.put(
                 "Example Text - Nested invisible text",
                 List.of(
                         new SpanRange(new AbsoluteSizeSpan(16), 0, 22),
-                        // new SpanRange(new AbsoluteSizeSpan(0), 22, 31),
+                        new SpanRange(new AbsoluteSizeSpan(0), 22, 31),
                         new SpanRange(new AbsoluteSizeSpan(16), 31, 36)));
 
         testCases.put("Italic text field", List.of(new SpanRange(new StyleSpan(Typeface.ITALIC))));

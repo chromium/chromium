@@ -2201,8 +2201,10 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
     }
   }
 
-  // Font size is in pixels.
-  if (FontSize()) {
+  // Font size is in pixels. A font size of 0 is valid in CSS and makes the
+  // text invisible, so serialize it whenever there is a layout object (and
+  // therefore a computed style) rather than only when it is non-zero.
+  if (GetLayoutObject()) {
     node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontSize,
                                  FontSize());
   }

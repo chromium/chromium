@@ -374,6 +374,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontSize) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSFontSizeZero) {
+  RunCSSTest(FILE_PATH_LITERAL("font-size-zero.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSHeadStyleScriptDisplayBlock) {
   RunCSSTest(FILE_PATH_LITERAL("head-style-script-display-block.html"));
 }
