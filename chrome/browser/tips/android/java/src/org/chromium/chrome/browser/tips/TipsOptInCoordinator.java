@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.widget.ButtonCompat;
@@ -229,6 +230,8 @@ public class TipsOptInCoordinator {
 
     @NullMarked
     protected class TipsOptInSheetContent implements BottomSheetContent {
+        private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
         private final View mContentView;
         private final BottomSheetController mController;
         private final BottomSheetObserver mBottomSheetOpenedObserver;
@@ -300,6 +303,11 @@ public class TipsOptInCoordinator {
         @Override
         public void destroy() {
             TipsOptInCoordinator.this.destroy();
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return SHEET_TYPE;
         }
 
         @Override
