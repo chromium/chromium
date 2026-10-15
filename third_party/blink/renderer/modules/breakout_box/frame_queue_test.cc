@@ -80,6 +80,32 @@ TEST_F(FrameQueueTest, QueueDropsOldElements) {
   EXPECT_FALSE(queue->Pop().has_value());
 }
 
+TEST_F(FrameQueueTest, PendingPulls) {
+  scoped_refptr<FrameQueue<int>> queue =
+      base::MakeRefCounted<FrameQueue<int>>(5);
+  EXPECT_FALSE(queue->HasPendingPulls());
+  EXPECT_EQ(queue->NumPendingPulls(), 0);
+
+  queue->IncrementPendingPulls();
+  queue->IncrementPendingPulls();
+  EXPECT_TRUE(queue->HasPendingPulls());
+  EXPECT_EQ(queue->NumPendingPulls(), 2);
+
+  EXPECT_TRUE(queue->DecrementPendingPulls());
+  EXPECT_EQ(queue->NumPendingPulls(), 1);
+  EXPECT_FALSE(queue->DecrementPendingPulls());
+  EXPECT_EQ(queue->NumPendingPulls(), 0);
+  EXPECT_FALSE(queue->HasPendingPulls());
+
+  // Decrementing at zero does not underflow.
+  EXPECT_FALSE(queue->DecrementPendingPulls());
+  EXPECT_EQ(queue->NumPendingPulls(), 0);
+
+  queue->IncrementPendingPulls();
+  queue->ResetPendingPulls();
+  EXPECT_EQ(queue->NumPendingPulls(), 0);
+}
+
 TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
   const int kMaxSize = 3;
   const int kNumElements = 100;

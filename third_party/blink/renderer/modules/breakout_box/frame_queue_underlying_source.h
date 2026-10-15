@@ -74,7 +74,6 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Delivers a new frame to this source.
   void QueueFrame(NativeFrameType);
 
-  bool HasPendingPulls() const;
   int NumPendingPullsForTesting() const;
   double DesiredSizeForTesting() const;
   uint64_t TotalFrames() const;
@@ -195,7 +194,6 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   scoped_refptr<base::SequencedTaskRunner> transferred_runner_
       GUARDED_BY(lock_);
   bool transferred_source_cleared_ GUARDED_BY(lock_) = false;
-  int num_pending_pulls_ GUARDED_BY(lock_) = 0;
   uint64_t initial_total_frames_ = 0;
   uint64_t initial_discarded_frames_ = 0;
   uint64_t closed_total_frames_ GUARDED_BY(lock_) = 0;
