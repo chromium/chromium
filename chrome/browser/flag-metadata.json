@@ -9966,11 +9966,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "use-dmsaa-for-tiles",
-    "owners": [ "vasilyt@chromium.org", "vikassoni@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "use-fake-device-for-media-stream",
     "owners": [ "mcasas@chromium.org", "chromeos-gfx@google.com" ],
     // This flag is used for ChromeOS media testing to mock a source device.

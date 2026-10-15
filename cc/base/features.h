@@ -23,9 +23,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSizeOopifEffectSurfacesAtExternalScale);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferImplInvalidation);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeferImplInvalidationFrames);
 
-// Use DMSAA instead of MSAA for rastering tiles.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
-
 // When no frames are produced in a certain time interval, reclaim prepaint
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);

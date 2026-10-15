@@ -9903,10 +9903,6 @@ const FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kContextualPageActionTabGrouping)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
-     flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-welcome-tour-force-user-eligibility",
      flag_descriptions::kWelcomeTourForceUserEligibilityName,

@@ -428,9 +428,6 @@ public final class ProductionSupportedFlagList {
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
         Flag.baseFeature(
-                CcFeatures.USE_DMSAA_FOR_TILES,
-                "Switches skia to use DMSAA instead of MSAA for tile raster"),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),

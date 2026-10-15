@@ -18,7 +18,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_canvas.h"
@@ -107,7 +106,12 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
       is_using_dmsaa_(
-          base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+          true
+#else
+          false
+#endif
+      ) {
   DCHECK(pending_raster_queries);
   DCHECK(compositor_context_provider);
   CHECK(worker_context_provider);
@@ -119,16 +123,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     should_flush_tile_raster_commands_ =
         worker_context_provider->ContextCapabilities()
             .use_deferred_graphite_submit;
-
-#if BUILDFLAG(IS_ANDROID)
-    auto is_using_vulkan =
-        worker_context_provider->ContextCapabilities().using_vulkan_context;
-
-    // On Android, DMSAA on vulkan backend launch is controlled by
-    // kUseDMSAAForTiles.
-    is_using_dmsaa_ = !is_using_vulkan ||
-                      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
-#endif
   }
 }
 

@@ -874,10 +874,6 @@ inline constexpr char kUseWallpaperStagingUrlDescription[] =
     "Use the staging server as part of the Wallpaper App to verify "
     "additions/removals of wallpapers.";
 
-inline constexpr char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
-inline constexpr char kUseDMSAAForTilesDescription[] =
-    "Switches skia to use DMSAA instead of MSAA for tile raster";
-
 inline constexpr char kIsolatedSandboxedIframesName[] =
     "Isolated sandboxed iframes";
 inline constexpr char kIsolatedSandboxedIframesDescription[] =

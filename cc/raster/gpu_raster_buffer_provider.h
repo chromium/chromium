@@ -132,7 +132,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   const raw_ptr<RasterQueryQueue> pending_raster_queries_;
 
   const double raster_metric_probability_;
-  bool is_using_dmsaa_ = false;
+  const bool is_using_dmsaa_;
   bool should_flush_tile_raster_commands_ = false;
 };
 
