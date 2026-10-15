@@ -157,8 +157,8 @@ public class SplitCompatApplication extends Application {
         // Perform initialization of globals common to all processes.
         ContextUtils.initApplicationContext(this);
 
-        // Do not call ApkInfo here, as ApkInfo reads CommandLine switches which have not yet been
-        // initialized in child processes at this point.
+        // Do not call ApkInfo here, as child processes do not receive ApkInfo from the parent
+        // process until later.
         String versionName = "";
         long versionCode = BuildConfig.ORIGINAL_VERSION_CODE;
         if (!isIsolatedProcess) {

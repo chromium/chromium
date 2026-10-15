@@ -271,6 +271,9 @@ public class ChildProcessService {
             }
             assert mServiceBound;
             CommandLine.init(mChildProcessArgs.commandLine);
+            // Must happen before anything uses ApkInfo, since isolated child processes cannot
+            // compute it themselves.
+            ApkInfo.initFromParentProcess(mChildProcessArgs.apkInfo);
 
             if (CommandLine.getInstance()
                     .hasSwitch(BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING)) {

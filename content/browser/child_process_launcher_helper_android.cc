@@ -11,10 +11,8 @@
 
 #include "base/android/android_info.h"
 #include "base/android/apk_assets.h"
-#include "base/android/apk_info.h"
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_array.h"
-#include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
@@ -118,21 +116,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   DCHECK(process_type == switches::kGpuProcess ||
          !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
 
-  // The child processes can't correctly retrieve host package information so we
-  // rather feed this information through the command line.
-  command_line()->AppendSwitchASCII(
-      switches::kHostPackageName, base::android::apk_info::host_package_name());
-  command_line()->AppendSwitchASCII(switches::kPackageName,
-                                    base::android::apk_info::package_name());
-  command_line()->AppendSwitchASCII(
-      switches::kHostPackageLabel,
-      base::android::apk_info::host_package_label());
-  command_line()->AppendSwitchASCII(
-      switches::kHostVersionCode, base::android::apk_info::host_version_code());
-  command_line()->AppendSwitchASCII(
-      switches::kPackageVersionName,
-      base::android::apk_info::package_version_name());
-
   return true;
 }
 
@@ -209,8 +192,9 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     const ChildProcessLauncherHelper::Process& process,
     bool known_dead) {
   ChildProcessTerminationInfo info;
-  if (!java_peer_avaiable_on_client_thread_)
+  if (!java_peer_avaiable_on_client_thread_) {
     return info;
+  }
 
   Java_ChildProcessLauncherHelperImpl_getTerminationInfoAndStop(
       AttachCurrentThread(), java_peer_, reinterpret_cast<intptr_t>(&info));
