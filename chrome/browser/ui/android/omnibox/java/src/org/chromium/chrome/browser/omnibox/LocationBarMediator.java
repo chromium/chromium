@@ -2442,14 +2442,19 @@ public class LocationBarMediator
      */
     @VisibleForTesting
     boolean shouldShowInstallButton() {
-        if (mUrlHasFocus
-                || mIsUrlFocusChangeInProgress
-                || mLocationBarDataProvider.getAppInstallState() != AppInstallState.NOT_INSTALLED) {
+        // The install button is only shown on tablet layouts, so phones skip the checks below,
+        // which can be expensive (see getAppInstallState()).
+        if (!mIsTablet) return false;
+        if (mUrlHasFocus || mIsUrlFocusChangeInProgress) return false;
+
+        WebContents webContents = getWebContentsForCurrentTab();
+        if (webContents == null || !AppBannerManager.isProbablyPromotable(webContents)) {
             return false;
         }
 
-        WebContents webContents = getWebContentsForCurrentTab();
-        return webContents != null && AppBannerManager.isProbablyPromotable(webContents);
+        // Check the install state last: getAppInstallState() may make synchronous PackageManager
+        // IPCs, so only query it for pages that could otherwise show the install button.
+        return mLocationBarDataProvider.getAppInstallState() == AppInstallState.NOT_INSTALLED;
     }
 
     /**

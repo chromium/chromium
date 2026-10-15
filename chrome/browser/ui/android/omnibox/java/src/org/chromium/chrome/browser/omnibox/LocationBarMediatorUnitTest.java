@@ -606,6 +606,19 @@ public class LocationBarMediatorUnitTest {
         locationBarMediator.getZoomButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
     }
 
+    /**
+     * Initializes {@link #mTabletMediator} and gives the install button enough toolbar width to
+     * show, then clears the resulting invocations on the tablet layout and embedder.
+     */
+    private void setUpTabletInstallButton() {
+        mTabletMediator.onFinishNativeInitialization();
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
+    }
+
     private void setUpMediatorAndCoordinator() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -2927,107 +2940,120 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testInstallButton_visibleIfInstallable() {
         doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        mMediator.onUrlFocusChange(/* hasFocus= */ false);
-        mMediator.setUrlFocusChangeInProgress(/* inProgress= */ false);
+        setUpTabletInstallButton();
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
-
-        mMediator.onInstallabilityUpdated(mAppBannerManager);
-        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+        mTabletMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
         verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
     }
 
     @Test
     public void testInstallButton_invisibleIfNotInstallable() {
         doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        setUpTabletInstallButton();
 
-        mMediator.onInstallabilityUpdated(mAppBannerManager);
-        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        mTabletMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
         verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
     }
 
     @Test
     public void testInstallButton_invisibleOmniboxIsFocused() {
-        mMediator.onUrlFocusChange(/* hasFocus= */ true);
-        mMediator.setUrlFocusChangeInProgress(/* inProgress= */ false);
+        setUpTabletInstallButton();
+        mTabletMediator.onUrlFocusChange(/* hasFocus= */ true);
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
-        mMediator.onInstallabilityUpdated(mAppBannerManager);
-        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        mTabletMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
         verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
     }
 
     @Test
     public void testInstallButton_visibilityRespondsToAppInstallationStateChange() {
         doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        mMediator.onUrlFocusChange(/* hasFocus= */ false);
-        mMediator.setUrlFocusChangeInProgress(/* inProgress= */ false);
-
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        setUpTabletInstallButton();
 
         // 1. App is not installed yet -> Install button should show
         doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         // 2. App becomes installed -> Install button should hide
         doReturn(AppInstallState.INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
     }
 
     @Test
     public void testInstallButton_visibilityRespondsToPendingAppInstallation() {
         doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        mMediator.onUrlFocusChange(false);
-        mMediator.setUrlFocusChangeInProgress(false);
-
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        setUpTabletInstallButton();
 
         doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         doReturn(AppInstallState.PENDING_INSTALL)
                 .when(mLocationBarDataProvider)
                 .getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
     }
 
     @Test
     public void testInstallButton_restoredWhenPendingInstallationFails() {
         doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        mMediator.onUrlFocusChange(false);
-        mMediator.setUrlFocusChangeInProgress(false);
-
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        setUpTabletInstallButton();
 
         // 1. Pending installation in progress -> install button is suppressed.
         doReturn(AppInstallState.PENDING_INSTALL)
                 .when(mLocationBarDataProvider)
                 .getAppInstallState();
-        mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
 
-        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         // 2. Pending installation fails / is cancelled -> install button is restored.
         doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(true);
+    }
+
+    @Test
+    public void testInstallButton_stateChangeDoesNotQueryInstallStateWhenNotPromotable() {
+        doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        setUpTabletInstallButton();
+        clearInvocations(mLocationBarDataProvider);
+
+        // getAppInstallState() may do PackageManager IPCs, so it must not be queried when the
+        // page isn't promotable.
+        mTabletMediator.onAppInstallationStateChanged();
+        verify(mLocationBarTablet).setInstallButtonVisibility(false);
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
+    }
+
+    @Test
+    public void testInstallButton_stateChangeDoesNotShowInstallButtonOnPhone() {
+        clearInvocations(mLocationBarLayout, mLocationBarDataProvider, mAppBannerManagerJni);
+
+        // The install button is never shown on phones, so nothing is queried.
         mMediator.onAppInstallationStateChanged();
-        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+        verify(mLocationBarLayout, never()).setInstallButtonVisibility(true);
+        verify(mAppBannerManagerJni, never()).isProbablyPromotable(any());
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
     }
 
     @Test
@@ -3501,6 +3527,49 @@ public class LocationBarMediatorUnitTest {
         mTabletMediator.onUrlChanged(/* isTabChanging= */ false);
 
         assertFalse(mTabletMediator.shouldShowInstallButton());
+    }
+
+    @Test
+    public void testShouldShowInstallButton_doesNotQueryInstallStateWhenNotPromotable() {
+        mTabletMediator.onFinishNativeInitialization();
+        doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        clearInvocations(mLocationBarDataProvider);
+
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
+    }
+
+    @Test
+    public void testShouldShowInstallButton_doesNotQueryInstallStateWithoutWebContents() {
+        mTabletMediator.onFinishNativeInitialization();
+        doReturn(null).when(mTab).getWebContents();
+        clearInvocations(mLocationBarDataProvider);
+
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
+    }
+
+    @Test
+    public void testShouldShowInstallButton_doesNotQueryInstallStateWhenFocused() {
+        mTabletMediator.onFinishNativeInitialization();
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        assertTrue(mTabletMediator.shouldShowInstallButton());
+
+        mTabletMediator.onUrlFocusChange(/* hasFocus= */ true);
+        clearInvocations(mLocationBarDataProvider);
+
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
+    }
+
+    @Test
+    public void testShouldShowInstallButton_returnsFalseOnPhoneWithoutQueries() {
+        mMediator.onFinishNativeInitialization();
+        clearInvocations(mLocationBarDataProvider, mAppBannerManagerJni);
+
+        assertFalse(mMediator.shouldShowInstallButton());
+        verify(mAppBannerManagerJni, never()).isProbablyPromotable(any());
+        verify(mLocationBarDataProvider, never()).getAppInstallState();
     }
 
     @Test
