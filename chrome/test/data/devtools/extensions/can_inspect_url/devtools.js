@@ -8,16 +8,23 @@ function output(msg) {
 
 async function test() {
   // The test driver uses the URL fragment of the initial inspected page to pass
-  // the URL to test against
-  const newPageURL = await new Promise((resolve, reject) => {
-    chrome.devtools.inspectedWindow.eval(
-        'location.hash.substr(1)', {}, (res, error) => {
-          if (error && error.isError)
-            reject(error);
-          else
-            resolve(res || error.value);
-        });
-  });
+  // the URL to test against. Poll until the fragment is populated so tests can
+  // also open DevTools before setting the target URL.
+  let newPageURL = '';
+  while (!newPageURL) {
+    newPageURL = await new Promise((resolve, reject) => {
+      chrome.devtools.inspectedWindow.eval(
+          'location.hash.substr(1)', {}, (res, error) => {
+            if (error && error.isError)
+              reject(error);
+            else
+              resolve(res || error?.value);
+          });
+    });
+    if (!newPageURL) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+  }
 
   const oldURL = await new Promise((resolve, reject) => {
     chrome.devtools.inspectedWindow.eval('location.href', {}, (res, error) => {
