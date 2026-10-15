@@ -335,6 +335,16 @@ public class WebappDataStorageTest {
         assertEquals(scopeUrl, storage.getScope());
         assertEquals(manifestUrl, storage.getWebApkManifestUrl());
         assertEquals(webApkVersionCode, storage.getWebApkVersionCode());
+
+        String updatedScopeUrl = "updated_scope";
+        BrowserServicesIntentDataProvider updatedIntentDataProvider =
+                new WebApkIntentDataProviderBuilder(webApkPackageName, url)
+                        .setScope(updatedScopeUrl)
+                        .setManifestUrl(manifestUrl)
+                        .setWebApkVersionCode(webApkVersionCode + 1)
+                        .build();
+        storage.updateFromWebappIntentDataProvider(updatedIntentDataProvider);
+        assertEquals(updatedScopeUrl, storage.getScope());
     }
 
     /**
