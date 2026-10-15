@@ -4455,6 +4455,7 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL},
 #if BUILDFLAG(IS_WIN)
       {"isolationStateLabel", IDS_SETTINGS_SYSTEM_ISOLATION_STATE_LABEL},
+      {"isolationStateSubLabel", IDS_SETTINGS_SYSTEM_ISOLATION_STATE_SUBLABEL},
 #endif  // BUILDFLAG(IS_WIN)
       {"proxySettingsLabel", IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -4491,14 +4492,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       "proxySettingsYourDevice",
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_DEVICE_LABEL));
-
-#if BUILDFLAG(IS_WIN)
-  html_source->AddString(
-      "isolationStateSubLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_SYSTEM_ISOLATION_STATE_SUBLABEL,
-          l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
-#endif  // BUILDFLAG(IS_WIN)
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.
