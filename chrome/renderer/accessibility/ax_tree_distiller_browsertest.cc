@@ -261,6 +261,64 @@ const TestCase kDistillWebPageTestCases[] = {
         </main>
       <body>)HTML",
      {"Main", "Expanded"}},
+    /* ----------------------- */
+    {"simple_page_list_items",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <ul>
+            <li><b>Bold</b> lead-in</li>
+            <li>Item <i>italic</i> text</li>
+          </ul>
+        </main>
+      <body>)HTML",
+     {"\xE2\x80\xA2 Bold lead-in", "\xE2\x80\xA2 Item italic text"}},
+    /* ----------------------- */
+    // A list item is picked as a single content node, rather than each
+    // paragraph inside it.
+    {"simple_page_list_item_with_paragraphs",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <ul>
+            <li>
+              <p>P1</p>
+              <p>P2</p>
+            </li>
+          </ul>
+        </main>
+      <body>)HTML",
+     {"\xE2\x80\xA2 P1P2"}},
+    /* ----------------------- */
+    {"simple_page_aria_list_item_with_paragraphs",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <div role='list'>
+            <div role='listitem'>
+              <p>P1</p>
+              <p>P2</p>
+            </div>
+          </div>
+        </main>
+      <body>)HTML",
+     {"P1P2"}},
+    /* ----------------------- */
+    // A collapsed list item is not content itself, but its descendants are
+    // still searched.
+    {"simple_page_collapsed_list_item_with_paragraph",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <p>Main</p>
+          <div role='list'>
+            <div role='listitem' aria-expanded='false'>
+              <p>Inside collapsed</p>
+            </div>
+          </div>
+        </main>
+      <body>)HTML",
+     {"Main", "Inside collapsed"}},
 };
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
@@ -318,4 +376,45 @@ TEST_F(AXTreeDistillerTestBase, DistillPdfRoot) {
 
   ui::AXTree tree(snapshot);
   DistillAXTree(tree, snapshot, {"Heading", "Paragraph"});
+}
+
+TEST_F(AXTreeDistillerTestBase, DistillPdfListItem) {
+  ui::AXTreeUpdate snapshot;
+  ui::AXNodeData pdf_root_node;
+  pdf_root_node.id = 1;
+  pdf_root_node.role = ax::mojom::Role::kPdfRoot;
+
+  ui::AXNodeData list_node;
+  list_node.id = 2;
+  list_node.role = ax::mojom::Role::kList;
+
+  ui::AXNodeData list_item_node;
+  list_item_node.id = 3;
+  list_item_node.role = ax::mojom::Role::kListItem;
+
+  // List items in PDFs have static text children directly, without a
+  // paragraph in between.
+  ui::AXNodeData bold_text_node;
+  bold_text_node.id = 4;
+  bold_text_node.role = ax::mojom::Role::kStaticText;
+  bold_text_node.SetName("Bold");
+  bold_text_node.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData text_node;
+  text_node.id = 5;
+  text_node.role = ax::mojom::Role::kStaticText;
+  text_node.SetName(" lead-in");
+  text_node.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  list_item_node.child_ids = {bold_text_node.id, text_node.id};
+  list_node.child_ids = {list_item_node.id};
+  pdf_root_node.child_ids = {list_node.id};
+  snapshot.root_id = pdf_root_node.id;
+  snapshot.nodes = {pdf_root_node, list_node, list_item_node, bold_text_node,
+                    text_node};
+  snapshot.has_tree_data = true;
+  snapshot.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXTree tree(snapshot);
+  DistillAXTree(tree, snapshot, {"Bold lead-in"});
 }

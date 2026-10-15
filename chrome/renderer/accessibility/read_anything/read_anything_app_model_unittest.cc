@@ -707,6 +707,66 @@ TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {
   EXPECT_TRUE(model().display_node_ids().contains(6));
 }
 
+TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ListItems) {
+  static constexpr ui::AXNodeID kRootId = 1;
+  static constexpr ui::AXNodeID kListId = 2;
+  static constexpr ui::AXNodeID kListItemId = 3;
+  static constexpr ui::AXNodeID kListMarkerId = 4;
+  static constexpr ui::AXNodeID kItemTextId = 5;
+  static constexpr ui::AXNodeID kCollapsedListItemId = 6;
+  static constexpr ui::AXNodeID kCollapsedItemTextId = 7;
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+
+  ui::AXNodeData root = test::GenericContainerNode(kRootId);
+  root.child_ids = {kListId};
+
+  ui::AXNodeData ul_node;
+  ul_node.id = kListId;
+  ul_node.role = ax::mojom::Role::kList;
+  ul_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "ul");
+  ul_node.child_ids = {kListItemId, kCollapsedListItemId};
+
+  ui::AXNodeData li_node;
+  li_node.id = kListItemId;
+  li_node.role = ax::mojom::Role::kListItem;
+  li_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "li");
+  li_node.child_ids = {kListMarkerId, kItemTextId};
+
+  ui::AXNodeData marker_node;
+  marker_node.id = kListMarkerId;
+  marker_node.role = ax::mojom::Role::kListMarker;
+  marker_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                 "::marker");
+  ui::AXNodeData item_text = test::TextNode(kItemTextId, u"Item 1");
+
+  ui::AXNodeData collapsed_li_node;
+  collapsed_li_node.id = kCollapsedListItemId;
+  collapsed_li_node.role = ax::mojom::Role::kListItem;
+  collapsed_li_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                       "li");
+  collapsed_li_node.AddState(ax::mojom::State::kCollapsed);
+  collapsed_li_node.child_ids = {kCollapsedItemTextId};
+  ui::AXNodeData collapsed_item_text =
+      test::TextNode(kCollapsedItemTextId, u"Collapsed item");
+
+  update.root_id = kRootId;
+  update.nodes = {std::move(root),
+                  std::move(ul_node),
+                  std::move(li_node),
+                  std::move(marker_node),
+                  std::move(item_text),
+                  std::move(collapsed_li_node),
+                  std::move(collapsed_item_text)};
+
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  ProcessDisplayNodes({kListItemId, kCollapsedListItemId});
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kListId, kListItemId, kListMarkerId,
+                                   kItemTextId));
+}
+
 TEST_F(ReadAnythingAppModelTest,
        DisplayNodeIdsDoesNotContain_InvisibleOrIgnoredNodes) {
   ui::AXTreeUpdate update;

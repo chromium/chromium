@@ -29,9 +29,9 @@ namespace {
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kContentRoles[]{
-    ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
-    ax::mojom::Role::kNote, ax::mojom::Role::kImage,
-    ax::mojom::Role::kFigcaption};
+    ax::mojom::Role::kHeading,    ax::mojom::Role::kParagraph,
+    ax::mojom::Role::kNote,       ax::mojom::Role::kImage,
+    ax::mojom::Role::kFigcaption, ax::mojom::Role::kListItem};
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kRolesToSkip[]{
@@ -111,7 +111,11 @@ void GetContentRootNodes(const ui::AXTree& tree,
 void AddContentNodesToVector(const ui::AXNode* node,
                              std::vector<ui::AXNodeID>* content_node_ids) {
   const auto& role = node->GetRole();
-  if (std::ranges::contains(kContentRoles, role)) {
+  // Collapsed nodes (e.g. collapsed aria-expanded list items) are not content
+  // themselves, but their descendants are still searched below.
+  bool is_collapsed = node->data().SupportsExpandCollapse() &&
+                      !node->HasState(ax::mojom::State::kExpanded);
+  if (std::ranges::contains(kContentRoles, role) && !is_collapsed) {
     content_node_ids->emplace_back(node->id());
     return;
   }
