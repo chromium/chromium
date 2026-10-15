@@ -105,9 +105,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   void ClearTransferredSource();
 
  protected:
-  // Initializes a new FrameQueueUnderlyingSource containing a
-  // |frame_queue_handle_| that references the same internal circular queue as
-  // |other_source|.
+  // Initializes a new FrameQueueUnderlyingSource whose |frame_queue_|
+  // references the same internal circular queue as |other_source|.
   FrameQueueUnderlyingSource(
       ScriptState*,
       FrameQueueUnderlyingSource<NativeFrameType>* other_source);
@@ -117,8 +116,14 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
                              wtf_size_t frame_pool_size,
                              std::optional<base::ThreadType> thread_type);
 
+  // Returns a reference-counted pointer to the internal queue. To avoid race
+  // conditions, callers should store the result in a local variable, check it
+  // for null, and use the local variable for the duration of the function.
+  // Repeatedly calling Queue() is unsafe because the internal queue could be
+  // cleared concurrently by another thread between calls.
   scoped_refptr<FrameQueue<NativeFrameType>> Queue() const {
-    return frame_queue_handle_.Queue();
+    base::AutoLock locker(lock_);
+    return frame_queue_;
   }
   const std::string& DeviceId() const { return device_id_; }
   wtf_size_t FramePoolSize() const { return frame_pool_size_; }
@@ -172,14 +177,16 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Main task runner for the window or worker context this source runs on.
   const scoped_refptr<base::SequencedTaskRunner> realm_task_runner_;
 
-  // |frame_queue_handle_| is a handle containing a reference to an internal
-  // circular queue prior to the stream controller's queue. It allows dropping
-  // older frames in case frames accumulate due to slow consumption.
-  // Frames are normally pushed on a background task runner (for example, the
-  // IO thread) and popped on |realm_task_runner_|.
-  FrameQueueHandle<NativeFrameType> frame_queue_handle_;
-
   mutable base::Lock lock_;
+  // |frame_queue_| is a reference to an internal circular queue prior to the
+  // stream controller's queue. It allows dropping older frames in case frames
+  // accumulate due to slow consumption. Frames are normally pushed on a
+  // background task runner (for example, the IO thread) and popped on
+  // |realm_task_runner_|. While `FrameQueue`'s own internal lock synchronizes
+  // the shared queue's contents across sources and threads, `lock_` guards the
+  // `frame_queue_` `scoped_refptr` itself against concurrent reads (e.g., in
+  // `QueueFrame()`) and resets (in `Close()` and `ClearTransferredSource()`).
+  scoped_refptr<FrameQueue<NativeFrameType>> frame_queue_ GUARDED_BY(lock_);
   // If the stream backed by this source is transferred to another in-process
   // realm (e.g., a Worker), |transferred_source_| is the source of the
   // transferred stream.

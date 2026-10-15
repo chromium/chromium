@@ -81,14 +81,14 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     : UnderlyingSourceBase(script_state),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      frame_queue_handle_(std::move(queue)),
+      frame_queue_(std::move(queue)),
       device_id_(std::move(device_id)),
       frame_pool_size_(frame_pool_size),
       thread_type_(thread_type),
       realm_is_boostable_context_(ExecutionContext::From(script_state)
                                       ->IsDedicatedWorkerGlobalScope()) {
   DCHECK(device_id_.empty() || frame_pool_size_ > 0);
-  auto q = frame_queue_handle_.Queue();
+  auto q = Queue();
   if (q) {
     base::AutoLock locker(q->GetLock());
     initial_total_frames_ = q->TotalFramesLocked();
@@ -101,7 +101,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
     FrameQueueUnderlyingSource<NativeFrameType>* other_source)
     : FrameQueueUnderlyingSource(script_state,
-                                 other_source->frame_queue_handle_.Queue(),
+                                 other_source->Queue(),
                                  other_source->device_id_,
                                  other_source->frame_pool_size_,
                                  other_source->thread_type_) {}
@@ -115,7 +115,7 @@ ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Pull(
     base::AutoLock locker(lock_);
     num_pending_pulls_++;
   }
-  auto frame_queue = frame_queue_handle_.Queue();
+  auto frame_queue = Queue();
   if (!frame_queue)
     return ToResolvedUndefinedPromise(script_state);
 
@@ -173,7 +173,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::ContextDestroyed() {
 
 template <typename NativeFrameType>
 wtf_size_t FrameQueueUnderlyingSource<NativeFrameType>::MaxQueueSize() const {
-  auto queue = frame_queue_handle_.Queue();
+  auto queue = Queue();
   return queue ? queue->MaxSize() : 0;
 }
 
@@ -208,7 +208,11 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   Deque<NativeFrameType> frames_to_destroy;
   {
     base::AutoLock locker(lock_);
-    frame_queue = frame_queue_handle_.Queue();
+    // Taking |frame_queue_| releases our reference to the queue once
+    // |frame_queue| goes out of scope. If this was the last reference (i.e.,
+    // not transferred), it will destroy the queue and any remaining frames in
+    // it.
+    frame_queue = std::move(frame_queue_);
     if (frame_queue) {
       base::AutoLock queue_locker(frame_queue->GetLock());
       if (!transferred_source) {
@@ -236,21 +240,16 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
       if (transferred_source) {
         // These frames will be discarded by the transferred source when it
         // processes the Close() task, so we must account for them now before
-        // we release our handle to the shared queue.
+        // we release our reference to the shared queue.
         closed_discarded_frames_ += frame_queue->SizeLocked();
       }
     }
-
-    // Invalidating the handle will release our reference to the queue.
-    // If this was the last reference (i.e., not transferred), it will
-    // eventually destroy the queue and any remaining audio frames in it.
-    frame_queue_handle_.Invalidate();
   }
 
-  // frames_to_destroy goes out of scope here: Popped video frames are destroyed
-  // (if any were popped).
-  // frame_queue goes out of scope here: The queue and remaining audio frames
-  // are destroyed if this was the last reference.
+  // frames_to_destroy goes out of scope here: Popped frames are destroyed (if
+  // any were popped).
+  // frame_queue goes out of scope here: The queue and remaining frames are
+  // destroyed if this was the last reference.
 }
 
 template <typename NativeFrameType>
@@ -263,7 +262,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
       target_source;
   {
     base::AutoLock locker(lock_);
-    frame_queue = frame_queue_handle_.Queue();
+    frame_queue = frame_queue_;
     if (!frame_queue) {
       closed_total_frames_++;
       closed_discarded_frames_++;
@@ -402,7 +401,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::ClearTransferredSource() {
   transferred_source_cleared_ = true;
   transferred_source_.Clear();
   transferred_runner_ = nullptr;
-  auto frame_queue = frame_queue_handle_.Queue();
+  auto frame_queue = std::move(frame_queue_);
   if (frame_queue) {
     base::AutoLock queue_locker(frame_queue->GetLock());
     closed_total_frames_ =
@@ -411,7 +410,6 @@ void FrameQueueUnderlyingSource<NativeFrameType>::ClearTransferredSource() {
                                initial_discarded_frames_ +
                                frame_queue->SizeLocked();
   }
-  frame_queue_handle_.Invalidate();
 }
 
 template <typename NativeFrameType>
@@ -427,7 +425,7 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<
     NativeFrameType>::MaybeSendFrameFromQueueToStream() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  auto frame_queue = frame_queue_handle_.Queue();
+  auto frame_queue = Queue();
   if (!frame_queue)
     return;
 
@@ -623,9 +621,8 @@ bool FrameQueueUnderlyingSource<
 template <typename NativeFrameType>
 uint64_t FrameQueueUnderlyingSource<NativeFrameType>::TotalFrames() const {
   base::AutoLock locker(lock_);
-  auto queue = frame_queue_handle_.Queue();
-  if (queue) {
-    return queue->TotalFrames() - initial_total_frames_;
+  if (frame_queue_) {
+    return frame_queue_->TotalFrames() - initial_total_frames_;
   }
   return closed_total_frames_;
 }
@@ -633,9 +630,8 @@ uint64_t FrameQueueUnderlyingSource<NativeFrameType>::TotalFrames() const {
 template <typename NativeFrameType>
 uint64_t FrameQueueUnderlyingSource<NativeFrameType>::DiscardedFrames() const {
   base::AutoLock locker(lock_);
-  auto queue = frame_queue_handle_.Queue();
-  if (queue) {
-    return queue->DiscardedFrames() - initial_discarded_frames_;
+  if (frame_queue_) {
+    return frame_queue_->DiscardedFrames() - initial_discarded_frames_;
   }
   return closed_discarded_frames_;
 }
@@ -644,11 +640,10 @@ template <typename NativeFrameType>
 uint64_t FrameQueueUnderlyingSource<NativeFrameType>::DiscardedAndQueuedFrames()
     const {
   base::AutoLock locker(lock_);
-  auto queue = frame_queue_handle_.Queue();
-  if (queue) {
-    base::AutoLock queue_locker(queue->GetLock());
-    return queue->DiscardedFramesLocked() - initial_discarded_frames_ +
-           queue->SizeLocked();
+  if (frame_queue_) {
+    base::AutoLock queue_locker(frame_queue_->GetLock());
+    return frame_queue_->DiscardedFramesLocked() - initial_discarded_frames_ +
+           frame_queue_->SizeLocked();
   }
   return closed_discarded_frames_;
 }

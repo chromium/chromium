@@ -124,41 +124,6 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   uint64_t discarded_frames_ GUARDED_BY(GetLock()) = 0;
 };
 
-// Wrapper that allows sharing a single FrameQueue reference across multiple
-// threads.
-template <typename NativeFrameType>
-class FrameQueueHandle {
- public:
-  explicit FrameQueueHandle(
-      scoped_refptr<FrameQueue<NativeFrameType>> frame_queue)
-      : queue_(std::move(frame_queue)) {
-    DCHECK(queue_);
-  }
-  FrameQueueHandle(const FrameQueueHandle&) = delete;
-  FrameQueueHandle& operator=(const FrameQueueHandle&) = delete;
-
-  ~FrameQueueHandle() { Invalidate(); }
-
-  // Returns a copy of |queue_|, which should be checked for nullity and
-  // re-used throughout the scope of a function call, instead of calling
-  // Queue() multiple times.  Otherwise the queue could be destroyed
-  // between calls.
-  scoped_refptr<FrameQueue<NativeFrameType>> Queue() const {
-    base::AutoLock locker(lock_);
-    return queue_;
-  }
-
-  // Releases the internal FrameQueue reference.
-  void Invalidate() {
-    base::AutoLock locker(lock_);
-    queue_.reset();
-  }
-
- private:
-  mutable base::Lock lock_;
-  scoped_refptr<FrameQueue<NativeFrameType>> queue_ GUARDED_BY(lock_);
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_H_

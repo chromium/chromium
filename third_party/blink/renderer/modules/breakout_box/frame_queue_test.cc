@@ -80,66 +80,33 @@ TEST_F(FrameQueueTest, QueueDropsOldElements) {
   EXPECT_FALSE(queue->Pop().has_value());
 }
 
-TEST_F(FrameQueueTest, FrameQueueHandle) {
-  const int kMaxSize = 5;
-  scoped_refptr<FrameQueue<int>> original_queue =
-      base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
-  FrameQueueHandle<int> handle1(original_queue);
-  FrameQueueHandle<int> handle2(std::move(original_queue));
-
-  for (int i = 0; i < kMaxSize; ++i) {
-    auto queue = handle1.Queue();
-    EXPECT_TRUE(queue);
-    queue->Push(i);
-  }
-  for (int i = 0; i < kMaxSize; ++i) {
-    auto queue = handle2.Queue();
-    EXPECT_TRUE(queue);
-    std::optional<int> element = queue->Pop();
-    EXPECT_TRUE(element.has_value());
-    EXPECT_EQ(*element, i);
-  }
-
-  EXPECT_TRUE(handle1.Queue());
-  handle1.Invalidate();
-  EXPECT_FALSE(handle1.Queue());
-
-  EXPECT_TRUE(handle2.Queue());
-  handle2.Invalidate();
-  EXPECT_FALSE(handle2.Queue());
-}
-
 TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
   const int kMaxSize = 3;
   const int kNumElements = 100;
-  scoped_refptr<FrameQueue<int>> original_queue =
+  scoped_refptr<FrameQueue<int>> queue1 =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
-  FrameQueueHandle<int> handle1(std::move(original_queue));
-  FrameQueueHandle<int> handle2(handle1.Queue());
+  scoped_refptr<FrameQueue<int>> queue2 = queue1;
 
   base::WaitableEvent start_event;
   base::WaitableEvent end_event;
   PostCrossThreadTask(
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
-          [](FrameQueueHandle<int>* handle, base::WaitableEvent* start_event,
-             base::WaitableEvent* end_event) {
-            auto queue = handle->Queue();
+          [](scoped_refptr<FrameQueue<int>> queue,
+             base::WaitableEvent* start_event, base::WaitableEvent* end_event) {
             EXPECT_TRUE(queue);
             start_event->Signal();
             for (int i = 0; i < kNumElements; ++i)
               queue->Push(i);
-            handle->Invalidate();
             end_event->Signal();
           },
-          CrossThreadUnretained(&handle1), CrossThreadUnretained(&start_event),
+          std::move(queue1), CrossThreadUnretained(&start_event),
           CrossThreadUnretained(&end_event)));
 
-  auto queue = handle2.Queue();
   int last_value_read = -1;
   start_event.Wait();
   for (int i = 0; i < kNumElements; ++i) {
-    std::optional<int> element = queue->Pop();
+    std::optional<int> element = queue2->Pop();
     if (element) {
       EXPECT_GE(*element, 0);
       EXPECT_LT(*element, kNumElements);
@@ -148,12 +115,12 @@ TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
     }
   }
   end_event.Wait();
-  EXPECT_FALSE(handle1.Queue());
-  EXPECT_TRUE(handle2.Queue());
+  EXPECT_FALSE(queue1);
+  EXPECT_TRUE(queue2);
 
   int num_read = 0;
-  while (!queue->IsEmpty()) {
-    std::optional<int> element = queue->Pop();
+  while (!queue2->IsEmpty()) {
+    std::optional<int> element = queue2->Pop();
     EXPECT_TRUE(element.has_value());
     EXPECT_GE(*element, 0);
     EXPECT_LT(*element, kNumElements);
