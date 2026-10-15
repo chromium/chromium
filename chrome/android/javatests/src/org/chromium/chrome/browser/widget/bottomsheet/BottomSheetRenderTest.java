@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -335,6 +337,29 @@ public class BottomSheetRenderTest {
                     assertEquals(0, contentContainer.getPaddingBottom());
                 });
         mRenderTestRule.render(mViewport, "standard_sheet_resize_content_edge_to_edge_inset");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandard_WrapContent_SystemBarNavigationInset() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(false);
+        initController(/* enableLargeFormFactorUi= */ false, /* edgeToEdgeBottomInsetDp= */ 0);
+
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        int navBarHeightPx = Math.round(48 * density);
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.systemBars(),
+                                Insets.of(0, 0, 0, navBarHeightPx))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        RenderSheetContent content = createCardContent("Wrap-Content Sheet Over Nav Bar", 220);
+        content.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+        showSheet(content, SheetState.FULL);
+        mRenderTestRule.render(mViewport, "standard_sheet_wrap_content_system_bar_nav_inset");
     }
 
     private void initController(boolean enableLargeFormFactorUi) {
