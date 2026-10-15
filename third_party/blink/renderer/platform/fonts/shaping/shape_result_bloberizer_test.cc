@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
@@ -40,18 +40,6 @@ static SimpleFontData* CreateTestSimpleFontData(bool force_rotation = false) {
                          : FontOrientation::kHorizontal),
       nullptr);
 }
-
-class ShapeResultBloberizerTest : public FontTestBase {
- protected:
-  void SetUp() override {
-    font_description.SetComputedSize(12.0);
-    font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
-    ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
-    font_description.SetGenericFamily(FontDescription::kStandardFamily);
-  }
-
-  FontDescription font_description;
-};
 
 struct ExpectedRun {
   int glyph_count;
@@ -123,22 +111,81 @@ void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
 
 }  // anonymous namespace
 
+class ShapeResultBloberizerTest : public FontTestBase {
+ protected:
+  void SetUp() override {
+    font_description.SetComputedSize(12.0);
+    font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
+    ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
+    font_description.SetGenericFamily(FontDescription::kStandardFamily);
+  }
+
+  static void Add(ShapeResultBloberizer& bloberizer,
+                  Glyph glyph,
+                  const SimpleFontData* font_data,
+                  CanvasRotationInVertical canvas_rotation,
+                  float h_offset,
+                  wtf_size_t character_index) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, h_offset,
+                   character_index);
+  }
+
+  static void Add(ShapeResultBloberizer& bloberizer,
+                  Glyph glyph,
+                  const SimpleFontData* font_data,
+                  CanvasRotationInVertical canvas_rotation,
+                  const gfx::Vector2dF& offset,
+                  wtf_size_t character_index) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, offset, character_index);
+  }
+
+  static const SimpleFontData* PendingRunFontData(
+      const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.pending_font_data_;
+  }
+
+  static CanvasRotationInVertical PendingBlobRotation(
+      const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.pending_canvas_rotation_;
+  }
+
+  static const Vector<Glyph, 1024>& PendingRunGlyphs(
+      const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.pending_glyphs_;
+  }
+
+  static const Vector<float, 1024>& PendingRunOffsets(
+      const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.pending_offsets_;
+  }
+
+  static bool HasPendingRunVerticalOffsets(
+      const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.HasPendingVerticalOffsets();
+  }
+
+  static size_t PendingBlobRunCount(const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.builder_run_count_;
+  }
+
+  static size_t CommittedBlobCount(const ShapeResultBloberizer& bloberizer) {
+    return bloberizer.blobs_.size();
+  }
+
+  FontDescription font_description;
+};
+
 TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
   Font* font = MakeGarbageCollected<Font>();
   ShapeResultBloberizer bloberizer(font->GetFontDescription(),
                                    ShapeResultBloberizer::Type::kNormal);
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            nullptr);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer).size(),
-            0ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunOffsets(bloberizer).size(),
-            0ul);
-  EXPECT_FALSE(
-      ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer),
-            0ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
+  EXPECT_EQ(PendingRunFontData(bloberizer), nullptr);
+  EXPECT_EQ(PendingRunGlyphs(bloberizer).size(), 0ul);
+  EXPECT_EQ(PendingRunOffsets(bloberizer).size(), 0ul);
+  EXPECT_FALSE(HasPendingRunVerticalOffsets(bloberizer));
+  EXPECT_EQ(PendingBlobRunCount(bloberizer), 0ul);
+  EXPECT_EQ(CommittedBlobCount(bloberizer), 0ul);
 
   EXPECT_TRUE(bloberizer.Blobs().empty());
 }
@@ -152,56 +199,43 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   SimpleFontData* font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1,
-                                     CanvasRotationInVertical::kRegular, 10, 0);
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1,
-                                     CanvasRotationInVertical::kRegular, 15, 1);
+  Add(bloberizer, 42, font1, CanvasRotationInVertical::kRegular, 10, 0);
+  Add(bloberizer, 43, font1, CanvasRotationInVertical::kRegular, 15, 1);
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font1);
-  EXPECT_FALSE(
-      ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
+  EXPECT_EQ(PendingRunFontData(bloberizer), font1);
+  EXPECT_FALSE(HasPendingRunVerticalOffsets(bloberizer));
   {
-    const auto& glyphs =
-        ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
+    const auto& glyphs = PendingRunGlyphs(bloberizer);
     EXPECT_EQ(glyphs.size(), 2ul);
     EXPECT_EQ(42, glyphs[0]);
     EXPECT_EQ(43, glyphs[1]);
 
-    const auto& offsets =
-        ShapeResultBloberizerTestInfo::PendingRunOffsets(bloberizer);
+    const auto& offsets = PendingRunOffsets(bloberizer);
     EXPECT_EQ(offsets.size(), 2ul);
     EXPECT_EQ(10, offsets[0]);
     EXPECT_EQ(15, offsets[1]);
   }
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer),
-            0ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
+  EXPECT_EQ(PendingBlobRunCount(bloberizer), 0ul);
+  EXPECT_EQ(CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2,
-                                     CanvasRotationInVertical::kRegular, 12, 0);
+  Add(bloberizer, 44, font2, CanvasRotationInVertical::kRegular, 12, 0);
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font2);
-  EXPECT_FALSE(
-      ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
+  EXPECT_EQ(PendingRunFontData(bloberizer), font2);
+  EXPECT_FALSE(HasPendingRunVerticalOffsets(bloberizer));
   {
-    const auto& glyphs =
-        ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
+    const auto& glyphs = PendingRunGlyphs(bloberizer);
     EXPECT_EQ(glyphs.size(), 1ul);
     EXPECT_EQ(44, glyphs[0]);
 
-    const auto& offsets =
-        ShapeResultBloberizerTestInfo::PendingRunOffsets(bloberizer);
+    const auto& offsets = PendingRunOffsets(bloberizer);
     EXPECT_EQ(offsets.size(), 1ul);
     EXPECT_EQ(12, offsets[0]);
   }
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer),
-            1ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
+  EXPECT_EQ(PendingBlobRunCount(bloberizer), 1ul);
+  EXPECT_EQ(CommittedBlobCount(bloberizer), 0ul);
 
   // flush everything (1 blob w/ 2 runs)
   EXPECT_EQ(bloberizer.Blobs().size(), 1ul);
@@ -216,26 +250,20 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   SimpleFontData* font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1,
-                                     CanvasRotationInVertical::kRegular,
-                                     gfx::Vector2dF(10, 0), 0);
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1,
-                                     CanvasRotationInVertical::kRegular,
-                                     gfx::Vector2dF(15, 0), 1);
+  Add(bloberizer, 42, font1, CanvasRotationInVertical::kRegular,
+      gfx::Vector2dF(10, 0), 0);
+  Add(bloberizer, 43, font1, CanvasRotationInVertical::kRegular,
+      gfx::Vector2dF(15, 0), 1);
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font1);
-  EXPECT_TRUE(
-      ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
+  EXPECT_EQ(PendingRunFontData(bloberizer), font1);
+  EXPECT_TRUE(HasPendingRunVerticalOffsets(bloberizer));
   {
-    const auto& glyphs =
-        ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
+    const auto& glyphs = PendingRunGlyphs(bloberizer);
     EXPECT_EQ(glyphs.size(), 2ul);
     EXPECT_EQ(42, glyphs[0]);
     EXPECT_EQ(43, glyphs[1]);
 
-    const auto& offsets =
-        ShapeResultBloberizerTestInfo::PendingRunOffsets(bloberizer);
+    const auto& offsets = PendingRunOffsets(bloberizer);
     EXPECT_EQ(offsets.size(), 4ul);
     EXPECT_EQ(10, offsets[0]);
     EXPECT_EQ(0, offsets[1]);
@@ -243,35 +271,28 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
     EXPECT_EQ(0, offsets[3]);
   }
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer),
-            0ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
+  EXPECT_EQ(PendingBlobRunCount(bloberizer), 0ul);
+  EXPECT_EQ(CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2,
-                                     CanvasRotationInVertical::kRegular,
-                                     gfx::Vector2dF(12, 2), 2);
+  Add(bloberizer, 44, font2, CanvasRotationInVertical::kRegular,
+      gfx::Vector2dF(12, 2), 2);
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font2);
-  EXPECT_TRUE(
-      ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
+  EXPECT_EQ(PendingRunFontData(bloberizer), font2);
+  EXPECT_TRUE(HasPendingRunVerticalOffsets(bloberizer));
   {
-    const auto& glyphs =
-        ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
+    const auto& glyphs = PendingRunGlyphs(bloberizer);
     EXPECT_EQ(glyphs.size(), 1ul);
     EXPECT_EQ(44, glyphs[0]);
 
-    const auto& offsets =
-        ShapeResultBloberizerTestInfo::PendingRunOffsets(bloberizer);
+    const auto& offsets = PendingRunOffsets(bloberizer);
     EXPECT_EQ(offsets.size(), 2ul);
     EXPECT_EQ(12, offsets[0]);
     EXPECT_EQ(2, offsets[1]);
   }
 
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer),
-            1ul);
-  EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
+  EXPECT_EQ(PendingBlobRunCount(bloberizer), 1ul);
+  EXPECT_EQ(CommittedBlobCount(bloberizer), 0ul);
 
   // flush everything (1 blob w/ 2 runs)
   EXPECT_EQ(bloberizer.Blobs().size(), 1ul);
@@ -311,17 +332,11 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   };
 
   for (const auto& op : append_ops) {
-    ShapeResultBloberizerTestInfo::Add(bloberizer, 42, test_font,
-                                       op.canvas_rotation, gfx::Vector2dF(), 0);
-    EXPECT_EQ(
-        op.expected_pending_glyphs,
-        ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer).size());
-    EXPECT_EQ(op.canvas_rotation,
-              ShapeResultBloberizerTestInfo::PendingBlobRotation(bloberizer));
-    EXPECT_EQ(op.expected_pending_runs,
-              ShapeResultBloberizerTestInfo::PendingBlobRunCount(bloberizer));
-    EXPECT_EQ(op.expected_committed_blobs,
-              ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer));
+    Add(bloberizer, 42, test_font, op.canvas_rotation, gfx::Vector2dF(), 0);
+    EXPECT_EQ(op.expected_pending_glyphs, PendingRunGlyphs(bloberizer).size());
+    EXPECT_EQ(op.canvas_rotation, PendingBlobRotation(bloberizer));
+    EXPECT_EQ(op.expected_pending_runs, PendingBlobRunCount(bloberizer));
+    EXPECT_EQ(op.expected_committed_blobs, CommittedBlobCount(bloberizer));
   }
 
   // flush everything -> 4 blobs total
@@ -354,11 +369,9 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
       reference_font->GetFontDescription(), *reference_node,
       ShapeResultBloberizer::Type::kEmitText);
 
-  const auto& glyphs =
-      ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
+  const auto& glyphs = PendingRunGlyphs(bloberizer);
   ASSERT_EQ(glyphs.size(), 5ul);
-  const auto reference_glyphs =
-      ShapeResultBloberizerTestInfo::PendingRunGlyphs(reference_bloberizer);
+  const auto reference_glyphs = PendingRunGlyphs(reference_bloberizer);
   ASSERT_EQ(reference_glyphs.size(), 5ul);
 
   EXPECT_EQ(reference_glyphs[0], glyphs[0]);
@@ -442,8 +455,7 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
   // Do not expect the trailing surrogate to be in any output.
-  const auto& glyphs =
-      ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer_ng);
+  const auto& glyphs = PendingRunGlyphs(bloberizer_ng);
   EXPECT_EQ(1u, glyphs.size());
 
   CheckBlobBuffer(

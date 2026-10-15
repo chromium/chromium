@@ -55,7 +55,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   float Advance() const { return advance_; }
 
  private:
-  friend class ShapeResultBloberizerTestInfo;
+  friend class ShapeResultBloberizerTest;
 
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
