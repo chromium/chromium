@@ -112,14 +112,14 @@ The information to populate the AccessibilityNodeInfo objects is contained in
 the accessibility tree in the C++ code in the shared BrowserAccessibilityManager.
 For Android there is the usual BrowserAccessibilityManagerAndroid, and the
 BrowserAccessibilityAndroid classes, as expected, but there is also an additional
-[web\_contents\_accessibility\_android.cc](https://cs.chromium.org/chromium/src/content/browser/accessibility/web_contents_accessibility_android.cc) class.
+[web\_contents\_accessibility\_base.cc](https://cs.chromium.org/chromium/src/content/browser/accessibility/web_contents_accessibility_base.cc) class.
 This class is what allows us to connect the Java-side WebContentsAccessibilityImpl
 with the C++ side manager, through the Java Native Interface (JNI).
 
 When [WebContentsAccessibilityImpl#createAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22AccessibilityNodeInfoCompat%20createAccessibilityNodeInfo%22) is called for
 a given virtual view (web node), the WebContentsAccessibilityImpl object calls into the native
-C++ code through JNI, connecting to `web_contents_accessibility_android.cc`. The
-web\_contents\_accessibility\_android object in turn compiles information about the
+C++ code through JNI, connecting to `web_contents_accessibility_base.cc`. The
+web\_contents\_accessibility\_base object in turn compiles information about the
 requested node from BrowserAccessibilityAndroid and BrowserAccessibilityManagerAndroid
 and then calls back into WebContentsAccessibilityImpl, again through the JNI, to
 send this information back to the Java-side to be populated into the
@@ -131,7 +131,7 @@ make so many trips. However, passing all the attributes in one giant function ca
 is also not ideal. We try to strike a balance by grouping like attributes together
 (e.g. all boolean attributes) into a single JNI trip, and make just a few JNI
 trips per AccessibilityNodeInfo object. These trips can be found in the
-[WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_android.cc?q=%22WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo%22) method,
+[WebContentsAccessibilityBase::PopulateAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_base.cc?q=%22WebContentsAccessibilityBase::PopulateAccessibilityNodeInfo%22) method,
 which is called from WebContentsAccessibilityImpl#createAccessibilityNodeInfo, and
 is the core method for compiling a node's attributes and passing them to the Java-side.
 
@@ -174,7 +174,7 @@ public AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId
 When returning a cached node, there are some fields that we always update. This
 requires a call through the JNI, but it still much more efficient than constructing
 a full node from scratch. Rather than calling `PopulateAccessibilityNodeInfo`, we
-call [WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_android.cc?q=%22WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo%22).
+call [WebContentsAccessibilityBase::UpdateCachedAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_base.cc?q=%22WebContentsAccessibilityBase::UpdateCachedAccessibilityNodeInfo%22).
 This method updates the bounding box for the node so that AT knows where to draw
 outlines if needed. (Note: it also technically updates RangeInfo on some nodes to
 get around a bug in the Android framework, more on that below.)
@@ -250,7 +250,7 @@ One of the most important methods in WebContentsAccessibilityImpl is the
 implementation of [performAction](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeProvider#performAction(int,%20int,%20android.os.Bundle)).
 This method is called by the Android framework on behalf of downstream AT for
 any user actions, such as focus changes, clicks, scrolls, etc. For most actions,
-we call through the JNI to web\_contents\_accessibility\_android, which will call a
+we call through the JNI to web\_contents\_accessibility\_base, which will call a
 corresponding method in BrowserAccessibilityManager to send this request to the
 underlying accessibility code. The performAction method parameters include a
 virtualViewId, the action, and a Bundle of args/extras. The Bundle may be null,
@@ -266,7 +266,7 @@ Often times a call to performAction is paired with one or more AccessibilityEven
 being dispatched in response, but AccessibilityEvents can also be sent without
 any user interaction, but instead from updates in the web contents. The AccessibilityEvents
 are relatively lightweight, and they are constructed following the same model as
-the AccessibilityNodeInfo objects (i.e. calling into web\_contents\_accessibility\_android and
+the AccessibilityNodeInfo objects (i.e. calling into web\_contents\_accessibility\_base and
 being populated through a series of JNI calls). However, the events can put significant
 strain on downstream AT, and this is where another important performance optimization
 was added.
@@ -435,7 +435,7 @@ Android framework.
     values between 0 and 100 (an integer percentage of the sliders position).
     BrowserAccessibilityAndroid has a method [IsRangeControlWithoutAriaValueText](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/browser_accessibility_android.cc?q=BrowserAccessibilityAndroid::IsRangeControlWithoutAriaValueText)
     which we use to separate these cases when populating AccessibilityNodeInfo
-    objects and AccessibilityEvents (see web\_contents\_accessibility\_android.cc).
+    objects and AccessibilityEvents (see web\_contents\_accessibility\_base.cc).
     Similar to the Collection related objects above, RangeInfo is `null` for any
     non-range related nodes.
 
@@ -484,11 +484,11 @@ Android framework.
     downstream AT. We have included this event as part of our event throttling in
     the AccessibilityEventDispatcher. We also include a small optimization for a
     given atomic update. If an atomic update sends more than
-    [kMaxContentChangedEventsToFire](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_android.h?q=%22kMaxContentChangedEventsToFire%22)
+    [kMaxContentChangedEventsToFire](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_base.h?q=%22kMaxContentChangedEventsToFire%22)
     events (currently set to 5), then any further events are dropped and a single
     event on the root node is sent instead. This has proven useful for situations such
-    as many nodes being toggled visible at once. See [HandleContentChanged](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_android.cc?q=%22WebContentsAccessibilityAndroid::HandleContentChanged%22)
-    in web\_contents\_accessibility\_android.cc.
+    as many nodes being toggled visible at once. See [HandleContentChanged](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/web_contents_accessibility_base.cc?q=%22WebContentsAccessibilityBase::HandleContentChanged%22)
+    in web\_contents\_accessibility\_base.cc.
 
 - Text selection
 
@@ -575,7 +575,7 @@ This target tests the BrowserAccessibilityManagerAndroid
 and BrowserAccessibilityAndroid classes via DumpAccessibilityTreeTests (same as the other platforms). However, Android does not run any DumpAccessibilityEventsTests because the events sent to the Android framework are handled within the Java-side code. This target cannot build the Java-side objects for accessibility, and so we use other targets for those cases.
 
 * **content_shell_test_apk**\
-This target will create/run an instance of a `WebContents`, which will construct a `WebContentsAccessibilityImpl` object along with a corresponding `web_contents_accessibility_android` object. This target is used to test the "extra layer" that exists only for Android. The accessibility tests in this target have parallels with those in the `content_browsertests` target.
+This target will create/run an instance of a `WebContents`, which will construct a `WebContentsAccessibilityImpl` object along with a corresponding `web_contents_accessibility_base` object. This target is used to test the "extra layer" that exists only for Android. The accessibility tests in this target have parallels with those in the `content_browsertests` target.
 
 	- *WebContentsAccessibilityTest* - This test suite is used to test the methods of `WebContentsAccessibilityImpl.java`. It tests the various actions of performAction, construction of `AccessibilityEvents`, and various helper methods we use throughout the code.
 

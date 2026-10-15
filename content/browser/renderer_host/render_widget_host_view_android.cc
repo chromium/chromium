@@ -55,7 +55,7 @@
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
-#include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/browser/accessibility/web_contents_accessibility_base.h"
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/android/ime_adapter_android.h"
 #include "content/browser/android/overscroll_controller_android.h"
@@ -1027,7 +1027,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
       top_shown_pix, controls_changed);
   // This needs to be called after GestureListenerManager::UpdateScrollInfo, as
   // it depends on frame info being updated during the UpdateScrollInfo call.
-  auto* wcax = GetWebContentsAccessibilityAndroid();
+  auto* wcax = GetWebContentsAccessibilityBase();
   if (wcax)
     wcax->UpdateFrameInfo(metadata.page_scale_factor);
 
@@ -2365,8 +2365,8 @@ void RenderWidgetHostViewAndroid::SynchronousCopyContents(
   std::move(callback).Run(viz::CopyOutputBitmapWithMetadata(bitmap));
 }
 
-WebContentsAccessibilityAndroid*
-RenderWidgetHostViewAndroid::GetWebContentsAccessibilityAndroid() const {
+WebContentsAccessibilityBase*
+RenderWidgetHostViewAndroid::GetWebContentsAccessibilityBase() const {
   return web_contents_accessibility_;
 }
 
@@ -3933,7 +3933,7 @@ void RenderWidgetHostViewAndroid::OnUpdateScopedSelectionHandles() {
 }
 
 void RenderWidgetHostViewAndroid::SetWebContentsAccessibility(
-    WebContentsAccessibilityAndroid* web_contents_accessibility) {
+    WebContentsAccessibilityBase* web_contents_accessibility) {
   web_contents_accessibility_ = web_contents_accessibility;
   UpdateRootScrollOffsetUpdateFrequency();
 }

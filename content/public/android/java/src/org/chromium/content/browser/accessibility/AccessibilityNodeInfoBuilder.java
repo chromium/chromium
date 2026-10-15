@@ -91,8 +91,8 @@ import java.util.Map;
 
 /**
  * Basic helper class to build AccessibilityNodeInfo objects for the WebContents in Chrome. This
- * class can be used by the Native-side code {@link web_contents_accessibility_android.cc} to
- * construct objects for the virtual view hierarchy to provide to the Android framework.
+ * class can be used by the Native-side code {@link web_contents_accessibility_base.cc} to construct
+ * objects for the virtual view hierarchy to provide to the Android framework.
  */
 @JNINamespace("content")
 @NullMarked

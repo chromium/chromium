@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
+#ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_BASE_H_
+#define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_BASE_H_
 
 #include <optional>
 #include <vector>
@@ -62,20 +62,19 @@ class ScopedAccessibilityMode;
 //
 // Owned by |Connector|, and destroyed together when the associated web contents
 // is destroyed.
-class CONTENT_EXPORT WebContentsAccessibilityAndroid
+class CONTENT_EXPORT WebContentsAccessibilityBase
     : public WebContentsAccessibility,
       public WebContentsObserver,
       public ui::AXNodeIdDelegate {
  public:
-  explicit WebContentsAccessibilityAndroid(WebContents* web_contents);
-  explicit WebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr);
+  explicit WebContentsAccessibilityBase(WebContents* web_contents);
+  explicit WebContentsAccessibilityBase(int64_t ax_tree_update_ptr);
 
-  WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
+  WebContentsAccessibilityBase(const WebContentsAccessibilityBase&) = delete;
+  WebContentsAccessibilityBase& operator=(const WebContentsAccessibilityBase&) =
       delete;
-  WebContentsAccessibilityAndroid& operator=(
-      const WebContentsAccessibilityAndroid&) = delete;
 
-  ~WebContentsAccessibilityAndroid() override;
+  ~WebContentsAccessibilityBase() override;
 
   // WebContentsObserver:
   void InnerWebContentsAttached(WebContents* inner_web_contents,
@@ -87,7 +86,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void OnAXNodeDeleted(ui::AXNodeID ax_node_id) override;
 
   // Notify the root BrowserAccessibilityManager that this is the
-  // WebContentsAccessibilityAndroid it should talk to.
+  // `WebContentsAccessibilityBase` it should talk to.
   void UpdateBrowserAccessibilityManager();
 
   void OnTooltipCleared();
@@ -476,7 +475,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleEndOfTestSignal();
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
-  base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
+  base::WeakPtr<WebContentsAccessibilityBase> GetWeakPtr();
 
   base::android::ScopedJavaLocalRef<jintArray> GetChildIdsForTesting(
       JNIEnv* env,
@@ -505,9 +504,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       int32_t unique_id);
 
  private:
-  friend class MockWebContentsAccessibilityAndroid;
+  friend class MockWebContentsAccessibilityBase;
 
-  WebContentsAccessibilityAndroid();
+  WebContentsAccessibilityBase();
 
   BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager()
       const;
@@ -671,9 +670,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   bool should_announce_full_text_ = false;
 
-  base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebContentsAccessibilityBase> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
+#endif  // CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_BASE_H_

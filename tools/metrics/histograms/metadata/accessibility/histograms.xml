@@ -531,9 +531,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the time it takes for a single one-shot tree search to find an
     element. This is done during the
-    WebContentsAccessibilityAndroid#FindElementType method, which searches for
-    the next element in a tree for a move by granularity action. We only track
-    this for a completed tree search (i.e. one that finds a node successfully),
+    WebContentsAccessibilityBase#FindElementType method, which searches for the
+    next element in a tree for a move by granularity action. We only track this
+    for a completed tree search (i.e. one that finds a node successfully),
     ignoring early-exits, to get an upper bound on the method cost. This metric
     has a range of 1 to 1000 microseconds. UMA data analysis confirmed this
     range is appropriate.

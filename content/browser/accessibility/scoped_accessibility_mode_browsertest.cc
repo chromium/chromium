@@ -20,7 +20,7 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/browser/accessibility/web_contents_accessibility_base.h"
 #endif
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -664,11 +664,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
   ASSERT_EQ(web_contents3().GetAccessibilityMode(), ui::AXMode());
 
-  // Initialize WebContentsAccessibilityAndroid on web_contents1() ONLY
+  // Initialize WebContentsAccessibilityBase on web_contents1() ONLY
   // (simulating Java becoming ready on a foreground tab while web_contents2()
   // and web_contents3() do not have Java accessibility ready). Owned by
   // WebContents via RenderWidgetHostConnector.
-  auto* wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+  auto* wcax1 = new WebContentsAccessibilityBase(&web_contents1());
 
   // Case 1: No accessibility services enabled (e.g. framework probe during
   // view/autofill structure query).
@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   accessibility_state().SetActivationFromPlatformEnabled(true);
 
-  auto* wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+  auto* wcax1 = new WebContentsAccessibilityBase(&web_contents1());
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/true,
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Once Java WebContentsAccessibilityImpl initializes for `new_wc` and calls
   // SetBrowserAXMode, `new_wc` receives the full accessibility mode.
-  auto* wcax_new = new WebContentsAccessibilityAndroid(new_wc);
+  auto* wcax_new = new WebContentsAccessibilityBase(new_wc);
   wcax_new->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/true,
@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies the b/565076216 scenario: a background/hidden tab initializing
-// WebContentsAccessibilityAndroid when no accessibility services are enabled
+// WebContentsAccessibilityBase when no accessibility services are enabled
 // never leaks kAXModeBasic to a foreground tab, and auto-disabling one tab
 // does not affect another active tab.
 IN_PROC_BROWSER_TEST_F(
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // web_contents1() is the active foreground tab; web_contents2() is a
   // background tab (e.g. restored at startup on desktop/phone).
-  auto* wcax_bg = new WebContentsAccessibilityAndroid(&web_contents2());
+  auto* wcax_bg = new WebContentsAccessibilityBase(&web_contents2());
   wcax_bg->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/false,
@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
                        ProcessAndWebContentsScoperCoexistence) {
   accessibility_state().SetActivationFromPlatformEnabled(true);
 
-  auto* wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+  auto* wcax1 = new WebContentsAccessibilityBase(&web_contents1());
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/true,
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
 // destroyed (closed), GetAccessibilityMode() and ActiveAssistiveTech() cleanly
 // reset to off/kNone via OnAnyModeChanged() even though ~WebContentsImpl()
 // detaches the WebContents from GetAllWebContents() before
-// ~WebContentsAccessibilityAndroid() destroys its ScopedAccessibilityMode.
+// ~WebContentsAccessibilityBase() destroys its ScopedAccessibilityMode.
 IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
                        LastWebContentsDestructionResetsAnyMode) {
   accessibility_state().SetActivationFromPlatformEnabled(true);
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
   Shell* extra_shell = CreateBrowser();
   WebContents* extra_wc = extra_shell->web_contents();
 
-  auto* wcax_extra = new WebContentsAccessibilityAndroid(extra_wc);
+  auto* wcax_extra = new WebContentsAccessibilityBase(extra_wc);
   wcax_extra->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/true,
@@ -935,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
             ui::AssistiveTech::kNone);
 }
 
-// Verifies that when WebContentsAccessibilityAndroid::SetBrowserAXMode enables
+// Verifies that when WebContentsAccessibilityBase::SetBrowserAXMode enables
 // accessibility on an outer WebContents, attached inner WebContents (such as
 // SlimWebViewGuest <webview> instances) also receive the AXMode whether they
 // attach before or after SetBrowserAXMode is called.
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(
   // WebContentsAccessibilityImpl during SetUpOnMainThread or navigation, reset
   // its renderer accessibility scoper so we start from a clean ui::AXMode().
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    if (auto* wcax = static_cast<WebContentsAccessibilityAndroid*>(
+    if (auto* wcax = static_cast<WebContentsAccessibilityBase*>(
             wc->GetPrimaryMainFrame()
                 ->AccessibilityGetWebContentsAccessibility())) {
       wcax->DisableRendererAccessibility(/*env=*/nullptr);
@@ -965,12 +965,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
   EXPECT_EQ(inner_before->GetAccessibilityMode(), ui::AXMode());
 
-  auto* wcax1 = static_cast<WebContentsAccessibilityAndroid*>(
+  auto* wcax1 = static_cast<WebContentsAccessibilityBase*>(
       static_cast<WebContentsImpl*>(&web_contents1())
           ->GetPrimaryMainFrame()
           ->AccessibilityGetWebContentsAccessibility());
   if (!wcax1) {
-    wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+    wcax1 = new WebContentsAccessibilityBase(&web_contents1());
   }
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,

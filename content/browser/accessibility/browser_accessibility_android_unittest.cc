@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
-#include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/browser/accessibility/web_contents_accessibility_base.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -98,12 +98,11 @@ class MockContentClient : public TestContentClient {
   }
 };
 
-class MockWebContentsAccessibilityAndroid
-    : public WebContentsAccessibilityAndroid {
+class MockWebContentsAccessibilityBase : public WebContentsAccessibilityBase {
  public:
-  MockWebContentsAccessibilityAndroid() {}
-  explicit MockWebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr)
-      : WebContentsAccessibilityAndroid(ax_tree_update_ptr) {}
+  MockWebContentsAccessibilityBase() {}
+  explicit MockWebContentsAccessibilityBase(int64_t ax_tree_update_ptr)
+      : WebContentsAccessibilityBase(ax_tree_update_ptr) {}
 
   MOCK_METHOD(void,
               HandleWindowContentChange,
@@ -156,7 +155,7 @@ class BrowserAccessibilityAndroidTest : public ::testing::Test {
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
   ui::TestAXNodeIdDelegate node_id_delegate_;
-  MockWebContentsAccessibilityAndroid mock_web_contents_accessibility_android_;
+  MockWebContentsAccessibilityBase mock_web_contents_accessibility_base_;
 
  private:
   void SetUp() override;
@@ -176,7 +175,7 @@ void BrowserAccessibilityAndroidTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
   test_browser_accessibility_delegate_->SetWebContentsAccessibility(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
   SetContentClient(&client_);
 }
 
@@ -2057,7 +2056,7 @@ TEST_F(BrowserAccessibilityAndroidTest, SnapshotIdsDoNotCollideWithLiveTree) {
           live_manager->GetBrowserAccessibilityRoot());
   int32_t live_unique_id = live_node->GetUniqueId();
 
-  // Now create snapshot tree using MockWebContentsAccessibilityAndroid as
+  // Now create snapshot tree using `MockWebContentsAccessibilityBase` as
   // delegate.
   ui::AXNodeData snapshot_root;
   snapshot_root.id = 1;  // Same Blink ID
@@ -2065,10 +2064,10 @@ TEST_F(BrowserAccessibilityAndroidTest, SnapshotIdsDoNotCollideWithLiveTree) {
 
   auto* update =
       new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(snapshot_root));
-  MockWebContentsAccessibilityAndroid snapshot_wcaa(
+  MockWebContentsAccessibilityBase snapshot_wcax(
       reinterpret_cast<intptr_t>(update));
 
-  int32_t snapshot_unique_id = snapshot_wcaa.GetRootId(nullptr);
+  int32_t snapshot_unique_id = snapshot_wcax.GetRootId(nullptr);
 
   // If the fix is active, snapshot_unique_id should be different from
   // live_unique_id.
@@ -2083,8 +2082,8 @@ TEST_F(BrowserAccessibilityAndroidTest, SnapshotIdsDoNotCollideWithLiveTree) {
   EXPECT_NE(nullptr, snapshot_node);
 
   EXPECT_EQ(snapshot_node,
-            snapshot_wcaa.GetAXFromUniqueIDForTesting(snapshot_unique_id));
-  EXPECT_EQ(nullptr, snapshot_wcaa.GetAXFromUniqueIDForTesting(live_unique_id));
+            snapshot_wcax.GetAXFromUniqueIDForTesting(snapshot_unique_id));
+  EXPECT_EQ(nullptr, snapshot_wcax.GetAXFromUniqueIDForTesting(live_unique_id));
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TwoSnapshotsDoNotCollide) {
@@ -2093,18 +2092,16 @@ TEST_F(BrowserAccessibilityAndroidTest, TwoSnapshotsDoNotCollide) {
   root1.role = ax::mojom::Role::kRootWebArea;
 
   auto* update1 = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(root1));
-  MockWebContentsAccessibilityAndroid wcaa1(
-      reinterpret_cast<intptr_t>(update1));
-  int32_t unique_id1 = wcaa1.GetRootId(nullptr);
+  MockWebContentsAccessibilityBase wcax1(reinterpret_cast<intptr_t>(update1));
+  int32_t unique_id1 = wcax1.GetRootId(nullptr);
 
   ui::AXNodeData root2;
   root2.id = 1;  // Same Blink ID
   root2.role = ax::mojom::Role::kRootWebArea;
 
   auto* update2 = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(root2));
-  MockWebContentsAccessibilityAndroid wcaa2(
-      reinterpret_cast<intptr_t>(update2));
-  int32_t unique_id2 = wcaa2.GetRootId(nullptr);
+  MockWebContentsAccessibilityBase wcax2(reinterpret_cast<intptr_t>(update2));
+  int32_t unique_id2 = wcax2.GetRootId(nullptr);
 
   // They should have different unique IDs.
   EXPECT_NE(unique_id1, unique_id2);
@@ -2117,11 +2114,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TwoSnapshotsDoNotCollide) {
   ASSERT_NE(nullptr, node1);
   ASSERT_NE(nullptr, node2);
 
-  EXPECT_EQ(node1, wcaa1.GetAXFromUniqueIDForTesting(unique_id1));
-  EXPECT_EQ(nullptr, wcaa1.GetAXFromUniqueIDForTesting(unique_id2));
+  EXPECT_EQ(node1, wcax1.GetAXFromUniqueIDForTesting(unique_id1));
+  EXPECT_EQ(nullptr, wcax1.GetAXFromUniqueIDForTesting(unique_id2));
 
-  EXPECT_EQ(node2, wcaa2.GetAXFromUniqueIDForTesting(unique_id2));
-  EXPECT_EQ(nullptr, wcaa2.GetAXFromUniqueIDForTesting(unique_id1));
+  EXPECT_EQ(node2, wcax2.GetAXFromUniqueIDForTesting(unique_id2));
+  EXPECT_EQ(nullptr, wcax2.GetAXFromUniqueIDForTesting(unique_id1));
 }
 
 // Test that BrowserAccessibilityAndroid::IsLeaf() returns true for a
@@ -2280,21 +2277,21 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsNodeLikelyKnownFilter) {
       static_cast<BrowserAccessibilityAndroid*>(b_unknown_node)->GetUniqueId();
 
   // Set up expectations for IsNodeLikelyKnownByAndroidFrameworkForExperiment.
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
+  EXPECT_CALL(mock_web_contents_accessibility_base_,
               IsNodeLikelyKnownByAndroidFrameworkForExperiment(known_unique_id))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
-      mock_web_contents_accessibility_android_,
+      mock_web_contents_accessibility_base_,
       IsNodeLikelyKnownByAndroidFrameworkForExperiment(unknown_unique_id))
       .WillRepeatedly(testing::Return(false));
 
   // The known node should trigger a single call to HandleWindowContentChange.
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
+  EXPECT_CALL(mock_web_contents_accessibility_base_,
               HandleWindowContentChange(known_unique_id, testing::_))
       .Times(1);
 
   // The unknown node should NOT trigger a call to HandleWindowContentChange.
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
+  EXPECT_CALL(mock_web_contents_accessibility_base_,
               HandleWindowContentChange(unknown_unique_id, testing::_))
       .Times(0);
 
@@ -3053,10 +3050,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   auto* update = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(
       root, button_outside, dialog_container, button_inside));
-  MockWebContentsAccessibilityAndroid wcaa(reinterpret_cast<intptr_t>(update));
+  MockWebContentsAccessibilityBase wcax(reinterpret_cast<intptr_t>(update));
 
   BrowserAccessibilityAndroid* root_node =
-      wcaa.GetAXFromUniqueIDForTesting(wcaa.GetRootId(nullptr));
+      wcax.GetAXFromUniqueIDForTesting(wcax.GetRootId(nullptr));
   ASSERT_NE(nullptr, root_node);
   ASSERT_EQ(2U, root_node->PlatformChildCount());
 
@@ -3079,16 +3076,16 @@ TEST_F(BrowserAccessibilityAndroidTest,
   // Moving accessibility focus into the dialog should trigger
   // `HandlePaneOpened` with the `new_dialog_id` (the dialog container's unique
   // ID), NOT the child node's unique ID.
-  EXPECT_CALL(wcaa, HandlePaneOpened(dialog_uid)).Times(1);
-  EXPECT_CALL(wcaa, HandlePaneOpened(inside_uid)).Times(0);
+  EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+  EXPECT_CALL(wcax, HandlePaneOpened(inside_uid)).Times(0);
 
-  wcaa.MoveAccessibilityFocus(nullptr, outside_uid, inside_uid);
+  wcax.MoveAccessibilityFocus(nullptr, outside_uid, inside_uid);
 
   // Moving focus out of the dialog should trigger `HandlePaneClosed` with the
   // dialog container's unique ID.
-  EXPECT_CALL(wcaa, HandlePaneClosed(dialog_uid)).Times(1);
+  EXPECT_CALL(wcax, HandlePaneClosed(dialog_uid)).Times(1);
 
-  wcaa.MoveAccessibilityFocus(nullptr, inside_uid, outside_uid);
+  wcax.MoveAccessibilityFocus(nullptr, inside_uid, outside_uid);
 }
 
 // Regression test for crbug.com/433149078. A multiselectable listbox
@@ -3252,12 +3249,12 @@ TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
           test_browser_accessibility_delegate_.get()));
 
   // As in production, the child frame's delegate does not report being a root
-  // frame, so its manager reaches the WebContentsAccessibilityAndroid instance
+  // frame, so its manager reaches the `WebContentsAccessibilityBase` instance
   // through the root frame's manager.
   ui::TestAXPlatformTreeManagerDelegate child_frame_delegate;
   child_frame_delegate.is_root_frame_ = false;
   child_frame_delegate.SetWebContentsAccessibility(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
 
   std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManagerAndroid::Create(
@@ -3269,7 +3266,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
 
   // Ignore the signals sent while the trees were being created.
   testing::Mock::VerifyAndClearExpectations(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
 
   auto* iframe_node = static_cast<BrowserAccessibilityAndroid*>(
       root_manager->GetFromID(iframe.id));
@@ -3278,16 +3275,15 @@ TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
   // A root change in the child frame's tree must not send a navigate signal,
   // since the root frame's root is unchanged. The node hosting the child frame
   // is invalidated instead, since it now has a different child.
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
-              HandleNavigate(testing::_))
+  EXPECT_CALL(mock_web_contents_accessibility_base_, HandleNavigate(testing::_))
       .Times(0);
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
+  EXPECT_CALL(mock_web_contents_accessibility_base_,
               HandleContentChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
-              HandleContentChanged(
-                  static_cast<int32_t>(iframe_node->GetUniqueId()),
-                  /*set_subtree_changed=*/true))
+  EXPECT_CALL(
+      mock_web_contents_accessibility_base_,
+      HandleContentChanged(static_cast<int32_t>(iframe_node->GetUniqueId()),
+                           /*set_subtree_changed=*/true))
       .Times(testing::AtLeast(1));
 
   ui::AXNodeData new_child_root;
@@ -3301,16 +3297,15 @@ TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
       << child_manager->ax_tree()->error();
 
   testing::Mock::VerifyAndClearExpectations(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
 
   // A root change in the root frame's tree sends a navigate signal with the
   // unique id of the new root.
   int32_t navigate_root_id = ui::kInvalidAXNodeID;
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
+  EXPECT_CALL(mock_web_contents_accessibility_base_,
               HandleContentChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(mock_web_contents_accessibility_android_,
-              HandleNavigate(testing::_))
+  EXPECT_CALL(mock_web_contents_accessibility_base_, HandleNavigate(testing::_))
       .WillOnce(testing::SaveArg<0>(&navigate_root_id));
 
   ui::AXNodeData new_root;
@@ -3368,7 +3363,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   ui::TestAXPlatformTreeManagerDelegate child_frame_delegate;
   child_frame_delegate.is_root_frame_ = false;
   child_frame_delegate.SetWebContentsAccessibility(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
 
   std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManagerAndroid::Create(
@@ -3381,7 +3376,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
             child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility());
 
   testing::Mock::VerifyAndClearExpectations(
-      &mock_web_contents_accessibility_android_);
+      &mock_web_contents_accessibility_base_);
 
   // The content of the update does not matter, only that it arrives through
   // OnAccessibilityEvents. The update is only prepared here and sent further
@@ -3397,7 +3392,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   // Java as a content changed call for that node, with the subtree flag set so
   // that its subtree is refetched and not just the node itself.
   EXPECT_CALL(
-      mock_web_contents_accessibility_android_,
+      mock_web_contents_accessibility_base_,
       HandleContentChanged(static_cast<int32_t>(iframe_node->GetUniqueId()),
                            /*set_subtree_changed=*/true))
       .Times(testing::AtLeast(1));

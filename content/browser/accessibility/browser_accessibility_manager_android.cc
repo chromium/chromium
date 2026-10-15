@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
-#include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/browser/accessibility/web_contents_accessibility_base.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -137,9 +137,9 @@ ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
                                                   node_id_delegate, nullptr);
   }
 
-  WebContentsAccessibilityAndroid* wcax = nullptr;
+  WebContentsAccessibilityBase* wcax = nullptr;
   if (delegate->AccessibilityIsRootFrame()) {
-    wcax = static_cast<WebContentsAccessibilityAndroid*>(
+    wcax = static_cast<WebContentsAccessibilityBase*>(
         delegate->AccessibilityGetWebContentsAccessibility());
   }
   return new BrowserAccessibilityManagerAndroid(
@@ -158,7 +158,7 @@ ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
 
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     const ui::AXTreeUpdate& initial_tree,
-    base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
+    base::WeakPtr<WebContentsAccessibilityBase> web_contents_accessibility,
     ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
     : ui::BrowserAccessibilityManager(node_id_delegate, delegate),
@@ -201,7 +201,7 @@ void BrowserAccessibilityManagerAndroid::ResetWebContentsAccessibility() {
 }
 
 bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   return (wcax && wcax->should_allow_image_descriptions()) ||
          allow_image_descriptions_for_testing_;
 }
@@ -297,7 +297,7 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
 
 void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
   ui::AXTreeManager::FireFocusEvent(node);
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -343,7 +343,7 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 
 void BrowserAccessibilityManagerAndroid::FireLocationChanged(
     ui::BrowserAccessibility* node) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -361,7 +361,7 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
     int action_request_id) {
   ui::BrowserAccessibilityManager::FireSourceEvent(event_type, node,
                                                    action_request_id);
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -392,7 +392,7 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
 }
 
 void BrowserAccessibilityManagerAndroid::FireSelectionChangedOnMainFrameRoot(
-    WebContentsAccessibilityAndroid* wcax) {
+    WebContentsAccessibilityBase* wcax) {
   auto* target_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
       GetManagerForRootFrame());
   if (!target_manager) {
@@ -409,7 +409,7 @@ void BrowserAccessibilityManagerAndroid::FireSelectionChangedOnMainFrameRoot(
 }
 
 void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
-    WebContentsAccessibilityAndroid* wcax) {
+    WebContentsAccessibilityBase* wcax) {
   // TODO(crbug.com/481134054): Return early if this frame is not focused,
   // since the selection exposed on Android is strictly that of the focused
   // frame.
@@ -470,7 +470,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
   }
 }
 
-bool isNodeLikelyKnownForExperiment(WebContentsAccessibilityAndroid* wcax,
+bool isNodeLikelyKnownForExperiment(WebContentsAccessibilityBase* wcax,
                                     int32_t unique_id) {
   if (features::kPreventWindowContentChangesForNodesNotLikelyInAndroid.Get()) {
     return wcax->IsNodeLikelyKnownByAndroidFrameworkForExperiment(unique_id);
@@ -482,7 +482,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     const ui::AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -904,7 +904,7 @@ bool BrowserAccessibilityManagerAndroid::PreviousAtGranularity(
 
 void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
     int32_t unique_id) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -919,13 +919,13 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
 
 bool BrowserAccessibilityManagerAndroid::OnHoverEvent(
     const ui::MotionEventAndroid& event) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   return wcax ? wcax->OnHoverEvent(event) : false;
 }
 
 void BrowserAccessibilityManagerAndroid::HandleHoverEvent(
     ui::BrowserAccessibility* node) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }
@@ -948,7 +948,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateStarting(
     ui::AXTree* tree,
     const absl::flat_hash_set<ui::AXNodeID>& deleting_nodes,
     const absl::flat_hash_set<ui::AXNodeID>& reparenting_nodes) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (wcax) {
     // This set needs to start fresh. This secondary cache is of requests to
     // java to clear that primary cache of Android objects. The idea being only
@@ -993,7 +993,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
                                                       changes);
 
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (wcax) {
     // Reset content changed events counter every time we finish an atomic
     // update.
@@ -1052,7 +1052,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   }
 }
 
-WebContentsAccessibilityAndroid*
+WebContentsAccessibilityBase*
 BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() const {
   ui::BrowserAccessibility* parent_node =
       GetParentNodeFromParentTreeAsBrowserAccessibility();
@@ -1068,7 +1068,7 @@ BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() const {
 std::u16string
 BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
     int32_t unique_id) {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return {};
   }
@@ -1379,7 +1379,7 @@ BrowserAccessibilityManagerAndroid::ConvertAndroidSelectionPositionToChrome(
 // TODO(crbug.com/485227837): Remove experiment's methods
 void BrowserAccessibilityManagerAndroid::
     OnAccessibilityEventsProcessedForExperiment() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityBase* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;
   }

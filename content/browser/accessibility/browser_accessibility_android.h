@@ -330,7 +330,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   // Used for tree dumps, generate a string representation of the
   // AccessibilityNodeInfo object for this node by calling through the
-  // manager to the web_contents_accessibility_android JNI.
+  // manager to the `WebContentsAccessibilityBase` JNI.
   std::u16string GenerateAccessibilityNodeInfoString() const;
 
   // Used to determine paint order to see in what order nodes are drawn.
