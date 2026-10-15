@@ -11,30 +11,15 @@
 namespace policy {
 
 // static
-BrowserManagementServiceFactory*
-BrowserManagementServiceFactory::GetInstance() {
-  static base::NoDestructor<BrowserManagementServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-BrowserManagementService* BrowserManagementServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BrowserManagementService>(
-      profile, /*create=*/true);
-}
-
-// static
 ManagementService* BrowserManagementServiceFactory::GetForPlatform() {
   return PlatformManagementService::GetInstance();
 }
 
-BrowserManagementServiceFactory::BrowserManagementServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BrowserManagementService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-BrowserManagementServiceFactory::~BrowserManagementServiceFactory() = default;
+BrowserManagementServiceFactory::BrowserManagementServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "BrowserManagementService",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 BrowserManagementServiceFactory::BuildServiceInstanceFor(

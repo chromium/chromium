@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/pref_url_list_matcher.h"
 #import "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
@@ -15,26 +14,12 @@
 
 namespace enterprise_reporting {
 
-// static
-SaasUsageReportingController*
-SaasUsageReportingControllerFactoryIOS::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<SaasUsageReportingController>(
-      profile, /*create=*/true);
-}
-
-// static
-SaasUsageReportingControllerFactoryIOS*
-SaasUsageReportingControllerFactoryIOS::GetInstance() {
-  static base::NoDestructor<SaasUsageReportingControllerFactoryIOS> instance;
-  return instance.get();
-}
-
-SaasUsageReportingControllerFactoryIOS::SaasUsageReportingControllerFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("SaasUsageReportingController",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
-
-SaasUsageReportingControllerFactoryIOS::
-    ~SaasUsageReportingControllerFactoryIOS() = default;
+SaasUsageReportingControllerFactoryIOS::SaasUsageReportingControllerFactoryIOS(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "SaasUsageReportingController",
+          ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 SaasUsageReportingControllerFactoryIOS::BuildServiceInstanceFor(

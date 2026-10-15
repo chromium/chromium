@@ -5,27 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_CONTROLLER_FACTORY_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_CONTROLLER_FACTORY_IOS_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace enterprise_reporting {
 
-class SaasUsageReportingController;
-
 class SaasUsageReportingControllerFactoryIOS
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SaasUsageReportingControllerFactoryIOS,
+          SaasUsageReportingController> {
  public:
-  static SaasUsageReportingController* GetForProfile(ProfileIOS* profile);
-  static SaasUsageReportingControllerFactoryIOS* GetInstance();
+  explicit SaasUsageReportingControllerFactoryIOS(PassKey key);
 
  private:
-  friend class base::NoDestructor<SaasUsageReportingControllerFactoryIOS>;
-
-  SaasUsageReportingControllerFactoryIOS();
-  ~SaasUsageReportingControllerFactoryIOS() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
