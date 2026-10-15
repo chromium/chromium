@@ -10,11 +10,8 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
-
-using read_anything::mojom::ReadAnythingOpenTrigger;
 
 class SidePanelEntryScope;
 class SidePanelRegistry;
@@ -57,8 +54,6 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
-
-  std::string default_language_code_;
 
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;

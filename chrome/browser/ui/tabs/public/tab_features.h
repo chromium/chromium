@@ -87,7 +87,6 @@ class Profile;
 class PwaInstallPageActionController;
 class QwacWebContentsObserver;
 class ReadAnythingController;
-class ReadAnythingSidePanelController;
 class RecentlyAudibleHelper;
 class RecordReplayPageActionController;
 class RevokedPermissionsTabHelper;

@@ -26,8 +26,7 @@ class ReadAnythingService : public KeyedService {
   static void InstallComponent(const base::FilePath& new_dir);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Called by the per-tab ReadAnythingSidePanelController and in
-  // ReadAnythingController.
+  // Called by the per-tab ReadAnythingController.
   virtual void OnReadAnythingShown();
 
  private:

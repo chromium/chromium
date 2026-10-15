@@ -811,8 +811,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, tab, tab.GetContents(),
               EnterpriseProxyErrorServiceFactory::GetForProfile(profile));
 
-  // Create the ReadAnythingController first to ensure it exists before
-  // any potential consumers, like the side panel controller.
   read_anything_controller_ =
       GetUserDataFactory().CreateInstance<ReadAnythingController>(
           tab, &tab, side_panel_registry_.get());
