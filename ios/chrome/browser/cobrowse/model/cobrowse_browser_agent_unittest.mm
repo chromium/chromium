@@ -54,7 +54,6 @@ class CobrowseBrowserAgentTest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestProfileIOS::Builder builder;
-    builder.SetName(profile_manager_.ReserveNewProfileName());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
         base::BindOnce([](ProfileIOS* profile)
@@ -68,16 +67,19 @@ class CobrowseBrowserAgentTest : public PlatformTest {
               .WillByDefault(testing::Return(true));
           return service;
         }));
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    scene_state_ =
+        [[FakeSceneState alloc] initWithProfile:personal_profile_.get()];
     scene_state_.sceneSessionID = "test_session_id";
     scene_state_.prefs = [[SceneStatePrefs alloc]
         initWithProfileManager:&profile_manager_
-                   profileName:profile_->GetProfileName()
+                   profileName:personal_profile_->GetProfileName()
              sessionIdentifier:scene_state_.sceneSessionID];
 
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    browser_ =
+        std::make_unique<TestBrowser>(personal_profile_.get(), scene_state_);
 
     scoped_feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer},
                                           {});
@@ -94,7 +96,7 @@ class CobrowseBrowserAgentTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> personal_profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeSceneState* scene_state_;
 };
@@ -102,7 +104,7 @@ class CobrowseBrowserAgentTest : public PlatformTest {
 // Test that `CobrowseBrowserAgent` restores the conversation URL with `q`,
 // `mstk`, and `mtid` from prefs.
 TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefs) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set(
       "test_session_id",
@@ -132,7 +134,7 @@ TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefs) {
 // Test that `CobrowseBrowserAgent` restores the conversation URL when `q` is
 // absent from prefs.
 TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefsWithoutQuery) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id"));
@@ -172,7 +174,7 @@ TEST_F(CobrowseBrowserAgentTest, StoresQueryServerIDAndTurnIDInPrefs) {
   agent->SetCobrowseContext(loaded_context);
 
   const base::DictValue& active_map =
-      profile_->GetPrefs()->GetDict(prefs::kCobrowseSessionActiveMap);
+      personal_profile_->GetPrefs()->GetDict(prefs::kCobrowseSessionActiveMap);
   const base::DictValue* session_dict = active_map.FindDict("test_session_id");
   ASSERT_NE(session_dict, nullptr);
   const std::string* stored_query = session_dict->FindString("q");
@@ -202,7 +204,7 @@ TEST_F(CobrowseBrowserAgentTest,
   test::SetStartSurfaceSessionObjectForSceneStateForTesting(
       scene_state_, base::Time::Now() - base::Hours(8));
 
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
@@ -213,14 +215,14 @@ TEST_F(CobrowseBrowserAgentTest,
 
   EXPECT_FALSE(agent->IsSessionActive());
   EXPECT_EQ(agent->GetCobrowseContext(), nil);
-  EXPECT_FALSE(profile_->GetPrefs()
+  EXPECT_FALSE(personal_profile_->GetPrefs()
                    ->GetDict(prefs::kCobrowseSessionActiveMap)
                    .contains("test_session_id"));
 }
 
 // Tests that TerminateSession clears the active session and context.
 TEST_F(CobrowseBrowserAgentTest, TerminateSessionClearsStateAndContext) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
@@ -236,7 +238,7 @@ TEST_F(CobrowseBrowserAgentTest, TerminateSessionClearsStateAndContext) {
 
   EXPECT_FALSE(agent->IsSessionActive());
   EXPECT_EQ(agent->GetCobrowseContext(), nil);
-  EXPECT_FALSE(profile_->GetPrefs()
+  EXPECT_FALSE(personal_profile_->GetPrefs()
                    ->GetDict(prefs::kCobrowseSessionActiveMap)
                    .contains("test_session_id"));
 }
@@ -245,7 +247,7 @@ TEST_F(CobrowseBrowserAgentTest, TerminateSessionClearsStateAndContext) {
 // when the start surface should be shown.
 TEST_F(CobrowseBrowserAgentTest,
        TerminatesSessionOnForegroundActiveWhenStartSurfaceShouldBeShown) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
@@ -264,7 +266,7 @@ TEST_F(CobrowseBrowserAgentTest,
 
   EXPECT_FALSE(agent->IsSessionActive());
   EXPECT_EQ(agent->GetCobrowseContext(), nil);
-  EXPECT_FALSE(profile_->GetPrefs()
+  EXPECT_FALSE(personal_profile_->GetPrefs()
                    ->GetDict(prefs::kCobrowseSessionActiveMap)
                    .contains("test_session_id"));
 }
@@ -273,12 +275,12 @@ TEST_F(CobrowseBrowserAgentTest,
 // `kSearchContentSharingSettings` policy is disabled.
 TEST_F(CobrowseBrowserAgentTest,
        DoesNotRestoreContextWhenSearchContentSharingDisabled) {
-  profile_->GetPrefs()->SetInteger(
+  personal_profile_->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kDisabled));
 
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
@@ -295,7 +297,7 @@ TEST_F(CobrowseBrowserAgentTest,
 // terminates an active cobrowse session.
 TEST_F(CobrowseBrowserAgentTest,
        TerminatesSessionWhenSearchContentSharingDisabled) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
   update->Set("test_session_id",
               CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
@@ -307,14 +309,14 @@ TEST_F(CobrowseBrowserAgentTest,
   EXPECT_TRUE(agent->IsSessionActive());
   EXPECT_NE(agent->GetCobrowseContext(), nil);
 
-  profile_->GetPrefs()->SetInteger(
+  personal_profile_->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kDisabled));
 
   EXPECT_FALSE(agent->IsSessionActive());
   EXPECT_EQ(agent->GetCobrowseContext(), nil);
-  EXPECT_FALSE(profile_->GetPrefs()
+  EXPECT_FALSE(personal_profile_->GetPrefs()
                    ->GetDict(prefs::kCobrowseSessionActiveMap)
                    .contains("test_session_id"));
 }
