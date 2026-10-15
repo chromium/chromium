@@ -163,7 +163,7 @@ _LANGUAGES = [
     "zu",
 ]
 
-_SCRIPTS = ["Cyrl", "Hans", "Hant", "Latn", "Mtei"]
+_SCRIPTS = ["Cyrl", "Guru", "Hans", "Hant", "Latn", "Mtei"]
 
 _REGIONS = [
     "001",
