@@ -11,9 +11,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,12 +45,16 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
@@ -63,11 +69,13 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -75,6 +83,7 @@ import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabBottomSheetWebUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.GLIC_VOICE)
 public class TabBottomSheetWebUiUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -107,6 +116,11 @@ public class TabBottomSheetWebUiUnitTest {
         when(mMockDecorView.getHeight()).thenReturn(1000);
 
         Mockito.lenient().doReturn(mEventForwarder).when(mWebContents).getEventForwarder();
+        mWebUi = createWebUi(TabBottomSheetClientType.GLIC);
+        TabBottomSheetWebUi.setInTestModeForTesting();
+    }
+
+    private TabBottomSheetWebUi createWebUi(@TabBottomSheetClientType int clientType) {
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -117,21 +131,19 @@ public class TabBottomSheetWebUiUnitTest {
                                 org.chromium.chrome.browser.context_sharing.R.layout
                                         .tab_bottom_sheet,
                                 null);
-        mWebUi =
-                new TestTabBottomSheetWebUi(
-                        context,
-                        containerView,
-                        mWindowAndroid,
-                        mContextMenuPopulatorFactory,
-                        mSelectionDropdownMenuDelegate,
-                        Color.WHITE,
-                        Color.LTGRAY,
-                        TabBottomSheetClientType.UNKNOWN,
-                        CoBrowseContainerType.BOTTOM_SHEET,
-                        /* ephemeralTabOpener= */ null,
-                        /* readLaterOpener= */ null,
-                        mMockContentView);
-        TabBottomSheetWebUi.setInTestModeForTesting();
+        return new TestTabBottomSheetWebUi(
+                context,
+                containerView,
+                mWindowAndroid,
+                mContextMenuPopulatorFactory,
+                mSelectionDropdownMenuDelegate,
+                Color.WHITE,
+                Color.LTGRAY,
+                clientType,
+                CoBrowseContainerType.BOTTOM_SHEET,
+                /* ephemeralTabOpener= */ null,
+                /* readLaterOpener= */ null,
+                mMockContentView);
     }
 
     @Test
@@ -312,12 +324,114 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
     public void testDestroy() {
         mWebUi.setWebContents(mWebContents, true);
         mWebUi.destroy();
         verify(mThinWebView).destroy();
-        verify(mWindowAndroid).removeActivityStateObserver(any());
+        // One observer each for WebViewResizingHelper and WebContents visibility.
+        verify(mWindowAndroid, times(2)).removeActivityStateObserver(any());
         assertNull(mWebUi.getWebContents());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testActivityStopAndResume_updatesWebContentsVisibility() {
+        Mockito.clearInvocations(mWindowAndroid);
+        mWebUi.setWebContents(mWebContents, false);
+        ArgumentCaptor<ActivityStateObserver> observerCaptor =
+                ArgumentCaptor.forClass(ActivityStateObserver.class);
+        verify(mWindowAndroid).addActivityStateObserver(observerCaptor.capture());
+        ActivityStateObserver observer = observerCaptor.getValue();
+
+        observer.onActivityStopped();
+        verify(mWebContents).updateWebContentsVisibility(Visibility.HIDDEN);
+
+        observer.onActivityResumed();
+        verify(mWebContents).updateWebContentsVisibility(Visibility.VISIBLE);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testGlicVoiceDisabled_doesNotObserveActivityState() {
+        Mockito.clearInvocations(mWindowAndroid);
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+
+        mWebUi.setWebContents(mWebContents, false);
+        mWebUi.setWebContents(null, false);
+
+        verify(mWindowAndroid, never()).addActivityStateObserver(any());
+        verify(mWindowAndroid, never()).removeActivityStateObserver(any());
+        verify(mWebContents, never()).updateWebContentsVisibility(anyInt());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testGlicVoiceDisabled_destroyRemovesOnlyResizingObserver() {
+        mWebUi.setWebContents(mWebContents, true);
+        mWebUi.destroy();
+        verify(mWindowAndroid, times(1)).removeActivityStateObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testNonGlicClient_doesNotObserveActivityState() {
+        TabBottomSheetWebUi webUi = createWebUi(TabBottomSheetClientType.CONTEXTUAL_TASKS);
+        Mockito.clearInvocations(mWindowAndroid);
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+
+        webUi.setWebContents(mWebContents, false);
+
+        verify(mWindowAndroid, never()).addActivityStateObserver(any());
+        verify(mWebContents, never()).updateWebContentsVisibility(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testSetWebContents_Null_StopsObservingActivityState() {
+        Mockito.clearInvocations(mWindowAndroid);
+        mWebUi.setWebContents(mWebContents, false);
+        ArgumentCaptor<ActivityStateObserver> observerCaptor =
+                ArgumentCaptor.forClass(ActivityStateObserver.class);
+        verify(mWindowAndroid).addActivityStateObserver(observerCaptor.capture());
+
+        mWebUi.setWebContents(null, false);
+
+        verify(mWindowAndroid).removeActivityStateObserver(observerCaptor.getValue());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testSetWebContents_SwapWebContents_KeepsSingleObserver() {
+        Mockito.clearInvocations(mWindowAndroid);
+        mWebUi.setWebContents(mWebContents, false);
+
+        WebContents secondWebContents = mock(WebContents.class);
+        Mockito.doReturn(mEventForwarder).when(secondWebContents).getEventForwarder();
+        mWebUi.setWebContents(secondWebContents, false);
+
+        verify(mWindowAndroid, times(1)).addActivityStateObserver(any());
+        verify(mWindowAndroid, never()).removeActivityStateObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testSetWebContents_WhileActivityStopped_HidesWebContents() {
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+
+        mWebUi.setWebContents(mWebContents, false);
+
+        verify(mWebContents).updateWebContentsVisibility(Visibility.HIDDEN);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testSetWebContents_WhileActivityResumed_DoesNotHideWebContents() {
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.RESUMED);
+
+        mWebUi.setWebContents(mWebContents, false);
+
+        verify(mWebContents, never()).updateWebContentsVisibility(Visibility.HIDDEN);
     }
 
     @Test

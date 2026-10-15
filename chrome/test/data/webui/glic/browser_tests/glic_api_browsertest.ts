@@ -2616,6 +2616,16 @@ class ApiTests extends ApiTestFixtureBase {
     await waitFor(stopMicrophonePromise.promise);
   }
 
+  // Android only: the browser window loses focus.
+  async testStopMicrophoneOnWindowDeactivated() {
+    await this.testStopMicrophone();
+  }
+
+  // Android only: the bottom sheet closes.
+  async testStopMicrophoneOnBottomSheetClosed() {
+    await this.testStopMicrophone();
+  }
+
   async testSetSyntheticExperimentState() {
     assertDefined(this.host.setSyntheticExperimentState);
     this.host.setSyntheticExperimentState('TestTrial', 'Enabled');

@@ -219,8 +219,9 @@ class Host : public GlicSharingManagerProvider {
 
   void PanelWasClosed();
 
-  // Requests the primary web client to stop microphone recording.
-  void StopMicrophone(base::OnceClosure done);
+  // Requests the primary web client to stop microphone recording. Virtual for
+  // testing.
+  virtual void StopMicrophone(base::OnceClosure done);
 
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,

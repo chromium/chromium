@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -38,6 +39,26 @@
 
 namespace glic {
 namespace {
+
+// Records StopMicrophone() requests instead of forwarding them to a web client.
+class FakeHost : public Host {
+ public:
+  explicit FakeHost(Profile* profile)
+      : Host(profile,
+             /*sharing_manager_provider=*/nullptr,
+             /*glic_instance=*/nullptr,
+             /*instance_delegate=*/nullptr) {}
+
+  void StopMicrophone(base::OnceClosure done) override {
+    ++stop_microphone_count_;
+    std::move(done).Run();
+  }
+
+  int stop_microphone_count() const { return stop_microphone_count_; }
+
+ private:
+  int stop_microphone_count_ = 0;
+};
 
 class FakeGlicUiEmbedderDelegate : public GlicUiEmbedder::Delegate {
  public:
@@ -153,7 +174,7 @@ content::MediaStreamRequest MakeAudioRequest() {
 class GlicSidePanelUiAndroidTest : public testing::Test {
  public:
   GlicSidePanelUiAndroidTest()
-      : host_(&profile_, nullptr, nullptr, nullptr),
+      : host_(&profile_),
         delegate_(host_),
         instance_metrics_(&profile_metrics_service_, &profile_) {
     ON_CALL(browser_window_, GetWindow())
@@ -162,6 +183,7 @@ class GlicSidePanelUiAndroidTest : public testing::Test {
   ~GlicSidePanelUiAndroidTest() override = default;
 
   TestingProfile* profile() { return &profile_; }
+  FakeHost& host() { return host_; }
   FakeGlicUiEmbedderDelegate& delegate() { return delegate_; }
   GlicInstanceMetrics& instance_metrics() { return instance_metrics_; }
   base::WeakPtr<tabs::TabInterface> tab() {
@@ -186,7 +208,7 @@ class GlicSidePanelUiAndroidTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   metrics::ProfileMetricsService profile_metrics_service_;
-  Host host_;
+  FakeHost host_;
   FakeGlicUiEmbedderDelegate delegate_;
   GlicInstanceMetrics instance_metrics_;
   FakeBaseWindow window_;
@@ -383,10 +405,24 @@ TEST_F(GlicSidePanelUiAndroidTest,
   EXPECT_THAT(delegate().activation_changes(), testing::ElementsAre(false));
 }
 
+// Leaving Chrome (e.g. for an incoming call) must ask the web client to stop
+// listening, since voice input is foreground only.
+TEST_F(GlicSidePanelUiAndroidTest, WindowDeactivatedStopsMicrophone) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
+  AttachBrowserWindowToTab();
+  GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                instance_metrics());
+
+  side_panel_ui.OnBrowserDeactivated(&browser_window());
+
+  EXPECT_EQ(1, host().stop_microphone_count());
+}
+
 // A permission prompt takes focus away from the browser window, so the panel
 // must not be reported as deactivated while one is showing.
 TEST_F(GlicSidePanelUiAndroidTest,
        WindowDeactivatedDuringPermissionRequestIsSuppressed) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
   AttachBrowserWindowToTab();
   GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
                                 instance_metrics());
@@ -396,6 +432,8 @@ TEST_F(GlicSidePanelUiAndroidTest,
   side_panel_ui.OnBrowserDeactivated(&browser_window());
 
   EXPECT_TRUE(delegate().activation_changes().empty());
+  // The prompt is how the user turns the microphone on, so it must not stop it.
+  EXPECT_EQ(0, host().stop_microphone_count());
 }
 
 // Deactivation suppressed by the prompt must be delivered once the user
@@ -426,6 +464,7 @@ TEST_F(GlicSidePanelUiAndroidTest,
 // came back to the foreground.
 TEST_F(GlicSidePanelUiAndroidTest,
        SuppressedDeactivationDeliveredAfterSystemPromptCompletes) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
   AttachBrowserWindowToTab();
   GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
                                 instance_metrics());
@@ -443,6 +482,10 @@ TEST_F(GlicSidePanelUiAndroidTest,
       blink::mojom::MediaStreamRequestResult::OK, /*ui=*/nullptr);
 
   EXPECT_THAT(delegate().activation_changes(), testing::ElementsAre(false));
+  // Activation can lag the end of the OS prompt, so the catch-up does not stop
+  // the microphone the user just granted. Page visibility covers a real
+  // backgrounding.
+  EXPECT_EQ(0, host().stop_microphone_count());
 }
 
 // If the window is active again once the prompt is gone, the suppressed
@@ -471,6 +514,7 @@ TEST_F(GlicSidePanelUiAndroidTest,
 // Another window losing focus says nothing about the window hosting the panel.
 TEST_F(GlicSidePanelUiAndroidTest,
        DeactivationOfUnrelatedBrowserWindowIgnored) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
   AttachBrowserWindowToTab();
   GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
                                 instance_metrics());
@@ -480,6 +524,58 @@ TEST_F(GlicSidePanelUiAndroidTest,
   side_panel_ui.OnBrowserDeactivated(&other_browser_window);
 
   EXPECT_TRUE(delegate().activation_changes().empty());
+  EXPECT_EQ(0, host().stop_microphone_count());
+}
+
+// Every way the sheet stops being fully shown (closed, peeked, or hidden by a
+// tab switch) must stop the microphone.
+TEST_F(GlicSidePanelUiAndroidTest, PanelHiddenStopsMicrophone) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
+  for (auto state : {GlicSidePanelCoordinator::State::kClosed,
+                     GlicSidePanelCoordinator::State::kPeek,
+                     GlicSidePanelCoordinator::State::kBackgrounded}) {
+    GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                  instance_metrics());
+    int count_before = host().stop_microphone_count();
+
+    side_panel_ui.SidePanelStateChanged(state);
+
+    EXPECT_EQ(count_before + 1, host().stop_microphone_count())
+        << "state=" << static_cast<int>(state);
+  }
+}
+
+TEST_F(GlicSidePanelUiAndroidTest, PanelShownDoesNotStopMicrophone) {
+  base::test::ScopedFeatureList feature_list{features::kGlicVoice};
+  GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                instance_metrics());
+
+  side_panel_ui.SidePanelStateChanged(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_EQ(0, host().stop_microphone_count());
+}
+
+// With GlicVoice disabled, neither leaving Chrome nor hiding the sheet asks the
+// web client to stop the microphone.
+TEST_F(GlicSidePanelUiAndroidTest, GlicVoiceDisabledDoesNotStopMicrophone) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicVoice);
+  AttachBrowserWindowToTab();
+  {
+    GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                  instance_metrics());
+    side_panel_ui.OnBrowserDeactivated(&browser_window());
+    EXPECT_THAT(delegate().activation_changes(), testing::Contains(false));
+  }
+  for (auto state : {GlicSidePanelCoordinator::State::kClosed,
+                     GlicSidePanelCoordinator::State::kPeek,
+                     GlicSidePanelCoordinator::State::kBackgrounded}) {
+    GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                  instance_metrics());
+    side_panel_ui.SidePanelStateChanged(state);
+  }
+
+  EXPECT_EQ(0, host().stop_microphone_count());
 }
 
 }  // namespace glic

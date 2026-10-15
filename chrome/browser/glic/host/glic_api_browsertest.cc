@@ -153,7 +153,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/android/jni_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection_platform_delegate.h"
 #endif
 
 #if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
@@ -4902,6 +4905,55 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testStopMicrophone) {
   ContinueJsTest();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+class GlicApiTestWithGlicVoice : public GlicApiTest {
+ public:
+  GlicApiTestWithGlicVoice() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicVoice);
+  }
+
+ protected:
+  // Drives the native entry point that Java calls when the browser window
+  // stops being the top resumed activity.
+  void SetBrowserWindowActive(BrowserWindowInterface* browser, bool active) {
+    GlobalBrowserCollectionPlatformDelegate* delegate =
+        GlobalBrowserCollection::GetInstance()->GetPlatformDelegate();
+    JNIEnv* env = base::android::AttachCurrentThread();
+    int64_t browser_ptr = reinterpret_cast<int64_t>(browser);
+    if (active) {
+      delegate->OnBrowserActivated(env, browser_ptr);
+    } else {
+      delegate->OnBrowserDeactivated(env, browser_ptr);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Leaving Chrome while the bottom sheet is open asks the web client to stop the
+// microphone.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithGlicVoice,
+                       testStopMicrophoneOnWindowDeactivated) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  BrowserWindowInterface* browser =
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface();
+  SetBrowserWindowActive(browser, false);
+  ContinueJsTest();
+  SetBrowserWindowActive(browser, true);
+}
+
+// Closing the bottom sheet asks the web client to stop the microphone.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithGlicVoice,
+                       testStopMicrophoneOnBottomSheetClosed) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  ContinueJsTest();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetSyntheticExperimentState) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
@@ -5273,6 +5325,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+
+#if BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithGlicVoice,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithRequestMonitor,

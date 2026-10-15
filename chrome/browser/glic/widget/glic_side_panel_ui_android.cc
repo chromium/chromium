@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -245,6 +246,13 @@ void GlicSidePanelUi::OnBrowserDeactivated(BrowserWindowInterface* browser) {
   }
   if (tab_ && tab_->GetBrowserWindowInterface() == browser) {
     delegate_->OnEmbedderWindowActivationChanged(false);
+    // Voice input is a foreground-only interaction on Android. When another
+    // app or system UI (e.g. an incoming call screen) takes over, the web
+    // client does not get a reliable signal to stop listening, so ask it
+    // explicitly.
+    if (base::FeatureList::IsEnabled(features::kGlicVoice)) {
+      delegate_->host().StopMicrophone(base::DoNothing());
+    }
   }
 }
 
@@ -278,6 +286,12 @@ EmbedderCloseReason MapStateToCloseReason(
 void GlicSidePanelUi::SidePanelStateChanged(
     GlicSidePanelCoordinator::State state) {
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
+    // The panel is no longer in front of the user, so it must not keep
+    // listening.
+    if (base::FeatureList::IsEnabled(features::kGlicVoice)) {
+      delegate_->host().StopMicrophone(base::DoNothing());
+    }
+
     GlicInstanceMetrics::CloseReason reason =
         state == GlicSidePanelCoordinator::State::kBackgrounded
             ? GlicInstanceMetrics::CloseReason::kTabSwitched
