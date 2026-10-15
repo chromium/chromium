@@ -7400,6 +7400,534 @@ TEST_F(ComposeboxQueryControllerTest, StartContextUploadFlow_ViewportOnly) {
                 .request_id()
                 .long_context_id(),
             0);
+  // Since the primary request_id already represents the viewport image upload,
+  // a duplicate viewport_request_id_ should not be allocated.
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetViewportRequestIdForTesting(),
+            nullptr);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->uuid(),
+            controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .uuid());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       StartContextUploadFlow_ImageViewportOnly) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  controller().InitializeIfNeeded();
+
+  // Start the file upload flow in image viewport-only mode (mime_type = kImage,
+  // empty context_input, viewport_screenshot populated), matching
+  // LensQueryFlowRouter::CreateContextualInputData in kViewportOnly /
+  // kSelectedRegionOnly modes.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+  input_data->viewport_screenshot = bitmap;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetViewportRequestIdForTesting(),
+            nullptr);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->uuid(),
+            controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .uuid());
+
+  // Verify that creating a search URL references the uploaded request ID in
+  // vsrid and does not emit an un-uploaded duplicate ID in cinpts.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  std::string cinpts_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      aim_url, kContextualInputsParameterKey, &cinpts_value));
+
+  std::optional<lens::LensOverlayRequestId> vsrid =
+      GetRequestIdFromUrl(aim_url.spec());
+  ASSERT_TRUE(vsrid.has_value());
+  EXPECT_EQ(vsrid->uuid(), controller()
+                               .last_sent_file_upload_request()
+                               ->objects_request()
+                               .request_context()
+                               .request_id()
+                               .uuid());
+}
+
+TEST_F(
+    ComposeboxQueryControllerTest,
+    Recontextualization_SeparateViewportRequestIds_MixedPageAndViewportUpdates) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  controller().InitializeIfNeeded();
+
+  constexpr int64_t kContextId = 12345;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  auto make_bitmap = [](SkColor color) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(100, 100);
+    bitmap.eraseColor(color);
+    return bitmap;
+  };
+
+  // Turn 1: Upload both page content and viewport screenshot.
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  auto input_data_1 = std::make_unique<lens::ContextualInputData>();
+  input_data_1->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_1->context_id = kContextId;
+  input_data_1->context_input = std::vector<lens::ContextualInput>{
+      lens::ContextualInput(std::vector<uint8_t>{1, 2, 3},
+                            lens::MimeType::kAnnotatedPageContent)};
+  input_data_1->viewport_screenshot = make_bitmap(SK_ColorRED);
+
+  controller().StartFileUploadFlow(file_token_1, std::move(input_data_1),
+                                   image_options);
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token_1, lens::MimeType::kAnnotatedPageContent);
+
+  const auto* file_info_1 = controller().GetFileInfoForTesting(file_token_1);
+  ASSERT_NE(file_info_1, nullptr);
+  ASSERT_TRUE(file_info_1->GetRequestIdForTesting().has_value());
+  ASSERT_NE(file_info_1->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_1 =
+      *file_info_1->GetRequestIdForTesting();
+  const lens::LensOverlayRequestId viewport_id_1 =
+      *file_info_1->GetViewportRequestIdForTesting();
+  const uint64_t kPageUuid = page_id_1.uuid();
+  const uint64_t kViewportUuid = viewport_id_1.uuid();
+  EXPECT_NE(kPageUuid, kViewportUuid);
+  EXPECT_EQ(page_id_1.context_id(), kContextId);
+  EXPECT_EQ(page_id_1.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_1.sequence_id(), 1);
+  EXPECT_EQ(page_id_1.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_1.long_context_id(), 1);
+
+  EXPECT_EQ(viewport_id_1.context_id(), kContextId);
+  EXPECT_EQ(viewport_id_1.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(viewport_id_1.sequence_id(), 1);
+  EXPECT_EQ(viewport_id_1.image_sequence_id(), 1);
+  EXPECT_EQ(viewport_id_1.long_context_id(), 0);
+
+  // Turn 2: Recontextualize with both updated page content and updated viewport
+  // screenshot.
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  auto input_data_2 = std::make_unique<lens::ContextualInputData>();
+  input_data_2->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_2->context_id = kContextId;
+  input_data_2->is_implicit_upload = true;
+  input_data_2->context_input = std::vector<lens::ContextualInput>{
+      lens::ContextualInput(std::vector<uint8_t>{4, 5, 6, 7},
+                            lens::MimeType::kAnnotatedPageContent)};
+  input_data_2->viewport_screenshot = make_bitmap(SK_ColorBLUE);
+
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data_2),
+                                   image_options);
+  WaitForFileUpload(file_token_2, lens::MimeType::kAnnotatedPageContent);
+
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token_1)->is_superceded);
+  const auto* file_info_2 = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_NE(file_info_2, nullptr);
+  ASSERT_TRUE(file_info_2->GetRequestIdForTesting().has_value());
+  ASSERT_NE(file_info_2->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_2 =
+      *file_info_2->GetRequestIdForTesting();
+  const lens::LensOverlayRequestId viewport_id_2 =
+      *file_info_2->GetViewportRequestIdForTesting();
+  EXPECT_EQ(page_id_2.uuid(), kPageUuid);
+  EXPECT_EQ(page_id_2.context_id(), kContextId);
+  EXPECT_EQ(page_id_2.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_2.sequence_id(), 2);
+  EXPECT_EQ(page_id_2.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_2.long_context_id(), 2);
+
+  EXPECT_EQ(viewport_id_2.uuid(), kViewportUuid);
+  EXPECT_EQ(viewport_id_2.context_id(), kContextId);
+  EXPECT_EQ(viewport_id_2.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(viewport_id_2.sequence_id(), 2);
+  EXPECT_EQ(viewport_id_2.image_sequence_id(), 2);
+  EXPECT_EQ(viewport_id_2.long_context_id(), 0);
+
+  // Turn 3: Recontextualize with only an updated viewport screenshot
+  // (context_input is nullopt, matching QueryContextualizer when only the
+  // viewport changed).
+  const int requests_before_turn_3 =
+      controller().num_file_upload_requests_sent();
+  const base::UnguessableToken file_token_3 = base::UnguessableToken::Create();
+  auto input_data_3 = std::make_unique<lens::ContextualInputData>();
+  input_data_3->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_3->context_id = kContextId;
+  input_data_3->is_implicit_upload = true;
+  input_data_3->context_input = std::nullopt;
+  input_data_3->viewport_screenshot = make_bitmap(SK_ColorGREEN);
+
+  controller().StartFileUploadFlow(file_token_3, std::move(input_data_3),
+                                   image_options);
+  WaitForFileUpload(file_token_3, lens::MimeType::kAnnotatedPageContent);
+
+  // Only the viewport upload request should have been sent on Turn 3.
+  EXPECT_EQ(controller().num_file_upload_requests_sent(),
+            requests_before_turn_3 + 1);
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token_2)->is_superceded);
+  const auto* file_info_3 = controller().GetFileInfoForTesting(file_token_3);
+  ASSERT_NE(file_info_3, nullptr);
+  ASSERT_TRUE(file_info_3->GetRequestIdForTesting().has_value());
+  ASSERT_NE(file_info_3->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_3 =
+      *file_info_3->GetRequestIdForTesting();
+  const lens::LensOverlayRequestId viewport_id_3 =
+      *file_info_3->GetViewportRequestIdForTesting();
+  // Page request ID stays at Turn 2's sequence numbers since no page content
+  // was uploaded on Turn 3.
+  EXPECT_EQ(page_id_3.uuid(), kPageUuid);
+  EXPECT_EQ(page_id_3.context_id(), kContextId);
+  EXPECT_EQ(page_id_3.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_3.sequence_id(), 2);
+  EXPECT_EQ(page_id_3.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_3.long_context_id(), 2);
+
+  // Viewport request ID increments to sequence_id = 3, image_sequence_id = 3.
+  EXPECT_EQ(viewport_id_3.uuid(), kViewportUuid);
+  EXPECT_EQ(viewport_id_3.context_id(), kContextId);
+  EXPECT_EQ(viewport_id_3.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(viewport_id_3.sequence_id(), 3);
+  EXPECT_EQ(viewport_id_3.image_sequence_id(), 3);
+  EXPECT_EQ(viewport_id_3.long_context_id(), 0);
+
+  // Turn 4: Recontextualize with only updated page content (no viewport
+  // screenshot).
+  const int requests_before_turn_4 =
+      controller().num_file_upload_requests_sent();
+  const base::UnguessableToken file_token_4 = base::UnguessableToken::Create();
+  auto input_data_4 = std::make_unique<lens::ContextualInputData>();
+  input_data_4->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_4->context_id = kContextId;
+  input_data_4->is_implicit_upload = true;
+  input_data_4->context_input = std::vector<lens::ContextualInput>{
+      lens::ContextualInput(std::vector<uint8_t>{8, 9, 10, 11, 12},
+                            lens::MimeType::kAnnotatedPageContent)};
+
+  controller().StartFileUploadFlow(file_token_4, std::move(input_data_4),
+                                   image_options);
+  WaitForFileUpload(file_token_4, lens::MimeType::kAnnotatedPageContent);
+
+  EXPECT_EQ(controller().num_file_upload_requests_sent(),
+            requests_before_turn_4 + 1);
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token_3)->is_superceded);
+  const auto* file_info_4 = controller().GetFileInfoForTesting(file_token_4);
+  ASSERT_NE(file_info_4, nullptr);
+  ASSERT_TRUE(file_info_4->GetRequestIdForTesting().has_value());
+  EXPECT_EQ(file_info_4->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_4 =
+      *file_info_4->GetRequestIdForTesting();
+  EXPECT_EQ(page_id_4.uuid(), kPageUuid);
+  EXPECT_EQ(page_id_4.context_id(), kContextId);
+  EXPECT_EQ(page_id_4.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_4.sequence_id(), 3);
+  EXPECT_EQ(page_id_4.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_4.long_context_id(), 3);
+
+  // Turn 5: Recontextualize with both page content and viewport screenshot
+  // again; verify that viewport_request_id_ resumes incrementing from Turn 3's
+  // viewport request ID (sequence_id = 4, image_sequence_id = 4).
+  const base::UnguessableToken file_token_5 = base::UnguessableToken::Create();
+  auto input_data_5 = std::make_unique<lens::ContextualInputData>();
+  input_data_5->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_5->context_id = kContextId;
+  input_data_5->is_implicit_upload = true;
+  input_data_5->context_input =
+      std::vector<lens::ContextualInput>{lens::ContextualInput(
+          std::vector<uint8_t>{13, 14}, lens::MimeType::kAnnotatedPageContent)};
+  input_data_5->viewport_screenshot = make_bitmap(SK_ColorYELLOW);
+
+  controller().StartFileUploadFlow(file_token_5, std::move(input_data_5),
+                                   image_options);
+  WaitForFileUpload(file_token_5, lens::MimeType::kAnnotatedPageContent);
+
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token_4)->is_superceded);
+  const auto* file_info_5 = controller().GetFileInfoForTesting(file_token_5);
+  ASSERT_NE(file_info_5, nullptr);
+  ASSERT_TRUE(file_info_5->GetRequestIdForTesting().has_value());
+  ASSERT_NE(file_info_5->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_5 =
+      *file_info_5->GetRequestIdForTesting();
+  const lens::LensOverlayRequestId viewport_id_5 =
+      *file_info_5->GetViewportRequestIdForTesting();
+  EXPECT_EQ(page_id_5.uuid(), kPageUuid);
+  EXPECT_EQ(page_id_5.context_id(), kContextId);
+  EXPECT_EQ(page_id_5.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_5.sequence_id(), 4);
+  EXPECT_EQ(page_id_5.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_5.long_context_id(), 4);
+
+  EXPECT_EQ(viewport_id_5.uuid(), kViewportUuid);
+  EXPECT_EQ(viewport_id_5.context_id(), kContextId);
+  EXPECT_EQ(viewport_id_5.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(viewport_id_5.sequence_id(), 4);
+  EXPECT_EQ(viewport_id_5.image_sequence_id(), 4);
+  EXPECT_EQ(viewport_id_5.long_context_id(), 0);
+
+  // Verify CreateClientToAimRequest includes both the page and viewport
+  // request IDs in lens_image_query_data.
+  auto aim_request_info =
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateClientToAimRequestInfo>();
+  aim_request_info->query_text = "follow up";
+  aim_request_info->file_tokens.push_back(file_token_5);
+  lens::ClientToAimMessage aim_message =
+      controller().CreateClientToAimRequest(std::move(aim_request_info));
+  ASSERT_EQ(aim_message.submit_query().payload().lens_image_query_data_size(),
+            2);
+  const auto& aim_page_id = aim_message.submit_query()
+                                .payload()
+                                .lens_image_query_data(0)
+                                .request_id();
+  const auto& aim_viewport_id = aim_message.submit_query()
+                                    .payload()
+                                    .lens_image_query_data(1)
+                                    .request_id();
+  EXPECT_EQ(aim_page_id.uuid(), kPageUuid);
+  EXPECT_EQ(aim_page_id.context_id(), kContextId);
+  EXPECT_EQ(aim_page_id.sequence_id(), 4);
+  EXPECT_EQ(aim_page_id.long_context_id(), 4);
+  EXPECT_EQ(aim_viewport_id.uuid(), kViewportUuid);
+  EXPECT_EQ(aim_viewport_id.context_id(), kContextId);
+  EXPECT_EQ(aim_viewport_id.sequence_id(), 4);
+  EXPECT_EQ(aim_viewport_id.image_sequence_id(), 4);
+
+  // Verify that when a region search interaction occurs on a page+viewport
+  // overlay token, CreateClientToAimRequest keeps the page entry's media_type
+  // as MEDIA_TYPE_WEBPAGE and attaches visual_search_interaction_data to the
+  // viewport entry (lens_image_query_data(1)).
+  auto region_url_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
+  region_url_request_info->query_text = "region query";
+  region_url_request_info->file_tokens.push_back(file_token_5);
+  region_url_request_info->query_start_time = kTestQueryStartTime;
+  region_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+  region_url_request_info->image_crop = lens::ImageCrop();
+  auto* zoomed_crop =
+      region_url_request_info->image_crop->mutable_zoomed_crop();
+  zoomed_crop->set_zoom(2.0);
+  auto* crop = zoomed_crop->mutable_crop();
+  crop->set_center_x(0.25);
+  crop->set_center_y(0.25);
+  crop->set_width(0.5);
+  crop->set_height(0.5);
+  crop->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+
+  base::RunLoop region_run_loop;
+  controller().AddEndpointFetcherCreatedCallback(
+      base::BindLambdaForTesting([&]() { region_run_loop.Quit(); }));
+  base::test::TestFuture<GURL> region_url_future;
+  controller().CreateSearchUrl(std::move(region_url_request_info),
+                               region_url_future.GetCallback());
+  region_run_loop.Run();
+  ASSERT_TRUE(region_url_future.Wait());
+
+  auto region_aim_request_info =
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateClientToAimRequestInfo>();
+  region_aim_request_info->query_text = "region follow up";
+  region_aim_request_info->file_tokens.push_back(file_token_5);
+  region_aim_request_info->overlay_token = file_token_5;
+  region_aim_request_info->force_include_latest_interaction_request_data = true;
+  lens::ClientToAimMessage region_aim_message =
+      controller().CreateClientToAimRequest(std::move(region_aim_request_info));
+  ASSERT_EQ(
+      region_aim_message.submit_query().payload().lens_image_query_data_size(),
+      2);
+  const auto& region_page_entry =
+      region_aim_message.submit_query().payload().lens_image_query_data(0);
+  const auto& region_viewport_entry =
+      region_aim_message.submit_query().payload().lens_image_query_data(1);
+  EXPECT_EQ(region_page_entry.request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_FALSE(region_page_entry.has_visual_search_interaction_data());
+  EXPECT_EQ(region_viewport_entry.request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_TRUE(region_viewport_entry.has_visual_search_interaction_data());
+  EXPECT_EQ(
+      region_viewport_entry.visual_search_interaction_data().interaction_type(),
+      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  EXPECT_FLOAT_EQ(region_viewport_entry.visual_search_interaction_data()
+                      .zoomed_crop()
+                      .zoom(),
+                  2.0);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       Recontextualization_SeparateViewportRequestIds_ViewportOnlyToCombined) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  controller().InitializeIfNeeded();
+
+  constexpr int64_t kContextId = 67890;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  auto make_bitmap = [](SkColor color) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(100, 100);
+    bitmap.eraseColor(color);
+    return bitmap;
+  };
+
+  // Turn 1: Initial upload is viewport-only (no page content).
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  auto input_data_1 = std::make_unique<lens::ContextualInputData>();
+  input_data_1->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_1->context_id = kContextId;
+  input_data_1->viewport_screenshot = make_bitmap(SK_ColorRED);
+
+  controller().StartFileUploadFlow(file_token_1, std::move(input_data_1),
+                                   image_options);
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token_1, lens::MimeType::kAnnotatedPageContent);
+
+  const auto* file_info_1 = controller().GetFileInfoForTesting(file_token_1);
+  ASSERT_NE(file_info_1, nullptr);
+  ASSERT_TRUE(file_info_1->GetRequestIdForTesting().has_value());
+  EXPECT_EQ(file_info_1->GetViewportRequestIdForTesting(), nullptr);
+  const uint64_t kViewportUuid = file_info_1->GetRequestIdForTesting()->uuid();
+  EXPECT_EQ(file_info_1->GetRequestIdForTesting()->context_id(), kContextId);
+  EXPECT_EQ(file_info_1->GetRequestIdForTesting()->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(file_info_1->GetRequestIdForTesting()->sequence_id(), 1);
+  EXPECT_EQ(file_info_1->GetRequestIdForTesting()->image_sequence_id(), 1);
+
+  // Turn 2: Second upload is also viewport-only.
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  auto input_data_2 = std::make_unique<lens::ContextualInputData>();
+  input_data_2->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_2->context_id = kContextId;
+  input_data_2->is_implicit_upload = true;
+  input_data_2->viewport_screenshot = make_bitmap(SK_ColorBLUE);
+
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data_2),
+                                   image_options);
+  WaitForFileUpload(file_token_2, lens::MimeType::kAnnotatedPageContent);
+
+  const auto* file_info_2 = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_NE(file_info_2, nullptr);
+  ASSERT_TRUE(file_info_2->GetRequestIdForTesting().has_value());
+  EXPECT_EQ(file_info_2->GetViewportRequestIdForTesting(), nullptr);
+  EXPECT_EQ(file_info_2->GetRequestIdForTesting()->uuid(), kViewportUuid);
+  EXPECT_EQ(file_info_2->GetRequestIdForTesting()->context_id(), kContextId);
+  EXPECT_EQ(file_info_2->GetRequestIdForTesting()->sequence_id(), 2);
+  EXPECT_EQ(file_info_2->GetRequestIdForTesting()->image_sequence_id(), 2);
+
+  // Turn 3: Upload includes both new page content and a new viewport
+  // screenshot. A fresh page request ID should be minted with sequence_id = 1,
+  // while the viewport request ID continues kViewportUuid at sequence_id = 3.
+  const base::UnguessableToken file_token_3 = base::UnguessableToken::Create();
+  auto input_data_3 = std::make_unique<lens::ContextualInputData>();
+  input_data_3->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data_3->context_id = kContextId;
+  input_data_3->is_implicit_upload = true;
+  input_data_3->context_input = std::vector<lens::ContextualInput>{
+      lens::ContextualInput(std::vector<uint8_t>{1, 2, 3},
+                            lens::MimeType::kAnnotatedPageContent)};
+  input_data_3->viewport_screenshot = make_bitmap(SK_ColorGREEN);
+
+  controller().StartFileUploadFlow(file_token_3, std::move(input_data_3),
+                                   image_options);
+  WaitForFileUpload(file_token_3, lens::MimeType::kAnnotatedPageContent);
+
+  const auto* file_info_3 = controller().GetFileInfoForTesting(file_token_3);
+  ASSERT_NE(file_info_3, nullptr);
+  ASSERT_TRUE(file_info_3->GetRequestIdForTesting().has_value());
+  ASSERT_NE(file_info_3->GetViewportRequestIdForTesting(), nullptr);
+
+  const lens::LensOverlayRequestId page_id_3 =
+      *file_info_3->GetRequestIdForTesting();
+  const lens::LensOverlayRequestId viewport_id_3 =
+      *file_info_3->GetViewportRequestIdForTesting();
+  EXPECT_NE(page_id_3.uuid(), kViewportUuid);
+  EXPECT_EQ(page_id_3.context_id(), kContextId);
+  EXPECT_EQ(page_id_3.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+  EXPECT_EQ(page_id_3.sequence_id(), 1);
+  EXPECT_EQ(page_id_3.image_sequence_id(), 0);
+  EXPECT_EQ(page_id_3.long_context_id(), 1);
+
+  EXPECT_EQ(viewport_id_3.uuid(), kViewportUuid);
+  EXPECT_EQ(viewport_id_3.context_id(), kContextId);
+  EXPECT_EQ(viewport_id_3.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(viewport_id_3.sequence_id(), 3);
+  EXPECT_EQ(viewport_id_3.image_sequence_id(), 3);
+  EXPECT_EQ(viewport_id_3.long_context_id(), 0);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
