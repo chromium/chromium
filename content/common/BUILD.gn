@@ -25,7 +25,6 @@ buildflag_header("buildflags") {
     "ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND=$allow_critical_memory_pressure_handling_in_foreground",
     "MBI_MODE_PER_RENDER_PROCESS_HOST=$_mbi_mode_per_render_process_host",
     "MBI_MODE_PER_SITE_INSTANCE=$_mbi_mode_per_site_instance",
-    "CONTENT_ENABLE_LEGACY_IPC=0",
     "ENABLE_MEMORY_COORDINATOR_INTERNALS=$enable_memory_coordinator_internals",
   ]
 }
@@ -630,9 +629,7 @@ mojom("mojo_bindings") {
     ]
   }
 
-  overridden_deps = [
-    "//third_party/blink/public/mojom:mojom_core",
-  ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
   component_deps = [ "//third_party/blink/public/common" ]
 
   component_output_prefix = "content_common_mojo_bindings"
