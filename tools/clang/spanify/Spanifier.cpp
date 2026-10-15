@@ -1591,6 +1591,38 @@ std::string CreateSubspanCloser(
   return llvm::formatv("{0})", maybe_closer);
 }
 
+// Returns whether an `ArrayTypeLoc` is bound under `id`.
+//
+// For `constexpr int arr[2]`, the `const` comes from `constexpr`, so Clang
+// wraps the declaration's `ArrayTypeLoc` in a `QualifiedTypeLoc`. This
+// unwraps it, like `getNodeFromArrayDecl()` does. Without it, `constexpr`
+// arrays aren't treated as C arrays, and `arr + n` becomes `arr.subspan(n)`
+// on a `std::array`, which doesn't compile.
+bool HasBoundArrayTypeLoc(const MatchFinder::MatchResult& result,
+                          llvm::StringRef id) {
+  const auto* type_loc = result.Nodes.getNodeAs<clang::TypeLoc>(id);
+  return type_loc &&
+         !type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>().isNull();
+}
+
+// Returns the element type of the array bound under `id`, including
+// qualifiers on the array itself, like the `const` from `constexpr`.
+//
+// For `constexpr int arr[2]`, `ArrayTypeLoc::getInnerType()` returns plain
+// `int`, and a `span<int>` over a const array doesn't compile.
+// `ASTContext::getAsArrayType()` moves the `const` down to the element type.
+//
+// Requires `HasBoundArrayTypeLoc(result, id)`.
+clang::QualType GetBoundArrayElementType(const MatchFinder::MatchResult& result,
+                                         llvm::StringRef id) {
+  const auto* type_loc = result.Nodes.getNodeAs<clang::TypeLoc>(id);
+  assert(type_loc);
+  const clang::ArrayType* array_type =
+      result.Context->getAsArrayType(type_loc->getType());
+  assert(array_type);
+  return array_type->getElementType();
+}
+
 void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::ASTContext& ast_context = *result.Context;
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -1612,9 +1644,9 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   BinaryOperationData bin_op_data =
       GetBinaryOperationDataOrCrash(binary_operation, result);
 
-  const auto* rhs_array_type =
-      result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
-  if (rhs_array_type) {
+  const bool rhs_is_c_array =
+      HasBoundArrayTypeLoc(result, "rhs_array_type_loc");
+  if (rhs_is_c_array) {
     // Built-in binary operators on C-style arrays (like `arr + 1`) decay
     // the array to a pointer and perform pointer arithmetic. Overloaded
     // operators (like `arr + val` where val is an enum/class) have custom
@@ -1637,10 +1669,11 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
     EmitReplacement(
         key, GetReplacementDirective(
                  bin_op_data.lhs->getBeginLoc(),
-                 llvm::formatv("{0}<{1}>(",
-                               GetProject()->GetSpanRelativePath(result),
-                               GetTypeAsString(rhs_array_type->getInnerType(),
-                                               *result.Context)),
+                 llvm::formatv(
+                     "{0}<{1}>(", GetProject()->GetSpanRelativePath(result),
+                     GetTypeAsString(
+                         GetBoundArrayElementType(result, "rhs_array_type_loc"),
+                         *result.Context)),
                  source_manager, kAdaptBinaryOperationPrecedence));
     // Emit the closing `)` of `base::span(...)` below.
   }
@@ -1664,7 +1697,7 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
       GetSubspanExprReplacement(binary_op_RHS, result, key);
 
   // Close the open `base::span(` expression if present.
-  std::string_view prefix = rhs_array_type ? ")" : "";
+  std::string_view prefix = rhs_is_c_array ? ")" : "";
   std::string subspan_opener =
       CreateSubspanOpener(prefix, &subspan_expr_replacement);
 
@@ -1846,7 +1879,7 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
 
   if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
     if (result.Nodes.getNodeAs<clang::Expr>("container_buff_address")) {
-      if (result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc") &&
+      if (HasBoundArrayTypeLoc(result, "rhs_array_type_loc") &&
           !result.Nodes.getNodeAs<clang::IntegerLiteral>(
               "zero_container_offset")) {
         return;
@@ -1969,14 +2002,14 @@ clang::SourceLocation EmitContainerPointerRewrites(
   const auto* subscript_expr =
       GetNodeOrCrash<clang::Expr>(result, "subscript_expr", __FUNCTION__);
 
-  const auto* rhs_array_type =
-      result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
+  const bool rhs_is_c_array =
+      HasBoundArrayTypeLoc(result, "rhs_array_type_loc");
 
   std::string_view declref_bind_name = "container_decl_ref";
   std::string_view subspan_opener = ").subspan(";
   if (mode == ContainerPointerRewritesMode::kDontWrapWithBaseSpan) {
     declref_bind_name = "rhs_expr";
-    if (!rhs_array_type) {
+    if (!rhs_is_c_array) {
       subspan_opener = ".subspan(";
     }
   }
@@ -2010,8 +2043,17 @@ clang::SourceLocation EmitContainerPointerRewrites(
   // Step 1
   if (mode == ContainerPointerRewritesMode::kWrapWithBaseSpan) {
     // Emit the opening `base::span(`.
-    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
-        result, "contained_type", __FUNCTION__);
+    //
+    // For a C array, take the element type from the array type, like
+    // `GetBoundArrayElementType()`. `contained_type` is bound through
+    // `arrayType()`, which drops the `const` from `constexpr`, and a
+    // `span<int>` over a const array doesn't compile.
+    const clang::ArrayType* array_type =
+        result.Context->getAsArrayType(container_decl_ref.getType());
+    const clang::QualType contained_type =
+        array_type ? array_type->getElementType()
+                   : *GetNodeOrCrash<clang::QualType>(result, "contained_type",
+                                                      __FUNCTION__);
     EmitReplacement(
         key, GetReplacementDirective(
                  replacement_range,

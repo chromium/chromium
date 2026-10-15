@@ -31,9 +31,11 @@ void test_constexpr_const_char_array2() {
   std::string bar = "bar1";
 
   // Expected rewrite:
-  // std::ignore =
-  // kFoo.subspan(base::checked_cast<size_t>(UnsafeIndex())).data();
-  std::ignore = kFoo.subspan(base::checked_cast<size_t>(UnsafeIndex())).data();
+  // std::ignore = base::span<const char>(kFoo).subspan(
+  //   base::checked_cast<size_t>(UnsafeIndex())).data();
+  std::ignore = base::span<const char>(kFoo)
+                    .subspan(base::checked_cast<size_t>(UnsafeIndex()))
+                    .data();
 }
 
 // Scenario 2: constexpr char[] initialized with a string literal.
@@ -55,9 +57,11 @@ void test_constexpr_char_array2() {
   std::string bar = "bar2";
 
   // Expected rewrite:
-  // std::ignore =
-  // kFoo.subspan(base::checked_cast<size_t>(UnsafeIndex())).data();
-  std::ignore = kFoo.subspan(base::checked_cast<size_t>(UnsafeIndex())).data();
+  // std::ignore = base::span<const char>(kFoo).subspan(
+  //   base::checked_cast<size_t>(UnsafeIndex())).data();
+  std::ignore = base::span<const char>(kFoo)
+                    .subspan(base::checked_cast<size_t>(UnsafeIndex()))
+                    .data();
 }
 
 // Scenario 3: Non-const char[] initialized with a string literal.
