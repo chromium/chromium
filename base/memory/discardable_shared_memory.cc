@@ -199,8 +199,14 @@ bool DiscardableSharedMemory::Map(size_t size) {
     return false;
   }
 
+  CheckedNumeric<size_t> checked_size = size;
+  checked_size += SharedMemoryHeaderSize();
+  if (!checked_size.IsValid()) {
+    return false;
+  }
+
   shared_memory_mapping_ =
-      shared_memory_region_.MapAt(0, SharedMemoryHeaderSize() + size);
+      shared_memory_region_.MapAt(0, checked_size.ValueOrDie());
   if (!shared_memory_mapping_.IsValid()) {
     return false;
   }
