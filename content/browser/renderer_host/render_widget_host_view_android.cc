@@ -1153,6 +1153,13 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
     // a new surface.
     pre_navigation_content_ = true;
 
+    if (delegated_frame_host_) {
+      // Let the frame host know which surface activated, so it can time
+      // fullscreen resizes.
+      delegated_frame_host_->OnRendererSurfaceActivated(
+          activated_local_surface_id, activation_time);
+    }
+
     while (!rotation_metrics_.empty()) {
       auto rotation_target = rotation_metrics_.front();
       // Activation from a previous surface before the new rotation has set a
@@ -2580,6 +2587,9 @@ void RenderWidgetHostViewAndroid::HideInternal() {
   if (hide_frontbuffer) {
     view_.GetLayer()->SetHideLayerAndSubtree(true);
     delegated_frame_host_->WasHidden();
+  } else if (delegated_frame_host_) {
+    // The frontbuffer stays visible, but the renderer is hidden.
+    delegated_frame_host_->OnRendererHidden();
   }
 
   if (stop_observing_root_window) {

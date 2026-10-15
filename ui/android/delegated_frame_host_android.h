@@ -62,6 +62,26 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
         const = 0;
   };
 
+  // How the resize of a visible fullscreen page ended. Recorded in
+  // "Android.FullscreenResize.Result". These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  //
+  // LINT.IfChange(AndroidFullscreenResizeResult)
+  enum class FullscreenResizeResult {
+    // A frame from the renderer at the new size activated.
+    kCompleted = 0,
+    // The page left fullscreen first.
+    kExitedFullscreen = 1,
+    // The page was hidden first.
+    kHidden = 2,
+    // The frames were evicted first.
+    kEvicted = 3,
+    // `this` was destroyed first.
+    kDestroyed = 4,
+    kMaxValue = kDestroyed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidFullscreenResizeResult)
+
   DelegatedFrameHostAndroid(ViewAndroid* view,
                             viz::HostFrameSinkManager* host_frame_sink_manager,
                             Client* client,
@@ -154,6 +174,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   bool IsPrimarySurfaceEvicted() const;
   bool HasSavedFrame() const;
   void WasHidden();
+  // Called when the renderer is hidden even if the frontbuffer is kept visible
+  // (e.g. when the view is occluded or the activity is stopped).
+  void OnRendererHidden();
   void WasShown(const viz::LocalSurfaceId& local_surface_id,
                 const gfx::Size& size_in_pixels,
                 bool is_fullscreen,
@@ -163,6 +186,11 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
                     const gfx::Size& new_size_in_pixels,
                     cc::DeadlinePolicy deadline_policy,
                     bool is_fullscreen);
+
+  // Called when Viz activates a frame from the renderer at `local_surface_id`.
+  // `activation_time` is when Viz activated it. Used for metrics.
+  void OnRendererSurfaceActivated(const viz::LocalSurfaceId& local_surface_id,
+                                  base::TimeTicks activation_time);
 
   // Called to request the presentation time for the next frame or cancel any
   // requests when the RenderWidget's visibility state is not changing. If the
@@ -244,6 +272,15 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void UpdateCaptureKeepAlive();
   void ReleaseCaptureKeepAlive();
 
+  // Starts timing the resize of a visible fullscreen page. If one is already
+  // being timed, keeps its start time and waits for `local_surface_id` instead.
+  void StartOrUpdateFullscreenResize(
+      const viz::LocalSurfaceId& local_surface_id);
+  // Records how the resize being timed, if any, ended at `end_time`, or now if
+  // `end_time` is null.
+  void FinishFullscreenResize(FullscreenResizeResult result,
+                              base::TimeTicks end_time = base::TimeTicks());
+
   const viz::FrameSinkId frame_sink_id_;
 
   raw_ptr<ViewAndroid> view_;
@@ -301,6 +338,18 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // navigation is committed. This bit tracks whether this
   // DelegatedFrameHostAndroid owns its FrameSinkId.
   bool owns_frame_sink_id_ = false;
+
+  // Whether the renderer is currently visible. Unlike
+  // `frame_evictor_->visible()`, this becomes false when the view is occluded
+  // or the activity is stopped while keeping the frontbuffer visible.
+  bool renderer_visible_ = false;
+
+  // While a resize of a visible fullscreen page is being timed: when it was
+  // first embedded, and the newest LocalSurfaceId embedded since. A frame at
+  // that id or newer ends it. `fullscreen_resize_target_` is invalid when no
+  // resize is being timed.
+  base::TimeTicks fullscreen_resize_start_time_;
+  viz::LocalSurfaceId fullscreen_resize_target_;
 };
 
 }  // namespace ui

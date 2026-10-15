@@ -2509,6 +2509,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.FullscreenResize.Result"
+    enum="AndroidFullscreenResizeResult" expires_after="2027-10-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    How a resize of a visible fullscreen page ended, e.g. a resize when entering
+    fullscreen. Recorded once per resize, when a frame from the renderer at the
+    new size activates in Viz (Completed), or when the page leaves fullscreen,
+    is hidden, loses its frames, or is destroyed first. See
+    Android.FullscreenResize.TimeToNewFrame for the duration of completed
+    resizes.
+  </summary>
+</histogram>
+
+<histogram name="Android.FullscreenResize.TimeToNewFrame" units="ms"
+    expires_after="2027-10-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Time from the browser embedding a new, resized surface for a visible
+    fullscreen page, e.g. when entering fullscreen, until Viz activates a frame
+    from the renderer at that size. The time Viz then takes to present the frame
+    isn't included. Once the surface-sync deadline expires, the browser shows
+    black instead of the page. If the page is resized again before such a frame
+    arrives, the time runs until a frame at the latest size. Recorded only for
+    resizes that end with such a frame; see Android.FullscreenResize.Result for
+    the others.
+  </summary>
+</histogram>
+
 <histogram name="Android.GlicPromoBottomSheet.DismissReason"
     enum="GlicPromoBottomSheetDismissReason" expires_after="2027-05-15">
   <owner>ssid@google.com</owner>

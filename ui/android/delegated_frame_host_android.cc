@@ -4,6 +4,7 @@
 
 #include "ui/android/delegated_frame_host_android.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -15,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -67,6 +69,12 @@ scoped_refptr<cc::slim::SurfaceLayer> CreateSurfaceLayer(
   return layer;
 }
 
+perfetto::NamedTrack FullscreenResizeTrack(
+    const DelegatedFrameHostAndroid* host) {
+  return perfetto::NamedTrack::FromPointer(
+      "DelegatedFrameHostAndroid::FullscreenResize", host);
+}
+
 }  // namespace
 
 DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
@@ -90,6 +98,7 @@ DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
 }
 
 DelegatedFrameHostAndroid::~DelegatedFrameHostAndroid() {
+  FinishFullscreenResize(FullscreenResizeResult::kDestroyed);
   EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   DetachFromCompositor();
   if (owns_frame_sink_id_) {
@@ -292,6 +301,7 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
 
 void DelegatedFrameHostAndroid::EvictDelegatedFrame(
     const std::vector<viz::SurfaceId>& surface_ids) {
+  FinishFullscreenResize(FullscreenResizeResult::kEvicted);
   content_layer_->SetSurfaceId(viz::SurfaceId(),
                                cc::DeadlinePolicy::UseDefaultDeadline());
   // If we have a surface from before a navigation, evict it, regardless of
@@ -444,9 +454,15 @@ bool DelegatedFrameHostAndroid::HasSavedFrame() const {
 }
 
 void DelegatedFrameHostAndroid::WasHidden() {
+  OnRendererHidden();
   CancelSuccessfulPresentationTimeRequest();
   frame_evictor_->SetVisible(false);
   ReleaseCaptureKeepAlive();
+}
+
+void DelegatedFrameHostAndroid::OnRendererHidden() {
+  renderer_visible_ = false;
+  FinishFullscreenResize(FullscreenResizeResult::kHidden);
 }
 
 void DelegatedFrameHostAndroid::WasShown(
@@ -460,6 +476,7 @@ void DelegatedFrameHostAndroid::WasShown(
         std::move(*content_to_visible_time_request));
   }
   frame_evictor_->SetVisible(true);
+  renderer_visible_ = true;
 
   EmbedSurface(
       new_local_surface_id, new_size_in_pixels,
@@ -500,6 +517,22 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   viz::SurfaceId current_primary_surface_id = content_layer_->surface_id();
   viz::SurfaceId new_primary_surface_id(frame_sink_id_, local_surface_id_);
 
+  // Whether a new size replaces content that has already been shown.
+  const bool replaces_old_content =
+      !content_layer_->bounds().IsEmpty() &&
+      surface_size_in_pixels_ != content_layer_->bounds() &&
+      (has_fallback_surface || bfcache_fallback_.is_valid());
+
+  // Time how long a resize of a visible fullscreen page takes, until Viz
+  // activates a frame from the renderer at the new size. If that frame misses
+  // the deadline, the block below makes Viz show black instead of the old one.
+  if (!is_fullscreen) {
+    FinishFullscreenResize(FullscreenResizeResult::kExitedFullscreen);
+  } else if (frame_evictor_->visible() && renderer_visible_ &&
+             replaces_old_content) {
+    StartOrUpdateFullscreenResize(local_surface_id_);
+  }
+
   if (!frame_evictor_->visible() || is_fullscreen) {
     // For fullscreen or when tab is hidden  we don't want to display old sized
     // content. So we advance the fallback forcing viz to fallback to blank
@@ -510,9 +543,7 @@ void DelegatedFrameHostAndroid::EmbedSurface(
     // visible. This is the case for pre-rendered contents. Don't use the
     // primary id as fallback since it's guaranteed to have no content. See
     // crbug.com/1218238.
-    if (!content_layer_->bounds().IsEmpty() &&
-        surface_size_in_pixels_ != content_layer_->bounds() &&
-        (has_fallback_surface || bfcache_fallback_.is_valid())) {
+    if (replaces_old_content) {
       content_layer_->SetOldestAcceptableFallback(new_primary_surface_id);
       // We default to black background for fullscreen case.
       content_layer_->SetBackgroundColor(
@@ -572,6 +603,53 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   // If DFHA is shown, make sure that the surface is kept alive. This is
   // required for e.g. tab sharing capture to work.
   UpdateCaptureKeepAlive();
+}
+
+void DelegatedFrameHostAndroid::OnRendererSurfaceActivated(
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks activation_time) {
+  if (fullscreen_resize_target_.is_valid() &&
+      local_surface_id.IsSameOrNewerThan(fullscreen_resize_target_)) {
+    FinishFullscreenResize(FullscreenResizeResult::kCompleted, activation_time);
+  }
+}
+
+void DelegatedFrameHostAndroid::StartOrUpdateFullscreenResize(
+    const viz::LocalSurfaceId& local_surface_id) {
+  // Keep the start time if the page is resized again before a frame at the
+  // previous size arrives, e.g. as the system bars hide one after another.
+  if (!fullscreen_resize_target_.is_valid()) {
+    fullscreen_resize_start_time_ = base::TimeTicks::Now();
+    TRACE_EVENT_BEGIN("viz", "DelegatedFrameHostAndroid::FullscreenResize",
+                      FullscreenResizeTrack(this),
+                      fullscreen_resize_start_time_);
+  }
+  // Wait for a frame at the newest size. Frames at an older size are no
+  // longer accepted as a fallback (see EmbedSurface()), so they won't be shown.
+  fullscreen_resize_target_ = local_surface_id;
+}
+
+void DelegatedFrameHostAndroid::FinishFullscreenResize(
+    FullscreenResizeResult result,
+    base::TimeTicks end_time) {
+  if (!fullscreen_resize_target_.is_valid()) {
+    return;
+  }
+  if (end_time.is_null()) {
+    end_time = base::TimeTicks::Now();
+  }
+  // `end_time` can come from Viz. Don't end before the start.
+  end_time = std::max(end_time, fullscreen_resize_start_time_);
+  TRACE_EVENT_END("viz", FullscreenResizeTrack(this), end_time, "result",
+                  result, "local_surface_id",
+                  fullscreen_resize_target_.ToString());
+  if (result == FullscreenResizeResult::kCompleted) {
+    base::UmaHistogramTimes("Android.FullscreenResize.TimeToNewFrame",
+                            end_time - fullscreen_resize_start_time_);
+  }
+  base::UmaHistogramEnumeration("Android.FullscreenResize.Result", result);
+  fullscreen_resize_start_time_ = base::TimeTicks();
+  fullscreen_resize_target_ = viz::LocalSurfaceId();
 }
 
 void DelegatedFrameHostAndroid::RequestSuccessfulPresentationTimeForNextFrame(
