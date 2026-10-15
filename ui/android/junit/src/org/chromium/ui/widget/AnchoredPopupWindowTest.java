@@ -26,6 +26,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
@@ -139,6 +140,14 @@ public final class AnchoredPopupWindowTest {
                 createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
         popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         verify(mPopupWindow).setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
+
+    @Test
+    public void setSoftInputMode_delegatesToPopupWindow() {
+        AnchoredPopupWindow popupWindow =
+                createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
+        popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        verify(mPopupWindow).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
     @Test
@@ -346,6 +355,20 @@ public final class AnchoredPopupWindowTest {
                 .build();
 
         verify(mPopupWindow).setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
+
+    @Test
+    public void testSetSoftInputMode_builder() {
+        new AnchoredPopupWindow.Builder(
+                        mActivity,
+                        mView,
+                        mDrawable,
+                        () -> mContentView,
+                        new RectProvider(new Rect(0, 0, 100, 100)))
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+                .build();
+
+        verify(mPopupWindow).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
     @Test

@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -171,14 +172,22 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 isShowing -> {
                     if (!isShowing) {
                         updateTabGroupTitle();
-                    } else if (mTabStripLayout == TabStripLayoutType.VERTICAL) {
-                        if (isMenuShowing()) {
-                            // Using .post() to ensure the Android OS has finished resizing the
-                            // window (shrinking the visible viewport) to accommodate the keyboard
-                            // before we calculate the menu's new positioning coordinates (layout
-                            // pass).
-                            assumeNonNull(mContentView).post(this::updateMenuLayout);
-                        }
+                    }
+
+                    // Determine whether to update the menu layout based on visibility and layout
+                    // type. Only update on menu show for vertical tabs; re-laying out on hide
+                    // causes vertical tabs to flip-flop above/below the anchor and jump jarringly.
+                    boolean shouldUpdateLayout =
+                            !isShowing
+                                    ? mTabStripLayout == TabStripLayoutType.HORIZONTAL
+                                    : isMenuShowing();
+
+                    if (shouldUpdateLayout) {
+                        // Using .post() to ensure the Android OS has finished resizing the
+                        // window (shrinking the visible viewport) to accommodate the keyboard
+                        // before we calculate the menu's new positioning coordinates (layout
+                        // pass).
+                        assumeNonNull(mContentView).post(this::updateMenuLayout);
                     }
                 };
         getTabModel().addTabGroupObserver(mTabGroupObserver);
@@ -516,6 +525,10 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @Override
     protected void afterCreate() {
         assert mContentView != null : "Menu view should not be null";
+
+        if (mTabStripLayout == TabStripLayoutType.HORIZONTAL) {
+            setMenuSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        }
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
 

@@ -532,6 +532,17 @@ public abstract class TabOverflowMenuCoordinator<T>
         }
     }
 
+    /**
+     * Sets the soft input mode for the popup window.
+     *
+     * @param mode See {@link android.widget.PopupWindow#setSoftInputMode(int)}.
+     */
+    protected void setMenuSoftInputMode(int mode) {
+        if (mMenuHolder != null) {
+            mMenuHolder.setSoftInputMode(mode);
+        }
+    }
+
     /** Forces the underlying main menu popup window to update its layout position. */
     protected void updateMenuLayout() {
         FlyoutController<TabOverflowMenuHolder<T>> controller =
@@ -542,6 +553,10 @@ public abstract class TabOverflowMenuCoordinator<T>
                 menuWindow.onRectChanged();
             }
         }
+    }
+
+    public @Nullable AnchoredPopupWindow getMenuWindowForTesting() {
+        return mMenuHolder != null ? mMenuHolder.getMenuWindow() : null;
     }
 
     public @Nullable ModelList getModelListForTesting() {

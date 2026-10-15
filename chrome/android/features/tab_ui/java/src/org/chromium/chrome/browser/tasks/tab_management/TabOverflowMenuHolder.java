@@ -225,6 +225,10 @@ public class TabOverflowMenuHolder<T> {
         return mContentView;
     }
 
+    void setSoftInputMode(int softInputMode) {
+        mMenuWindow.setSoftInputMode(softInputMode);
+    }
+
     void show() {
         mMenuWindow.show();
         mContentView.findViewById(R.id.tab_group_action_menu_list).requestFocus();

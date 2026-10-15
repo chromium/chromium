@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -109,6 +110,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
@@ -676,6 +678,11 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertTrue(
                 "Menu should be showing initially",
                 mTabGroupContextMenuCoordinator.isMenuShowing());
+        AnchoredPopupWindow menuWindow = mTabGroupContextMenuCoordinator.getMenuWindowForTesting();
+        assertNotNull(menuWindow);
+        assertNotEquals(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING,
+                menuWindow.getSoftInputModeForTesting());
 
         // Extract the internal listener that we defined/modified in the constructor.
         KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
@@ -703,6 +710,70 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertTrue(
                 "Menu should remain displayable after layout update",
                 mTabGroupContextMenuCoordinator.isMenuShowing());
+
+        // Simulate the keyboard dismissing (isShowing = false).
+        listener.keyboardVisibilityChanged(false);
+
+        // For vertical tabs, dismissing the keyboard should NOT schedule a layout task to
+        // avoid jarring flip-flop jumping.
+        assertTrue(
+                "The keyboard dismissal on vertical strip must not schedule a layout task",
+                ShadowLooper.getShadowMainLooper().isIdle());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Feature("Tab Strip Group Context Menu")
+    public void testKeyboardShowing_HorizontalStrip_ForcesMenuLayoutUpdate() {
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        assertTrue(
+                "Menu should be showing initially",
+                mTabGroupContextMenuCoordinator.isMenuShowing());
+        AnchoredPopupWindow menuWindow = mTabGroupContextMenuCoordinator.getMenuWindowForTesting();
+        assertNotNull(menuWindow);
+        assertEquals(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING,
+                menuWindow.getSoftInputModeForTesting());
+
+        // Extract the internal listener that we defined/modified in the constructor.
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
+                mTabGroupContextMenuCoordinator.getKeyboardVisibilityListenerForTesting();
+        assertNotNull("KeyboardVisibilityListener should not be null", listener);
+
+        // Clear all initialization/inflation tasks so the looper queue is completely empty.
+        ShadowLooper.getShadowMainLooper().runToEndOfTasks();
+        assertTrue(
+                "Looper must be idle before simulating the keyboard event",
+                ShadowLooper.getShadowMainLooper().isIdle());
+
+        // Simulate the keyboard surfacing (isShowing = true).
+        listener.keyboardVisibilityChanged(true);
+
+        // Check if a layout task was successfully scheduled on the looper.
+        assertFalse(
+                "The keyboard visibility change must schedule a layout task, making the looper"
+                        + " non-idle",
+                ShadowLooper.getShadowMainLooper().isIdle());
+
+        // Execute the posted layout task cleanly to finish the test cycle.
+        ShadowLooper.getShadowMainLooper().runToEndOfTasks();
+
+        assertTrue(
+                "Menu should remain displayable after layout update",
+                mTabGroupContextMenuCoordinator.isMenuShowing());
+
+        // Simulate the keyboard dismissing (isShowing = false) while menu remains open.
+        listener.keyboardVisibilityChanged(false);
+
+        // For horizontal tabs, dismissing the keyboard must schedule a layout task to restore
+        // menu height.
+        assertFalse(
+                "The keyboard dismissal on horizontal strip must schedule a layout task",
+                ShadowLooper.getShadowMainLooper().isIdle());
+
+        ShadowLooper.getShadowMainLooper().runToEndOfTasks();
+        assertTrue(mTabGroupContextMenuCoordinator.isMenuShowing());
     }
 
     @Test

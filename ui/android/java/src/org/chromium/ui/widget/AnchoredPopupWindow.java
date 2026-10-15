@@ -316,6 +316,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         private boolean mAnimateFromAnchor;
         private boolean mFocusable;
         private @Nullable Integer mInputMethodMode;
+        private @Nullable Integer mSoftInputMode;
         private boolean mTouchable;
         private boolean mIsTouchableSet;
         private float mElevation;
@@ -570,6 +571,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
 
         /**
+         * @param mode The soft input mode for the popup. See {@link
+         *     PopupWindow#setSoftInputMode(int)}.
+         */
+        public Builder setSoftInputMode(int mode) {
+            mSoftInputMode = mode;
+            return this;
+        }
+
+        /**
          * @param touchable True if the popup is touchable, false otherwise.
          */
         public Builder setTouchable(boolean touchable) {
@@ -686,6 +696,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         setFocusable(builder.mFocusable);
         if (builder.mInputMethodMode != null) {
             mPopupWindow.setInputMethodMode(builder.mInputMethodMode);
+        }
+        if (builder.mSoftInputMode != null) {
+            mPopupWindow.setSoftInputMode(builder.mSoftInputMode);
         }
         if (builder.mIsTouchableSet) {
             mPopupWindow.setTouchable(builder.mTouchable);
@@ -925,6 +938,23 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     public void setInputMethodMode(int inputMethodMode) {
         mPopupWindow.setInputMethodMode(inputMethodMode);
+    }
+
+    /**
+     * Sets the soft input mode for the popup. See {@link PopupWindow#setSoftInputMode(int)}.
+     *
+     * @param softInputMode The soft input mode to set.
+     */
+    public void setSoftInputMode(int softInputMode) {
+        mPopupWindow.setSoftInputMode(softInputMode);
+        if (mPopupWindow.isShowing()) {
+            mPopupWindow.update();
+        }
+    }
+
+    /** Returns the soft input mode of the underlying popup window for testing. */
+    public int getSoftInputModeForTesting() {
+        return mPopupWindow.getSoftInputMode();
     }
 
     /**
