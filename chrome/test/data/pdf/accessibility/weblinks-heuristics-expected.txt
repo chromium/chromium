@@ -1,9 +1,3 @@
-Hello,
-¶
-http://yahoo.com
-¶
-! nice meeting you
-¶
 Goodbye,
 ¶
 http://bing.com
@@ -12,4 +6,10 @@ http://bing.com
 Bye,
 ¶
 http://google.com
+¶
+Hello,
+¶
+http://yahoo.com
+¶
+! nice meeting you
 ¶

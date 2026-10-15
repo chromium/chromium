@@ -1,10 +1,5 @@
 [document frame] name='PDF document containing 1 page'
 ++[landmark] name='Page 1'
-++++[paragraph]
-++++++[static] name='Hello, '
-++++++[link] name='http://yahoo.com'
-++++++++[static] name='http://yahoo.com'
-++++++[static] name='! nice meeting you '
 ++++[heading] name='Goodbye, http://bing.com! nice meeting you Bye, http://google.com'
 ++++++[static] name='Goodbye, '
 ++++++[link] name='http://bing.com'
@@ -12,3 +7,8 @@
 ++++++[static] name='! nice meeting you Bye, '
 ++++++[link] name='http://google.com'
 ++++++++[static] name='http://google.com'
+++++[paragraph]
+++++++[static] name='Hello, '
+++++++[link] name='http://yahoo.com'
+++++++++[static] name='http://yahoo.com'
+++++++[static] name='! nice meeting you '
