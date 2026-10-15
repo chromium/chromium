@@ -551,8 +551,8 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
 IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabsAndGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
-  // TODO(crbug.com/571588484): Test the tab closure with the
-  // tab group deletion dialog enabled.
+  // Prevent showing the deletion dialog so this test can verify ProfileData
+  // and recently closed tabs without dialog interception.
   if (auto* dialog_controller =
           tab_groups::DeletionDialogController::From(browser1())) {
     dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
@@ -637,6 +637,89 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabsAndGroups) {
             ASSERT_EQ(tab_group->id, tab->group_id);
           });
   handler()->GetProfileData(std::move(callback2));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
+                       CloseLastTabInGroupWithDeletionDialog_Ok) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  tab_groups::DeletionDialogController* dialog_controller =
+      tab_groups::DeletionDialogController::From(browser1());
+  ASSERT_TRUE(dialog_controller);
+
+  // Add tabs to browser1.
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  // Associate tab at index 0 to a tab group.
+  tab_strip_model->AddToNewGroup({0});
+
+  ClearSetupExpectations();
+
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+
+  // Close the group's only tab via tab search.
+  const int tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+
+  // The tab deletion dialog should be shown, and the tab should not be closed
+  // yet.
+  EXPECT_TRUE(dialog_controller->IsShowingDialog());
+  EXPECT_EQ(3, browser1()->tab_strip_model()->count());
+
+  // Confirm deletion in the dialog.
+  dialog_controller->SimulateOkButtonForTesting();
+
+  // The dialog should be dismissed and the tab should be closed.
+  EXPECT_FALSE(dialog_controller->IsShowingDialog());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return browser1()->tab_strip_model()->count() == 2; }));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
+                       CloseLastTabInGroupWithDeletionDialog_Cancel) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  tab_groups::DeletionDialogController* dialog_controller =
+      tab_groups::DeletionDialogController::From(browser1());
+  ASSERT_TRUE(dialog_controller);
+
+  // Add tabs to browser1.
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  // Associate tab at index 0 to a tab group.
+  tab_strip_model->AddToNewGroup({0});
+
+  ClearSetupExpectations();
+
+  // Closing the tab should not succeed, so no tabs are removed.
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+
+  // Attempt to close the group's only tab via tab search.
+  const int tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+
+  // The tab deletion dialog should be shown, and the tab should not be closed.
+  EXPECT_TRUE(dialog_controller->IsShowingDialog());
+  EXPECT_EQ(3, browser1()->tab_strip_model()->count());
+
+  // Cancel deletion in the dialog.
+  dialog_controller->SimulateCancelButtonForTesting();
+
+  // The dialog should be dismissed, and the tab should remain in the strip.
+  EXPECT_FALSE(dialog_controller->IsShowingDialog());
+  EXPECT_EQ(3, browser1()->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MediaTabsTest) {
