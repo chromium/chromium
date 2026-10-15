@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +20,7 @@ namespace {
 using QuestionType = blink::mojom::AIDecisionModelQuestionType;
 using ::testing::ElementsAre;
 using ::testing::FloatNear;
+using ::testing::Gt;
 
 blink::mojom::AIDecisionModelQuestionPtr MakeQuestion(
     std::string id,
@@ -44,6 +46,21 @@ std::vector<std::string> Labels(
   return labels;
 }
 
+std::vector<std::string> Descriptions(
+    const DecisionModelSchemaCompiler::CompiledQuestion& question) {
+  std::vector<std::string> descriptions;
+  for (const auto& option : question.options) {
+    descriptions.push_back(option.description);
+  }
+  return descriptions;
+}
+
+passage_embeddings::Embedding MakeUnitEmbedding(std::vector<float> values) {
+  auto normalized = passage_embeddings::Embedding::Normalize(std::move(values));
+  CHECK(normalized.has_value());
+  return passage_embeddings::Embedding(std::move(*normalized));
+}
+
 TEST(DecisionModelSchemaCompilerTest, CompilesEachQuestionType) {
   auto schema = DecisionModelSchemaCompiler::Compile(
       "ctx",
@@ -59,6 +76,83 @@ TEST(DecisionModelSchemaCompilerTest, CompilesEachQuestionType) {
   EXPECT_THAT(Labels(schema->questions[2]),
               ElementsAre("1", "2", "3", "4", "5"));
   EXPECT_THAT(Labels(schema->questions[3]), ElementsAre("low", "mid", "high"));
+}
+
+TEST(DecisionModelSchemaCompilerTest, DefaultScoreDescriptions) {
+  constexpr std::string_view kExtremelyLow =
+      "extremely low, lowest, most negative.";
+  constexpr std::string_view kVeryLow = "very low, strongly negative.";
+  constexpr std::string_view kLow = "low, fairly negative.";
+  constexpr std::string_view kSomewhatLow =
+      "somewhat low, moderately negative.";
+  constexpr std::string_view kSlightlyLow = "slightly low, slightly negative.";
+  constexpr std::string_view kModerate = "moderate, medium, neutral.";
+  constexpr std::string_view kSlightlyHigh =
+      "slightly high, slightly positive.";
+  constexpr std::string_view kSomewhatHigh =
+      "somewhat high, moderately positive.";
+  constexpr std::string_view kHigh = "high, fairly positive.";
+  constexpr std::string_view kVeryHigh = "very high, strongly positive.";
+  constexpr std::string_view kExtremelyHigh =
+      "extremely high, highest, most positive.";
+
+  auto make_score_question = [](size_t count) {
+    std::vector<std::string> labels;
+    for (size_t i = 1; i <= count; ++i) {
+      labels.push_back(base::NumberToString(i));
+    }
+    return MakeQuestion("s" + base::NumberToString(count), QuestionType::kScore,
+                        std::move(labels));
+  };
+
+  auto custom_words =
+      MakeQuestion("words", QuestionType::kScore, {"low", "mid", "high"});
+  auto partial_desc =
+      MakeQuestion("partial", QuestionType::kScore, {"1", "2", "3"});
+  partial_desc->options[0]->description = "lowest";
+
+  auto schema = DecisionModelSchemaCompiler::Compile(
+      std::nullopt,
+      {make_score_question(2), make_score_question(3), make_score_question(4),
+       make_score_question(5), make_score_question(6), make_score_question(7),
+       make_score_question(8), make_score_question(9), make_score_question(10),
+       make_score_question(11), std::move(custom_words),
+       std::move(partial_desc)});
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+  ASSERT_EQ(schema->questions.size(), 12u);
+
+  EXPECT_THAT(Descriptions(schema->questions[0]), ElementsAre(kLow, kHigh));
+  EXPECT_THAT(Descriptions(schema->questions[1]),
+              ElementsAre(kLow, kModerate, kHigh));
+  EXPECT_THAT(Descriptions(schema->questions[2]),
+              ElementsAre(kVeryLow, kLow, kHigh, kVeryHigh));
+  EXPECT_THAT(Descriptions(schema->questions[3]),
+              ElementsAre(kVeryLow, kLow, kModerate, kHigh, kVeryHigh));
+  EXPECT_THAT(Descriptions(schema->questions[4]),
+              ElementsAre(kVeryLow, kLow, kSlightlyLow, kSlightlyHigh, kHigh,
+                          kVeryHigh));
+  EXPECT_THAT(Descriptions(schema->questions[5]),
+              ElementsAre(kVeryLow, kLow, kSlightlyLow, kModerate,
+                          kSlightlyHigh, kHigh, kVeryHigh));
+  EXPECT_THAT(Descriptions(schema->questions[6]),
+              ElementsAre(kExtremelyLow, kVeryLow, kLow, kSlightlyLow,
+                          kSlightlyHigh, kHigh, kVeryHigh, kExtremelyHigh));
+  EXPECT_THAT(
+      Descriptions(schema->questions[7]),
+      ElementsAre(kExtremelyLow, kVeryLow, kLow, kSlightlyLow, kModerate,
+                  kSlightlyHigh, kHigh, kVeryHigh, kExtremelyHigh));
+  EXPECT_THAT(Descriptions(schema->questions[8]),
+              ElementsAre(kExtremelyLow, kVeryLow, kLow, kSomewhatLow,
+                          kSlightlyLow, kSlightlyHigh, kSomewhatHigh, kHigh,
+                          kVeryHigh, kExtremelyHigh));
+  EXPECT_THAT(Descriptions(schema->questions[9]),
+              ElementsAre(kExtremelyLow, kVeryLow, kLow, kSomewhatLow,
+                          kSlightlyLow, kModerate, kSlightlyHigh, kSomewhatHigh,
+                          kHigh, kVeryHigh, kExtremelyHigh));
+  // Custom word labels and partially-described options are not overwritten.
+  EXPECT_THAT(Descriptions(schema->questions[10]), ElementsAre("", "", ""));
+  EXPECT_THAT(Descriptions(schema->questions[11]),
+              ElementsAre("lowest", "", ""));
 }
 
 TEST(DecisionModelSchemaCompilerTest, RejectsInvalidSchemas) {
@@ -137,6 +231,85 @@ TEST(DecisionModelSchemaCompilerTest, AllowsSurroundingWhitespace) {
   EXPECT_TRUE(
       DecisionModelSchemaCompiler::Compile("ctx 1\nctx 2", {std::move(q)})
           .has_value());
+}
+
+TEST(DecisionModelSchemaCompilerTest, BuildsOptionAndQueryPassages) {
+  auto choice = MakeQuestion("c", QuestionType::kChoice,
+                             {"bug", "share_link", "one-time", "-2"});
+  choice->options[0]->description = "Product crash or defect";
+
+  auto schema = DecisionModelSchemaCompiler::Compile(
+      "Support tickets",
+      {MakeQuestion("b", QuestionType::kBoolean), std::move(choice),
+       MakeQuestion("s", QuestionType::kScore)});
+  ASSERT_TRUE(schema.has_value());
+
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 0, 0),
+      "title: true | text: Question: Prompt for b - true, yes, affirmative.");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 0, 1),
+      "title: false | text: Question: Prompt for b - No, false, none, not "
+      "applicable, unrelated.");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 1, 0),
+      "title: bug | text: Question: Prompt for c - Product crash or defect");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 1, 1),
+      "title: share link | text: Question: Prompt for c - share link");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 1, 2),
+      "title: one time | text: Question: Prompt for c - one time");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 1, 3),
+      "title: -2 | text: Question: Prompt for c - -2");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 2, 0),
+      "title: Level 1 | text: Question: Prompt for s - very low, strongly "
+      "negative.");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 2, 2),
+      "title: Level 3 | text: Question: Prompt for s - moderate, medium, "
+      "neutral.");
+  EXPECT_EQ(
+      DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(*schema, 2, 4),
+      "title: Level 5 | text: Question: Prompt for s - very high, strongly "
+      "positive.");
+
+  EXPECT_EQ(DecisionModelSchemaCompiler::BuildInputEmbeddingPassage(
+                "Checkout crashes"),
+            "task: classification | query: Checkout crashes");
+}
+
+TEST(DecisionModelSchemaCompilerTest, ScoreQuestionEmbeddings) {
+  auto opt0 = MakeUnitEmbedding({1.0f, 1.0f, 0.0f});
+  auto opt1 = MakeUnitEmbedding({1.0f, -1.0f, 0.0f});
+  auto query = MakeUnitEmbedding({1.0f, 0.8f, 0.0f});
+  auto weights =
+      DecisionModelSchemaCompiler::ScoreQuestionEmbeddings(query, {opt0, opt1});
+  ASSERT_EQ(weights.size(), 2u);
+  EXPECT_THAT(weights[0], Gt(weights[1] * 20.0f));
+
+  // Centroid whitening preserves margin when options share a common component.
+  auto shared0 = MakeUnitEmbedding({10.0f, 1.0f, 0.0f});
+  auto shared1 = MakeUnitEmbedding({10.0f, 0.0f, 1.0f});
+  auto shared2 = MakeUnitEmbedding({10.0f, -1.0f, 0.0f});
+  auto whitened_weights = DecisionModelSchemaCompiler::ScoreQuestionEmbeddings(
+      MakeUnitEmbedding({1.0f, 1.0f, 0.0f}), {shared0, shared1, shared2});
+  ASSERT_EQ(whitened_weights.size(), 3u);
+  EXPECT_THAT(whitened_weights[0], Gt(whitened_weights[1] * 10.0f));
+  EXPECT_THAT(whitened_weights[1], Gt(whitened_weights[2] * 10.0f));
+
+  // Empty options, mismatched dimensions, or invalid temperatures return empty.
+  EXPECT_TRUE(
+      DecisionModelSchemaCompiler::ScoreQuestionEmbeddings(query, {}).empty());
+  EXPECT_TRUE(DecisionModelSchemaCompiler::ScoreQuestionEmbeddings(
+                  query, {MakeUnitEmbedding({1.0f, 0.0f}),
+                          MakeUnitEmbedding({0.0f, 1.0f})})
+                  .empty());
+  EXPECT_TRUE(DecisionModelSchemaCompiler::ScoreQuestionEmbeddings(
+                  query, {opt0, opt1}, 0.0f)
+                  .empty());
 }
 
 TEST(DecisionModelSchemaCompilerTest, DecodeResultAndNumericScoreWeighting) {

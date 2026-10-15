@@ -173,16 +173,35 @@ TEST_F(AIEmbeddingsComponentInstallerTest,
   feature_list_.Reset();
   feature_list_.InitWithFeatures({},
                                  {blink::features::kAIEmbeddingsAPI,
-                                  blink::features::kAIEmbeddingsAPIForWorkers});
+                                  blink::features::kAIEmbeddingsAPIForWorkers,
+                                  blink::features::kAIDecisionModelAPI});
 
   EXPECT_CALL(mock_cus_, RegisterComponent(testing::_)).Times(0);
   RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
 }
 
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       RegistersWhenDecisionModelFeatureEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({blink::features::kAIDecisionModelAPI},
+                                 {blink::features::kAIEmbeddingsAPI,
+                                  blink::features::kAIEmbeddingsAPIForWorkers});
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_cus_, RegisterComponent(testing::_))
+      .WillOnce([&](const component_updater::ComponentRegistration&) {
+        run_loop.Quit();
+        return true;
+      });
+  RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
+  run_loop.Run();
+}
+
 TEST_F(AIEmbeddingsComponentInstallerTest, RegistersWhenWorkerFeatureEnabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({blink::features::kAIEmbeddingsAPIForWorkers},
-                                 {blink::features::kAIEmbeddingsAPI});
+                                 {blink::features::kAIEmbeddingsAPI,
+                                  blink::features::kAIDecisionModelAPI});
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_cus_, RegisterComponent(testing::_))

@@ -88,7 +88,12 @@ TEST(DecisionModelPromptBuilderTest, DefaultScoreLevelsAreKeyed) {
       CompileOrDie(std::nullopt, {MakeQuestion("s", QuestionType::kScore)});
 
   EXPECT_EQ(DecisionModelPromptBuilder::BuildQuestionPrompt(schema, 0),
-            "\n\nQuestion: Prompt for s\nA) 1\nB) 2\nC) 3\nD) 4\nE) 5\n\n"
+            "\n\nQuestion: Prompt for s\n"
+            "A) 1: very low, strongly negative.\n"
+            "B) 2: low, fairly negative.\n"
+            "C) 3: moderate, medium, neutral.\n"
+            "D) 4: high, fairly positive.\n"
+            "E) 5: very high, strongly positive.\n\n"
             "Reply with just the letter of the best option.");
 }
 

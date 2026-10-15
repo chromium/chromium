@@ -166,7 +166,8 @@ void RegisterAIEmbeddingsComponent(
   CHECK(local_state);
   if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI) &&
       !base::FeatureList::IsEnabled(
-          blink::features::kAIEmbeddingsAPIForWorkers)) {
+          blink::features::kAIEmbeddingsAPIForWorkers) &&
+      !base::FeatureList::IsEnabled(blink::features::kAIDecisionModelAPI)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;

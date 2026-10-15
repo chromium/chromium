@@ -7,14 +7,17 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "third_party/blink/public/mojom/ai/ai_decision_model.mojom.h"
 
-// Validates a developer-defined decision schema and decodes per-option scores
-// into `AIDecisionModelResult`s.
+// Validates and compiles a decision schema, decodes per-option weights into
+// `AIDecisionModelResult`s for both the language model and embedding backends,
+// and formats and scores passages for the embedding backend.
 //
 // For score questions, each option's value is its label as a number if every
 // label in the question is a finite number (`base::StringToDouble()`), and its
@@ -28,8 +31,12 @@ class DecisionModelSchemaCompiler {
   static constexpr size_t kMinChoiceOptions = 2;
   static constexpr size_t kMaxChoiceOptions = 26;
   static constexpr size_t kMinScoreLevels = 2;
-  static constexpr size_t kMaxScoreLevels = 9;
+  static constexpr size_t kMaxScoreLevels = 11;
   static constexpr size_t kDefaultScoreLevels = 5;
+
+  // TODO(crbug.com/565849508): Configure softmax temperature via model
+  // metadata.
+  static constexpr float kDefaultEmbeddingTemperature = 0.05f;
 
   struct CompiledOption {
     // The label returned to the developer (e.g. "true", "bug", "4").
@@ -78,6 +85,20 @@ class DecisionModelSchemaCompiler {
   static base::expected<CompiledSchema, std::string> Compile(
       const std::optional<std::string>& shared_context,
       base::span<const blink::mojom::AIDecisionModelQuestionPtr> questions);
+
+  // Returns the EmbeddingGemma document passage for a question's option.
+  static std::string BuildOptionEmbeddingPassage(const CompiledSchema& schema,
+                                                 size_t question_index,
+                                                 size_t option_index);
+
+  // Returns the EmbeddingGemma classification query passage for `input`.
+  static std::string BuildInputEmbeddingPassage(std::string_view input);
+
+  // Returns temperature-scaled cosine similarity weights for EmbeddingGemma.
+  static std::vector<float> ScoreQuestionEmbeddings(
+      const passage_embeddings::Embedding& input_embedding,
+      base::span<const passage_embeddings::Embedding> option_embeddings,
+      float temperature = kDefaultEmbeddingTemperature);
 
   // Normalizes `question_option_scores[q][o]` (one non-negative weight per
   // option) into a result with the top label, confidence, full distribution,

@@ -47,7 +47,7 @@ constexpr wtf_size_t kMaxQuestions = 16;
 constexpr wtf_size_t kMinChoiceOptions = 2;
 constexpr wtf_size_t kMaxChoiceOptions = 26;
 constexpr wtf_size_t kMinScoreOptions = 2;
-constexpr wtf_size_t kMaxScoreOptions = 9;
+constexpr wtf_size_t kMaxScoreOptions = 11;
 
 // Validates the developer-provided schema. Throws a TypeError and returns false
 // if it is malformed. When `require_questions` is false, a missing `questions`
@@ -115,7 +115,7 @@ bool ValidateQuestions(const DecisionModelCreateCoreOptions* options,
         if (has_opts &&
             (num_opts < kMinScoreOptions || num_opts > kMaxScoreOptions)) {
           exception_state.ThrowTypeError(
-              "Score DecisionModelQuestion options must have between 2 and 9 "
+              "Score DecisionModelQuestion options must have between 2 and 11 "
               "levels when specified.");
           return false;
         }

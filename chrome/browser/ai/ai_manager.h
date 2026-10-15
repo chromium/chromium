@@ -61,6 +61,13 @@ class AIManager : public base::SupportsUserData::Data,
                   public blink::mojom::AIManager,
                   public content::RenderWidgetHostObserver {
  public:
+#if !BUILDFLAG(IS_ANDROID)
+  enum class DecisionModelBackend {
+    kEmbeddingGemmaV1,
+    kLanguageModel,
+  };
+#endif
+
   using AILanguageModelOrCreationError =
       base::expected<std::unique_ptr<AILanguageModel>,
                      blink::mojom::AIManagerCreateClientError>;
@@ -224,6 +231,11 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       DecisionModelSchemaCompiler::CompiledSchema schema,
       base::WeakPtr<optimization_guide::ModelClient> model_client);
+
+  void OnDecisionModelEmbedderReady(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      DecisionModelSchemaCompiler::CompiledSchema schema);
 #endif
 
   // Creates an `AILanguageModel`, as a new session. Clones are created

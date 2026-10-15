@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ai/ai_embedding_gemma_v1_decision_model.h"
 #include "chrome/browser/ai/ai_language_model_decision_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -720,6 +722,18 @@ std::string_view AILanguageModelSamplingModeToString(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+AIManager::DecisionModelBackend GetDecisionModelBackend() {
+  using Backend = AIManager::DecisionModelBackend;
+  static constexpr base::FeatureParam<Backend>::Option kOptions[] = {
+      {Backend::kEmbeddingGemmaV1, "embedding_gemma_v1"},
+      {Backend::kLanguageModel, "language_model"},
+  };
+  const base::FeatureParam<Backend> kBackend{
+      &blink::features::kAIDecisionModelAPI, "backend",
+      Backend::kEmbeddingGemmaV1, &kOptions};
+  return kBackend.Get();
+}
+
 // Only the manifest broker resolves the Prompt API's model from its feature
 // config. Also requires the CPU backend as a temporary workaround for GPU
 // backend scoring issues: on GPU, scoring options back to back on session
@@ -2032,16 +2046,36 @@ void AIManager::CanCreateDecisionModel(
     return;
   }
 
-  if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
-    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
+  if (GetDecisionModelBackend() == DecisionModelBackend::kLanguageModel) {
+    if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
+      std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableFeatureNotEnabled);
+      return;
+    }
+    // Same foundation model and use case as the Prompt API, resolved from its
+    // feature config, which is also what picks the model version (e.g. Gemma
+    // 4).
+    CanCreateSessionWithConfig<
+        optimization_guide::proto::PromptApiFeatureConfig>(
+        optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+        on_device_model::Capabilities(), std::move(callback));
     return;
   }
-  // Same foundation model and use case as the Prompt API, resolved from its
-  // feature config, which is also what picks the model version (e.g. Gemma 4).
-  CanCreateSessionWithConfig<optimization_guide::proto::PromptApiFeatureConfig>(
-      optimization_guide::mojom::OnDeviceFeature::kPromptApi,
-      on_device_model::Capabilities(), std::move(callback));
+
+  CHECK_EQ(GetDecisionModelBackend(), DecisionModelBackend::kEmbeddingGemmaV1);
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  if (!service_launcher->AllowedToLaunch()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableTooManyRecentCrashes);
+    return;
+  }
+  if (!service_launcher->controller()->IsModelAvailable()) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+    return;
+  }
+  std::move(callback).Run(
+      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 #else
   std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                               kUnavailableFeatureNotEnabled);
@@ -2068,14 +2102,36 @@ void AIManager::CreateDecisionModel(
   if (!schema.has_value()) {
     return;
   }
-  // Blink only creates after `CanCreateDecisionModel()` reports the API as
-  // available, which it never does without these.
-  if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
-    receivers_.ReportBadMessage("Decisions API backend unavailable");
+
+  if (GetDecisionModelBackend() == DecisionModelBackend::kLanguageModel) {
+    // Blink only creates after `CanCreateDecisionModel()` reports the API as
+    // available, which it never does without these.
+    if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
+      receivers_.ReportBadMessage("Decisions API backend unavailable");
+      return;
+    }
+    CreateLanguageModelDecisionModel(
+        std::move(client), std::move(schema).value(), std::move(monitor));
     return;
   }
-  CreateLanguageModelDecisionModel(std::move(client), std::move(schema).value(),
-                                   std::move(monitor));
+
+  CHECK_EQ(GetDecisionModelBackend(), DecisionModelBackend::kEmbeddingGemmaV1);
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  if (!service_launcher->AllowedToLaunch()) {
+    on_device_ai::SendClientRemoteError(
+        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
+            std::move(client)),
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  if (monitor) {
+    service_launcher->AddDownloadObserver(std::move(monitor));
+  }
+
+  service_launcher->WaitForModelAvailable(base::BindOnce(
+      &AIManager::OnDecisionModelEmbedderReady, weak_factory_.GetWeakPtr(),
+      std::move(client), std::move(schema).value()));
 #else
   on_device_ai::SendClientRemoteError(
       mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
@@ -2154,6 +2210,27 @@ void AIManager::OnDecisionModelLanguageModelReady(
   tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kPromptApi);
   // Eagerly initialize other features, now that one successfully initialized.
   MaybeTryEagerInit();
+}
+
+void AIManager::OnDecisionModelEmbedderReady(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    DecisionModelSchemaCompiler::CompiledSchema schema) {
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  if (!service_launcher->controller()->IsModelAvailable() ||
+      !service_launcher->AllowedToLaunch() ||
+      !service_launcher->controller()->GetEmbedder()) {
+    on_device_ai::SendClientRemoteError(
+        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
+            std::move(client)),
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  context_bound_object_set_.AddContextBoundObject(
+      std::make_unique<AIEmbeddingGemmaV1DecisionModel>(
+          context_bound_object_set_, std::move(schema),
+          *service_launcher->controller()->GetEmbedder(), std::move(client)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

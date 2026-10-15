@@ -435,54 +435,6 @@ TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(AIManagerTest, CanCreateDecisionModel) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(blink::features::kAIDecisionModelAPI);
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateDecisionModel(
-        blink::mojom::AIDecisionModelCreateOptions::New(),
-        future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kAIDecisionModelAPI);
-  {
-    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
-    options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateDecisionModel(std::move(options),
-                                        future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableUnsupportedLanguage);
-  }
-  {
-    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
-        client;
-    std::ignore = client.InitWithNewPipeAndPassReceiver();
-    mojo::test::BadMessageObserver bad_message_observer;
-    GetAIManagerRemote()->CreateDecisionModel(
-        std::move(client), blink::mojom::AIDecisionModelCreateOptions::New(),
-        mojo::NullRemote());
-    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-              "At least one question is required.");
-  }
-  {
-    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
-        client;
-    std::ignore = client.InitWithNewPipeAndPassReceiver();
-    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
-    options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
-    mojo::test::BadMessageObserver bad_message_observer;
-    GetAIManagerRemote()->CreateDecisionModel(
-        std::move(client), std::move(options), mojo::NullRemote());
-    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-              "Unsupported language options");
-  }
-}
-
 class TestCreateDecisionModelClient
     : public blink::mojom::AIManagerCreateDecisionModelClient {
  public:
@@ -528,40 +480,190 @@ MakeBooleanDecisionModelOptions() {
   return options;
 }
 
-// Enables the Decisions API, and the CPU backend and manifest broker it needs.
-void EnableLanguageModelDecisionModel(
-    base::test::ScopedFeatureList& feature_list) {
-  feature_list.InitWithFeatures(
-      {blink::features::kAIDecisionModelAPI,
-       on_device_model::features::kOnDeviceModelForceCpuBackend,
-       optimization_guide::kOptimizationGuideManifestBroker},
+// Enables the specified Decisions API backend and any required dependencies.
+void EnableDecisionModel(base::test::ScopedFeatureList& feature_list,
+                         AIManager::DecisionModelBackend backend) {
+  if (backend == AIManager::DecisionModelBackend::kEmbeddingGemmaV1) {
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kAIDecisionModelAPI,
+          {{"backend", "embedding_gemma_v1"}}}},
+        {});
+    return;
+  }
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kAIDecisionModelAPI, {{"backend", "language_model"}}},
+       {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
+       {optimization_guide::kOptimizationGuideManifestBroker, {}}},
       {});
 }
 
-TEST_F(AIManagerTest, CanCreateDecisionModelWithLanguageModelBackend) {
+TEST_F(AIManagerTest, CanCreateDecisionModel) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kAIDecisionModelAPI);
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+  }
+
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  service_launcher->RecordSuccessfulUse();
+  service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
+
+  for (AIManager::DecisionModelBackend backend :
+       {AIManager::DecisionModelBackend::kEmbeddingGemmaV1,
+        AIManager::DecisionModelBackend::kLanguageModel}) {
+    SCOPED_TRACE(static_cast<int>(backend));
+    base::test::ScopedFeatureList feature_list;
+    EnableDecisionModel(feature_list, backend);
+    {
+      auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+      options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
+      base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+      ai_manager_->CanCreateDecisionModel(std::move(options),
+                                          future.GetCallback());
+      EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableUnsupportedLanguage);
+    }
+    {
+      // `availability()` without a schema when model is not yet downloaded.
+      base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+      ai_manager_->CanCreateDecisionModel(
+          blink::mojom::AIDecisionModelCreateOptions::New(),
+          future.GetCallback());
+      EXPECT_EQ(future.Get(),
+                blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+    }
+    {
+      base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+      ai_manager_->CanCreateDecisionModel(MakeBooleanDecisionModelOptions(),
+                                          future.GetCallback());
+      EXPECT_EQ(future.Get(),
+                blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+    }
+    {
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client;
+      std::ignore = client.InitWithNewPipeAndPassReceiver();
+      mojo::test::BadMessageObserver bad_message_observer;
+      GetAIManagerRemote()->CreateDecisionModel(
+          std::move(client), blink::mojom::AIDecisionModelCreateOptions::New(),
+          mojo::NullRemote());
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "At least one question is required.");
+    }
+    {
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client;
+      std::ignore = client.InitWithNewPipeAndPassReceiver();
+      auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+      options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
+      mojo::test::BadMessageObserver bad_message_observer;
+      GetAIManagerRemote()->CreateDecisionModel(
+          std::move(client), std::move(options), mojo::NullRemote());
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "Unsupported language options");
+    }
+  }
+}
+
+TEST_F(AIManagerTest, CanCreateDecisionModelWithEmbeddingGemmaV1Backend) {
   base::test::ScopedFeatureList feature_list;
-  EnableLanguageModelDecisionModel(feature_list);
-  // Uses the Prompt API's foundation model, which is downloadable.
+  EnableDecisionModel(feature_list,
+                      AIManager::DecisionModelBackend::kEmbeddingGemmaV1);
+
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  service_launcher->RecordSuccessfulUse();
+  service_launcher->controller()->MaybeUpdateModelInfo(
+      optimization_guide::ModelInfo{
+          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+          .version = 1,
+          .model_metadata = optimization_guide::AnyWrapProto(
+              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+      });
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateDecisionModel(
         blink::mojom::AIDecisionModelCreateOptions::New(),
         future.GetCallback());
     EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
   }
+
+  // Creating when the embedder model is ready invokes
+  // `OnDecisionModelEmbedderReady` and registers the session object.
+  {
+    TestCreateDecisionModelClient client;
+    GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                              MakeBooleanDecisionModelOptions(),
+                                              mojo::NullRemote());
+    GetAIManagerRemote().FlushForTesting();
+    EXPECT_EQ(GetAIManagerContextBoundObjectSetSize(), 1u);
+  }
+
+  // Consecutive service crashes disable launching.
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateDecisionModel(MakeBooleanDecisionModelOptions(),
-                                        future.GetCallback());
-    EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableTooManyRecentCrashes);
+  }
+  {
+    TestCreateDecisionModelClient client;
+    GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                              MakeBooleanDecisionModelOptions(),
+                                              mojo::NullRemote());
+    EXPECT_EQ(
+        client.result().Take(),
+        base::unexpected(
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession));
+  }
+  service_launcher->RecordSuccessfulUse();
+  service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
+}
+
+TEST_F(AIManagerTest, CanCreateDecisionModelWithLanguageModelBackend) {
+  // Without `kOnDeviceModelForceCpuBackend` and
+  // `kOptimizationGuideManifestBroker`, the language model backend is
+  // unavailable.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kAIDecisionModelAPI, {{"backend", "language_model"}}}},
+      {});
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+  }
+  {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    mojo::test::BadMessageObserver bad_message_observer;
+    GetAIManagerRemote()->CreateDecisionModel(std::move(client),
+                                              MakeBooleanDecisionModelOptions(),
+                                              mojo::NullRemote());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "Decisions API backend unavailable");
   }
 }
 
 TEST_F(AIManagerTest, CreateDecisionModelWithLanguageModelBackend) {
   base::test::ScopedFeatureList feature_list;
-  EnableLanguageModelDecisionModel(feature_list);
+  EnableDecisionModel(feature_list,
+                      AIManager::DecisionModelBackend::kLanguageModel);
 
   TestCreateDecisionModelClient client;
   GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
@@ -590,7 +692,8 @@ TEST_F(AIManagerTest, CreateDecisionModelWithLanguageModelBackend) {
 
 TEST_F(AIManagerTest, CreateDecisionModelForwardsQuotaErrorInfo) {
   base::test::ScopedFeatureList feature_list;
-  EnableLanguageModelDecisionModel(feature_list);
+  EnableDecisionModel(feature_list,
+                      AIManager::DecisionModelBackend::kLanguageModel);
   // Every prompt is too large for the model.
   constexpr uint32_t kPromptSize = 100000;
   SetSizeInTokens(kPromptSize);
