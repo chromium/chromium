@@ -54,7 +54,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -1056,37 +1055,15 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       shared_image_usages |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
     }
 
-    gpu::ImageInfo image_info(size, format, shared_image_usages,
-                              GetColorSpace(), kTopLeft_GrSurfaceOrigin,
-                              GetAlphaType(),
-                              /*buffer_usage=*/std::nullopt,
-                              /*is_software=*/false);
-
-    std::optional<base::TimeDelta> expiration_time =
-        (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-            ? std::make_optional(
-                  Canvas2DResourceProvider::kUnusedResourceExpirationTime)
-            : std::nullopt;
-    bool is_single_buffered =
-        shared_image_usages.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-    constexpr int kMaxRecycledCanvasResources = 3;
-
-    auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-        image_info,
-        shared_context_wrapper->ContextProvider().SharedImageInterface(),
-        "CanvasResourceRaster",
-        is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
-    if (!image_pool) {
-      return nullptr;
-    }
-    auto resource = image_pool->GetImage();
-    if (!resource) {
-      return nullptr;
-    }
-
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
-    auto client_si = resource->GetSharedImage();
+    auto client_si =
+        shared_context_wrapper->ContextProvider()
+            .SharedImageInterface()
+            ->CreateSharedImage(
+                {format, size, GetColorSpace(), kTopLeft_GrSurfaceOrigin,
+                 GetAlphaType(), shared_image_usages, "CanvasResourceRaster"},
+                gpu::kNullSurfaceHandle);
     gpu::SyncToken sync_token = client_si->creation_sync_token();
     if (sync_token.HasData()) {
       client_si->UpdateDestructionSyncToken(sync_token);
