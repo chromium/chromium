@@ -60,6 +60,7 @@ import java.util.ArrayList;
 /** Test to verify download end to end flow with download location dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_SYSTEM_FILE_DIALOG)
 @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572086975
 public class DownloadLocationChangeEnd2EndTest {
     public final FreshCtaTransitTestRule mActivityTestRule =
