@@ -67,14 +67,18 @@ void BoundSessionRegistrationFetcherImpl::Start(
       std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
           key_service_.get(),
           base::ToVector(registration_params_.supported_algos()));
-  // base::Unretained() is safe since `this` owns
-  // `registration_token_helper_`.
+  // A weak pointer is required here: `registration_token_helper_` runs pending
+  // callbacks with a cancellation error from its destructor, which happens
+  // during the destruction of `this`. `callback_` must not be run in this case,
+  // as the owner doesn't expect to be called back while it's destroying `this`
+  // (so just reordering `callback_` and `registration_token_helper_` wouldn't
+  // be enough).
   registration_token_helper_->GenerateForSessionBinding(
       registration_params_.challenge(),
       registration_params_.registration_endpoint(),
       base::BindOnce(
           &BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated,
-          base::Unretained(this), base::ElapsedTimer()));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
 }
 
 void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(

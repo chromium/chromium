@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -101,5 +102,14 @@ class BoundSessionRegistrationFetcherImpl
       registration_token_helper_;
 
   RegistrationCompleteCallback callback_;
+
+  // Must be the last member so that it's destroyed first. This invalidates
+  // weak pointers before any other member is destroyed, in particular before
+  // `registration_token_helper_`, which synchronously runs pending callbacks
+  // with a cancellation error from its destructor.
+  // TODO(crbug.com/514242898): Remove the factory once `UnexportableKeyLoader`
+  // no longer invokes callbacks from its destructor.
+  base::WeakPtrFactory<BoundSessionRegistrationFetcherImpl> weak_ptr_factory_{
+      this};
 };
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_IMPL_H_

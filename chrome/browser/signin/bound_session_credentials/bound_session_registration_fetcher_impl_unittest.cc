@@ -206,6 +206,10 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
         1);
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   void OnRequestIntercepted(const network::ResourceRequest& request) {
     EXPECT_EQ(request.url, kRegistrationUrl) << "Unexpected request";
@@ -407,6 +411,28 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoKeyProvider) {
   EXPECT_FALSE(WasRequestSent());
   EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kGenerateRegistrationTokenFailed);
+}
+
+// Regression test for https://crbug.com/567397860.
+TEST_F(BoundSessionRegistrationFetcherImplTest,
+       DestroyedWhileGeneratingRegistrationToken) {
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  // The binding key generation is still pending as background tasks haven't
+  // run yet. Destroying the fetcher cancels the pending key generation, which
+  // must not invoke the completion callback.
+  fetcher.reset();
+  EXPECT_FALSE(future.IsReady());
+
+  RunBackgroundTasks();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(WasRequestSent());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionRegistrationResult", 0);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionRegistrationTotalDuration", 0);
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, ParseCredentials) {
