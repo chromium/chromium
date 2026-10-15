@@ -62,10 +62,6 @@
   UISheetPresentationController* presentationController =
       navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];

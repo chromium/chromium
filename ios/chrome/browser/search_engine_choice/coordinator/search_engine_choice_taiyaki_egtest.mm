@@ -184,12 +184,6 @@
                       grey_accessibilityID(
                           kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
 
-  // Expand the bottom sheet to largeDetent by swiping up on the sheet view.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
-      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
-
   // Verify the Taiyaki third paragraph instructive text is present and visible.
   NSString* taiyakiText = l10n_util::GetNSString(
       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH_INSTRUCTIVE);
