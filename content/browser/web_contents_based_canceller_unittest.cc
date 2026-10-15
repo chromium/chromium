@@ -313,6 +313,23 @@ TEST_F(WebContentsBasedCancellerTest, WebUIExemptFromSizeCheck) {
 }
 
 TEST_F(WebContentsBasedCancellerTest,
+       PrivilegedWebContentsExemptFromSizeCheck) {
+  WebContents::CreateParams params(browser_context());
+  WebContents::PrivilegedParams privileged_params;
+  privileged_params.feature_id = 1;
+  params.privileged_params = privileged_params;
+  std::unique_ptr<WebContents> privileged_contents(
+      WebContentsTester::CreateTestWebContents(params));
+  WebContentsTester::For(privileged_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  static_cast<RenderFrameHostImpl*>(privileged_contents->GetPrimaryMainFrame())
+      ->GetView()
+      ->SetBounds(gfx::Rect(0, 0, 100, 100));
+  EXPECT_FALSE(WebContentsBasedCanceller::IsWindowTooSmall(
+      privileged_contents.get(), kTestMinWindowSize));
+}
+
+TEST_F(WebContentsBasedCancellerTest,
        NarrowedWebContentsInNormalTopLevelWindowAllowed) {
   TestWindowBoundsDelegate delegate(gfx::Rect(0, 0, 800, 600));
   web_contents()->SetDelegate(&delegate);

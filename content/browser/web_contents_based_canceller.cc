@@ -22,7 +22,7 @@ namespace content {
 namespace {
 
 bool IsExemptFromSizeCheck(WebContents* outermost) {
-  if (!outermost) {
+  if (!outermost || outermost->IsPrivileged()) {
     return true;
   }
   RenderFrameHost* rfh = outermost->GetPrimaryMainFrame();
