@@ -138,8 +138,7 @@ void TrayItemView::DestroyLabel() {
   if (!label_)
     return;
 
-  RemoveChildViewT(label_.get());
-  label_ = nullptr;
+  RemoveChildViewT(label_.ExtractAsDangling());
 
   for (auto& observer : observers_) {
     observer.OnTrayItemChildViewChanged();
@@ -150,8 +149,7 @@ void TrayItemView::DestroyImageView() {
   if (!image_view_)
     return;
 
-  RemoveChildViewT(image_view_.get());
-  image_view_ = nullptr;
+  RemoveChildViewT(image_view_.ExtractAsDangling());
 
   for (auto& observer : observers_) {
     observer.OnTrayItemChildViewChanged();

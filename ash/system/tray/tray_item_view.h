@@ -204,7 +204,7 @@ class ASH_EXPORT TrayItemView : public views::View,
   double GetItemScaleProgressFromAnimationProgress(
       double animation_value) const;
 
-  const raw_ptr<Shelf, DanglingUntriaged> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // When showing the item in tray, the animation is executed with 2 stages:
   // 1. Resize: The size reserved for tray item view gradually increases.
@@ -227,8 +227,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   bool is_active_ = false;
 
   // Only one of |label_| and |image_view_| should be non-null.
-  raw_ptr<IconizedLabel, DanglingUntriaged> label_ = nullptr;
-  raw_ptr<views::ImageView, DanglingUntriaged> image_view_ = nullptr;
+  raw_ptr<IconizedLabel> label_ = nullptr;
+  raw_ptr<views::ImageView> image_view_ = nullptr;
 
   // Measures animation smoothness metrics for "show" animation.
   std::optional<ui::ThroughputTracker> show_throughput_tracker_;
