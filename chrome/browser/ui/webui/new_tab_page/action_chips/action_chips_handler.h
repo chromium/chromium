@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -54,7 +53,7 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> receiver,
       mojo::PendingRemote<action_chips::mojom::Page> page,
       Profile* profile,
-      content::WebUI* web_ui,
+      content::WebContents* web_contents,
       std::unique_ptr<ActionChipsGenerator> action_chips_generator,
       GetSessionHandleCallback get_session_handle_callback);
   ActionChipsHandler(const ActionChipsHandler&) = delete;
@@ -96,7 +95,7 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
   mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
-  raw_ptr<content::WebUI> web_ui_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ActionChipsGenerator> action_chips_generator_;
   GetSessionHandleCallback get_session_handle_callback_;
   PrefChangeRegistrar pref_change_registrar_;

@@ -136,12 +136,12 @@ class FakeActionChipsHandler : public ActionChipsHandler {
           pending_receiver,
       mojo::PendingRemote<Page> pending_page,
       Profile* profile,
-      content::WebUI* web_ui,
+      content::WebContents* web_contents,
       std::unique_ptr<ActionChipsGenerator> action_chips_generator)
       : ActionChipsHandler(std::move(pending_receiver),
                            std::move(pending_page),
                            profile,
-                           web_ui,
+                           web_contents,
                            std::move(action_chips_generator),
                            base::NullCallback()) {}
 };
@@ -313,7 +313,7 @@ class ActionChipsHandlerTest : public testing::Test {
     mock_action_chips_generator_ = mock_action_chips_generator.get();
     handler_ = std::make_unique<FakeActionChipsHandler>(
         mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>(),
-        page_.BindAndGetRemote(), profile_.get(), web_ui_.get(),
+        page_.BindAndGetRemote(), profile_.get(), web_ui_->GetWebContents(),
         std::move(mock_action_chips_generator));
     ON_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
         .WillByDefault(&CallWithStaticChips);
@@ -647,13 +647,17 @@ TEST_F(ActionChipsHandlerTest, DiscardWebContentsDoesNotCrash) {
   // ActionChipsHandler::OnTabStripModelChanged if the kReplaced event is not
   // handled correctly, because the old_contents (which is the one handler is
   // watching) loses its UserData during discard.
-  EXPECT_THAT(tab_strip_model_fixture_
-                  ->DiscardWebContents(
-                      web_ui_->GetWebContents(),
-                      content::WebContentsTester::CreateTestWebContents(
-                          profile_.get(), nullptr))
-                  .get(),
-              Eq(web_ui_->GetWebContents()));
+  content::WebContents* ntp = web_ui_->GetWebContents();
+  std::unique_ptr<content::WebContents> discarded_contents =
+      tab_strip_model_fixture_->DiscardWebContents(
+          ntp, content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                                 nullptr));
+  EXPECT_THAT(discarded_contents.get(), Eq(ntp));
+
+  // The handler holds a raw_ptr to the discarded WebContents. Destroy it before
+  // the WebContents goes away to avoid a dangling pointer.
+  mock_action_chips_generator_ = nullptr;
+  handler_.reset();
 }
 
 TEST_F(ActionChipsHandlerTest,
@@ -759,7 +763,7 @@ TEST_F(ActionChipsHandlerTest, NullBrowserWindowInterface) {
   // This should not crash.
   auto handler_without_bwi = std::make_unique<FakeActionChipsHandler>(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>(),
-      mojo::PendingRemote<Page>(), profile_.get(), web_ui_.get(),
+      mojo::PendingRemote<Page>(), profile_.get(), web_ui_->GetWebContents(),
       std::move(mock_action_chips_generator));
 }
 
