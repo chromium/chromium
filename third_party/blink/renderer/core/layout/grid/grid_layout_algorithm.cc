@@ -1738,56 +1738,6 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       constraint_space.GetWritingDirection();
   const auto container_writing_mode = constraint_space.GetWritingMode();
 
-  // The following roughly comes from:
-  // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
-  //
-  // We are interested in cases where the grid-item *may* expand due to
-  // fragmentation (lines pushed down by a fragmentation line, etc).
-  auto MinBlockSizeShouldEncompassIntrinsicSize =
-      [&](const GridItemData& grid_item,
-          bool has_descendant_that_depends_on_percentage_block_size) -> bool {
-    // If this item has (any) descendant that is percentage based, we can end
-    // up in a situation where we'll constantly try and expand the row. E.g.
-    // <div style="display: grid;">
-    //   <div style="min-height: 100px;">
-    //     <div style="height: 200%;"></div>
-    //   </div>
-    // </div>
-    if (has_descendant_that_depends_on_percentage_block_size)
-      return false;
-
-    if (grid_item.node.IsMonolithic())
-      return false;
-
-    const auto& item_style = grid_item.node.Style();
-
-    // NOTE: We currently assume that writing-mode roots are monolithic, but
-    // this may change in the future.
-    DCHECK_EQ(container_writing_direction.GetWritingMode(),
-              item_style.GetWritingMode());
-
-    // Only allow growth on "auto" block-size items, unless box decorations are
-    // to be cloned. Even a fixed block-size item can grow if box decorations
-    // are cloned (as long as box-sizing is content-box).
-    if (!item_style.LogicalHeight().HasAutoOrContentOrIntrinsic() &&
-        item_style.BoxDecorationBreak() != EBoxDecorationBreak::kClone) {
-      return false;
-    }
-
-    // Only allow growth on items which only span a single row.
-    if (grid_item.SpanSize(kForRows) > 1)
-      return false;
-
-    // If we have a fixed maximum track, we assume that we've hit this maximum,
-    // and as such shouldn't grow.
-    if (grid_item.IsSpanningFixedMaximumTrack(kForRows) &&
-        !grid_item.IsSpanningIntrinsicTrack(kForRows))
-      return false;
-
-    return !grid_item.IsSpanningFixedMinimumTrack(kForRows) ||
-           Style().LogicalHeight().HasAutoOrContentOrIntrinsic();
-  };
-
   wtf_size_t previous_expansion_row_set_index = kNotFound;
   auto IsExpansionMakingProgress = [&](wtf_size_t row_set_index) -> bool {
     return previous_expansion_row_set_index == kNotFound ||
@@ -1871,9 +1821,10 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           FragmentainerOffsetForChildren() + child_block_offset;
       const bool min_block_size_should_encompass_intrinsic_size =
           MinBlockSizeShouldEncompassIntrinsicSize(
-              grid_item,
+              grid_item, Style(),
               item_placement_data
-                  .has_descendant_that_depends_on_percentage_block_size);
+                  .has_descendant_that_depends_on_percentage_block_size,
+              &layout_data.Rows());
 
       LayoutUnit unavailable_block_size;
       if (IsBreakInside(GetBreakToken()) && IsBreakInside(break_token)) {

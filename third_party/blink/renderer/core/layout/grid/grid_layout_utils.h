@@ -21,6 +21,7 @@ namespace blink {
 
 class BlockNode;
 class BoxFragmentBuilder;
+class ComputedStyle;
 class ConstraintSpace;
 class GapGeometry;
 class GridLayoutData;
@@ -523,6 +524,17 @@ LayoutUnit LargestAutoPlacedSubgridContribution(LayoutUnit start_extra_margin,
 void AccommodateSubgridExtraMargins(const GridSizingSubtree& sizing_subtree,
                                     GridSizingTrackCollection& track_collection,
                                     GridTrackSizingDirection track_direction);
+
+// Determines whether an item *may* grow to encompass content pushed down by
+// fragmentation (lines pushed down by a fragmentation line, etc).
+// `opt_row_track_collection` should be nullptr if there is no row track
+// collection available in the given layout algorithm (for example, grid lanes
+// column containers).
+bool MinBlockSizeShouldEncompassIntrinsicSize(
+    const GridItemData& grid_item,
+    const ComputedStyle& container_style,
+    bool has_descendant_that_depends_on_percentage_block_size,
+    const GridLayoutTrackCollection* opt_row_track_collection);
 
 }  // namespace blink
 

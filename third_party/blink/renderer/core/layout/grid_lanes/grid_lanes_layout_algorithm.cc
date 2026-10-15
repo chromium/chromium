@@ -1048,9 +1048,14 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     // TODO(almaher): Compute unavailable block size for resumed items when
     // sibling monolithic overflow expanded the container in an earlier
     // fragment.
-    //
-    // TODO(almaher): Determine whether this item should encompass its intrinsic
-    // block size when fragmented, using the same eligibility checks as grid.
+
+    const bool min_block_size_should_encompass_intrinsic_size =
+        MinBlockSizeShouldEncompassIntrinsicSize(
+            item, Style(),
+            grid_lanes_item->PlacementData()
+                .has_descendant_that_depends_on_percentage_block_size,
+            is_columns ? nullptr : &layout_data.Rows());
+
     LogicalSize fixed_available_size = kIndefiniteLogicalSize;
     if (const auto stretch_size =
             grid_lanes_item->StretchSizeInStackingAxis()) {
@@ -1063,9 +1068,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         SubgriddedItemData(item, &layout_data, container_writing_mode),
         child_layout_subtree, &containing_grid_area,
         /*unavailable_block_size=*/LayoutUnit(),
-        /*min_block_size_should_encompass_intrinsic_size=*/false,
-        offset.block_offset, /*opt_fixed_inline_size=*/std::nullopt,
-        fixed_available_size);
+        min_block_size_should_encompass_intrinsic_size, offset.block_offset,
+        /*opt_fixed_inline_size=*/std::nullopt, fixed_available_size);
 
     // Unlike flex lines, row tracks may be sized independently of their items.
     // As a result of this and spanner support, a grid lanes item may fragment
