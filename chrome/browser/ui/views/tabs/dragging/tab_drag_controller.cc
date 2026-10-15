@@ -2169,6 +2169,10 @@ void TabDragController::RevertDrag() {
   CHECK(source_context_);
 
   dragging_tabs_session_ = nullptr;
+  if (current_drag_target_) {
+    current_drag_target_->OnTabDragEnded();
+    ResetDragTarget();
+  }
 
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
@@ -2550,6 +2554,10 @@ void TabDragController::CompleteDrag() {
 
   if (current_drag_target_ && current_drag_target_->CanDropTab()) {
     current_drag_target_->HandleTabDrop(*this);
+    if (current_drag_target_) {
+      current_drag_target_->OnTabDragEnded();
+      ResetDragTarget();
+    }
     OnContextStoppedDragging();
 
     // The delegate is expected to handle all tab dragging finalization, and

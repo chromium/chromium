@@ -109,6 +109,13 @@ TabDragContext* DraggedTabsContainer::OnTabDragUpdated(
 }
 
 void DraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
+  // `on_scrolled_subscription_` can trigger this callback during drag teardown
+  // (e.g. when restoring focus or selection scrolls the tab strip) after the
+  // drag has already stopped.
+  if (!GetDragHandler().IsDragging()) {
+    return;
+  }
+
   gfx::Point point_in_container = views::View::ConvertPointFromScreen(
       base::to_address(host_view_), last_drag_point_in_screen_);
 

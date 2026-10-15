@@ -529,6 +529,65 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, CancelDragWithinUnpinnedContainer) {
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+                       CancelDragFromUnselectedTabInScrollableTabStrip) {
+  constexpr int kTabCount = 50;
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  tabs::TabInterface* original_tab_0 = nullptr;
+  tabs::TabInterface* original_tab_1 = nullptr;
+  tabs::TabInterface* original_tab_2 = nullptr;
+
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      Do([&]() {
+        for (int i = tab_strip_model->count(); i < kTabCount; ++i) {
+          std::unique_ptr<content::WebContents> contents =
+              content::WebContents::Create(
+                  content::WebContents::CreateParams(browser()->GetProfile()));
+          tab_strip_model->InsertWebContentsAt(tab_strip_model->count(),
+                                               std::move(contents),
+                                               ADD_INHERIT_OPENER);
+        }
+        tab_strip_model->ActivateTabAt(
+            0, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+        original_tab_0 = tab_strip_model->GetTabAtIndex(0);
+        original_tab_1 = tab_strip_model->GetTabAtIndex(1);
+        original_tab_2 = tab_strip_model->GetTabAtIndex(2);
+      }),
+      RunScheduledLayout(), PollState(kScrollOffsetPoller, GetScrollOffset()),
+      WaitForState(kScrollOffsetPoller, 0), Do([&]() {
+        auto* region_view =
+            GetBrowserView().vertical_tab_strip_region_view_for_testing();
+        auto* tab_strip_view =
+            static_cast<TabStripView*>(region_view->GetTabStripView());
+        ASSERT_TRUE(tab_strip_view->unpinned_tabs_scroll_view()
+                        ->IsVerticalContentOverflowing());
+        ASSERT_EQ(0, tab_strip_model->active_index());
+        ASSERT_TRUE(tab_strip_model->IsTabSelected(0));
+        ASSERT_FALSE(tab_strip_model->IsTabSelected(1));
+      }),
+
+      // Start dragging unselected tab 1 to index 2 while tab 0 was active.
+      StartDragBetweenTabs(1, 2), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+      CheckResult(
+          [&]() { return tab_strip_model->GetIndexOfTab(original_tab_1); }, 2),
+
+      // Cancel the drag with ESC. The dragged tab should revert to index 1 and
+      // the originally active tab (tab 0) should remain at index 0 and active.
+      PressEscAsync(), WaitForState(kDragStatePoller, false), Do([&]() {
+        EXPECT_EQ(0, tab_strip_model->active_index());
+        EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
+        EXPECT_FALSE(tab_strip_model->IsTabSelected(1));
+        EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(original_tab_0));
+        EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(original_tab_1));
+        EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(original_tab_2));
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitTabs) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
