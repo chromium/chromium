@@ -566,6 +566,9 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
       HandleThreadContextLibraryUpdateFromAim(
           search_to_client_message.update_thread_context_library());
       return true;
+    case lens::SearchToClientMessage::kOnPageChanged:
+      ClearInputPlateState();
+      return true;
     case lens::SearchToClientMessage::EVENT_MESSAGE_NOT_SET:
       return false;
   }
@@ -833,6 +836,9 @@ std::vector<int32_t> ContextualTasksWebContentsUserData::GetPendingDelayedTabs(
 void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
     std::optional<lens::AddedContext> lens_added_context,
     std::optional<base::UnguessableToken> overlay_token) {
+  if (!submit_pending_) {
+    return;
+  }
   submit_pending_ = false;
 
   lens::ClientToSearchMessage response_message;
@@ -1260,6 +1266,32 @@ void ContextualTasksWebContentsUserData::ClearFiles() {
   }
   UpdateContextLibraryInputState();
   RefreshActiveTaskContext();
+}
+
+void ContextualTasksWebContentsUserData::ClearInputPlateState() {
+  submit_pending_ = false;
+  RemoveLensCrop();
+  auto& page_state = GetPrimaryPageSearchState();
+  page_state.last_lens_crop_data_uri.clear();
+  if (page_state.is_lens_crop_mounted) {
+    page_state.is_lens_crop_mounted = false;
+    SendInjectChromeInput(InjectedInputType::kLensChip, /*is_active=*/false);
+  }
+  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+#if !BUILDFLAG(IS_ANDROID)
+    auto* browser_window_interface = GetBrowserWindowInterface();
+    for (const auto& attached_tab :
+         session_handle->GetTabContextState().attached) {
+      RemoveAttachedTabUnderline(attached_tab.tab_id, *this,
+                                 browser_window_interface);
+    }
+#endif
+    session_handle->ClearSubmittedContextTokens();
+    session_handle->SetPersistedTabs({});
+    session_handle->set_deselected_tabs_urls({});
+    session_handle->SetRestoredTabs({});
+  }
+  ClearFiles();
 }
 
 void ContextualTasksWebContentsUserData::AssociateTabWithTask(

@@ -159,6 +159,13 @@ message SearchToClientMessage {
     string url = 1;
   }
 
+  // Message sent by Search Web to Chrome to notify that the page has changed
+  // (e.g. when navigating to another thread or zero state).
+  message OnPageChanged {
+    // True if current page is zero state.
+    bool is_zero_state = 1;
+  }
+
   oneof event_message {
     // Handshake response sent by Search Web acknowledging readiness.
     HandshakeResponse handshake_response = 1;
@@ -173,6 +180,9 @@ message SearchToClientMessage {
 
     // Sent to notify Chrome to open a link in side panel mode.
     OpenLinkInSidePanelMode open_link_in_side_panel_mode = 4;
+
+    // Sent to notify Chrome that the page has changed.
+    OnPageChanged on_page_changed = 5;
   }
 }
 
