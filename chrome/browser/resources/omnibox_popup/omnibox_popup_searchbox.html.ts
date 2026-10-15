@@ -20,7 +20,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           placeholder-text=""
           searchbox-aria-description="${this.searchboxAriaDescription}"
           searchbox-icon="${this.searchboxIcon_}"
-          .selectedMatch="${this.selectedMatch}"
+          .selectedMatch="${this.computeSelectedMatchForInput_()}"
           page-url="${this.computeCurrentPageUrl_()}"
           .inputKeywordModel="${this.inputKeywordModel}"
           ?input-has-matches="${this.hasMatches()}"

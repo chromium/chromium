@@ -307,6 +307,10 @@ export class OmniboxPopupSearchboxElement extends
   // True if the user has modified the text in the input field (e.g., typed or
   // deleted characters), as opposed to displaying permanent text set from C++.
   protected accessor userInputInProgress_: boolean = false;
+  // Stores the last selected autocomplete match while user input is in
+  // progress. Preserved across popup closures on blur so the searchbox icon
+  // does not fall back to the default icon while editing.
+  private lastSelectedMatch_: AutocompleteMatch|null = null;
   protected accessor fullUrl_: string = '';
   protected accessor permanentDisplayText_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
@@ -521,6 +525,12 @@ export class OmniboxPopupSearchboxElement extends
 
     super.willUpdate(changedProperties);
 
+    if (this.selectedMatch) {
+      this.lastSelectedMatch_ = this.selectedMatch;
+    } else if (!this.result && !this.hasUserInput_) {
+      this.lastSelectedMatch_ = null;
+    }
+
     if (changedProperties.has('searchboxChromeRefreshTheming')) {
       this.useWebkitSearchIcons_ = this.searchboxChromeRefreshTheming;
     }
@@ -731,11 +741,14 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   /**
+   * TODO(crbug.com/572759485): Remove revert since it is only used in tests.
    * Clears frontend autocomplete matches and reverts C++ `OmniboxEditModel`.
    * Kept separate from `clearAutocompleteMatches()`, which is called internally
    * by `SearchboxMixin` when selecting suggestions or blurring the input.
    */
   revert() {
+    this.userInputInProgress_ = false;
+    this.lastSelectedMatch_ = null;
     this.clearAutocompleteMatches();
     this.popupPageHandler_.revert(this.currentSequenceNum_);
   }
@@ -1271,6 +1284,22 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   /**
+   * Returns the match to use for the searchbox input element.
+   * While user input is in progress, preserves `lastSelectedMatch_` when
+   * results are cleared on blur so the icon does not fall back to the default
+   * icon.
+   */
+  protected computeSelectedMatchForInput_(): AutocompleteMatch|null {
+    if (this.selectedMatch) {
+      return this.selectedMatch;
+    }
+    if (!this.result && this.userInputInProgress_) {
+      return this.lastSelectedMatch_;
+    }
+    return null;
+  }
+
+  /**
    * Reports selection changes back to C++.
    */
   private onSelectionChanged_() {
@@ -1362,6 +1391,7 @@ export class OmniboxPopupSearchboxElement extends
     // while the user is actively typing in the same tab.
     if (state.isTabSwitch || !state.userInputInProgress) {
       this.textfieldModel_.setInitialText(text, selection);
+      this.lastSelectedMatch_ = null;
     }
     this.updateEditHistoryState_();
 
@@ -1534,6 +1564,7 @@ export class OmniboxPopupSearchboxElement extends
   private async onClearPopup_(): Promise<void> {
     this.hasReceivedInitialInputState_ = false;
     this.hasDirectUserDomInput_ = false;
+    this.lastSelectedMatch_ = null;
     this.$.input.setInputText('');
     this.getInputElement().blur();
     this.clearAutocompleteMatches();
@@ -1549,6 +1580,11 @@ export class OmniboxPopupSearchboxElement extends
     this.selectAllOnMouseRelease_ = false;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
+    // Cache the selected match before clearing autocomplete results so the
+    // searchbox icon does not fall back to the default icon while blurred.
+    if (this.selectedMatch) {
+      this.lastSelectedMatch_ = this.selectedMatch;
+    }
     // Clear autocomplete results so clicking into omnibox_view_views
     // registers that the popup is closed. This enables
     // select_all_on_mouse_release_ (in omnibox_view_views) to be set to the
@@ -1729,6 +1765,7 @@ export class OmniboxPopupSearchboxElement extends
       // Notify the backend when the user clears all input (`onInputCleared`) so
       // it knows the draft was manually cleared and can revert empty drafts on
       // tab switch (restoring the permanent URL instead of a blank string).
+      this.lastSelectedMatch_ = null;
       this.clearAutocompleteMatches();
       this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
     } else if (this.hasReceivedInitialInputState_) {
@@ -2040,6 +2077,7 @@ export class OmniboxPopupSearchboxElement extends
       inputEl.urlEmphasis = restoredText ? this.urlEmphasis_ : null;
       inputEl.select();
       this.userInputInProgress_ = false;
+      this.lastSelectedMatch_ = null;
       this.popupPageHandler_.revert(this.currentSequenceNum_);
       this.popupPageHandler_.logEscapeAction(
           OmniboxEscapeAction.kClearUserInput);
