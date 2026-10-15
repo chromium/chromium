@@ -1,0 +1,9 @@
+Tests that same-document navigation away from an allowlisted URL detaches the session.
+Page target detached: {
+    sessionId : <string>
+    targetId : <string>
+}
+Re-attaching to page target: {
+    code : -32000
+    message : Not allowed
+}

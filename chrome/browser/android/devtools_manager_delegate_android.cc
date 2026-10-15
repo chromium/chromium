@@ -18,6 +18,7 @@
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/browser_resources.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -326,6 +328,17 @@ DevToolsAgentHost::List DevToolsManagerDelegateAndroid::RemoteDebuggingTargets(
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
   return true;
+}
+
+bool DevToolsManagerDelegateAndroid::AllowInspectingRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  // Resolve the profile owning the RenderFrameHost to evaluate DevTools
+  // availability policies on Android identically to desktop platforms.
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  if (!profile) {
+    return true;
+  }
+  return IsInspectionAllowed(profile, rfh);
 }
 
 bool DevToolsManagerDelegateAndroid::AllowInspectingTarget(

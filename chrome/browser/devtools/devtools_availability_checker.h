@@ -10,6 +10,7 @@ class Profile;
 
 namespace content {
 class DevToolsAgentHost;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -71,6 +72,12 @@ enum class DevToolsBlockReason {
 DevToolsBlockReason GetDevToolsBlockReason(Profile* profile,
                                            content::WebContents* web_contents);
 
+// |rfh| may be null, in which case this function just checks the settings for
+// |profile|. When target-level evaluation is enabled, this checks the frame's
+// own last committed URL before falling back to its owning WebContents.
+DevToolsBlockReason GetDevToolsBlockReason(Profile* profile,
+                                           content::RenderFrameHost* rfh);
+
 // |extension| may be null, in which case this function just checks
 // the settings for |profile|.
 DevToolsBlockReason GetDevToolsBlockReason(
@@ -94,6 +101,7 @@ DevToolsBlockReason GetDevToolsBlockReason(
 // DevToolsBlockReason::kNotBlocked. The notes on null arguments above apply
 // here as well.
 bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents);
+bool IsInspectionAllowed(Profile* profile, content::RenderFrameHost* rfh);
 bool IsInspectionAllowed(Profile* profile,
                          const extensions::Extension* extension);
 bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app);

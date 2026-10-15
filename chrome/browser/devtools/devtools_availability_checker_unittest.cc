@@ -177,9 +177,12 @@ TEST_F(DevToolsAvailabilityCheckerTest, DeveloperToolsDisallowedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullWebContents) {
-  // Passing nullptr for WebContents should default to allowed.
+  // Passing nullptr for WebContents or RenderFrameHost should default to
+  // allowed.
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(),
                                   static_cast<content::WebContents*>(nullptr)));
+  EXPECT_TRUE(IsInspectionAllowed(
+      profile_.get(), static_cast<content::RenderFrameHost*>(nullptr)));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -696,14 +699,19 @@ TEST_F(DevToolsAvailabilityCheckerTest, TargetLevelSubframeBlocked) {
           ->AppendChild("subframe");
   content::RenderFrameHostTester::For(subframe)
       ->InitializeRenderFrameIfNeeded();
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://blocked.com/iframe"), subframe);
 
   // The main page should still be inspectable.
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(),
+                                  web_contents_->GetPrimaryMainFrame()));
 
-  // But if we specifically check the blocked subframe's URL, it should be
+  // But if we specifically check the blocked subframe or its URL, it should be
   // blocked.
+  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), subframe));
+  EXPECT_EQ(DevToolsBlockReason::kUrlAllowlistOrBlocklist,
+            GetDevToolsBlockReason(profile_.get(), subframe));
   EXPECT_FALSE(
       IsInspectionAllowed(profile_.get(), GURL("https://blocked.com/iframe")));
 }
@@ -736,10 +744,13 @@ TEST_F(DevToolsAvailabilityCheckerTargetLevelDisabledTest,
           ->AppendChild("subframe");
   content::RenderFrameHostTester::For(subframe)
       ->InitializeRenderFrameIfNeeded();
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://blocked.com/iframe"), subframe);
 
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+  EXPECT_FALSE(IsInspectionAllowed(profile_.get(),
+                                   web_contents_->GetPrimaryMainFrame()));
+  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), subframe));
 }
 
 TEST_F(DevToolsAvailabilityCheckerTargetLevelDisabledTest,
@@ -756,11 +767,16 @@ TEST_F(DevToolsAvailabilityCheckerTargetLevelDisabledTest,
           ->AppendChild("subframe");
   content::RenderFrameHostTester::For(subframe)
       ->InitializeRenderFrameIfNeeded();
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://blocked.com/iframe"), subframe);
 
   EXPECT_EQ(DevToolsBlockReason::kUrlAllowlistOrBlocklist,
             GetDevToolsBlockReason(profile_.get(), web_contents_.get()));
+  EXPECT_EQ(DevToolsBlockReason::kUrlAllowlistOrBlocklist,
+            GetDevToolsBlockReason(profile_.get(),
+                                   web_contents_->GetPrimaryMainFrame()));
+  EXPECT_EQ(DevToolsBlockReason::kUrlAllowlistOrBlocklist,
+            GetDevToolsBlockReason(profile_.get(), subframe));
 }
 
 // GetDevToolsBlockReason() names the check that blocked inspection. It is
@@ -807,10 +823,15 @@ TEST_F(DevToolsAvailabilityCheckerTest, BlockReasonForPolicyDisallowed) {
       ->NavigateAndCommit(GURL("https://example.com/page"));
   EXPECT_EQ(DevToolsBlockReason::kPolicyDisallowed,
             GetDevToolsBlockReason(profile_.get(), web_contents_.get()));
-  // The general policy also applies to contexts without WebContents.
+  // The general policy also applies to contexts without WebContents or
+  // RenderFrameHost.
   EXPECT_EQ(DevToolsBlockReason::kPolicyDisallowed,
             GetDevToolsBlockReason(
                 profile_.get(), static_cast<content::WebContents*>(nullptr)));
+  EXPECT_EQ(
+      DevToolsBlockReason::kPolicyDisallowed,
+      GetDevToolsBlockReason(profile_.get(),
+                             static_cast<content::RenderFrameHost*>(nullptr)));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

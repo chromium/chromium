@@ -43,6 +43,8 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
   content::DevToolsAgentHost::List RemoteDebuggingTargets(
       TargetType target_type) override;
   bool IsBrowserTargetDiscoverable() override;
+  // Evaluates whether DevTools is permitted to inspect the given frame.
+  bool AllowInspectingRenderFrameHost(content::RenderFrameHost* rfh) override;
   bool AllowInspectingTarget(content::DevToolsAgentHost* agent_host) override;
   void Activate(content::DevToolsAgentHost* agent_host) override;
 

@@ -164,6 +164,32 @@ DevToolsBlockReason GetDevToolsBlockReason(
 }
 
 DevToolsBlockReason GetDevToolsBlockReason(Profile* profile,
+                                           content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    // When no frame is provided, fall back to the general profile-level policy.
+    return GetDevToolsBlockReason(profile,
+                                  static_cast<content::WebContents*>(nullptr));
+  }
+
+  // Under target-level evaluation, inspect a non-primary-main frame's own last
+  // committed URL first so restricted subframes are blocked even when the main
+  // frame is allowed.
+  if (!rfh->IsInPrimaryMainFrame() &&
+      base::FeatureList::IsEnabled(features::kDevToolsTargetLevelEvaluation)) {
+    DevToolsBlockReason reason =
+        GetDevToolsBlockReason(profile, rfh->GetLastCommittedURL());
+    if (reason != DevToolsBlockReason::kNotBlocked) {
+      return reason;
+    }
+  }
+
+  // Also ensure the owning WebContents (and primary main frame) permits
+  // inspection.
+  return GetDevToolsBlockReason(profile,
+                                content::WebContents::FromRenderFrameHost(rfh));
+}
+
+DevToolsBlockReason GetDevToolsBlockReason(Profile* profile,
                                            content::WebContents* web_contents) {
   if (!web_contents) {
     // For contexts without web_contents, we can only check the general policy.
@@ -386,6 +412,13 @@ bool IsInspectionAllowed(Profile* profile,
 
 bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   return GetDevToolsBlockReason(profile, web_contents) ==
+         DevToolsBlockReason::kNotBlocked;
+}
+
+bool IsInspectionAllowed(Profile* profile, content::RenderFrameHost* rfh) {
+  // Delegate to GetDevToolsBlockReason so frame-level policy reasons stay
+  // unified.
+  return GetDevToolsBlockReason(profile, rfh) ==
          DevToolsBlockReason::kNotBlocked;
 }
 

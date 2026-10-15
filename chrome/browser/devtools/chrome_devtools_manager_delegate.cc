@@ -408,8 +408,12 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     content::RenderFrameHost* rfh) {
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
-  return IsInspectionAllowed(profile,
-                             content::WebContents::FromRenderFrameHost(rfh));
+  if (!profile) {
+    return true;
+  }
+  // Evaluate policy for the specific RenderFrameHost so target-level URL
+  // restrictions apply to both main frames and subframes.
+  return IsInspectionAllowed(profile, rfh);
 }
 
 bool ChromeDevToolsManagerDelegate::AllowInspectingTarget(

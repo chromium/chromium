@@ -1,0 +1,10 @@
+Tests that same-document navigation to a blocklisted URL in an OOPIF detaches only the OOPIF target.
+OOPIF target detached: {
+    sessionId : <string>
+    targetId : <string>
+}
+Main page still inspectable: /protocol/inspector-protocol-page.html
+Re-attaching to OOPIF target: {
+    code : -32000
+    message : Not allowed
+}

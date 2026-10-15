@@ -1,0 +1,17 @@
+Tests that same-document navigation to a blocklisted URL detaches both tab and page targets.
+Tab target detached: {
+    sessionId : <string>
+    targetId : <string>
+}
+Page target detached: {
+    sessionId : <string>
+    targetId : <string>
+}
+Re-attaching to tab target: {
+    code : -32000
+    message : Not allowed
+}
+Re-attaching to page target: {
+    code : -32000
+    message : Not allowed
+}

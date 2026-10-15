@@ -170,6 +170,10 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
   void DestroyOnRenderFrameGone();
   void UpdateFrameHost(RenderFrameHostImpl* frame_host);
+  // The method returns a pointer retaining this. Once the pointer goes
+  // out of scope, this may be destroyed.
+  [[nodiscard]] scoped_refptr<RenderFrameDevToolsAgentHost>
+  RevalidateSessionAccess(RenderFrameHostImpl* frame_host);
   void ChangeFrameHostAndObservedProcess(RenderFrameHostImpl* frame_host);
   void UpdateFrameAlive();
 

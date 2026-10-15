@@ -17,9 +17,13 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 #include "components/headless/test/shared_test_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -544,5 +548,51 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeProtocolBrowserTestWithDownload,
 HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeProtocolBrowserTestWithDownload,
                               FileDownloadSecondTab,
                               "shared/file-download-second-tab.js")
+
+// Configure DeveloperToolsAvailabilityBlocklist before DevTools sessions attach
+// so URLBlocklistManager enforces the policy synchronously.
+class HeadlessModeDevToolsPolicyBlocklistProtocolTest
+    : public HeadlessModeProtocolBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    HeadlessModeProtocolBrowserTest::SetUpOnMainThread();
+    base::ListValue blocklist;
+    blocklist.Append("a.test/protocol/blocked_route");
+    blocklist.Append("b.test/protocol/blocked_route");
+    browser()->GetProfile()->GetPrefs()->SetList(
+        prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+  }
+};
+
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeDevToolsPolicyBlocklistProtocolTest,
+                              SameDocumentNavigationBlocklist,
+                              "target/same-document-navigation-blocklist.js")
+
+HEADLESS_MODE_PROTOCOL_TEST_F(
+    HeadlessModeDevToolsPolicyBlocklistProtocolTest,
+    OopifSameDocumentNavigationBlocklist,
+    "target/oopif-same-document-navigation-blocklist.js")
+
+class HeadlessModeDevToolsPolicyAllowlistProtocolTest
+    : public HeadlessModeProtocolBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    HeadlessModeProtocolBrowserTest::SetUpOnMainThread();
+    // Block a.test so non-allowlisted paths on a.test are disallowed while the
+    // test harness on harness.test remains unaffected.
+    base::ListValue blocklist;
+    blocklist.Append("a.test");
+    browser()->GetProfile()->GetPrefs()->SetList(
+        prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+    base::ListValue allowlist;
+    allowlist.Append("a.test/protocol/inspector-protocol-page.html");
+    browser()->GetProfile()->GetPrefs()->SetList(
+        prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+  }
+};
+
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeDevToolsPolicyAllowlistProtocolTest,
+                              SameDocumentNavigationAllowlist,
+                              "target/same-document-navigation-allowlist.js")
 
 }  // namespace headless

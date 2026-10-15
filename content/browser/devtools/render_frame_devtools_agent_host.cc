@@ -589,8 +589,8 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
       UpdateRawHeadersAccess(frame_tree_node_->current_frame_host(), nullptr);
     }
 
-    // Same-document navigations don't get a new RFH, so there isn't really
-    // anything to update here. Eagerly updating the tracked RFH is harmful,
+    // Same-document navigations don't get a new RFH, so |frame_host_| doesn't
+    // need to be updated here. Eagerly updating the tracked RFH is harmful,
     // since the same-document navigation may interleave with cross-document
     // navigations, e.g. if triggered from an unload handler.
     // Another navigation may still be waiting to commit in the selected RFH.
@@ -606,6 +606,11 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
       // UpdateFrameHost may destruct |this|.
       protect = this;
       UpdateFrameHost(frame_tree_node_->current_frame_host());
+    } else if (request->IsSameDocument() && request->HasCommitted() &&
+               request->GetRenderFrameHost() == frame_host_) {
+      // Re-evaluate session access against the newly committed URL without
+      // switching the tracked RenderFrameHost.
+      protect = RevalidateSessionAccess(frame_host_);
     }
 
     if (navigation_requests_.empty()) {
@@ -618,6 +623,22 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
       NavigationRequest::From(navigation_handle));
 }
 
+scoped_refptr<RenderFrameDevToolsAgentHost>
+RenderFrameDevToolsAgentHost::RevalidateSessionAccess(
+    RenderFrameHostImpl* frame_host) {
+  scoped_refptr<RenderFrameDevToolsAgentHost> retain_this(this);
+  std::vector<DevToolsSession*> restricted_sessions;
+  for (DevToolsSession* session : sessions()) {
+    if (!ShouldAllowSession(frame_host, session)) {
+      restricted_sessions.push_back(session);
+    }
+  }
+  if (!restricted_sessions.empty()) {
+    ForceDetachRestrictedSessions(restricted_sessions);
+  }
+  return retain_this;
+}
+
 void RenderFrameDevToolsAgentHost::UpdateFrameHost(
     RenderFrameHostImpl* frame_host) {
   if (frame_host && !ShouldCreateDevToolsForHost(frame_host)) {
@@ -626,17 +647,8 @@ void RenderFrameDevToolsAgentHost::UpdateFrameHost(
     return;
   }
 
-  std::vector<DevToolsSession*> restricted_sessions;
-  for (DevToolsSession* session : sessions()) {
-    if (!ShouldAllowSession(frame_host, session)) {
-      restricted_sessions.push_back(session);
-    }
-  }
-  scoped_refptr<RenderFrameDevToolsAgentHost> protect;
-  if (!restricted_sessions.empty()) {
-    protect = this;
-    ForceDetachRestrictedSessions(restricted_sessions);
-  }
+  scoped_refptr<RenderFrameDevToolsAgentHost> protect =
+      RevalidateSessionAccess(frame_host);
 
   if (frame_host == frame_host_) {
     if (frame_host && !render_frame_alive_)
