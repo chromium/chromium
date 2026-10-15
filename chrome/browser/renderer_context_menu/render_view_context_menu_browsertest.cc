@@ -4271,10 +4271,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 class SendTabToSelfContextMenuBrowserTest : public ContextMenuBrowserTest {
  public:
   SendTabToSelfContextMenuBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-        {});
+    feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -4305,8 +4303,8 @@ class SendTabToSelfContextMenuBrowserTest : public ContextMenuBrowserTest {
 };
 
 // Tests that the Send Tab to Self context menu item is appended for standard
-// HTTP/HTTPS pages and links in a full browser test environment when enhanced
-// desktop UI v2 is enabled.
+// HTTP/HTTPS pages and links in a full browser test environment when
+// `kSendTabToSelfEnhancedDesktopUIv2` is enabled.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfContextMenuBrowserTest,
                        SendTabToSelfPageAndLinkPresence) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4327,11 +4325,8 @@ class SendTabToSelfContextMenuLinkDisabledBrowserTest
     : public ContextMenuBrowserTest {
  public:
   SendTabToSelfContextMenuLinkDisabledBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{send_tab_to_self::
-                                  kSendTabToSelfEnhancedDesktopUI},
-        /*disabled_features=*/{
-            send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2});
+    feature_list_.InitAndDisableFeature(
+        send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -4362,8 +4357,7 @@ class SendTabToSelfContextMenuLinkDisabledBrowserTest
 };
 
 // Tests that the Send Tab to Self context menu item is NOT shown when right
-// clicking on hyperlinks if enhanced desktop UI v2 is disabled (even if v1 is
-// enabled for standard page right clicks).
+// clicking on hyperlinks if `kSendTabToSelfEnhancedDesktopUIv2` is disabled.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfContextMenuLinkDisabledBrowserTest,
                        LinkMenuDisabledWhenV2Disabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4383,10 +4377,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfContextMenuLinkDisabledBrowserTest,
 class SendTabToSelfNoTargetDeviceBrowserTest : public ContextMenuBrowserTest {
  public:
   SendTabToSelfNoTargetDeviceBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-        {});
+    feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

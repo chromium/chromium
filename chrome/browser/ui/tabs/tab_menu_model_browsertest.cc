@@ -1018,10 +1018,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
 
 class TabMenuModelSendTabToSelfBrowserTest : public TabMenuModelBrowserTest {
  public:
-  TabMenuModelSendTabToSelfBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
-  }
+  TabMenuModelSendTabToSelfBrowserTest() = default;
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -1039,9 +1036,6 @@ class TabMenuModelSendTabToSelfBrowserTest : public TabMenuModelBrowserTest {
                SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
         ->GetFakeSendTabToSelfModel();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfBrowserTest,

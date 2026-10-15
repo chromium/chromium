@@ -141,10 +141,8 @@ std::vector<syncer::RemoteDeviceInfo> GetDevicesForDisplay(
 bool IsSubmenuEnabledForEntryPoint(ShareEntryPoint entry_point) {
   switch (entry_point) {
     case ShareEntryPoint::kTabMenu:
-      return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI);
     case ShareEntryPoint::kContentMenu:
-      return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI) ||
-             base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUIv2);
+      return true;
     case ShareEntryPoint::kLinkMenu:
     case ShareEntryPoint::kShareMenu:
       return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUIv2);
@@ -348,15 +346,9 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
       return;
     }
 
-    const base::Feature& stts_feature =
-        (entry_point_ == ShareEntryPoint::kLinkMenu ||
-         base::FeatureList::IsEnabled(
-             send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2))
-            ? send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2
-            : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI;
-
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        primary_web_contents_->GetBrowserContext(), stts_feature);
+        primary_web_contents_->GetBrowserContext(),
+        send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
 
     RecordEntryPointInvoked(entry_point_);
 

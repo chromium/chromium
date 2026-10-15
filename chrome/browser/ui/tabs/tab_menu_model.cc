@@ -53,7 +53,6 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_context_menu_command.h"
@@ -263,12 +262,6 @@ void TabMenuModel::BuildSendTabToSelfItem(int index,
 #endif
 
   SetElementIdentifierAt(GetItemCount() - 1, kTabSendTabToSelfMenuItem);
-
-  // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
-  SetIsNewFeatureAt(GetItemCount() - 1,
-                    UserEducationService::MaybeShowNewBadge(
-                        tab_strip_->profile(),
-                        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI));
 }
 
 void TabMenuModel::AppendGlicItems(int index,

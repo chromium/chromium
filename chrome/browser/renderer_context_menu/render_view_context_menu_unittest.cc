@@ -142,6 +142,8 @@ using extensions::MenuItem;
 using extensions::MenuManager;
 using extensions::MenuManagerFactory;
 using extensions::URLPatternSet;
+using send_tab_to_self::EntryPointDisplayReason;
+using send_tab_to_self::StubSendTabToSelfSyncService;
 
 namespace {
 
@@ -2717,9 +2719,6 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
             menu->menu_model().GetLabelAt(index.value()));
 }
 
-using send_tab_to_self::EntryPointDisplayReason;
-using send_tab_to_self::StubSendTabToSelfSyncService;
-
 class RenderViewContextMenuSendTabToSelfPageTest
     : public RenderViewContextMenuMenuSimplificationTest {
  public:
@@ -2756,9 +2755,6 @@ class RenderViewContextMenuSendTabToSelfPageTest
 // is provided.
 TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
        ItemNotPresentWhenNoDisplayReason) {
-  base::test::ScopedFeatureList feature_list(
-      send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
-
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreatePageMenu(std::nullopt);
 
@@ -2769,9 +2765,6 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
 // the user that no target device is available.
 TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
        CommandItemPresentWhenInformNoTargetDevice) {
-  base::test::ScopedFeatureList feature_list(
-      send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
-
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreatePageMenu(EntryPointDisplayReason::kInformNoTargetDevice);
 
@@ -2790,8 +2783,7 @@ class RenderViewContextMenuSendTabToSelfPageSigninPromosTest
  public:
   RenderViewContextMenuSendTabToSelfPageSigninPromosTest() {
     feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+        {send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
          send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
 #endif
@@ -2845,17 +2837,10 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
 }
 #endif
 
-// Tests that Send Tab to Self is displayed as a submenu when
-// `kSendTabToSelfEnhancedDesktopUI` is enabled and target devices are
+// Tests that Send Tab to Self is displayed as a submenu when target devices are
 // available.
 TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
-       SubmenuPresentWhenEnhancedDesktopUIEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{send_tab_to_self::kSendTabToSelfEnhancedDesktopUI},
-      /*disabled_features=*/{
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2});
-
+       SubmenuPresentWhenOfferFeature) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreatePageMenu(EntryPointDisplayReason::kOfferFeature);
 
@@ -2864,79 +2849,6 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
       menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
   ASSERT_TRUE(index.has_value());
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
-            menu->menu_model().GetTypeAt(index.value()));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-            menu->menu_model().GetLabelAt(index.value()));
-}
-
-// Tests that Send Tab to Self is displayed as a submenu when only
-// `kSendTabToSelfEnhancedDesktopUIv2` is enabled.
-TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
-       SubmenuPresentWhenOnlyEnhancedDesktopUIv2Enabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-      /*disabled_features=*/
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI});
-
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreatePageMenu(EntryPointDisplayReason::kOfferFeature);
-
-  ASSERT_TRUE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
-            menu->menu_model().GetTypeAt(index.value()));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-            menu->menu_model().GetLabelAt(index.value()));
-}
-
-// Tests that Send Tab to Self is displayed as a submenu when both
-// `kSendTabToSelfEnhancedDesktopUI` and `kSendTabToSelfEnhancedDesktopUIv2` are
-// enabled.
-TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
-       SubmenuPresentWhenBothEnhancedDesktopUIFlagsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-                            send_tab_to_self::
-                                kSendTabToSelfEnhancedDesktopUIv2},
-      /*disabled_features=*/{});
-
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreatePageMenu(EntryPointDisplayReason::kOfferFeature);
-
-  ASSERT_TRUE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
-            menu->menu_model().GetTypeAt(index.value()));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-            menu->menu_model().GetLabelAt(index.value()));
-}
-
-// Tests that Send Tab to Self falls back to a command item when both enhanced
-// desktop UI features are disabled.
-TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
-       CommandItemPresentWhenEnhancedDesktopUIDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2});
-
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreatePageMenu(EntryPointDisplayReason::kOfferFeature);
-
-  ASSERT_TRUE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND,
             menu->menu_model().GetTypeAt(index.value()));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
             menu->menu_model().GetLabelAt(index.value()));
@@ -2958,166 +2870,6 @@ class RenderViewContextMenuSendTabToSelfLinkTest
       content::BrowserContext* context) {
     return std::make_unique<StubSendTabToSelfSyncService>();
   }
-};
-
-// Tests that right-clicking a hyperlink offers the Send Tab to Self item as a
-// submenu when enhanced desktop UI v2 is enabled.
-TEST_F(RenderViewContextMenuSendTabToSelfLinkTest, SubmenuPresentForLink) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-       send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-      {});
-
-  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kOfferFeature);
-
-  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-  params.unfiltered_link_url = params.link_url =
-      GURL("https://example.com/link");
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.set_protocol_handler_registry(protocol_handler_registry());
-  menu.Init();
-
-  ASSERT_TRUE(menu.IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu.menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
-            menu.menu_model().GetTypeAt(index.value()));
-}
-
-// Tests that right-clicking a hyperlink offers the Send Tab to Self item as a
-// submenu when only `kSendTabToSelfEnhancedDesktopUIv2` is enabled and
-// `kSendTabToSelfEnhancedDesktopUI` is disabled.
-TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
-       SubmenuPresentForLinkWhenOnlyV2Enabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-      /*disabled_features=*/
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI});
-
-  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kOfferFeature);
-
-  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-  params.unfiltered_link_url = params.link_url =
-      GURL("https://example.com/link");
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.set_protocol_handler_registry(protocol_handler_registry());
-  menu.Init();
-
-  ASSERT_TRUE(menu.IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu.menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
-            menu.menu_model().GetTypeAt(index.value()));
-}
-
-// Tests that when right-clicking a hyperlink, the Send Tab to Self item is
-// embedded in the same menu group as Save Link As and Copy Link Address (no
-// separators between them).
-TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
-       InGroupWithSaveLinkAsAndCopyLinkAddress) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-       send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-      {});
-
-  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kOfferFeature);
-
-  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-  params.unfiltered_link_url = params.link_url =
-      GURL("https://example.com/link");
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.set_protocol_handler_registry(protocol_handler_registry());
-  menu.Init();
-
-  std::optional<size_t> save_index =
-      menu.menu_model().GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SAVELINKAS);
-  std::optional<size_t> copy_index = menu.menu_model().GetIndexOfCommandId(
-      IDC_CONTENT_CONTEXT_COPYLINKLOCATION);
-  std::optional<size_t> stts_index =
-      menu.menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-
-  ASSERT_TRUE(save_index.has_value());
-  ASSERT_TRUE(copy_index.has_value());
-  ASSERT_TRUE(stts_index.has_value());
-  EXPECT_LT(stts_index.value(), save_index.value());
-  EXPECT_LT(save_index.value(), copy_index.value());
-  for (size_t i = stts_index.value(); i <= copy_index.value(); ++i) {
-    EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR, menu.menu_model().GetTypeAt(i));
-  }
-}
-
-// Tests that when right-clicking a hyperlink with no target devices available
-// (`kInformNoTargetDevice`), the Send Tab to Self item is appended as a regular
-// command item rather than as a submenu.
-TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
-       NoSubmenuWhenNoDevicesForLink) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-       send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2},
-      {});
-
-  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kInformNoTargetDevice);
-
-  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-  params.unfiltered_link_url = params.link_url =
-      GURL("https://example.com/link");
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.set_protocol_handler_registry(protocol_handler_registry());
-  menu.Init();
-
-  ASSERT_TRUE(menu.IsItemPresent(IDC_SEND_TAB_TO_SELF));
-  std::optional<size_t> index =
-      menu.menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
-  ASSERT_TRUE(index.has_value());
-  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND,
-            menu.menu_model().GetTypeAt(index.value()));
-}
-
-class RenderViewContextMenuSendTabToSelfLinkSigninPromosTest
-    : public RenderViewContextMenuSendTabToSelfLinkTest {
- public:
-  RenderViewContextMenuSendTabToSelfLinkSigninPromosTest() {
-    feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
-         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
-#endif
-        },
-        {});
-  }
 
   std::unique_ptr<TestRenderViewContextMenu> CreateLinkMenu(
       EntryPointDisplayReason display_reason) {
@@ -3135,6 +2887,85 @@ class RenderViewContextMenuSendTabToSelfLinkSigninPromosTest
     menu->set_protocol_handler_registry(protocol_handler_registry());
     menu->Init();
     return menu;
+  }
+};
+
+// Tests that right-clicking a hyperlink offers the Send Tab to Self item as a
+// submenu when `kSendTabToSelfEnhancedDesktopUIv2` is enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfLinkTest, SubmenuPresentForLink) {
+  base::test::ScopedFeatureList feature_list(
+      send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kOfferFeature);
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+// Tests that when right-clicking a hyperlink, the Send Tab to Self item is
+// embedded in the same menu group as Save Link As and Copy Link Address (no
+// separators between them).
+TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
+       InGroupWithSaveLinkAsAndCopyLinkAddress) {
+  base::test::ScopedFeatureList feature_list(
+      send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kOfferFeature);
+
+  std::optional<size_t> save_index =
+      menu->menu_model().GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SAVELINKAS);
+  std::optional<size_t> copy_index = menu->menu_model().GetIndexOfCommandId(
+      IDC_CONTENT_CONTEXT_COPYLINKLOCATION);
+  std::optional<size_t> stts_index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+
+  ASSERT_TRUE(save_index.has_value());
+  ASSERT_TRUE(copy_index.has_value());
+  ASSERT_TRUE(stts_index.has_value());
+  EXPECT_LT(stts_index.value(), save_index.value());
+  EXPECT_LT(save_index.value(), copy_index.value());
+  for (size_t i = stts_index.value(); i <= copy_index.value(); ++i) {
+    EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR, menu->menu_model().GetTypeAt(i));
+  }
+}
+
+// Tests that when right-clicking a hyperlink with no target devices available
+// (`kInformNoTargetDevice`), the Send Tab to Self item is appended as a regular
+// command item rather than as a submenu.
+TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
+       NoSubmenuWhenNoDevicesForLink) {
+  base::test::ScopedFeatureList feature_list(
+      send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kInformNoTargetDevice);
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+class RenderViewContextMenuSendTabToSelfLinkSigninPromosTest
+    : public RenderViewContextMenuSendTabToSelfLinkTest {
+ public:
+  RenderViewContextMenuSendTabToSelfLinkSigninPromosTest() {
+    feature_list_.InitWithFeatures(
+        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
+         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+        },
+        {});
   }
 
  private:
@@ -3187,31 +3018,17 @@ TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
 #endif
 
 // Tests that right-clicking a hyperlink does NOT append the Send Tab to Self
-// item at all when enhanced desktop UI v2 is disabled (even if v1 is enabled).
+// item at all when `kSendTabToSelfEnhancedDesktopUIv2` is disabled.
 TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
        ItemNotPresentForLinkWhenV2Disabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{send_tab_to_self::kSendTabToSelfEnhancedDesktopUI},
-      /*disabled_features=*/{
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2});
+  feature_list.InitAndDisableFeature(
+      send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
 
-  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
-  sync_service->SetEntryPointDisplayReason(
-      EntryPointDisplayReason::kOfferFeature);
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kOfferFeature);
 
-  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-  params.unfiltered_link_url = params.link_url =
-      GURL("https://example.com/link");
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.set_protocol_handler_registry(protocol_handler_registry());
-  menu.Init();
-
-  EXPECT_FALSE(menu.IsItemPresent(IDC_SEND_TAB_TO_SELF));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
 }
 
 namespace {

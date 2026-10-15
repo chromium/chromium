@@ -55,9 +55,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadAnythingLineFocus"
       summary="Shown on the Line Focus menu item in Reading Mode settings
                menu."/>
-  <variant name="SendTabToSelfEnhancedDesktopUI"
-      summary="Promotion for Send to your device in the tab and webpage
-               context menus."/>
   <variant name="SendTabToSelfEnhancedDesktopUIv2"
       summary="Promotion for Send to your device in the tab and webpage
                context menus."/>
