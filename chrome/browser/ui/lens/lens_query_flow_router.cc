@@ -256,9 +256,10 @@ void LensQueryFlowRouter::StartQueryFlow(
       return;
     }
 
-    ContextUploadMode initial_mode = ShouldPopulateFullPageContext()
-                                         ? ContextUploadMode::kFullPage
-                                         : ContextUploadMode::kViewportOnly;
+    ContextUploadMode initial_mode =
+        should_upload_page_content && ShouldPopulateFullPageContext()
+            ? ContextUploadMode::kFullPage
+            : ContextUploadMode::kViewportOnly;
 
     auto upload_task = base::BindOnce(
         &LensQueryFlowRouter::UploadContextualInputData,
@@ -1002,8 +1003,10 @@ bool LensQueryFlowRouter::ShouldPopulateFullPageContext() const {
   // if the invocation source is one where page context is blocked.
   if (context_upload_mode_ == ContextUploadMode::kSelectedRegionOnly ||
       (lens_search_controller_ &&
-       IsSelectedRegionOnlyInvocationSource(
-           profile(), lens_search_controller_->invocation_source()))) {
+       (lens_search_controller_->invocation_source() ==
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox ||
+        IsSelectedRegionOnlyInvocationSource(
+            profile(), lens_search_controller_->invocation_source())))) {
     return false;
   }
   const bool can_add_page_content_to_query =

@@ -109,6 +109,7 @@ MATCHER_P(ContextualInputDataMatches,
 
   return arg->page_url == expected.page_url &&
          arg->page_title == expected.page_title &&
+         arg->tab_session_id == expected.tab_session_id &&
          arg->primary_content_type == expected.primary_content_type &&
          arg->pdf_current_page == expected.pdf_current_page &&
          arg->is_page_context_eligible == expected.is_page_context_eligible &&
@@ -1078,6 +1079,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Arrange: Create expected contextual input data.
   lens::ContextualInputData expected_input_data;
+  expected_input_data.tab_session_id = SessionID::InvalidValue();
   expected_input_data.page_url = example_url;
   expected_input_data.page_title = page_title;
   expected_input_data.primary_content_type = primary_content_type;
@@ -1331,6 +1333,8 @@ TEST_F(
 TEST_F(
     LensQueryFlowRouterContextualTaskEnabledTest,
     StartQueryFlow_RoutesToContextualTasks_OnlyViewport_WhenComposeboxSource) {
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+
   // Arrange: Set up invocation source to composebox.
   EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
       .WillRepeatedly(Return(
@@ -1357,7 +1361,9 @@ TEST_F(
 
   // Arrange: Create expected contextual input data.
   lens::ContextualInputData expected_input_data;
-  // Expect empty page URL and title because we only upload viewport.
+  // Expect empty page URL, title, and tab session ID because we only upload
+  // viewport.
+  expected_input_data.tab_session_id = std::nullopt;
   expected_input_data.page_url = GURL();
   expected_input_data.page_title = std::nullopt;
   // Expect kImage because we only upload viewport.
@@ -1368,7 +1374,6 @@ TEST_F(
   expected_input_data.upload_type = lens::LensOverlayContextualInputUploadType::
       CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
   // Expect empty context input.
-  expected_input_data.context_input = std::vector<lens::ContextualInput>();
   expected_input_data.context_input = std::vector<lens::ContextualInput>();
 
   // Assert: Create expectation.
@@ -1382,6 +1387,9 @@ TEST_F(
                         router.GetViewportScreenshot(), example_url, page_title,
                         {}, page_contents, primary_content_type, std::nullopt,
                         ui_scale_factor, invocation_time);
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kViewportOnly);
+  EXPECT_FALSE(router.ShouldPopulateFullPageContext());
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
