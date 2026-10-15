@@ -47,6 +47,8 @@ join , \
   InitialWebUI \
   InitialWebUISurfaceSync:$(InitialWebUISurfaceSyncParams) \
   InitialWebUIWithoutExtensions \
+  InitialWebUIWithoutSpellCheckForNtp \
+  InitialWebUIWithoutTranslateForNtp \
   LazyKeyedServiceInstantiation \
   PerDependencyDeadlines \
   PrioritizeResizeTaskRunnerOnStartup \

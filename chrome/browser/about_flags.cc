@@ -4210,6 +4210,8 @@ constexpr char kWebUIToolbarEnableFeatures[] =
     "InitialWebUISurfaceSync:deadline_in_frames/12000/"
     "renderer_commit_delay_ms/100000,"
     "InitialWebUIWithoutExtensions,"
+    "InitialWebUIWithoutSpellCheckForNtp,"
+    "InitialWebUIWithoutTranslateForNtp,"
     "LazyKeyedServiceInstantiation,"
     "PerDependencyDeadlines,"
     "PrioritizeResizeTaskRunnerOnStartup,"
