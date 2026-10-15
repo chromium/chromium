@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -90,7 +89,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -468,22 +466,6 @@ public class SearchActivityUnitTest {
         assertTrue(mActivity.isActivityFinishingOrDestroyed());
         assertTrue(mActivity.isFinishing());
         histograms.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void handleNewIntent_forJumpStartOmnibox() {
-        // Jump-start Omnibox relies on cached data above anything else.
-        // Save some data to confirm it's properly picked.
-        String jumpStartUrl = "https://asdf.com/ghjkl";
-        CachedZeroSuggestionsManager.saveJumpStartContext(
-                new CachedZeroSuggestionsManager.JumpStartContext(new GURL(jumpStartUrl), 123));
-
-        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.LAUNCHER), false);
-
-        assertEquals(123, mDataProvider.getPageClassification(/* prefetch= */ true));
-        assertEquals(123, mDataProvider.getPageClassification(/* prefetch= */ false));
-        assertEquals(jumpStartUrl, mDataProvider.getCurrentGurl().getSpec());
     }
 
     @Test

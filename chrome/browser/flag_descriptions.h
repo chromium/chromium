@@ -3219,12 +3219,6 @@ inline constexpr char kJourneysName[] = "History Journeys";
 inline constexpr char kJourneysDescription[] =
     "Enables the History Journeys UI.";
 
-inline constexpr char kJumpStartOmniboxName[] = "Jump-start Omnibox";
-inline constexpr char kJumpStartOmniboxDescription[] =
-    "Modifies cold- and warm start-up "
-    "process on low-end devices to reduce the time to active Omnibox, while "
-    "completing core systems initialization in the background.";
-
 inline constexpr char kAnnotatedPageContentExtractionName[] =
     "Enables annotated page content extraction";
 inline constexpr char kAnnotatedPageContentExtractionDescription[] =

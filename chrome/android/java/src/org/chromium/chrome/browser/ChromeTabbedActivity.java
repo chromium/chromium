@@ -148,7 +148,6 @@ import org.chromium.chrome.browser.educational_tip.HomeTipsModulesProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.FeedUma;
-import org.chromium.chrome.browser.feedback.OmniboxFeedbackSource;
 import org.chromium.chrome.browser.finds.FindsFeatures;
 import org.chromium.chrome.browser.finds.FindsManager;
 import org.chromium.chrome.browser.finds.FindsService;
@@ -398,7 +397,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -647,8 +645,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private final MismatchedIndicesHandler mMismatchedIndicesHandler =
             new TabbedMismatchedIndicesHandler(
                     this::getOnCreateTimestampMs, !MultiWindowUtils.isMultiInstanceApi31Enabled());
-    private final SearchActivityClient mJumpStartSearchClient =
-            new SearchActivityClientImpl(this, IntentOrigin.LAUNCHER);
     private final SearchActivityClient mHubSearchClient =
             new SearchActivityClientImpl(this, IntentOrigin.HUB);
     private final OneshotSupplierImpl<SystemBarColorHelper> mBottomChinSupplier =
@@ -843,15 +839,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (getClass().equals(ChromeTabbedActivity.class)
                 && Intent.ACTION_MAIN.equals(intent.getAction())) {
-            if (OmniboxFeatures.shouldJumpStartOmniboxEngage()) {
-                OmniboxFeedbackSource.addFeedbackData(
-                        OmniboxFeedbackSource.Psd.JSO_STATE, "engaged");
-                return LaunchIntentDispatcher.dispatchToSearchActivity(
-                        mJumpStartSearchClient, this, intent);
-            } else if (OmniboxFeatures.isJumpStartOmniboxEnabled()) {
-                OmniboxFeedbackSource.addFeedbackData(
-                        OmniboxFeedbackSource.Psd.JSO_STATE, "active");
-            }
             // Call dispatchToTabbedActivity() for MAIN intents to activate proper multi-window
             // TabbedActivity (i.e. if CTA2 is currently running and Chrome is started, CTA2
             // should be brought to front). Don't call dispatchToTabbedActivity() for non-MAIN

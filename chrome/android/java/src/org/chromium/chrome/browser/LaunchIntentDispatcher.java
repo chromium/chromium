@@ -64,8 +64,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -116,23 +114,6 @@ public class LaunchIntentDispatcher {
      */
     public static @Action int dispatchToTabbedActivity(Activity currentActivity, Intent intent) {
         return new LaunchIntentDispatcher(currentActivity, intent).dispatchToTabbedActivity();
-    }
-
-    /**
-     * Dispatches the intent to Search Activity.
-     *
-     * @param client SearchActivityClient instance
-     * @param currentActivity activity that received the intent
-     * @param intent intent to dispatch
-     * @return action to take
-     */
-    public static @Action int dispatchToSearchActivity(
-            SearchActivityClient client, Activity currentActivity, Intent intent) {
-        client.requestOmniboxForResult(
-                client.newIntentBuilder()
-                        .setResolutionType(ResolutionType.OPEN_OR_LAUNCH_CHROME)
-                        .build());
-        return Action.FINISH_ACTIVITY;
     }
 
     /**

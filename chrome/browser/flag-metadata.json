@@ -6661,11 +6661,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "jump-start-omnibox",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "launcher-local-image-search",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 150

@@ -29,16 +29,12 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.url.GURL;
 
 import java.util.Locale;
-import java.util.Set;
 
 /** CachedZeroSuggestionsManager manages caching and restoring zero suggestions. */
 @NullMarked
@@ -47,20 +43,6 @@ public class CachedZeroSuggestionsManager {
         void saveToCache(@PageClassification int pageClass, AutocompleteResult r);
 
         AutocompleteResult readFromCache(@PageClassification int pageClass);
-    }
-
-    /** Jump-Start Omnibox: the context of the most recently visited page. */
-    public static class JumpStartContext {
-        /** The GURL representing the most recently visited page. */
-        public final GURL url;
-
-        /** {@link PageClassification} value associated with the most recently visited page. */
-        public final @PageClassification int pageClass;
-
-        public JumpStartContext(GURL url, @PageClassification int pageClass) {
-            this.url = url;
-            this.pageClass = pageClass;
-        }
     }
 
     /** Persisted Search Engine metadata. */
@@ -73,17 +55,7 @@ public class CachedZeroSuggestionsManager {
         }
     }
 
-    @VisibleForTesting
-    /* package */ static final String KEY_JUMP_START_URL = "omnibox:jump_start:url";
-
-    @VisibleForTesting
-    /* package */ static final String KEY_JUMP_START_PAGE_CLASS = "omnibox:jump_start:page_class";
-
     @VisibleForTesting /* package */ static final String KEY_DSE_KEYWORD = "omnibox:dse:keyword";
-
-    @VisibleForTesting
-    /* package */ static final Set<String> ADDITIONAL_KEYS_TO_ERASE =
-            Set.of(KEY_JUMP_START_URL, KEY_JUMP_START_PAGE_CLASS);
 
     private static @Nullable OverridesForTesting sOverridesForTesting;
 
@@ -174,48 +146,6 @@ public class CachedZeroSuggestionsManager {
         prefs.edit().remove(key).apply();
     }
 
-    /** Save the context of the most recently visited page. */
-    @SuppressWarnings("ApplySharedPref")
-    public static void saveJumpStartContext(@Nullable JumpStartContext jsContext) {
-        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        if (jsContext == null || GURL.isEmptyOrInvalid(jsContext.url)) {
-            editor.remove(KEY_JUMP_START_URL);
-            editor.remove(KEY_JUMP_START_PAGE_CLASS);
-        } else {
-            editor.putString(KEY_JUMP_START_URL, jsContext.url.getSpec());
-            editor.putInt(KEY_JUMP_START_PAGE_CLASS, jsContext.pageClass);
-        }
-        // Note: this code has very little time to run. Be sure data is persisted. Don't use
-        // asynchronous `apply()` method, because the asynchronously persisted details may never
-        // make it to the data file.
-        editor.commit();
-    }
-
-    /**
-     * Read previously stored context of the most recently visited page.
-     *
-     * <p>This function always returns a valid object, even if there's no data to read, falling back
-     * to the context of a NTP.
-     */
-    public static JumpStartContext readJumpStartContext() {
-        UrlConstantResolver defaultResolver =
-                UrlConstantResolverFactory.getForProfile(/* profile= */ null);
-        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
-            return new JumpStartContext(
-                    new GURL(defaultResolver.getNtpUrl()),
-                    PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
-        }
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        String url = prefs.getString(KEY_JUMP_START_URL, defaultResolver.getNtpUrl());
-        @PageClassification
-        int pageClass =
-                prefs.getInt(
-                        KEY_JUMP_START_PAGE_CLASS,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
-        return new JumpStartContext(new GURL(url), pageClass);
-    }
-
     /** Clean up data persisted by current Chrome versions. */
     public static void eraseCachedData() {
         if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
@@ -225,9 +155,6 @@ public class CachedZeroSuggestionsManager {
                 pageClass <= PageClassification.MAX_VALUE;
                 pageClass++) {
             editor.remove(getCacheKey(pageClass));
-        }
-        for (String key : ADDITIONAL_KEYS_TO_ERASE) {
-            editor.remove(key);
         }
         // This is a best-effort cleanup which is okay if it doesn't complete before Chrome dies.
         editor.apply();

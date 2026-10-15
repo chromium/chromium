@@ -48,14 +48,13 @@ import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconO
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.JumpStartContext;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -205,22 +204,24 @@ public class SearchEngineServiceUnitTest {
     }
 
     private void saveSearchEngineSpecificDataToCache() {
-        CachedZeroSuggestionsManager.saveJumpStartContext(
-                new JumpStartContext(new GURL("https://some.url"), 12345));
+        CachedZeroSuggestionsManager.saveToCache(
+                PageClassification.ANDROID_SEARCH_WIDGET, AutocompleteResult.fromCache(null, null));
     }
 
     private void verifyNoSearchEngineSpecificDataInCache() {
-        var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
-        assertEquals(UrlConstantResolver.getOriginalNativeNtpUrl(), jumpStartContext.url.getSpec());
-        assertEquals(
-                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-                jumpStartContext.pageClass);
+        assertFalse(
+                ContextUtils.getAppSharedPreferences()
+                        .contains(
+                                "omnibox:cached_suggestions:"
+                                        + PageClassification.ANDROID_SEARCH_WIDGET));
     }
 
     private void verifySearchEngineSpecificDataRetainedInCache() {
-        var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
-        assertEquals(new GURL("https://some.url"), jumpStartContext.url);
-        assertEquals(12345, jumpStartContext.pageClass);
+        assertTrue(
+                ContextUtils.getAppSharedPreferences()
+                        .contains(
+                                "omnibox:cached_suggestions:"
+                                        + PageClassification.ANDROID_SEARCH_WIDGET));
     }
 
     @Test

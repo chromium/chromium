@@ -10753,25 +10753,6 @@
             ]
         }
     ],
-    "JumpStartOmnibox": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_15",
-                    "params": {
-                        "jump_start_min_away_time_minutes": "15"
-                    },
-                    "enable_features": [
-                        "JumpStartOmnibox",
-                        "LocalHistoryZeroSuggestBeyondNTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardAccessoryPaymentOffer": [
         {
             "platforms": [

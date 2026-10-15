@@ -76,7 +76,6 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
-    @DisableFeatures(OmniboxFeatureList.JUMP_START_OMNIBOX)
     public void isInCacheableContext_defaultContexts() {
         verifyCacheablePageClasses(
                 Set.of(
@@ -85,48 +84,8 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.JUMP_START_OMNIBOX + ":jump_start_cover_recently_visited_page/false")
-    public void isInCacheableContext_jumpStartDisabled() {
-        OmniboxFeatures.setJumpStartOmniboxEnabled(false);
-        verifyCacheablePageClasses(
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET));
-    }
-
-    @Test
-    @EnableFeatures(
-            OmniboxFeatureList.JUMP_START_OMNIBOX + ":jump_start_cover_recently_visited_page/false")
-    public void isInCacheableContext_jumpStartDefaultContext() {
-        OmniboxFeatures.setJumpStartOmniboxEnabled(true);
-        verifyCacheablePageClasses(
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS));
-    }
-
-    @Test
-    @EnableFeatures(
-            OmniboxFeatureList.JUMP_START_OMNIBOX + ":jump_start_cover_recently_visited_page/true")
-    public void isInCacheableContext_jumpStartAdditionalContext() {
-        OmniboxFeatures.setJumpStartOmniboxEnabled(true);
-        verifyCacheablePageClasses(
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                        PageClassification.OTHER));
-    }
-
-    @Test
     @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    @EnableFeatures(
-            OmniboxFeatureList.JUMP_START_OMNIBOX + ":jump_start_cover_recently_visited_page/true")
     public void isInCacheableContext_serveJavaCachedZeroSuggestDisabled() {
-        OmniboxFeatures.setJumpStartOmniboxEnabled(true);
         verifyCacheablePageClasses(Set.of());
     }
 

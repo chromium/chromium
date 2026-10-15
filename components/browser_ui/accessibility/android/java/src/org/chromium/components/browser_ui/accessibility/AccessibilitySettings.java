@@ -37,7 +37,6 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -90,7 +89,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeSwitchPreference mForceEnableZoomPref;
     private ChromeSwitchPreference mCaretBrowsingPref;
-    private ChromeSwitchPreference mJumpStartOmnibox;
     private @Nullable AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
     private ChromeSwitchPreference mTouchpadOverscrollHistoryNavigationPref;
@@ -138,11 +136,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mForceEnableZoomPref.setOnPreferenceChangeListener(this);
         mForceEnableZoomPref.setChecked(
                 mDelegate.getForceEnableZoomAccessibilityDelegate().getValue());
-
-        mJumpStartOmnibox = findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
-        mJumpStartOmnibox.setOnPreferenceChangeListener(this);
-        mJumpStartOmnibox.setChecked(OmniboxFeatures.isJumpStartOmniboxEnabled());
-        mJumpStartOmnibox.setVisible(shouldShowJumpStartOmniboxPref());
 
         ChromeSwitchPreference readerForAccessibilityPref =
                 findPreference(PREF_READER_FOR_ACCESSIBILITY);
@@ -298,8 +291,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT.equals(preference.getKey())) {
             // TODO(mschillaci): Implement the override behavior for OS level.
-        } else if (OmniboxFeatures.KEY_JUMP_START_OMNIBOX.equals(preference.getKey())) {
-            OmniboxFeatures.setJumpStartOmniboxEnabled((Boolean) newValue);
         } else if (PREF_CARET_BROWSING.equals(preference.getKey())) {
             mDelegate.setCaretBrowsingEnabled((Boolean) newValue);
         } else if (PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION.equals(preference.getKey())) {
@@ -327,10 +318,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     @Nullable PrefObserver getPrefObserverForTesting() {
         return mPrefObserver;
-    }
-
-    private static boolean shouldShowJumpStartOmniboxPref() {
-        return OmniboxFeatures.sJumpStartOmnibox.isEnabled();
     }
 
     private static boolean shouldShowPageZoomV2() {
@@ -395,9 +382,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 subViewPos,
                 R.string.page_zoom_preview_title,
                 R.string.page_zoom_preview_text_summary);
-        if (!shouldShowJumpStartOmniboxPref()) {
-            indexData.removeEntryForKey(prefFragment, OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
-        }
         if (!shouldShowPageZoomV2()) {
             indexData.removeEntryForKey(prefFragment, PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
         }

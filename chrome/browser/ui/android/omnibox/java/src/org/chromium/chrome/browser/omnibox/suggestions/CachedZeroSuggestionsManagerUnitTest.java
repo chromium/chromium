@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.KEY_JUMP_START_PAGE_CLASS;
-import static org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.KEY_JUMP_START_URL;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
@@ -252,81 +250,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
     }
 
-    private void saveJumpStartContext(String url, @PageClassification int pageClass) {
-        CachedZeroSuggestionsManager.saveJumpStartContext(
-                new CachedZeroSuggestionsManager.JumpStartContext(new GURL(url), pageClass));
-    }
-
-    @Test
-    public void jumpStartContext_saveRestoreValidContext() {
-        var prefs = ContextUtils.getAppSharedPreferences();
-
-        saveJumpStartContext("https://abc.xyz", 123);
-
-        assertEquals("https://abc.xyz/", prefs.getString(KEY_JUMP_START_URL, null));
-        assertEquals(123, prefs.getInt(KEY_JUMP_START_PAGE_CLASS, 0));
-
-        var jsContext = CachedZeroSuggestionsManager.readJumpStartContext();
-        assertEquals("https://abc.xyz/", jsContext.url.getSpec());
-        assertEquals(123, jsContext.pageClass);
-    }
-
-    @Test
-    public void jumpStartContext_saveRestoreEmptyUrl() {
-        var prefs = ContextUtils.getAppSharedPreferences();
-
-        // Initialize with valid context to verify data being erased.
-        saveJumpStartContext("https://abc.xyz", 123);
-        assertTrue(prefs.contains(KEY_JUMP_START_URL));
-
-        // Preserve empty URL
-        saveJumpStartContext("", 456);
-        assertFalse(prefs.contains(KEY_JUMP_START_URL));
-        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
-    }
-
-    @Test
-    public void jumpStartContext_saveRestoreInvalidUrl() {
-        var prefs = ContextUtils.getAppSharedPreferences();
-
-        // Initialize with valid context to verify data being erased.
-        saveJumpStartContext("https://abc.xyz", 123);
-        assertTrue(prefs.contains(KEY_JUMP_START_URL));
-
-        // Preserve invalid URL
-        saveJumpStartContext("asdf", 456);
-        assertFalse(prefs.contains(KEY_JUMP_START_URL));
-        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
-    }
-
-    @Test
-    public void jumpStartContext_saveRestoreNullContext() {
-        var prefs = ContextUtils.getAppSharedPreferences();
-
-        // Initialize with valid context to verify data being erased.
-        saveJumpStartContext("https://abc.xyz", 123);
-        assertTrue(prefs.contains(KEY_JUMP_START_URL));
-
-        // Preserve invalid URL
-        CachedZeroSuggestionsManager.saveJumpStartContext(null);
-        assertFalse(prefs.contains(KEY_JUMP_START_URL));
-        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
-    }
-
-    @Test
-    public void jumpStartContext_eraseCachedData() {
-        var prefs = ContextUtils.getAppSharedPreferences();
-
-        // Initialize with valid context to verify data being erased.
-        saveJumpStartContext("https://abc.xyz", 123);
-        assertTrue(prefs.contains(KEY_JUMP_START_URL));
-
-        // Preserve invalid URL
-        CachedZeroSuggestionsManager.eraseCachedData();
-        assertFalse(prefs.contains(KEY_JUMP_START_URL));
-        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
-    }
-
     @Test
     public void dseMetadata_restoreFromEmptyCache() {
         var prefs = ContextUtils.getAppSharedPreferences();
@@ -370,12 +293,5 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
         CachedZeroSuggestionsManager.saveSearchEngineMetadata(new SearchEngineMetadata("keyword"));
         assertNull(CachedZeroSuggestionsManager.readSearchEngineMetadata());
-
-        saveJumpStartContext("https://abc.xyz", 123);
-        assertFalse(prefs.contains(KEY_JUMP_START_URL));
-        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
-        var jsContext = CachedZeroSuggestionsManager.readJumpStartContext();
-        assertEquals(
-                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS, jsContext.pageClass);
     }
 }

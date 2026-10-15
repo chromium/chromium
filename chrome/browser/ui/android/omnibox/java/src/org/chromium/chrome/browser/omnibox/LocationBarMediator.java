@@ -1725,8 +1725,7 @@ public class LocationBarMediator
         @PageClassification int pageClass = mLocationBarDataProvider.getPageClassification(false);
         return pageClass == PageClassification.ANDROID_SHORTCUTS_WIDGET
                 || pageClass == PageClassification.ANDROID_SEARCH_WIDGET
-                || PageClassificationUtils.isHubOrTabSearch(pageClass)
-                || pageClass == PageClassification.JUMP_START;
+                || PageClassificationUtils.isHubOrTabSearch(pageClass);
     }
 
     /**
@@ -3543,7 +3542,6 @@ public class LocationBarMediator
 
     @Override
     public void onPauseWithNative() {
-        OmniboxFeatures.updateLastExitTimestamp();
         GeolocationHeader.stopListeningForLocationUpdates();
     }
 

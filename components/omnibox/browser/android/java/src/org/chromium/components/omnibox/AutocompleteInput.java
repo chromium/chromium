@@ -635,21 +635,8 @@ public class AutocompleteInput implements UserData {
         if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return false;
         if (!isInZeroPrefixContext()) return false;
 
-        switch (mPageClassification) {
-            case PageClassification.ANDROID_SEARCH_WIDGET:
-            case PageClassification.ANDROID_SHORTCUTS_WIDGET:
-                return true;
-
-            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS:
-                return OmniboxFeatures.isJumpStartOmniboxEnabled();
-
-            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
-            case PageClassification.OTHER:
-                return OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue();
-
-            default:
-                return false;
-        }
+        return mPageClassification == PageClassification.ANDROID_SEARCH_WIDGET
+                || mPageClassification == PageClassification.ANDROID_SHORTCUTS_WIDGET;
     }
 
     public void setHasAttachments(boolean hasAttachments) {

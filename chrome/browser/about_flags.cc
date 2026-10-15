@@ -2448,25 +2448,6 @@ const FeatureEntry::FeatureVariation
         {"(600 dp)", kContextualSearchSuppressShortViewWith600Dp, nullptr},
 };
 
-const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
-    {"jump_start_min_away_time_minutes", "1"},
-    {"jump_start_cover_recently_visited_page", "true"}};
-const FeatureEntry::FeatureParam kJumpStartOmnibox15Minutes[] = {
-    {"jump_start_min_away_time_minutes", "15"},
-    {"jump_start_cover_recently_visited_page", "true"}};
-const FeatureEntry::FeatureParam kJumpStartOmnibox30Minutes[] = {
-    {"jump_start_min_away_time_minutes", "30"},
-    {"jump_start_cover_recently_visited_page", "true"}};
-const FeatureEntry::FeatureParam kJumpStartOmnibox60Minutes[] = {
-    {"jump_start_min_away_time_minutes", "60"},
-    {"jump_start_cover_recently_visited_page", "true"}};
-
-const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
-    {"(after 1min)", kJumpStartOmnibox1Minute},
-    {"(after 15min)", kJumpStartOmnibox15Minutes},
-    {"(after 30min)", kJumpStartOmnibox30Minutes},
-    {"(after 60min)", kJumpStartOmnibox60Minutes}};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -10868,14 +10849,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensSidePanelUnificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSidePanelUnification)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"jump-start-omnibox", flag_descriptions::kJumpStartOmniboxName,
-     flag_descriptions::kJumpStartOmniboxDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kJumpStartOmnibox,
-                                    kJumpStartOmniboxVariations,
-                                    "JumpStartOmnibox")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-segmentation-internals-survey",
      flag_descriptions::kSegmentationSurveyPageName,

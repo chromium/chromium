@@ -1867,16 +1867,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/OmniboxFocusReason.java:OmniboxFocusReason) -->
 
-<!-- LINT.IfChange(OmniboxJumpStartState) -->
-
-<enum name="OmniboxJumpStartState">
-  <int value="0" label="Not Eligible"/>
-  <int value="1" label="Enabled"/>
-  <int value="2" label="Disabled By User"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java:OmniboxJumpStartState) -->
-
 <!-- LINT.IfChange(OmniboxSuggestionUiType) -->
 
 <enum name="OmniboxSuggestionUiType">

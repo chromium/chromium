@@ -17,13 +17,9 @@ import java.util.Map;
 /** Grabs feedback about the default Omnibox. */
 @NullMarked
 public class OmniboxFeedbackSource implements FeedbackSource {
-    @StringDef({Psd.JSO_STATE})
+    @StringDef({})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Psd {
-        // Captures whether JumpStart Omnibox was enabled and if it engaged when the User returned
-        // to Chrome.
-        String JSO_STATE = "Omnibox JSO State";
-    }
+    public @interface Psd {}
 
     private static final Map<String, String> sProductSpecificData = new HashMap<>();
 

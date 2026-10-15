@@ -4159,18 +4159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.JumpStartState" enum="OmniboxJumpStartState"
-    expires_after="2027-10-01">
-  <owner>ender@google.com</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records the JumpStart feature eligibility and user preference state during
-    cold start. Logged once per cold start.
-
-    Note: There is a recording gap between: 2026.07-2026.08.
-  </summary>
-</histogram>
-
 <histogram name="Android.Omnibox.MobileFusebox.ReanchorViews.Duration"
     units="ms" expires_after="2027-10-01">
   <owner>skym@chromium.org</owner>

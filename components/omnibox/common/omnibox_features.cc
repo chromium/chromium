@@ -635,10 +635,6 @@ const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxHelperText{
     false};
 
 #if BUILDFLAG(IS_ANDROID)
-// Accelerates time from cold start to focused Omnibox on low-end devices,
-// prioritizing Omnibox focus and background initialization.
-BASE_FEATURE(kJumpStartOmnibox, DISABLED);
-
 // Prevents intermediate AutocompleteResult updates from being sent to Java on
 // low-end devices. This aims at eliminating time spent on constructing,
 // measuring, and laying out views that are about to be discarded, and reducing
@@ -687,7 +683,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxFuseboxAsyncInflation,
       &kRichAutocompletion,
       &kUrlBarWithoutLigatures,
-      &kJumpStartOmnibox,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxXGeoFailClosedOnPreciseLeak,
