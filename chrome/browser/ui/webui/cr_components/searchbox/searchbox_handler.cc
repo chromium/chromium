@@ -581,6 +581,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       base::FeatureList::IsEnabled(omnibox::kAimUseSearchboxConfigIconIds));
   dict.Set("ShowContextMenuHeaders",
            ntp_composebox::kShowContextMenuHeaders.Get());
+  dict.Set("composeboxSingleTabMenuItemEnabled",
+           omnibox::IsSingleTabMenuItemInComposeboxEnabled());
   dict.Set("composeboxSmartTabSharingVisible",
            options.is_lens ? false
                            : contextual_tasks::ContextualTasksContextService::
