@@ -1491,6 +1491,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, UserBlockedSite) {
   EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
 }
 
+// Tests that updating the optional section keeps the main page at the size
+// given by the menu. Blocking extensions on a site hides the menu item
+// controls, which reduces the page's preferred width below the menu width.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       UpdateOptionalSectionKeepsPageSize) {
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
+
+  // Block all extensions on `url`.
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  ShowMenu();
+  LayoutMenuIfNecessary();
+
+  ExtensionsMenuMainPageView* page = main_page();
+  ASSERT_TRUE(page);
+  ASSERT_FALSE(page->reload_section()->GetVisible());
+  const gfx::Size page_size = page->size();
+
+  // The menu updates the optional section whenever the main page is updated
+  // (e.g. when an extension action changes), even if no section visibility
+  // changes.
+  page->SetOptionalSectionVisibility(
+      ExtensionsMenuViewModel::OptionalSection::kNone);
+  EXPECT_EQ(page->size(), page_size);
+}
+
 // Test that user controls for enterprise extensions in the menu are disabled on
 // user blocked sites, since user cannot change the individual extension's site
 // access.

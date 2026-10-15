@@ -419,8 +419,6 @@ void ExtensionsMenuMainPageView::SetOptionalSectionVisibility(
       requests_section_->SetVisible(false);
       break;
   }
-
-  SizeToPreferredSize();
 }
 
 std::vector<ExtensionsMenuEntryView*>
