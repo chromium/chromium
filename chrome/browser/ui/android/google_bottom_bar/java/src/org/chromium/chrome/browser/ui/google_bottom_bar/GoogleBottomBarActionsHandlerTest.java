@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
 import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarActionsHandler.EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_CLICKED_HISTOGRAM;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -35,7 +34,6 @@ import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,14 +51,12 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -96,7 +92,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     private Activity mActivity;
     private GoogleBottomBarActionsHandler mGoogleBottomBarActionsHandler;
-    private HistogramWatcher mHistogramWatcher;
     private ShadowPackageManager mShadowPackageManager;
 
     @Before
@@ -116,21 +111,9 @@ public class GoogleBottomBarActionsHandlerTest {
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
     }
 
-    @After
-    public void tearDown() {
-        if (mHistogramWatcher != null) {
-            mHistogramWatcher.assertExpected();
-            mHistogramWatcher.close();
-            mHistogramWatcher = null;
-        }
-    }
-
     @Test
     public void testSaveAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -153,9 +136,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testSaveAction_buttonConfigHasNoPendingIntent_showsTooltip() {
         TextBubble.setSkipShowCheckForTesting(true);
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_DISABLED);
         Context context = mActivity;
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -177,9 +157,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testShareAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SHARE_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
@@ -202,9 +179,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testShareAction_initiateShareForCurrentTab() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SHARE_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -225,9 +199,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testPageInsightsAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.PIH_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
@@ -251,8 +222,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testPageInsightsAction_buttonConfigHasNoPendingIntent_logsError() {
-        mHistogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -273,8 +242,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testCustomAction_buttonConfigHasNoPendingIntent_logsError() {
-        mHistogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -296,9 +263,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testCustomAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
@@ -323,9 +287,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test(expected = IllegalStateException.class)
     public void
             testSearchAction_buttonConfigHasNoPendingIntent_canNotBeResolved_throwsIllegalStateException() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -348,9 +309,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void
             testSearchAction_buttonConfigHasNoPendingIntent_canBeResolved_googleAppSearchIntentStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -380,9 +338,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testSearchAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_EMBEDDER);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
@@ -407,9 +362,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test(expected = IllegalStateException.class)
     public void
             testHomeAction_buttonConfigHasNoPendingIntent_canNotBeResolved_throwsIllegalStateException() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -431,9 +383,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void
             testHomeAction_buttonConfigHasNoPendingIntent_canBeResolved_googleAppHomeIntentStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         Drawable icon = mock(Drawable.class);
@@ -467,9 +416,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testHomeAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_EMBEDDER);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
@@ -502,9 +448,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testOnSearchboxHomeTap_canBeResolved_googleAppHomeIntentStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
         intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
@@ -535,9 +478,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testOnSearchboxHintTextTap_canBeResolved_googleAppSearchIntentStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
         intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
@@ -564,10 +504,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testOnSearchboxMicTap_canBeResolved_googleAppVoiceSearchIntentStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM,
-                        GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
         intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
@@ -587,9 +523,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @DisabledTest(message = "https://crbug.com/477372460")
     public void testOnSearchboxLensTap_lensNotEnabled_lensNotStarted() {
         TextBubble.setSkipShowCheckForTesting(true);
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         doReturn(false).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;
@@ -600,9 +533,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testOnSearchboxLensTap_lensEnabled_lensStarted() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         doReturn(true).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;

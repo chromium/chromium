@@ -28,7 +28,6 @@ class GoogleBottomBarLogger {
     static final String BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM =
             "CustomTabs.GoogleBottomBar.Variant.Created";
     static final String BUTTON_SHOWN_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Shown";
-    static final String BUTTON_CLICKED_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Clicked";
     static final String BUTTON_UPDATED_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Updated";
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/custom_tabs/histograms.xml)
@@ -196,17 +195,6 @@ class GoogleBottomBarLogger {
                         event);
         RecordHistogram.recordEnumeratedHistogram(
                 BUTTON_UPDATED_HISTOGRAM, event, GoogleBottomBarButtonEvent.COUNT);
-    }
-
-    /**
-     * Logs an event indicating the type of button that is clicked in the Google Bottom Bar.
-     *
-     * @param event The button type (from {@link GoogleBottomBarButtonEvent}).
-     */
-    static void logButtonClicked(@GoogleBottomBarButtonEvent int event) {
-        assert event < GoogleBottomBarButtonEvent.COUNT;
-        RecordHistogram.recordEnumeratedHistogram(
-                BUTTON_CLICKED_HISTOGRAM, event, GoogleBottomBarButtonEvent.COUNT);
     }
 
     /**

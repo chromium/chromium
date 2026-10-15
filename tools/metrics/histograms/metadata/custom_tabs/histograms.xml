@@ -282,18 +282,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.GoogleBottomBar.Button.Clicked"
-    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
-  <owner>tivi@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Recorded only on Android. Records clicks on GoogleBottomBar buttons in the
-    GoogleBottomBar. Logged when a button is clicked in the GoogleBottomBar
-    (when the GoogleBottomBar feature is enabled and visible at the bottom of
-    the CCT).
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.GoogleBottomBar.Button.Shown"
     enum="GoogleBottomBarButtonEvent" expires_after="2025-07-27">
   <owner>tivi@google.com</owner>
