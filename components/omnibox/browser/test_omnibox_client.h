@@ -123,6 +123,11 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
     return &autocomplete_classifier_;
   }
 
+  // Returns how many times `GetAutocompleteClassifier()` has been called.
+  int get_autocomplete_classifier_count() const {
+    return get_autocomplete_classifier_count_;
+  }
+
  private:
   SessionID session_id_;
   TestLocationBarModel location_bar_model_;
@@ -130,6 +135,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   std::unique_ptr<TestAiModeButtonService> ai_mode_button_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
+  int get_autocomplete_classifier_count_ = 0;
   WindowOpenDisposition last_log_disposition_;
   GURL url_;
   base::WeakPtrFactory<TestOmniboxClient> weak_factory_{this};

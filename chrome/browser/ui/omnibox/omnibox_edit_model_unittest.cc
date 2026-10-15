@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
@@ -420,6 +421,45 @@ TEST_F(OmniboxEditModelTest, CurrentMatch) {
     // Additionally verify we aren't accidentally dropping the HTTPS scheme.
     EXPECT_EQ("https://www.google.com/", match.destination_url.spec());
   }
+}
+
+// Classifying empty text never yields a match, so the `AutocompleteClassifier`
+// should not be requested for it. This keeps the classifier from being created
+// while the browser window is being created.
+TEST_F(OmniboxEditModelTest, CurrentMatchForEmptyTextSkipsClassifier) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLazyKeyedServiceInstantiation);
+
+  location_bar_model()->set_url(GURL());
+  location_bar_model()->set_url_for_display(std::u16string());
+  model()->ResetDisplayTexts();
+  model()->Revert();
+  ASSERT_EQ(std::u16string(), view()->GetText());
+
+  const int classifier_count = client()->get_autocomplete_classifier_count();
+  GURL alternate_nav_url("https://example.com/");
+  AutocompleteMatch match =
+      model()->CurrentMatchAndAlternateNavUrl(&alternate_nav_url);
+  EXPECT_FALSE(match.destination_url.is_valid());
+  EXPECT_FALSE(alternate_nav_url.is_valid());
+  EXPECT_EQ(classifier_count, client()->get_autocomplete_classifier_count());
+}
+
+TEST_F(OmniboxEditModelTest, CurrentMatchForEmptyTextUsesClassifierByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLazyKeyedServiceInstantiation);
+
+  location_bar_model()->set_url(GURL());
+  location_bar_model()->set_url_for_display(std::u16string());
+  model()->ResetDisplayTexts();
+  model()->Revert();
+  ASSERT_EQ(std::u16string(), view()->GetText());
+
+  const int classifier_count = client()->get_autocomplete_classifier_count();
+  AutocompleteMatch match = model()->CurrentMatch();
+  EXPECT_FALSE(match.destination_url.is_valid());
+  EXPECT_EQ(classifier_count + 1,
+            client()->get_autocomplete_classifier_count());
 }
 
 TEST_F(OmniboxEditModelTest, DisplayText) {

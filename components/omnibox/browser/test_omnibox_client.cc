@@ -85,6 +85,7 @@ const AutocompleteSchemeClassifier& TestOmniboxClient::GetSchemeClassifier()
 }
 
 AutocompleteClassifier* TestOmniboxClient::GetAutocompleteClassifier() {
+  ++get_autocomplete_classifier_count_;
   return &autocomplete_classifier_;
 }
 

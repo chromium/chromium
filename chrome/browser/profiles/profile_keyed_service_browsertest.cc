@@ -659,6 +659,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    guest_otr_active_services.erase("AutocompleteClassifier");
     guest_otr_active_services.erase("ReadAnythingServiceFactory");
   }
 #if BUILDFLAG(IS_CHROMEOS)

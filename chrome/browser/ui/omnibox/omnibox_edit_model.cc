@@ -1887,12 +1887,27 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
   if (!found_match_for_text) {
     // For match generation, we use the unelided |url_for_editing_|, unless the
     // user input is in progress.
-    std::u16string text_for_match_generation =
-        user_input_in_progress() ? user_text_ : url_for_editing_;
+    std::u16string text_for_match_generation = MaybePrependKeyword(
+        user_input_in_progress() ? user_text_ : url_for_editing_);
+
+    // Classifying empty text never produces a match. Skip it to avoid creating
+    // the `AutocompleteClassifier`, which builds a full
+    // `AutocompleteController`, while the browser window is being created (e.g.
+    // `LocationBarView::Init()` queries the location icon before any tab is
+    // added).
+    if (text_for_match_generation.empty() &&
+        base::FeatureList::IsEnabled(
+            features::kLazyKeyedServiceInstantiation) &&
+        features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+      if (alternate_nav_url) {
+        *alternate_nav_url = GURL();
+      }
+      return;
+    }
 
     controller_->client()->GetAutocompleteClassifier()->Classify(
-        MaybePrependKeyword(text_for_match_generation), is_keyword_selected(),
-        true, GetPageClassification(), match, alternate_nav_url);
+        text_for_match_generation, is_keyword_selected(), true,
+        GetPageClassification(), match, alternate_nav_url);
   }
 }
 
