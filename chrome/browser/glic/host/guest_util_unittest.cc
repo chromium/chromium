@@ -299,10 +299,9 @@ TEST_F(GuestUtilMultiInstanceTest,
       prefs::kGlicGuestUrlPresetAutopush, "https://evil.com/preset");
 
   TestingProfile* profile = CreateTestingProfile();
-  base::DictValue settings;
-  settings.Set("url", "https://business.gemini.google/home/cid/abc123");
-  profile->GetPrefs()->SetDict(glic::prefs::kGlicGeminiEnterpriseSettings,
-                               std::move(settings));
+  profile->GetPrefs()->SetString(
+      glic::prefs::kGlicGeminiEnterpriseUrl,
+      "https://business.gemini.google/home/cid/abc123");
 
   EXPECT_EQ(
       GURL("https://business.gemini.google/side-panel?configId=abc123&hl=en"),

@@ -6,10 +6,12 @@ owners:
 
 caption: Configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> settings (BETA)
 
+deprecated: true
+
 desc: |-
   Configures the connection settings for <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-  This policy is being replaced by the <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME">GeminiEnterpriseUrl</ph> policy. If both are set, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME">GeminiEnterpriseUrl</ph> takes precedence.
+  This policy is no longer supported and is ignored. Use the <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME">GeminiEnterpriseUrl</ph> policy instead.
 
   The policy configures the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL via <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph>, which must be a valid URL that uses the https scheme, points to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> domain, and doesn't include a username or password. If it doesn't meet these requirements, the policy is ignored and <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> is left unconfigured.
 

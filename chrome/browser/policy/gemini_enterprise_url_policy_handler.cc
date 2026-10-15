@@ -55,6 +55,14 @@ bool GeminiEnterpriseUrlPolicyHandler::CheckUrl(const std::string& policy_name,
 bool GeminiEnterpriseUrlPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
+  // The policy is mandatory-only. Reject recommended values, which can still
+  // come from platform policy sources (e.g. the Windows Recommended key).
+  const PolicyMap::Entry* entry = policies.Get(policy_name());
+  if (entry && entry->level == POLICY_LEVEL_RECOMMENDED) {
+    errors->AddError(policy_name(), IDS_POLICY_LEVEL_ERROR);
+    return false;
+  }
+
   if (!SimplePolicyHandler::CheckPolicySettings(policies, errors)) {
     return false;
   }

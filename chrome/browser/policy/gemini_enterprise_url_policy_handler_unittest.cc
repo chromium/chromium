@@ -87,14 +87,12 @@ TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, ValidUrlWithPort) {
   ExpectAppliedPref("https://localhost.corp.google.com:10443/side-panel");
 }
 
-TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, ValidUrlRecommendedLevel) {
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, RecommendedLevelRejected) {
   SetPolicy(base::Value("https://business.gemini.google/"),
             POLICY_LEVEL_RECOMMENDED);
 
-  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
-  EXPECT_TRUE(errors_.empty());
-
-  ExpectAppliedPref("https://business.gemini.google/");
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_LEVEL_ERROR);
 }
 
 TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, EmptyUrl) {

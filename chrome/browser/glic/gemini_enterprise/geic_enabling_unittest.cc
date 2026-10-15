@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,10 +28,7 @@ class GeicEnablingTest : public testing::Test {
 
  protected:
   void SetPolicyUrl(const std::string& url) {
-    base::DictValue settings;
-    settings.Set("url", url);
-    profile_->GetPrefs()->SetDict(glic::prefs::kGlicGeminiEnterpriseSettings,
-                                  std::move(settings));
+    profile_->GetPrefs()->SetString(glic::prefs::kGlicGeminiEnterpriseUrl, url);
   }
 
   GURL ResolvePolicyUrl(const std::string& url) {
@@ -272,6 +268,13 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
   SetPolicyUrl("https://business.gemini.google/side-panel");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kGeicGuestURLSwitch, "https://evil.com/switch");
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
+
+  // An unparsable switch value doesn't fall through either.
+  profile_ = std::make_unique<TestingProfile>();
+  SetPolicyUrl("https://business.gemini.google/side-panel");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kGeicGuestURLSwitch,
+                                                            "not a url");
   EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 

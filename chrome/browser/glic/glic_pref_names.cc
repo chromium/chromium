@@ -145,7 +145,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kGlicClientDataStorage);
   registry->RegisterBooleanPref(prefs::kGlicPreviouslyNotAllowed, false);
 
-  registry->RegisterDictionaryPref(prefs::kGlicGeminiEnterpriseSettings);
   registry->RegisterStringPref(prefs::kGlicGeminiEnterpriseUrl, std::string());
   registry->RegisterIntegerPref(
       prefs::kGlicLastProfileReadyState,

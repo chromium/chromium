@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
@@ -214,10 +213,8 @@ TEST_F(GlicMetricsProviderTest,
 
   Profile* default_profile =
       profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
-  base::DictValue settings;
-  settings.Set("url", "http://localhost:8080/geic");
-  default_profile->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
-                                       std::move(settings));
+  default_profile->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
+                                         "http://localhost:8080/geic");
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);
@@ -247,10 +244,8 @@ TEST_F(GlicMetricsProviderTest,
       profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
 
   // Configure profile2 as GeminiEnterprise and invoke Glic there.
-  base::DictValue settings;
-  settings.Set("url", "http://localhost:8080/geic");
-  profile2()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
-                                  std::move(settings));
+  profile2()->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
+                                    "http://localhost:8080/geic");
   const base::Time t1 = base::Time::Now();
   profile2()->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime, t1);
 

@@ -192,19 +192,11 @@ inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
 
 // String pref populated by the `GeminiEnterpriseUrl` enterprise policy. Stores
 // the enterprise's Gemini Enterprise web application URL (e.g.
-// `https://business.gemini.google/home/cid/<id>`). Replaces
-// `kGlicGeminiEnterpriseSettings`.
+// `https://business.gemini.google/home/cid/<id>`). When `features::kGeic` is
+// enabled, a valid URL here configures the GEiC guest URL and enables GEiC for
+// the profile (unless overridden by `--geic-guest-url` or supplemented by
+// `features::kGeicGuestURL`).
 inline constexpr char kGlicGeminiEnterpriseUrl[] = "glic.gemini_enterprise_url";
-
-// Dict pref populated by the `GeminiEnterpriseSettings` enterprise policy.
-// Stores a `"url"` string key pointing to the enterprise's Gemini Enterprise
-// web application URL (e.g. `https://business.gemini.google/home/cid/<id>`).
-// When `features::kGeic` is enabled, a valid `"url"` here configures the GEiC
-// guest URL and enables GEiC for the profile (unless overridden by
-// `--geic-guest-url` or supplemented by `features::kGeicGuestURL`). In
-// consumer Glic, it is also parsed to configure Gemini Enterprise tools.
-inline constexpr char kGlicGeminiEnterpriseSettings[] =
-    "glic.gemini_enterprise_settings";
 
 // Boolean pref that tracks if the Glic partition needs a cookie sync.
 inline constexpr char kGlicPartitionNeedsCookieSync[] =

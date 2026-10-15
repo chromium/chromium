@@ -1755,7 +1755,7 @@ inline constexpr char kContextualCueingV2MultiSourceDescription[] =
 inline constexpr char kGeicEnabledName[] = "GEiC enabled";
 inline constexpr char kGeicEnabledDescription[] =
     "Controls Gemini Enterprise in Chrome (GEiC) side panel integration. Set "
-    "to Enabled to apply a GeminiEnterpriseSettings policy even if this "
+    "to Enabled to apply a GeminiEnterpriseUrl policy even if this "
     "profile is not detected as a managed account. Set to Disabled to opt out "
     "of GEiC and fall back to consumer Gemini, even if a Gemini Enterprise "
     "policy or experiment applies to this profile.";

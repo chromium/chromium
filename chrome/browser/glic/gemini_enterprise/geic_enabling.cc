@@ -15,7 +15,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
-#include "base/values.h"
+#include "base/types/expected.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
@@ -44,7 +44,7 @@ struct LatchedGeicConfig : public base::SupportsUserData::Data {
   const GURL guest_url;
 };
 
-// Although `GeminiEnterpriseSettingsPolicyHandler` validates the policy URL's
+// Although `GeminiEnterpriseUrlPolicyHandler` validates the policy URL's
 // syntax, scheme and host when applying the enterprise policy, we validate the
 // URL here as well so that all guest URL sources (`--geic-guest-url` switch,
 // policy pref, and `features::kGeicGuestURL` Finch param) and direct pref
@@ -88,15 +88,34 @@ GURL CanonicalizeGuestUrl(const GURL& input_url) {
       input_url.ReplaceComponents(replacements), "configId", path);
 }
 
-std::string GetPolicyGuestUrl(content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || !profile->GetPrefs()) {
-    return std::string();
+// Why a guest URL source didn't produce a usable URL.
+enum class GuestUrlError {
+  // The source is not set.
+  kUnset,
+  // The source is set, but to an unparsable or disallowed URL.
+  kInvalid,
+};
+
+// Classifies a guest URL source. Returns the validated URL, ready to be
+// canonicalized, or why it can't be used.
+base::expected<GURL, GuestUrlError> ToGuestUrl(const std::string& spec) {
+  if (spec.empty()) {
+    return base::unexpected(GuestUrlError::kUnset);
   }
-  const base::DictValue& dict =
-      profile->GetPrefs()->GetDict(glic::prefs::kGlicGeminiEnterpriseSettings);
-  const std::string* url_str = dict.FindString("url");
-  return url_str ? *url_str : std::string();
+  GURL url(spec);
+  if (!IsValidGuestUrl(url)) {
+    return base::unexpected(GuestUrlError::kInvalid);
+  }
+  return url;
+}
+
+base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile && profile->GetPrefs()
+             ? ToGuestUrl(profile->GetPrefs()->GetString(
+                   glic::prefs::kGlicGeminiEnterpriseUrl))
+             : base::unexpected(GuestUrlError::kUnset);
 }
 
 GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
@@ -104,21 +123,22 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
     return GURL();
   }
 
-  const std::string candidates[] = {
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kGeicGuestURLSwitch),
+  const base::expected<GURL, GuestUrlError> candidates[] = {
+      ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kGeicGuestURLSwitch)),
       GetPolicyGuestUrl(browser_context),
-      features::kGeicGuestURL.Get(),
+      ToGuestUrl(features::kGeicGuestURL.Get()),
   };
+  // The first set candidate wins, even if it is invalid, so that an invalid
+  // higher-priority source doesn't silently fall through.
   auto it = std::ranges::find_if(
-      candidates, [](const std::string& s) { return !s.empty(); });
-  if (it != std::end(candidates)) {
-    GURL url(*it);
-    if (IsValidGuestUrl(url)) {
-      return CanonicalizeGuestUrl(url);
-    }
-  }
-  return GURL();
+      candidates, [](const base::expected<GURL, GuestUrlError>& candidate) {
+        return candidate.has_value() ||
+               candidate.error() != GuestUrlError::kUnset;
+      });
+  return it != std::end(candidates) && it->has_value()
+             ? CanonicalizeGuestUrl(it->value())
+             : GURL();
 }
 
 // Returns the GEiC config for `browser_context`, resolving and latching it on
