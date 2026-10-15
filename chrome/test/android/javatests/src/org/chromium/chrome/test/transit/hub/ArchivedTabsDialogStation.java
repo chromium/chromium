@@ -55,7 +55,6 @@ public class ArchivedTabsDialogStation
     }
 
     public SettingsStation<TabArchiveSettingsFragment> openSettings(Runnable settingsTrigger) {
-        assert mTabArchiveSettings.shouldShowDialogIph();
         return runTo(settingsTrigger)
                 .arriveAt(new SettingsStation<>(TabArchiveSettingsFragment.class));
     }
