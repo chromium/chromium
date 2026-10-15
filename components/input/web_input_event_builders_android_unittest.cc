@@ -27,6 +27,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
+using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
 using blink::WebMouseEvent;
 using blink::WebMouseWheelEvent;
@@ -518,6 +519,24 @@ TEST(WebInputEventBuilderAndroidTest,
     web_event = input::WebMouseWheelEventBuilder::Build(*motion_event);
     EXPECT_EQ(web_event.delta_units, ui::ScrollGranularity::kScrollByPixel);
   }
+}
+
+TEST(WebInputEventBuilderAndroidTest, ContextMenuKeys) {
+  JNIEnv* env = AttachCurrentThread();
+
+  WebKeyboardEvent menu_event =
+      CreateFakeWebKeyboardEvent(env, AKEYCODE_MENU, 0, 0);
+  EXPECT_EQ(ui::VKEY_APPS, menu_event.windows_key_code);
+  EXPECT_EQ(AKEYCODE_MENU, menu_event.native_key_code);
+  EXPECT_EQ(ui::DomKey::CONTEXT_MENU, ui::DomKey(menu_event.dom_key));
+
+  WebKeyboardEvent shift_f10_event = CreateFakeWebKeyboardEvent(
+      env, AKEYCODE_F10, WebKeyboardEvent::kShiftKey, 0);
+  EXPECT_EQ(ui::VKEY_F10, shift_f10_event.windows_key_code);
+  EXPECT_EQ(AKEYCODE_F10, shift_f10_event.native_key_code);
+  EXPECT_EQ(ui::DomKey::F10, ui::DomKey(shift_f10_event.dom_key));
+  EXPECT_EQ(WebKeyboardEvent::kShiftKey,
+            shift_f10_event.GetModifiers() & WebInputEvent::kInputModifiers);
 }
 
 // TODO(crbug.com/41353469): Add more tests for WebMouseEventBuilder

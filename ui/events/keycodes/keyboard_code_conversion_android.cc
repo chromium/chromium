@@ -784,6 +784,8 @@ KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode) {
       return VKEY_PRIOR;
     case AKEYCODE_CHANNEL_DOWN:
       return VKEY_NEXT;
+    case AKEYCODE_MENU:
+      return VKEY_APPS;
     default:
       return VKEY_UNKNOWN;
   }
@@ -1022,6 +1024,8 @@ int AndroidKeyCodeFromKeyboardCode(KeyboardCode key_code) {
       return AKEYCODE_NUMPAD_ADD;
     case VKEY_DECIMAL:
       return AKEYCODE_NUMPAD_DOT;
+    case VKEY_APPS:
+      return AKEYCODE_MENU;
     default:
       return AKEYCODE_UNKNOWN;
   }
