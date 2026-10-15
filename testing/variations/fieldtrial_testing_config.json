@@ -10941,6 +10941,26 @@
             ]
         }
     ],
+    "LaunchOnStartup": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Foreground_OptIn",
+                    "params": {
+                        "default_preference": "disabled",
+                        "mode": "foreground"
+                    },
+                    "enable_features": [
+                        "LaunchOnStartup",
+                        "LaunchOnStartupInfoBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "LazilySetCustomActionCaption": [
         {
             "platforms": [
