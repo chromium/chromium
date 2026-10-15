@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -20,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/tick_clock.h"
+#include "media/audio/audio_features.h"
 
 namespace media {
 
@@ -83,6 +85,8 @@ AudioThreadHangMonitor::AudioThreadHangMonitor(
                                           : hang_deadline.value()
                                     : kDefaultHangDeadline) /
                      kMaxFailedPingsCount),
+      rearm_after_late_check_(base::FeatureList::IsEnabled(
+          features::kAudioThreadHangMonitorRearmAfterLateCheck)),
       timer_(clock_) {
   DETACH_FROM_SEQUENCE(monitor_sequence_);
 }
@@ -124,10 +128,16 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
   // An unexpected |time_since_last_check| may indicate that the system has been
   // in sleep mode, in which case the audio thread may have had insufficient
   // time to respond to the ping. In such a case, skip the check for now.
-  if (!audio_thread_responded_to_last_ping &&
-      time_since_last_check > ping_interval_ + base::Seconds(1)) {
-    PingAudioThread();
-    return;
+  if (time_since_last_check > ping_interval_ + base::Seconds(1)) {
+    if (!rearm_after_late_check_) {
+      // Pre-fix behavior: skip without updating |last_check_time_|, so all
+      // following checks are late too.
+      return;
+    }
+    if (!audio_thread_responded_to_last_ping) {
+      PingAudioThread();
+      return;
+    }
   }
 
   if (audio_thread_responded_to_last_ping) {
@@ -174,7 +184,9 @@ void AudioThreadHangMonitor::PingAudioThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_);
 
   last_check_time_ = clock_->NowTicks();
-  if (alive_flag_->flag_.exchange(false)) {
+  const bool previous_ping_answered = alive_flag_->flag_.exchange(false);
+  // With the feature disabled, ping even if the previous ping is still pending.
+  if (previous_ping_answered || !rearm_after_late_check_) {
     audio_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(

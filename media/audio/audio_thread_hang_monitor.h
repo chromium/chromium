@@ -147,6 +147,12 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // At which interval to ping and see if the thread is running.
   const base::TimeDelta ping_interval_;
 
+  // Whether CheckIfAudioThreadIsAlive() keeps checking after a late check and
+  // PingAudioThread() keeps at most one ping in flight. Read once from
+  // kAudioThreadHangMonitorRearmAfterLateCheck.
+  // TODO(crbug.com/572682743): Remove with the feature.
+  const bool rearm_after_late_check_;
+
   // For testing. See DumpWithoutCrashing() and TerminateCurrentProcess().
   base::RepeatingClosure dump_callback_;
   base::RepeatingClosure terminate_process_callback_;

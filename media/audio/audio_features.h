@@ -25,6 +25,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartOnDeviceChange);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartAudioProcessOnTimeout);
 #endif
 
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioThreadHangMonitorRearmAfterLateCheck);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 
 }  // namespace features

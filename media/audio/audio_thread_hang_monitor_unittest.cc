@@ -8,11 +8,15 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "media/audio/audio_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,10 +43,19 @@ constexpr base::TimeDelta kLongHangDeadline = base::Minutes(30);
 class AudioThreadHangMonitorTest : public Test {
  public:
   AudioThreadHangMonitorTest()
+      : AudioThreadHangMonitorTest(/*rearm_after_late_check=*/true) {}
+
+  // Sets kAudioThreadHangMonitorRearmAfterLateCheck before the audio thread
+  // starts and before the monitor, which reads it in its constructor, is
+  // created.
+  explicit AudioThreadHangMonitorTest(bool rearm_after_late_check)
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         histograms_(),
         audio_thread_("Audio thread"),
         hang_monitor_({nullptr, base::OnTaskRunnerDeleter(nullptr)}) {
+    feature_list_.InitWithFeatureState(
+        features::kAudioThreadHangMonitorRearmAfterLateCheck,
+        rearm_after_late_check);
     CHECK(audio_thread_.Start());
     // We must inject the main thread task runner as the hang monitor task
     // runner since TaskEnvironment::FastForwardBy only works for the main
@@ -107,6 +120,7 @@ class AudioThreadHangMonitorTest : public Test {
   MOCK_METHOD0(HangActionDump, void());
   MOCK_METHOD0(HangActionTerminate, void());
 
+  base::test::ScopedFeatureList feature_list_;
   base::WaitableEvent event_;
   base::test::TaskEnvironment task_env_;
   base::HistogramTester histograms_;
@@ -459,6 +473,96 @@ TEST_F(AudioThreadHangMonitorTest,
 
   EXPECT_THAT(histograms_.GetAllSamples("Media.AudioThreadStatus"),
               ElementsAre(base::Bucket(kStarted, 2), base::Bucket(kHung, 1)));
+}
+
+TEST_F(AudioThreadHangMonitorTest,
+       DoesNotPingAudioThreadAgainWhilePingIsPending) {
+  // |audio_task_runner| never runs its tasks, so all pings stay pending.
+  auto audio_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  hang_monitor_ = AudioThreadHangMonitor::Create(
+      HangAction::kDoNothing, std::nullopt, task_env_.GetMockTickClock(),
+      audio_task_runner, task_env_.GetMainThreadTaskRunner());
+  RunUntilIdle();
+
+  task_env_.FastForwardBy(base::Minutes(3));
+
+  EXPECT_EQ(audio_task_runner->NumPendingTasks(), 1u);
+}
+
+// Runs with kAudioThreadHangMonitorRearmAfterLateCheck disabled, i.e. with the
+// behavior from before crbug.com/572682743 was fixed.
+class AudioThreadHangMonitorRearmDisabledTest
+    : public AudioThreadHangMonitorTest {
+ public:
+  AudioThreadHangMonitorRearmDisabledTest()
+      : AudioThreadHangMonitorTest(/*rearm_after_late_check=*/false) {}
+};
+
+TEST_F(AudioThreadHangMonitorRearmDisabledTest,
+       LogsHungWhenAudioThreadIsBlocked) {
+  RunUntilIdle();
+
+  BlockAudioThreadUntilEvent();
+  task_env_.FastForwardBy(base::Minutes(10));
+  event_.Signal();
+
+  EXPECT_THAT(histograms_.GetAllSamples("Media.AudioThreadStatus"),
+              ElementsAre(base::Bucket(kStarted, 1), base::Bucket(kHung, 1)));
+}
+
+TEST_F(AudioThreadHangMonitorRearmDisabledTest,
+       DoesNotLogHungWhenAudioThreadIsBlockedAfterAnsweredLateCheck) {
+  RunUntilIdle();
+
+  // The audio thread is considered alive at start, so this late check is
+  // answered. With the feature disabled, it's skipped anyway, so all
+  // following checks are late too and the hang isn't detected.
+  SimulateLateCheck();
+
+  BlockAudioThreadUntilEvent();
+  task_env_.FastForwardBy(base::Minutes(10));
+  event_.Signal();
+
+  EXPECT_THAT(histograms_.GetAllSamples("Media.AudioThreadStatus"),
+              ElementsAre(base::Bucket(kStarted, 1)));
+}
+
+TEST_F(
+    AudioThreadHangMonitorRearmDisabledTest,
+    DoesNotTerminateProcessWhenAudioThreadIsBlockedAfterUnansweredLateCheck) {
+  hang_monitor_ = AudioThreadHangMonitor::Create(
+      HangAction::kTerminateCurrentProcess, std::nullopt,
+      task_env_.GetMockTickClock(), audio_thread_.task_runner(),
+      task_env_.GetMainThreadTaskRunner());
+  SetHangActionCallbacksForTesting();
+  RunUntilIdle();
+
+  // The late check doesn't update the last check time, so all following
+  // checks are late too and the hang isn't detected.
+  EXPECT_CALL(*this, HangActionTerminate).Times(0);
+
+  SimulateUnansweredLateCheckThenResume();
+
+  BlockAudioThreadUntilEvent();
+  task_env_.FastForwardBy(base::Minutes(10));
+  event_.Signal();
+
+  EXPECT_THAT(histograms_.GetAllSamples("Media.AudioThreadStatus"),
+              ElementsAre(base::Bucket(kStarted, 2)));
+}
+
+TEST_F(AudioThreadHangMonitorRearmDisabledTest,
+       PingsAudioThreadAgainWhilePingIsPending) {
+  // |audio_task_runner| never runs its tasks, so all pings stay pending.
+  auto audio_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  hang_monitor_ = AudioThreadHangMonitor::Create(
+      HangAction::kDoNothing, std::nullopt, task_env_.GetMockTickClock(),
+      audio_task_runner, task_env_.GetMainThreadTaskRunner());
+  RunUntilIdle();
+
+  task_env_.FastForwardBy(base::Minutes(3));
+
+  EXPECT_EQ(audio_task_runner->NumPendingTasks(), 3u);
 }
 
 }  // namespace media
