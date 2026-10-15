@@ -11,7 +11,6 @@ config("public_config") {
 cast_source_set("public") {
   sources = [
     "avsettings.h",
-    "bluetooth/bluetooth_types.h",
     "cast_egl_platform.h",
     "cast_egl_platform_shlib.h",
     "cast_media_shlib.h",
