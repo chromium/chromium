@@ -396,6 +396,56 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(other_ext_url, std::string()));
 }
 
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerCannotClearOtherExtensionStorage) {
+  base::FilePath path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
+  path = path.AppendASCII("extensions").AppendASCII("simple_with_popup");
+  const Extension* another_extension = LoadExtension(path);
+  ASSERT_TRUE(another_extension);
+
+  GURL regular_url = embedded_test_server()->GetURL("/simple.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, regular_url));
+
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(extension());
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(),
+      base::StringPrintf(R"([{"tabId": %d}, "1.3"])", tab_id), profile()))
+      << attach_function->GetError();
+
+  std::string other_ext_origin = another_extension->origin().Serialize();
+  std::string other_ext_storage_key = other_ext_origin + "/";
+
+  auto clear_origin_cmd = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  clear_origin_cmd->set_extension(extension());
+  std::string clear_origin_args =
+      base::StringPrintf(R"([{"tabId": %d}, "Storage.clearDataForOrigin", )"
+                         R"({"origin": "%s", "storageTypes": "all"}])",
+                         tab_id, other_ext_origin.c_str());
+  std::string origin_error = api_test_utils::RunFunctionAndReturnError(
+      clear_origin_cmd.get(), clear_origin_args, profile());
+  EXPECT_THAT(origin_error, testing::HasSubstr("Permission denied"));
+
+  auto clear_key_cmd = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  clear_key_cmd->set_extension(extension());
+  std::string clear_key_args =
+      base::StringPrintf(R"([{"tabId": %d}, "Storage.clearDataForStorageKey", )"
+                         R"({"storageKey": "%s", "storageTypes": "all"}])",
+                         tab_id, other_ext_storage_key.c_str());
+  std::string key_error = api_test_utils::RunFunctionAndReturnError(
+      clear_key_cmd.get(), clear_key_args, profile());
+  EXPECT_THAT(key_error, testing::HasSubstr("Permission denied"));
+
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(extension());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), base::StringPrintf(R"([{"tabId": %d}])", tab_id),
+      profile()));
+}
+
 IN_PROC_BROWSER_TEST_F(DebuggerFileAccessApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
   base::FilePath worker_path =
