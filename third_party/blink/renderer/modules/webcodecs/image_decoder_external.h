@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

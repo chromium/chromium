@@ -31,6 +31,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/insecure_random_generator.h"
 #include "base/threading/simple_thread.h"

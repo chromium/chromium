@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_IMAGE_DECODER_CORE_H_
 
 #include "base/sequence_checker.h"
+#include "base/synchronization/atomic_flag.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 

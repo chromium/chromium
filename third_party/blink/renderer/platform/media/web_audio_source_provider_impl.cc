@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"
 #include "base/thread_annotations.h"
 #include "media/base/audio_bus.h"
