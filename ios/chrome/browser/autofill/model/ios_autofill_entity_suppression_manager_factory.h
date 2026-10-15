@@ -7,29 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace autofill {
-class EntitySuppressionManager;
-}  // namespace autofill
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all EntitySuppressionManagers and associates them with
 // ProfileIOS.
 class IOSAutofillEntitySuppressionManagerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSAutofillEntitySuppressionManagerFactory,
+          autofill::EntitySuppressionManager> {
  public:
-  static autofill::EntitySuppressionManager* GetForProfile(ProfileIOS* profile);
-  static IOSAutofillEntitySuppressionManagerFactory* GetInstance();
+  explicit IOSAutofillEntitySuppressionManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSAutofillEntitySuppressionManagerFactory>;
-
-  IOSAutofillEntitySuppressionManagerFactory();
-  ~IOSAutofillEntitySuppressionManagerFactory() override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

@@ -7,29 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace autofill {
-class AutofillAiModelExecutor;
-}
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns the AutofillAiModelExecutor responsible for managing
 // calls to the AutofillAI server model via optimization guide infrastructure.
-class IOSAutofillAiModelExecutorFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSAutofillAiModelExecutorFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSAutofillAiModelExecutorFactory,
+          autofill::AutofillAiModelExecutor> {
  public:
-  static IOSAutofillAiModelExecutorFactory* GetInstance();
-  static autofill::AutofillAiModelExecutor* GetForProfile(ProfileIOS* profile);
+  explicit IOSAutofillAiModelExecutorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSAutofillAiModelExecutorFactory>;
-
-  IOSAutofillAiModelExecutorFactory();
-  ~IOSAutofillAiModelExecutorFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

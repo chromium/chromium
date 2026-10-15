@@ -7,30 +7,20 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace strike_database {
-class StrikeDatabase;
-}  // namespace strike_database
+#import "components/strike_database/strike_database.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace autofill {
 
 // Singleton that owns all StrikeDatabases and associates them with
 // ProfileIOS.
-class StrikeDatabaseFactory : public ProfileKeyedServiceFactoryIOS {
+class StrikeDatabaseFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                  StrikeDatabaseFactory,
+                                  strike_database::StrikeDatabase> {
  public:
-  static strike_database::StrikeDatabase* GetForProfile(ProfileIOS* profile);
-  static StrikeDatabaseFactory* GetInstance();
+  explicit StrikeDatabaseFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<StrikeDatabaseFactory>;
-
-  StrikeDatabaseFactory();
-  ~StrikeDatabaseFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

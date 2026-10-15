@@ -7,29 +7,21 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace autofill {
 
-class AutocompleteHistoryManager;
-
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
 // profiles.
-class AutocompleteHistoryManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class AutocompleteHistoryManagerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AutocompleteHistoryManagerFactory,
+          AutocompleteHistoryManager> {
  public:
-  static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
-  static AutocompleteHistoryManagerFactory* GetInstance();
+  explicit AutocompleteHistoryManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AutocompleteHistoryManagerFactory>;
-
-  AutocompleteHistoryManagerFactory();
-  ~AutocompleteHistoryManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -17,29 +17,13 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-autofill::WalletPassAccessManager*
-IOSWalletPassAccessManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<autofill::WalletPassAccessManager>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSWalletPassAccessManagerFactory*
-IOSWalletPassAccessManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSWalletPassAccessManagerFactory> instance;
-  return instance.get();
-}
-
-IOSWalletPassAccessManagerFactory::IOSWalletPassAccessManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("WalletPassAccessManager") {
+IOSWalletPassAccessManagerFactory::IOSWalletPassAccessManagerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "WalletPassAccessManager") {
   DependsOn(IOSAutofillEntityDataManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-IOSWalletPassAccessManagerFactory::~IOSWalletPassAccessManagerFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(

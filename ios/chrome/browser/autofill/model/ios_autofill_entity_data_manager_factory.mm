@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -20,22 +19,9 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
-// static
-autofill::EntityDataManager* IOSAutofillEntityDataManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<autofill::EntityDataManager>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSAutofillEntityDataManagerFactory*
-IOSAutofillEntityDataManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSAutofillEntityDataManagerFactory> instance;
-  return instance.get();
-}
-
-IOSAutofillEntityDataManagerFactory::IOSAutofillEntityDataManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("EntityDataManager") {
+IOSAutofillEntityDataManagerFactory::IOSAutofillEntityDataManagerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "EntityDataManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
@@ -43,9 +29,6 @@ IOSAutofillEntityDataManagerFactory::IOSAutofillEntityDataManagerFactory()
   DependsOn(autofill::StrikeDatabaseFactory::GetInstance());
   DependsOn(IOSAutofillAiPersonalContextAccessManagerFactory::GetInstance());
 }
-
-IOSAutofillEntityDataManagerFactory::~IOSAutofillEntityDataManagerFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(

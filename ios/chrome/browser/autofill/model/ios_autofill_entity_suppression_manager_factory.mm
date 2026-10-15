@@ -9,7 +9,6 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
@@ -23,31 +22,14 @@
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
-// static
-autofill::EntitySuppressionManager*
-IOSAutofillEntitySuppressionManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<autofill::EntitySuppressionManager>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSAutofillEntitySuppressionManagerFactory*
-IOSAutofillEntitySuppressionManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSAutofillEntitySuppressionManagerFactory>
-      instance;
-  return instance.get();
-}
-
 IOSAutofillEntitySuppressionManagerFactory::
-    IOSAutofillEntitySuppressionManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("EntitySuppressionManager",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+    IOSAutofillEntitySuppressionManagerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "EntitySuppressionManager",
+          ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-IOSAutofillEntitySuppressionManagerFactory::
-    ~IOSAutofillEntitySuppressionManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(

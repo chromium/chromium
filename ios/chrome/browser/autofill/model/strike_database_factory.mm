@@ -9,24 +9,9 @@
 
 namespace autofill {
 
-// static
-strike_database::StrikeDatabase* StrikeDatabaseFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<strike_database::StrikeDatabase>(
-      profile,
-      /*create=*/true);
-}
-
-// static
-StrikeDatabaseFactory* StrikeDatabaseFactory::GetInstance() {
-  static base::NoDestructor<StrikeDatabaseFactory> instance;
-  return instance.get();
-}
-
-StrikeDatabaseFactory::StrikeDatabaseFactory()
-    : ProfileKeyedServiceFactoryIOS("AutofillStrikeDatabase") {}
-
-StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
+StrikeDatabaseFactory::StrikeDatabaseFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AutofillStrikeDatabase") {}
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

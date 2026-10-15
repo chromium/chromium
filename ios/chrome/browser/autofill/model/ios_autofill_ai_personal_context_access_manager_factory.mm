@@ -15,35 +15,17 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 
-// static
-autofill::AutofillAiPersonalContextAccessManager*
-IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<
-          autofill::AutofillAiPersonalContextAccessManager>(profile, true);
-}
-
-// static
-IOSAutofillAiPersonalContextAccessManagerFactory*
-IOSAutofillAiPersonalContextAccessManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSAutofillAiPersonalContextAccessManagerFactory>
-      instance;
-  return instance.get();
-}
-
 IOSAutofillAiPersonalContextAccessManagerFactory::
-    IOSAutofillAiPersonalContextAccessManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("AutofillAiPersonalContextAccessManager",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+    IOSAutofillAiPersonalContextAccessManagerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AutofillAiPersonalContextAccessManager",
+          ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(IOSAutofillEntitySuppressionManagerFactory::GetInstance());
 }
-
-IOSAutofillAiPersonalContextAccessManagerFactory::
-    ~IOSAutofillAiPersonalContextAccessManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(

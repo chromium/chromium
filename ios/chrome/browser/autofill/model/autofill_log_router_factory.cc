@@ -9,22 +9,9 @@
 
 namespace autofill {
 
-// static
-LogRouter* AutofillLogRouterFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<LogRouter>(profile,
-                                                          /*create=*/true);
-}
-
-// static
-AutofillLogRouterFactory* AutofillLogRouterFactory::GetInstance() {
-  static base::NoDestructor<AutofillLogRouterFactory> instance;
-  return instance.get();
-}
-
-AutofillLogRouterFactory::AutofillLogRouterFactory()
-    : ProfileKeyedServiceFactoryIOS("AutofillInternalsService") {}
-
-AutofillLogRouterFactory::~AutofillLogRouterFactory() = default;
+AutofillLogRouterFactory::AutofillLogRouterFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AutofillInternalsService") {}
 
 std::unique_ptr<KeyedService> AutofillLogRouterFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

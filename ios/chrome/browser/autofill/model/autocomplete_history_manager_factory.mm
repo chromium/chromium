@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -17,27 +16,14 @@
 
 namespace autofill {
 
-// static
-AutocompleteHistoryManager* AutocompleteHistoryManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AutocompleteHistoryManager>(
-      profile, /*create=*/true);
-}
-
-// static
-AutocompleteHistoryManagerFactory*
-AutocompleteHistoryManagerFactory::GetInstance() {
-  static base::NoDestructor<AutocompleteHistoryManagerFactory> instance;
-  return instance.get();
-}
-
-AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("AutocompleteHistoryManager",
-                                    ProfileSelection::kRedirectedInIncognito) {
+AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AutocompleteHistoryManager",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::WebDataServiceFactory::GetInstance());
 }
-
-AutocompleteHistoryManagerFactory::~AutocompleteHistoryManagerFactory() {}
 
 std::unique_ptr<KeyedService>
 AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(

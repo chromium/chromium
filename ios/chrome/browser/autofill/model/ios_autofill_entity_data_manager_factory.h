@@ -7,30 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace autofill {
-class EntityDataManager;
-}
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all EntityDataManagers and associates them with
 // ProfileIOS.
 class IOSAutofillEntityDataManagerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSAutofillEntityDataManagerFactory,
+          autofill::EntityDataManager> {
  public:
-  static autofill::EntityDataManager* GetForProfile(ProfileIOS* profile);
-  static IOSAutofillEntityDataManagerFactory* GetInstance();
+  explicit IOSAutofillEntityDataManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSAutofillEntityDataManagerFactory>;
-
-  IOSAutofillEntityDataManagerFactory();
-  ~IOSAutofillEntityDataManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
