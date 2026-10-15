@@ -21,4 +21,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+Added FORMS_AND_LABELS_ONLY and ON_SCREEN_ONLY to AXMode in system_profile.proto locally (pending upstream export in cl/996757158).

@@ -1603,6 +1603,14 @@ message SystemProfileProto {
       // The accessibility tree will contain additional properties needed only
       // by screen readers.
       SCREEN_READER = 11;
+
+      // Filter flags:
+      // Filters out everything except for forms and labels necessary for
+      // password managers to operate.
+      FORMS_AND_LABELS_ONLY = 12;
+
+      // Filters all nodes that are not on-screen.
+      ON_SCREEN_ONLY = 13;
     }
 
     // Indicates which accessibility mode flags are set.

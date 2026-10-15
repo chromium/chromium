@@ -212,7 +212,7 @@ class AX_BASE_EXPORT AXMode {
   // a feature flag. Please see kAccessibilityOnScreenMode.
   static constexpr uint32_t kOnScreenOnly = 1 << 1;
   static constexpr uint32_t kFilterLastFlag = 1 << 1;
-  // LINT.ThenChange(//ui/accessibility/mojom/ax_mode_mojom_traits_unittest.cc:ax_mode_filters)
+  // LINT.ThenChange(/chrome/browser/metrics/accessibility_state_provider.cc,/ui/accessibility/mojom/ax_mode_mojom_traits_unittest.cc:ax_mode_filters)
 
  private:
   friend struct mojo::StructTraits<ax::mojom::AXModeDataView, AXMode>;
