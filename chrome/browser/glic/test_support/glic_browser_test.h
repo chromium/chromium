@@ -1119,6 +1119,8 @@ class GlicBrowserTestMixin : public T {
           return "kLogin";
         case GlicNoWebviewContentsManager::GuestState::kGuestError:
           return "kGuestError";
+        case GlicNoWebviewContentsManager::GuestState::kSecurityInterstitial:
+          return "kSecurityInterstitial";
       }
     };
     return RunUntilEqual(

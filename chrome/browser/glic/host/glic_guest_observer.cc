@@ -66,7 +66,8 @@ void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
-  url::Origin origin = url::Origin::Create(navigation_handle->GetURL());
+  url::Origin origin =
+      navigation_handle->GetOriginToCommit().value_or(url::Origin());
   if (!IsGuestOriginAllowed(
           origin, navigation_handle->GetWebContents()->GetBrowserContext())) {
     return;
@@ -129,13 +130,14 @@ void GlicGuestObserver::MaybeEnableMojoJsBindings(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
-  // Enable MojoJS bindings if the pending navigation is targeting an allowed
+  // Enable MojoJS bindings if the pending navigation is committing an allowed
   // origin so Blink can initialize the Mojo context during document load.
   // The frame's committed origin is checked in `BindGlicWebClientHandler()`
   // when the page attempts to bind the pipe.
+  url::Origin origin =
+      navigation_handle->GetOriginToCommit().value_or(url::Origin());
   if (IsOriginAllowedGlicApi(
-          url::Origin::Create(navigation_handle->GetURL()),
-          navigation_handle->GetWebContents()->GetBrowserContext())) {
+          origin, navigation_handle->GetWebContents()->GetBrowserContext())) {
     navigation_handle->GetRenderFrameHost()->EnableMojoJsBindings(
         /*features=*/nullptr);
   }

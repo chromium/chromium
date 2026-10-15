@@ -61,8 +61,16 @@ content::NavigationThrottle::ThrottleCheckResult
 GlicGuestNavigationThrottle::CheckUrl() {
   const GURL& url = navigation_handle()->GetURL();
 
+  // `MaybeCreateAndAdd` attaches this throttle to both the primary main frame
+  // and speculative prerendered main frames (`IsInPrerenderedMainFrame()`). If
+  // a background prerender navigation is blocked, cancel the prerender silently
+  // without notifying `GlicWebClientManager` (which would otherwise transition
+  // the active primary page to an error state).
   GlicWebClientManager* manager =
-      GetWebClientManagerForWebContents(navigation_handle()->GetWebContents());
+      navigation_handle()->IsInPrimaryMainFrame()
+          ? GetWebClientManagerForWebContents(
+                navigation_handle()->GetWebContents())
+          : nullptr;
 
   if (IsAdminBlockedUrl(url)) {
     if (manager) {

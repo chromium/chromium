@@ -1,6 +1,8 @@
 include_rules = [
   "+components/glic",
   "+components/origin_matcher",
+  "+components/security_interstitials/content",
+  "+components/security_interstitials/core",
 
   # geic_enabling is a GLiC-internal helper rather than a general purpose
   # enablement check; see the comment in geic_enabling.h. Callers should go

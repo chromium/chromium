@@ -71,6 +71,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     kLogin,
     // Guest is displaying an in-page error page (e.g. /sorry/ or CAPTCHA).
     kGuestError,
+    // Guest is displaying a security interstitial (e.g. enterprise warning).
+    kSecurityInterstitial,
   };
 
   // Manages the lifetime, WebUI page handler bindings, and observer events
@@ -100,8 +102,9 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     // - `error_type`: If an error is active, the overlay shows that error
     //   panel.
     // - `guest_state`: If `GuestState::kLoading`, a loading skeleton is shown;
-    //   otherwise (kReady, kLogin, kGuestError), the guest WebContents is
-    //   presented directly and no overlay is needed (returns nullptr).
+    //   otherwise (kReady, kLogin, kGuestError, kSecurityInterstitial), the
+    //   guest WebContents is presented directly and no overlay is needed
+    //   (returns nullptr).
     // - `panel_state_kind`: Detached panels show a floating loading skeleton;
     //   otherwise, a side-panel loading skeleton is shown.
     static mojom::OverlayStatePtr DetermineOverlayState(
@@ -309,7 +312,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void ApplySizeToGuest();
 
   // Displays the guest WebContents directly for guest pages that bypass the
-  // web client bootstrap (e.g. login or guest error pages).
+  // web client bootstrap (e.g. login, security interstitial, or guest error
+  // pages).
   void ShowGuestDirectly(GuestState state);
 
   // Transitions the manager to `next_state`, coordinating overlay allocation,

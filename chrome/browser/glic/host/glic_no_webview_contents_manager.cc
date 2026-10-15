@@ -424,9 +424,10 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
     return mojom::OverlayState::NewError(*error_type);
   }
 
-  // Input 2: Guest presentation. When the guest is ready, displaying a login
-  // or in-page error page, or when the loading overlay is disabled, the guest
-  // WebContents is shown and no overlay is needed.
+  // Input 2: Guest presentation. When the guest is ready, or displaying a
+  // login, security interstitial, or in-page error page, or when the loading
+  // overlay is disabled, the guest WebContents is shown and no overlay is
+  // needed.
   if (guest_state != GuestState::kLoading || ShouldDisableLoadingOverlay()) {
     return nullptr;
   }
@@ -764,7 +765,10 @@ void GlicNoWebviewContentsManager::Zoom(mojom::ZoomAction zoom_action,
 void GlicNoWebviewContentsManager::SetErrorCallback(
     base::RepeatingClosure callback) {
   error_callback_ = std::move(callback);
-  if (ShouldReloadOnShow()) {
+  // `GlicWebContentsWarmingPool::TakeContainer()` passes a null `callback` to
+  // clear the warming pool's error handler; only post a task if a non-null
+  // callback was registered.
+  if (error_callback_ && ShouldReloadOnShow()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                              error_callback_);
   }
@@ -916,6 +920,12 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       // present the guest WebContents directly so the user can enter
       // credentials.
       ShowGuestDirectly(GuestState::kLogin);
+      break;
+    case mojom::GuestPageType::kSecurityInterstitial:
+      // When the guest encounters a security interstitial (e.g. an enterprise
+      // warning page), present the guest WebContents directly so the user can
+      // interact with the interstitial.
+      ShowGuestDirectly(GuestState::kSecurityInterstitial);
       break;
     case mojom::GuestPageType::kGuestError:
       // When the guest encounters an in-page error (e.g. /sorry/ or CAPTCHA),

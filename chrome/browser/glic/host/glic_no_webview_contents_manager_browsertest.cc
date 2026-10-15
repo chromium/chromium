@@ -318,6 +318,17 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                                    StructuredErrorReason::GUEST_PROCESS_GONE));
 
   manager->OnGuestNavigated(GURL("https://example.com/"),
+                            /*is_api_allowed=*/false,
+                            mojom::GuestPageType::kSecurityInterstitial,
+                            /*is_initial_commit=*/true);
+  // A security interstitial page is shown to the user directly rather than as
+  // an error, so it is not reported.
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR,
+                                   StructuredErrorReason::GUEST_PROCESS_GONE));
+
+  manager->OnGuestNavigated(GURL("https://example.com/"),
                             /*is_api_allowed=*/true,
                             mojom::GuestPageType::kDisabledByAdmin,
                             /*is_initial_commit=*/true);
@@ -885,6 +896,9 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
       mojom::PanelStateKind::kAttached));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLogin,
+      mojom::PanelStateKind::kAttached));
+  EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
+      /*error_type=*/std::nullopt, GuestState::kSecurityInterstitial,
       mojom::PanelStateKind::kAttached));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kGuestError,

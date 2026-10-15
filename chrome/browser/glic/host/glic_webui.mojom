@@ -46,7 +46,8 @@ interface PreloadPage {
   // Notifies the page when the guest frame starts a navigation.
   OnGuestNavigationStarted();
 
-  // Notifies the page when the guest frame commits a navigation.
+  // Notifies the page when the guest frame commits a navigation or when a
+  // primary main frame navigation is blocked before commit.
   OnGuestNavigated(url.mojom.Url url,
                    bool is_api_allowed,
                    GuestPageType page_type,
@@ -80,6 +81,7 @@ enum GuestPageType {
   kGuestError = 2,
   kLoadError = 3,
   kDisabledByAdmin = 4,
+  kSecurityInterstitial = 5,
 };
 
 // Functions provided by the WebUI page.

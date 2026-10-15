@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/process/kill.h"
@@ -24,6 +25,8 @@ class WebContents;
 }  // namespace content
 
 namespace glic {
+
+BASE_DECLARE_FEATURE(kGlicShowSecurityInterstitials);
 
 class Host;
 
@@ -50,7 +53,8 @@ class GlicWebClientManager : public content::WebContentsObserver {
     virtual ~Delegate() = default;
     // The guest contents started navigating.
     virtual void OnGuestNavigationStarted() {}
-    // The guest contents finished navigating.
+    // The guest contents finished navigating, or a primary main frame
+    // navigation was blocked before commit.
     virtual void OnGuestNavigated(const GURL& url,
                                   bool is_api_allowed,
                                   mojom::GuestPageType page_type,
@@ -132,6 +136,10 @@ class GlicWebClientManager : public content::WebContentsObserver {
 
   // Whether the guest frame has completed at least one navigation commit.
   bool has_navigation_committed_ = false;
+  // Whether the current primary main frame navigation has already been handled
+  // as blocked, avoiding duplicate notifications when multiple throttles or
+  // observers detect the same blocked navigation.
+  bool current_navigation_blocked_ = false;
 
   mojo::PendingReceiver<glic::mojom::WebClientHandler>
       pending_web_client_receiver_;
