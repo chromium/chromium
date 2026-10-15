@@ -52,6 +52,7 @@ source_set("chromeos") {
     "//remoting/host/base",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/manager",
+    "//ui/gfx:gfx_skia",
     "//ui/wm",
   ]
 }

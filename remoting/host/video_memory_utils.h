@@ -93,7 +93,7 @@ class IpcSharedBufferCore
 
   int id() const { return id_; }
   size_t size() const { return mapping_.size(); }
-  const void* memory() const { return mapping_.memory(); }
+  const void* memory() const { return mapping_.data(); }
 
  private:
   ~IpcSharedBufferCore();

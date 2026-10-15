@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -19,6 +18,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace remoting {
 
@@ -215,12 +215,8 @@ std::unique_ptr<SkBitmap> AshMojomVideoConsumer::Frame::CreateSkBitmap() const {
   size_t dest_stride = bitmap->rowBytes();
   size_t row_bytes = size.width() * kBytesPerPixel;
 
-  // SAFETY: Both the source and destination buffer sizes have been validated in
-  // OnFrameCaptured via IsValidFrame().
-  auto src_span = UNSAFE_BUFFERS(base::span(
-      static_cast<const uint8_t*>(pixels_.memory()), pixels_.size()));
-  auto dest_span = UNSAFE_BUFFERS(base::span(
-      static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
+  const auto src_span = base::span(pixels_);
+  auto dest_span = gfx::SkPixmapToWritableSpan(bitmap->pixmap());
 
   for (int y = 0; y < size.height(); ++y) {
     size_t src_row_offset = (content_rect_.y() + y) * src_stride +

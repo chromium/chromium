@@ -74,7 +74,7 @@ SharedVideoMemory::SharedVideoMemory(base::ReadOnlySharedMemoryRegion region,
                                      webrtc::SharedMemory::Handle handle,
                                      int id,
                                      base::OnceClosure on_deleted_callback)
-    : SharedMemory(mapping.memory(), mapping.size(), handle, id),
+    : SharedMemory(mapping.data(), mapping.size(), handle, id),
       on_deleted_callback_(std::move(on_deleted_callback))
 #if BUILDFLAG(IS_WIN)
       ,
