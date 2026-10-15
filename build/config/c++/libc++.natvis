@@ -486,12 +486,12 @@
   </Type>
 
   <Type Name="std::__Cr::vector&lt;*&gt;">
-    <Intrinsic Name="size" Expression="__end_ - __begin_" />
+    <Intrinsic Name="size" Expression="__layout_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <ArrayItems>
         <Size>size()</Size>
-        <ValuePointer>__begin_</ValuePointer>
+        <ValuePointer>__layout_.__begin_</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
