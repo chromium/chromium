@@ -8,16 +8,24 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host_observer.h"
+#include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/window_impl.h"
+#include "ui/platform_window/stub/stub_window.h"
 
 namespace aura {
 
@@ -74,6 +82,58 @@ void SetWindowBounds(HWND hwnd, const gfx::Rect& bounds) {
                  bounds.height(), SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
+class TestWindowTreeHost : public WindowTreeHostPlatform {
+ public:
+  explicit TestWindowTreeHost(HWND hwnd) : widget_(hwnd) {
+    SetPlatformWindow(std::make_unique<ui::StubWindow>(
+        this, /*use_default_accelerated_widget=*/false, kBounds));
+    CreateCompositor();
+    window()->Show();
+  }
+
+  TestWindowTreeHost(const TestWindowTreeHost&) = delete;
+  TestWindowTreeHost& operator=(const TestWindowTreeHost&) = delete;
+
+  // Simulates synchronous WM_DESTROY/WM_NCDESTROY handling (like
+  // DesktopWindowTreeHostWin::HandleDestroying and HandleDestroyed), which
+  // destroys the Aura root Window before the WindowTreeHost itself is deleted.
+  void SimulateDestroyWindow() {
+    DestroyCompositor();
+    DestroyDispatcher();
+  }
+
+  // WindowTreeHostPlatform:
+  gfx::AcceleratedWidget GetAcceleratedWidget() override { return widget_; }
+
+ private:
+  HWND widget_;
+};
+
+class CallbackHostObserver : public WindowTreeHostObserver {
+ public:
+  CallbackHostObserver(WindowTreeHost* host, base::RepeatingClosure callback)
+      : callback_(std::move(callback)) {
+    observation_.Observe(host);
+  }
+
+  CallbackHostObserver(const CallbackHostObserver&) = delete;
+  CallbackHostObserver& operator=(const CallbackHostObserver&) = delete;
+
+  ~CallbackHostObserver() override = default;
+
+  // WindowTreeHostObserver:
+  void OnOcclusionStateChanged(WindowTreeHost* host,
+                               Window::OcclusionState new_state,
+                               const SkRegion& occluded_region) override {
+    callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure callback_;
+  base::ScopedObservation<WindowTreeHost, WindowTreeHostObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 // Tests how WindowOcclusionCalculator handles EVENT_OBJECT_LOCATIONCHANGE, with
@@ -87,6 +147,26 @@ class NativeWindowOcclusionTrackerTest : public testing::TestWithParam<bool> {
   NativeWindowOcclusionTrackerTest() {
     scoped_feature_list_.InitWithFeatureState(
         features::kFilterNativeWinOcclusionLocationChanges, GetParam());
+  }
+
+  static void CallUpdateOcclusionState(
+      NativeWindowOcclusionTrackerWin* tracker,
+      const std::vector<std::pair<HWND, Window::OcclusionState>>& states) {
+    NativeWindowOcclusionTrackerWin::HwndToRootOcclusionStateMap map;
+    for (const auto& [hwnd, state] : states) {
+      map[hwnd].occlusion_state = state;
+    }
+    tracker->UpdateOcclusionState(map, /*show_all_windows=*/false);
+  }
+
+  static void CallOnMinimizeEnd(NativeWindowOcclusionTrackerWin* tracker,
+                                HWND hwnd) {
+    tracker->OnMinimizeEnd(hwnd);
+  }
+
+  static void CallMarkNonIconicWindowsOccluded(
+      NativeWindowOcclusionTrackerWin* tracker) {
+    tracker->MarkNonIconicWindowsOccluded();
   }
 
   void SetUp() override {
@@ -249,5 +329,205 @@ TEST_P(NativeWindowOcclusionTrackerTest, TrackedRootWindowLocationChange) {
 INSTANTIATE_TEST_SUITE_P(All,
                          NativeWindowOcclusionTrackerTest,
                          testing::Bool());
+
+using NativeWindowOcclusionTrackerReentrancyTest = test::AuraTestBase;
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DestroyWindowsDuringUpdateOcclusionState) {
+  std::unique_ptr<TestNativeWindow> native_win1 = CreateTopLevelWindow();
+  std::unique_ptr<TestNativeWindow> native_win2 = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host3 = std::make_unique<TestWindowTreeHost>(native_win2->hwnd());
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+  tracker->Enable(host3->window());
+
+  int notifications = 0;
+  auto destroy_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    if (host1 && host1->window()) {
+      host1->SimulateDestroyWindow();
+    }
+    if (host2 && host2->window()) {
+      host2->SimulateDestroyWindow();
+    }
+    if (host3 && host3->window()) {
+      host3->SimulateDestroyWindow();
+    }
+  });
+
+  CallbackHostObserver obs1(host1.get(), destroy_all);
+  CallbackHostObserver obs2(host2.get(), destroy_all);
+  CallbackHostObserver obs3(host3.get(), destroy_all);
+
+  NativeWindowOcclusionTrackerTest::CallUpdateOcclusionState(
+      tracker, {{native_win1->hwnd(), Window::OcclusionState::VISIBLE},
+                {native_win2->hwnd(), Window::OcclusionState::OCCLUDED}});
+  EXPECT_EQ(1, notifications);
+}
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DestroyWindowsDuringOnMinimizeEnd) {
+  std::unique_ptr<TestNativeWindow> native_win = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win->hwnd());
+
+  host1->SetNativeWindowOcclusionState(Window::OcclusionState::HIDDEN, {});
+  host2->SetNativeWindowOcclusionState(Window::OcclusionState::HIDDEN, {});
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+
+  int notifications = 0;
+  auto destroy_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    if (host1 && host1->window()) {
+      host1->SimulateDestroyWindow();
+    }
+    if (host2 && host2->window()) {
+      host2->SimulateDestroyWindow();
+    }
+  });
+
+  CallbackHostObserver obs1(host1.get(), destroy_all);
+  CallbackHostObserver obs2(host2.get(), destroy_all);
+
+  NativeWindowOcclusionTrackerTest::CallOnMinimizeEnd(tracker,
+                                                      native_win->hwnd());
+  EXPECT_EQ(1, notifications);
+}
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DestroyWindowsDuringMarkNonIconicWindowsOccluded) {
+  std::unique_ptr<TestNativeWindow> native_win1 = CreateTopLevelWindow();
+  std::unique_ptr<TestNativeWindow> native_win2 = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host3 = std::make_unique<TestWindowTreeHost>(native_win2->hwnd());
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+  tracker->Enable(host3->window());
+
+  int notifications = 0;
+  auto destroy_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    if (host1 && host1->window()) {
+      host1->SimulateDestroyWindow();
+    }
+    if (host2 && host2->window()) {
+      host2->SimulateDestroyWindow();
+    }
+    if (host3 && host3->window()) {
+      host3->SimulateDestroyWindow();
+    }
+  });
+
+  CallbackHostObserver obs1(host1.get(), destroy_all);
+  CallbackHostObserver obs2(host2.get(), destroy_all);
+  CallbackHostObserver obs3(host3.get(), destroy_all);
+
+  NativeWindowOcclusionTrackerTest::CallMarkNonIconicWindowsOccluded(tracker);
+  EXPECT_EQ(1, notifications);
+}
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DisableWindowsDuringUpdateOcclusionState) {
+  std::unique_ptr<TestNativeWindow> native_win1 = CreateTopLevelWindow();
+  std::unique_ptr<TestNativeWindow> native_win2 = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host3 = std::make_unique<TestWindowTreeHost>(native_win2->hwnd());
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+  tracker->Enable(host3->window());
+
+  int notifications = 0;
+  auto disable_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    tracker->Disable(host1->window());
+    tracker->Disable(host2->window());
+    tracker->Disable(host3->window());
+  });
+
+  CallbackHostObserver obs1(host1.get(), disable_all);
+  CallbackHostObserver obs2(host2.get(), disable_all);
+  CallbackHostObserver obs3(host3.get(), disable_all);
+
+  NativeWindowOcclusionTrackerTest::CallUpdateOcclusionState(
+      tracker, {{native_win1->hwnd(), Window::OcclusionState::VISIBLE},
+                {native_win2->hwnd(), Window::OcclusionState::OCCLUDED}});
+  EXPECT_EQ(1, notifications);
+}
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DisableWindowsDuringOnMinimizeEnd) {
+  std::unique_ptr<TestNativeWindow> native_win = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win->hwnd());
+
+  host1->SetNativeWindowOcclusionState(Window::OcclusionState::HIDDEN, {});
+  host2->SetNativeWindowOcclusionState(Window::OcclusionState::HIDDEN, {});
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+
+  int notifications = 0;
+  auto disable_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    tracker->Disable(host1->window());
+    tracker->Disable(host2->window());
+  });
+
+  CallbackHostObserver obs1(host1.get(), disable_all);
+  CallbackHostObserver obs2(host2.get(), disable_all);
+
+  NativeWindowOcclusionTrackerTest::CallOnMinimizeEnd(tracker,
+                                                      native_win->hwnd());
+  EXPECT_EQ(1, notifications);
+}
+
+TEST_F(NativeWindowOcclusionTrackerReentrancyTest,
+       DisableWindowsDuringMarkNonIconicWindowsOccluded) {
+  std::unique_ptr<TestNativeWindow> native_win1 = CreateTopLevelWindow();
+  std::unique_ptr<TestNativeWindow> native_win2 = CreateTopLevelWindow();
+
+  auto host1 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host2 = std::make_unique<TestWindowTreeHost>(native_win1->hwnd());
+  auto host3 = std::make_unique<TestWindowTreeHost>(native_win2->hwnd());
+
+  auto* tracker = NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+  tracker->Enable(host1->window());
+  tracker->Enable(host2->window());
+  tracker->Enable(host3->window());
+
+  int notifications = 0;
+  auto disable_all = base::BindLambdaForTesting([&]() {
+    ++notifications;
+    tracker->Disable(host1->window());
+    tracker->Disable(host2->window());
+    tracker->Disable(host3->window());
+  });
+
+  CallbackHostObserver obs1(host1.get(), disable_all);
+  CallbackHostObserver obs2(host2.get(), disable_all);
+  CallbackHostObserver obs3(host3.get(), disable_all);
+
+  NativeWindowOcclusionTrackerTest::CallMarkNonIconicWindowsOccluded(tracker);
+  EXPECT_EQ(1, notifications);
+}
 
 }  // namespace aura
