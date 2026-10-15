@@ -247,6 +247,7 @@ namespace http://www.w3.org/1999/xhtml
     property onfullscreenerror
     property ongotpointercapture
     property oninput
+    property oninstallresult
     property oninvalid
     property onkeydown
     property onkeypress
@@ -906,7 +907,6 @@ html element install
     property isValid
     property manifest
     property manifestId
-    property oninstallresult
     property onvalidationstatuschange
 html element kbd
 html element label
@@ -1628,6 +1628,7 @@ namespace http://www.w3.org/2000/svg
     property onfullscreenerror
     property ongotpointercapture
     property oninput
+    property oninstallresult
     property oninvalid
     property onkeydown
     property onkeypress

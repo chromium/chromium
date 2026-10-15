@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>installresult IDL event handler is not exposed when disabled</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const interfaces = [
+    HTMLElement,
+    Document,
+    SVGElement,
+    MathMLElement,
+  ];
+  for (const interfaceObject of interfaces) {
+    assert_false("oninstallresult" in interfaceObject.prototype,
+        `oninstallresult should not be exposed on ${interfaceObject.name}`);
+  }
+  assert_false("oninstallresult" in window,
+      "oninstallresult should not be exposed on Window");
+}, "GlobalEventHandlers does not expose oninstallresult when disabled");
+</script>

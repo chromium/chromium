@@ -113,6 +113,7 @@ PASS childWindow.ongamepadrawinputchanged is null
 PASS childWindow.ongotpointercapture is null
 PASS childWindow.onhashchange is null
 PASS childWindow.oninput is null
+PASS childWindow.oninstallresult is null
 PASS childWindow.oninvalid is null
 PASS childWindow.onkeydown is null
 PASS childWindow.onkeypress is null

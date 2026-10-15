@@ -278,6 +278,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(formdata, kFormdata)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(gotpointercapture, kGotpointercapture)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(input, kInput)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(installresult, kInstallresult)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(invalid, kInvalid)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(keydown, kKeydown)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(keypress, kKeypress)

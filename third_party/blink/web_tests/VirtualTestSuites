@@ -3713,14 +3713,17 @@
       "Win",
       "ChromeOS"
     ],
-    "bases": [],
+    "bases": [
+      "fast/events/installresult-global-event-handler-disabled.html"
+    ],
+    "exclusive_tests": "ALL",
     "args": [
       "--disable-features=InstallElement"
     ],
     "owners": [
       "permissions-core@google.com"
     ],
-    "expires": "never"
+    "expires": "Mar 1, 2027"
   },
   "This suite disables unload deprecation and allows tests to run with unload handlers.",
   "It should not expire as long as there are tests that use unload.",

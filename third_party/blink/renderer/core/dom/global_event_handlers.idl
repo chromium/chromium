@@ -64,6 +64,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onfocus;
   attribute EventHandler onformdata;
   attribute EventHandler oninput;
+  [RuntimeEnabled=InstallElement] attribute EventHandler oninstallresult;
   attribute EventHandler oninvalid;
   attribute EventHandler onkeydown;
   attribute EventHandler onkeypress;

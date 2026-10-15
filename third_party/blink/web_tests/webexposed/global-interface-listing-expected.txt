@@ -2095,6 +2095,7 @@ interface Document : Node
     getter onfullscreenerror
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -2331,6 +2332,7 @@ interface Document : Node
     setter onfullscreenerror
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -4093,6 +4095,7 @@ interface HTMLElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -4242,6 +4245,7 @@ interface HTMLElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -4754,12 +4758,10 @@ interface HTMLInstallElement : HTMLElement
     getter isValid
     getter manifest
     getter manifestId
-    getter oninstallresult
     getter onvalidationstatuschange
     method constructor
     setter manifest
     setter manifestId
-    setter oninstallresult
     setter onvalidationstatuschange
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag
@@ -6297,6 +6299,7 @@ interface MathMLElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -6418,6 +6421,7 @@ interface MathMLElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -8950,6 +8954,7 @@ interface SVGElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -9073,6 +9078,7 @@ interface SVGElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -13927,6 +13933,7 @@ namespace console
     getter ongotpointercapture
     getter onhashchange
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -14166,6 +14173,7 @@ namespace console
     setter ongotpointercapture
     setter onhashchange
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress

@@ -452,7 +452,7 @@ TEST_F(HTMLInstallElementTestBase, InstallurlWithManifestReturnsInvalidData) {
 }
 
 // The `oninstallresult` content attribute should map to the `installresult`
-// event, matching the `oninstallresult` IDL attribute.
+// event.
 TEST_F(HTMLInstallElementTestBase, OnInstallResultContentAttribute) {
   EXPECT_EQ(
       event_type_names::kInstallresult,
@@ -529,6 +529,42 @@ TEST_F(HTMLInstallElementFiringSimTest, OnInstallResultContentAttributeFires) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !ConsoleMessages().empty(); }));
   EXPECT_TRUE(ConsoleMessages()[0].contains("installresult: success"));
+}
+
+TEST_F(HTMLInstallElementFiringSimTest, OnInstallResultAncestorHandlerFires) {
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"HTML(
+    <body>
+      <div id="ancestor">
+        <install id="i"
+          manifestid="https://site.example/manifest.json"
+          style="display:inline-block; width:100px; height:30px">
+        </install>
+      </div>
+      <script>
+        ancestor.oninstallresult = event => {
+          console.log(event.currentTarget.id + ':' + event.target.id + ':' +
+                      event.result);
+        };
+      </script>
+    </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* element = To<HTMLInstallElement>(
+      GetDocument().QuerySelector(AtomicString("install")));
+  ASSERT_TRUE(element);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  WaitForPermissionElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !ConsoleMessages().empty(); }));
+  const String expected_message = String("ancestor:i:") + kResultInvalidData;
+  EXPECT_TRUE(ConsoleMessages()[0].contains(expected_message));
+  EXPECT_FALSE(web_install_service_.WasCalled());
 }
 
 TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAttribute) {
