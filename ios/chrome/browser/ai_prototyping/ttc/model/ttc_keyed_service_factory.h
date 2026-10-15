@@ -7,35 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-class TTCKeyedService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for `TTCKeyedService`.
-class TTCKeyedServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TTCKeyedServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TTCKeyedServiceFactory,
+                                                TTCKeyedService> {
  public:
-  // Returns the `TTCKeyedService` for `profile`, creating it if none exists.
-  // Returns nullptr if TTC is not enabled or if the profile is incognito.
-  static TTCKeyedService* GetForProfile(ProfileIOS* profile);
-
-  // Returns the singleton `TTCKeyedServiceFactory` instance.
-  static TTCKeyedServiceFactory* GetInstance();
-
-  TTCKeyedServiceFactory(const TTCKeyedServiceFactory&) = delete;
-  TTCKeyedServiceFactory& operator=(const TTCKeyedServiceFactory&) = delete;
+  explicit TTCKeyedServiceFactory(PassKey key);
 
  private:
-  friend base::NoDestructor<TTCKeyedServiceFactory>;
-
-  // Default constructor initializing factory traits with
-  // `ProfileSelection::kNoInstanceInIncognito`.
-  TTCKeyedServiceFactory();
-  ~TTCKeyedServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

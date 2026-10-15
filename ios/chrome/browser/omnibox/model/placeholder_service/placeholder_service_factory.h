@@ -7,30 +7,23 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class PlaceholderService;
+#import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that owns all PlaceholderServices and associates them with
 // Profile.
-class PlaceholderServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class PlaceholderServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PlaceholderServiceFactory,
+                                                PlaceholderService> {
  public:
-  static PlaceholderService* GetForProfile(ProfileIOS* profile);
-  static PlaceholderServiceFactory* GetInstance();
+  explicit PlaceholderServiceFactory(PassKey key);
 
   // Returns the default factory used to build PlaceholderServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<PlaceholderServiceFactory>;
-
-  PlaceholderServiceFactory();
-  ~PlaceholderServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
