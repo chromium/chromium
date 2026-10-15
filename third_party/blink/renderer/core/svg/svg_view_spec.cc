@@ -193,6 +193,7 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
   if (!SkipExactly<CharType>(chars, '(', position)) {
     return false;
   }
+  SkipOptionalSVGSpaces(chars, position);
 
   while (position < chars.size() && chars[position] != ')') {
     ViewSpecFunctionType function_type = ScanViewSpecFunction(chars, position);
@@ -256,7 +257,7 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
       return false;
     }
 
-    SkipExactly<CharType>(chars, ';', position);
+    position = SkipOptionalSVGSpacesOrDelimiter(chars, position, ';');
   }
   return SkipExactly<CharType>(chars, ')', position);
 }

@@ -2568,8 +2568,6 @@ crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outli
 crbug.com/552713154 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure Pass ]
 crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Crash Failure Timeout ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-and-xywh.html [ Failure ]
-crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces-around-semicolon.html [ Failure ]
-crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces.html [ Failure ]
 crbug.com/550484948 external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.html [ Timeout ]
 crbug.com/550484948 external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.worker.html [ Timeout ]
 crbug.com/550481743 external/wpt/svg/styling/text-overflow-presentation-attribute-foreignobject.html [ Failure ]
