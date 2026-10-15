@@ -30,6 +30,10 @@
 #include "url/origin.h"
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ExplainMatchResult;
+using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Pointer;
@@ -50,6 +54,13 @@ enum class OtherTestCustomPredicate {
   kOtherCustom1,
   kOtherCustom2,
 };
+
+MATCHER_P2(GatingDecisionIs, is_allowed, attribution, "") {
+  return ExplainMatchResult(
+      AllOf(Field("is_allowed", &GatingDecision::is_allowed, is_allowed),
+            Field("attribution", &GatingDecision::attribution, attribution)),
+      arg, result_listener);
+}
 
 enum class CheckerTestTool {
   kClick = 1,
@@ -165,13 +176,12 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_NoPrompt) {
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_WithPrompt) {
@@ -189,13 +199,12 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_WithPrompt) {
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/true);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Blocked) {
@@ -213,13 +222,12 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Blocked) {
                             /*is_allowed=*/false,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Blocked_WithPrompt) {
@@ -237,13 +245,12 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Blocked_WithPrompt) {
                             /*is_allowed=*/false,
                             /*did_prompt_user=*/true);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 class TestGatingContext : public GatingDecisionContext {
@@ -281,17 +288,12 @@ TEST_F(OriginGatingCheckerTest, PlumbsContext) {
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true, .did_prompt_user = false}));
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      std::move(context),
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}),
-      future.GetCallback());
-
-  auto [returned_context, decision] = future.Take();
-  EXPECT_THAT(returned_context, Pointer(expected_context_ptr));
-  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, std::move(context),
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -310,13 +312,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kAllowSameOrigin);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kAllowSameOrigin));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -338,13 +339,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -362,13 +362,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kForbidNonLocalhostIpAddress);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kForbidNonLocalhostIpAddress));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -389,13 +388,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -416,13 +414,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -443,13 +440,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -469,13 +465,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -492,13 +487,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrLocalhost);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kRequireHttpsOrLocalhost));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -518,13 +512,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -544,13 +537,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -570,13 +562,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -590,13 +581,12 @@ TEST_F(OriginGatingCheckerTest,
   GURL source("https://example.com");
   GURL destination("file://localhost/tmp");
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrLocalhost);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kRequireHttpsOrLocalhost));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -616,13 +606,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -642,13 +631,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -665,13 +653,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrHttp);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kRequireHttpsOrHttp));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -688,13 +675,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kAllowHttpLocalhost);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kAllowHttpLocalhost));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -714,13 +700,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -740,13 +725,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -763,13 +747,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kAllowAboutBlank);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kAllowAboutBlank));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -789,13 +772,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -815,13 +797,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -848,13 +829,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kAllowByTaskPolicyConfig));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -874,13 +854,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kBlockByTaskPolicyConfig));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -905,18 +884,13 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
   // Use page action event.
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          PageActionEvent{.destination = destination,
-                          .tool = ClientTool(CheckerTestTool::kClick)}),
-      future.GetCallback());
-
-  GatingDecision decision = future.Get<1>();
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(PageActionEvent{
+                      .destination = destination,
+                      .tool = ClientTool(CheckerTestTool::kClick)})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kAllowByTaskPolicyConfig));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -935,18 +909,13 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          PageActionEvent{.destination = destination,
-                          .tool = ClientTool(CheckerTestTool::kClick)}),
-      future.GetCallback());
-
-  GatingDecision decision = future.Get<1>();
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(PageActionEvent{
+                      .destination = destination,
+                      .tool = ClientTool(CheckerTestTool::kClick)})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kBlockByTaskPolicyConfig));
 }
 
 // TaskPolicyConfig usage doesn't necessarily preclude blockage by other
@@ -1009,50 +978,41 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(NavigationResponseEvent{
-            .source = kBlockedByListSite, .destination = kBlockedByListSite}));
-    EXPECT_FALSE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
-  }
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(
-            NavigationResponseEvent{.source = kBlockedByConfigSite,
-                                    .destination = kBlockedByConfigSite}));
-    EXPECT_FALSE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
-  }
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(NavigationResponseEvent{
-            .source = kAllowedByConfigIgnoredByListSite,
-            .destination = kAllowedByConfigIgnoredByListSite}));
-    EXPECT_TRUE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
-  }
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(NavigationResponseEvent{
-            .source = kAllowedByConfigAndListSite,
-            .destination = kAllowedByConfigAndListSite}));
-    EXPECT_TRUE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
-  }
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(NavigationResponseEvent{
-            .source = kBlockedByConfigAndListSite,
-            .destination = kBlockedByConfigAndListSite}));
-    EXPECT_FALSE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
-  }
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(
+              NavigationResponseEvent{.source = kBlockedByListSite,
+                                      .destination = kBlockedByListSite})),
+      GatingDecisionIs(/*is_allowed*/ false, TestCustomPredicate::kCustom1));
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = kBlockedByConfigSite,
+                      .destination = kBlockedByConfigSite})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kBlockByTaskPolicyConfig));
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = kAllowedByConfigIgnoredByListSite,
+                      .destination = kAllowedByConfigIgnoredByListSite})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kAllowByTaskPolicyConfig));
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{
+              .source = kAllowedByConfigAndListSite,
+              .destination = kAllowedByConfigAndListSite})),
+      GatingDecisionIs(/*is_allowed*/ true, TestCustomPredicate::kCustom1));
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = kBlockedByConfigAndListSite,
+                      .destination = kBlockedByConfigAndListSite})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kBlockByTaskPolicyConfig));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1085,26 +1045,22 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
   // Allowed tool: kClick
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(
-            PageActionEvent{.destination = destination,
-                            .tool = ClientTool(CheckerTestTool::kClick)}));
-    EXPECT_TRUE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
-  }
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(PageActionEvent{
+                      .destination = destination,
+                      .tool = ClientTool(CheckerTestTool::kClick)})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kAllowByTaskPolicyConfig));
 
   // Blocked tool: kNavigate
-  {
-    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-        *checker, nullptr,
-        GateableEvent(
-            PageActionEvent{.destination = destination,
-                            .tool = ClientTool(CheckerTestTool::kNavigate)}));
-    EXPECT_FALSE(decision.is_allowed);
-    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
-  }
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(PageActionEvent{
+                      .destination = destination,
+                      .tool = ClientTool(CheckerTestTool::kNavigate)})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kBlockByTaskPolicyConfig));
 }
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
@@ -1127,11 +1083,9 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kEnterprisePolicy));
 
   // With bypass_cache set, the allow decision must not be persisted. A
   // subsequent evaluation where enterprise policy makes no decision should miss
@@ -1144,10 +1098,9 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
                             /*is_allowed=*/false,
                             /*did_prompt_user=*/false);
 
-  GatingDecision second_decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-  EXPECT_FALSE(second_decision.is_allowed);
-  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1169,11 +1122,9 @@ TEST_F(OriginGatingCheckerTest,
       .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
           .decision = Decision::kAllowed, .bypass_cache = false}));
 
-  GatingDecision decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kEnterprisePolicy));
 
   // Without bypass_cache, the allow decision must be persisted. A subsequent
   // evaluation where enterprise policy makes no decision should hit the cache.
@@ -1185,11 +1136,10 @@ TEST_F(OriginGatingCheckerTest,
           base::test::RunOnceCallback<2>(/*requires_user_confirmation=*/false));
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision second_decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-  EXPECT_TRUE(second_decision.is_allowed);
-  EXPECT_EQ(second_decision.attribution,
-            DecisionSource::kCacheWithoutUserConfirmation);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true,
+                       DecisionSource::kCacheWithoutUserConfirmation));
 }
 
 TEST_F(
@@ -1208,13 +1158,12 @@ TEST_F(
       .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
           .decision = Decision::kAllowed, .bypass_cache = false}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kEnterprisePolicy));
   // Without a cache predicate in the configuration, the allow decision must not
   // be persisted to the cache even when bypass_cache is false.
   OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
@@ -1238,13 +1187,12 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Blocked) {
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ false,
+                               DecisionSource::kEnterprisePolicy));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1267,13 +1215,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
@@ -1299,13 +1246,12 @@ TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
   GURL source("https://example.com");
   GURL destination("https://foo.com");
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, TestCustomPredicate::kCustom1));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1328,8 +1274,8 @@ TEST_F(OriginGatingCheckerTest,
           NavigationResponseEvent{.source = GURL("https://example.com"),
                                   .destination = GURL("https://foo.com")}));
 
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+  EXPECT_THAT(decision, GatingDecisionIs(/*is_allowed*/ true,
+                                         TestCustomPredicate::kCustom1));
   EXPECT_EQ(decision.attribution.CustomPredicateId<TestCustomPredicate>(),
             TestCustomPredicate::kCustom1);
 
@@ -1362,13 +1308,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
@@ -1394,13 +1339,12 @@ TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
   GURL source("https://example.com");
   GURL destination("https://foo.com");
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom2);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, TestCustomPredicate::kCustom2));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1426,13 +1370,12 @@ TEST_F(OriginGatingCheckerTest,
                             /*is_allowed=*/true,
                             /*did_prompt_user=*/false);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1455,12 +1398,12 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kCacheWithUserConfirmation);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kCacheWithUserConfirmation));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1497,12 +1440,12 @@ TEST_F(OriginGatingCheckerTest,
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true, .did_prompt_user = true}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1533,13 +1476,12 @@ TEST_F(OriginGatingCheckerTest,
           base::test::RunOnceCallback<2>(/*requires_user_confirmation=*/false));
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution,
-            DecisionSource::kCacheWithoutUserConfirmation);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kCacheWithoutUserConfirmation));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1568,18 +1510,13 @@ TEST_F(OriginGatingCheckerTest,
           base::test::RunOnceCallback<2>(/*requires_user_confirmation=*/false));
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          PageActionEvent{.destination = destination,
-                          .tool = ClientTool(CheckerTestTool::kClick)}),
-      future.GetCallback());
-  GatingDecision decision = future.Get<1>();
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution,
-            DecisionSource::kCacheWithoutUserConfirmation);
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(PageActionEvent{
+                      .destination = destination,
+                      .tool = ClientTool(CheckerTestTool::kClick)})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kCacheWithoutUserConfirmation));
 }
 
 TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
@@ -1619,16 +1556,12 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = false, .did_prompt_user = false}));
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          NavigationRequestEvent{.source = source, .destination = destination}),
-      future.GetCallback());
-  GatingDecision decision = future.Get<1>();
-  EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationRequestEvent{.source = source,
+                                               .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
@@ -1652,17 +1585,13 @@ TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          PageActionEvent{.destination = destination,
-                          .tool = ClientTool(CheckerTestTool::kClick)}),
-      future.GetCallback());
-  GatingDecision decision = future.Get<1>();
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom2);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(
+              PageActionEvent{.destination = destination,
+                              .tool = ClientTool(CheckerTestTool::kClick)})),
+      GatingDecisionIs(/*is_allowed*/ true, TestCustomPredicate::kCustom2));
 }
 
 TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
@@ -1700,17 +1629,13 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true, .did_prompt_user = false}));
 
-  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
-      future;
-  checker->ComputeGatingDecision(
-      nullptr,
-      GateableEvent(
-          PageActionEvent{.destination = destination,
-                          .tool = ClientTool(CheckerTestTool::kClick)}),
-      future.GetCallback());
-  GatingDecision decision = future.Get<1>();
-  EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(
+              PageActionEvent{.destination = destination,
+                              .tool = ClientTool(CheckerTestTool::kClick)})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
@@ -1735,10 +1660,9 @@ TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
               .did_prompt_user = false,
               .bypass_cache = true}));
 
-  GatingDecision decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-
-  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
   // The allow decision must not have been persisted. A subsequent evaluation
   // should miss the cache and fall back to the delegate.
   SetUpDelegateExpectations(event,
@@ -1746,10 +1670,9 @@ TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
                             /*is_allowed=*/false,
                             /*did_prompt_user=*/false);
 
-  GatingDecision second_decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-  EXPECT_FALSE(second_decision.is_allowed);
-  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
@@ -1774,21 +1697,19 @@ TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
               .did_prompt_user = false,
               .bypass_cache = false}));
 
-  GatingDecision decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-
-  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
   // The allow decision must have been persisted. A subsequent evaluation should
   // hit the cache.
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
       .WillOnce(base::test::RunOnceCallback<2>(false));
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision second_decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-  EXPECT_TRUE(second_decision.is_allowed);
-  EXPECT_EQ(second_decision.attribution,
-            DecisionSource::kCacheWithoutUserConfirmation);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ true,
+                       DecisionSource::kCacheWithoutUserConfirmation));
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1818,12 +1739,12 @@ TEST_F(OriginGatingCheckerTest,
               .did_prompt_user = false,
               .bypass_cache = false}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
-
-  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(
+          *checker, nullptr,
+          GateableEvent(NavigationResponseEvent{.source = source,
+                                                .destination = destination})),
+      GatingDecisionIs(/*is_allowed*/ true, DecisionSource::kNoVerdict));
   // Without a cache predicate in the configuration, the allow decision must not
   // be persisted to the cache even when bypass_cache is false.
   OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
@@ -1895,10 +1816,9 @@ TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
               .did_prompt_user = false,
               .bypass_cache = false}));
 
-  GatingDecision decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-
-  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
   // A blocked decision is never persisted regardless of bypass_cache. A
   // subsequent evaluation should miss the cache and fall back to the delegate.
   SetUpDelegateExpectations(event,
@@ -1906,10 +1826,9 @@ TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
                             /*is_allowed=*/false,
                             /*did_prompt_user=*/false);
 
-  GatingDecision second_decision =
-      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
-  EXPECT_FALSE(second_decision.is_allowed);
-  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
+  EXPECT_THAT(
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event),
+      GatingDecisionIs(/*is_allowed*/ false, DecisionSource::kNoVerdict));
 }
 
 TEST_F(OriginGatingCheckerTest, DelegateDestroyedBeforeEvaluation) {
