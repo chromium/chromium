@@ -147,7 +147,7 @@ bool StyleMaskSourceImage::HasSVGMask() const {
   }
   CHECK(resource_);
   LayoutSVGResourceContainer* container =
-      resource_->ResourceContainerNoCycleCheck();
+      resource_->ResourceContainerNoCycleCheck(SVGResource::Usage::kElement);
   return IsA<LayoutSVGResourceMasker>(container);
 }
 

@@ -40,8 +40,10 @@ void SVGResource::AddClient(SVGResourceClient& client) {
   auto& entry = clients_.insert(&client, ClientEntry()).stored_value->value;
   entry.count++;
   entry.cached_cycle_check = kNeedCheck;
-  if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
+  if (LayoutSVGResourceContainer* container =
+          ResourceContainerNoCycleCheck(Usage::kElement)) {
     container->ClearInvalidationMask();
+  }
 }
 
 void SVGResource::RemoveClient(SVGResourceClient& client) {
@@ -53,8 +55,10 @@ void SVGResource::RemoveClient(SVGResourceClient& client) {
   clients_.erase(it);
   // The last instance of |client| was removed. Clear its entry in
   // resource's cache.
-  if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
+  if (LayoutSVGResourceContainer* container =
+          ResourceContainerNoCycleCheck(Usage::kElement)) {
     container->RemoveClientFromCache(client);
+  }
 }
 
 class SVGResource::ImageResourceObserverWrapper
@@ -123,17 +127,29 @@ void SVGResource::NotifyContentChanged() {
     client->ResourceContentChanged(this);
 }
 
-Element* SVGResource::Target() const {
-  UpdateContentLifecycleForUse();
-  return target_.Get();
-}
-
-LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck() const {
-  Element* target = Target();
-  if (!target) {
+LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck(
+    Usage usage) const {
+  if (!target_) {
     return nullptr;
   }
-  return DynamicTo<LayoutSVGResourceContainer>(target->GetLayoutObject());
+  if (usage == Usage::kContent) {
+    UpdateContentLifecycleForUse();
+  }
+  return DynamicTo<LayoutSVGResourceContainer>(target_->GetLayoutObject());
+}
+
+LayoutSVGResourceContainer* SVGResource::ResourceContainerForCycleCheck()
+    const {
+  if (auto* container = ResourceContainerNoCycleCheck(Usage::kContent)) {
+    // Clear the invalidation mask when performing the cycle-check so that it
+    // doesn't block any future invalidations from invalidating the cycle-cache.
+    //
+    // This makes calls to ClearInvalidationMask() from painting code
+    // redundant.
+    container->ClearInvalidationMask();
+    return container;
+  }
+  return nullptr;
 }
 
 LayoutSVGResourceContainer* SVGResource::ResourceContainer(
@@ -141,7 +157,7 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return nullptr;
-  auto* container = ResourceContainerNoCycleCheck();
+  auto* container = ResourceContainerForCycleCheck();
   if (!container)
     return nullptr;
   ClientEntry& entry = it->value;
@@ -161,7 +177,7 @@ bool SVGResource::FindCycle(SVGResourceClient& client) const {
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return false;
-  auto* container = ResourceContainerNoCycleCheck();
+  auto* container = ResourceContainerForCycleCheck();
   if (!container)
     return false;
   switch (it->value.cached_cycle_check) {
@@ -226,9 +242,10 @@ void LocalSVGResource::TargetChanged(const AtomicString& id) {
     return;
   // Clear out caches on the old resource, and then notify clients about the
   // change.
-  LayoutSVGResourceContainer* old_resource = ResourceContainerNoCycleCheck();
-  if (old_resource)
+  if (LayoutSVGResourceContainer* old_resource =
+          ResourceContainerNoCycleCheck(Usage::kElement)) {
     old_resource->RemoveAllClientsFromCache();
+  }
   target_ = new_target;
   NotifyContentChanged();
 }
