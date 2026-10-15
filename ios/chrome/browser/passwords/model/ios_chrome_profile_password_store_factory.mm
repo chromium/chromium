@@ -25,13 +25,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-namespace {
-
-using affiliations::AffiliationService;
-using password_manager::AffiliatedMatchHelper;
-
-}  // namespace
-
 IOSChromeProfilePasswordStoreFactory::IOSChromeProfilePasswordStoreFactory(
     PassKey key)
     : TypedRefcountedProfileKeyedServiceFactoryIOS(
@@ -50,7 +43,7 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabase(password_manager::kProfileStore,
                                             profile->GetStatePath(),
                                             profile->GetPrefs()));
-  AffiliationService* affiliation_service =
+  affiliations::AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   std::unique_ptr<password_manager::PasswordStoreBackend> backend =
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
