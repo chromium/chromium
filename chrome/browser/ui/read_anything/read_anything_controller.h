@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -44,6 +43,7 @@ struct NativeWebKeyboardEvent;
 }  // namespace input
 
 class ReadAnythingController;
+class ReadAnythingSidePanelController;
 
 #if BUILDFLAG(ENABLE_PDF)
 class GURL;
@@ -244,10 +244,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Artificially sets the time when the user entered a page for testing the
   // omnibox entry point.
   void SetDwellTimeForTesting(base::TimeTicks test_time);
-
-  ReadAnythingSidePanelController* GetSidePanelControllerForTesting() {
-    return read_anything_side_panel_controller_.get();
-  }
 
   void OnSoftNavigation();
 

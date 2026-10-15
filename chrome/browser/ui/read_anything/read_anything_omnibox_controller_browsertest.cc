@@ -174,9 +174,7 @@ class ReadAnythingOmniboxControllerTestBase
     auto* read_anything_controller =
         ReadAnythingController::From(browser()->GetActiveTabInterface());
     CHECK(read_anything_controller);
-    auto* side_panel_controller =
-        read_anything_controller->GetSidePanelControllerForTesting();
-    side_panel_controller->OnEntryWillHide(read_anything_entry(), reason);
+    read_anything_entry()->OnEntryWillHide(reason);
     read_anything_controller->SetPresentationState(
         ReadAnythingController::PresentationState::kInactive);
   }
