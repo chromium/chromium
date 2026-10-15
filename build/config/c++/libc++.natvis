@@ -83,7 +83,7 @@
   <Type Name="std::__Cr::deque&lt;*,*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_" />
     <Intrinsic Name="block_size"
-        Expression="sizeof($T1) &lt; 256 ? 4096 / sizeof($T1) : 16" />
+        Expression="sizeof($T1) &lt; 128 ? 512 / sizeof($T1) : 4" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <IndexListItems>
